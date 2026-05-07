@@ -37,11 +37,10 @@ import io.goobi.viewer.solr.SolrConstants;
 class CitationToolsTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies throw IllegalArgumentException if allLinks null
      */
     @Test
-    void getValue_shouldThrowIllegalArgumentExceptionIfAllLinksNull() throws Exception {
+    void generateCitationLinksForLevel_shouldThrowIllegalArgumentExceptionIfAllLinksNull() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
@@ -51,11 +50,10 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies throw IllegalArgumentException if level null
      */
     @Test
-    void getValue_shouldThrowIllegalArgumentExceptionIfLevelNull() throws Exception {
+    void generateCitationLinksForLevel_shouldThrowIllegalArgumentExceptionIfLevelNull() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
@@ -66,11 +64,10 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies throw IllegalArgumentException if viewManager null
      */
     @Test
-    void getValue_shouldThrowIllegalArgumentExceptionIfViewManagerNull() throws Exception {
+    void generateCitationLinksForLevel_shouldThrowIllegalArgumentExceptionIfViewManagerNull() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
@@ -81,11 +78,10 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies preserve internal links
      */
     @Test
-    void getValue_shouldPreserveInternalLinks() throws Exception {
+    void generateCitationLinksForLevel_shouldPreserveInternalLinks() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
@@ -95,11 +91,10 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies set correct value for record type
      */
     @Test
-    void getValue_shouldSetCorrectValueForRecordType() throws Exception {
+    void generateCitationLinksForLevel_shouldSetCorrectValueForRecordType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
@@ -109,11 +104,10 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies set correct value for docstruct type
      */
     @Test
-    void getValue_shouldSetCorrectValueForDocstructType() throws Exception {
+    void generateCitationLinksForLevel_shouldSetCorrectValueForDocstructType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
 
@@ -123,11 +117,10 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
      * @verifies set correct value for image type
      */
     @Test
-    void getValue_shouldSetCorrectValueForImageType() throws Exception {
+    void generateCitationLinksForLevel_shouldSetCorrectValueForImageType() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
@@ -138,11 +131,10 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getValue(ViewManager)
-     * @verifies fall back to topstruct value correctly
+     * @verifies use topstruct field value when topstruct fallback is enabled on image level link
      */
     @Test
-    void getValue_shouldFallBackToTopstructValueCorrectly() throws Exception {
+    void generateCitationLinksForLevel_shouldUseTopstructFieldValueWhenTopstructFallbackIsEnabledOnImageLevelLink() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(10);
@@ -153,11 +145,10 @@ class CitationToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see CitationLink#getUrl(ViewManager)
-     * @verifies apply pattern correctly
+     * @verifies replace value and page placeholders in link pattern with resolved field and page number
      */
     @Test
-    void getValue_shouldApplyPatternCorrectly() throws Exception {
+    void generateCitationLinksForLevel_shouldReplaceValueAndPagePlaceholdersInLinkPatternWithResolvedFieldAndPageNumber() throws Exception {
         ViewManager viewManager = ViewManager.createViewManager(PI_KLEIUNIV, true);
         Assertions.assertNotNull(viewManager);
         viewManager.setCurrentImageOrder(2);

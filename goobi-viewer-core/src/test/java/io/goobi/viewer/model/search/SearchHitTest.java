@@ -55,8 +55,8 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
     
     /**
-     * @see SearchHit#SearchHit(HitType,BrowseElement,SolrDocument,Map,Locale,SearchHitFactory)
-     * @verifies set authorityDataIdentifier correctly
+     * @verifies set authority data identifier correctly
+     * @see SearchHit#SearchHit(HitType, BrowseElement, SolrDocument, Map, Locale, SearchHitFactory)
      */
     @Test
     void SearchHit_shouldSetAuthorityDataIdentifierCorrectly() throws Exception {
@@ -70,11 +70,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument)
      * @verifies add field values pairs that match search terms
      */
     @Test
-    void populateFoundMetadata_shouldAddFieldValuesPairsThatMatchSearchTerms() throws Exception {
+    void createSearchHit_shouldAddFieldValuesPairsThatMatchSearchTerms() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -108,11 +107,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument)
      * @verifies add MD fields that contain terms from DEFAULT
      */
     @Test
-    void populateFoundMetadata_shouldAddMDFieldsThatContainTermsFromDEFAULT() throws Exception {
+    void createSearchHit_shouldAddMDFieldsThatContainTermsFromDEFAULT() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -141,11 +139,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument)
      * @verifies not add duplicate values
      */
     @Test
-    void populateFoundMetadata_shouldNotAddDuplicateValues() throws Exception {
+    void createSearchHit_shouldNotAddDuplicateValues() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -169,11 +166,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument,Set)
      * @verifies not add ignored fields
      */
     @Test
-    void populateFoundMetadata_shouldNotAddIgnoredFields() throws Exception {
+    void createSearchHit_shouldNotAddIgnoredFields() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -201,11 +197,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set)
      * @verifies not add field values that equal the label
      */
     @Test
-    void populateFoundMetadata_shouldNotAddFieldValuesThatEqualTheLabel() throws Exception {
+    void createSearchHit_shouldNotAddFieldValuesThatEqualTheLabel() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -229,11 +224,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set)
      * @verifies translate configured field values correctly
      */
     @Test
-    void populateFoundMetadata_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
+    void createSearchHit_shouldTranslateConfiguredFieldValuesCorrectly() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         {
             Set<String> terms = new HashSet<>();
@@ -267,11 +261,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set,Set,Set)
      * @verifies write one line fields into a single string
      */
     @Test
-    void populateFoundMetadata_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
+    void createSearchHit_shouldWriteOneLineFieldsIntoASingleString() throws Exception {
         Map<String, Set<String>> searchTerms = new HashMap<>();
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "bat", "hiru" })));
         searchTerms.put("MD_COUNT_SE", new HashSet<>(Arrays.asList(new String[] { "ett", "två" })));
@@ -306,11 +299,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#populateFoundMetadata(SolrDocument,Set,Set,Set,Set)
      * @verifies truncate snippet fields correctly
      */
     @Test
-    void populateFoundMetadata_shouldTruncateSnippetFieldsCorrectly() throws Exception {
+    void createSearchHit_shouldTruncateSnippetFieldsCorrectly() throws Exception {
         int maxLength = 50;
         DataManager.getInstance().getConfiguration().overrideValue("search.fulltextFragmentLength", maxLength);
 
@@ -347,7 +339,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addLabelHighlighting()
      * @verifies modify label correctly from default
      */
     @Test
@@ -377,7 +368,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addLabelHighlighting()
      * @verifies modify label correctly from title
      */
     @Test
@@ -407,7 +397,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addLabelHighlighting()
      * @verifies do nothing if searchTerms null
      */
     @Test
@@ -438,7 +427,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addCMSPageChildren()
      * @verifies do nothing if no cms pages for record found
      */
     @Test
@@ -457,7 +445,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addFulltextChild(SolrDocument,String)
      * @verifies throw IllegalArgumentException if doc null
      */
     @Test
@@ -474,7 +461,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addFulltextChild(SolrDocument,String)
      * @verifies do nothing if searchTerms does not contain fulltext
      */
     @Test
@@ -508,7 +494,6 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchHit#addFulltextChild(SolrDocument,String)
      * @verifies do nothing if tei file name not found
      */
     @Test
@@ -541,10 +526,10 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchHit#generateNotificationFragment(int)
-     * @verifies generate fragment correctly
+     * @verifies generate HTML table row fragment with count, thumbnail image, and title
      */
     @Test
-    void generateNotificationFragment_shouldGenerateFragmentCorrectly() throws Exception {
+    void generateNotificationFragment_shouldGenerateHTMLTableRowFragmentWithCountThumbnailImageAndTitle() throws Exception {
         TestUtils.mockFacesContext();
         
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":" + AbstractSolrEnabledTest.PI_KLEIUNIV, null);
@@ -563,5 +548,20 @@ class SearchHitTest extends AbstractDatabaseAndSolrEnabledTest {
                 + "/api/v1/records/PPN517154005/files/images/00000001.tif/full/!10,11/0/default.jpg" + "\" alt=\"" + title
                 + "\" /></td><td>" + title
                 + "</td></tr>", fragment);
+    }
+
+    /**
+     * @see SearchHit#SearchHit(HitType, BrowseElement, SolrDocument, Map, Locale, SearchHitFactory)
+     * @verifies set authorityDataIdentifier correctly
+     */
+    @Test
+    void constructor_shouldSetAuthorityDataIdentifierCorrectly() throws Exception {
+        // Provide searchTerms containing a NORM_IDENTIFIER entry so the constructor extracts it
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(NormDataImporter.FIELD_IDENTIFIER, new HashSet<>(Arrays.asList("gnd_12345")));
+
+        // browseElement may be null; only the authorityDataIdentifier extraction path is under test
+        SearchHit hit = new SearchHit(HitType.DOCSTRCT, null, null, searchTerms, Locale.ENGLISH, null);
+        Assertions.assertEquals("gnd_12345", hit.getAuthorityDataIdentifier());
     }
 }

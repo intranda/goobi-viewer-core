@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.IndexerTools;
+import io.goobi.viewer.controller.imaging.SourceImagePrewarmService;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.SocketBean;
@@ -121,6 +122,13 @@ public class ContextListener implements ServletContextListener {
     /** {@inheritDoc} */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        // Shut down the source-image prewarm executor first: its workers do Solr lookups in
+        // resolveAndPrewarm(), so they must finish before the Solr client is closed below.
+        // Without this shutdown Tomcat reports each prewarm worker thread as a memory leak.
+        logger.info("Shutting down SourceImagePrewarmService executor...");
+        SourceImagePrewarmService.getInstance().shutdown();
+        logger.info("SourceImagePrewarmService executor stopped.");
+
         // Shut down background re-indexing first: it uses Solr, which must still be open at this point.
         logger.info("Shutting down IndexerTools executor...");
         IndexerTools.shutdown();

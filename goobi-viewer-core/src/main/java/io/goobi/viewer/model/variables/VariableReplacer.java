@@ -158,6 +158,7 @@ public class VariableReplacer {
      *
      * @param template string containing variable placeholders to replace
      * @return A list of strings
+     * @should return expected value for given input
      */
     public List<String> replace(String template) {
         List<String> replacementStrings = getReplacementStrings(template);

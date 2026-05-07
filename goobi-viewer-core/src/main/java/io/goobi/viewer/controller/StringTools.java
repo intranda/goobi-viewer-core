@@ -222,7 +222,7 @@ public final class StringTools {
      *
      * @param str input string to escape
      * @return the input string with HTML special characters replaced by their entity equivalents
-     * @should escape all characters correctly
+     * @should replace angle brackets, quotes, and ampersands with HTML entities
      */
     public static String escapeHtmlChars(String str) {
         return replaceCharacters(str, new String[] { "&", "\"", "<", ">" }, new String[] { "&amp;", "&quot;", "&lt;", "&gt;" });
@@ -266,7 +266,7 @@ public final class StringTools {
      *
      * @param s input string to normalize
      * @return String without diacritical marks
-     * @should remove diacritical marks correctly
+     * @should strip accents from umlauts and accented characters while preserving eszett and base letters
      */
     public static String removeDiacriticalMarks(String s) {
         if (s == null) {
@@ -295,8 +295,8 @@ public final class StringTools {
      * @param s input string to strip of line breaks
      * @param replaceWith replacement string for each line break found
      * @return String without line breaks
-     * @should remove line breaks correctly
-     * @should remove html line breaks correctly
+     * @should strip CRLF sequences and join text with given replacement
+     * @should replace all HTML br tag variants with the given replacement string
      */
     public static String removeLineBreaks(String s, final String replaceWith) {
         if (s == null) {
@@ -316,12 +316,19 @@ public final class StringTools {
     }
 
     /**
-     * stripJS.
+     * Regex-based removal of {@code <script>} and {@code <svg>} blocks. Bypassable by any
+     * other XSS vector (event-handler attributes, {@code javascript:} URIs, alternative tags
+     * like {@code <iframe>} or {@code <details ontoggle>}). Retained only for non-XSS-sink
+     * call sites (URL hygiene, REST-input detection, filename helpers).
      *
      * @param s String to strip of JavaScript blocks
      * @return String sans any script-tag blocks
-     * @should remove JS blocks correctly
+     * @should remove script tags, self-closing scripts, and SVG event handler elements regardless of case
+     * @deprecated For HTML rendering sinks use {@link HtmlSanitizer#cleanRichText(String)} or
+     *             {@link HtmlSanitizer#cleanComment(String)} instead. This method only catches
+     *             {@code <script>}/{@code <svg>} and is unsuitable as XSS protection.
      */
+    @Deprecated
     public static String stripJS(String s) {
         if (StringUtils.isBlank(s)) {
             return s;
@@ -338,7 +345,7 @@ public final class StringTools {
      *
      * @param s String to clean
      * @return String sans any logger pattern-breaking characters
-     * @should remove chars correctly
+     * @should replace tabs and line break characters with underscores
      */
     public static String stripPatternBreakingChars(String s) {
         if (StringUtils.isBlank(s)) {
@@ -384,6 +391,7 @@ public final class StringTools {
      *
      * @param s string whose single and double quotes should be escaped
      * @return the input string with single and double quotes preceded by a backslash
+     * @should return expected value for given input
      */
     public static String escapeQuotes(final String s) {
         String ret = s;
@@ -446,6 +454,7 @@ public final class StringTools {
      * @throws UnsupportedEncodingException
      * @should return true if string contains url encoded characters
      * @should return false if string not encoded
+     * @should return false if string contains literal percent sign
      */
     public static boolean isStringUrlEncoded(String s, String charset) throws UnsupportedEncodingException {
         if (StringUtils.isEmpty(s)) {
@@ -468,7 +477,8 @@ public final class StringTools {
      * @param value URL string to escape
      * @param escapePercentCharacters true to also replace percent characters
      * @return the input string with critical URL characters replaced by their encoded placeholder equivalents
-     * @should replace characters correctly
+     * @should replace +, /, backslash, pipe, and ? with Unicode escape sequences and decode percent-encoding when flagged
+     * @should replace plus slash backslash pipe and question mark with unicode escape sequences and decode percent encoding when flagged
      */
     public static String escapeCriticalUrlChracters(final String value, boolean escapePercentCharacters) {
         if (value == null) {
@@ -491,7 +501,7 @@ public final class StringTools {
      * unescapeCriticalUrlChracters.
      *
      * @param value escaped URL string to unescape
-     * @should replace characters correctly
+     * @should restore original characters from Unicode escape sequences
      * @return the input string with encoded placeholder sequences restored to their original URL characters
      */
     public static String unescapeCriticalUrlChracters(String value) {
@@ -543,7 +553,7 @@ public final class StringTools {
      *
      * @param html The HTML to fix
      * @return Same HTML document but with Chrome-compatible CSS class names
-     * @should rename classes correctly
+     * @should move leading digits in CSS class names to the end in both selectors and class attributes
      */
     public static String renameIncompatibleCSSClasses(final String html) {
         if (html == null) {
@@ -586,8 +596,8 @@ public final class StringTools {
      * @param collection hierarchical collection name string
      * @param split delimiter character used to separate hierarchy levels
      * @return List of string containing every (sub-)collection name
-     * @should create list correctly
-     * @should return single value correctly
+     * @should build cumulative hierarchy list from separator-delimited collection string
+     * @should return single-element list when collection string has no separator
      */
     public static List<String> getHierarchyForCollection(String collection, String split) {
         if (StringUtils.isEmpty(collection) || StringUtils.isEmpty(split)) {
@@ -614,8 +624,8 @@ public final class StringTools {
      *
      * @param coords WebAnnotation coordinate string, e.g. "xywh=x,y,w,h"
      * @return Legacy format coordinates
-     * @should normalize coordinates correctly
      * @should preserve legacy coordinates
+     * @should convert xywh fragment to absolute x 1 y 1 x 2 y 2 coordinate format
      */
     public static String normalizeWebAnnotationCoordinates(String coords) {
         if (coords == null) {
@@ -673,7 +683,7 @@ public final class StringTools {
      *
      * @param myString input string to hash
      * @return generated hash
-     * @should hash string correctly
+     * @should return SHA-256 hex digest for given input string
      */
     public static String generateHash(String myString) {
         String answer = "";
@@ -743,8 +753,8 @@ public final class StringTools {
      * @return true if value null, empty or starts with 0x1; false otherwise
      * @should return true if value null or empty
      * @should return true if value starts with 0x1
-     * @should return true if value starts with #1;
      * @should return false otherwise
+     * @should return true if value starts with 1
      */
     public static boolean checkValueEmptyOrInverted(String value) {
         if (StringUtils.isEmpty(value)) {
@@ -759,7 +769,7 @@ public final class StringTools {
      * @param values All values to check
      * @param regex Regular expression pattern to filter by
      * @return List of values that match <code>regex</code>
-     * @should return all matching values
+     * @should return all matching keys
      */
     public static List<String> filterStringsViaRegex(List<String> values, String regex) {
         if (values == null || values.isEmpty() || StringUtils.isEmpty(regex)) {
@@ -848,15 +858,13 @@ public final class StringTools {
     }
 
     /**
-     * Sanitizes a filename so that it contains only printable ASCII characters (U+0020–U+007E).
-     * Unicode letters with diacritics are first decomposed via NFD normalization and their combining
-     * marks stripped, preserving the base Latin letter (e.g. {@code ü} → {@code u}). All remaining
-     * non-ASCII characters (such as the En-Dash U+2013) are replaced with a hyphen, and consecutive
-     * hyphens are collapsed into one.
+     * Sanitizes a filename so that it contains only printable ASCII characters (U+0020–U+007E). Unicode letters with diacritics are first decomposed
+     * via NFD normalization and their combining marks stripped, preserving the base Latin letter (e.g. {@code ü} → {@code u}). All remaining
+     * non-ASCII characters (such as the En-Dash U+2013) are replaced with a hyphen, and consecutive hyphens are collapsed into one.
      *
-     * <p>HTTP response headers (e.g. {@code Content-Location}) must not contain characters outside
-     * the printable ASCII range; Tomcat rejects such headers with an {@link IllegalArgumentException}.
-     * Calling this method on the target filename during CMS media upload prevents that error.
+     * <p>
+     * HTTP response headers (e.g. {@code Content-Location}) must not contain characters outside the printable ASCII range; Tomcat rejects such
+     * headers with an {@link IllegalArgumentException}. Calling this method on the target filename during CMS media upload prevents that error.
      *
      * @param filename raw filename that may contain non-ASCII characters; may be {@code null}
      * @return filename containing only printable ASCII characters, or {@code null} if input was {@code null}
@@ -927,7 +935,7 @@ public final class StringTools {
      * @param replacement String to substitute for the last occurrence of target
      * @return ALtered text
      * @should return original text if target not found
-     * @should replace target with replacement correctly
+     * @should replace the last occurrence of target substring with replacement
      */
     public static String replaceLast(String text, String target, String replacement) {
         int index = text.lastIndexOf(target);
@@ -948,6 +956,7 @@ public final class StringTools {
      * @param text the text to truncate
      * @param maxLength maximal length of the returned text
      * @return the truncated text or null if the input was null
+     * @should return abcde for given input
      */
     public static String truncateText(String text, int maxLength) {
         if (text == null || text.length() <= maxLength) {
@@ -964,7 +973,18 @@ public final class StringTools {
         return text.substring(0, end) + "...";
     }
 
+    /**
+     * @should return range from 0 to n for integer input
+     * @should return correct range for closed interval notation
+     * @should return correct range for open interval notation
+     * @should return correct range for half open interval notation
+     * @should throw IllegalArgumentException for invalid input
+     */
     public static IntegerRange parseIntRange(String input) {
+
+        if (StringTools.isInteger(input)) {
+            return IntegerRange.of(0, Integer.parseInt(input));
+        }
 
         Pattern p = Pattern.compile("([\\[(])\\s*(-?\\d+)\\s*,\\s*(-?\\d+)\\s*([\\])])");
         Matcher m = p.matcher(input.trim());

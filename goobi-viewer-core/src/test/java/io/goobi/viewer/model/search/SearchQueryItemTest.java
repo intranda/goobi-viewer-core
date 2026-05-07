@@ -34,11 +34,67 @@ import io.goobi.viewer.solr.SolrConstants;
 class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
-     * @see SearchQueryItem#generateQuery(Set)
-     * @verifies generate query correctly
+     * @see SearchQueryItem#removeLine(SearchQueryItemLine)
+     * @verifies remove line correctly
      */
     @Test
-    void generateQuery_shouldGenerateQueryCorrectly() {
+    void removeLine_shouldRemoveLineCorrectly() {
+        // Add a second line so the item has two lines, then remove one
+        SearchQueryItem item = new SearchQueryItem();
+        item.addNewLine(0);
+        Assertions.assertEquals(2, item.getLines().size());
+        SearchQueryItemLine lineToRemove = item.getLines().get(1);
+        Assertions.assertTrue(item.removeLine(lineToRemove));
+        Assertions.assertEquals(1, item.getLines().size());
+    }
+
+    /**
+     * @see SearchQueryItem#removeLine(SearchQueryItemLine)
+     * @verifies not remove last remaining line
+     */
+    @Test
+    void removeLine_shouldNotRemoveLastRemainingLine() {
+        // With only one line in the item, removeLine should return false
+        SearchQueryItem item = new SearchQueryItem();
+        Assertions.assertEquals(1, item.getLines().size());
+        SearchQueryItemLine onlyLine = item.getLines().get(0);
+        Assertions.assertFalse(item.removeLine(onlyLine));
+        Assertions.assertEquals(1, item.getLines().size());
+    }
+
+    /**
+     * @see SearchQueryItem#toggleValue(String)
+     * @verifies set values correctly
+     */
+    @Test
+    void toggleValue_shouldSetValuesCorrectly() {
+        // Toggling a value that is not yet set should add it to the first line's values
+        SearchQueryItem item = new SearchQueryItem();
+        Assertions.assertFalse(item.isValueSet("testval"));
+        item.toggleValue("testval");
+        Assertions.assertTrue(item.isValueSet("testval"));
+    }
+
+    /**
+     * @see SearchQueryItem#toggleValue(String)
+     * @verifies unset values correctly
+     */
+    @Test
+    void toggleValue_shouldUnsetValuesCorrectly() {
+        // Toggling an already-set value should remove it from the first line's values
+        SearchQueryItem item = new SearchQueryItem();
+        item.toggleValue("testval");
+        Assertions.assertTrue(item.isValueSet("testval"));
+        item.toggleValue("testval");
+        Assertions.assertFalse(item.isValueSet("testval"));
+    }
+
+
+    /**
+     * @verifies build solr queries for o r a n d phrase search multi value and multi line item configurations
+     */
+    @Test
+    void generateQuery_shouldBuildSolrQueriesForORANDPhraseSearchMultiValueAndMultiLineItemConfigurations() {
         {
             SearchQueryItem item = new SearchQueryItem();
             item.setOperator(SearchItemOperator.OR);
@@ -166,6 +222,10 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
                 item.generateQuery(searchTerms, true, false));
     }
 
+    /**
+     * @see SearchQueryItem#generateQuery(Set<String>, boolean, boolean)
+     * @verifies add fuzzy search operator
+     */
     @Test
     void generateQuery_shouldAddFuzzySearchOperator() {
         SearchQueryItem item = new SearchQueryItem();
@@ -176,6 +236,10 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals("+(MD_TITLE:((fooo fooo~1) AND (bar)))", item.generateQuery(searchTerms, true, true));
     }
 
+    /**
+     * @see SearchQueryItem#generateQuery(Set<String>, boolean, boolean)
+     * @verifies add fuzzy search operator with wildcards
+     */
     @Test
     void generateQuery_shouldAddFuzzySearchOperatorWithWildcards() {
         SearchQueryItem item = new SearchQueryItem();
@@ -188,7 +252,7 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryItem#generateQuery(Set,boolean)
-     * @verifies preserve truncation
+     * @verifies add fuzzy search operator with hyphen
      */
     @Test
     void generateQuery_shouldAddFuzzySearchOperatorWithHyphen() {
@@ -202,10 +266,10 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryItem#generateQuery(Set,boolean)
-     * @verifies generate range query correctly
+     * @verifies build range query with trimmed boundary values including negative numbers
      */
     @Test
-    void generateQuery_shouldGenerateRangeQueryCorrectly() {
+    void generateQuery_shouldBuildRangeQueryWithTrimmedBoundaryValuesIncludingNegativeNumbers() {
         SearchQueryItem item = new SearchQueryItem();
         item.setField("MD_YEARPUBLISH");
         item.setValue(" 1900 ");
@@ -221,10 +285,10 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SearchQueryItem#generateQuery(Set,boolean,boolean,int)
-     * @verifies add proximity search token correctly
+     * @verifies append proximity search distance to FULLTEXT phrase query
      */
     @Test
-    void generateQuery_shouldAddProximitySearchTokenCorrectly() {
+    void generateQuery_shouldAppendProximitySearchDistanceToFULLTEXTPhraseQuery() {
         SearchQueryItem item = new SearchQueryItem();
         item.setField(SolrConstants.FULLTEXT);
         item.setValue("\"foo bar\"~10");
@@ -337,5 +401,139 @@ class SearchQueryItemTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals("not-a-date", SearchQueryItem.convertDatepickerValueToSolrDate("not-a-date"));
         Assertions.assertEquals("", SearchQueryItem.convertDatepickerValueToSolrDate(""));
         Assertions.assertNull(SearchQueryItem.convertDatepickerValueToSolrDate(null));
+    }
+
+    /**
+     * Regression test for ConcurrentModificationException during JSF c:forEach iteration
+     * over queryItem.lines on searchAdvanced.xhtml: a concurrent request on the
+     * SessionScoped SearchBean can mutate the lines list while another thread iterates.
+     * With ArrayList this throws CME; with CopyOnWriteArrayList the iterator works on a
+     * snapshot and ignores the change.
+     *
+     * @see SearchQueryItem#getLines()
+     * @verifies allow safe iteration during concurrent modification
+     */
+    @Test
+    void getLines_shouldAllowSafeIterationDuringConcurrentModification() {
+        SearchQueryItem item = new SearchQueryItem();
+        item.addNewLine(0);
+        item.addNewLine(1);
+        Assertions.assertEquals(3, item.getLines().size());
+
+        int seen = 0;
+        for (SearchQueryItemLine line : item.getLines()) {
+            Assertions.assertNotNull(line);
+            if (seen == 0) {
+                // Mutate during iteration to simulate a concurrent request triggering reset().
+                item.reset();
+            }
+            seen++;
+        }
+        Assertions.assertEquals(3, seen, "iterator must complete on the original snapshot");
+        Assertions.assertEquals(1, item.getLines().size(), "post-iteration list reflects the reset");
+    }
+
+    /**
+     * @see SearchQueryItem#convertDatepickerValueToSolrDate(String)
+     * @verifies pass through already converted values silently
+     */
+    @Test
+    void convertDatepickerValueToSolrDate_shouldPassThroughAlreadyConvertedValuesSilently() {
+        // Already in Solr yyyyMMdd format — must be returned unchanged
+        // so bookmarked URLs with correct values keep working.
+        Assertions.assertEquals("19950111", SearchQueryItem.convertDatepickerValueToSolrDate("19950111"));
+        Assertions.assertEquals("20240315", SearchQueryItem.convertDatepickerValueToSolrDate("20240315"));
+    }
+
+    /**
+     * @see SearchQueryItem#generateQuery(Set, boolean, boolean)
+     * @verifies normalize CALENDAR_DAY value to yyyyMMdd when given as locale date
+     */
+    @Test
+    void generateQuery_shouldNormalizeCalendarDayValueToYyyyMMddWhenGivenAsLocaleDate() {
+        // Production regression: YEARMONTHDAY:(11.01.1995) was rejected by Solr as
+        // "Invalid Number". The query item must convert DE/EN date strings to yyyyMMdd
+        // even when the field is not configured as datepicker (e.g. searchInRecord paths).
+        // Emission also includes the IDDOC→IDDOC_OWNER nested join so that pages of the
+        // matching issue are covered as well.
+        String expectedSingleDay = "+(" + SolrConstants.CALENDAR_DAY + ":19950111"
+                + " _query_:\"{!join from=" + SolrConstants.IDDOC + " to=" + SolrConstants.IDDOC_OWNER
+                + "}" + SolrConstants.CALENDAR_DAY + ":19950111\")";
+
+        SearchQueryItem item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("11.01.1995");
+        Assertions.assertEquals(expectedSingleDay, item.generateQuery(new HashSet<>(), true, false));
+
+        // Same for English-formatted dates
+        item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("1/11/1995");
+        Assertions.assertEquals(expectedSingleDay, item.generateQuery(new HashSet<>(), true, false));
+
+        // Already-correct values must pass through unchanged
+        item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("19950111");
+        Assertions.assertEquals(expectedSingleDay, item.generateQuery(new HashSet<>(), true, false));
+    }
+
+    /**
+     * @see SearchQueryItem#generateQuery(Set, boolean, boolean)
+     * @verifies build CALENDAR_DAY range when both values are set even without datepicker config
+     */
+    @Test
+    void generateQuery_shouldBuildCalendarDayRangeWhenBothValuesAreSetEvenWithoutDatepickerConfig() {
+        // searchInRecord(piField, piValue, date1, date2) populates queryItem 2 with
+        // YEARMONTHDAY + value/value2 programmatically. The field config in this scenario
+        // typically has neither range nor datepicker set, so the range query must be built
+        // from the field name alone — otherwise value2 is silently dropped and the user
+        // gets a single-day match instead of the requested range. The nested IDDOC join is
+        // appended so page-level fulltext hits inside the range are not dropped.
+        String expectedRange = "+(" + SolrConstants.CALENDAR_DAY + ":[19950111 TO 19951231]"
+                + " _query_:\"{!join from=" + SolrConstants.IDDOC + " to=" + SolrConstants.IDDOC_OWNER
+                + "}" + SolrConstants.CALENDAR_DAY + ":[19950111 TO 19951231]\")";
+
+        SearchQueryItem item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("11.01.1995");
+        item.setValue2("31.12.1995");
+        Assertions.assertEquals(expectedRange, item.generateQuery(new HashSet<>(), true, false));
+
+        // Already-converted values must pass through unchanged
+        item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("19950111");
+        item.setValue2("19951231");
+        Assertions.assertEquals(expectedRange, item.generateQuery(new HashSet<>(), true, false));
+    }
+
+    /**
+     * @see SearchQueryItem#generateQuery(Set, boolean, boolean)
+     * @verifies emit nested IDDOC join so page fulltext hits honor the CALENDAR_DAY range
+     */
+    @Test
+    void generateQuery_shouldEmitNestedIDDOCJoinSoPageFulltextHitsHonorTheCALENDARDAYRange() {
+        // Newspaper data model: YEARMONTHDAY is only on Issue docs, never on PAGE docs.
+        // Without the nested join, a +(FULLTEXT:vaduz) +(YEARMONTHDAY:[X TO Y]) inner query
+        // cannot match any page (pages have FULLTEXT but no YEARMONTHDAY) and fulltext hits
+        // silently vanish. The emission must contain the {!join from=IDDOC to=IDDOC_OWNER}
+        // subquery so that pages of matching issues are included.
+        SearchQueryItem item = new SearchQueryItem();
+        item.setOperator(SearchItemOperator.AND);
+        item.setField(SolrConstants.CALENDAR_DAY);
+        item.setValue("11.01.1878");
+        item.setValue2("31.12.1878");
+        String query = item.generateQuery(new HashSet<>(), true, false);
+        Assertions.assertTrue(query.contains("_query_:\"{!join from=" + SolrConstants.IDDOC
+                + " to=" + SolrConstants.IDDOC_OWNER + "}"),
+                "Expected nested IDDOC→IDDOC_OWNER join in query: " + query);
+        Assertions.assertTrue(query.contains(SolrConstants.CALENDAR_DAY + ":[18780111 TO 18781231]"),
+                "Expected normalized date range in query: " + query);
     }
 }

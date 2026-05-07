@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 class SecurityQuestionTest {
 
     /**
-     * @see SecurityQuestion#isAnswerCorrect(String)
      * @verifies return true on correct answer
      */
     @Test
@@ -39,7 +38,6 @@ class SecurityQuestionTest {
     }
 
     /**
-     * @see SecurityQuestion#isAnswerCorrect(String)
      * @verifies return true on correct answer and ignore case
      */
     @Test
@@ -49,7 +47,6 @@ class SecurityQuestionTest {
     }
 
     /**
-     * @see SecurityQuestion#isAnswerCorrect(String)
      * @verifies return false on incorrect answer
      */
     @Test
@@ -71,7 +68,6 @@ class SecurityQuestionTest {
     }
 
     /**
-     * @see SecurityQuestion#isAnswerCorrect(String)
      * @verifies mark question as answered
      */
     @Test

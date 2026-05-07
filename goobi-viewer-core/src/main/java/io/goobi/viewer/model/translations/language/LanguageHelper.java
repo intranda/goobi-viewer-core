@@ -65,7 +65,14 @@ public class LanguageHelper {
                                     .setListDelimiterHandler(new DefaultListDelimiterHandler('&')) // TODO Why '&'?
                                     .setThrowExceptionOnMissing(false));
             builder.getConfiguration().setExpressionEngine(new XPathExpressionEngine());
-            executorService = Executors.newSingleThreadScheduledExecutor();
+            // Named, daemon thread factory: makes future Tomcat leak warnings identifiable
+            // (instead of generic "pool-N-thread-1") and ensures a crashed shutdown path does
+            // not block the JVM.
+            executorService = Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread t = new Thread(r, "viewer-language-reloader");
+                t.setDaemon(true);
+                return t;
+            });
             trigger = new PeriodicReloadingTrigger(builder.getReloadingController(),
                     null, 10, TimeUnit.SECONDS, executorService);
             trigger.start();
@@ -136,6 +143,7 @@ public class LanguageHelper {
      *
      * @param inIsoCode ISO 639-1 or 639-2/B language code to look up
      * @return the Language data for the given ISO code, or null if not found
+     * @should resolve both iso 639-1 and iso 639-2 codes
      */
     public Language getLanguage(final String inIsoCode) {
         if (inIsoCode == null) {

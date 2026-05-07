@@ -31,8 +31,11 @@ import org.junit.jupiter.api.Test;
  */
 class RequestCountsTest {
 
+    /**
+     * @verifies serialize all request type counts
+     */
     @Test
-    void test_serialize() {
+    void toJsonArray_shouldSerializeAllRequestTypeCounts() {
         
         SessionRequestCounts counts = new SessionRequestCounts();
         counts.setCount(RequestType.FILE_DOWNLOAD, 4);
@@ -43,16 +46,22 @@ class RequestCountsTest {
         assertEquals("[23,4,3]", s);
     }
 
+    /**
+     * @verifies serialize zeros when no counts set
+     */
     @Test
-    void test_serialize_empty() {
+    void toJsonArray_shouldSerializeZerosWhenNoCountsSet() {
         SessionRequestCounts counts = new SessionRequestCounts();
     
         String s = counts.toJsonArray();
         assertEquals("[0,0,0]", s);
     }
     
+    /**
+     * @verifies serialize zeros for unset request types
+     */
     @Test
-    void test_serialize_partially_empty() {
+    void toJsonArray_shouldSerializeZerosForUnsetRequestTypes() {
         SessionRequestCounts counts = new SessionRequestCounts();
         counts.setCount(RequestType.MEDIA_RESOURCE, 3);
 
@@ -60,8 +69,11 @@ class RequestCountsTest {
         assertEquals("[0,0,3]", s);
     }
     
+    /**
+     * @verifies deserialize json array into request type counts
+     */
     @Test
-    void test_deserialize() {
+    void SessionRequestCounts_shouldDeserializeJsonArrayIntoRequestTypeCounts() {
         String s = "[23,4,3]";
         SessionRequestCounts counts = new SessionRequestCounts(s);
         assertEquals(Long.valueOf(23), counts.getCount(RequestType.RECORD_VIEW));

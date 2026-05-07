@@ -70,7 +70,9 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageIn
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -137,6 +139,7 @@ public class UserAvatarResource extends ImageResource {
      * @param userId database ID of the user
      * @return {@link URI}
      * @throws WebApplicationException
+     * @should return 404 for missing avatar
      */
     public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
         try {
@@ -268,13 +271,22 @@ public class UserAvatarResource extends ImageResource {
     }
 
     /**
-     * Determines the current User using the UserBean instance stored in the session store. If no session is available, no UserBean could be found or
-     * no user is logged in, NULL is returned
+     * Determines the current User from a bearer token or the session UserBean.
      *
      * @return Optional<User>
      */
-    private static Optional<User> getUser() {
-        UserBean userBean = BeanUtils.getUserBean();
+    private Optional<User> getUser() {
+        try {
+            Optional<User> tokenUser = UserLoggedInFilter.getUserToken(servletRequest)
+                    .filter(token -> !token.isExpired())
+                    .map(token -> token.getUser());
+            if (tokenUser.isPresent()) {
+                return tokenUser;
+            }
+        } catch (DAOException e) {
+            logger.warn("Error getting user from authorization token", e);
+        }
+        UserBean userBean = BeanUtils.getUserBeanFromSession(servletRequest.getSession());
         if (userBean == null) {
             logger.trace("Unable to get user: No UserBean found in session store.");
             return Optional.empty();
@@ -284,7 +296,6 @@ public class UserAvatarResource extends ImageResource {
             logger.trace("Unable to get user: No user found in session store UserBean instance");
             return Optional.empty();
         }
-        // logger.trace("Found user {}", user); //NOSONAR Debug
         return Optional.of(user);
     }
 

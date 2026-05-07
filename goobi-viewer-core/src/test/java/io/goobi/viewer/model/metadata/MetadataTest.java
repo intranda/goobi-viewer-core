@@ -46,7 +46,7 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see Metadata#filterMetadata(List,Locale)
-     * @verifies return language-specific version of a field
+     * @verifies return languagespecific version of a field
      */
     @Test
     void filterMetadata_shouldReturnLanguagespecificVersionOfAField() {
@@ -93,10 +93,10 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see Metadata#filterMetadata(List,String,String)
-     * @verifies filter by desired field name correctly
+     * @verifies return only metadata entries matching the given field name and language
      */
     @Test
-    void filterMetadata_shouldFilterByDesiredFieldNameCorrectly() {
+    void filterMetadata_shouldReturnOnlyMetadataEntriesMatchingTheGivenFieldNameAndLanguage() {
         List<Metadata> metadataList = new ArrayList<>();
         metadataList.add(new Metadata("", "MD_TITLE_LANG_EN", "", "foo"));
         metadataList.add(new Metadata("", "MD_TITLE_LANG_DE", "", "foo"));
@@ -141,8 +141,8 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#isBlank(String)
      * @verifies return true if all paramValues are empty
+     * @see Metadata#isBlank()
      */
     @Test
     void isBlank_shouldReturnTrueIfAllParamValuesAreEmpty() {
@@ -152,8 +152,8 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#isBlank(String)
      * @verifies return false if at least one paramValue is not empty
+     * @see Metadata#isBlank()
      */
     @Test
     void isBlank_shouldReturnFalseIfAtLeastOneParamValueIsNotEmpty() {
@@ -163,7 +163,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#isBlank(String)
      * @verifies return true if all values have different ownerIddoc
      */
     @Test
@@ -181,11 +180,10 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#isBlank(String)
-     * @verifies return true if at least one value has same ownerIddoc
+     * @verifies return false if at least one value has same ownerIddoc
      */
     @Test
-    void isBlank_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() {
+    void isBlank_shouldReturnFalseIfAtLeastOneValueHasSameOwnerIddoc() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
         String[] values = new String[] { "val1", "val2" };
@@ -199,8 +197,54 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * No-arg isBlank() delegates to isBlank(null), returning all values regardless of ownerIddoc.
+     * Even when at least one value has a matching ownerIddoc, the method returns true
+     * if all param values are blank.
+     *
+     * @see Metadata#isBlank()
+     * @verifies return true if at least one value has same ownerIddoc
+     */
+    @Test
+    void isBlankNoArg_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() {
+        // Set up metadata with two blank-valued entries that have different ownerIddocs
+        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
+        String[] blankValues = new String[] { "", "" };
+        metadata.setParamValue(0, 0, Arrays.asList(blankValues), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(blankValues), "", null, null, null, null);
+        assertEquals(2, metadata.getValues().size());
+        metadata.getValues().get(0).setOwnerIddoc("123");
+        metadata.getValues().get(1).setOwnerIddoc("456");
+
+        // No-arg isBlank() returns all values; all param values are blank, so result is true
+        Assertions.assertTrue(metadata.isBlank());
+    }
+
+    /**
+     * When filtering by ownerIddoc, if the matching value has blank param values, isBlank returns true.
+     *
+     * @see Metadata#isBlank(String)
+     * @verifies return true if at least one value has same ownerIddoc
+     */
+    @Test
+    void isBlankWithOwnerIddoc_shouldReturnTrueIfAtLeastOneValueHasSameOwnerIddoc() {
+        // Set up metadata with one non-blank entry (ownerIddoc "123") and one blank entry (ownerIddoc "456")
+        Metadata metadata = new Metadata("", "MD_FIELD", "", "");
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD));
+        String[] nonBlankValues = new String[] { "val1", "val2" };
+        String[] blankValues = new String[] { "", "" };
+        metadata.setParamValue(0, 0, Arrays.asList(nonBlankValues), "", null, null, null, null);
+        metadata.setParamValue(1, 0, Arrays.asList(blankValues), "", null, null, null, null);
+        assertEquals(2, metadata.getValues().size());
+        metadata.getValues().get(0).setOwnerIddoc("123");
+        metadata.getValues().get(1).setOwnerIddoc("456");
+
+        // Filter by ownerIddoc "456" which has blank param values, so isBlank returns true
+        Assertions.assertTrue(metadata.isBlank("456"));
+    }
+
+    /**
      * @throws IndexUnreachableException
-     * @see Metadata#populateGroup(StructElement,String,List<StringPair>,Locale)
      * @verifies populate group correctly
      */
     @Test
@@ -220,7 +264,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @throws IndexUnreachableException
-     * @see Metadata#populateGroup(StructElement,String,List<StringPair>,Locale)
      * @verifies apply default value if none found
      */
     @Test
@@ -244,11 +287,10 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,Locale)
-     * @verifies add multivalued param values correctly
+     * @verifies store multiple values for a single param index preserving order
      */
     @Test
-    void setParamValue_shouldAddMultivaluedParamValuesCorrectly() {
+    void setParamValue_shouldStoreMultipleValuesForASingleParamIndexPreservingOrder() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
@@ -261,11 +303,10 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#setParamValue(int,int,List,String,String,Map,String,Locale)
-     * @verifies set group type correctly
+     * @verifies set groupTypeForUrl on the metadata value when group type is provided
      */
     @Test
-    void setParamValue_shouldSetGroupTypeCorrectly() {
+    void setParamValue_shouldSetGroupTypeForUrlOnTheMetadataValueWhenGroupTypeIsProvided() {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "");
         String[] values = new String[] { "val1", "val2" };
         metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setPrefix("pre_").setSuffix("_suf"));
@@ -275,7 +316,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#getValuesForOwner(String)
      * @verifies return all values if ownerIddoc null
      */
     @Test
@@ -293,7 +333,6 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see Metadata#getValuesForOwner(String)
      * @verifies return only values for the given ownerIddoc
      */
     @Test
@@ -335,5 +374,167 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
     void getMasterValue_shouldReturnSinglePlaceholderForNonGroupMetadataIfMasterValueEmpty() {
         assertEquals("{0}", new Metadata().getMasterValue());
 
+    }
+
+    /**
+     * @verifies format full ISO date
+     */
+    @Test
+    void setParamValue_dateField_shouldFormatFullIsoDate() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("2024-04-15"), "", null, null, null, null);
+        assertEquals("15.04.2024", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @verifies format ISO date time
+     */
+    @Test
+    void setParamValue_dateField_shouldFormatIsoDateTime() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("2024-04-15T10:30:00"), "", null, null, null, null);
+        assertEquals("15.04.2024", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @verifies format ISO year month
+     */
+    @Test
+    void setParamValue_dateField_shouldFormatIsoYearMonth() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("1876-04"), "", null, null, null, null);
+        assertEquals("04.1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @verifies format year only
+     */
+    @Test
+    void setParamValue_dateField_shouldFormatYearOnly() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("1876"), "", null, null, null, null);
+        assertEquals("1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @verifies keep raw value if unparseable
+     */
+    @Test
+    void setParamValue_dateField_shouldKeepRawValueIfUnparseable() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("foobar"), "", null, null, null, null);
+        assertEquals("foobar", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @verifies parse non ISO full date with input pattern
+     */
+    @Test
+    void setParamValue_dateField_shouldParseNonIsoFullDateWithInputPattern() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setInputPattern("dd-MM-yyyy")
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("15-04-1876"), "", null, null, null, null);
+        assertEquals("15.04.1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @verifies parse us format full date with input pattern
+     */
+    @Test
+    void setParamValue_dateField_shouldParseUsFormatFullDateWithInputPattern() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setInputPattern("MM/dd/yyyy")
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("04/15/1876"), "", null, null, null, null);
+        assertEquals("15.04.1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @verifies parse non ISO year month with input pattern
+     */
+    @Test
+    void setParamValue_dateField_shouldParseNonIsoYearMonthWithInputPattern() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setInputPattern("MM-yyyy")
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("04-1876"), "", null, null, null, null);
+        assertEquals("04.1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @verifies parse year only with input pattern
+     */
+    @Test
+    void setParamValue_dateField_shouldParseYearOnlyWithInputPattern() {
+        Metadata metadata = new Metadata("", "MD_DATE", "", "");
+        metadata.getParams().add(new MetadataParameter()
+                .setType(MetadataParameterType.DATEFIELD)
+                .setInputPattern("yyyy")
+                .setOutputPattern("dd.MM.yyyy"));
+        metadata.setParamValue(0, 0, Collections.singletonList("1876"), "", null, null, null, null);
+        assertEquals("1876", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * Verifies that populate uses the default value of a MetadataParameter
+     * when the StructElement has no value for the requested field.
+     *
+     * @see Metadata#populate(StructElement, StructElement, String, List, Map, int, Locale)
+     * @verifies use default value of no value found
+     */
+    @Test
+    void populate_shouldUseDefaultValueOfNoValueFound() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("PPN_TEST");
+        // StructElement has no metadata fields, so the lookup for "MD_NONEXISTENT" will return null
+
+        Metadata metadata = new Metadata("MD_NONEXISTENT", "{0}", Collections.singletonList(
+                new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_NONEXISTENT").setDefaultValue("fallback_value")));
+
+        boolean result = metadata.populate(se, null, "1", null, null, 0, null);
+        // The default value path sets found=true, so populate should return true
+        Assertions.assertTrue(result);
+        // The default value should have been applied to the first MetadataValue
+        Assertions.assertFalse(metadata.getValues().isEmpty());
+        Assertions.assertEquals("fallback_value", metadata.getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @verifies store pi and logid from struct element
+     */
+    @Test
+    void populate_shouldStorePiAndLogidFromStructElement() throws Exception {
+        StructElement se = new StructElement();
+        se.setPi("TEST_PI_123");
+        se.setLogid("LOG_0001");
+
+        Metadata metadata = new Metadata("", "MD_TITLE", "", "");
+        metadata.getParams().add(new MetadataParameter().setType(MetadataParameterType.FIELD).setKey("MD_TITLE"));
+        metadata.populate(se, null, "42", null, null, 0, null);
+
+        assertEquals("TEST_PI_123", metadata.getOwnerPi());
+        assertEquals("LOG_0001", metadata.getOwnerLogid());
     }
 }

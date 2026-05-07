@@ -34,8 +34,12 @@ import io.goobi.viewer.model.maps.GeomapItemFilter;
 
 class FeatureSetConfigurationTest extends AbstractTest {
 
+    /**
+     * @verifies read configuation
+     * @see FeatureSetConfiguration#getFilter
+     */
     @Test
-    void testReadConfiguation() {
+    void getFilter_shouldReadConfiguation() {
 
         Configuration config = DataManager.getInstance().getConfiguration();
         List<FeatureSetConfiguration> configs = config.getRecordGeomapFeatureSetConfigs("");

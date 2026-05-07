@@ -33,10 +33,10 @@ class BCryptTest extends AbstractTest {
 
     /**
      * @see BCrypt#hashpw(String,String)
-     * @verifies hash password correctly
+     * @verifies produce unique hashes for distinct passwords including ASCII, umlauts, and symbols up to truncation limit
      */
     @Test
-    void hashpw_shouldHashPasswordCorrectly() throws Exception {
+    void hashpw_shouldProduceUniqueHashesForDistinctPasswordsIncludingASCIIUmlautsAndSymbolsUpToTruncationLimit() throws Exception {
         String salt = BCrypt.gensalt();
         Set<String> used = new HashSet<>();
 
@@ -76,5 +76,29 @@ class BCryptTest extends AbstractTest {
             }
             used.add(hash);
         }
+    }
+
+    /**
+     * @see BCrypt#checkPassword(String,String)
+     * @verifies return true if passwords match
+     */
+    @Test
+    void checkPassword_shouldReturnTrueIfPasswordsMatch() throws Exception {
+        // Hash a known password, then verify it matches
+        String password = "secretPassword123";
+        String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
+        Assertions.assertTrue(BCrypt.checkPassword(password, hashed));
+    }
+
+    /**
+     * @see BCrypt#checkPassword(String,String)
+     * @verifies return false if passwords dont match
+     */
+    @Test
+    void checkPassword_shouldReturnFalseIfPasswordsDontMatch() throws Exception {
+        // Hash a known password, then verify a different password does not match
+        String password = "secretPassword123";
+        String hashed = BCrypt.hashpw(password, BCrypt.gensalt());
+        Assertions.assertFalse(BCrypt.checkPassword("wrongPassword", hashed));
     }
 }

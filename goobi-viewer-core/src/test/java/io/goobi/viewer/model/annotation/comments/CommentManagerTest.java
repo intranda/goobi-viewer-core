@@ -81,8 +81,11 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         this.user = dao.getUser(1l);
     }
 
+    /**
+     * @verifies create
+     */
     @Test
-    void testCreate() throws DAOException {
+    void createComment_shouldCreate() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 
@@ -99,8 +102,12 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.verify(notificator, Mockito.times(1)).notifyCreation(Mockito.any(), Mockito.any(), Mockito.any());
     }
 
+    /**
+     * @verifies modify
+     * @see CommentManager#editComment
+     */
     @Test
-    void testModify() throws DAOException {
+    void editComment_shouldModify() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 
@@ -127,8 +134,12 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.verify(notificator, Mockito.times(1)).notifyEdit(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
+    /**
+     * @verifies delete
+     * @see CommentManager#deleteComment
+     */
     @Test
-    void testDelete() throws DAOException {
+    void deleteComment_shouldDelete() throws DAOException {
         Comment comment = dao.getCommentsForPage(PI, page).stream().findFirst().orElse(null);
         assertNull(comment);
 
@@ -165,7 +176,6 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CommentManager#isUserHasAccessToCommentGroups(User)
      * @verifies return true if user admin
      */
     @Test
@@ -176,7 +186,6 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CommentManager#isUserHasAccessToCommentGroups(User)
      * @verifies return true if user owner of user group linked to comment group
      */
     @Test
@@ -187,7 +196,6 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see CommentManager#isUserHasAccessToCommentGroups(User)
      * @verifies return true if user member of user group linked to comment group
      */
     @Test
@@ -198,11 +206,53 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies complete without exception
      * @see CommentManager#shutdown()
      */
     @Test
     void shutdown_shouldCompleteWithoutException() {
         // Verifies the notification executor shuts down cleanly
         Assertions.assertDoesNotThrow(CommentManager::shutdown);
+    }
+
+    /**
+     * @see CommentManager#checkAndCleanScripts(String, User, String, Integer)
+     * @verifies return null if text is null
+     */
+    @Test
+    void checkAndCleanScripts_shouldReturnNullIfTextIsNull() {
+        Assertions.assertNull(CommentManager.checkAndCleanScripts(null, null, "PI_TEST", 1));
+    }
+
+    /**
+     * @see CommentManager#checkAndCleanScripts(String, User, String, Integer)
+     * @verifies return text unchanged if already clean
+     */
+    @Test
+    void checkAndCleanScripts_shouldReturnTextUnchangedIfAlreadyClean() {
+        String plain = "This is a normal comment.";
+        Assertions.assertEquals(plain, CommentManager.checkAndCleanScripts(plain, null, "PI_TEST", 1));
+    }
+
+    /**
+     * @see CommentManager#checkAndCleanScripts(String, User, String, Integer)
+     * @verifies remove script tags and log warning
+     */
+    @Test
+    void checkAndCleanScripts_shouldRemoveScriptTagsAndLogWarning() {
+        String dirty = "Hello <script>alert('xss')</script> world";
+        String result = CommentManager.checkAndCleanScripts(dirty, null, "PI_TEST", 1);
+        Assertions.assertFalse(result.contains("<script"), "script tag must be removed");
+    }
+
+    /**
+     * @see CommentManager#checkAndCleanScripts(String, User, String, Integer)
+     * @verifies remove onclick attributes and log warning
+     */
+    @Test
+    void checkAndCleanScripts_shouldRemoveOnclickAttributesAndLogWarning() {
+        String dirty = "<p onclick=\"alert('xss')\">Click me</p>";
+        String result = CommentManager.checkAndCleanScripts(dirty, null, "PI_TEST", 1);
+        Assertions.assertFalse(result.contains("onclick"), "onclick attribute must be removed");
     }
 }

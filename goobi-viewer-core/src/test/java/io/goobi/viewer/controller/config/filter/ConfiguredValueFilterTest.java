@@ -17,32 +17,52 @@ class ConfiguredValueFilterTest {
             "record", Map.of("DC", List.of("abra.ka.dabra.simsala.bim", "hex, hex")),
             "page", Map.of(ReplacerVariables.MIME_TYPE, List.of("application/epub-zip"))));
 
+    /**
+     * @verifies pass show filter
+     * @see ConfiguredValueFilter#passes
+     */
     @Test
-    void test_passShowFilter() {
+    void passes_shouldPassShowFilter() {
         ConfiguredValueFilter filter = ConfiguredValueFilter.getShowFilter("{record.DC}", "abra\\.ka\\.dabra.*");
         assertTrue(filter.passes(vr));
     }
 
+    /**
+     * @verifies block show filter
+     * @see ConfiguredValueFilter#passes
+     */
     @Test
-    void test_blockShowFilter() {
+    void passes_shouldBlockShowFilter() {
         ConfiguredValueFilter filter = ConfiguredValueFilter.getShowFilter("{record.DC}", "visibili.vanitar");
         assertFalse(filter.passes(vr));
     }
 
+    /**
+     * @verifies block hide filter
+     * @see ConfiguredValueFilter#getHideFilter
+     */
     @Test
-    void test_blockHideFilter() {
+    void getHideFilter_shouldBlockHideFilter() {
         ConfiguredValueFilter filter = ConfiguredValueFilter.getHideFilter("{record.DC}", "abra\\.ka\\.dabra.*");
         assertFalse(filter.passes(vr));
     }
 
+    /**
+     * @verifies pass hide filter
+     * @see ConfiguredValueFilter#getHideFilter
+     */
     @Test
-    void test_passHideFilter() {
+    void getHideFilter_shouldPassHideFilter() {
         ConfiguredValueFilter filter = ConfiguredValueFilter.getHideFilter("{record.DC}", "visibili.vanitar");
         assertTrue(filter.passes(vr));
     }
 
+    /**
+     * @verifies block conditions apply
+     * @see ConfiguredValueFilter#passes
+     */
     @Test
-    void test_block_conditionsApply() {
+    void passes_shouldBlockConditionsApply() {
         ConfiguredValueFilter filter = ConfiguredValueFilter.getHideFilter("{record.DC}", "abra\\.ka\\.dabra.*");
         ConfiguredValueFilter condition = ConfiguredValueFilter.getShowFilter("{page.mimeType}", "image/tiff");
         assertFalse(filter.passes(vr));

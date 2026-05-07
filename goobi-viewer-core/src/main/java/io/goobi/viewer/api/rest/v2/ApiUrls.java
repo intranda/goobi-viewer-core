@@ -51,7 +51,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String INDEX = "/index";
     public static final String INDEX_FIELDS = "/fields";
     public static final String INDEX_QUERY = "/query";
-    public static final String INDEX_STREAM = "/stream";
     public static final String INDEX_STATISTICS = "/statistics";
 
     public static final String RECORDS_RSS = "/records/rss";

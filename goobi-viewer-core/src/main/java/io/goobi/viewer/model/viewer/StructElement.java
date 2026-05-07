@@ -368,7 +368,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * Loads and returns the immediate parent StructElement of this element.
      *
      * @return {@link io.goobi.viewer.model.viewer.StructElement}
-     * @should return parent correctly
+     * @should return parent StructElement with matching Lucene ID for child element
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getParent() throws IndexUnreachableException {
@@ -410,6 +410,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @return true if at least one Solr document references this element as its parent, false otherwise
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @should return true if element has children
      */
     public boolean isHasChildren() throws IndexUnreachableException, PresentationException {
         if (hasChildren == null) {
@@ -430,13 +431,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * will be returned. If no topStruct element is found because no metadata {@link io.goobi.viewer.solr.SolrConstants#IDDOC_TOPSTRUCT} is found or
      * because it could not be resolved, null is returned
      *
-     * @should retrieve top struct correctly
      * @should return self if topstruct
      * @should return self if anchor
      * @should return self if group
      * @return the top-level StructElement for this record, or null if it cannot be resolved
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return top level struct element different from child element with expected lucene i d
      */
     public StructElement getTopStruct() throws PresentationException, IndexUnreachableException {
         if (work || anchor || isGroup()) {
@@ -571,7 +572,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @param width a int.
      * @param height a int.
      * @return Image URL
-     * @should construct url correctly
+     * @should return IIIF image URL with given width and height constraints
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public String getImageUrl(int width, int height) throws ViewerConfigurationException {
@@ -770,7 +771,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * Returns a stub representation of this object that only contains simple members to conserve memory.
      *
      * @return the lightweight StructElementStub representation of this element
-     * @should create stub correctly
+     * @should copy all fields including PI, logid, doctype, label, and metadata to stub
      */
     public StructElementStub createStub() {
         StructElementStub ret = new StructElementStub(luceneId);
@@ -806,6 +807,46 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public Map<String, String> getGroupMemberships() {
         return groupMemberships;
+    }
+
+    /**
+     * Returns the group memberships with any entry whose value matches this element's anchor PI removed.
+     *
+     * <p>Some indexer pipelines emit a {@code GROUPID_*} field whose value is identical to the
+     * record's {@code PI_ANCHOR} / {@code PI_PARENT}, e.g. a newspaper volume tagged with
+     * {@code GROUPID_NEWSPAPER} pointing at the same anchor that {@code PI_ANCHOR} already
+     * references. The raw {@link #getGroupMemberships()} map then contains an entry that
+     * is semantically a duplicate of the anchor relationship; UI code that renders both a
+     * group listing and an anchor link (such as {@code widget_relatedGroups.xhtml}) ends up
+     * showing the same target twice.
+     *
+     * <p>The raw map is left untouched for callers that depend on it (e.g.
+     * {@link io.goobi.viewer.model.viewer.ViewManager#createCalendarView()} for records
+     * indexed without {@code PI_ANCHOR}), so the dedupe is opt-in via this getter.
+     *
+     * @return a copy of {@code groupMemberships} with anchor-equal entries filtered out;
+     *         never null
+     * @should return all entries when no anchor pi is known
+     * @should remove entries whose value equals the anchor pi
+     */
+    public Map<String, String> getGroupMembershipsExcludingAnchor() {
+        if (groupMemberships.isEmpty()) {
+            return groupMemberships;
+        }
+        String anchorPi = ancestors.get(SolrConstants.PI_ANCHOR);
+        if (anchorPi == null) {
+            anchorPi = ancestors.get(SolrConstants.PI_PARENT);
+        }
+        if (anchorPi == null) {
+            return groupMemberships;
+        }
+        Map<String, String> filtered = new HashMap<>(groupMemberships.size());
+        for (Map.Entry<String, String> entry : groupMemberships.entrySet()) {
+            if (!anchorPi.equals(entry.getValue())) {
+                filtered.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return filtered;
     }
 
     /**

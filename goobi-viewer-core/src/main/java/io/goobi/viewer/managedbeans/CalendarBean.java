@@ -65,6 +65,7 @@ import io.goobi.viewer.model.calendar.CalendarItemWeek;
 import io.goobi.viewer.model.calendar.CalendarItemYear;
 import io.goobi.viewer.model.calendar.CalendarRow;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -686,6 +687,7 @@ public class CalendarBean implements Serializable {
      * @return a list of CalendarItemCentury objects for each century that has at least one indexed record
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should get all centuries
      */
     public List<CalendarItemCentury> getAllActiveCenturies() throws PresentationException, IndexUnreachableException {
         if (allActiveCenturies == null) {
@@ -965,14 +967,19 @@ public class CalendarBean implements Serializable {
                             try {
                                 SolrDocumentList docs = DataManager.getInstance().getSearchIndex()
                                         .search(query + SearchHelper.getAllSuffixes(),
-                                                Arrays.asList(SolrConstants.PI_TOPSTRUCT, SolrConstants.THUMBPAGENO, SolrConstants.LOGID));
+                                                Arrays.asList(SolrConstants.PI_TOPSTRUCT, SolrConstants.THUMBPAGENO, SolrConstants.LOGID,
+                                                        SolrConstants.DOCSTRCT, SolrConstants.MIMETYPE, SolrConstants.ISWORK,
+                                                        SolrConstants.ISANCHOR, SolrConstants.DOCTYPE, SolrConstants.ORDER,
+                                                        SolrConstants.THUMBNAIL));
                                 if (docs != null && !docs.isEmpty()) {
                                     SolrDocument doc = docs.get(0);
                                     String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-                                    Object thumbPageNo = doc.getFieldValue(SolrConstants.THUMBPAGENO);
-                                    String logId = (String) doc.getFieldValue(SolrConstants.LOGID);
-                                    if (pi != null && thumbPageNo != null && logId != null) {
-                                        dayItem.setSingleResultUrl("image/" + pi + "/" + thumbPageNo + "/" + logId + "/");
+                                    if (pi != null) {
+                                        String url = IdentifierResolver.constructUrl(doc, false);
+                                        if (url.startsWith("/")) {
+                                            url = url.substring(1);
+                                        }
+                                        dayItem.setSingleResultUrl(url);
                                     }
                                 }
                             } catch (PresentationException | IndexUnreachableException e) {
@@ -1032,6 +1039,7 @@ public class CalendarBean implements Serializable {
      * 
      * @param currentWeek Week item to prepend empty days to
      * @param date First day of the month
+     * @should add days before monday
      */
     protected static void addEmptyDays(CalendarItemWeek currentWeek, LocalDate date) {
 

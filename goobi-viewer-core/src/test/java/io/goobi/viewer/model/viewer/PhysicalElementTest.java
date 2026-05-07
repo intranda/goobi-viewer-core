@@ -78,8 +78,12 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("http://www.example.com/image.jpg", PhysicalElement.determineFileName("http://www.example.com/image.jpg"));
     }
 
+    /**
+     * @verifies return correct threshold values
+     * @see PhysicalElement#getImageHeightRationThresholds
+     */
     @Test
-    void getImageHeightRationThresholds_test() {
+    void getImageHeightRationThresholds_shouldReturnCorrectThresholdValues() {
         PhysicalElement page =
                 new PhysicalElement("PHYS_0001", "00000001.tif", 1, "Seite 1", "urn:234235:3423", "http://purl", "1234", "image/tiff", null);
         Assertions.assertEquals(0.2f, page.getImageHeightRationThresholds().get(0));
@@ -123,11 +127,11 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see PhysicalElement#getBaseMimeType()
-     * @verifies return correct base mime type
+     * @see PhysicalElement#getMediaType()
+     * @verifies return correct media type
      */
     @Test
-    void getBaseMimeType_shouldReturnCorrectBaseMimeType() throws Exception {
+    void getMediaType_shouldReturnCorrectMediaType() throws Exception {
         Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("image/tiff").build().getMediaType().isImage());
         Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("audio/mpeg3").build().getMediaType().isAudio());
         Assertions.assertTrue(new PhysicalElementBuilder().setMimeType("video/webm").build().getMediaType().isVideo());
@@ -139,10 +143,10 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see PhysicalElement#getImageFilepath()
-     * @verifies return filePath if mime type image
+     * @verifies return filepath for image mime type
      */
     @Test
-    void getImageFilepath_shouldReturnImageIfBaseMimeTypeNotFound() throws Exception {
+    void getImageFilepath_shouldReturnFilepathForImageMimeType() throws Exception {
         Assertions.assertEquals("001.tif", new PhysicalElementBuilder().setMimeType("image/tiff").setFilePath("001.tif").build().getImageFilepath());
     }
 
@@ -167,21 +171,21 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see PhysicalElement#getImageFilepath()
      * @verifies return true if access allowed for this page
+     * @see PhysicalElement#isAccessPermissionFulltext()
      */
     @Test
-    void isFulltextAccessPermission_shouldReturnTrueIfAccessAllowedForThisPage() throws Exception {
+    void isAccessPermissionFulltext_shouldReturnTrueIfAccessAllowedForThisPage() throws Exception {
         PhysicalElement pe = new PhysicalElementBuilder().setPi("PPN517154005").setFilePath("00000001.tif").build();
         Assertions.assertTrue(pe.isAccessPermissionFulltext());
     }
 
     /**
-     * @see PhysicalElement#getImageFilepath()
      * @verifies return false if access denied for this page
+     * @see PhysicalElement#isAccessPermissionFulltext()
      */
     @Test
-    void isFulltextAccessPermission_shouldReturnFalseIfAccessDeniedForThisPage() throws Exception {
+    void isAccessPermissionFulltext_shouldReturnFalseIfAccessDeniedForThisPage() throws Exception {
         PhysicalElement pe = new PhysicalElementBuilder().setPi("1164781693_1792000902").setFilePath("EPN_77071899X_0002.tif").build();
         Assertions.assertFalse(pe.isAccessPermissionFulltext());
     }

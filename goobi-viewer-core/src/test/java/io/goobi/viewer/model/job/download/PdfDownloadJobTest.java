@@ -42,8 +42,11 @@ class PdfDownloadJobTest extends AbstractSolrEnabledTest {
 
     private static final String PI = "02008031921530";
 
+    /**
+     * @verifies return true if folder contains pdf
+     */
     @Test
-    void test_folderContainsPdf(@TempDir Path directory) throws IOException {
+    void containsPdfs_shouldReturnTrueIfFolderContainsPdf(@TempDir Path directory) throws IOException {
 
         Files.createFile(directory.resolve("file1.pdf"));
         Files.createFile(directory.resolve("file2.pdf"));
@@ -53,8 +56,11 @@ class PdfDownloadJobTest extends AbstractSolrEnabledTest {
 
     }
 
+    /**
+     * @verifies return false if folder contains no pdf
+     */
     @Test
-    void test_folderContainsNoPdf(@TempDir Path directory) throws IOException {
+    void containsPdfs_shouldReturnFalseIfFolderContainsNoPdf(@TempDir Path directory) throws IOException {
 
         Files.createFile(directory.resolve("file1.jpg"));
         Files.createFile(directory.resolve("file2.txt"));
@@ -64,8 +70,11 @@ class PdfDownloadJobTest extends AbstractSolrEnabledTest {
 
     }
 
+    /**
+     * @verifies create pdf
+     */
     @Test
-    void test_createPDF(@TempDir Path targetDir)
+    void create_shouldCreatePdf(@TempDir Path targetDir)
             throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException, ContentLibException {
 
         Path mediaFolder = Path.of(DataManager.getInstance().getConfiguration().getViewerHome()).resolve("data/1/media").resolve(PI);

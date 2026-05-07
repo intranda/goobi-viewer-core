@@ -48,6 +48,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.WebApplicationException;
@@ -79,11 +80,13 @@ public class MediaResource {
      *
      * @param format audio MIME subtype (e.g. mp3, ogg)
      * @param filename name of the audio resource file
-     * @return the streamed audio content as a string response
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
+    // Return type changed from String to void: the media payload is streamed directly to the
+    // injected HttpServletResponse by MediaDeliveryService, so Jersey must not attempt to write
+    // an additional (empty) String body on top of the already-committed response.
     @Hidden
     @GET
     @Path(RECORDS_FILES_AUDIO)
@@ -92,11 +95,11 @@ public class MediaResource {
             content = @Content(mediaType = "audio/*"))
     @ApiResponse(responseCode = "206", description = "Partial content (range request)")
     @ApiResponse(responseCode = "404", description = "Media item not found")
-    public String serveAudioContent(
+    public void serveAudioContent(
             @Parameter(description = "Audio MIME subtype (e.g. mp3, ogg)") @PathParam("mimetype") String format,
             @Parameter(description = "Filename of the audio resource") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, AccessDeniedException {
-        return serveMediaContent("audio", format, pi, filename);
+        serveMediaContent("audio", format, pi, filename);
     }
 
     /**
@@ -104,11 +107,11 @@ public class MediaResource {
      *
      * @param format video MIME subtype (e.g. mp4, webm)
      * @param filename name of the video resource file
-     * @return the streamed video content as a string response
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      */
+    // Return type changed from String to void, see comment on serveAudioContent.
     @Hidden
     @GET
     @Path(RECORDS_FILES_VIDEO)
@@ -117,14 +120,15 @@ public class MediaResource {
             content = @Content(mediaType = "video/*"))
     @ApiResponse(responseCode = "206", description = "Partial content (range request)")
     @ApiResponse(responseCode = "404", description = "Media item not found")
-    public String serveVideoContent(
+    public void serveVideoContent(
             @Parameter(description = "Video MIME subtype (e.g. mp4, webm)") @PathParam("mimetype") String format,
             @Parameter(description = "Filename of the video resource") @PathParam("filename") String filename)
             throws PresentationException, IndexUnreachableException, WebApplicationException {
-        return serveMediaContent("video", format, pi, filename);
+        serveMediaContent("video", format, pi, filename);
     }
 
-    private String serveMediaContent(String type, String format, String identifier, String filepath)
+    // Return type changed from String to void, see comment on serveAudioContent.
+    private void serveMediaContent(String type, String format, String identifier, String filepath)
             throws PresentationException, IndexUnreachableException, WebApplicationException {
         logger.trace("serveMediaContent: {}/{}/{}/{}", type, format, identifier, filepath);
         String mimeType = type + "/" + format;
@@ -142,13 +146,8 @@ public class MediaResource {
                 throw new PresentationException("Error accessing media resource", e);
             }
         } else {
-            try {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            } catch (IOException e) {
-                throw new WebApplicationException(e);
-            }
+            throw new NotFoundException();
         }
-        return "";
     }
 
     /**

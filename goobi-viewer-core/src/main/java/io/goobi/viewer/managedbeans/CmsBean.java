@@ -575,6 +575,7 @@ public class CmsBean implements Serializable {
      *         or the current navigation view as fallback
      * @throws IndexUnreachableException if the Solr index is unreachable when checking if the related work is loaded
      * @should return current navigation view when no related work is loaded
+     * @should return current navigation view when no related work loaded
      */
     public String getRelatedWorkDefaultView() throws IndexUnreachableException {
         if (!isRelatedWorkLoaded()) {
@@ -704,6 +705,7 @@ public class CmsBean implements Serializable {
      * Getter for the field <code>currentPage</code>.
      *
      * @return the currently active CMS page, or an empty CMSPage if none is set
+     * @should page
      */
     public CMSPage getCurrentPage() {
         if (currentPage == null) {
@@ -942,6 +944,7 @@ public class CmsBean implements Serializable {
      * @param hits List of search hits to group
      * @param groupingField Solr field name to group hits by
      * @return List&lt;Entry&lt;String, List&lt;SearchHit&gt;&gt;&gt;
+     * @should return collection with 3 elements
      */
     public List<Entry<String, List<SearchHit>>> getGroupedQueryResults(List<SearchHit> hits, String groupingField) {
 
@@ -1026,6 +1029,7 @@ public class CmsBean implements Serializable {
      * getLuceneFields.
      *
      * @return a list of all Solr field names excluding internal, facet, and norm fields
+     * @should return true for given input
      */
     public List<String> getLuceneFields() {
         return getLuceneFields(false, false);
@@ -1078,6 +1082,7 @@ public class CmsBean implements Serializable {
      *
      * @return a list of all CMS static pages mapping viewer page types to CMS pages
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return non empty collection for given input
      */
     public List<CMSStaticPage> getStaticPages() throws DAOException {
         if (this.staticPages == null) {
@@ -1167,6 +1172,7 @@ public class CmsBean implements Serializable {
      * @param page static page whose existing mapping is excluded from filtering
      * @return A list of all cmsPages not yet registered to a static page
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return 2 for given input
      */
     public List<CMSPage> getAvailableCmsPages(CMSStaticPage page) throws DAOException {
         List<CMSPage> allPages = getAllCMSPages().stream()
@@ -1204,6 +1210,7 @@ public class CmsBean implements Serializable {
      * Saves static page status for all cms pages.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+      * @should save cms pages
      */
     public void saveStaticPages() throws DAOException {
         for (CMSStaticPage page : getStaticPages()) {
@@ -1774,9 +1781,7 @@ public class CmsBean implements Serializable {
         if (navigationMenuItems == null) {
             try {
                 String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-                String currentTheme = getCurrentCmsPageIfLoaded()
-                        .map(CMSPage::getSubTheme)
-                        .orElse(BeanUtils.getNavigationHelper().getThemeOrSubtheme());
+                String currentTheme = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
                 navigationMenuItems = DataManager.getInstance()
                         .getDao()
                         .getAllTopCMSNavigationItems()
@@ -1785,7 +1790,11 @@ public class CmsBean implements Serializable {
                         .filter(item -> (StringUtils.isBlank(item.getAssociatedTheme()) && mainTheme.equalsIgnoreCase(currentTheme))
                                 || currentTheme.equalsIgnoreCase(item.getAssociatedTheme()))
                         .toList();
+                // Track whether we fell back to main-theme items because the active (sub)theme had none,
+                // so the log line can mark this explicitly for debugging theme-specific menu issues
+                boolean usedMainThemeFallback = false;
                 if (navigationMenuItems.isEmpty()) {
+                    usedMainThemeFallback = true;
                     navigationMenuItems = DataManager.getInstance()
                             .getDao()
                             .getAllTopCMSNavigationItems()
@@ -1795,7 +1804,14 @@ public class CmsBean implements Serializable {
                                     || item.getAssociatedTheme().equalsIgnoreCase(mainTheme)))
                             .toList();
                 }
-                logger.info("returning {} items", navigationMenuItems.size());
+                // Lowered to debug (cached menu load); include current theme and mark main-theme fallback
+                // to make multi-theme/subtheme navigation issues traceable
+                if (usedMainThemeFallback) {
+                    logger.debug("Loaded {} navigation menu items for theme '{}' (main-theme fallback)",
+                            navigationMenuItems.size(), currentTheme);
+                } else {
+                    logger.debug("Loaded {} navigation menu items for theme '{}'", navigationMenuItems.size(), currentTheme);
+                }
             } catch (DAOException e) {
                 navigationMenuItems = Collections.emptyList();
             }

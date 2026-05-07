@@ -88,7 +88,7 @@ public class GeoCoordinateConverter {
     protected static final String POLYGON_LAT_LNG_PATTERN = "POLYGON\\(\\(([\\dE.-]+[\\s/]*[\\dE.-]+[,\\s]*)+\\)\\)"; //NOSONAR
     // Pre-compiled patterns to avoid repeated Pattern.compile() in hot paths
     protected static final Pattern COMPILED_POINT_PATTERN = Pattern.compile(POINT_LAT_LNG_PATTERN);
-    protected static final Pattern COMPILED_POLYGON_PATTERN = Pattern.compile(POLYGON_LAT_LNG_PATTERN);
+    protected static final Pattern COMPILED_POLYGON_PATTERN = Pattern.compile(POLYGON_LAT_LNG_PATTERN); //NOSONAR S5852: no catastrophic backtracking
 
     //    private final Configuration config;
     private final Map<String, Metadata> featureTitleConfigs;

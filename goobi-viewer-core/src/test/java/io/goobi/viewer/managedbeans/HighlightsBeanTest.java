@@ -50,8 +50,12 @@ class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
         bean.init();
     }
 
+    /**
+     * @verifies list objects
+     * @see HighlightsBean#getAllObjectsProvider
+     */
     @Test
-    void test_listObjecs() {
+    void getAllObjectsProvider_shouldListObjects() {
 
         LocalDateTime now = LocalDate.of(2023, 3, 15).atStartOfDay();
         bean.initProviders(now);
@@ -59,8 +63,12 @@ class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, bean.getCurrentObjects().size());
     }
 
+    /**
+     * @verifies filter list
+     * @see HighlightsBean#getAllObjectsProvider
+     */
     @Test
-    void test_filterList() {
+    void getAllObjectsProvider_shouldFilterList() {
 
         LocalDateTime now = LocalDate.of(2023, 4, 15).atStartOfDay();
         bean.initProviders(now);
@@ -75,8 +83,12 @@ class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
         assertEquals(3, bean.getAllObjectsProvider().getSizeOfDataList());
     }
 
+    /**
+     * @verifies return correct url for highlights
+     * @see HighlightsBean#getUrl(Highlight)
+     */
     @Test
-    void test_HighlightUrl() throws DAOException {
+    void getUrl_shouldReturnCorrectUrlForHighlights() throws DAOException {
 
         Mockito.when(navigationHelper.getImageUrl()).thenReturn("localhost:8080/viewer/image");
 
@@ -91,7 +103,7 @@ class HighlightsBeanTest extends AbstractDatabaseEnabledTest {
     /**
      * @throws DAOException
      * @see HighlightsBean#getHighlightsBefore(LocalDate)
-     * @verifies return return all enabled previous highlights
+     * @verifies return all enabled previous highlights
      */
     @Test
     void getHighlightsBefore_shouldReturnAllEnabledPreviousHighlights() throws DAOException {

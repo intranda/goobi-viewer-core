@@ -54,7 +54,6 @@ class BrowsingMenuFieldConfigTest {
     }
 
     /**
-     * @see BrowsingMenuFieldConfig#addDoctypeFilterQuery()
      * @verifies add doctype filter if field MD or MD2
      */
     @Test
@@ -72,7 +71,6 @@ class BrowsingMenuFieldConfigTest {
     }
 
     /**
-     * @see BrowsingMenuFieldConfig#addDoctypeFilterQuery()
      * @verifies add doctype filter if field DC
      */
     @Test
@@ -83,7 +81,6 @@ class BrowsingMenuFieldConfigTest {
     }
 
     /**
-     * @see BrowsingMenuFieldConfig#addDoctypeFilterQuery()
      * @verifies add doctype filter if field DOCSTRCT
      */
     @Test

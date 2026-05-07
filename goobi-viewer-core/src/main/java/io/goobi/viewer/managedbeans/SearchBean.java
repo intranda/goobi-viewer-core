@@ -123,16 +123,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * JSF session-scoped backing bean for the search interface, managing search queries, facets,
- * sorting, and result pagination. Initialised via {@code @PostConstruct init()} which resets the
- * advanced search parameters to their defaults.
+ * JSF session-scoped backing bean for the search interface, managing search queries, facets, sorting, and result pagination. Initialised via
+ * {@code @PostConstruct init()} which resets the advanced search parameters to their defaults.
  *
- * <p><b>Lifecycle:</b> Created once per HTTP session by the CDI container; survives across
- * multiple page navigations within the same session and is destroyed when the session expires.
+ * <p>
+ * <b>Lifecycle:</b> Created once per HTTP session by the CDI container; survives across multiple page navigations within the same session and is
+ * destroyed when the session expires.
  *
- * <p><b>Thread safety:</b> Mostly confined to the JSF request thread of the owning session.
- * The async Excel-export download state ({@code downloadReady}, {@code downloadComplete}) is
- * held in {@code volatile} fields and guarded by a {@code synchronized} block to allow safe
+ * <p>
+ * <b>Thread safety:</b> Mostly confined to the JSF request thread of the owning session. The async Excel-export download state
+ * ({@code downloadReady}, {@code downloadComplete}) is held in {@code volatile} fields and guarded by a {@code synchronized} block to allow safe
  * hand-off between the JSF thread and the background download thread.
  */
 @Named
@@ -267,7 +267,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Getter for unit tests.
      * 
-
+     * 
      */
     Map<String, List<StringPair>> getAdvancedSearchSelectItems() {
         return advancedSearchSelectItems;
@@ -276,7 +276,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * clearSearchItemLists.
      *
-     * @should clear map correctly
+     * @should empty the advanced search select items map
      */
     public void clearSearchItemLists() {
         advancedSearchSelectItems.clear();
@@ -329,7 +329,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * {@inheritDoc}
      *
-     * <p>Action method for search buttons (simple search).
+     * <p>
+     * Action method for search buttons (simple search).
      * 
      * @should not reset facets
      */
@@ -369,7 +370,7 @@ public class SearchBean implements SearchInterface, Serializable {
             facets.resetActiveFacetString();
         }
         generateSimpleSearchString(searchString);
-        return StringConstants.PRETTY_NEWSEARCH5;
+        return redirectToSearchUrl(StringConstants.PRETTY_NEWSEARCH5);
     }
 
     /**
@@ -416,7 +417,7 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param resetParameters true to reset sort, filter and page before searching
      * @return Navigation outcome
-     * @should generate search string correctly
+     * @should generate internal search string from advanced search query items
      * @should reset search parameters
      */
     public String searchAdvanced(boolean resetParameters) {
@@ -428,7 +429,46 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         searchStringInternal = generateAdvancedSearchMainQuery();
 
-        return StringConstants.PRETTY_SEARCHADVANCED5;
+        return redirectToSearchUrl(StringConstants.PRETTY_SEARCHADVANCED5);
+
+    }
+
+    private String redirectToSearchUrl(String prettyUrl) {
+        if (navigationHelper != null) {
+            String subThemeParam = navigationHelper.getSubThemeQueryParam();
+            if (StringUtils.isNotBlank(subThemeParam)) {
+                try {
+                    String redirectUrl = buildPrettySearchUrl(prettyUrl, subThemeParam);
+                    if (StringUtils.isNotBlank(redirectUrl)) {
+                        FacesContext.getCurrentInstance().getExternalContext().redirect(redirectUrl);
+                        return "";
+                    }
+                } catch (IOException e) {
+                    logger.error("Error generating advanced search url", e);
+                }
+
+            }
+        }
+        return prettyUrl;
+    }
+
+    private String buildPrettySearchUrl(String prettyUrl, String subThemeParam) {
+        switch (prettyUrl) {
+            case StringConstants.PRETTY_SEARCHADVANCED5:
+            case StringConstants.PRETTY_SEARCHTERM5:
+            case StringConstants.PRETTY_NEWSEARCH5:
+                return PrettyUrlTools.getAbsolutePageUrl(prettyUrl, getActiveContext(), getExactSearchString(),
+                        getCurrentPage(), getSortString(), getFacets().getActiveFacetString()) + subThemeParam;
+            case StringConstants.PRETTY_CMSSEARCH6:
+                Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
+                return oPath.map(pagePath -> {
+                    return PrettyUrlTools.getAbsolutePageUrl(prettyUrl, pagePath.getCmsPage().getId(),
+                            getActiveContext(), this.getExactSearchString(), pagePath.getCmsPage().getListPage(), this.getSortString(),
+                            this.getFacets().getActiveFacetString());
+                }).orElse("");
+            default:
+                return "";
+        }
     }
 
     /**
@@ -448,7 +488,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Executes a search for any content tagged with today's month and day.
      *
      * @return Navigation outcome
-     * @should set search string correctly
+     * @should set search string starting with MONTHDAY field
      */
     public String searchToday() {
         logger.trace("searchToday");
@@ -502,7 +542,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * {@inheritDoc}
      *
-     * <p>Alias for {@link #resetSearchAction()}
+     * <p>
+     * Alias for {@link #resetSearchAction()}
      */
     @Override
     public String resetSearch() {
@@ -511,6 +552,9 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Resets variables that hold search result data. Does not reset search parameter variables such as type, filter or collection.
+     * 
+     * @should not throw NullPointerException under concurrent access
+     * @should not throw NPE when called concurrently
      */
     public void resetSearchResults() {
         logger.trace("resetSearchResults");
@@ -536,6 +580,9 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Resets general search options and type specific options for currently unused types.
+     */
+    /**
+     * @should clear advancedSearchOrigin
      */
     public void resetSearchParameters() {
         resetSearchParameters(false, true);
@@ -600,7 +647,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Resets search options for the simple search.
      *
-     * @should reset variables correctly
+     * @should clear searchString to empty and searchStringForUrl to dash
      */
     protected void resetSimpleSearchParameters() {
         logger.trace("resetSimpleSearchParameters");
@@ -613,8 +660,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Resets search options for the advanced search.
      *
-     * @should reset variables correctly
-     * @should re-select collection correctly
+     * @should reinitialize advanced search query group with three default query items
+     * @should preserve active DC facet value in the DC query item after reset
      */
     protected void resetAdvancedSearchParameters() {
         logger.trace("resetAdvancedSearchParameters");
@@ -890,6 +937,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should set advancedSearchOrigin from cms page when current page is a cms page
      */
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         executeSearch("");
@@ -908,6 +956,10 @@ public class SearchBean implements SearchInterface, Serializable {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
+
+        if (this.navigationHelper != null && this.navigationHelper.isCmsPage()) {
+            this.advancedSearchOrigin = new AdvancedSearchOrigin(this.navigationHelper.getCurrentCMSPage());
+        }
 
         // Create SearchQueryGroup from query
         if (activeSearchType == SearchHelper.SEARCH_TYPE_ADVANCED && advancedSearchQueryGroup.isBlank()) {
@@ -959,6 +1011,7 @@ public class SearchBean implements SearchInterface, Serializable {
         } else if (StringUtils.isNotEmpty(this.filterQuery)) {
             sbFilterQuery.append(this.filterQuery);
         }
+        sbFilterQuery.append(navigationHelper.getSubThemeDiscriminatorQuerySuffix());
 
         newSearch.setCustomFilterQuery(sbFilterQuery.toString().trim());
         // logger.trace("Custom filter query: {}", sbFilterQuery.toString().trim());
@@ -1226,7 +1279,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * {@inheritDoc}
      *
-     * <p>Wrapper for setSearchStringKeepCurrentPage() that also resets <code>currentPage</code>.
+     * <p>
+     * Wrapper for setSearchStringKeepCurrentPage() that also resets <code>currentPage</code>.
      */
     @Override
     public void setSearchString(String searchString) {
@@ -1297,6 +1351,12 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public void setExactSearchString(final String inSearchString) {
         logger.debug("setExactSearchString: {}", inSearchString);
+        // Diagnostic: capture the caller stack only when trace is enabled, so the double-invocation
+        // per request (observed: PrettyFaces setter-binding plus a second trigger from JSF rendering)
+        // can be pinpointed without spamming normal debug logs
+        if (logger.isTraceEnabled()) {
+            logger.trace("setExactSearchString caller", new Throwable("caller stack"));
+        }
         String tempSearchString = inSearchString;
         if ("-".equals(tempSearchString)) {
             tempSearchString = "";
@@ -1336,7 +1396,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * For unit tests.
      * 
-
+     * 
      */
     String getSearchStringInternal() {
         return searchStringInternal;
@@ -1345,7 +1405,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * For unit tests.
      * 
-
+     * 
      */
     void setSearchStringInternal(String searchStringInternal) {
         this.searchStringInternal = searchStringInternal;
@@ -1496,7 +1556,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * Sets activeResultGroup via the given name.
      *
      * @param activeResultGroupName Name of the active context
-     * @should select result group correctly
+     * @should store and return the given result group name
      * @should reset result group if new name not configured
      * @should reset result group if empty name given
      */
@@ -1519,7 +1579,6 @@ public class SearchBean implements SearchInterface, Serializable {
         activeResultGroup = null;
     }
 
-    
     public String getAdvancedSearchFieldTemplate() {
         return advancedSearchFieldTemplate;
     }
@@ -1554,13 +1613,13 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Matches the selected collection item in the advanced search to the current value of <code>currentCollection</code>.
      *
-     * @should mirror facet items to search query items correctly
-     * @should remove facet items from search query items correctly
+     * @should copy active hierarchical facet values into corresponding advanced search query items
      * @should add extra search query item if all items full
      * @should not replace query items already in use
      * @should not add identical hierarchical query items
      * @should change nothing if facet already exists in query items
      * @should not throw NPE when queryItems contains null elements
+     * @should not throw CME when called concurrently
      */
     public void mirrorAdvancedSearchCurrentHierarchicalFacets() {
         logger.trace("mirrorAdvancedSearchCurrentHierarchicalFacets");
@@ -1679,15 +1738,16 @@ public class SearchBean implements SearchInterface, Serializable {
         //redirect to current cms page if this action takes place on a cms page
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
-            facets.removeFacetAction(facetQuery, "");
-            String url = PrettyUrlTools.getAbsolutePageUrl(StringConstants.PREFIX_PRETTY + "cmsOpenPage6", oPath.get().getCmsPage().getId(),
+            facets.removeFacetAction(facetQuery);
+            String url = PrettyUrlTools.getAbsolutePageUrl(StringConstants.PRETTY_CMSSEARCH6, oPath.get().getCmsPage().getId(),
                     getActiveContext(), this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(),
                     this.getFacets().getActiveFacetString());
             logger.trace("redirecting to url: {}", url);
             PrettyUrlTools.redirectToUrl(url);
             return "";
         } else if (PageType.browse.equals(oPath.map(ViewerPath::getPageType).orElse(PageType.other))) {
-            return facets.removeFacetAction(facetQuery, StringConstants.PREFIX_PRETTY + "browse4");
+            facets.removeFacetAction(facetQuery);
+            return redirectToSearchUrl(StringConstants.PRETTY_BROWSE4);
         } else {
             String ret = StringConstants.PRETTY_NEWSEARCH5;
             switch (activeSearchType) {
@@ -1700,7 +1760,8 @@ public class SearchBean implements SearchInterface, Serializable {
                 default:
                     break;
             }
-            return facets.removeFacetAction(facetQuery, ret);
+            facets.removeFacetAction(facetQuery);
+            return redirectToSearchUrl(ret);
         }
     }
 
@@ -1769,7 +1830,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * For unit tests.
      * 
-
+     * 
      */
     void setCurrentHitIndex(int currentHitIndex) {
         this.currentHitIndex = currentHitIndex;
@@ -1787,8 +1848,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * increaseCurrentHitIndex.
      *
-     * @should increase index correctly
-     * @should decrease index correctly
+     * @should increase hit index by operand value within bounds
+     * @should decrease hit index by negative operand value within bounds
      * @should reset operand afterwards
      * @should do nothing if hit index at the last hit
      * @should do nothing if hit index at 0
@@ -1841,7 +1902,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param page Page number of he loaded record.
      * @param aggregateHits If true, only the identifier has to match, page number is ignored.
      * @should set currentHitIndex to minus one if no search hits
-     * @should set currentHitIndex correctly
+     * @should set currentHitIndex to the position of the given PI in the search result list
      */
     public void findCurrentHitIndex(String pi, int page, boolean aggregateHits) {
         logger.trace("findCurrentHitIndex: {}/{}", pi, page);
@@ -1874,6 +1935,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return null if currentHitIndex is negative
+     * @should return null if currentSearch is null
      */
     public BrowseElement getNextElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         // Capture currentHitIndex in a local variable to prevent a TOCTOU race condition:
@@ -1912,6 +1975,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return null if currentHitIndex is negative
+     * @should return null if currentSearch is null
      */
     public BrowseElement getPreviousElement() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         // Capture currentHitIndex in a local variable to prevent a TOCTOU race condition:
@@ -1971,7 +2036,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * {@inheritDoc}
      *
-     * <p>Sets <code>currentSearchFilter</code> via the given label value.
+     * <p>
+     * Sets <code>currentSearchFilter</code> via the given label value.
      */
     @Override
     public void setCurrentSearchFilterString(String searchFilterLabel) {
@@ -2026,7 +2092,7 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * For unit tests.
      * 
-
+     * 
      */
     void setAdvancedSearchQueryGroup(SearchQueryGroup advancedSearchQueryGroup) {
         this.advancedSearchQueryGroup = advancedSearchQueryGroup;
@@ -2137,7 +2203,8 @@ public class SearchBean implements SearchInterface, Serializable {
     /**
      * Returns drop-down items for all collection names. Convenience method that retrieves the current language from <code>NavigationHelper</code>.
      *
-     * <p>This method shouldn't throw exceptions, otherwise it can cause an IllegalStateException.
+     * <p>
+     * This method shouldn't throw exceptions, otherwise it can cause an IllegalStateException.
      *
      * @return a list of label/value pairs for all available collection names in the current user's language
      */
@@ -2177,6 +2244,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * getAdvancedSearchAllowedFields.
      *
      * @return List of allowed advanced search fields
+     * @should omit languaged fields for other languages
+     * @should addSearchFilters
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchAllowedFields() {
         return getAdvancedSearchAllowedFields(navigationHelper.getLocaleString(), advancedSearchFieldTemplate, false);
@@ -2782,7 +2851,7 @@ public class SearchBean implements SearchInterface, Serializable {
             sb.append(currentPath.getApplicationUrl()).append("/").append(currentPath.getPrettifiedPagePath());
             URI uri = URI.create(sb.toString());
             uri = getParameterPath(uri);
-            return StringTools.appendTrailingSlash(uri.toString());
+            return StringTools.appendTrailingSlash(uri.toString()) + navigationHelper.getSubThemeQueryParam();
         }
 
         //fallback
@@ -2979,33 +3048,57 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param date1 Start date for the calendar day range filter
      * @param date2 End date for the calendar day range filter
      * @return Navigation outcome
+     * @should reset CALENDAR_DAY query item when no dates are supplied
+     * @should preserve freshly typed search term when no dates are supplied
+     * @should populate CALENDAR_DAY query item when both dates are supplied
+     * @should preserve freshly typed search term when called with dates from the calendar TocView
+     * @should set advancedSearchOrigin with pi label and docstrct from active document
      */
     public String searchInRecord(String piField, String piValue, String date1, String date2) {
-        logger.trace("searchInRecord: {}:{}", piField, piValue);
+        logger.debug("searchInRecord: piField={}, piValue={}, date1={}, date2={}", piField, piValue, date1, date2);
         // Clear any active facets from the browsing context so they don't pollute the search
         this.facets.resetActiveFacets();
-        // reset all items except those containing values from the search input fields
-        int index = 0;
-        for (SearchQueryItem item : this.advancedSearchQueryGroup.getQueryItems()) {
-            if (index != 1 && index != 2) {
-                item.reset();
-            }
-            index++;
+        // Both entry points (search-in-current-item widget and the calendar TocView) bind an
+        // input field to queryItems[1].value. By the time this action fires, JSF has already
+        // written the current form value back to that property — whatever the user last had in
+        // the text box, whether freshly typed or left as-is. We capture that now and restore it
+        // after the reset so it is not lost by the wipe.
+        List<SearchQueryItem> items = this.advancedSearchQueryGroup.getQueryItems();
+        boolean hasDates = StringUtils.isNotEmpty(date1) && StringUtils.isNotEmpty(date2);
+        String preservedSearchTerm = items.size() > 1 ? items.get(1).getValue() : null;
+        logger.debug("searchInRecord: captured preservedSearchTerm='{}' from queryItems[1] (hasDates={}, items.size={})",
+                preservedSearchTerm, hasDates, items.size());
+        for (SearchQueryItem item : items) {
+            item.reset();
         }
-        this.advancedSearchQueryGroup.getQueryItems().get(0).setField(piField);
+        items.get(0).setField(piField);
         if (StringUtils.isNotBlank(piValue)) {
-            this.advancedSearchQueryGroup.getQueryItems().get(0).setValue(piValue);
+            items.get(0).setValue(piValue);
         }
-        this.advancedSearchQueryGroup.getQueryItems().get(0).getLines().get(0).setOperator(SearchItemOperator.AND);
-        this.advancedSearchQueryGroup.getQueryItems().get(1).setField(SearchHelper.SEARCH_FILTER_ALL.getField());
-        this.advancedSearchQueryGroup.getQueryItems().get(1).setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
-        this.advancedSearchQueryGroup.getQueryItems().get(1).getLines().get(0).setOperator(SearchItemOperator.AND);
-        // Configure queryItems[2] for YEARMONTHDAY date range (range + datepicker derived from field config)
-        if (StringUtils.isNotEmpty(date1) && StringUtils.isNotEmpty(date2)) {
-            this.advancedSearchQueryGroup.getQueryItems().get(2).setField(SolrConstants.CALENDAR_DAY);
-            this.advancedSearchQueryGroup.getQueryItems().get(2).setValue(date1);
-            this.advancedSearchQueryGroup.getQueryItems().get(2).setValue2(date2);
-            this.advancedSearchQueryGroup.getQueryItems().get(2).getLines().get(0).setOperator(SearchItemOperator.AND);
+        items.get(0).getLines().get(0).setOperator(SearchItemOperator.AND);
+        items.get(1).setField(SearchHelper.SEARCH_FILTER_ALL.getField());
+        items.get(1).setLabel(SearchHelper.SEARCH_FILTER_ALL.getLabel());
+        items.get(1).getLines().get(0).setOperator(SearchItemOperator.AND);
+        if (StringUtils.isNotBlank(preservedSearchTerm)) {
+            items.get(1).setValue(preservedSearchTerm);
+        }
+        // Configure queryItems[2] for YEARMONTHDAY date range only when both dates are supplied
+        // (e.g. via the calendar TocView). When called without dates, the explicit reset above
+        // ensures the slot is empty rather than carrying forward a previous range.
+        if (items.size() > 2 && hasDates) {
+            items.get(2).setField(SolrConstants.CALENDAR_DAY);
+            items.get(2).setValue(date1);
+            items.get(2).setValue2(date2);
+            items.get(2).getLines().get(0).setOperator(SearchItemOperator.AND);
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("searchInRecord: post-reset state — items[0]={}:{}, items[1]={}:'{}', items[2]={}:'{}'-'{}'",
+                    items.get(0).getField(), items.get(0).getValue(),
+                    items.size() > 1 ? items.get(1).getField() : "-",
+                    items.size() > 1 ? items.get(1).getValue() : "-",
+                    items.size() > 2 ? items.get(2).getField() : "-",
+                    items.size() > 2 ? items.get(2).getValue() : "-",
+                    items.size() > 2 ? items.get(2).getValue2() : "-");
         }
         this.setActiveSearchType(1);
         logger.trace("Searching for: {}", this.advancedSearchQueryGroup.getQueryItems().get(1).getValue());
@@ -3171,8 +3264,8 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @param language BCP 47 language tag for translating sort option labels
      * @return List of sorting options for the given language
-     * @should return options correctly
      * @should use current random seed option instead of default
+     * @should return sorting options with language specific default field first
      */
     public Collection<SearchSortingOption> getSearchSortingOptions(String language) {
         Collection<SearchSortingOption> options = DataManager.getInstance().getConfiguration().getSearchSortingOptions(language);
@@ -3230,8 +3323,8 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * The url of the viewer page loaded when the last search operation was performed, stored in {@link #lastUsedSearchPage} or the url of the
-     * default search or searchAdvanced page depending on the state of this bean.
+     * The url of the viewer page loaded when the last search operation was performed, stored in {@link #lastUsedSearchPage} or the url of the default
+     * search or searchAdvanced page depending on the state of this bean.
      *
      * @return a URL string
      */

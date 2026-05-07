@@ -67,7 +67,9 @@
                                 </ui:fragment>
                             </dl>
 
-                            <p class="mt-4 mb-4">#{msg.downloadEMailText}</p>
+							<p class="mt-4 mb-4">
+							    <h:outputText value="#{msg.downloadEMailText}" escape="false" />
+							</p>
                         </div>
 
                         <!-- FORM -->
@@ -115,7 +117,9 @@
                                         id="downloadAcceptTerms"
                                         data-reference="downloadAcceptTerms"
                                         class="form-group form-row col-12">
-                                        <p class="mb-4">#{msg.feedbackAcceptingTerms}</p>
+                                        <p class="mb-4">
+                                            <h:outputText value="#{msg.feedbackAcceptingTerms}" escape="false" />
+                                        </p>
                                         <label class="col-lg-3 control-label">#{msg.admin__terms_of_use__accept}:</label>
 
                                         <div class="col-12 col-lg-9 admin__radio-switch">

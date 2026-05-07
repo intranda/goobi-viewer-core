@@ -86,6 +86,12 @@ public class IIIFUrlHandler {
      * @param quality IIIF quality parameter
      * @param format IIIF format parameter
      * @return Generated URL
+     * @should url from file
+     * @should url from local url
+     * @should url from external image url
+     * @should url from local file url
+     * @should url from local file url with space
+     * @should url from windows file url
      */
     public String getIIIFImageUrl(String fileUrl, String docStructIdentifier, String region, String size, String rotation, String quality,
             String format) {

@@ -69,6 +69,7 @@ public class PageListSidebarWidget extends CustomSidebarWidget {
     /**
      *
      * @return the ids of the listed {@link CMSPage CMSPages}
+     * @should persist
      */
     public List<Long> getPageIds() {
         return pageIds;
@@ -86,6 +87,7 @@ public class PageListSidebarWidget extends CustomSidebarWidget {
     /**
      *
      * @return a listing of the ids of linked {@link CMSPage CMSPages}
+     * @should clone
      */
     public PageList getPageList() {
         return new PageList(pageIds);

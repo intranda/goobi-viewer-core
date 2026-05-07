@@ -325,6 +325,10 @@ public class Search implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should populate YEAR range facet values
+     * @should populate DC unfiltered facet
+     * @should populate year range facets
+     * @should populate unfiltered facets for always apply fields
      */
     public void execute(SearchFacets facets, Map<String, Set<String>> searchTerms, int hitsPerPage, Locale locale)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
@@ -373,7 +377,10 @@ public class Search implements Serializable {
             for (String fq : activeFacetFilterQueries) {
                 logger.debug("Facet query: {}", fq);
             }
-            logger.debug("Subelement facet query: {}", subElementQueryFilterSuffix);
+            // Skip empty subelement facet query to avoid noisy "Subelement facet query:" lines with no value
+            if (StringUtils.isNotEmpty(subElementQueryFilterSuffix)) {
+                logger.debug("Subelement facet query: {}", subElementQueryFilterSuffix);
+            }
         }
 
         String finalQuery =
@@ -813,6 +820,8 @@ public class Search implements Serializable {
      * 
      * @param o WKT string or list of WKT strings to parse
      * @return List<IArea>
+     * @should parse geo coords point
+     * @should parse geo coords polygon
      */
     protected static List<IArea> getLocations(Object o) {
         List<IArea> locs = new ArrayList<>();

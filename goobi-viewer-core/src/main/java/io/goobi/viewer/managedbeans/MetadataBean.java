@@ -147,6 +147,7 @@ public class MetadataBean {
      * Convenience method for {@link #getMetadataElementList(int) getMetadataElementList(0)}.
      *
      * @return the first metadata element list
+     * @should return empty list when no document loaded
      */
     public List<MetadataElement> getMetadataElementList() {
         return getMetadataElementList(0);
@@ -266,6 +267,7 @@ public class MetadataBean {
      * @return List<MetadataElement>
      * @should return empty list if bottom element missing
      * @should return empty list if bottom element contains no sidebar metadata
+     * @should return bottom element if it contains sidebar metadata
      */
     public List<MetadataElement> getBottomMetadataElementAsList(int metadataViewIndex) {
         // logger.trace("getBottomMetadataElementAsList: {}", metadataViewIndex); //NOSONAR Debug

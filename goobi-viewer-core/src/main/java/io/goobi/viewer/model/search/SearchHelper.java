@@ -90,6 +90,7 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.User;
@@ -513,11 +514,23 @@ public final class SearchHelper {
      * @param searchTerms map of search terms per field
      * @param factory factory used for search hit creation and term matching
      * @return {@link SolrDocumentList}
+     * @should keep DOCSTRCT child docs when search terms are empty
+     * @should keep DOCSTRCT child docs when search terms are null
+     * @should require search term match when search terms are present
      */
-    private static SolrDocumentList filterChildDocs(SolrDocumentList docs, String mainIdDoc, Map<String, Set<String>> searchTerms,
+    static SolrDocumentList filterChildDocs(SolrDocumentList docs, String mainIdDoc, Map<String, Set<String>> searchTerms,
             SearchHitFactory factory) {
         SolrDocumentList filteredList = new SolrDocumentList();
         Map<String, SolrDocument> ownerDocs = new HashMap<>();
+        // When the search has no text-highlightable term (e.g. a pure YEARMONTHDAY date-range
+        // query from the calendar TocView, whose searchTerms map ends up only carrying structural
+        // fields such as PI_ANCHOR / PI_TOPSTRUCT / TITLE_TERMS extracted from the query), the
+        // term-based containment check can't mark DOCSTRCT children as relevant — they would all
+        // be dropped, leaving the user with zero sub-hits even though the expand already returned
+        // the matching issues. In that situation we trust the expand result and pass them through.
+        boolean noTextSearchTerms = !hasTextSearchTerm(searchTerms);
+        logger.debug("filterChildDocs: {} incoming child docs, noTextSearchTerms={}, searchTerms keys={}",
+                docs.size(), noTextSearchTerms, searchTerms != null ? searchTerms.keySet() : "null");
         for (SolrDocument doc : docs) {
             HitType hitType = getHitType(doc);
             String ownerIDDoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC_OWNER);
@@ -544,7 +557,10 @@ public final class SearchHelper {
                     }
                 }
             } else if (hitType == HitType.DOCSTRCT) {
-                if (ownerDocs.containsKey(iddoc)) {
+                if (noTextSearchTerms) {
+                    // Date-range or other non-text expand match: trust the expand result
+                    filteredList.add(doc);
+                } else if (ownerDocs.containsKey(iddoc)) {
                     ownerDocs.remove(iddoc);
                     filteredList.add(doc);
                 } else {
@@ -554,6 +570,7 @@ public final class SearchHelper {
 
         }
         filteredList.setNumFound(filteredList.size());
+        logger.debug("filterChildDocs: {} docs passed the filter (from {} incoming)", filteredList.size(), docs.size());
         return filteredList;
     }
 
@@ -561,6 +578,49 @@ public final class SearchHelper {
         return !factory
                 .findAdditionalMetadataFieldsContainingSearchTerms(SolrTools.getFieldValueMap(doc), searchTerms, Collections.emptySet(), "", "")
                 .isEmpty();
+    }
+
+    /**
+     * Returns true if the given search terms map contains any entry that represents a user-entered
+     * text term worth highlighting (DEFAULT / FULLTEXT / NORMDATATERMS / UGCTERMS / SEARCHTERMS_ARCHIVE
+     * / CMS_TEXT_ALL, or any explicit MD_* field term). Structural-only fields like PI_ANCHOR,
+     * PI_TOPSTRUCT, DC, DOCSTRCT, DOCTYPE, TITLE_TERMS are ignored, because
+     * {@link #extractSearchTermsFromQuery(String, String)} adds those automatically from the
+     * assembled query even when the user did not type anything.
+     *
+     * @param searchTerms map extracted from the current query
+     * @return true if a text-highlightable term is present; false otherwise
+     * @should return false for null map
+     * @should return false when only structural fields are present
+     * @should return true when DEFAULT field has values
+     * @should return true when an MD_ field has values
+     * @should return false when text field has only empty value set
+     */
+    static boolean hasTextSearchTerm(Map<String, Set<String>> searchTerms) {
+        if (searchTerms == null || searchTerms.isEmpty()) {
+            return false;
+        }
+        for (Map.Entry<String, Set<String>> entry : searchTerms.entrySet()) {
+            if (entry.getValue() == null || entry.getValue().isEmpty()) {
+                continue;
+            }
+            String field = entry.getKey();
+            switch (field) {
+                case SolrConstants.DEFAULT:
+                case SolrConstants.FULLTEXT:
+                case SolrConstants.NORMDATATERMS:
+                case SolrConstants.UGCTERMS:
+                case SolrConstants.SEARCHTERMS_ARCHIVE:
+                case SolrConstants.CMS_TEXT_ALL:
+                    return true;
+                default:
+                    if (field != null && field.startsWith("MD_")) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+        return false;
     }
 
     /**
@@ -590,6 +650,10 @@ public final class SearchHelper {
      * Returns all suffixes relevant to search filtering.
      *
      * @return generated Solr query suffix string
+     * @should add static suffix
+     * @should not add static suffix if not requested
+     * @should add collection blacklist suffix
+     * @should add archive filter suffix
      */
     public static String getAllSuffixes() {
         return getAllSuffixes(BeanUtils.getRequest(), true, true);
@@ -680,7 +744,6 @@ public final class SearchHelper {
      * @param searchTerms map of field names to sets of search terms for highlighting
      * @param locale language locale for translation
      * @param proximitySearchDistance word distance for proximity search
-     * @should return correct hit for non-aggregated search
      * @should return correct hit for aggregated search
      * @param filterQueries Solr filter query strings
      * @return the BrowseElement for the search result at the given index, or null if no results are found
@@ -799,6 +862,7 @@ public final class SearchHelper {
      * @return map of collection names to their aggregated result counts
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should find all collections
+     * @should group collections by DC field and aggregate their docstruct facet values
      */
     public static Map<String, CollectionResult> findAllCollectionsFromField(String luceneField, String groupingField, String filterQuery,
             boolean filterForWhitelist, boolean filterForBlacklist, String splittingChar) throws IndexUnreachableException {
@@ -963,11 +1027,11 @@ public final class SearchHelper {
      * @param dc collection name to check
      * @param blacklist set of blacklisted collection name patterns
      * @param splittingChar character used to separate hierarchy levels in collection names
-     * @should match simple collections correctly
-     * @should match subcollections correctly
+     * @should return true when a parent collection in the blacklist matches the subcollection path
      * @should throw IllegalArgumentException if dc is null
      * @should throw IllegalArgumentException if blacklist is null
      * @return true if dc matches any entry in the blacklist; false otherwise
+     * @should return true for exact collection match and false for non matching collection
      */
     protected static boolean checkCollectionInBlacklist(String dc, Set<String> blacklist, String splittingChar) {
         if (dc == null) {
@@ -1063,11 +1127,11 @@ public final class SearchHelper {
      *
      * @param suggest the search string to suggest completions for
      * @param currentFacets active facet items used to narrow the suggestion scope
-     * @should return autosuggestions correctly
-     * @should filter by collection correctly
-     * @should filter by facet correctly
      * @return list of matching suggestion strings
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return non-empty suggestion list for a matching search prefix
+     * @should return empty list when filtered by a non-matching collection facet
+     * @should return empty list when filtered by a non-matching title facet
      */
     public static List<String> searchAutosuggestion(final String suggest, List<IFacetItem> currentFacets) throws IndexUnreachableException {
         if (suggest.contains(" ")) {
@@ -1135,7 +1199,7 @@ public final class SearchHelper {
      * so the suffix is generated anew upon every call and not persisted.
      *
      * @param field Solr field name whose blacklisted values should be filtered
-     * @should construct suffix correctly
+     * @should return negated DC filter clauses for each blacklisted collection
      * @return Solr query suffix excluding blacklisted values for the given field
      */
     protected static String generateCollectionBlacklistFilterSuffix(String field) {
@@ -1157,11 +1221,11 @@ public final class SearchHelper {
      * getDiscriminatorFieldFilterSuffix.
      *
      * @param discriminatorField Solr field name used as the sub-theme discriminator
-     * @should construct subquery correctly
      * @should return empty string if discriminator value is empty or hyphen
      * @param nh navigation helper used to retrieve the current discriminator value
      * @return Solr query suffix restricting results to the current discriminator value
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return field value filter suffix when discriminator value is set
      */
     public static String getDiscriminatorFieldFilterSuffix(NavigationHelper nh, String discriminatorField) throws IndexUnreachableException {
         // logger.trace("nh null? {}", nh == null); //NOSONAR Debug
@@ -1192,7 +1256,8 @@ public final class SearchHelper {
     public static void updateFilterQuerySuffix(HttpServletRequest request, String privilege)
             throws IndexUnreachableException, PresentationException, DAOException {
         String filterQuerySuffix =
-                getPersonalFilterQuerySuffix(DataManager.getInstance().getDao().getRecordLicenseTypes(),
+                // Route through cache to avoid repeated DAO round-trips per request
+                getPersonalFilterQuerySuffix(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(),
                         (User) Optional.ofNullable(request)
                                 .map(HttpServletRequest::getSession)
                                 .map(session -> session.getAttribute("user"))
@@ -1219,12 +1284,11 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @should construct suffix correctly
-     * @should construct suffix correctly if user has license privilege
-     * @should construct suffix correctly if user has overriding license privilege
-     * @should construct suffix correctly if ip range has license privilege
-     * @should construct suffix correctly if moving wall license
-     * @should construct suffix correctly for alternate privilege
+     * @should construct filter suffix with access conditions including moving wall query
+     * @should include access condition for license type when user has listing privilege
+     * @should return empty suffix for localhost and include access conditions for regular IP range with listing privilege
+     * @should include OPENACCESS and moving wall query in suffix when no user or IP is given
+     * @should exclude license type from suffix for LIST privilege but include it for DOWNLOAD_METADATA privilege
      * @should limit to open access if licenseTypes empty
      */
     public static String getPersonalFilterQuerySuffix(List<LicenseType> licenseTypes, User user, String ipAddress, Optional<ClientApplication> client,
@@ -1318,9 +1382,8 @@ public final class SearchHelper {
      * @should truncate string to 200 chars if no term has been found
      * @should make terms bold if found in text
      * @should remove unclosed HTML tags
-     * @should return multiple match fragments correctly
+     * @should return separate highlighted fragments for each match occurrence in the fulltext
      * @should replace line breaks with spaces
-     * @should add fragment if no term was matched only if so requested
      * @should highlight multi word terms while removing stopwords
      */
     public static List<String> truncateFulltext(Set<String> searchTerms, final String inFulltext, int targetFragmentLength, boolean firstMatchOnly,
@@ -1798,6 +1861,7 @@ public final class SearchHelper {
      * @return list of facet value strings
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return correct values via json response
      */
     public static List<String> getFacetValues(String query, String facetFieldName, int facetMinCount)
             throws PresentationException, IndexUnreachableException {
@@ -2291,8 +2355,8 @@ public final class SearchHelper {
      * @param discriminatorValue current sub-theme discriminator value to exclude from terms
      * @return map of Solr field names to sets of extracted search terms
      * @should extract all values from query except from NOT blocks
-     * @should handle multiple phrases in query correctly
-     * @should handle escaped double quotes correctly
+     * @should extract separate term sets per field when query contains multiple phrase clauses
+     * @should preserve escaped double quotes within extracted phrase terms
      * @should skip discriminator value
      * @should not remove truncation
      * @should throw IllegalArgumentException if query is null
@@ -2301,7 +2365,7 @@ public final class SearchHelper {
      * @should remove fuzzy search tokens
      * @should remove range values
      * @should remove operators from field names
-     * @should handle escaped parentheses in phrase values correctly
+     * @should extract a valid closed phrase when value contains escaped parentheses
      */
     public static Map<String, Set<String>> extractSearchTermsFromQuery(final String query, String discriminatorValue) {
         logger.trace("extractSearchTermsFromQuery:{}", query);
@@ -2483,7 +2547,7 @@ public final class SearchHelper {
      * @return value without surrounding quotation marks
      * @should return value if blank
      * @should return value if not in quotes
-     * @should unquote value correctly
+     * @should remove outer quotes and proximity suffix while preserving inner escaped quotes
      */
     public static String unquoteValue(String value, boolean containsEscapedDoubleQuotes) {
         if (StringUtils.isNotBlank(value)) {
@@ -2509,12 +2573,11 @@ public final class SearchHelper {
      * @param template Advanced search fields template
      * @param language language code for field labels
      * @return Parsed {@link SearchQueryGroup}
-     * @should parse phrase search query correctly
-     * @should parse regular search query correctly
-     * @should parse drop down items correctly
-     * @should parse range items correctly
-     * @should parse items from facet string correctly
-     * @should parse mixed search query correctly
+     * @should parse regular search query and recognize NOT operator for negated subquery
+     * @should parse range query into item with value and value2 bounds
+     * @should parse facet string into query items with correct fields and AND operators
+     * @should parse phrase search query into group with a n d operator and correct field value pairs
+     * @should parse mixed query with phrase regular range and facet items into six query items
      */
     public static SearchQueryGroup parseSearchQueryGroupFromQuery(final String query, String facetString, String template, String language) {
         logger.trace("parseSearchQueryGroupFromQuery: {}", query);
@@ -2779,7 +2842,7 @@ public final class SearchHelper {
      * facetifyList.
      *
      * @param sourceList list of Solr field names to convert to facet field names
-     * @return list of facetified field names * @should facetify correctly
+     * @return list of facetified field names * @should convert each field in the list to its FACET_ prefixed equivalent
      */
     public static List<String> facetifyList(List<String> sourceList) {
         if (sourceList == null) {
@@ -2802,7 +2865,7 @@ public final class SearchHelper {
      *
      * @param fieldName Solr field name to convert to a facet field name
      * @return field name with the FACET_ prefix applied
-     * @should facetify correctly
+     * @should add FACET_ prefix and strip UNTOKENIZED suffix while leaving MDNUM fields unchanged
      * @should leave bool fields unaltered
      * @should leave year month day fields unaltered
      */
@@ -2824,7 +2887,7 @@ public final class SearchHelper {
      *
      * @param fieldName Solr field name to convert to a sort field name
      * @return field name with the SORT_ prefix applied
-     * @should sortify correctly
+     * @should convert field names to SORT_ or SORTNUM_ prefixed equivalents
      */
     public static String sortifyField(String fieldName) {
         return adaptField(fieldName, SolrConstants.PREFIX_SORT);
@@ -2844,6 +2907,7 @@ public final class SearchHelper {
      *
      * @param fieldName Solr field name to normalize by removing known prefixes and suffixes
      * @return Normalized fieldName
+     * @should strip _UNTOKENIZED suffix from field name
      */
     public static String normalizeField(String fieldName) {
         return adaptField(fieldName, null);
@@ -2943,7 +3007,7 @@ public final class SearchHelper {
      *
      * @param fieldName facetified Solr field name to convert back to its base field name
      * @return base field name without the FACET_ prefix
-     * @should defacetify correctly
+     * @should strip FACET_ prefix and map to original Solr field names including date fields
      */
     public static String defacetifyField(String fieldName) {
         if (fieldName == null) {
@@ -2988,14 +3052,13 @@ public final class SearchHelper {
      * @param searchTerms map of field names to sets of search terms for highlighting
      * @param proximitySearchDistance word distance for proximity search
      * @return Solr expand query string
-     * @should generate query correctly
+     * @should combine search terms from multiple fields with OR into a single expand query string
      * @should return empty string if no fields match
      * @should skip reserved fields
      * @should escape reserved characters
      * @should not escape asterisks
      * @should not escape truncation
-     * @should add quotation marks if phraseSearch is true
-     * @should add proximity search token correctly
+     * @should append proximity search distance to phrase terms in FULLTEXT field
      */
     public static String generateExpandQuery(List<String> fields, Map<String, Set<String>> searchTerms, int proximitySearchDistance) {
         logger.trace("generateExpandQuery");
@@ -3085,10 +3148,10 @@ public final class SearchHelper {
      * @param group advanced search query group containing the query items
      * @param allowFuzzySearch if true, fuzzy search tokens are included in the query
      * @return Solr expand query string
-     * @should generate query correctly
      * @should skip reserved fields
      * @should switch to OR operator on fulltext items
-     * @should put item sequences with the same field into common parentheses
+     * @should generate a n d combined expand query from advanced search group items
+     * @should put item sequences with same field into common parentheses
      */
     public static String generateAdvancedExpandQuery(SearchQueryGroup group, boolean allowFuzzySearch) {
         logger.trace("generateAdvancedExpandQuery");
@@ -3121,13 +3184,18 @@ public final class SearchHelper {
                 continue;
             }
             // logger.trace("item field: {}", item.getField()); //NOSONAR Debug
-            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc
+            // Skip fields that exist in all child docs (e.g. PI_TOPSTRUCT) so that searches within a record don't return every single doc.
+            // CALENDAR_DAY (YEARMONTHDAY) is also skipped: the date filter is already enforced on the parent-level search,
+            // and its generateQuery() emits an {!join from=IDDOC to=IDDOC_OWNER} sub-query that — in the OR-mode expand context
+            // used for search-in-record — matches every page of every date-matching issue, producing spurious sub-hits for
+            // pages that don't contain the actual search term.
             switch (item.getField()) {
                 case SolrConstants.PI_TOPSTRUCT:
                 case SolrConstants.PI_ANCHOR:
                 case SolrConstants.DC:
                 case SolrConstants.DOCSTRCT:
                 case SolrConstants.BOOKMARKS:
+                case SolrConstants.CALENDAR_DAY:
                     continue;
                 default:
                     if (item.getField().startsWith(SolrConstants.PREFIX_GROUPID)) {
@@ -3274,6 +3342,10 @@ public final class SearchHelper {
      * @param query raw search query string to prepare
      * @return prepared query string wrapped in parentheses, or a fallback record-listing query
      * @should wrap query correctly
+     * @should return discriminator query when input query is null and fall back to default when both are empty
+     * @should wrap field:value query in +() notation
+     * @should wrap non-null query in parentheses
+     * @should wrap field value query in plus paren notation
      */
     public static String prepareQuery(String query) {
         StringBuilder sbQuery = new StringBuilder();
@@ -3368,6 +3440,12 @@ public final class SearchHelper {
      * @param aggregationType {@link SearchAggregationType}
      * @return complete Solr query string with all suffixes
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return collection with 71 elements
+     * @should add join statement if aggregateHits true
+     * @should not add join statement if aggregateHits false
+     * @should remove existing join statement
+     * @should add embedded query template if boostTopLevelDocstructs true
+     * @should escape quotation marks in embedded query
      */
     public static String buildFinalQuery(String rawQuery, boolean boostTopLevelDocstructs, SearchAggregationType aggregationType) {
         return buildFinalQuery(rawQuery, boostTopLevelDocstructs, null, aggregationType);
@@ -3429,6 +3507,9 @@ public final class SearchHelper {
      * @param request HTTP servlet request whose session holds the filter query suffix
      * @param privilege Privilege to check (Connector checks a different privilege)
      * @return Filter query suffix string from the HTTP session
+     * @should use BeanUtils request fallback when initiating suffix update
+     * @should compute personal filter suffix on the fly when no session is available
+     * @should fail closed with OPENACCESS-only suffix when sessionless computation fails
      */
     static String getFilterQuerySuffix(final HttpServletRequest request, String privilege) {
         HttpServletRequest req = request;
@@ -3440,14 +3521,41 @@ public final class SearchHelper {
         }
         HttpSession session = req.getSession(false);
         if (session == null) {
-            return null;
+            // The personal filter suffix carries the AccessCondition restrictions that prevent
+            // protected records from being returned. Without a session there is no place to
+            // cache it, but it must still be computed and applied — otherwise sessionless
+            // callers (e.g. REST clients without a JSESSIONID cookie) would see records they
+            // are not allowed to see. The result is computed on the fly and not cached.
+            // If the computation throws, fall back to an OPENACCESS-only suffix so protected
+            // records remain hidden even when the DB or Solr is temporarily unreachable.
+            try {
+                // No session means no client cookie either. Calling
+                // ClientApplicationManager.getClientFromRequest here would invoke
+                // req.getSession() (without 'false') and thereby force-create a session,
+                // which contradicts the whole sessionless path.
+                return getPersonalFilterQuerySuffix(
+                        DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(),
+                        null,
+                        NetTools.getIpAddress(req),
+                        Optional.empty(),
+                        privilege);
+            } catch (IndexUnreachableException | DAOException e) {
+                logger.error("Failed to compute sessionless filter query suffix, falling back to OPENACCESS-only", e);
+            } catch (PresentationException e) {
+                logger.error("Failed to compute sessionless filter query suffix, falling back to OPENACCESS-only: {}", e.getMessage());
+            }
+            return " +(" + SolrConstants.ACCESSCONDITION + ":\"" + SolrConstants.OPEN_ACCESS_VALUE + "\")";
         }
 
         String ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
         // If not suffix generated yet, initiate update
         if (ret == null) {
             try {
-                updateFilterQuerySuffix(request, privilege);
+                // Use the resolved 'req' (which may have been obtained via BeanUtils fallback)
+                // instead of the original 'request' parameter. Previously the original null was
+                // propagated, causing the warning "No HttpServletRequest found, cannot set
+                // filter query." and leaving the personal access filter unset for the session.
+                updateFilterQuerySuffix(req, privilege);
                 ret = (String) session.getAttribute(PARAM_NAME_FILTER_QUERY_SUFFIX);
             } catch (IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage(), e);
@@ -3475,7 +3583,7 @@ public final class SearchHelper {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @should create excel workbook correctly
+     * @should create workbook with query header row and PI/label columns for matching records
      */
     public static void exportSearchAsExcel(SXSSFWorkbook wb, String finalQuery, String exportQuery, List<StringPair> sortFields,
             List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale, int proximitySearchDistance)
@@ -3550,7 +3658,7 @@ public final class SearchHelper {
      * @param sortString semicolon-separated sort field string, prefix '!' for descending
      * @param navigationHelper navigation helper used to resolve language-specific sort fields
      * @return list of sort field/direction pairs
-     * @should parse string correctly
+     * @should parse semicolon-separated sort string into list of sort fields
      */
     public static List<StringPair> parseSortString(String sortString, NavigationHelper navigationHelper) {
         if (StringUtils.isEmpty(sortString)) {
@@ -3610,7 +3718,7 @@ public final class SearchHelper {
      *
      * @param term The term to clean up.
      * @return Cleaned up term.
-     * @should remove illegal chars correctly
+     * @should strip parentheses from the search term
      * @should remove trailing punctuation
      * @should preserve truncation
      * @should preserve negation
@@ -3674,8 +3782,8 @@ public final class SearchHelper {
      * @param accessCondition access condition value to query for
      * @param escapeAccessCondition if true, special URL characters in the value are escaped
      * @return Constructed Solr query
-     * @should build escaped query correctly
-     * @should build not escaped query correctly
+     * @should build query with unescaped slashes in access condition value when escaping is disabled
+     * @should build query with slash escaped access condition value when escaping is enabled
      */
     public static String getQueryForAccessCondition(final String accessCondition, boolean escapeAccessCondition) {
         String ac = escapeAccessCondition ? BeanUtils.escapeCriticalUrlChracters(accessCondition) : accessCondition;
@@ -3726,7 +3834,7 @@ public final class SearchHelper {
      * @param term search phrase to append the proximity token to
      * @param distance maximum word distance between terms in a proximity search
      * @return {@link String}
-     * @should term with proximity search token
+     * @should wrap terms in quotes with proximity operator and strip existing quotes
      */
     public static String addProximitySearchToken(String term, int distance) {
         if (StringUtils.isEmpty(term)) {
@@ -3756,7 +3864,7 @@ public final class SearchHelper {
      *
      * @param term Search term containing proximity search token
      * @return term without proximity search token
-     * @should remove token correctly
+     * @should strip the proximity distance suffix from a quoted phrase
      * @should return unmodified term if no token found
      */
     public static String removeProximitySearchToken(String term) {
@@ -3782,7 +3890,7 @@ public final class SearchHelper {
      * @should return 0 if query empty
      * @should return 0 if query does not contain token
      * @should return 0 if query not phrase search
-     * @should extract distance correctly
+     * @should return the numeric distance value from a proximity search token
      */
     public static int extractProximitySearchDistanceFromQuery(String query) {
         if (StringUtils.isEmpty(query) || !query.contains("\"~")) {
@@ -3811,8 +3919,8 @@ public final class SearchHelper {
      *
      * @param s Search terms
      * @return true if phrase; false otherwise
-     * @should detect phrase correctly
-     * @should detect phrase with proximity correctly
+     * @should return true for quoted phrase with proximity suffix and false for unquoted text with tilde
+     * @should return true for double quoted strings and false for unquoted strings
      */
     public static boolean isPhrase(String s) {
         if (StringUtils.isBlank(s)) {
@@ -3833,6 +3941,7 @@ public final class SearchHelper {
      *
      * @param term search term possibly containing leading and/or trailing wildcard characters
      * @return array of prefix, token, suffix
+     * @should get wildcards
      */
     public static String[] getWildcardsTokens(String term) {
         String prefix = term.startsWith("*") ? "*" : "";
@@ -3848,9 +3957,9 @@ public final class SearchHelper {
      * @param allowedFacetQueryRegexes Optional list containing regexes for allowed facet queries
      * @return Expand query
      * @should return empty string if list null or empty
-     * @should construct query correctly
      * @should only use queries that match allowed regex
      * @should return empty string of no query allowed
+     * @should combine facet clauses with d o c t y p e d o c s t r c t filter into expand query
      */
     public static String buildExpandQueryFromFacets(List<String> allFacetQueries, List<String> allowedFacetQueryRegexes) {
         if (allFacetQueries == null || allFacetQueries.isEmpty()) {

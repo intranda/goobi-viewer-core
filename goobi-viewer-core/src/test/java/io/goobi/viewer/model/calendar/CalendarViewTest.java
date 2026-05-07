@@ -29,10 +29,21 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 
 class CalendarViewTest extends AbstractSolrEnabledTest {
-    
+
     /**
      * @see CalendarView#isDisplay()
      * @verifies return true if number of items sufficient
+     */
+    @Test
+    void isDisplay_shouldReturnTrueIfNumberOfItemsSufficient() throws Exception {
+        // Verify that isDisplay returns true when the calendar has enough items
+        CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null);
+        Assertions.assertTrue(cv.isDisplay());
+    }
+
+    /**
+     * @see CalendarView#isDisplay()
+     * @verifies return true if numer of items suffient
      */
     @Test
     void isDisplay_shouldReturnTrueIfNumerOfItemsSuffient() throws Exception {
@@ -49,6 +60,34 @@ class CalendarViewTest extends AbstractSolrEnabledTest {
         CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null);
         List<String> years = cv.getVolumeYears();
         Assertions.assertEquals(9, years.size());
+    }
+
+    /**
+     * @see CalendarView#isDisplay()
+     * @verifies return false when docstruct is not in calendar whitelist
+     */
+    @Test
+    void isDisplay_shouldReturnFalseWhenDocstructIsNotInCalendarWhitelist() throws Exception {
+        // The test config seeds the whitelist with Newspaper/Periodical only — a Podcast
+        // anchor must therefore suppress the calendar view even if the year-count probe
+        // would otherwise admit it, so that viewToc.xhtml falls through to the regular
+        // issue-list TOC instead of rendering an empty calendar grid.
+        CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null, "Podcast");
+        Assertions.assertFalse(cv.isDisplay());
+    }
+
+    /**
+     * @see CalendarView#isDisplay()
+     * @verifies return true when whitelisted docstruct provided (issue inheriting from anchor)
+     */
+    @Test
+    void isDisplay_shouldReturnTrueWhenWhitelistedDocstructProvided() throws Exception {
+        // ViewManager passes the anchor's docstruct rather than the issue/volume's own when
+        // constructing CalendarView, so a newspaper issue (top struct = "NewspaperIssue") is
+        // expected to receive its anchor's docstruct ("Newspaper") here. With that whitelisted
+        // value the gate must not suppress the calendar that widget_calendar.xhtml renders.
+        CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null, "Newspaper");
+        Assertions.assertTrue(cv.isDisplay());
     }
 
 }

@@ -8,12 +8,15 @@
 
     <composite:implementation>
         <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild}">
+            <ui:param
+                name="groupMembershipsDeduped"
+                value="#{activeDocumentBean.viewManager.topStructElement.groupMembershipsExcludingAnchor}" />
             <div
                 id="widgetRelatedGroups"
-                class="widget widget-related-groups">
+                class="widget-related-groups">
                 <!-- Group (convolutes, etc.) listing -->
-                <h:outputText rendered="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.size() gt 1}">
-                    <div class="widget-related-groups__list">
+                <h:outputText rendered="#{groupMembershipsDeduped.size() gt 1}">
+                    <div class="widget widget-related-groups__list">
                         <div class="widget__topbar widget-related-groups__topbar">
                             <h2 class="widget__title widget-related-groups__title">#{msg.recordGroupMemberships}</h2>
                         </div>
@@ -22,7 +25,7 @@
                             <ul>
                                 <ui:repeat
                                     var="groupMembership"
-                                    value="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.entrySet().toArray()}">
+                                    value="#{groupMembershipsDeduped.entrySet().toArray()}">
                                     <li>
                                         <a
                                             href="#{navigationHelper.tocUrl}/#{groupMembership.value}/1/"
@@ -38,33 +41,38 @@
                 </h:outputText>
 
                 <!-- Group (convolutes, etc.) listing -->
-                <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.size() eq 1}">
+                <h:panelGroup rendered="#{groupMembershipsDeduped.size() eq 1}">
                     <div class="widget widget-related-groups__series">
                         <ui:param
                             name="groupMembership"
-                            value="#{activeDocumentBean.viewManager.topStructElement.groupMemberships.entrySet().iterator().next().value}" />
+                            value="#{groupMembershipsDeduped.entrySet().iterator().next().value}" />
                         <div class="widget__topbar widget-related-groups__topbar">
                             <h2 class="widget__title widget-related-groups__title">
                                 <a
                                     href="#{navigationHelper.tocUrl}/#{groupMembership}/1/"
                                     target="_blank">
-                                    <h:outputText
-                                        value="#{msg[activeDocumentBean.viewManager.topStructElement.getGroupLabel(groupMembership, 'label__related_groups')]}" />
+                                    <h:outputText value="#{msg[activeDocumentBean.viewManager.topStructElement.getGroupLabel(groupMembership, 'label__related_groups')]}" />
                                 </a>
                             </h2>
                         </div>
                     </div>
                 </h:panelGroup>
 
-                <!-- Extra link to the anchor, if this is a volume -->
+                <!-- Extra link to the anchor, if this is a volume. Prefer the anchor's
+                     own label over the generic msg.anchor fallback so users see the
+                     parent record's title (e.g. "Lübeckische Anzeigen") rather than
+                     "Gesamtwerk". -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.topStructElement.anchorChild}">
+                    <ui:param
+                        name="anchorLabel"
+                        value="#{activeDocumentBean.viewManager.anchorStructElement.label}" />
                     <div class="widget widget-related-groups__anchor">
                         <div class="widget__topbar widget-related-groups__topbar">
                             <h2 class="widget__title widget-related-groups__title">
                                 <a
                                     href="#{navigationHelper.getRecordUrl(activeDocumentBean.viewManager.anchorPi, activeDocumentBean.viewManager.anchorStructElement.docStructType, 1, true, false)}"
                                     target="_blank">
-                                    #{msg.anchor}
+                                    <h:outputText value="#{not empty anchorLabel ? anchorLabel : msg.anchor}" />
                                 </a>
                             </h2>
                         </div>

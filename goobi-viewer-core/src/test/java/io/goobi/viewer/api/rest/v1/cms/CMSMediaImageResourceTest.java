@@ -66,8 +66,11 @@ class CMSMediaImageResourceTest extends AbstractRestApiTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies route request when filename has uppercase suffix
+     */
     @Test
-    void testCallImageUrlCapitalSuffix() {
+    void getMediaFile_shouldRouteRequestWhenFilenameHasUppercaseSuffix() {
         String filename = "image4.JPG";
         String url = urls.path(ApiUrls.CMS_MEDIA, ApiUrls.CMS_MEDIA_FILES_FILE).params(filename).build();
         try (Response response = target(url)
@@ -80,8 +83,11 @@ class CMSMediaImageResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return original url for gif file
+     */
     @Test
-    void testCallImageUrlForGif() {
+    void getResourceURI_shouldReturnOriginalUrlForGifFile() {
         String filename = "lorelai.gif";
         String url = "https://viewer.goobi.io/api/v1/cms/media/files/" + filename;
         ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
@@ -93,8 +99,11 @@ class CMSMediaImageResourceTest extends AbstractRestApiTest {
         assertEquals(url, resourceURI);
     }
 
+    /**
+     * @verifies contain url-encoded filename with special characters
+     */
     @Test
-    void testUrlencoding() throws UnsupportedEncodingException {
+    void getResourceURI_shouldContainUrlEncodedFilenameWithSpecialCharacters() throws UnsupportedEncodingException {
         String filename = "ä (b) c";
         String filenameEnc = URLEncoder.encode(filename, "utf-8");
         CMSMediaItem media = new CMSMediaItem();

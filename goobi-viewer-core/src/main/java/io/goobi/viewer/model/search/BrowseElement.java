@@ -529,6 +529,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      *
      * @param structElement structure element to generate the label from
      * @return the multilingual label derived from the structure element's metadata fields
+     * @should return Mein Titel for given input
      */
     public IMetadataValue createMultiLanguageLabel(StructElement structElement) {
         MultiLanguageMetadataValue value = new MultiLanguageMetadataValue();
@@ -935,6 +936,12 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     public String getFulltextForHtml() {
         if (fulltextForHtml == null) {
             if (fulltext != null) {
+                // TODO(security): Migrate to HtmlSanitizer once a dedicated cleanFulltextSnippet
+                // profile exists. The current StringTools.stripJS only removes <script>/<svg>
+                // blocks and is bypassable by event-handler attributes and javascript: URIs.
+                // The Solr highlighter injects <mark> / <em> tags that must be preserved, so
+                // the existing rich-text and comment allowlists are unsuitable here. Tracked
+                // alongside HIGH 5 (CMS XSS) in the security audit memo.
                 fulltextForHtml = StringTools.stripJS(fulltext).replace("\n", " ");
             } else {
                 fulltextForHtml = "";
@@ -1456,6 +1463,14 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * determinePageType.
      *
      * @return the PageType appropriate for this browse element based on its document structure and MIME type
+     * @should return metadata page type for pdf mime type without images
+     * @should return object page type for pdf mime type with images
+     * @should return object page type for audio mime type
+     * @should return object page type for video mime type
+     * @should return metadata for pdf without images
+     * @should return object for pdf with images
+     * @should return object for audio
+     * @should return object for video
      */
     public PageType determinePageType() {
         return PageType.determinePageType(docStructType, mimeType, anchor || DocType.GROUP.equals(docType), hasImages || hasMedia, false);

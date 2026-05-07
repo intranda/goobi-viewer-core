@@ -157,8 +157,10 @@
                             class="btn btn--default metadata__fold-button metadata__fold-button-more"
                             data-trigger="expandMetadata">
                             <span class="metadata__fold-button-inner">
-                                <util:icon icon="caret-down"/>
-                                <span><h:outputText value="#{msg.metadata__fold_show_more}" /></span>
+                                <util:icon icon="caret-down" />
+                                <span>
+                                    <h:outputText value="#{msg.metadata__fold_show_more}" />
+                                </span>
                             </span>
                         </button>
                         <!-- Show less -->
@@ -167,24 +169,28 @@
                             class="btn btn--default metadata__fold-button metadata__fold-button-less -hidden"
                             data-trigger="collapseMetadata">
                             <span class="metadata__fold-button-inner">
-                                <util:icon icon="caret-up"/>
-                             <span><h:outputText value="#{msg.metadata__fold_show_less}" /></span>
+                                <util:icon icon="caret-up" />
+                                <span>
+                                    <h:outputText value="#{msg.metadata__fold_show_less}" />
+                                </span>
                             </span>
                         </button>
                     </h:panelGroup>
                     <script>
                         $(document)
-                            // "Show more": reveals full list, swaps buttons
+                            // "Show more": reveals full list, hides default block, swaps buttons
                             .on('click', '[data-trigger="expandMetadata"]', function() {
                                 var $w = $(this).closest('.metadata__wrapper');
+                                $w.find('.-visibleByDefault').addClass('-hidden');
                                 $w.find('[data-target="collapsedMetadataBlock"]').removeClass('-hidden');
                                 $(this).addClass('-hidden');
                                 $w.find('[data-trigger="collapseMetadata"]').removeClass('-hidden');
                             })
-                            // "Show less": hides full list, swaps buttons
+                            // "Show less": hides full list, restores default block, swaps buttons
                             .on('click', '[data-trigger="collapseMetadata"]', function() {
                                 var $w = $(this).closest('.metadata__wrapper');
                                 $w.find('[data-target="collapsedMetadataBlock"]').addClass('-hidden');
+                                $w.find('.-visibleByDefault').removeClass('-hidden');
                                 $(this).addClass('-hidden');
                                 $w.find('[data-trigger="expandMetadata"]').removeClass('-hidden');
                             });

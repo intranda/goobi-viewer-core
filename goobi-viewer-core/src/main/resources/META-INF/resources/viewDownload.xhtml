@@ -50,19 +50,6 @@
                         id="jobStatusField"
                         value="#{downloadBean.message.messageStatus.name()}" />
                     <h:panelGroup rendered="#{downloadBean.message != null}">
-                        <!-- ERROR MESSAGE -->
-                        <h:panelGroup rendered="#{downloadBean.message.messageStatus.name() == 'ERROR'}">
-                            <div class="card card-danger">
-                                <div class="card-header">
-                                    <h2 class="card-title">#{msg.downloadQueueTitle}</h2>
-                                </div>
-                                <div class="card-body">
-                                    <!-- TODO: Add error message to job once it fails -->
-                                    #{downloadBean.message.properties['message']}
-                                </div>
-                            </div>
-                        </h:panelGroup>
-
                         <!-- DOWNLOAD QUEUE -->
                         <h:panelGroup rendered="#{downloadBean.message.messageStatus.name() == 'WAIT' or downloadBean.message.messageStatus.name() == 'NEW'}">
                             <div class="card card-info">
@@ -137,6 +124,23 @@
                     updateJobStatus();
                     var interval = setInterval(function () {
                         $('#viewDownload').load(document.URL + ' #viewDownload .download__status', function () {
+                            // After a poll, the job-status hidden field is missing in two situations:
+                            //   1. The expected redirect: openDownloadAction() threw a DownloadException
+                            //      and MyExceptionHandler routed the response to error.xhtml (which has
+                            //      no #jobStatusField).
+                            //   2. A transient AJAX failure: 5xx from the container before JSF runs,
+                            //      network blip, request timeout — .load() callback still fires but the
+                            //      response body lacks the selector.
+                            // Both cases are handled the same way: full reload. In case (1) the user
+                            // lands on error.xhtml (correct destination). In case (2) the reload either
+                            // re-establishes the WAIT card or surfaces the still-broken backend as a
+                            // proper error page. The slight over-trigger on transient blips is
+                            // acceptable — better than getting stuck on an empty status block.
+                            if ($('#jobStatusField').length === 0) {
+                                clearInterval(interval);
+                                window.location.reload();
+                                return;
+                            }
                             updateJobStatus();
                         });
                     }, 5000);
@@ -145,7 +149,12 @@
                         var status = $('#jobStatusField').val();
                         switch (status) {
                             case 'ERROR':
+                                // Defensive fallback: should be unreachable now that openDownloadAction()
+                                // throws DownloadException on ERROR status. If the inline branch ever
+                                // returns ERROR (e.g. due to a future regression), reload to land on
+                                // the standard error page.
                                 clearInterval(interval);
+                                window.location.reload();
                                 break;
                             case 'READY':
                             case 'FINISH':
@@ -158,8 +167,6 @@
                                 break;
                         }
                     }
-
-                    updateJobStatus();
                 </script>
             </div>
         </f:view>

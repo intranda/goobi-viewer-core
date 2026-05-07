@@ -71,6 +71,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.Metadata;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.annotation.comments.Comment;
@@ -173,11 +174,17 @@ public class SearchResultConverter {
      * @param queryRegex The regex matching the search terms
      * @param comment The comment containing the search terms
      * @return a {@link de.intranda.api.iiif.search.SearchHit}
+     * @should return non null result
      */
     public SearchHit convertCommentToHit(String queryRegex, String pi, Comment comment) {
         SearchHit hit = new SearchHit();
 
-        String text = comment.getDisplayText();
+        // IIIF TextQuoteSelector prefix/suffix are plain text per the W3C Web Annotation spec.
+        // Comment.getDisplayText() goes through HtmlSanitizer.cleanComment which rewrites \n
+        // to <br>\n for HTML rendering — that markup must not bleed into the IIIF JSON
+        // response. Use the plain-text sanitizer instead: still strips XSS payloads but
+        // preserves verbatim newlines used by selector/regex matching downstream.
+        String text = HtmlSanitizer.cleanCommentPlainText(comment.getText());
         Matcher m = Pattern.compile(AbstractSearchParser.getSingleWordRegex(queryRegex)).matcher(text);
         while (m.find()) {
             String match = m.group(1);
@@ -211,6 +218,7 @@ public class SearchResultConverter {
      * @param queryRegex regex pattern matching the search terms
      * @param ugc Solr document of type UGC to search within
      * @return A search hit matching the queryRegex within the given UGC SolrDocument
+     * @should return non null result
      */
     public SearchHit convertUGCToHit(String queryRegex, SolrDocument ugc) {
         if (ugc == null) {
@@ -256,6 +264,7 @@ public class SearchResultConverter {
      * @param fieldName Solr field name to read metadata value from
      * @param doc Solr document containing the field to search
      * @return A search hit for a Solr field search
+     * @should return non null result
      */
     public SearchHit convertMetadataToHit(String queryRegex, String fieldName, SolrDocument doc) {
         SearchHit hit = new SearchHit();
@@ -295,6 +304,7 @@ public class SearchResultConverter {
      * @return A result list containing hits for each mach of the query and annotations containing the hits
      * @throws JDOMException
      * @throws IOException
+     * @should return non null result
      */
     public AnnotationResultList getAnnotationsFromAlto(Path path, String query) throws IOException, JDOMException {
         AnnotationResultList results = new AnnotationResultList();
@@ -335,6 +345,7 @@ public class SearchResultConverter {
      * @param numHits The maximal number of hits to be returned in the result itself. This is the maximal size of the hit list within a single result
      *            page of a paged annotation collection
      * @return A result list containing all matching hits within the range set by previousHitCount, firstIndex and numHits
+     * @should return 1 for given input
      */
     public AnnotationResultList getAnnotationsFromFulltext(String text, String pi, Integer pageNo, String query, long previousHitCount,
             int firstIndex, int numHits) {

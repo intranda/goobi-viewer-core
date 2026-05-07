@@ -23,12 +23,16 @@ package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,21 +43,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.AdvancedSearchOrigin;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.search.SearchSortingOption;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
 
 class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -69,10 +77,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#clearSearchItemLists()
-     * @verifies clear map correctly
+     * @verifies empty the advanced search select items map
      */
     @Test
-    void clearSearchItemLists_shouldClearMapCorrectly() throws Exception {
+    void clearSearchItemLists_shouldEmptyTheAdvancedSearchSelectItemsMap() throws Exception {
         searchBean.getAdvancedSearchSelectItems(SolrConstants.DOCSTRCT, "en", false);
         Assertions.assertFalse(searchBean.getAdvancedSearchSelectItems().isEmpty());
         searchBean.clearSearchItemLists();
@@ -81,10 +89,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#resetSimpleSearchParameters()
-     * @verifies reset variables correctly
+     * @verifies clear searchString to empty and searchStringForUrl to dash
      */
     @Test
-    void resetSimpleSearchParameters_shouldResetVariablesCorrectly() {
+    void resetSimpleSearchParameters_shouldClearSearchStringToEmptyAndSearchStringForUrlToDash() {
         searchBean.setSearchString("test");
         assertEquals("test", searchBean.getSearchString());
         assertEquals("test", searchBean.getSearchStringForUrl());
@@ -96,20 +104,20 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#resetAdvancedSearchParameters()
-     * @verifies reset variables correctly
+     * @verifies reinitialize advanced search query group with three default query items
      */
     @Test
-    void resetAdvancedSearchParameters_shouldResetVariablesCorrectly() {
+    void resetAdvancedSearchParameters_shouldReinitializeAdvancedSearchQueryGroupWithThreeDefaultQueryItems() {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
     }
 
     /**
      * @see SearchBean#resetAdvancedSearchParameters()
-     * @verifies re-select collection correctly
+     * @verifies preserve active DC facet value in the DC query item after reset
      */
     @Test
-    void resetAdvancedSearchParameters_shouldReselectCollectionCorrectly() {
+    void resetAdvancedSearchParameters_shouldPreserveActiveDCFacetValueInTheDCQueryItemAfterReset() {
         searchBean.getFacets().setActiveFacetString("DC:col");
 
         searchBean.resetAdvancedSearchParameters();
@@ -143,7 +151,6 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#mirrorAdvancedSearchCurrentCollection()
      * @verifies set collection item correctly
      */
     @Test
@@ -166,7 +173,6 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#mirrorAdvancedSearchCurrentCollection()
      * @verifies reset collection item correctly
      */
     @Test
@@ -194,10 +200,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
-     * @verifies mirror facet items to search query items correctly
+     * @verifies copy active hierarchical facet values into corresponding advanced search query items
      */
     @Test
-    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldMirrorFacetItemsToSearchQueryItemsCorrectly() {
+    void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldCopyActiveHierarchicalFacetValuesIntoCorrespondingAdvancedSearchQueryItems() {
         searchBean.resetAdvancedSearchParameters();
         assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
         SearchQueryItem item1 = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
@@ -256,7 +262,6 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
      * @verifies change nothing if facet already exists in query items
      */
     @Test
@@ -309,8 +314,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#mirrorAdvancedSearchCurrentHierarchicalFacets()
-     * @verifies not throw ConcurrentModificationException under concurrent access
+     * @verifies not throw CME when called concurrently
      */
     @Test
     void mirrorAdvancedSearchCurrentHierarchicalFacets_shouldNotThrowCMEWhenCalledConcurrently() throws Exception {
@@ -541,7 +545,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
-     * @verifies add multiple facets for the same field correctly if field already in current facets
+     * @verifies add multiple facets for the same field correctly if field already in active facets
      */
     @Test
     void generateAdvancedSearchMainQuery_shouldAddMultipleFacetsForTheSameFieldCorrectlyIfFieldAlreadyInActiveFacets() throws Exception {
@@ -594,7 +598,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
-     * @verifies not add more facets if field value combo already in current facets
+     * @verifies not add more facets if field value combo already in active facets
      */
     @Test
     void generateAdvancedSearchMainQuery_shouldNotAddMoreFacetsIfFieldValueComboAlreadyInActiveFacets() throws Exception {
@@ -721,10 +725,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#increaseCurrentHitIndex()
-     * @verifies increase index correctly
+     * @verifies increase hit index by operand value within bounds
      */
     @Test
-    void increaseCurrentHitIndex_shouldIncreaseIndexCorrectly() {
+    void increaseCurrentHitIndex_shouldIncreaseHitIndexByOperandValueWithinBounds() {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
 
@@ -749,10 +753,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#increaseCurrentHitIndex()
-     * @verifies decrease index correctly
+     * @verifies decrease hit index by negative operand value within bounds
      */
     @Test
-    void increaseCurrentHitIndex_shouldDecreaseIndexCorrectly() {
+    void increaseCurrentHitIndex_shouldDecreaseHitIndexByNegativeOperandValueWithinBounds() {
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setHitsCount(10);
 
@@ -821,8 +825,11 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(0, searchBean.getCurrentHitIndex());
     }
 
+    /**
+     * @verifies extract hierarchical facet values from facet string
+     */
     @Test
-    void testGetHierarchicalFacets() {
+    void getHierarchicalFacets_shouldExtractHierarchicalFacetValuesFromFacetString() {
         String facetString = "DC:sonstiges.ocr.antiqua;;DOCSTRCT:monograph;;MD_TOPICS_UNTOKENIZED:schulbuch";
         List<String> hierarchicalFacetFields = Arrays.asList(new String[] { "A", "MD_TOPICS", "B", "DC", "C" });
 
@@ -833,8 +840,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#getAdvancedSearchAllowedFields()
      * @verifies omit languaged fields for other languages
+     * @see SearchBean#getAdvancedSearchAllowedFields()
      */
     @Test
     void getAdvancedSearchAllowedFields_shouldOmitLanguagedFieldsForOtherLanguages() {
@@ -863,8 +870,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#getAdvancedSearchAllowedFields()
      * @verifies addSearchFilters
+     * @see SearchBean#getAdvancedSearchAllowedFields()
      */
     @Test
     void getAdvancedSearchAllowedFields_shouldAddSearchFilters() {
@@ -895,11 +902,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#findCurrentHitIndex(String,int,boolean)
-     * @verifies set currentHitIndex correctly
+     * @verifies set currentHitIndex to the position of the given PI in the search result list
      */
     @Test
-    void findCurrentHitIndex_shouldSetCurrentHitIndexCorrectly() throws Exception {
+    void findCurrentHitIndex_shouldSetCurrentHitIndexToThePositionOfTheGivenPIInTheSearchResultList() throws Exception {
         DataManager.getInstance().getConfiguration().overrideValue("search.resultGroups[@enabled]", false);
         searchBean.setCurrentSearch(new Search());
         searchBean.getCurrentSearch().setPage(1);
@@ -1011,10 +1017,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#getSearchSortingOptions()
-     * @verifies return options correctly
+     * @verifies return sorting options with language specific default field first
      */
     @Test
-    void getSearchSortingOptions_shouldReturnOptionsCorrectly() {
+    void getSearchSortingOptions_shouldReturnSortingOptionsWithLanguageSpecificDefaultFieldFirst() {
         Collection<SearchSortingOption> options = searchBean.getSearchSortingOptions("en");
         String defaultSorting = DataManager.getInstance().getConfiguration().getDefaultSortField("en");
         assertEquals("SORT_TITLE_LANG_EN", defaultSorting);
@@ -1048,10 +1054,10 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#searchAdvanced(boolean)
-     * @verifies generate search string correctly
+     * @verifies generate internal search string from advanced search query items
      */
     @Test
-    void searchAdvanced_shouldGenerateSearchStringCorrectly() {
+    void searchAdvanced_shouldGenerateInternalSearchStringFromAdvancedSearchQueryItems() {
         Assertions.assertTrue(StringUtils.isEmpty(searchBean.getSearchStringInternal()));
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setField(SolrConstants.PI);
         searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0).setValue(PI_KLEIUNIV);
@@ -1075,20 +1081,20 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see SearchBean#searchToday()
-     * @verifies set search string correctly
+     * @verifies set search string starting with MONTHDAY field
      */
     @Test
-    void searchToday_shouldSetSearchStringCorrectly() {
+    void searchToday_shouldSetSearchStringStartingWithMONTHDAYField() {
         searchBean.searchToday();
         Assertions.assertTrue(searchBean.getSearchStringInternal().startsWith(SolrConstants.MONTHDAY));
     }
 
     /**
      * @see SearchBean#setActiveResultGroupName(String)
-     * @verifies select result group correctly
+     * @verifies store and return the given result group name
      */
     @Test
-    void setActiveResultGroupName_shouldSelectResultGroupCorrectly() {
+    void setActiveResultGroupName_shouldStoreAndReturnTheGivenResultGroupName() {
         SearchBean sb = new SearchBean();
         assertEquals("-", sb.getActiveResultGroupName());
 
@@ -1125,8 +1131,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#setActiveResultGroupName(String)
      * @verifies not change hitsPerPageSetterCalled value
+     * @see SearchBean#setHitsPerPageNoTrigger(int)
      */
     @Test
     void setHitsPerPageNoTrigger_shouldNotChangeHitsPerPageSetterCalledValue() {
@@ -1138,8 +1144,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#resetSearchResults()
-     * @verifies not throw NullPointerException under concurrent access
+     * @verifies not throw NPE when called concurrently
      */
     @Test
     void resetSearchResults_shouldNotThrowNPEWhenCalledConcurrently() throws Exception {
@@ -1177,8 +1182,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#getPreviousElement()
      * @verifies return null if currentHitIndex is negative
+     * @see SearchBean#getPreviousElement()
      */
     @Test
     void getPreviousElement_shouldReturnNullIfCurrentHitIndexIsNegative() throws Exception {
@@ -1187,8 +1192,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#getPreviousElement()
      * @verifies return null if currentSearch is null
+     * @see SearchBean#getPreviousElement()
      */
     @Test
     void getPreviousElement_shouldReturnNullIfCurrentSearchIsNull() throws Exception {
@@ -1198,8 +1203,8 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#getNextElement()
      * @verifies return null if currentHitIndex is negative
+     * @see SearchBean#getNextElement()
      */
     @Test
     void getNextElement_shouldReturnNullIfCurrentHitIndexIsNegative() throws Exception {
@@ -1208,13 +1213,172 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see SearchBean#getNextElement()
      * @verifies return null if currentSearch is null
+     * @see SearchBean#getNextElement()
      */
     @Test
     void getNextElement_shouldReturnNullIfCurrentSearchIsNull() throws Exception {
         searchBean.setCurrentHitIndex(5);
         Assertions.assertNull(searchBean.getCurrentSearch());
         Assertions.assertNull(searchBean.getNextElement());
+    }
+
+    /**
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     * @verifies reset CALENDAR_DAY query item when no dates are supplied
+     */
+    @Test
+    void searchInRecord_shouldResetCalendarDayQueryItemWhenNoDatesAreSupplied() throws Exception {
+        // Reproduces the leftover-restriction bug: a previous in-record search via the calendar
+        // TocView populated queryItems[2] with a YEARMONTHDAY range. The user then types a word
+        // into the search-in-current-item widget (no dates). Without the fix, the stale date
+        // range would silently survive and restrict the new search.
+        List<SearchQueryItem> items = Arrays.asList(new SearchQueryItem(), new SearchQueryItem(), new SearchQueryItem());
+        searchBean.getAdvancedSearchQueryGroup().injectItems(items);
+        items.get(2).setField(SolrConstants.CALENDAR_DAY);
+        items.get(2).setValue("11.01.1895");
+        items.get(2).setValue2("31.12.1895");
+
+        searchBean.searchInRecord("PI_TOPSTRUCT", "PPN123");
+
+        Assertions.assertNull(items.get(2).getField());
+        Assertions.assertNull(items.get(2).getValue());
+        Assertions.assertNull(items.get(2).getValue2());
+    }
+
+    /**
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     * @verifies preserve freshly typed search term when no dates are supplied
+     */
+    @Test
+    void searchInRecord_shouldPreserveFreshlyTypedSearchTermWhenNoDatesAreSupplied() throws Exception {
+        // The widget's input field is bound to queryItems[1].value, so the freshly typed term
+        // is already there when the action fires. The reset must not wipe it.
+        List<SearchQueryItem> items = Arrays.asList(new SearchQueryItem(), new SearchQueryItem(), new SearchQueryItem());
+        searchBean.getAdvancedSearchQueryGroup().injectItems(items);
+        items.get(1).setValue("vaduz");
+
+        searchBean.searchInRecord("PI_TOPSTRUCT", "PPN789");
+
+        Assertions.assertEquals("vaduz", items.get(1).getValue());
+        Assertions.assertEquals(SearchHelper.SEARCH_FILTER_ALL.getField(), items.get(1).getField());
+    }
+
+    /**
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     * @verifies populate CALENDAR_DAY query item when both dates are supplied
+     */
+    @Test
+    void searchInRecord_shouldPopulateCalendarDayQueryItemWhenBothDatesAreSupplied() throws Exception {
+        // Calendar TocView path: dates are passed explicitly. The reset must not eliminate them
+        // before they are written back into queryItems[2].
+        List<SearchQueryItem> items = Arrays.asList(new SearchQueryItem(), new SearchQueryItem(), new SearchQueryItem());
+        searchBean.getAdvancedSearchQueryGroup().injectItems(items);
+
+        searchBean.searchInRecord("PI_ANCHOR", "PPN456", "11.01.1895", "31.12.1895");
+
+        Assertions.assertEquals(SolrConstants.CALENDAR_DAY, items.get(2).getField());
+        Assertions.assertEquals("11.01.1895", items.get(2).getValue());
+        Assertions.assertEquals("31.12.1895", items.get(2).getValue2());
+        Assertions.assertEquals("PI_ANCHOR", items.get(0).getField());
+        Assertions.assertEquals("PPN456", items.get(0).getValue());
+    }
+
+    /**
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     * @verifies preserve freshly typed search term when called with dates from the calendar TocView
+     */
+    @Test
+    void searchInRecord_shouldPreserveFreshlyTypedSearchTermWhenCalledWithDatesFromTheCalendarTocView() throws Exception {
+        // The calendar TocView DOES have an input field bound to queryItems[1].value
+        // (see calendarTocView.xhtml → newspaperSearchTerm). A user can combine a free-text
+        // term with a date range, so the term must survive the reset just like in the widget path.
+        List<SearchQueryItem> items = Arrays.asList(new SearchQueryItem(), new SearchQueryItem(), new SearchQueryItem());
+        searchBean.getAdvancedSearchQueryGroup().injectItems(items);
+        items.get(1).setValue("vaduz");
+
+        searchBean.searchInRecord("PI_ANCHOR", "PPN456", "11.01.2021", "23.05.2021");
+
+        Assertions.assertEquals("vaduz", items.get(1).getValue());
+        Assertions.assertEquals(SolrConstants.CALENDAR_DAY, items.get(2).getField());
+    }
+
+    /**
+     * @verifies set advancedSearchOrigin with pi label and docstrct from active document
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     */
+    @Test
+    void searchInRecord_shouldSetAdvancedSearchOriginWithRecordData() {
+        try (MockedStatic<BeanUtils> mockedBeanUtils = mockStatic(BeanUtils.class)) {
+            mockedBeanUtils.when(BeanUtils::getLocale).thenReturn(Locale.ENGLISH);
+            searchBean.resetAdvancedSearchParameters();
+
+            ActiveDocumentBean adb = mock(ActiveDocumentBean.class);
+            ViewManager vm = mock(ViewManager.class);
+            StructElement se = mock(StructElement.class);
+            when(adb.getViewManager()).thenReturn(vm);
+            when(vm.getTopStructElement()).thenReturn(se);
+            when(se.getLabel()).thenReturn("Test Record");
+            when(se.getDocStructType()).thenReturn("Monograph");
+            mockedBeanUtils.when(BeanUtils::getActiveDocumentBean).thenReturn(adb);
+
+            searchBean.searchInRecord("PI_TOPSTRUCT", "PI_001", null, null);
+
+            AdvancedSearchOrigin origin = searchBean.getAdvancedSearchOrigin();
+            Assertions.assertNotNull(origin);
+            Assertions.assertEquals("PI_001", origin.getPi());
+            Assertions.assertTrue(origin.isRecordOrigin());
+        }
+    }
+
+    /**
+     * @verifies set advancedSearchOrigin from cms page when current page is a cms page
+     * @see SearchBean#executeSearch()
+     */
+    @Test
+    void executeSearch_shouldSetAdvancedSearchOriginWhenCurrentPageIsCmsPage() throws Exception {
+        CMSPage page = new CMSPage();
+        page.setId(42L);
+
+        NavigationHelper navHelper = mock(NavigationHelper.class);
+        when(navHelper.isCmsPage()).thenReturn(true);
+        when(navHelper.getCurrentCMSPage()).thenReturn(page);
+        when(navHelper.getSubThemeDiscriminatorQuerySuffix()).thenReturn("");
+        when(navHelper.getLocale()).thenReturn(Locale.ENGLISH);
+        searchBean.setNavigationHelper(navHelper);
+
+        searchBean.executeSearch();
+
+        AdvancedSearchOrigin origin = searchBean.getAdvancedSearchOrigin();
+        Assertions.assertNotNull(origin);
+        Assertions.assertEquals(42L, origin.getCmsPageId());
+        Assertions.assertTrue(origin.isCmsPageOrigin());
+    }
+
+    /**
+     * @verifies clear advancedSearchOrigin
+     * @see SearchBean#resetSearchParameters()
+     */
+    @Test
+    void resetSearchParameters_shouldClearAdvancedSearchOrigin() throws Exception {
+        CMSPage page = new CMSPage();
+        page.setId(42L);
+
+        NavigationHelper navHelper = mock(NavigationHelper.class);
+        when(navHelper.isCmsPage()).thenReturn(true);
+        when(navHelper.getCurrentCMSPage()).thenReturn(page);
+        when(navHelper.getSubThemeDiscriminatorQuerySuffix()).thenReturn("");
+        when(navHelper.getLocale()).thenReturn(Locale.ENGLISH);
+        searchBean.setNavigationHelper(navHelper);
+
+        searchBean.executeSearch();
+        Assertions.assertNotNull(searchBean.getAdvancedSearchOrigin());
+
+        try (MockedStatic<BeanUtils> mockedBeanUtils = mockStatic(BeanUtils.class)) {
+            mockedBeanUtils.when(BeanUtils::getLocale).thenReturn(Locale.ENGLISH);
+            searchBean.resetSearchParameters();
+        }
+
+        Assertions.assertNull(searchBean.getAdvancedSearchOrigin());
     }
 }

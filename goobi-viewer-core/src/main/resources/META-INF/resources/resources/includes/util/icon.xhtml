@@ -17,12 +17,17 @@
         name="wrapperClass"
         value="icon-wrapper#{not empty styleClass ? ' '.concat(styleClass) : ''}" />
 
-    <h:panelGroup
-        styleClass="#{wrapperClass}">
-        <f:passThroughAttribute name="aria-hidden" value="#{empty ariaLabel ? 'true' : null}" />
-        <f:passThroughAttribute name="role"        value="#{not empty ariaLabel ? 'img' : null}" />
-        <f:passThroughAttribute name="aria-label"  value="#{not empty ariaLabel ? ariaLabel : null}" />
-        <svg 
+    <h:panelGroup styleClass="#{wrapperClass}">
+        <f:passThroughAttribute
+            name="aria-hidden"
+            value="#{empty ariaLabel ? 'true' : null}" />
+        <f:passThroughAttribute
+            name="role"
+            value="#{not empty ariaLabel ? 'img' : null}" />
+        <f:passThroughAttribute
+            name="aria-label"
+            value="#{not empty ariaLabel ? ariaLabel : null}" />
+        <svg
             class="icon-svg #{svgClass}"
             aria-hidden="true"
             focusable="false">

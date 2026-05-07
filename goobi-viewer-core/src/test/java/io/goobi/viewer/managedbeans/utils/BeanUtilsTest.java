@@ -48,9 +48,10 @@ class BeanUtilsTest {
      * <p>
      * With .getClass().equals(clazz) this FAILS because ProxyBean.class != ParentBean.class.
      * With clazz.isInstance(value) it correctly detects the subclass.
+     * @verifies return subclass stored under internal weld key
      */
     @Test
-    void findInstanceInSessionAttributes_returnsSubclassStoredUnderInternalWeldKey() {
+    void findInstanceInSessionAttributes_shouldReturnSubclassStoredUnderInternalWeldKey() {
         ProxyBean weldProxy = new ProxyBean();
 
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -66,9 +67,10 @@ class BeanUtilsTest {
      * Fix 2: getBeanFromSession must find an instance when the direct attribute lookup
      * returns null (Weld does not store under the @Named name) but the instance exists
      * as a subclass under an internal key.
+     * @verifies return subclass stored under internal key when direct lookup returns null
      */
     @Test
-    void getBeanFromSession_findsSubclassWhenDirectLookupReturnsNull() {
+    void getBeanFromSession_shouldReturnSubclassStoredUnderInternalKeyWhenDirectLookupReturnsNull() {
         ProxyBean weldProxy = new ProxyBean();
 
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -84,9 +86,10 @@ class BeanUtilsTest {
 
     /**
      * Sanity check: an exact class match must still work after the fix.
+     * @verifies return exact class match
      */
     @Test
-    void findInstanceInSessionAttributes_returnsExactClassMatch() {
+    void findInstanceInSessionAttributes_shouldReturnExactClassMatch() {
         ParentBean bean = new ParentBean();
 
         HttpSession session = Mockito.mock(HttpSession.class);
@@ -100,9 +103,10 @@ class BeanUtilsTest {
 
     /**
      * Sanity check: a completely unrelated class must NOT be returned.
+     * @verifies not return unrelated class
      */
     @Test
-    void findInstanceInSessionAttributes_doesNotReturnUnrelatedClass() {
+    void findInstanceInSessionAttributes_shouldNotReturnUnrelatedClass() {
         Object unrelated = "just a string";
 
         HttpSession session = Mockito.mock(HttpSession.class);

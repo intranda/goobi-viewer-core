@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.net.URI;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -72,7 +73,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
@@ -267,7 +267,11 @@ public class MessageQueueManager {
             return false;
         }
         try {
-            broker = BrokerFactory.createBroker("xbean:" + PathConverter.toURI(this.config.getConfigFilePath().toAbsolutePath()).toString(), false);
+            // ActiveMQ 6.2.5+ rejects file:// URIs as "remote-file" in its XBean loader (default allowed protocols: "file,classpath").
+            // Pass the absolute path directly as the xbean scheme-specific-part; the URI(scheme, ssp, fragment) constructor
+            // handles any necessary character encoding, and Spring resolves it to a local FileSystemResource.
+            URI xbeanUri = new URI("xbean", this.config.getConfigFilePath().toAbsolutePath().toString(), null);
+            broker = BrokerFactory.createBroker(xbeanUri.toString(), false);
             broker.setUseJmx(true);
             broker.start();
 

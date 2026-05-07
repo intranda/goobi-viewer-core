@@ -154,7 +154,8 @@ public abstract class AbstractPageLoader implements IPageLoader {
                 || (pageNosToLoad.isEmpty() && numPages < DataManager.getInstance().getConfiguration().getPageLoaderThreshold())) {
             return new EagerPageLoader(topStructElement);
         }
-        logger.debug("Record has {} pages, using a lean page loader to limit memory usage.", numPages);
+        // Log format adjusted to start with the PI for easier grep/log filtering
+        logger.debug("PI: '{}', {} pages, using LeanPageLoader to limit memory usage.", topStructElement.getPi(), numPages);
         return new LeanPageLoader(topStructElement, numPages);
     }
 
@@ -163,10 +164,10 @@ public abstract class AbstractPageLoader implements IPageLoader {
      *
      * @param format label format string with placeholders such as {numpages}
      * @param locale locale used to resolve message key placeholders
-     * @should replace numpages correctly
-     * @should replace message keys correctly
      * @return the label format string with static placeholders resolved
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should replace numpages placeholder with actual page count in label format
+     * @should replace {msg.key} placeholders with translated message values in template
      */
     protected String buildPageLabelTemplate(String format, Locale locale) throws IndexUnreachableException {
         if (format == null) {
@@ -397,8 +398,8 @@ public abstract class AbstractPageLoader implements IPageLoader {
      * @param nextPageNo Optional next page number
      * @param nextOderLabel Optional next page label
      * @return {@link SelectItem}
-     * @should construct single page item correctly
-     * @should construct double page item correctly
+     * @should set label from order and orderlabel template and value from order for single page
+     * @should combine both page orders and labels with dash separator for double page item
      */
     protected static SelectPageItem buildPageSelectItem(String labelTemplate, int pageNo, String orderLabel, Integer nextPageNo,
             String nextOderLabel) {

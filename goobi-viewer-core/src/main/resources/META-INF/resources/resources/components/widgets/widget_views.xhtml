@@ -61,8 +61,7 @@
                 </div>
             </ui:fragment>
 
-            <div
-                class="widget__body widget-views__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'views') ? '-collapsed' : ''}">
+            <div class="widget__body widget-views__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'views') ? '-collapsed' : ''}">
                 <h:form
                     prependId="false"
                     id="widgetViewsForm"
@@ -179,8 +178,7 @@
                             visibility-class="widget-element"
                             rendered="#{configurationBean.sidebarFulltextLinkVisible and displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
                             <li class="#{navigationHelper.currentPage == 'fulltext' ? 'active' : ''}">
-                                <h:outputLink
-                                    value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
+                                <h:outputLink value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
                                     <h:outputText value="#{msg.fulltext}" />
                                     <f:passThroughAttribute
                                         name="aria-label"
@@ -196,8 +194,7 @@
                             visibility-class="widget-element"
                             value="#{textBean.getRecordLanguages(activeDocumentBean.viewManager.topStructElement)}">
                             <li class="#{navigationHelper.currentPage == 'fulltext' and activeDocumentBean.selectedRecordLanguage3 == lang ? 'active' : ''}">
-                                <h:outputLink
-                                    value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{lang}/">
+                                <h:outputLink value="#{navigationHelper.fulltextActiveUrl}/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/#{lang}/">
                                     <h:outputText value="#{msg.fulltext}: #{msg[lang]}" />
                                     <f:passThroughAttribute
                                         name="aria-label"

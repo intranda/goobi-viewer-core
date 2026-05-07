@@ -572,6 +572,7 @@ public final class NetTools {
      *
      * @param request incoming HTTP servlet request to inspect
      * @return the resolved remote IP address of the client
+     * @should parse ip address
      */
     public static String getIpAddress(HttpServletRequest request) {
         String address = ADDRESS_LOCALHOST_IPV4;
@@ -601,7 +602,7 @@ public final class NetTools {
      *
      * @param address IP address
      * @return the first IP address from a comma-separated list, or the entire string if it contains only one address
-     * @should filter multiple addresses correctly
+     * @should return only the first IP address from a comma-separated list
      */
     protected static String parseMultipleIpAddresses(final String address) {
         if (address == null) {
@@ -626,7 +627,7 @@ public final class NetTools {
      *
      * @param email email address to scramble
      * @return Scrambled email address
-     * @should modify string correctly
+     * @should replace domain middle part with asterisks keeping first three and last three characters
      */
     public static String scrambleEmailAddress(String email) {
         if (StringUtils.isEmpty(email)) {
@@ -652,7 +653,7 @@ public final class NetTools {
      *
      * @param address IP address
      * @return Scrambled IP address
-     * @should modify string correctly
+     * @should replace last two octets of IP address with X
      */
     public static String scrambleIpAddress(String address) {
         if (StringUtils.isEmpty(address)) {
@@ -688,7 +689,7 @@ public final class NetTools {
      * @param rootUrl base URL of the viewer application
      * @param webApiToken authentication token for the web API
      * @return Generated URL
-     * @should build url correctly
+     * @should compose cache API URL with correct query params for each cache type
      */
     public static String buildClearCacheUrl(String mode, String pi, String rootUrl, String webApiToken) {
         if (mode == null) {

@@ -58,7 +58,7 @@ public class RecordLockManager {
      * @param limit Optional number of concurrent views for the record
      * @return a {@link LockRecordResult}, indicating that either a lock has been set, the lock limit was exceeded or that no action was necessary
      * @throws IllegalArgumentException if the given pi is null
-     * @should add record lock to map correctly
+     * @should return RECORD_LOCKED and store a lock entry with the given PI and session ID
      * @should do nothing if limit null
      * @should do nothing if session id already in list
      */

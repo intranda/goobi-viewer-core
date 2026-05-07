@@ -135,6 +135,7 @@ public class DataRetriever {
      * @param solrField Solr field used to store the collection hierarchy
      * @return List<CollectionResult> (immutable!)
      * @throws IndexUnreachableException
+      * @should get top collections
      */
     public List<CollectionResult> getTopLevelCollections(String solrField) throws IndexUnreachableException {
         String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(solrField);
@@ -154,6 +155,7 @@ public class DataRetriever {
      * @param collectionName name of the parent collection whose children to retrieve
      * @return List<CollectionResult> (immutable!)
      * @throws IndexUnreachableException
+     * @should return non empty collection for given input
      */
     public List<CollectionResult> getChildCollections(String solrField, String collectionName) throws IndexUnreachableException {
         String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(solrField);
@@ -179,6 +181,7 @@ public class DataRetriever {
      * @return List<StructElement> (immutable!)
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should return non empty collection for given input
      */
     public List<StructElement> getContainedRecords(String solrField, String collectionName) throws IndexUnreachableException, PresentationException {
         String query = "+{field}:{collection} +(ISWORK:* ISANCHOR:*)".replace("{field}", solrField).replace("{collection}", collectionName);

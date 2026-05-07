@@ -108,8 +108,8 @@ public class Citation {
     /**
      * @param outputFormat the CSL output format (e.g. "html" or "text")
      * @return Citation string
-     * @should return apa html citation correctly
-     * @should return apa html plaintext correctly
+     * @should return APA-style HTML citation containing italic title and year
+     * @should return APA-style plaintext citation with author, year, and title
      */
     public String getCitationString(String outputFormat) {
         CSLItemData itemData = itemDataProvider.addItemData(id, fields, type);

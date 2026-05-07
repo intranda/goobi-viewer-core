@@ -31,7 +31,6 @@ import io.goobi.viewer.model.security.License;
 class LicenseTest {
 
     /**
-     * @see License#isValid()
      * @verifies return correct value
      */
     @Test

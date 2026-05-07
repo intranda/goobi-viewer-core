@@ -145,6 +145,8 @@ public class TaskManager {
     /**
      * Shuts down the internal thread pool. Attempts to stop running tasks; waits up to 5 seconds
      * for threads to terminate. Should be called from the servlet context listener on undeploy.
+     * @should stop the executor service
+     * @should stop executor service
      */
     public void shutdown() {
         executorService.shutdownNow();

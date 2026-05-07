@@ -44,27 +44,39 @@ class ImageViewConditionTest {
         condition = new ViewAttributes(viewManager, pageType);
     }
 
+    /**
+     * @verifies match when mime type and page count both satisfied
+     */
     @Test
-    public void testMimeTypeAndPageCount() throws ConfigurationException {
+    public void matchesConfiguration_shouldMatchWhenMimeTypeAndPageCountBothSatisfied() throws ConfigurationException {
         XMLConfiguration node = loadConfig("<condition><mimeType>image/jpeg</mimeType><pageCount>[10,20]</pageCount></condition>");
         Assertions.assertTrue(condition.matchesConfiguration(node));
     }
 
+    /**
+     * @verifies match when view and collection both satisfied
+     */
     @Test
-    public void testPageTypeAndCollection() throws ConfigurationException {
+    public void matchesConfiguration_shouldMatchWhenViewAndCollectionBothSatisfied() throws ConfigurationException {
         XMLConfiguration node =
                 loadConfig("<condition><view>viewFullscreen</view><collection>dc.image</collection><collection>dc.pdf</collection></condition>");
         Assertions.assertTrue(condition.matchesConfiguration(node));
     }
 
+    /**
+     * @verifies match when view and doc type both satisfied
+     */
     @Test
-    public void testPageTypeAndDocType() throws ConfigurationException {
+    public void matchesConfiguration_shouldMatchWhenViewAndDocTypeBothSatisfied() throws ConfigurationException {
         XMLConfiguration node = loadConfig("<condition><view>viewFullscreen</view><docType>volume</docType></condition>");
         Assertions.assertTrue(condition.matchesConfiguration(node));
     }
 
+    /**
+     * @verifies match when condition is empty
+     */
     @Test
-    public void testNoCondition() throws ConfigurationException {
+    public void matchesConfiguration_shouldMatchWhenConditionIsEmpty() throws ConfigurationException {
         XMLConfiguration node = loadConfig("<condition></condition>");
         Assertions.assertTrue(condition.matchesConfiguration(node));
     }

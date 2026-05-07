@@ -97,15 +97,14 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * JSF session-scoped backing bean providing navigation state, URL building, and breadcrumb
- * tracking for the viewer frontend. Initialised via {@code @PostConstruct init()} which resolves
- * the user's locale from the current JSF view root and seeds the status map with default values.
+ * JSF session-scoped backing bean providing navigation state, URL building, and breadcrumb tracking for the viewer frontend. Initialised via
+ * {@code @PostConstruct init()} which resolves the user's locale from the current JSF view root and seeds the status map with default values.
  *
- * <p><b>Lifecycle:</b> Created once per HTTP session; survives across page navigations and is
- * destroyed when the session expires.
+ * <p>
+ * <b>Lifecycle:</b> Created once per HTTP session; survives across page navigations and is destroyed when the session expires.
  *
- * <p><b>Thread safety:</b> Not explicitly synchronised; all state is expected to be accessed
- * from the JSF request thread of the owning session only.
+ * <p>
+ * <b>Thread safety:</b> Not explicitly synchronised; all state is expected to be accessed from the JSF request thread of the owning session only.
  */
 @Named
 @SessionScoped
@@ -231,6 +230,7 @@ public class NavigationHelper implements Serializable {
      * searchPage.
      *
      * @return the search page name after setting it as the current navigation page
+     * @should return expected value for given input
      */
     public String searchPage() {
         this.setCurrentPage(SEARCH_PAGE);
@@ -279,6 +279,7 @@ public class NavigationHelper implements Serializable {
      * setCmsPage.
      *
      * @param isCmsPage true if the current page is a CMS page
+     * @should return expected value for given input
      */
     public void setCmsPage(boolean isCmsPage) {
         this.isCmsPage = isCmsPage;
@@ -305,9 +306,9 @@ public class NavigationHelper implements Serializable {
     /**
      * Sets the CMS page as the current page for navigation purposes.
      *
-     * <p>Skips execution on JSF postback requests to avoid triggering during AJAX calls,
-     * which could conflict with parallel record loads. This mirrors the former
-     * {@code <f:viewAction onPostback="false">} behavior that was declared in the view.
+     * <p>
+     * Skips execution on JSF postback requests to avoid triggering during AJAX calls, which could conflict with parallel record loads. This mirrors
+     * the former {@code <f:viewAction onPostback="false">} behavior that was declared in the view.
      *
      * @param cmsPage CMS page to set as current page
      */
@@ -333,6 +334,7 @@ public class NavigationHelper implements Serializable {
      * Setter for the field <code>currentPage</code>.
      *
      * @param currentPage page name to set as current
+     * @should return expected value for given input
      */
     public void setCurrentPage(String currentPage) {
         logger.trace("setCurrentPage: {}", currentPage);
@@ -340,13 +342,17 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Sets the current page for the error page, mapping generic error types (general, general_no_url)
-     * to the "error" page name so that the browser title shows "Fehler" instead of unrelated translations.
+     * Sets the current page for the error page, mapping generic error types (general, general_no_url) to the "error" page name so that the browser
+     * title shows "Fehler" instead of unrelated translations.
      *
-     * <p>Specific error types (e.g. recordNotFound, download) are passed through directly so that
-     * their own message keys are used as the page title.
+     * <p>
+     * Specific error types (e.g. recordNotFound, download) are passed through directly so that their own message keys are used as the page title.
      *
      * @param errorType the error type string set by the exception handler; may be null
+     * @should map null and generic error types to error
+     * @should pass through specific error types unchanged
+     * @should map generic types to error
+     * @should pass through specific error types
      */
     public void setCurrentPageForError(String errorType) {
         if (errorType == null || "general".equals(errorType) || "general_no_url".equals(errorType)) {
@@ -416,7 +422,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the manually selected view type (will be used for search result browsing, if set).
      *
-     * @should return value correctly
+     * @should return preferred view value from status map
      * @return the manually selected view type name, or null if none has been set
      */
     public String getPreferredView() {
@@ -426,7 +432,7 @@ public class NavigationHelper implements Serializable {
     /**
      * Sets the manually selected view type (will be used for search result browsing, if set).
      *
-     * @should set value correctly
+     * @should store given value under preferred view key in status map
      * @param preferredView view type name to set as preferred
      */
     public void setPreferredView(String preferredView) {
@@ -553,6 +559,7 @@ public class NavigationHelper implements Serializable {
      * @param pageType page type for which the breadcrumb hierarchy is built
      * @param labels optional label overrides for each breadcrumb level
      * @return List<LabeledLink>
+     * @should return collection with 3 elements
      */
     protected List<LabeledLink> createAdminBreadcrumbs(PageType pageType, List<List<String>> labels) {
         PageType breadcrumbType = pageType;
@@ -635,7 +642,7 @@ public class NavigationHelper implements Serializable {
      * getCurrentView.
      *
      * @return the name of the currently selected content view
-     * @should return value correctly
+     * @should return current view value from status map
      */
     public String getCurrentView() {
         return statusMap.get(KEY_CURRENT_VIEW);
@@ -645,7 +652,7 @@ public class NavigationHelper implements Serializable {
      * Sets the currently selected content view name.
      *
      * @param currentView view name to set as current
-     * @should set value correctly
+     * @should store given value under current view key in status map
      */
     public void setCurrentView(String currentView) {
         logger.trace("{}: {}", KEY_CURRENT_VIEW, currentView);
@@ -989,7 +996,7 @@ public class NavigationHelper implements Serializable {
      * setMenuPage.
      *
      * @param page menu page name to store in the status map
-     * @should set value correctly
+     * @should store given value under menu page key in status map
      */
     public void setMenuPage(String page) {
         statusMap.put(KEY_MENU_PAGE, page);
@@ -998,7 +1005,7 @@ public class NavigationHelper implements Serializable {
     /**
      * getMenuPage.
      *
-     * @should return value correctly
+     * @should return menu page value from status map
      * @return the currently active menu page name stored in the status map
      */
     public String getMenuPage() {
@@ -1032,6 +1039,7 @@ public class NavigationHelper implements Serializable {
      *
      * @return the subtheme name determined from current cmsPage or current document. If {@link Configuration#getSubthemeDiscriminatorField} is blank,
      *         always return an empty string
+     * @should return empty string if viewManager is null
      */
     public String determineCurrentSubThemeDiscriminatorValue() {
         // Automatically set the sub-theme discriminator value to the
@@ -1057,6 +1065,14 @@ public class NavigationHelper implements Serializable {
         return subThemeDiscriminatorValue;
     }
 
+    public CMSPage getCurrentCMSPage() {
+        if (cmsBean != null) {
+            return cmsBean.getCurrentPage();
+        } else {
+            return null;
+        }
+    }
+
     public void setSubThemeDiscriminatorValue() {
         String subThemeDiscriminatorValue = determineCurrentSubThemeDiscriminatorValue();
         setSubThemeDiscriminatorValue(subThemeDiscriminatorValue);
@@ -1066,7 +1082,7 @@ public class NavigationHelper implements Serializable {
      * setSubThemeDiscriminatorValue.
      *
      * @param subThemeDiscriminatorValue discriminator value identifying the active sub-theme
-     * @should set value correctly
+     * @should store discriminator value in status map when CMS page is set
      */
     public void setSubThemeDiscriminatorValue(String subThemeDiscriminatorValue) {
         logger.trace("setSubThemeDiscriminatorValue: {}", subThemeDiscriminatorValue);
@@ -1102,6 +1118,28 @@ public class NavigationHelper implements Serializable {
     /**
      * resetTheme.
      */
+    public void applySubThemeFromUrl(String subTheme) {
+        setSubThemeDiscriminatorValue(StringUtils.defaultString(subTheme));
+    }
+
+    public String getSubThemeQueryParam() {
+        try {
+            String value = getSubThemeDiscriminatorValue();
+            return getSubThemeQueryParam(value);
+        } catch (IndexUnreachableException e) {
+            logger.debug("Cannot read subtheme discriminator value: {}", e.getMessage());
+        }
+        return "";
+    }
+
+    public static String getSubThemeQueryParam(String subtheme) {
+        if (StringUtils.isNotBlank(subtheme) && !"-".equals(subtheme)) {
+            return "?subtheme=" + subtheme;
+        } else {
+            return "";
+        }
+    }
+
     public void resetTheme() {
         logger.trace("resetTheme");
         // Resetting the current page here would result in the current record being flushed, which is bad for CMS overview pages
@@ -1262,7 +1300,7 @@ public class NavigationHelper implements Serializable {
      * @param anchorOrGroup true if the record is an anchor or group
      * @param hasImages true if the record has image pages
      * @return Record URL
-     * @should construct url correctly
+     * @should return /object/{PI}/ URL for monograph record type
      */
     public String getRecordUrl(String pi, String docStructType, int order, boolean anchorOrGroup, boolean hasImages) {
         PageType pageType = PageType.determinePageType(docStructType, "image/tiff", anchorOrGroup, hasImages, false);
@@ -1440,7 +1478,7 @@ public class NavigationHelper implements Serializable {
      * setSelectedNewsArticle.
      *
      * @param art identifier or key of the selected news article
-     * @should set value correctly
+     * @should store given value under selected news article key in status map
      */
     public void setSelectedNewsArticle(String art) {
         statusMap.put(KEY_SELECTED_NEWS_ARTICLE, art);
@@ -1449,7 +1487,7 @@ public class NavigationHelper implements Serializable {
     /**
      * getSelectedNewsArticle.
      *
-     * @should return value correctly
+     * @should return selected news article value from status map
      * @return the identifier of the currently selected news article stored in the status map
      */
     public String getSelectedNewsArticle() {
@@ -1508,7 +1546,7 @@ public class NavigationHelper implements Serializable {
      * getStatusMapValue.
      *
      * @param key status map key to look up
-     * @should return value correctly
+     * @should return value stored under given key in status map
      * @return the value associated with the given key in the navigation status map
      */
     public String getStatusMapValue(String key) {
@@ -1520,7 +1558,7 @@ public class NavigationHelper implements Serializable {
      *
      * @param key status map key to set
      * @param value value to associate with the key
-     * @should set value correctly
+     * @should store given key-value pair in status map
      */
     public void setStatusMapValue(String key, String value) {
         statusMap.put(key, value);
@@ -1562,7 +1600,8 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the translation for the given <code>msgKey</code> and replaces all {i} placeholders with values from the given <code>params</code>.
      *
-     * <p>Does not carry out character escaping
+     * <p>
+     * Does not carry out character escaping
      *
      * @param msgKey Message key to translate
      * @param params One or more parameter values to replace the placeholders.
@@ -1646,8 +1685,13 @@ public class NavigationHelper implements Serializable {
      * @return the Solr query suffix for filtering by the current sub-theme discriminator value
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getSubThemeDiscriminatorQuerySuffix() throws IndexUnreachableException {
-        return SearchHelper.getDiscriminatorFieldFilterSuffix(this, DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+    public String getSubThemeDiscriminatorQuerySuffix() {
+        try {
+            return SearchHelper.getDiscriminatorFieldFilterSuffix(this, DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+        } catch (IndexUnreachableException e) {
+            logger.warn("Cannot determine subTheme", e);
+            return "";
+        }
     }
 
     /**
@@ -1920,9 +1964,9 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Resolves a list of licence icon names to their resource URIs, filtering out any icons whose resolved path is blank or a
-     * directory (trailing slash). This method is intended for use in Facelets templates that pass the result directly to
-     * {@code <ui:include>}, where an invalid path would cause a {@code TagAttributeException} at view-build time.
+     * Resolves a list of licence icon names to their resource URIs, filtering out any icons whose resolved path is blank or a directory (trailing
+     * slash). This method is intended for use in Facelets templates that pass the result directly to {@code <ui:include>}, where an invalid path
+     * would cause a {@code TagAttributeException} at view-build time.
      *
      * @param icons list of icon file names (e.g. "cc0.svg"); blank entries are ignored
      * @return ordered list of resolved resource URIs suitable for use as {@code <ui:include src="...">} values

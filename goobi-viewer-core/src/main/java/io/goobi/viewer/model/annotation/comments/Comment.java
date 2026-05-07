@@ -29,7 +29,7 @@ import de.intranda.api.annotation.wa.Motivation;
 import de.intranda.api.annotation.wa.TextualResource;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
@@ -103,8 +103,17 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
         return DataManager.getInstance().getSearchIndex().getHitCount(SolrConstants.PI + ":" + getTargetPI()) > 0;
     }
 
+    /**
+     * Returns the comment text sanitized for display.
+     *
+     * @return sanitized display text
+     * @should remove script tags from display text
+     */
     public String getDisplayText() {
-        return StringTools.stripJS(getContentString());
+        // Switched from regex-based StringTools.stripJS to HtmlSanitizer.cleanComment
+        // (Jsoup allowlist) so event-handler attributes and javascript: URIs are
+        // also neutralized — stripJS only stripped <script>/<svg> blocks.
+        return HtmlSanitizer.cleanComment(getContentString());
     }
 
     public String getText() {

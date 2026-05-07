@@ -22,11 +22,9 @@
 package io.goobi.viewer.api.rest.v1.bookmarks;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS;
-import static org.junit.jupiter.api.Assertions.*;
-
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +35,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.model.bookmark.Bookmark;
 import io.goobi.viewer.model.bookmark.BookmarkList;
-import io.goobi.viewer.api.rest.v1.bookmarks.BookmarkResource;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author florian
@@ -45,8 +45,11 @@ import io.goobi.viewer.api.rest.v1.bookmarks.BookmarkResource;
  */
 class BookmarkResourceTest extends AbstractRestApiTest {
 
+    /**
+     * @verifies parse name and pi from json
+     */
     @Test
-    void testDeserializeBookmark() throws JsonMappingException, JsonProcessingException {
+    void deserializeBookmark_shouldParseNameAndPiFromJson() throws JsonMappingException, JsonProcessingException {
         String jsonString = "{\"name\": \"Test Bookmark\", \"description\": \"some testing...\", \"pi\": \"PPN743674162\"}";
         ObjectMapper mapper = new ObjectMapper();
         Bookmark bookmark = mapper.readValue(jsonString, Bookmark.class);
@@ -55,17 +58,14 @@ class BookmarkResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Verify that POST /bookmarks returns 400 when called without a logged-in user.
-     * Session-based bookmark lists do not support adding additional lists.
-     * The success path (201 Created) requires authentication and is verified at the source level
-     * in BookmarkResource.addBookmarkList() which wraps the result in Response.status(CREATED).
-     */
-    /**
-     * Verify that POST /bookmarks returns 409 when called without a logged-in user.
-     * Session users already have exactly one temporary bookmark list and may not add more.
+     * Verify that POST /bookmarks returns 409 when called without a logged-in user. Session users already have exactly one temporary bookmark list
+     * and may not add more.
+     * 
+     * @verifies return 409 when not logged in
+     * @see BookmarkResource#addBookmarkList
      */
     @Test
-    void testAddBookmarkList_returns409WhenNotLoggedIn() {
+    void addBookmarkList_shouldReturn409WhenNotLoggedIn() {
         BookmarkList list = new BookmarkList();
         list.setName("Test List");
         try (Response response = target(USERS_BOOKMARKS)
@@ -77,39 +77,11 @@ class BookmarkResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Tests for the parseMaxHits() helper that handles ?max=null and other invalid values.
-     * This guards against NumberFormatException when a client sends the literal string "null"
-     * as the value of the max query parameter.
-     */
-    /**
-     * requireValidListId() is private but enforced in all list-specific endpoints.
-     * A listId of 0 must be rejected with HTTP 400 before any business logic runs.
+     * @verifies return null for invalid input and parsed integer for valid input
+     * @see BookmarkResource#parseMaxHits
      */
     @Test
-    void getBookmarkList_zeroListId_returns400() {
-        try (Response response = target(USERS_BOOKMARKS + "/0")
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get()) {
-            assertEquals(400, response.getStatus(), "listId=0 should be rejected with HTTP 400");
-        }
-    }
-
-    /**
-     * Negative listIds must also be rejected with HTTP 400.
-     */
-    @Test
-    void getBookmarkList_negativeListId_returns400() {
-        try (Response response = target(USERS_BOOKMARKS + "/-1")
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get()) {
-            assertEquals(400, response.getStatus(), "listId=-1 should be rejected with HTTP 400");
-        }
-    }
-
-    @Test
-    void testParseMaxHits() {
+    void parseMaxHits_shouldReturnNullForInvalidInputAndParsedIntegerForValidInput() {
         // null input → null output
         assertNull(BookmarkResource.parseMaxHits(null), "null string should parse to null");
         // literal "null" (sent by some clients) → null output

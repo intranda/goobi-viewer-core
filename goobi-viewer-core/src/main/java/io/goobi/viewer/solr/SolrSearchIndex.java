@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,7 +48,6 @@ import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.BaseHttpSolrClient.RemoteSolrException;
-import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.Http2SolrClient;
 import org.apache.solr.client.solrj.request.LukeRequest;
 import org.apache.solr.client.solrj.request.json.HeatmapFacetMap;
@@ -201,13 +199,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     static Http2SolrClient getNewHttp2SolrClient(String solrUrl) {
-        return new Http2SolrClient.Builder(solrUrl)
-                .withIdleTimeout(TIMEOUT_SO, TimeUnit.MILLISECONDS)
-                .withConnectionTimeout(TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
-                .withFollowRedirects(false)
-                .withRequestWriter(new BinaryRequestWriter())
-                // .allowCompression(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled())
-                .build();
+        return (Http2SolrClient) SolrTools.newSolrClient(solrUrl, TIMEOUT_SO);
     }
 
     /**
@@ -256,11 +248,11 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @return {@link org.apache.solr.client.solrj.response.QueryResponse}
      * @should return correct results
      * @should return correct number of rows
-     * @should sort results correctly
-     * @should facet results correctly
-     * @should filter fields correctly
+     * @should return results in descending DATECREATED order when sort field specified
+     * @should return only the requested field in each document when field list specified
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should include non null facet field with values when facet field list provided
      */
     public QueryResponse search(String query, int first, int rows, List<StringPair> sortFields, List<String> facetFields, String facetSort,
             List<String> fieldList, List<String> filterQueries, Map<String, String> params) throws PresentationException, IndexUnreachableException {
@@ -817,7 +809,6 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @should return value from map if available
-     * @should re-fetch from Solr after TTL expires
      */
     public String findDataRepositoryName(String pi) throws PresentationException, IndexUnreachableException {
         Long lastFetched = dataRepositoryTimestamps.get(pi);
@@ -834,7 +825,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      *
      * @param pi persistent identifier of the record
      * @param dataRepositoryName name of the data repository to associate with the record
-     * @should update value correctly
+     * @should store repository name for given PI replacing null with new value
      */
     public void updateDataRepositoryNames(String pi, String dataRepositoryName) {
         dataRepositoryNames.put(pi, dataRepositoryName);
@@ -898,9 +889,9 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @return the QueryResponse containing facets (and optional field statistics) without document results
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @should generate facets correctly
      * @should generate field statistics for every facet field if requested
      * @should not return any docs
+     * @should return non-null facet fields for CALENDAR_YEAR and CALENDAR_MONTH
      */
     public QueryResponse searchFacetsAndStatistics(String query, List<String> filterQueries, List<String> facetFields, int facetMinCount,
             boolean getFieldStatistics) throws PresentationException, IndexUnreachableException {
@@ -1068,6 +1059,8 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @return a list of all SOLR fields starting with "SORT_".
      * @throws org.apache.solr.client.solrj.SolrServerException if any.
      * @throws java.io.IOException if any.
+     * @should return cached list on second call
+     * @should return non empty list
      */
     public List<String> getAllSortFieldNames() throws SolrServerException, IOException {
         // Return cached list to avoid repeated Luke requests on every call
@@ -1140,7 +1133,9 @@ public class SolrSearchIndex implements java.io.Closeable {
     public List<DisplayUserGeneratedContent> getDisplayUserGeneratedContentsForRecord(String pi)
             throws PresentationException, IndexUnreachableException {
         if (StringUtils.isEmpty(pi)) {
-            logger.warn("Cannot fetch user generated content, no PI value given.");
+            // Include a caller stacktrace so unexpected callers (plugins/reflection/new usages)
+            // can be located; the only in-tree caller now pre-checks for empty PI
+            logger.warn("Cannot fetch user generated content, no PI value given.", new Throwable("caller stack"));
             return Collections.emptyList();
         }
 
@@ -1337,6 +1332,7 @@ public class SolrSearchIndex implements java.io.Closeable {
      * @param gridLevel heatmap grid level controlling resolution
      * @return String
      * @throws IndexUnreachableException
+     * @should return non null result
      */
     public String getHeatMap(String solrField, String wktRegion, String query, String filterQuery, Integer gridLevel)
             throws IndexUnreachableException {

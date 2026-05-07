@@ -101,11 +101,10 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#search(String,int,int,List,boolean,List,String,List)
-     * @verifies sort results correctly
+     * @verifies return results in descending DATECREATED order when sort field specified
      */
     @Test
-    void search_shouldSortResultsCorrectly() throws Exception {
+    void search_shouldReturnResultsInDescendingDATECREATEDOrderWhenSortFieldSpecified() throws Exception {
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
                 .search(SolrConstants.PI + ":*", 0, 10, Collections.singletonList(new StringPair(SolrConstants.DATECREATED, "desc")), null, null);
@@ -122,11 +121,10 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#search(String,int,int,List,boolean,List,String,List)
-     * @verifies facet results correctly
+     * @verifies include non null facet field with values when facet field list provided
      */
     @Test
-    void search_shouldFacetResultsCorrectly() throws Exception {
+    void search_shouldIncludeNonNullFacetFieldWithValuesWhenFacetFieldListProvided() throws Exception {
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
                 .search(SolrConstants.PI + ":*", 0, 10, null, Collections.singletonList(SolrConstants.DC), null);
@@ -136,11 +134,10 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#search(String,int,int,List,boolean,List,String,List)
-     * @verifies filter fields correctly
+     * @verifies return only the requested field in each document when field list specified
      */
     @Test
-    void search_shouldFilterFieldsCorrectly() throws Exception {
+    void search_shouldReturnOnlyTheRequestedFieldInEachDocumentWhenFieldListSpecified() throws Exception {
         QueryResponse response = DataManager.getInstance()
                 .getSearchIndex()
                 .search(SolrConstants.PI + ":*", 0, 10, null, null, Collections.singletonList(SolrConstants.PI));
@@ -153,11 +150,10 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#searchFacetsAndStatistics(String,List,boolean)
-     * @verifies generate facets correctly
+     * @verifies return non-null facet fields for CALENDAR_YEAR and CALENDAR_MONTH
      */
     @Test
-    void searchFacetsAndStatistics_shouldGenerateFacetsCorrectly() throws Exception {
+    void searchFacetsAndStatistics_shouldReturnNonNullFacetFieldsForCALENDAR_YEARAndCALENDAR_MONTH() throws Exception {
         String[] facetFields = { SolrConstants.CALENDAR_YEAR, SolrConstants.CALENDAR_MONTH };
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
@@ -167,7 +163,6 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#searchFacetsAndStatistics(String,List,boolean)
      * @verifies generate field statistics for every facet field if requested
      */
     @Test
@@ -182,7 +177,6 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#searchFacetsAndStatistics(String,List,boolean)
      * @verifies not return any docs
      */
     @Test
@@ -204,7 +198,6 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#getFirstDoc(String,List)
      * @verifies return correct doc
      */
     @Test
@@ -222,7 +215,6 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#getDocumentByIddoc(long)
      * @verifies return correct doc
      */
     @Test
@@ -271,17 +263,16 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrSearchIndex#updateDataRepositoryNames(String,String)
-     * @verifies update value correctly
+     * @verifies store repository name for given PI replacing null with new value
      */
     @Test
-    void updateDataRepositoryNames_shouldUpdateValueCorrectly() {
+    void updateDataRepositoryNames_shouldStoreRepositoryNameForGivenPIReplacingNullWithNewValue() {
         Assertions.assertNull(DataManager.getInstance().getSearchIndex().getDataRepositoryNames().get("PPN123"));
         DataManager.getInstance().getSearchIndex().updateDataRepositoryNames("PPN123", "repo/a");
         Assertions.assertEquals("repo/a", DataManager.getInstance().getSearchIndex().getDataRepositoryNames().get("PPN123"));
     }
 
     /**
-     * @see SolrSearchIndex#getLabelValuesForFacetField(String,String,Set)
      * @verifies return correct values
      */
     @Test
@@ -297,8 +288,8 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @verifies return non empty list
      * @see SolrSearchIndex#getAllSortFieldNames()
-     * @verifies return non-empty list
      */
     @Test
     void getAllSortFieldNames_shouldReturnNonEmptyList() throws Exception {
@@ -308,8 +299,8 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see SolrSearchIndex#getAllSortFieldNames()
      * @verifies return cached list on second call
+     * @see SolrSearchIndex#getAllSortFieldNames()
      */
     @Test
     void getAllSortFieldNames_shouldReturnCachedListOnSecondCall() throws Exception {
@@ -320,8 +311,12 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
         Assertions.assertSame(first, second);
     }
 
+    /**
+     * @verifies return non null result
+     * @see SolrSearchIndex#getHeatMap(String, String, String, String, Integer)
+     */
     @Test
-    void test_getHeatMap() throws IndexUnreachableException {
+    void getHeatMap_shouldReturnNonNullResult() throws IndexUnreachableException {
 
         String world = "[\"-180 -90\" TO \"180 90\"]";
         String query = "*:*";

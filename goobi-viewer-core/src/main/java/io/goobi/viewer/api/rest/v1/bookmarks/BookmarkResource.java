@@ -36,34 +36,20 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_LIST_SHARED_RS
 import static io.goobi.viewer.api.rest.v1.ApiUrls.USERS_BOOKMARKS_PUBLIC;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import jakarta.ws.rs.BadRequestException;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PATCH;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.resourcebuilders.AbstractBookmarkResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.SessionBookmarkResourceBuilder;
@@ -87,6 +73,23 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * REST resource for managing user bookmark lists including creation, sharing, and export in multiple formats.
@@ -96,6 +99,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @Path(USERS_BOOKMARKS)
 @ViewerRestServiceBinding
 public class BookmarkResource {
+
+    private static final Logger logger = LogManager.getLogger(BookmarkResource.class);
 
     private AbstractBookmarkResourceBuilder builder;
     private HttpServletRequest servletRequest;
@@ -107,17 +112,33 @@ public class BookmarkResource {
     public BookmarkResource(@Context HttpServletRequest servletRequest, @Context HttpServletResponse servletResponse) {
         this.servletRequest = servletRequest;
         this.servletResponse = servletResponse;
-        UserBean bean = BeanUtils.getUserBeanFromSession(servletRequest.getSession());
-        if (bean != null) {
-            User currentUser = bean.getUser();
-            if (currentUser != null) {
-                builder = new UserBookmarkResourceBuilder(currentUser);
-            }
-        }
-        if (builder == null) {
+
+        User currentUser = getUser(servletRequest);
+        if (currentUser != null) {
+            builder = new UserBookmarkResourceBuilder(currentUser);
+        } else {
             HttpSession session = servletRequest.getSession();
             builder = new SessionBookmarkResourceBuilder(session);
         }
+    }
+
+    private User getUser(HttpServletRequest request) {
+        User user = null;
+        try {
+            user = UserLoggedInFilter.getUserToken(request)
+                    .filter(token -> !token.isExpired())
+                    .map(token -> token.getUser())
+                    .orElse(null);
+        } catch (DAOException e) {
+            logger.warn("Error getting user from authorization token", e);
+        }
+        if (user == null) {
+            UserBean bean = BeanUtils.getUserBeanFromSession(request.getSession());
+            if (bean != null) {
+                user = bean.getUser();
+            }
+        }
+        return user;
     }
 
     @GET
@@ -138,7 +159,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add a new bookmark list for the current user.")
-    @ApiResponse(responseCode = "201", description = "Bookmark list created successfully")
+    @ApiResponse(responseCode = "201", description = "Bookmark list created successfully, returns the new list")
     @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
     @ApiResponse(responseCode = "409", description = "Session users may only have one bookmark list")
     @ApiResponse(responseCode = "500", description = "Error querying database")
@@ -149,13 +170,18 @@ public class BookmarkResource {
         if (list == null) {
             throw new BadRequestException("Request body must not be null");
         }
-        SuccessMessage result;
+        BookmarkList created;
         if (StringUtils.isNotBlank(list.getName())) {
-            result = builder.addBookmarkList(list.getName());
+            created = builder.addBookmarkList(list.getName());
         } else {
-            result = builder.addBookmarkList();
+            created = builder.addBookmarkList();
         }
-        return Response.status(Response.Status.CREATED).entity(result).build();
+        Response.ResponseBuilder response = Response.status(Response.Status.CREATED).entity(created);
+        if (created.getId() != null) {
+            URI location = URI.create(urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_LIST).params(created.getId()).build());
+            response = response.location(location);
+        }
+        return response.build();
     }
 
     @GET
@@ -174,8 +200,6 @@ public class BookmarkResource {
             @Parameter(description = "The id of the bookmark list",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long id)
             throws DAOException, IOException, RestApiException {
-        // Enforce the schema minimum=1: listId=0 is technically parseable as Long but has no valid
-        // bookmark list associated and would silently return the session list instead.
         requireValidListId(id);
         return builder.getBookmarkListById(id);
     }
@@ -245,10 +269,11 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add bookmark to list. Only pi, LogId and order are used")
-    @ApiResponse(responseCode = "201", description = "Bookmark added; returns the updated bookmark list")
+    @ApiResponse(responseCode = "201", description = "Bookmark added; returns the created bookmark")
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID or bookmark data")
     @ApiResponse(responseCode = "404", description = "Bookmark list or record not found")
+    @ApiResponse(responseCode = "409", description = "Bookmark already exists in list")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     // Provide explicit content spec to avoid OpenAPI schema validation error ("Invalid requestBody definition").
     // type = "object" prevents schemathesis from sending primitives (e.g. the integer 0) as the request body.
@@ -262,10 +287,14 @@ public class BookmarkResource {
         if (item == null) {
             throw new BadRequestException("Request body must not be null");
         }
-        builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(),
+        Bookmark created = builder.addBookmarkToBookmarkList(id, item.getPi(), item.getLogId(),
                 Optional.ofNullable(item.getOrder()).map(Object::toString).orElse(null));
-        BookmarkList updatedList = builder.getBookmarkListById(id);
-        return Response.status(Response.Status.CREATED).entity(updatedList).build();
+        Response.ResponseBuilder response = Response.status(Response.Status.CREATED).entity(created);
+        if (created.getId() != null) {
+            URI location = URI.create(urls.path(ApiUrls.USERS_BOOKMARKS, ApiUrls.USERS_BOOKMARKS_ITEM).params(id, created.getId()).build());
+            response = response.location(location);
+        }
+        return response.build();
     }
 
     @GET
@@ -469,16 +498,19 @@ public class BookmarkResource {
     }
 
     /**
-     * Validates that the given bookmark list ID is at least 1.
+     * Validates that the given bookmark list ID is at least 1 if a user bookmarklist is requested
      *
-     * <p>The schema documents minimum=1, but JAX-RS does not enforce schema constraints server-side.
-     * Without this check, listId=0 silently returns the session list instead of a 400.
+     * <p>
+     * The schema documents minimum=1, but JAX-RS does not enforce schema constraints server-side. Without this check, listId=0 silently returns the
+     * session list instead of a 400.
      *
      * @param id the listId path parameter value
-     * @throws BadRequestException if id is null or less than 1
+     * @throws BadRequestException if id is null or less than 1 and {@link #builder} is no {@link SessionBookmarkResourceBuilder}
      */
     private void requireValidListId(Long id) {
-        if (id != null && id < 1) {
+        if (this.builder instanceof SessionBookmarkResourceBuilder) {
+            return;
+        } else if (id != null && id < 1) {
             throw new BadRequestException("Bookmark list ID must be at least 1, got: " + id);
         }
     }
@@ -486,9 +518,9 @@ public class BookmarkResource {
     /**
      * Parses the "max" query parameter string to an Integer.
      *
-     * <p>Returns null if the string is null, blank, the literal "null", or not a valid integer.
-     * This is needed because some clients send ?max=null (the string "null") which JAX-RS
-     * cannot auto-convert to Integer and would throw a NumberFormatException (HTTP 500).
+     * <p>
+     * Returns null if the string is null, blank, the literal "null", or not a valid integer. This is needed because some clients send ?max=null (the
+     * string "null") which JAX-RS cannot auto-convert to Integer and would throw a NumberFormatException (HTTP 500).
      *
      * @param maxStr the raw query parameter value
      * @return parsed Integer, or null if absent or invalid

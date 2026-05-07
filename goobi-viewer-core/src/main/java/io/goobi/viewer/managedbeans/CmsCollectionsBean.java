@@ -108,7 +108,6 @@ public class CmsCollectionsBean implements Serializable {
      * @return true if the if translations for the values of <code>solrField</code> are not or only partially translated; false if they are fully
      *         translated
      * @should return false if solrField not among configured translation groups
-     * @should return false if solrField values fully translated
      * @should return true if solrField values not or partially translated
      */
     public boolean isDisplayTranslationWidget() {
@@ -142,7 +141,6 @@ public class CmsCollectionsBean implements Serializable {
      * @return true if the if translations for the values of <code>solrField</code> and <code>solrFieldValue</code> are not or only partially
      *         translated; false if they are fully translated
      * @should return false if solrField not among configured translation groups
-     * @should return false if solrField values fully translated
      * @should return true if solrFieldValue not or partially translated
      */
     public boolean isDisplayTranslationWidgetEdit() {
@@ -620,7 +618,7 @@ public class CmsCollectionsBean implements Serializable {
     /**
      * Sets the value of <code>imageMode</code> depending on the properties of <code>currentCollection</code>.
      *
-     * @should set imageMode correctly
+     * @should set image mode to PI when representative work exists, NONE when absent, and IMAGE when media item is set
      */
     public void initImageMode() {
         if (currentCollection == null) {

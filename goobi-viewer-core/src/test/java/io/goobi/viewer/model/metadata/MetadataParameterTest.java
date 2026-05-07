@@ -36,8 +36,11 @@ import io.goobi.viewer.model.viewer.StructElement;
 
 class MetadataParameterTest {
 
+    /**
+     * @verifies read metadata
+     */
     @Test
-    void testReadMetadata() throws IndexUnreachableException, PresentationException {
+    void setKey_shouldReadMetadata() throws IndexUnreachableException, PresentationException {
         MetadataParameter param = new MetadataParameter();
         param.setKey("TEST_FIELD");
         param.setType(MetadataParameterType.FIELD);

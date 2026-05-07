@@ -44,10 +44,12 @@ import io.goobi.viewer.model.archives.ArchiveManager;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.iiif.auth.BearerTokenManager;
+import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.security.authentication.AuthResponseListener;
 import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.recordlock.RecordLockManager;
+import io.goobi.viewer.model.security.user.IpRangeCache;
 import io.goobi.viewer.model.statistics.usage.UsageStatisticsRecorder;
 import io.goobi.viewer.model.translations.language.LanguageHelper;
 import io.goobi.viewer.modules.IModule;
@@ -74,9 +76,17 @@ public final class DataManager {
 
     private final RecordLockManager recordLockManager = new RecordLockManager();
 
+    private final LicenseTypeCache licenseTypeCache = new LicenseTypeCache();
+
+    private final IpRangeCache ipRangeCache = new IpRangeCache();
+
     private Configuration configuration;
 
-    private LanguageHelper languageHelper;
+    // volatile + double-checked locking so concurrent first-time callers cannot each create a
+    // separate LanguageHelper. Each instance owns its own ScheduledExecutorService and
+    // PeriodicReloadingTrigger; an orphaned instance would never be shut down by ContextListener
+    // and Tomcat would report its scheduler thread as a memory leak at undeploy.
+    private volatile LanguageHelper languageHelper; //NOSONAR S3077 — DCL safe publication, see comment above
 
     private SolrSearchIndex searchIndex;
 
@@ -211,8 +221,8 @@ public final class DataManager {
      * registerModule.
      *
      * @param module module instance to register
-     * @should not add module if it's already registered
      * @return true if the module was successfully registered, false if a module with the same ID is already registered
+     * @should not add module if it's already registered
      */
     public boolean registerModule(IModule module) {
         if (module == null) {
@@ -273,13 +283,22 @@ public final class DataManager {
      * @return the language helper instance for ISO language code lookups, initialised lazily on first access
      */
     public LanguageHelper getLanguageHelper() {
-        if (languageHelper == null) {
+        // Proper double-checked locking: re-check inside the synchronized block so two threads
+        // arriving simultaneously do not both construct a new LanguageHelper. The previous code
+        // had the inner check missing, so the second thread would overwrite the first instance
+        // and orphan its ScheduledExecutorService — a slow drip of leaked scheduler threads
+        // visible as "pool-N-thread-1" memory-leak warnings at Tomcat shutdown.
+        LanguageHelper local = languageHelper;
+        if (local == null) {
             synchronized (LOCK) {
-                languageHelper = new LanguageHelper("languages.xml");
+                local = languageHelper;
+                if (local == null) {
+                    local = new LanguageHelper("languages.xml");
+                    languageHelper = local;
+                }
             }
         }
-
-        return languageHelper;
+        return local;
     }
 
     /**
@@ -305,6 +324,8 @@ public final class DataManager {
      * a closed client from being silently replaced by a new one.
      *
      * @throws IOException if closing the client fails
+     * @should close searchIndex without calling checkReloadNeeded
+     * @should close client without check reload needed
      */
     public void closeSearchIndex() throws IOException {
         if (searchIndex != null) {
@@ -477,12 +498,31 @@ public final class DataManager {
         this.restApiManager = restApiManager;
     }
 
-    
+
     public RecordLockManager getRecordLockManager() {
         return recordLockManager;
     }
 
-    
+    /**
+     * Returns the application-scoped {@link LicenseTypeCache}. See
+     * {@code docs/superpowers/specs/2026-04-22-dao-access-cache-design.md}.
+     *
+     * @return the singleton cache instance; never null
+     */
+    public LicenseTypeCache getLicenseTypeCache() {
+        return licenseTypeCache;
+    }
+
+    /**
+     * Returns the application-scoped {@link IpRangeCache}.
+     *
+     * @return the singleton cache instance; never null
+     */
+    public IpRangeCache getIpRangeCache() {
+        return ipRangeCache;
+    }
+
+
     public TimeAnalysis getTiming() {
         return timing;
     }

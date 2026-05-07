@@ -30,8 +30,12 @@ import org.junit.jupiter.api.Test;
  */
 class HtmlTagValidatorTest {
 
+    /**
+     * @verifies reject block level tags and accept inline formatting tags
+     * @see HtmlTagValidator#validate(FacesContext, UIComponent, String)
+     */
     @Test
-    void test() {
+    void validate_shouldRejectBlockLevelTagsAndAcceptInlineFormattingTags() {
         Assertions.assertFalse(new HtmlTagValidator().validate("abc\njkl  h <p>asdasd</p> ashdoha<br/> asdas"), "Accepts <p> tag");
         Assertions.assertFalse(new HtmlTagValidator().validate("abc\njkl  h <div test=\"asd\">asdasd</div> ashdoha<br/> asdas"),
                 "Accepts <div> tag with attribute");

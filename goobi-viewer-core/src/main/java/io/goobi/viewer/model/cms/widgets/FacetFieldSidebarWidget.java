@@ -78,6 +78,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
      * Contains the SOLR field holding the values to list.
      *
      * @return the name of the Solr field whose values are listed in this widget
+     * @should persist
      */
     public String getFacetField() {
         return facetField;
@@ -147,6 +148,7 @@ public class FacetFieldSidebarWidget extends CustomSidebarWidget {
     /**
      *
      * @return the number of field values displayed in the widget
+     * @should clone
      */
     public int getNumEntries() {
         return numEntries;

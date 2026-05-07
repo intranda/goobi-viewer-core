@@ -108,6 +108,7 @@ public final class RSSFeed {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws DAOException
+     * @should return non-null SyndFeed with requested number of entries
      */
     public static SyndFeed createRss(String rootPath, String query, int maxItems)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {
@@ -144,7 +145,7 @@ public final class RSSFeed {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws DAOException
-     * @should produce feed correctly
+     * @should return non-null Channel with requested number of items
      */
     public static SyndFeed createRss(String rootPath, String query, List<String> filterQueries, String language, int maxItems,
             final String sortField, boolean sortDescending)
@@ -446,6 +447,7 @@ public final class RSSFeed {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws DAOException
+     * @should return non-null Channel with requested number of items
      */
     public static Channel createRssFeed(String rootPath, String query, int rssFeedItems)
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, DAOException {

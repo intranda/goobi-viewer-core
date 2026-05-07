@@ -22,9 +22,9 @@
 package io.goobi.viewer.model.search;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -56,8 +56,17 @@ public class SearchQueryGroup implements Serializable {
         }
     }
 
-    /** List of query items in this group. */
-    private final List<SearchQueryItem> queryItems = new ArrayList<>();
+    /**
+     * List of query items in this group.
+     *
+     * Uses CopyOnWriteArrayList to avoid ConcurrentModificationException during JSF
+     * c:forEach iteration on searchAdvanced.xhtml: SearchBean is @SessionScoped, so
+     * concurrent requests on the same session (e.g. AJAX in flight while a render
+     * thread iterates, or bot prefetching) can mutate this list while another thread
+     * iterates it. Writes (init/inject/add/remove) are user-action driven and rare;
+     * reads happen on every render — COW is the right trade-off here.
+     */
+    private final List<SearchQueryItem> queryItems = new CopyOnWriteArrayList<>();
     private String template;
 
     private SearchQueryGroupOperator operator = SearchQueryGroupOperator.AND;
@@ -171,6 +180,7 @@ public class SearchQueryGroup implements Serializable {
      * Getter for the field <code>queryItems</code>.
      *
      * @return the list of individual search query items within this group
+     * @should allow safe iteration during concurrent modification
      */
     public List<SearchQueryItem> getQueryItems() {
         return queryItems;
@@ -182,7 +192,7 @@ public class SearchQueryGroup implements Serializable {
      * @param field Index field for the new item
      * @param afterIndex Item index after which to place new new item
      * @return true if operation successful; false otherwise
-     * @should add item correctly
+     * @should append a new query item and increase the item list size by one
      */
     public boolean addNewQueryItem(String field, int afterIndex) {
         logger.trace("addNewQueryItem: {}", afterIndex);
@@ -200,7 +210,7 @@ public class SearchQueryGroup implements Serializable {
      * removeQueryItem.
      *
      * @param item a {@link io.goobi.viewer.model.search.SearchQueryItem} object.
-     * @should remove item correctly
+     * @should remove the specified query item and decrease the item list size by one
      * @should not remove last remaining item
      * @return true if the item was removed successfully, false if it could not be removed (e.g. it is the last remaining item)
      */

@@ -87,7 +87,7 @@ public final class BeanUtils {
     // ApplicationBean is @ApplicationScoped — the same instance for the entire application lifetime.
     // Caching it here avoids a full Weld CDI lookup (getBeanByName → BeanManager → StackWalker) on
     // every call to getPersistentStorageBean(). volatile ensures safe publication across threads.
-    private static volatile ApplicationBean cachedApplicationBean = null;
+    private static volatile ApplicationBean cachedApplicationBean = null; //NOSONAR S3077: @ApplicationScoped singleton, assigned once
 
     /**
      * Private constructor.
@@ -585,6 +585,7 @@ public final class BeanUtils {
      * @param clazz expected type of the bean
      * @param <T> a T class
      * @return an Optional containing the typed bean from the session, or empty if not found
+     * @should return null when finds subclass when direct lookup
      */
     @SuppressWarnings("unchecked")
     public static <T> Optional<T> getBeanFromSession(HttpSession session, String beanName, Class<T> clazz) {
@@ -632,6 +633,9 @@ public final class BeanUtils {
      * @param clazz type to search for among session attributes
      * @param <T> a T class
      * @return an Optional containing the first session attribute of the given type, or empty if none found
+     * @should return subclass stored under internal weld key
+     * @should return exact class match
+     * @should not return unrelated class
      */
     @SuppressWarnings({ "unchecked" })
     public static <T> Optional<T> findInstanceInSessionAttributes(HttpSession session, Class<T> clazz) {

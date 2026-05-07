@@ -87,7 +87,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getPage(int)
      * @verifies return correct page
      */
     @Test
@@ -101,7 +100,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getPage(int)
      * @verifies return null if order less than zero
      */
     @Test
@@ -114,7 +112,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getPage(int)
      * @verifies return null if order larger than number of pages
      */
     @Test
@@ -127,7 +124,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getPage(int)
      * @verifies return null if pageLoader is null
      */
     @Test
@@ -140,7 +136,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getImagesSection()
      * @verifies return correct PhysicalElements for a thumbnail page
      */
     @Test
@@ -165,6 +160,9 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(15, pages.get(4).getOrder());
     }
 
+    /**
+     * @verifies return correct physical elements for a thumbnail page with start page two
+     */
     @Test
     void getImagesSection_shouldReturnCorrectPhysicalElementsForAThumbnailPageWithStartPageTwo() throws Exception {
         int thumbnailsPerPage = 30;
@@ -205,7 +203,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#resetImage()
      * @verifies reset rotation
      */
     @Test
@@ -221,11 +218,10 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#rotateLeft()
-     * @verifies rotate correctly
+     * @verifies decrement rotation by 90 degrees and wrap from 0 to 270
      */
     @Test
-    void rotateLeft_shouldRotateCorrectly() throws Exception {
+    void rotateLeft_shouldDecrementRotationBy90DegreesAndWrapFrom0To270() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
@@ -241,11 +237,10 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#rotateRight()
-     * @verifies rotate correctly
+     * @verifies increment rotation by 90 degrees and wrap from 270 to 0
      */
     @Test
-    void rotateRight_shouldRotateCorrectly() throws Exception {
+    void rotateRight_shouldIncrementRotationBy90DegreesAndWrapFrom270To0() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
@@ -261,11 +256,10 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getPdfPartDownloadLink()
-     * @verifies construct url correctly
+     * @verifies include dollar separated filenames for selected page range in p d f u r l
      */
     @Test
-    void getPdfPartDownloadLink_shouldConstructUrlCorrectly() throws Exception {
+    void getPdfPartDownloadLink_shouldIncludeDollarSeparatedFilenamesForSelectedPageRangeInPDFURL() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
@@ -305,7 +299,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getCiteLinkWork()
      * @verifies return correct url
      */
     @Test
@@ -324,7 +317,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#isBelowFulltextThreshold(double)
      * @verifies return true if there are no pages
      */
     @Test
@@ -341,8 +333,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(viewManager.isBelowFulltextThreshold(0));
     }
 
+    /**
+     * @verifies display download widget
+     */
     @Test
-    void testDisplayDownloadWidget() throws IndexUnreachableException, PresentationException, DAOException {
+    void isDisplayContentDownloadMenu_shouldDisplayDownloadWidget() throws IndexUnreachableException, PresentationException, DAOException {
         String pi = "PPN123";
         String docstructType = "Catalogue";
 
@@ -357,8 +352,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertTrue(display);
     }
 
+    /**
+     * @verifies list download links for work
+     */
     @Test
-    void testListDownloadLinksForWork()
+    void getContentDownloadLinksForWork_shouldListDownloadLinksForWork()
             throws IndexUnreachableException, PresentationException, DAOException, IOException {
         String pi = "PPN123";
         String docstructType = "Catalogue";
@@ -374,8 +372,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(2, links.size());
     }
 
+    /**
+     * @verifies return expected value for given input
+     */
     @Test
-    void testGetPageDownloadUrl() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+    void getPageDownloadUrl_shouldReturnExpectedValueForGivenInput() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
 
         String pi = "PPN123";
         String docstructType = "Catalogue";
@@ -397,11 +398,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getPageDownloadUrl(DownloadOption, PhysicalElement)
      * @verifies return empty string if page is null
+     * @see ViewManager#getPageDownloadUrl
      */
     @Test
-    void testGetPageDownloadUrl_shouldReturnEmptyStringIfPageIsNull()
+    void getPageDownloadUrl_shouldReturnEmptyStringIfPageIsNull()
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
 
         String pi = "PPN123";
@@ -414,8 +415,12 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("", viewManager.getPageDownloadUrl(maxSizeTiff, null));
     }
 
+    /**
+     * @verifies return correct url for external iiif resource
+     * @see ViewManager#getPageDownloadUrl(final DownloadOption, PhysicalElement)
+     */
     @Test
-    void testGetPageDownloadUrlExternalResource()
+    void getPageDownloadUrl_shouldReturnCorrectUrlForExternalIiifResource()
             throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
 
         String pi = "PPN123";
@@ -436,8 +441,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     }
 
+    /**
+     * @verifies return non null result
+     */
     @Test
-    void testGetDownloadOptionsForImage() {
+    void getDownloadOptionsForImage_shouldReturnNonNullResult() {
 
         DownloadOption tooLarge = new DownloadOption("", "master", new Dimension(10000, 10000));
         DownloadOption master = new DownloadOption("", "master", DownloadOption.MAX);
@@ -462,8 +470,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     }
 
+    /**
+     * @verifies return non null result
+     */
     @Test
-    void test_setCurrentImageOrderString()
+    void setCurrentImageOrderString_shouldReturnNonNullResult()
             throws IndexUnreachableException, PresentationException, IDDOCNotFoundException, DAOException {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
@@ -524,8 +535,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         return new ViewManager(se, pageLoader, se.getLuceneId(), null, null, new ImageDeliveryBean());
     }
 
+    /**
+     * @verifies get elements around page
+     */
     @Test
-    void test_getElementsAroundPage() throws IndexUnreachableException, PresentationException, DAOException {
+    void getPageRangeAroundPage_shouldGetElementsAroundPage() throws IndexUnreachableException, PresentationException, DAOException {
         StructElement se = new StructElement(iddocKleiuniv);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
         assertEquals(16, viewManager.getAllPages().size());
@@ -585,8 +599,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     }
 
+    /**
+     * @verifies return non null result
+     */
     @Test
-    void test_getPdfDownloadLink()
+    void getPdfDownloadLink_shouldReturnNonNullResult()
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException, URISyntaxException {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
@@ -596,8 +613,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(test, link);
     }
 
+    /**
+     * @verifies append query params to url
+     */
     @Test
-    void test_getPdfDownloadLink_queryParams()
+    void getPdfDownloadLink_shouldAppendQueryParamsToUrl()
             throws IndexUnreachableException, PresentationException, DAOException, ViewerConfigurationException, URISyntaxException {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
@@ -614,11 +634,10 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getLinkForDFGViewer()
-     * @verifies construct default url correctly
+     * @verifies return DFG viewer link using default source file URL when no custom field set
      */
     @Test
-    void getLinkForDFGViewer_shouldConstructDefaultUrlCorrectly() throws Exception {
+    void getLinkForDFGViewer_shouldReturnDFGViewerLinkUsingDefaultSourceFileURLWhenNoCustomFieldSet() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, new ImageDeliveryBean());
@@ -628,10 +647,10 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see ViewManager#getLinkForDFGViewer()
-     * @verifies construct url from custom field correctly
+     * @verifies return d f g viewer link using URL encoded m d 2 d f g v i e w e r URL field value
      */
     @Test
-    void getLinkForDFGViewer_shouldConstructUrlFromCustomFieldCorrectly() throws Exception {
+    void getLinkForDFGViewer_shouldReturnDFGViewerLinkUsingURLEncodedMD2DFGVIEWERURLFieldValue() throws Exception {
         StructElement se = new StructElement(iddocKleiuniv);
         Assertions.assertNotNull(se);
         se.metadataFields.put("MD2_DFGVIEWERURL", Collections.singletonList("https://foo.bar/PPN517154004.xml"));
@@ -641,7 +660,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getExternalDownloadUrl()
      * @verifies return correct value
      */
     @Test
@@ -656,7 +674,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#isDisplayArchivesWidget()
      * @verifies set displayArchivesWidget to false if no ead node id exists
      */
     @Test
@@ -668,7 +685,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#isDisplayArchivesWidget()
      * @verifies set displayArchivesWidget to false if no archive node with id found in index
      */
     @Test
@@ -682,7 +698,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#isDisplayArchivesWidget()
      * @verifies set displayArchivesWidget to true if both id and archive node exist
      */
     @Test
@@ -696,7 +711,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getCopyrightIndicatorStatusName()
      * @verifies return locked status if locked most restrictive status found
      */
     @Test
@@ -710,7 +724,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getCopyrightIndicatorStatusName()
      * @verifies return partial status if partial most restrictive status found
      */
     @Test
@@ -724,7 +737,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getCopyrightIndicatorStatusName()
      * @verifies return open status if no restrictive statuses found
      */
     @Test
@@ -738,7 +750,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getCopyrightIndicatorStatuses()
      * @verifies return correct statuses
      */
     @Test
@@ -753,7 +764,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getCopyrightIndicatorStatuses()
      * @verifies return locked status if no statuses found
      */
     @Test
@@ -768,7 +778,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getCopyrightIndicatorLicense()
      * @verifies return correct license
      */
     @Test
@@ -784,7 +793,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getCopyrightIndicatorLicense()
      * @verifies return default license if no licenses found
      */
     @Test
@@ -798,8 +806,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("", license.getDescription());
     }
 
+    /**
+     * @verifies return true for given input
+     */
     @Test
-    void test_getLinkToDownloadFile() throws IndexUnreachableException, PresentationException, DAOException {
+    void getLinkToDownloadFile_shouldReturnTrueForGivenInput() throws IndexUnreachableException, PresentationException, DAOException {
         String filename = "INN 2_Gutenzell.pdf";
         String filenameEncoded = "INN%202_Gutenzell.pdf";
 
@@ -812,8 +823,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getImageInfosAsJson(PageType)
-     * @verifies return empty JSON object if current page is null
+     * @verifies return empty JSON if current page is null
      */
     @Test
     void getImageInfosAsJson_shouldReturnEmptyJsonIfCurrentPageIsNull() throws Exception {
@@ -828,8 +838,11 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("{}", result);
     }
 
+    /**
+     * @verifies update cite links on page change
+     */
     @Test
-    void test_updateCiteLinksOnPageChange() throws IndexUnreachableException, PresentationException, DAOException, IDDOCNotFoundException {
+    void getSidebarWidgetUsageCitationLinksForLevel_shouldUpdateCiteLinksOnPageChange() throws IndexUnreachableException, PresentationException, DAOException, IDDOCNotFoundException {
         String linkPattern = "https://nbn-resolving.org/{value}/fragment/page={page}";
         String linkValue = "http://resolver.sub.uni-goettingen.de/purl?PPN517154005";
         int page1 = 10;
@@ -852,8 +865,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getMasterImageUrl(Scale, PhysicalElement)
-     * @verifies url-encode watermarkId containing special characters
+     * @verifies url encode watermark id containing special characters
      */
     @Test
     void getMasterImageUrl_shouldUrlEncodeWatermarkIdContainingSpecialCharacters() throws Exception {
@@ -889,7 +901,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getTeiUrl()
      * @verifies return empty string if current page is null
      */
     @Test
@@ -902,7 +913,6 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getFulltextUrl()
      * @verifies return empty string if current page is null
      */
     @Test
@@ -919,7 +929,8 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return true if mimeType is application
      */
     @Test
-    void isFilesOnly_shouldReturnTrueForApplicationMimeType() throws Exception {
+    void isFilesOnly_shouldReturnTrueIfMimeTypeIsApplication() throws Exception {
+        // Verify that isFilesOnly returns true when the ViewManager's mimeType is "application"
         StructElement se = new StructElement("123");
         IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
         ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, "application", null);
@@ -931,6 +942,29 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return false if mimeType is not application
      */
     @Test
+    void isFilesOnly_shouldReturnFalseIfMimeTypeIsNotApplication() throws Exception {
+        // Verify that isFilesOnly returns false when the ViewManager's mimeType is not "application"
+        StructElement se = new StructElement("123");
+        IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
+        ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, "image", null);
+        Assertions.assertFalse(viewManager.isFilesOnly());
+    }
+
+    /**
+     * @verifies return true for application mime type
+     */
+    @Test
+    void isFilesOnly_shouldReturnTrueForApplicationMimeType() throws Exception {
+        StructElement se = new StructElement("123");
+        IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
+        ViewManager viewManager = new ViewManager(se, pageLoader, se.getLuceneId(), null, "application", null);
+        Assertions.assertTrue(viewManager.isFilesOnly());
+    }
+
+    /**
+     * @verifies return false for image mime type
+     */
+    @Test
     void isFilesOnly_shouldReturnFalseForImageMimeType() throws Exception {
         StructElement se = new StructElement("123");
         IPageLoader pageLoader = Mockito.mock(EagerPageLoader.class);
@@ -939,8 +973,7 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see ViewManager#getMimeTypesForLoadedPages()
-     * @verifies return empty map if LeanPageLoader returns null for current page
+     * @verifies return empty map if lean page loader returns null
      */
     @Test
     void getMimeTypesForLoadedPages_shouldReturnEmptyMapIfLeanPageLoaderReturnsNull() throws Exception {

@@ -138,29 +138,41 @@ class VuFindAuthenticationProviderTest extends AbstractDatabaseEnabledTest {
         super.tearDown();
     }
     
+    /**
+     * @verifies return empty user when username is unknown
+     */
     @Test
-    void testLogin_unknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnEmptyUserWhenUsernameIsUnknown() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userActiveNickname + "test", userActivePwHash);
         Assertions.assertFalse(future.get().getUser().isPresent());
     }
 
+    /**
+     * @verifies return active non-suspended user when credentials are valid
+     */
     @Test
-    void testLogin_valid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnActiveNonSuspendedUserWhenCredentialsAreValid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userActiveNickname, userActivePwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().getUser().get().isActive());
         Assertions.assertFalse(future.get().getUser().get().isSuspended());
     }
 
+    /**
+     * @verifies return refused result when password is invalid
+     */
     @Test
-    void testLogin_invalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnRefusedResultWhenPasswordIsInvalid() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userActiveNickname, userSuspendedPwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().isRefused());
     }
 
+    /**
+     * @verifies return suspended user when account is expired
+     */
     @Test
-    void testLogin_suspended() throws AuthenticationProviderException, InterruptedException, ExecutionException {
+    void login_shouldReturnSuspendedUserWhenAccountIsExpired() throws AuthenticationProviderException, InterruptedException, ExecutionException {
         CompletableFuture<LoginResult> future = provider.login(userSuspendedNickname, userSuspendedPwHash);
         Assertions.assertTrue(future.get().getUser().isPresent());
         Assertions.assertTrue(future.get().getUser().get().isActive());

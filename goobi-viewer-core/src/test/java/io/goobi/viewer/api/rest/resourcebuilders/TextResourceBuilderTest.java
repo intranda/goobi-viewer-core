@@ -21,6 +21,9 @@
  */
 package io.goobi.viewer.api.rest.resourcebuilders;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
@@ -28,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.managedbeans.UserBean;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,8 +42,7 @@ class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
 
 
     /**
-     * @see TextResourceBuilder#getFulltextMap(String,HttpServletRequest)
-     * @verifies prioritize plaintext files over alto
+     * @verifies prioritize plaintext over ALTO
      */
     @Test
     void getFulltextMap_shouldPrioritizePlaintextOverAlto() throws Exception {
@@ -54,7 +57,6 @@ class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TextResourceBuilder#getAltoAsZip(String,HttpServletRequest)
      * @verifies throw ContentNotFoundException if no alto files found
      */
     @Test
@@ -70,7 +72,59 @@ class TextResourceBuilderTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see TextResourceBuilder#getFulltextAsZip(String,HttpServletRequest)
+     * @see TextResourceBuilder#sumFileSizesOrThrow(String, List, long, String)
+     * @verifies throw IllegalRequestException when sum exceeds limit
+     */
+    @Test
+    void sumFileSizesOrThrow_shouldThrowIllegalRequestExceptionWhenSumExceedsLimit() throws Exception {
+        // Bundled ALTO fixture for PI_KLEIUNIV is 7749 bytes; with a 1024-byte limit the helper
+        // must reject. Direct helper test bypasses the Solr fixture (the embedded test index does
+        // not carry FILENAME_ALTO entries for KLEIUNIV, so going through getAltoDocument() would
+        // resolve to an empty file list and the guard would never fire).
+        Path altoFile = Paths.get("src/test/resources/data/viewer/data/1/alto/PPN517154005/00000001.xml");
+        Assertions.assertTrue(altoFile.toFile().exists(), "test ALTO fixture missing");
+
+        Assertions.assertThrows(IllegalRequestException.class,
+                () -> TextResourceBuilder.sumFileSizesOrThrow(PI_KLEIUNIV, List.of(altoFile), 1024L, "alto.zip"));
+    }
+
+    /**
+     * @see TextResourceBuilder#sumFileSizesOrThrow(String, List, long, String)
+     * @verifies return total when sum stays within limit
+     */
+    @Test
+    void sumFileSizesOrThrow_shouldReturnTotalWhenSumStaysWithinLimit() throws Exception {
+        Path altoFile = Paths.get("src/test/resources/data/viewer/data/1/alto/PPN517154005/00000001.xml");
+        long total = TextResourceBuilder.sumFileSizesOrThrow(PI_KLEIUNIV, List.of(altoFile), 1_000_000L, "alto.zip");
+        Assertions.assertEquals(altoFile.toFile().length(), total);
+    }
+
+    /**
+     * @see TextResourceBuilder#sumStringSizesOrThrow(String, java.util.Collection, long, String)
+     * @verifies throw IllegalRequestException when sum exceeds limit
+     */
+    @Test
+    void sumStringSizesOrThrow_shouldThrowIllegalRequestExceptionWhenSumExceedsLimit() throws Exception {
+        // Two 600-character pages -> 2 * 600 * 2 = 2400 in-heap UTF-16 bytes (plus separators);
+        // a 1024-byte limit must trip on the second page.
+        String page = "x".repeat(600);
+        Assertions.assertThrows(IllegalRequestException.class,
+                () -> TextResourceBuilder.sumStringSizesOrThrow(PI_KLEIUNIV, List.of(page, page), 1024L, "plaintext.zip"));
+    }
+
+    /**
+     * @see TextResourceBuilder#sumStringSizesOrThrow(String, java.util.Collection, long, String)
+     * @verifies return total when sum stays within limit
+     */
+    @Test
+    void sumStringSizesOrThrow_shouldReturnTotalWhenSumStaysWithinLimit() throws Exception {
+        String page = "x".repeat(100);
+        long total = TextResourceBuilder.sumStringSizesOrThrow(PI_KLEIUNIV, List.of(page, page), 100_000L, "plaintext.zip");
+        // 2 pages of 100 chars: each contributes length()*2 + 4 (separator overhead) = 204
+        Assertions.assertEquals(2L * (100L * 2 + 4), total);
+    }
+
+    /**
      * @verifies throw ContentNotFoundException if no fulltext files found
      */
     @Test

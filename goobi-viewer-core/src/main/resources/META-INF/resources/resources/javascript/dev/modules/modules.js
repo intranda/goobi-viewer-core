@@ -195,6 +195,15 @@
     	}
     }
 
+    // Maximum number of tile sources loaded into OpenSeadragon simultaneously in sequence mode.
+    // Keeps OSD's world small enough to run smoothly; page navigation triggers a full reload
+    // that re-centers the window on the newly selected page.
+    const _sequenceWindowSize = 100;
+    // How many images from the window boundary trigger loading the next batch.
+    const _expandThreshold = 10;
+    // How many images to add per expansion step.
+    const _expandBatchSize = 50;
+
     const _config = {
         elementSelectors: {
             image: '[data-image="zoomable"]',
@@ -336,12 +345,23 @@
             }
         }
 
-        initWindowResize() { 
-            window.addEventListener("resize", () => this.resetSize());
+        /**
+         * Jumps to the image with the given IIIF id. If windowing is active and the image lies
+         * outside the currently loaded window, Sequence handles the window reload automatically.
+         *
+         * @param {string} id  IIIF image id of the target image
+         */
+        setCurrentImage(id) {
+            this.sequence?.setCurrentImage(id, true, false);
+        }
+
+        initWindowResize() {
+            window.addEventListener('resize', () => this.resetSize());
         }
 
         getCurrentTileSourceIndex() {
-            return this.viewer.getImageIndexById(this.getCurrentTileSourceId());
+            // OSD world is empty before viewer.load() — resolve index directly from the tileSources map
+            return Object.keys(this.tileSources).indexOf(this.currentPageNo);
         }
 
         getCurrentTileSourceOrder() {
@@ -459,19 +479,24 @@
     } 
 
     function getSequenceSettings(viewMode) {
-        switch((viewMode || "").toLowerCase()) {
-            case "double": return {
-                columns: 2
-            };
-            case "sequence": return {
-                columns: 1
-            };
-            case "single":
-            default: return {
-                columns: 1
-            };
+        let columns;
+    	switch ((viewMode || '').toLowerCase()) {
+            case 'double':
+                columns = 2;
+    			break;
+            case 'sequence':
+            case 'single':
+            default:
+               columns = 1;
         }
-    } 
+    	return {
+    		columns: columns,
+    		useWindowing: true,
+    		windowSize: _sequenceWindowSize,
+    		windowExpandThreshold: _expandThreshold,
+    		windowExpandSize: _expandBatchSize
+    	}
+    }
 
     function getFittingMode(pageType) {
         switch((pageType || "").toLowerCase()) {

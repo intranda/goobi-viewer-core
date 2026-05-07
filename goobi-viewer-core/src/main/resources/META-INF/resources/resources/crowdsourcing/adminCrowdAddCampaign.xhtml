@@ -200,9 +200,7 @@
                                                                     </div>
 
                                                                     <!-- HELP -->
-                                                                    <span class="admin__form-help-text">
-                                                                        #{msg.admin__help_crowdsourcing_campaign_media_file}
-                                                                    </span>
+                                                                    <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_media_file}</span>
                                                                 </div>
                                                             </div>
 
@@ -333,9 +331,7 @@
                                                                             <div class="col-2 admin__form-label">
                                                                                 <label for="adminCrowdAddCampaignQuestionText_#{status.count}">
                                                                                     #{msg.admin__crowdsourcing_question_text}:
-                                                                                    <span class="admin__label-required-field">
-                                                                                        (#{msg.form__required_field})
-                                                                                    </span>
+                                                                                    <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                                                 </label>
                                                                             </div>
 
@@ -357,9 +353,7 @@
                                                                             </div>
 
                                                                             <div class="col-2" />
-                                                                            <span class="col-8 admin__form-help-text">
-                                                                                #{msg.admin__help_crowdsourcing_question_text}
-                                                                            </span>
+                                                                            <span class="col-8 admin__form-help-text">#{msg.admin__help_crowdsourcing_question_text}</span>
                                                                         </div>
 
                                                                         <!-- TYPE -->
@@ -385,9 +379,7 @@
                                                                                         render="question"
                                                                                         execute="@this" />
                                                                                 </h:selectOneMenu>
-                                                                                <span class="admin__form-help-text">
-                                                                                    #{msg.admin__help_crowdsourcing_question_type}
-                                                                                </span>
+                                                                                <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_type}</span>
                                                                             </div>
 
                                                                             <div class="col-1 admin__form-help-icon">
@@ -448,9 +440,7 @@
                                                                                         </ul>
                                                                                     </div>
 
-                                                                                    <span class="admin__form-help-text">
-                                                                                        #{msg.admin__help_crowdsourcing_question_metadata}
-                                                                                    </span>
+                                                                                    <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_metadata}</span>
                                                                                 </div>
 
                                                                                 <div class="col-1 admin__form-help-icon">
@@ -471,9 +461,7 @@
                                                                             <div class="col-2 admin__form-label">
                                                                                 <label for="adminCrowdAddCampaignQuestionTargetSelector">
                                                                                     #{msg.admin__crowdsourcing_question_targetSelector}:
-                                                                                    <span class="admin__label-required-field">
-                                                                                        (#{msg.form__required_field})
-                                                                                    </span>
+                                                                                    <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                                                 </label>
                                                                             </div>
 
@@ -494,9 +482,7 @@
                                                                                         render="@none"
                                                                                         execute="@this" />
                                                                                 </h:selectOneMenu>
-                                                                                <span class="admin__form-help-text">
-                                                                                    #{msg.admin__help_crowdsourcing_question_targetSelector}
-                                                                                </span>
+                                                                                <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_targetSelector}</span>
                                                                             </div>
 
                                                                             <div class="col-1 admin__form-help-icon">
@@ -515,9 +501,7 @@
                                                                             <div class="col-2 admin__form-label">
                                                                                 <label for="adminCrowdAddCampaignQuestionTargetFrequency">
                                                                                     #{msg.admin__crowdsourcing_question_targetFrequency}:
-                                                                                    <span class="admin__label-required-field">
-                                                                                        (#{msg.form__required_field})
-                                                                                    </span>
+                                                                                    <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                                                 </label>
                                                                             </div>
 
@@ -541,9 +525,7 @@
                                                                                         render="@none"
                                                                                         execute="@this" />
                                                                                 </h:selectOneMenu>
-                                                                                <span class="admin__form-help-text">
-                                                                                    #{msg.admin__help_crowdsourcing_question_targetFrequency}
-                                                                                </span>
+                                                                                <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_question_targetFrequency}</span>
                                                                             </div>
 
                                                                             <div class="col-1 admin__form-help-icon">
@@ -639,8 +621,7 @@
                                                     id="adminCrowdPrivateSettingsGroup"
                                                     layout="block">
                                                     <!-- GROUP SELECTION GROUP -->
-                                                    <ui:fragment
-                                                        rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE' and userBean.user.superuser}">
+                                                    <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE' and userBean.user.superuser}">
                                                         <div class="form-group form-row admin__sidebar-divider-top">
                                                             <div class="col-11 control-label admin__form-label">
                                                                 <label for="adminCrowdVisibleFor">#{msg.admin__crowdsourcing_campaign_limit_to_group}:</label>
@@ -681,9 +662,7 @@
                                                                         <span class="toggle-inside" />
                                                                     </span>
                                                                 </div>
-                                                                <span class="admin__form-help-text">
-                                                                    #{msg.admin__help_crowdsourcing_campaign_limit_to_group}
-                                                                </span>
+                                                                <span class="admin__form-help-text">#{msg.admin__help_crowdsourcing_campaign_limit_to_group}</span>
                                                             </div>
 
                                                             <h:panelGroup
@@ -715,8 +694,7 @@
                                                                             <h:outputLink
                                                                                 id="campaignOwnerName"
                                                                                 value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.userGroup.owner.id}/">
-                                                                                <h:outputText
-                                                                                    value="#{crowdsourcingBean.selectedCampaign.userGroup.owner.displayName}" />
+                                                                                <h:outputText value="#{crowdsourcingBean.selectedCampaign.userGroup.owner.displayName}" />
                                                                             </h:outputLink>
                                                                         </div>
                                                                     </ui:fragment>
@@ -729,9 +707,7 @@
                                                     <ui:fragment rendered="#{crowdsourcingBean.selectedCampaign.visibility == 'PRIVATE'}">
                                                         <div class="form-group form-row admin__sidebar-divider-top">
                                                             <div class="col-11 control-label admin__form-label">
-                                                                <label for="adminCrowdVisibleFor">
-                                                                    #{msg.admin__crowdsourcing_campaign_time_pediod_enabled}:
-                                                                </label>
+                                                                <label for="adminCrowdVisibleFor">#{msg.admin__crowdsourcing_campaign_time_pediod_enabled}:</label>
                                                             </div>
                                                             <div class="col-1 admin__form-help-icon">
                                                                 <button
@@ -893,8 +869,7 @@
                                                                 <h:outputLink
                                                                     id="campaignReviewerOwnerName"
                                                                     value="#{navigationHelper.applicationUrl}admin/users/edit/#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.id}/">
-                                                                    <h:outputText
-                                                                        value="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.displayName}" />
+                                                                    <h:outputText value="#{crowdsourcingBean.selectedCampaign.reviewerUserGroup.owner.displayName}" />
                                                                 </h:outputLink>
                                                             </div>
                                                         </c:if>

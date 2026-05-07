@@ -1,0 +1,52 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package io.goobi.viewer.managedbeans;
+
+import java.io.Serializable;
+
+import io.goobi.viewer.controller.HtmlSanitizer;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
+
+/**
+ * <p>
+ * EL-accessible adapter for {@link HtmlSanitizer}. Lets JSF templates sanitize
+ * user-supplied HTML inside {@code <h:outputText escape="false">} or similar render-path
+ * sinks via {@code #{htmlSanitizer.cleanRichText(value)}}.
+ * </p>
+ */
+@Named("htmlSanitizer")
+@ApplicationScoped
+public class HtmlSanitizerBean implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * EL adapter for {@link HtmlSanitizer#cleanRichText(String)}.
+     *
+     * @param input raw HTML string; may be {@code null}
+     * @return sanitized HTML
+     */
+    public String cleanRichText(String input) {
+        return HtmlSanitizer.cleanRichText(input);
+    }
+}

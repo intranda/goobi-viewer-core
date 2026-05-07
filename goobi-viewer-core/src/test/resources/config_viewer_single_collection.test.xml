@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Goobi viewer configuration file (for unit tests) -->
+<!-- Config with only one collection field, for CmsCollectionsBean test -->
+
+<config>
+    <configFolder>src/test/resources/nonexistent/</configFolder>
+    <viewerHome>src/test/resources/data/viewer/</viewerHome>
+    <dataRepositoriesHome>src/test/resources/data/viewer/data/</dataRepositoriesHome>
+    <stopwordsFile>src/test/resources/stopwords.txt</stopwordsFile>
+
+    <collections>
+        <collection field="DC" />
+    </collections>
+</config>

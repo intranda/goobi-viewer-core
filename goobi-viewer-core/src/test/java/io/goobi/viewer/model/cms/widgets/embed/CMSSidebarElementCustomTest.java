@@ -39,8 +39,11 @@ import io.goobi.viewer.model.cms.widgets.type.WidgetGenerationType;
 
 class CMSSidebarElementCustomTest extends AbstractDatabaseEnabledTest {
 
+    /**
+     * @verifies set owner widget generation type and content type
+     */
     @Test
-    void test() throws DAOException {
+    void CMSSidebarElementCustom_shouldSetOwnerWidgetGenerationTypeAndContentType() throws DAOException {
         CustomSidebarWidget widget = new HtmlSidebarWidget();
         widget.setId(11l);
         widget.getTitle().setText("Titel", Locale.GERMAN);

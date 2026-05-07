@@ -120,7 +120,8 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     @Override
     public String getOwnerIddocForPage(int pageOrder) throws IndexUnreachableException, PresentationException {
         if (pageOwnerIddocMap.get(pageOrder) == null) {
-            logger.warn("IDDOC for page {} not found, retrieving from Solr...", pageOrder);
+            // Log format adjusted to start with the PI for easier grep/log filtering
+            logger.warn("PI: '{}', IDDOC for page {} not found, retrieving from Solr...", pi, pageOrder);
             String iddoc = DataManager.getInstance().getSearchIndex().getImageOwnerIddoc(pi, pageOrder);
             pageOwnerIddocMap.put(pageOrder, iddoc);
         }
@@ -149,8 +150,8 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
     /**
      * setFirstAndLastPageOrder.
      *
-     * @should set first page order correctly
-     * @should set last page order correctly
+     * @should set first page order to 1 for loaded struct element
+     * @should set last page order to total number of pages for loaded struct element
      */
     protected final void setFirstAndLastPageOrder() {
         if (pages != null && !pages.isEmpty()) {
@@ -216,7 +217,8 @@ public class EagerPageLoader extends AbstractPageLoader implements Serializable 
             }
         }
 
-        logger.debug("Loaded {} pages for '{}'.", ret.size(), pi);
+        // Log format adjusted to start with the PI for easier grep/log filtering
+        logger.debug("PI: '{}', {} pages loaded, EagerPageLoader.", pi, ret.size());
         return ret;
     }
 

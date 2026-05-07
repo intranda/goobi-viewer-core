@@ -51,9 +51,8 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
      * @param component the UI component this converter is attached to
      * @param submittedValue the string value submitted from the UI form field
      * @return the parsed LocalDateTime in UTC, or null if the submitted value is null or empty
-     * @should convert English dateTime correctly
-     * @should convert German dateTime correctly
-     * @should covert generic dateTime correctly
+     * @should parse German-formatted date string into LocalDateTime using German locale and pattern
+     * @should parse English-formatted date string into LocalDateTime using English locale and pattern
      */
     @Override
     public LocalDateTime getAsObject(FacesContext context, UIComponent component, String submittedValue) {
@@ -73,9 +72,8 @@ public class LocalDateTimeConverter implements Converter<LocalDateTime> {
      * @param component the UI component this converter is attached to
      * @param ldt the LocalDateTime value to convert to a string
      * @return the formatted date-time string, or an empty string if {@code ldt} is null
-     * @should convert English dateTime correctly
-     * @should convert German dateTime correctly
-     * @should covert generic dateTime correctly
+     * @should format LocalDateTime into German-formatted date string using German locale and pattern
+     * @should format LocalDateTime into English-formatted date string using English locale and pattern
      */
     @Override
     public String getAsString(FacesContext context, UIComponent component, LocalDateTime ldt) {

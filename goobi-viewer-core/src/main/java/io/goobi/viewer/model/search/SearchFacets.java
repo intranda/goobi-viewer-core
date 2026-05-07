@@ -28,13 +28,13 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +44,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+
+import com.ocpsoft.pretty.PrettyContext;
+import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
@@ -55,6 +58,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Current faceting settings for a search.
@@ -67,8 +71,10 @@ public class SearchFacets implements Serializable {
 
     private final transient Object lock = new Object();
 
-    /** Available regular facets for the current search result. ConcurrentHashMap allows concurrent reads and fine-grained write locks,
-     *  replacing the single-mutex synchronizedMap bottleneck. Display order is controlled by getAllFacetFields(), not map insertion order. */
+    /**
+     * Available regular facets for the current search result. ConcurrentHashMap allows concurrent reads and fine-grained write locks, replacing the
+     * single-mutex synchronizedMap bottleneck. Display order is controlled by getAllFacetFields(), not map insertion order.
+     */
     private final Map<String, List<IFacetItem>> availableFacets = new ConcurrentHashMap<>();
     /** Currently applied facets. */
     private final List<IFacetItem> activeFacets = new ArrayList<>();
@@ -96,7 +102,7 @@ public class SearchFacets implements Serializable {
     /**
      * resetCurrentFacets.
      *
-     * @should reset facets correctly
+     * @should reset active facet string to default dash value
      */
     public void resetActiveFacets() {
         resetActiveFacetString();
@@ -261,12 +267,31 @@ public class SearchFacets implements Serializable {
      *
      * @param link facet query link string to look up in the active facets
      * @return true if given link is part of the active facet string; false otherwise
+     * @should return false for blank link
      */
     public boolean isFacetStringCurrentlyUsed(String link) {
+        // Blank links are never valid facet strings (e.g. caused by JSF EL null coercion).
+        if (StringUtils.isBlank(link)) {
+            return false;
+        }
         try {
             return isFacetCurrentlyUsed(new FacetItem(link, false));
         } catch (IllegalArgumentException e) {
-            logger.warn(e.getMessage());
+            // Log link in quotes so empty strings are visible, and include the request URL for context.
+            // Use PrettyContext to get the original pretty URL (before internal JSF forward), falling back to the raw request URL.
+            HttpServletRequest req = BeanUtils.getRequest();
+            String requestUrl = "unknown";
+            if (req != null) {
+                PrettyContext prettyContext = PrettyContext.getCurrentInstance(req);
+                URL prettyUrl = prettyContext != null ? prettyContext.getRequestURL() : null;
+                if (prettyUrl != null) {
+                    requestUrl = prettyUrl.toURL();
+                } else {
+                    requestUrl = req.getRequestURL().toString()
+                            + (req.getQueryString() != null ? "?" + req.getQueryString() : "");
+                }
+            }
+            logger.warn("Field and value are not colon-separated: '{}'; requestUrl='{}'", link, requestUrl);
             return false;
         }
     }
@@ -292,8 +317,11 @@ public class SearchFacets implements Serializable {
      * isFacetListSizeSufficient.
      *
      * @param field Solr facet field name to check
-     * @return true if the facet list for the given field has enough elements to be shown (more than one,
-     *         or more than zero for DOCSTRCT_SUB), false otherwise
+     * @return true if the facet list for the given field has enough elements to be shown (more than one, or more than zero for DOCSTRCT_SUB), false
+     *         otherwise
+     * @should return false for unknown field
+     * @should return false for single item field
+     * @should return true for field with two or more items
      */
     public boolean isFacetListSizeSufficient(String field) {
         // logger.trace("isFacetListSizeSufficient: {}", field); //NOSONAR Debug
@@ -312,6 +340,8 @@ public class SearchFacets implements Serializable {
      *
      * @param field Solr facet field name to look up
      * @return a int.
+     * @should return zero for unknown field
+     * @should return correct size
      */
     public int getAvailableFacetsListSizeForField(String field) {
         // Store in local variable to avoid TOCTOU race on the synchronized map:
@@ -356,6 +386,7 @@ public class SearchFacets implements Serializable {
      * @param field Solr facet field name to look up in the available facets map
      * @param excludeSelected If true, selected facets will be removed from the list
      * @return List<IFacetItem>
+     * @should not mutate the underlying list when excludeSelected is true
      */
     public List<IFacetItem> getAvailableFacetsForField(String field, boolean excludeSelected) {
         // logger.trace("getAvailableFacetsForField: {}", field); //NOSONAR Debug
@@ -364,20 +395,28 @@ public class SearchFacets implements Serializable {
             return Collections.emptyList();
         }
 
-        // Remove currently used facets (unless boolean type)
+        // Defensive copy: the list inside availableFacets must never be mutated here.
+        // SearchFacets lives on the session-scoped SearchBean, so concurrent JSF render passes
+        // (parallel AJAX requests, multi-tab) hit this method at the same time. Mutating the
+        // shared ArrayList via removeAll() corrupts its internal size counter and surfaces as
+        // ArrayIndexOutOfBoundsException ("length -N is negative") in ArrayList.batchRemove,
+        // and on top of that permanently shrinks the stored list across requests.
+        List<IFacetItem> result = new ArrayList<>(facetItems);
+
+        // Remove currently used facets. Snapshot activeFacets too: it is a plain ArrayList that
+        // other methods (updateFacetItem, setActiveFacetString) write to under the instance lock,
+        // so reading it here without a snapshot risks a ConcurrentModificationException.
         if (excludeSelected) {
-            facetItems.removeAll(activeFacets);
+            result.removeAll(new ArrayList<>(activeFacets));
         }
 
         // Trim to initial number
         int initialNumber = DataManager.getInstance().getConfiguration().getInitialFacetElementNumber(field);
-        if (!isFacetExpanded(field) && initialNumber != -1 && facetItems.size() > initialNumber) {
-            // Return a defensive copy instead of a subList view to prevent ConcurrentModificationException
-            // when this session-scoped bean is accessed concurrently by multiple requests (e.g., AJAX).
-            return new ArrayList<>(facetItems.subList(0, initialNumber));
+        if (!isFacetExpanded(field) && initialNumber != -1 && result.size() > initialNumber) {
+            return new ArrayList<>(result.subList(0, initialNumber));
         }
 
-        return facetItems;
+        return result;
     }
 
     /**
@@ -432,6 +471,7 @@ public class SearchFacets implements Serializable {
      * @throws PresentationException
      * @throws IndexUnreachableException
      * @should return correct value
+     * @should not throw NPE when map value is null
      */
     public boolean isHasRangeFacets() throws PresentationException, IndexUnreachableException {
         for (String rangeField : DataManager.getInstance().getConfiguration().getRangeFacetFields()) {
@@ -500,7 +540,8 @@ public class SearchFacets implements Serializable {
      *
      * @return SSV string of facet queries or "-" if empty
      * @should contain queries from all FacetItems
-     * @should return hyphen if currentFacets empty
+     * @should facet escaping
+     * @should return hyphen if active facets empty
      */
     public String getActiveFacetString() {
         String ret = generateFacetPrefix(getActiveFacetsCopy(), null, true);
@@ -520,8 +561,6 @@ public class SearchFacets implements Serializable {
      * @param activeFacetString SSV-encoded string of active facet field:value pairs
      * @should create FacetItems from all links
      * @should decode slashes and backslashes
-     * @should reset slider range if no slider field among current facets
-     * @should not reset slider range if slider field among current facets
      */
     public void setActiveFacetString(String activeFacetString) {
         synchronized (lock) {
@@ -573,7 +612,11 @@ public class SearchFacets implements Serializable {
             // causes an "undefined field ;MD_GENRE_LANG_EN" error.
             if ("".equals(facetLink) || "undefined".equals(facetLink) || facetLink.startsWith(":") || facetLink.startsWith(";")
                     || facetLink.endsWith(":")) {
-                logger.warn("Invalid facet, skipping: {}", facetLink);
+                // Log facet value in quotes so empty strings are visible, and include the request URL for context
+                HttpServletRequest req = BeanUtils.getRequest();
+                String requestUrl = req != null ? (req.getRequestURL().toString()
+                        + (req.getQueryString() != null ? "?" + req.getQueryString() : "")) : "unknown";
+                logger.warn("Invalid facet, skipping: '{}'; requestUrl='{}'", facetLink, requestUrl);
                 continue;
             }
 
@@ -610,6 +653,8 @@ public class SearchFacets implements Serializable {
      * @param field Solr facet field name whose item to update
      * @param hierarchical if true, the facet item is marked as hierarchical
      * @return the JSF navigation outcome after updating the facet (e.g. "pretty:search6")
+     * @should replace existing facet item value with parsed range values when field matches
+     * @should append new facet item to list when no item with matching field exists
      */
     public String updateFacetItem(String field, boolean hierarchical) {
         // Synchronize on lock (same as other write operations) to protect activeFacets.
@@ -962,13 +1007,11 @@ public class SearchFacets implements Serializable {
      * removeFacetAction.
      *
      * @param facetQuery facet query string to remove from active facets
-     * @should remove facet correctly
+     * @should remove only the exact matching facet without affecting similarly prefixed entries
      * @should remove facet containing reserved chars
      * @should sanitize triple semicolons to double after removal
-     * @param ret navigation outcome string to return after removal
-     * @return the navigation outcome string after removing the facet
      */
-    public String removeFacetAction(final String facetQuery, final String ret) {
+    public void removeFacetAction(final String facetQuery) {
         logger.trace("removeFacetAction: {}", facetQuery);
         String currentFacetString = generateFacetPrefix(getActiveFacetsCopy(), null, false);
         if (currentFacetString.contains(facetQuery)) {
@@ -981,7 +1024,6 @@ public class SearchFacets implements Serializable {
             setActiveFacetString(currentFacetString);
         }
 
-        return ret;
     }
 
     /**
@@ -999,7 +1041,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for unit tests.
      * 
-
+     * 
      */
     Map<String, String> getMinValues() {
         return minValues;
@@ -1008,7 +1050,7 @@ public class SearchFacets implements Serializable {
     /**
      * Getter for unit tests.
      * 
-
+     * 
      */
     Map<String, String> getMaxValues() {
         return maxValues;
@@ -1093,6 +1135,11 @@ public class SearchFacets implements Serializable {
         synchronized (lock) {
             //add current facets which have no hits. This may happen due to geomap faceting
             for (IFacetItem currentItem : getActiveFacetsCopy()) {
+                // Skip items with null field to prevent null keys in the returned map,
+                // which can cause JSF EL null-coercion issues in the template.
+                if (currentItem.getField() == null) {
+                    continue;
+                }
                 String fieldType = DataManager.getInstance().getConfiguration().getFacetFieldType(currentItem.getField());
                 //don't include geo and range facets in list, since they have their own widgets
                 //Is this code still relevant then? Aren't all other facets included in allFacetFields and availableFacets?
@@ -1131,6 +1178,7 @@ public class SearchFacets implements Serializable {
      * Getter for the field <code>availableFacets</code>.
      *
      * @return the map of Solr field names to their available facet items
+     * @should not throw under concurrent access
      */
     public Map<String, List<IFacetItem>> getAvailableFacets() {
         return availableFacets;
@@ -1139,11 +1187,11 @@ public class SearchFacets implements Serializable {
     /**
      * Returns a snapshot copy of the currently active facet filters.
      *
-     * <p>Returns a defensive copy so that callers (e.g. JSF {@code c:forEach} templates) cannot
-     * receive a {@link java.util.ConcurrentModificationException} if a concurrent request modifies
-     * the list. Uses the same {@code lock} object as all write operations so that the copy is taken
-     * atomically with respect to any concurrent {@link #setActiveFacetString} or
-     * {@link #setGeoFacetFeature} call.
+     * <p>
+     * Returns a defensive copy so that callers (e.g. JSF {@code c:forEach} templates) cannot receive a
+     * {@link java.util.ConcurrentModificationException} if a concurrent request modifies the list. Uses the same {@code lock} object as all write
+     * operations so that the copy is taken atomically with respect to any concurrent {@link #setActiveFacetString} or {@link #setGeoFacetFeature}
+     * call.
      *
      * @return a new, mutable {@link ArrayList} snapshot of the active facet filters; never {@code null}
      */
@@ -1217,8 +1265,8 @@ public class SearchFacets implements Serializable {
      * @should return false if language code same
      * @should return false if no language code
      * @should return false if language code different but active facet selected
-     * @return true if the field has a language code suffix that does not match the given language and
-     *         no active facet is selected for it, false otherwise
+     * @return true if the field has a language code suffix that does not match the given language and no active facet is selected for it, false
+     *         otherwise
      */
     public boolean isHasWrongLanguageCode(String field, String language) {
         if (SolrTools.isHasWrongLanguageCode(field, language)) {
@@ -1300,12 +1348,10 @@ public class SearchFacets implements Serializable {
         return facet.getValue();
     }
 
-    
     public Map<String, String> getLabelMap() {
         return labelMap;
     }
 
-    
     public GeoFacetItem getGeoFacetting() {
         synchronized (lock) {
             List<String> geoFacetFields = DataManager.getInstance().getConfiguration().getGeoFacetFields();

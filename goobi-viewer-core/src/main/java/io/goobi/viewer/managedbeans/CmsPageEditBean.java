@@ -173,6 +173,9 @@ public class CmsPageEditBean implements Serializable {
      * savePageAndForwardToEdit.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+      * @should save page
+      * @should save as template
+      * @should save page no admin
      */
     public void savePageAndForwardToEdit() throws DAOException {
         this.saveSelectedPage();
@@ -190,6 +193,9 @@ public class CmsPageEditBean implements Serializable {
      * Adds the current page to the database, if it doesn't exist or updates it otherwise.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should save page
+     * @should save as template
+     * @should save page no admin
      */
     public void saveSelectedPage() throws DAOException {
         logger.trace("saveSelectedPage");
@@ -274,6 +280,7 @@ public class CmsPageEditBean implements Serializable {
      *
      * @return Return view
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+      * @should delete page for given input
      */
     public String deleteSelectedPage() throws DAOException {
         if (deletePage(selectedPage)) {
@@ -289,6 +296,7 @@ public class CmsPageEditBean implements Serializable {
      * @param page Page to delete
      * @return true if deletion was successful; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should delete page for given input
      */
     public boolean deletePage(CMSPage page) throws DAOException {
         if (this.dao == null || page == null || page.getId() == null) {
@@ -418,6 +426,11 @@ public class CmsPageEditBean implements Serializable {
      * Getter for the field <code>selectedPage</code>.
      *
      * @return the CMS page currently selected for editing
+     * @should new page
+     * @should new page from template
+     * @should new page from template with title and pi
+     * @should edit page
+     * @should save page
      */
     public CMSPage getSelectedPage() {
         return selectedPage;
@@ -645,6 +658,7 @@ public class CmsPageEditBean implements Serializable {
      *
      * @param component CMS component to remove from the selected page
      * @return true if the component was successfully removed from the page, false otherwise
+     * @should return true for given input
      */
     public boolean deleteComponent(CMSComponent component) {
         return this.selectedPage.removeComponent(component);
@@ -652,6 +666,7 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      * addComponent.
+     * @should return true for given input
      */
     public void addComponent() {
         if (addComponent(getSelectedPage(), getSelectedComponent())) {
@@ -670,7 +685,10 @@ public class CmsPageEditBean implements Serializable {
                     Messages.error(null, "cms__create_page__error_unknown_component_name", componentFilename);
                 }
             } else {
-                logger.error("Cannot add component: No component filename given");
+                // Lowered from error to warn: this branch is triggered by routine user input validation
+                // (clicking "Add component" without selecting one). The user is already informed via
+                // Messages.error(...) below; ERROR-level logs were misleading. Page id added for context.
+                logger.warn("Cannot add component to page {}: No component filename given", page.getId());
                 Messages.error("cms__create_page__error_no_component_name_given");
             }
         } else {

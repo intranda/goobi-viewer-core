@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CalendarBean;
@@ -47,6 +48,7 @@ public class CalendarView implements Serializable {
     private final String pi;
     private final String anchorPi;
     private final String anchorField;
+    private final String docStructType;
     private String year;
     /** Calendar representation of this record's child elements. */
     private List<CalendarItemMonth> calendarItems = new ArrayList<>();
@@ -63,10 +65,33 @@ public class CalendarView implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      */
     public CalendarView(String pi, String anchorPi, String anchorField, String year) throws IndexUnreachableException, PresentationException {
+        this(pi, anchorPi, anchorField, year, null);
+    }
+
+    /**
+     * Constructor with explicit docstruct.
+     *
+     * <p>The docstruct is consulted by {@link #isDisplay()} against
+     * {@link io.goobi.viewer.controller.Configuration#getCalendarDocStructTypes()} so that
+     * the calendar view only appears for record types where it makes sense — multi-year
+     * date metadata alone (e.g. on a podcast anchor) is not enough. A null docstruct
+     * disables the whitelist check (legacy callers and unit-test fixtures).
+     *
+     * @param pi Record identifier
+     * @param anchorPi Anchor record identifier (must be same as pi if this is an anchor)
+     * @param anchorField Solr field name linking volumes to their anchor
+     * @param year Year of a volume; null, if this is an anchor!
+     * @param docStructType DOCSTRCT of the top struct element; null to skip the whitelist gate
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
+    public CalendarView(String pi, String anchorPi, String anchorField, String year, String docStructType)
+            throws IndexUnreachableException, PresentationException {
         this.pi = pi;
         this.anchorPi = anchorPi;
         this.anchorField = anchorField != null ? anchorField : SolrConstants.PI_ANCHOR;
         this.year = year;
+        this.docStructType = docStructType;
 
         if (year != null) {
             populateCalendar();
@@ -76,12 +101,28 @@ public class CalendarView implements Serializable {
     /**
      * Checks whether the conditions for displaying the calendar view have been met.
      *
+     * <p>When a non-empty
+     * {@link io.goobi.viewer.controller.Configuration#getCalendarDocStructTypes() calendar
+     * whitelist} is configured and this view was constructed with a docstruct that is not
+     * in the list, the calendar view is suppressed regardless of how many years or items
+     * are indexed. This prevents records that happen to have multi-year date metadata
+     * (e.g. podcast anchors) from rendering an empty calendar grid in place of the
+     * regular issue-list TOC. A null docstruct (legacy callers) skips the whitelist gate.
+     *
      * @return true if more than one selectable year is available or more than one item for the currently selected year; false otherwise
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @should return true if number of items sufficient
+     * @should return true if numer of items suffient
+     * @should return false when docstruct is not in calendar whitelist
      */
     public boolean isDisplay() throws PresentationException, IndexUnreachableException {
+        if (docStructType != null) {
+            List<String> calendarDocStructs = DataManager.getInstance().getConfiguration().getCalendarDocStructTypes();
+            if (!calendarDocStructs.isEmpty() && !calendarDocStructs.contains(docStructType)) {
+                return false;
+            }
+        }
         int hits = 0;
         for (CalendarItemMonth item : calendarItems) {
             if (item.getHits() > 0) {

@@ -48,24 +48,33 @@ class LocalDateConverterTest {
     private static final String PATTERN_GENERIC = "yyyy-MM-dd";
 
 
+    /**
+     * @verifies german
+     */
     @Test
-    void testGerman() {
+    void getAsObject_shouldGerman() {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(Collections.singletonMap("data-format", PATTERN_GERMAN));
         LocalDate date = new LocalDateConverter().getAsObject(null, component, DATE_GERMAN);
         assertEquals(DATE, date);
     }
 
+    /**
+     * @verifies english
+     */
     @Test
-    void testEnglish() {
+    void getAsObject_shouldEnglish() {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(Collections.singletonMap("data-format", PATTERN_ENGLISH));
         LocalDate date = new LocalDateConverter().getAsObject(null, component, DATE_ENGLISH);
         assertEquals(DATE, date);
     }
 
+    /**
+     * @verifies generic
+     */
     @Test
-    void testGeneric() {
+    void getAsObject_shouldGeneric() {
         UIComponent component = Mockito.mock(UIComponent.class);
         Mockito.when(component.getAttributes()).thenReturn(Collections.singletonMap("data-format", PATTERN_GENERIC));
         LocalDate date = new LocalDateConverter().getAsObject(null, component, DATE_GENERIC);

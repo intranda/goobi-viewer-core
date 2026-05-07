@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -150,7 +151,23 @@ public class Configuration extends AbstractConfiguration {
 
     static final String VALUE_DEFAULT = "_DEFAULT";
 
+    /**
+     * XML path prefix whose overrides invalidate {@link #facetFieldPropertyCache}.
+     */
+    private static final String FACET_CONFIG_PATH_PREFIX = "search.facets.";
+
     private Set<String> stopwords;
+
+    /**
+     * Caches resolved facet-field attribute lookups for {@link #getPropertyForFacetField(String, String, String)}
+     * to avoid rebuilding a {@code BaseHierarchicalConfiguration} sub-config (with full interpolator init)
+     * for every facet node on every call. The key is {@code facetField + ' ' + property} (safe: neither
+     * Solr field names nor XPath property expressions contain spaces); the value is an {@link Optional}
+     * holding the raw XML string at that property (empty = no matching node / attribute absent, so the
+     * caller must fall back to its own default). Invalidated on config reload and on
+     * {@link #overrideValue(String, Object)} for {@code search.facets.*} paths.
+     */
+    private final ConcurrentHashMap<String, Optional<String>> facetFieldPropertyCache = new ConcurrentHashMap<>();
 
     /**
      * Creates a new Configuration instance.
@@ -174,7 +191,13 @@ public class Configuration extends AbstractConfiguration {
                 logger.error(e.getMessage(), e);
             }
             builder.addEventListener(ConfigurationBuilderEvent.CONFIGURATION_REQUEST,
-                    event -> builder.getReloadingController().checkForReloading(null));
+                    event -> {
+                        // Clear the facet-field property cache on reload so it does not return stale values
+                        // after the default config file has been modified on disk.
+                        if (builder.getReloadingController().checkForReloading(null)) {
+                            facetFieldPropertyCache.clear();
+                        }
+                    });
         } else {
             logger.error("Default configuration file not found: {}; Base path is {}", builder.getFileHandler().getFile().getAbsoluteFile(),
                     builder.getFileHandler().getBasePath());
@@ -201,6 +224,9 @@ public class Configuration extends AbstractConfiguration {
                     event -> {
                         // logger.trace("request event");
                         if (builderLocal.getReloadingController().checkForReloading(null)) {
+                            // Local config changed on disk — drop cached facet-field lookups so they get
+                            // re-resolved against the freshly-parsed XML.
+                            facetFieldPropertyCache.clear();
                             if (System.currentTimeMillis() - localConfigDisabledTimestamp > 1000) {
                                 localConfigDisabled = false;
                                 logger.info("Local configuration file '{}' reloaded.", fileLocal.getAbsolutePath());
@@ -277,6 +303,7 @@ public class Configuration extends AbstractConfiguration {
      * @return the path to the local config_viewer.xml file.
      * @should return environment variable value if available
      * @should add trailing slash
+     * @should broken config
      */
     public String getConfigLocalPath() {
         String configLocalPath = System.getProperty("configFolder");
@@ -383,7 +410,7 @@ public class Configuration extends AbstractConfiguration {
      * @param prefix Optional prefix for filtering
      * @return List of type attribute values of matching lists
      * @should return all metadataList types if prefix empty
-     * @should filter by prefix correctly
+     * @should return only types matching the given prefix
      */
     public List<String> getMetadataListTypes(String prefix) {
         List<HierarchicalConfiguration<ImmutableNode>> metadataLists = getLocalConfigurationsAt("metadata.metadataList");
@@ -412,8 +439,6 @@ public class Configuration extends AbstractConfiguration {
      * @param topstructValueFallbackDefaultValue default value for topstructValueFallback attribute
      * @return List of metadata configurations
      * @should throw IllegalArgumentException if type null
-     * @should return empty list if no metadata lists configured
-     * @should return empty list if metadataList contains no templates
      * @should return empty list if list type not found
      */
     public List<Metadata> getMetadataConfigurationForTemplate(String type, String template, boolean fallbackToDefaultTemplate,
@@ -480,8 +505,8 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param type metadata list type attribute value
      * @return Map&lt;String, List&lt;Metadata&gt;&gt;
-     * @should return empty map if type null
      * @should return correct config
+     * @should return empty list if list type not found
      */
     public Map<String, List<Metadata>> getMetadataTemplates(String type) {
         try {
@@ -636,9 +661,7 @@ public class Configuration extends AbstractConfiguration {
      * @param index zero-based index of the metadataView element to use
      * @param template template name to look up
      * @return List of configured <code>Metadata</code> fields for the given template
-     * @should return correct template configuration
-     * @should return default template configuration if template not found
-     * @should return default template if template is null
+     * @should return non null result
      */
     public List<MetadataListElement> getMainMetadataListItemsForTemplate(int index, String template) {
         logger.trace("getMainMetadataForTemplate: {}", template);
@@ -1004,6 +1027,7 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * @return the list of configured geo map feature title options as select items
+     * @should return collection with 3 elements
      */
     public List<SelectItem> getGeomapFeatureTitleOptions() {
         List<HierarchicalConfiguration<ImmutableNode>> configs = getLocalConfigurationsAt("maps.metadata.option");
@@ -1109,6 +1133,7 @@ public class Configuration extends AbstractConfiguration {
      * is returned, all downloads should remain visible
      *
      * @return a regex or an empty string if no downloads should be hidden
+      * @should return configured value
      */
     public List<IFilterConfiguration> getAdditionalFilesDisplayFilters() {
         HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("additional-files");
@@ -1481,6 +1506,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * 
      * @return the list of configured collection Solr field names
+     * @should return collection with 3 elements
      */
     public List<String> getConfiguredCollectionFields() {
         List<String> list = getLocalList("collections.collection[@field]");
@@ -1498,6 +1524,7 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @param field the solr fild on which the collection is based
      * @return a map of regular expressions matching collection names and associated sortOrders
+     * @should return collection with 3 elements
      */
     public Map<String, String> getCollectionSortOrders(String field) {
 
@@ -1555,9 +1582,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param field collection Solr field name to look up
      * @return a map of collection name patterns to their configured default sort fields for the given collection field
-     * @should return correct field for collection
-     * @should give priority to exact matches
-     * @should return hyphen if collection not found
+     * @should return all fields
      */
     public Map<String, String> getCollectionDefaultSortFields(String field) {
         Map<String, String> map = new HashMap<>();
@@ -1599,8 +1624,8 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param field collection Solr field name to look up
      * @should return correct value
-     * @should return -1 if no collection config was found
      * @return a int.
+     * @should return 1 if no collection config was found
      */
     public int getCollectionDisplayDepthForSearch(String field) {
 
@@ -1856,6 +1881,7 @@ public class Configuration extends AbstractConfiguration {
      * 
      * @return List of configured template names
      * @should return all values
+     * @should return correct value
      */
     public List<String> getAdvancedSearchTemplateNames() {
         return getLocalList(XML_PATH_SEARCH_ADVANCED_SEARCHFIELDS_TEMPLATE + "[@name]", Collections.emptyList());
@@ -1916,7 +1942,7 @@ public class Configuration extends AbstractConfiguration {
      * @param language language code used to filter language-specific fields
      * @return a list of configured advanced search field configurations for the given template and language
      * @should return all values
-     * @should return skip fields that don't match given language
+     * @should return skip fields that dont match given language
      */
     public List<AdvancedSearchFieldConfiguration> getAdvancedSearchFields(String template, boolean fallbackToDefaultTemplate, String language) {
         // logger.trace("getAdvancedSearchFields({},{})", template, fallbackToDefaultTemplate); //NOSONAR Debug
@@ -2454,6 +2480,7 @@ public class Configuration extends AbstractConfiguration {
      * getVocabulariesFolder.
      *
      * @return the configured folder name for vocabulary files
+     * @should return correct value
      */
     public String getVocabulariesFolder() {
         return getLocalString("vocabularies", "vocabularies");
@@ -2652,6 +2679,14 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * @return number of days until a UserToken expires; 0 or negative means no expiry
+     * @should return default value of 30 when not configured
+     */
+    public int getTokenExpirationDays() {
+        return getLocalInt("user.authentication.tokenExpirationDays", 30);
+    }
+
+    /**
      * isShowOpenIdConnect.
      *
      * @should return correct value
@@ -2664,9 +2699,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getAuthenticationProviders.
      *
-     * @should return all properly configured elements
-     * @should load user group names correctly
+     * @should populate addUserToGroups list from provider configuration
      * @return a list of all configured authentication providers
+     * @should return all six configured providers with their type specific attributes populated
      */
     public List<IAuthenticationProvider> getAuthenticationProviders() {
         XMLConfiguration myConfigToUse = getConfig();
@@ -2908,6 +2943,7 @@ public class Configuration extends AbstractConfiguration {
      * getThemeRootPath.
      *
      * @return the configured root path for theme resources
+     * @should return correct value
      */
     public String getThemeRootPath() {
         return getLocalString("viewer.theme.rootPath");
@@ -3468,6 +3504,7 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param facetField facet field name to look up
      * @return the configured sort order for the given facet field (e.g. "default", "asc", "desc")
+     * @should return configured sort order for field
      */
     public String getSortOrder(String facetField) {
         return getPropertyForFacetField(facetField, "[@sortOrder]", "default");
@@ -3582,28 +3619,64 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.
      *
+     * <p>Hot path: called dozens of times per facet field during every search-result render.
+     * The underlying {@code getLocalConfigurationsAt} rebuilds a fresh {@code BaseHierarchicalConfiguration}
+     * (with full {@code ConfigurationInterpolator} init) for every facet node on every call, which
+     * dominated the server-side latency on result pages with many configured facet fields. Results are
+     * therefore cached in {@link #facetFieldPropertyCache}; the cache is invalidated on config reload
+     * and on {@link #overrideValue(String, Object)} for {@code search.facets.*} paths.
+     *
      * @param facetField Facet field
      * @param property Element or attribute name to check
      * @param defaultValue Value that is returned if none was found
      * @return Found value or defaultValue
+     * @should cache resolved value across repeated calls
+     * @should return default value for blank facet field without populating cache
      */
     String getPropertyForFacetField(String facetField, String property, String defaultValue) {
         if (StringUtils.isBlank(facetField)) {
             return defaultValue;
         }
 
+        // Cache key intentionally excludes defaultValue: the cache stores the *raw* XML lookup
+        // outcome (present or absent) and only the caller controls the fallback. This keeps the
+        // cache independent of how different callers spell the default for the same property.
+        // ASCII Unit Separator (US, 0x1F): an explicit, non-printable separator that cannot occur
+        // in a Solr field name or XML attribute path, so the concatenated cache key is unambiguous
+        // even when facetField/property contain spaces or other punctuation.
+        String cacheKey = facetField + '\u001F' + property;
+        // computeIfAbsent collapses the previous get/null-check/put into a single atomic call:
+        // it preserves the negative-caching semantics (the resolver may return Optional.empty(), which
+        // is stored and short-circuits later lookups) and prevents duplicate resolves when concurrent
+        // threads hit the same missing key. S2789 false positive on the prior null-check is gone.
+        Optional<String> cached = facetFieldPropertyCache.computeIfAbsent(cacheKey,
+                k -> resolveFacetFieldProperty(facetField, property));
+        return cached.orElse(defaultValue);
+    }
+
+    /**
+     * Raw XML lookup for {@link #getPropertyForFacetField(String, String, String)}, without caching.
+     * Preserves the original lookup order (regular fields first, then hierarchical fields) and the
+     * "first matching, non-null value wins" semantics of the previous inlined implementation.
+     *
+     * @param facetField non-blank facet field name
+     * @param property element or attribute path to read (e.g. {@code [@sortOrder]})
+     * @return present {@link Optional} with the XML value if a matching field node exposes this property;
+     *         empty {@link Optional} otherwise (caller applies default)
+     */
+    private Optional<String> resolveFacetFieldProperty(String facetField, String property) {
         String facetifiedField = SearchHelper.facetifyField(facetField);
+        String untokenized = facetField + SolrConstants.SUFFIX_UNTOKENIZED;
+
         // Regular fields
         List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(facetField)
-                        || (facetField + SolrConstants.SUFFIX_UNTOKENIZED).equals(nodeText)
-                        || nodeText.equals(facetifiedField)) {
+                if (nodeText.equals(facetField) || untokenized.equals(nodeText) || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
-                        return ret;
+                        return Optional.of(ret);
                     }
                 }
             }
@@ -3613,18 +3686,44 @@ public class Configuration extends AbstractConfiguration {
         if (facetFields != null && !facetFields.isEmpty()) {
             for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
                 String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(facetField)
-                        || (facetField + SolrConstants.SUFFIX_UNTOKENIZED).equals(nodeText)
-                        || nodeText.equals(facetifiedField)) {
+                if (nodeText.equals(facetField) || untokenized.equals(nodeText) || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
                     if (ret != null) {
-                        return ret;
+                        return Optional.of(ret);
                     }
                 }
             }
         }
 
-        return defaultValue;
+        return Optional.empty();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Overridden to invalidate {@link #facetFieldPropertyCache} whenever a {@code search.facets.*}
+     * property is changed at runtime, so tests and admin-tooling that mutate the config see the updated
+     * value on the next lookup.
+     *
+     * @should invalidate facet field property cache for facet paths
+     * @should not invalidate facet field property cache for non facet paths
+     */
+    @Override
+    public void overrideValue(String property, Object value) {
+        super.overrideValue(property, value);
+        if (property != null && property.startsWith(FACET_CONFIG_PATH_PREFIX)) {
+            facetFieldPropertyCache.clear();
+        }
+    }
+
+    /**
+     * Exposed for unit tests that need to inspect the {@link #facetFieldPropertyCache} state.
+     * Not intended as a public API.
+     *
+     * @return the number of entries currently cached in the facet-field property cache
+     */
+    int getFacetFieldPropertyCacheSize() {
+        return facetFieldPropertyCache.size();
     }
 
     /**
@@ -3679,7 +3778,7 @@ public class Configuration extends AbstractConfiguration {
      * @param language language code for filtering language-specific sort fields
      * @return List of {@link SearchSortingOption}s from configured sorting fields
      * @should place default sorting field on top
-     * @should handle descending configurations correctly
+     * @should include ascending and descending entries for the same field
      * @should ignore secondary fields from default config
      * @should ignore fields with mismatched language
      */
@@ -4104,6 +4203,20 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Whether the viewer pre-decodes the source image of the currently selected page into the
+     * ContentServer's source image cache while the HTML is rendering, so the OpenSeadragon tile
+     * burst that follows finds the decoded master already cached. Only useful when the
+     * ContentServer's {@code sourceImageCache useCache="true"} is set; otherwise the call is a
+     * no-op. Defaults to {@code true} since the cost (one async decode per page view) is small
+     * compared to the typical 800 ms tile-burst stall on cold first-views.
+     *
+     * @return true if pre-warming the source image cache on page selection is enabled
+     */
+    public boolean isPrewarmSourceImageCache() {
+        return getLocalBoolean("performance.prewarmSourceImageCache[@enabled]", true);
+    }
+
+    /**
      * Returns whether a navigator element should be shown in the OpenSeadragon viewer.
      *
      * @param viewAttributes view context attributes selecting the zoom config
@@ -4130,6 +4243,8 @@ public class Configuration extends AbstractConfiguration {
      *
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return configured value
+     * @should return zero for edit content page type
      */
     public int getFooterHeight() throws ViewerConfigurationException {
         return getFooterHeight(new ViewAttributes(PageType.viewImage));
@@ -4161,6 +4276,8 @@ public class Configuration extends AbstractConfiguration {
      *
      * @return a list of configured zoom scale values for the default image view
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return configured scale values
+     * @should return fullscreen scales for fullscreen page type
      */
     public List<String> getImageViewZoomScales() throws ViewerConfigurationException {
         return getImageViewZoomScales(new ViewAttributes(PageType.viewImage));
@@ -4201,6 +4318,8 @@ public class Configuration extends AbstractConfiguration {
      *
      * @return the configured tile sizes for imageView as a hashmap linking each tile size to the list of resolutions to use with that size
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @should return configured tile sizes and scale factors
+     * @should return fullscreen tile sizes for fullscreen page type
      */
     public Map<Integer, List<Integer>> getTileSizes() throws ViewerConfigurationException {
         return getTileSizes(new ViewAttributes(PageType.viewImage));
@@ -4457,6 +4576,7 @@ public class Configuration extends AbstractConfiguration {
      * Returns the TTL (in minutes) for cached data repository name lookups.
      *
      * @return TTL in minutes; default is 10
+     * @should return correct value
      */
     public int getDataRepositoryCacheTTL() {
         return getLocalInt("performance.dataRepositoryCacheTTL", 10);
@@ -4480,6 +4600,35 @@ public class Configuration extends AbstractConfiguration {
      */
     public int getDatabaseConnectionAttempts() {
         return getLocalInt("performance.databaseConnectionAttempts", 5);
+    }
+
+    /**
+     * getMaxAggregateAltoSize.
+     *
+     * Aggregate-text REST endpoints (e.g. /api/v1/records/{pi}/alto) build a single concatenated
+     * response in memory. For very large works (e.g. multi-thousand-page newspapers) this can
+     * OOM the JVM; clients should use the streaming /alto.zip endpoint instead. This config
+     * exposes a hard byte cap on the aggregate file size (sum of Files.size() over all page-level
+     * ALTO files) above which the REST layer rejects the request with HTTP 400.
+     *
+     * @return configured limit in bytes; default 50 MB
+     * @should return correct value
+     */
+    public int getMaxAggregateAltoSize() {
+        return getLocalInt("performance.maxAggregateAltoSize", 50_000_000);
+    }
+
+    /**
+     * getMaxAggregateFulltextSize.
+     *
+     * Same as {@link #getMaxAggregateAltoSize()} but for the plain-text aggregate endpoint
+     * (/api/v1/records/{pi}/plaintext). Default 50 MB.
+     *
+     * @return configured limit in bytes; default 50 MB
+     * @should return correct value
+     */
+    public int getMaxAggregateFulltextSize() {
+        return getLocalInt("performance.maxAggregateFulltextSize", 50_000_000);
     }
 
     /**
@@ -4825,6 +4974,24 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * getCalendarDocStructTypes.
+     *
+     * <p>List of DOCSTRCT names for which the calendar TOC view applies. When the
+     * top struct of an anchor/group record matches one of these types and multiple
+     * calendar years are indexed, the calendar view replaces the issue-list TOC and
+     * the (potentially heavy) issue list is skipped. Records whose docstruct is not
+     * in this list always get the regular TOC build, even when they have multi-year
+     * date metadata. An empty list preserves legacy behavior — defer for any anchor
+     * or group with more than one indexed calendar year.
+     *
+     * @should return all configured values
+     * @return a list of configured docstruct names that use the calendar TOC view
+     */
+    public List<String> getCalendarDocStructTypes() {
+        return getLocalList("toc.calendarDocStructTypes.docstruct");
+    }
+
+    /**
      * isTocListSiblingRecords.
      *
      * @return true if sibling records should be listed in the table of contents, false otherwise
@@ -4956,6 +5123,7 @@ public class Configuration extends AbstractConfiguration {
      * getCmsMediaDisplayWidth.
      *
      * @return a int.
+     * @should return configured value
      */
     public int getCmsMediaDisplayWidth() {
         return getLocalInt("cms.mediaDisplayWidth", 0);
@@ -4965,6 +5133,7 @@ public class Configuration extends AbstractConfiguration {
      * getCmsMediaDisplayHeight. If not configured, return 100.000. In this case the actual image size always depends on the requested width
      *
      * @return a int.
+     * @should return configured value
      */
     public int getCmsMediaDisplayHeight() {
         return getLocalInt("cms.mediaDisplayHeight", 100000);
@@ -5511,6 +5680,7 @@ public class Configuration extends AbstractConfiguration {
      * getConfiguredCollections.
      *
      * @return a list of configured collection Solr field names
+     * @should return all configured collection fields
      */
     public List<String> getConfiguredCollections() {
         return getLocalList("collections.collection[@field]", new ArrayList<>());
@@ -5748,6 +5918,8 @@ public class Configuration extends AbstractConfiguration {
     /**
      * @param name geo map marker name to look up
      * @return the configured GeoMapMarker with the given name, or null if not found
+     * @should return collection with 5 elements
+     * @should return non null result
      */
     public GeoMapMarker getGeoMapMarker(String name) {
         return getGeoMapMarkers().stream().filter(m -> name.equalsIgnoreCase(m.getName())).findAny().orElse(null);
@@ -5756,6 +5928,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @return a list of solr field names containing GeoJson data used to create markers in maps
+     * @should return collection with 4 elements
      */
     public List<String> getGeoMapMarkerFields() {
         return getLocalList("maps.coordinateFields.field", Arrays.asList("MD_GEOJSON_POINT", "NORM_COORDS_GEOJSON"));
@@ -5882,6 +6055,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @return the list of configured license descriptions
+     * @should return collection with 2 elements
      */
     public List<LicenseDescription> getLicenseDescriptions() {
         List<LicenseDescription> licenses = new ArrayList<>();
@@ -5948,7 +6122,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @return the list of configured translation groups
-     * @should read config items correctly
+     * @should return translation groups with type, name, description, items, and regex flags from config
      */
     public List<TranslationGroup> getTranslationGroups() {
         List<TranslationGroup> ret = new ArrayList<>();
@@ -6213,6 +6387,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      *
      * @return the list of configured host names allowed as redirect targets after HTTP header login
+     * @should return configured values
      */
     public List<String> getHttpHeaderLoginRedirectWhitelist() {
         return getLocalList("user.authenticationProviders.redirectWhitelist.host");

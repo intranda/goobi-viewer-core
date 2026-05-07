@@ -32,8 +32,8 @@ import io.goobi.viewer.exceptions.IllegalUrlParameterException;
 class BookmarkBeanTest extends AbstractDatabaseEnabledTest {
 
     /**
+     * @verifies throw for non numeric id
      * @see BookmarkBean#setCurrentBookmarkListId(String)
-     * @verifies throw IllegalUrlParameterException for non-numeric id
      */
     @Test
     void setCurrentBookmarkListId_shouldThrowForNonNumericId() {
@@ -42,8 +42,8 @@ class BookmarkBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @verifies throw if bookmark list not found
      * @see BookmarkBean#setCurrentBookmarkListId(String)
-     * @verifies throw IllegalUrlParameterException if bookmark list not found
      */
     @Test
     void setCurrentBookmarkListId_shouldThrowIfBookmarkListNotFound() {
@@ -53,8 +53,8 @@ class BookmarkBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @verifies not throw for null
      * @see BookmarkBean#setCurrentBookmarkListId(String)
-     * @verifies not throw for null id
      */
     @Test
     void setCurrentBookmarkListId_shouldNotThrowForNull() {
@@ -63,8 +63,8 @@ class BookmarkBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @verifies throw if share key not found
      * @see BookmarkBean#setShareKey(String)
-     * @verifies throw IllegalUrlParameterException if share key not found
      */
     @Test
     void setShareKey_shouldThrowIfShareKeyNotFound() {
@@ -73,8 +73,8 @@ class BookmarkBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @verifies not throw for null
      * @see BookmarkBean#setShareKey(String)
-     * @verifies not throw for null key
      */
     @Test
     void setShareKey_shouldNotThrowForNull() {

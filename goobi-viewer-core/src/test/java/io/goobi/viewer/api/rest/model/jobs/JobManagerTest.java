@@ -56,8 +56,11 @@ class JobManagerTest {
         manager = new TaskManager(Duration.of(7, ChronoUnit.DAYS));
     }
 
+    /**
+     * @verifies set status to complete after execution
+     */
     @Test
-    void testAddJob() throws InterruptedException {
+    void addTask_shouldSetStatusToCompleteAfterExecution() throws InterruptedException {
         Task job = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
         });
         manager.addTask(job);
@@ -71,8 +74,11 @@ class JobManagerTest {
         assertEquals(TaskStatus.COMPLETE, manager.getTask(job.getId()).getStatus());
     }
 
+    /**
+     * @verifies return all tasks for given type
+     */
     @Test
-    void testListJobs() {
+    void getTasks_shouldReturnAllTasksForGivenType() {
         Task job1 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {
         });
         Task job2 = new Task(new TaskParameter(TaskType.NOTIFY_SEARCH_UPDATE), (request, me) -> {

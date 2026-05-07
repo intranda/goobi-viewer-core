@@ -67,9 +67,12 @@ class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
         super.tearDown();
     }
 
+    /**
+     * @verifies return ordered collection with positive total items
+     */
     @Test
     @SuppressWarnings("unchecked")
-    void testGetChanges() throws JsonMappingException, JsonProcessingException {
+    void getAllChanges_shouldReturnOrderedCollectionWithPositiveTotalItems() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_CHANGES).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -85,9 +88,13 @@ class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies return ordered collection page with next and partOf links
+     * @see ChangeDiscoveryResource#getPage(@Parameter(description = "page order within the collection of activities"))
+     */
     @Test
     @SuppressWarnings("unchecked")
-    void testGetChangesPage() throws JsonMappingException, JsonProcessingException {
+    void getPage_shouldReturnOrderedCollectionPageWithNextAndPartOfLinks() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_CHANGES, RECORDS_CHANGES_PAGE).params(0).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -109,9 +116,10 @@ class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
      * An invalid 'start' date (e.g. unicode garbage) must return HTTP 400, not 500.
      * Before the fix, LocalDate.parse() threw DateTimeParseException which was not caught,
      * causing an unhandled exception and a 500 response.
+     * @verifies return http 400 when start date is invalid
      */
     @Test
-    void testGetChanges_invalidStartDate_returns400() {
+    void getAllChanges_shouldReturnHttp400WhenStartDateIsInvalid() {
         try (Response response = target(urls.path(RECORDS_CHANGES).build() + "?start=not-a-date")
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
@@ -120,9 +128,12 @@ class ChangeDiscoveryResourceTest extends AbstractRestApiTest {
         }
     }
 
+    /**
+     * @verifies calculate last page number from total items and page size
+     */
     @Test
     @SuppressWarnings("unchecked")
-    void testGetChangePageCount() throws JsonMappingException, JsonProcessingException {
+    void getAllChanges_shouldCalculateLastPageNumberFromTotalItemsAndPageSize() throws JsonMappingException, JsonProcessingException {
         try (Response response = target(urls.path(RECORDS_CHANGES).build())
                 .request()
                 .accept(MediaType.APPLICATION_JSON)

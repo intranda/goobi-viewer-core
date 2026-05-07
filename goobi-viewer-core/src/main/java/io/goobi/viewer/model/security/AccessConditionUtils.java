@@ -79,6 +79,9 @@ public final class AccessConditionUtils {
 
     private static final Logger logger = LogManager.getLogger(AccessConditionUtils.class);
 
+    /** Maximum number of identifiers per Solr terms query before chunking kicks in. */
+    private static final int PERMISSION_BATCH_CHUNK_SIZE = 500;
+
     /**
      * Private constructor to prevent instantiation.
      */
@@ -329,9 +332,11 @@ public final class AccessConditionUtils {
             // Resolve user once before the loop to avoid repeated expensive session attribute scans
             // (findInstanceInSessionAttributes) when requiredAccessConditions has multiple entries.
             User resolvedUser = user != null ? user : retrieveUserFromContext(session);
+            // Hoisted out of the loop for the same reason; the cache returns the same immutable snapshot.
+            List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
             for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
                 Set<String> pageAccessConditions = entry.getValue();
-                AccessPermission access = checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), pageAccessConditions,
+                AccessPermission access = checkAccessPermission(licenseTypes, pageAccessConditions,
                         privilegeName, resolvedUser, ipAddress,
                         ClientApplicationManager.getClientFromSession(session), query);
                 ret.put(entry.getKey(), access);
@@ -348,6 +353,10 @@ public final class AccessConditionUtils {
      * 
      * @param session The session in which the user data is stored
      * @return The user logged into the given session. May be null if no user is logged in
+     * @should return null for null session
+     * @should return user from direct session attribute
+     * @should return null without session scan when cdi returns null user
+     * @should return user via session scan when stored under non standard key
      */
     public static User retrieveUserFromContext(HttpSession session) {
         try {
@@ -367,23 +376,22 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Fetches and pre-evaluates access permissions for all pages of a record in a single batch
-     * Solr query, avoiding O(n) per-page Solr queries during IIIF manifest generation.
+     * Fetches and pre-evaluates access permissions for all pages of a record in a single batch Solr query, avoiding O(n) per-page Solr queries during
+     * IIIF manifest generation.
      *
-     * <p>Steps:
+     * <p>
+     * Steps:
      * <ol>
-     *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE} (fields: ORDER, ACCESSCONDITION)</li>
-     *   <li>One DAO call: {@code getRecordLicenseTypes()}</li>
-     *   <li>One user + IP resolution from {@code request}</li>
-     *   <li>In-memory evaluation of VIEW_IMAGES, VIEW_THUMBNAILS, ZOOM_IMAGES,
-     *   DOWNLOAD_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
+     * <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE} (fields: ORDER, ACCESSCONDITION)</li>
+     * <li>One cache read: {@code getRecordLicenseTypes()}</li>
+     * <li>One user + IP resolution from {@code request}</li>
+     * <li>In-memory evaluation of VIEW_IMAGES, VIEW_THUMBNAILS, ZOOM_IMAGES, DOWNLOAD_IMAGES, VIEW_FULLTEXT, DOWNLOAD_PAGE_PDF per page</li>
      * </ol>
      *
      * @param pi persistent identifier of the record
      * @param request HTTP servlet request for user and client IP resolution; may be null
-     * @return populated {@link PagePermissions};
-     *         {@link PagePermissions#EMPTY} when pi is blank, when no pages are found,
-     *         or when a Solr/DAO error occurs (logged at WARN)
+     * @return populated {@link PagePermissions}; {@link PagePermissions#EMPTY} when pi is blank, when no pages are found, or when a Solr/DAO error
+     *         occurs (logged at WARN)
      * @should return granted permissions for open access record
      * @should return empty for blank pi
      * @should return empty for null pi
@@ -407,7 +415,7 @@ public final class AccessConditionUtils {
             }
 
             // Resolve shared context once – reused across all pages to avoid repeated lookups
-            List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
+            List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
             User user = retrieveUserFromContext(request != null ? request.getSession() : null);
             String ipAddress = NetTools.getIpAddress(request);
             Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
@@ -459,20 +467,21 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Fetches the list of filenames accessible to the current user for a given record and Solr
-     * filename field, using a single batch Solr query. Permissions are evaluated in memory —
-     * no further Solr queries are issued per file.
+     * Fetches the list of filenames accessible to the current user for a given record and Solr filename field, using a single batch Solr query.
+     * Permissions are evaluated in memory — no further Solr queries are issued per file.
      *
-     * <p>Steps:
+     * <p>
+     * Steps:
      * <ol>
-     *   <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE +filenameField:[* TO *]}</li>
-     *   <li>One DAO call: {@code getRecordLicenseTypes()}</li>
-     *   <li>One user + IP resolution from {@code request}</li>
-     *   <li>In-memory evaluation of {@code privilegeType} per page document</li>
+     * <li>One Solr query: {@code +PI_TOPSTRUCT:pi +DOCTYPE:PAGE +filenameField:[* TO *]}</li>
+     * <li>One cache read: {@code getRecordLicenseTypes()}</li>
+     * <li>One user + IP resolution from {@code request}</li>
+     * <li>In-memory evaluation of {@code privilegeType} per page document</li>
      * </ol>
      *
-     * <p>Only bare filenames are returned (e.g. {@code 00000001.xml}), not full Solr paths
-     * (e.g. {@code alto/PI/00000001.xml}). Results are ordered by page {@code ORDER}.
+     * <p>
+     * Only bare filenames are returned (e.g. {@code 00000001.xml}), not full Solr paths (e.g. {@code alto/PI/00000001.xml}). Results are ordered by
+     * page {@code ORDER}.
      *
      * @param pi persistent identifier of the record; blank input returns an empty list immediately
      * @param filenameField Solr field to query, e.g. {@code SolrConstants.FILENAME_ALTO}
@@ -483,9 +492,9 @@ public final class AccessConditionUtils {
      * @should return empty list for null pi
      * @should return filenames for open access record
      * @should return empty list for record with no files indexed
-     * @should return empty list for restricted record when anonymous
      * @should return bare filenames not full paths
      * @should work for fulltext field
+     * @should return empty list for restricted record anonymous
      */
     public static List<String> fetchAccessibleFileNames(String pi, String filenameField,
             String privilegeType, HttpServletRequest request) {
@@ -514,7 +523,7 @@ public final class AccessConditionUtils {
             }
 
             // Resolve shared context once — reused for every page to avoid repeated lookups
-            List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
+            List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
             User user = retrieveUserFromContext(request != null ? request.getSession() : null);
             String ipAddress = NetTools.getIpAddress(request);
             Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
@@ -590,7 +599,7 @@ public final class AccessConditionUtils {
         String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + page.getPi() + " +" + SolrConstants.ORDER + ":" + page.getOrder();
         try {
             User user = retrieveUserFromContext(request != null ? request.getSession() : null);
-            return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), page.getAccessConditions(),
+            return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), page.getAccessConditions(),
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
             logger.debug(e.getMessage());
@@ -628,7 +637,7 @@ public final class AccessConditionUtils {
             if (results.size() > 0) {
                 Set<String> accessConditions =
                         results.getFirst().getFieldValues(SolrConstants.ACCESSCONDITION).stream().map(Object::toString).collect(Collectors.toSet());
-                return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), accessConditions,
+                return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), accessConditions,
                         privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
             }
 
@@ -738,7 +747,7 @@ public final class AccessConditionUtils {
             }
 
             User user = retrieveUserFromContext(request != null ? request.getSession() : null);
-            return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
+            return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), originalQuery);
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
@@ -755,72 +764,238 @@ public final class AccessConditionUtils {
      * @param request HTTP servlet request providing session and IP address
      * @return Map with true/false for each LOGID
      * @should fill map completely
+     * @should return empty map when identifier is blank
+     * @should return empty map when identifier is null
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static Map<String, AccessPermission> checkAccessPermissionByIdentiferForAllLogids(String identifier, String privilegeName,
+            HttpServletRequest request) throws IndexUnreachableException, DAOException {
+        // Delegate to the batch method with a single-privilege set; returns either the resolved submap
+        // or an empty map (never null) to preserve the legacy contract.
+        Map<String, Map<String, AccessPermission>> result = checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(
+                identifier, Collections.singleton(privilegeName), request);
+        return result.getOrDefault(privilegeName, new HashMap<>());
+    }
+
+    /**
+     * Checks whether the current user has the given access permissions for every LOGID of the record with the
+     * given identifier, evaluating multiple privileges in a single Solr roundtrip.
+     *
+     * <p>The Solr index is queried <strong>once</strong> for all DOCSTRCT documents of the given identifier;
+     * the returned access conditions are then evaluated in-memory for each requested privilege. Per-privilege
+     * results are stored in the session cache using the same key scheme as
+     * {@link #checkAccessPermissionByIdentiferForAllLogids(String, String, HttpServletRequest)}, so subsequent
+     * calls (single or batched) for any of the privileges hit the cache.
+     *
+     * @param identifier persistent identifier of the record
+     * @param privilegeNames set of access privilege names to verify; an empty or null set returns an empty map
+     * @param request HTTP servlet request providing session and IP address (may be null)
+     * @return Map keyed by privilege name; each value is a Map keyed by LOGID with the resolved permission
+     * @should return empty map when privileges set is null
+     * @should return empty map when privileges set is empty
+     * @should return empty submap for each privilege when identifier is blank
+     * @should return same result as single-privilege call for each privilege
+     * @should handle three or more privileges in one batch
+     * @should populate session cache per privilege so subsequent calls hit cache
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public static Map<String, Map<String, AccessPermission>> checkAccessPermissionByIdentifierForAllLogidsAndPrivileges(
+            String identifier, Set<String> privilegeNames, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException {
+        if (privilegeNames == null || privilegeNames.isEmpty()) {
+            return new HashMap<>();
+        }
+        // Blank identifiers are filtered out by the cross-PI method (they pollute cache keys and break
+        // the terms-query parser). Reproduce the Phase-B contract: return one empty submap per privilege.
+        if (StringUtils.isBlank(identifier)) {
+            Map<String, Map<String, AccessPermission>> empty = new HashMap<>();
+            for (String privilege : privilegeNames) {
+                empty.put(privilege, new HashMap<>());
+            }
+            return empty;
+        }
+        // Delegate to cross-PI method with a singleton identifier set; preserves Phase B contract.
+        Map<String, Map<String, Map<String, AccessPermission>>> batch =
+                checkAccessPermissionsForPisAndPrivileges(Collections.singleton(identifier), privilegeNames, request);
+        return batch.getOrDefault(identifier, new HashMap<>());
+    }
+
+    /**
+     * Checks access permissions for a set of identifiers and a set of privileges in one Solr roundtrip.
+     *
+     * <p>Issues a single Solr query (or a chunked sequence for large identifier sets) using the
+     * <code>terms</code> query parser to fetch access conditions for all docstructs of all given identifiers,
+     * then evaluates each requested privilege in-memory per identifier. Per-identifier per-privilege results
+     * are stored in the session cache under the same key scheme as the legacy single-PI methods.
+     *
+     * <p><strong>Moving-Wall semantics:</strong> the inner <code>checkAccessPermission</code> receives a
+     * per-identifier query string of the form <code>+PI_TOPSTRUCT:"&lt;id&gt;" +DOCTYPE:DOCSTRCT</code>,
+     * reconstructed inside the doc loop, so that <code>LicenseType.isRestrictionsExpired</code> sees the
+     * same cache key as the legacy single-PI methods would have produced. The cross-PI <code>terms</code>
+     * string is used only for the outer Solr fetch.
+     *
+     * @param identifiers persistent identifiers of records; null or empty returns an empty map
+     * @param privilegeNames access privilege names to verify; null or empty returns an empty map
+     * @param request HTTP servlet request providing session and IP address (may be null)
+     * @return Map keyed by identifier; each value is a Map keyed by privilege name; each inner Map keyed by LOGID
+     * @should return empty map when identifiers is null
+     * @should return empty map when identifiers is empty
+     * @should return empty map when privileges is null
+     * @should return empty map when privileges is empty
+     * @should return same result as per-identifier batch call
+     * @should return same result as Phase B method for singleton identifier
+     * @should populate session cache per identifier and privilege
+     * @should hit session cache on subsequent call without additional Solr roundtrip
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     @SuppressWarnings("unchecked")
-    public static Map<String, AccessPermission> checkAccessPermissionByIdentiferForAllLogids(String identifier, String privilegeName,
-            HttpServletRequest request) throws IndexUnreachableException, DAOException {
-        logger.trace("checkAccessPermissionByIdentiferForAllLogids({}, {})", identifier, privilegeName);
+    public static Map<String, Map<String, Map<String, AccessPermission>>> checkAccessPermissionsForPisAndPrivileges(
+            Set<String> identifiers, Set<String> privilegeNames, HttpServletRequest request)
+            throws IndexUnreachableException, DAOException {
+        if (identifiers == null || identifiers.isEmpty() || privilegeNames == null || privilegeNames.isEmpty()) {
+            return new HashMap<>();
+        }
+        // Filter out null/blank identifiers up-front. Avoids polluting cache keys (`_PRIV_<priv>_null`),
+        // breaking the terms parser argument list, and causing behavior drift vs. the legacy methods which
+        // skipped Solr entirely for empty identifiers.
+        Set<String> validIdentifiers = new HashSet<>();
+        for (String id : identifiers) {
+            if (StringUtils.isNotBlank(id)) {
+                validIdentifiers.add(id);
+            }
+        }
+        if (validIdentifiers.isEmpty()) {
+            return new HashMap<>();
+        }
+        logger.trace("checkAccessPermissionsForPisAndPrivileges({} ids, {} privs)", validIdentifiers.size(), privilegeNames.size());
         HttpSession session = request != null ? request.getSession() : null;
 
-        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeName + "_" + identifier;
-        Map<String, AccessPermission> ret = (Map<String, AccessPermission>) getSessionPermission(attributeName, session);
-        if (ret != null) {
+        // Step 1: session-cache lookup per (identifier, privilege)
+        Map<String, Map<String, Map<String, AccessPermission>>> ret = new HashMap<>();
+        Map<String, Set<String>> uncachedPerIdentifier = new HashMap<>();
+        for (String identifier : validIdentifiers) {
+            Map<String, Map<String, AccessPermission>> perPrivResult = new HashMap<>();
+            for (String privilege : privilegeNames) {
+                String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilege + "_" + identifier;
+                Map<String, AccessPermission> cached = (Map<String, AccessPermission>) getSessionPermission(attributeName, session);
+                if (cached != null) {
+                    perPrivResult.put(privilege, cached);
+                } else {
+                    uncachedPerIdentifier.computeIfAbsent(identifier, k -> new HashSet<>()).add(privilege);
+                }
+            }
+            ret.put(identifier, perPrivResult);
+        }
+        if (uncachedPerIdentifier.isEmpty()) {
             return ret;
         }
 
-        ret = new HashMap<>();
-        if (StringUtils.isNotEmpty(identifier)) {
-            String query = new StringBuilder().append('+')
-                    .append(SolrConstants.PI_TOPSTRUCT)
-                    .append(":\"")
-                    .append(identifier)
-                    .append("\" +")
-                    .append(SolrConstants.DOCTYPE)
-                    .append(':')
-                    .append(DocType.DOCSTRCT.name())
-                    .toString();
+        // Step 2: pre-initialize empty submaps for every uncached (id, priv) so the contract holds even if Solr returns nothing
+        for (Map.Entry<String, Set<String>> entry : uncachedPerIdentifier.entrySet()) {
+            for (String privilege : entry.getValue()) {
+                ret.get(entry.getKey()).put(privilege, new HashMap<>());
+            }
+        }
+
+        // Step 3: chunked Solr fetches via terms parser. Chunked at PERMISSION_BATCH_CHUNK_SIZE to bypass any
+        // per-shard or HTTP limits on large terms-parser argument lists.
+        List<String> uncachedIdentifiers = new ArrayList<>(uncachedPerIdentifier.keySet());
+        List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
+        User user = retrieveUserFromContext(session);
+        for (int from = 0; from < uncachedIdentifiers.size(); from += PERMISSION_BATCH_CHUNK_SIZE) {
+            int to = Math.min(from + PERMISSION_BATCH_CHUNK_SIZE, uncachedIdentifiers.size());
+            List<String> chunk = uncachedIdentifiers.subList(from, to);
+            String fetchQuery = buildTermsPermissionQuery(chunk);
             try {
-                logger.trace(query);
+                logger.trace(fetchQuery); //NOSONAR Debug
                 SolrDocumentList results = DataManager.getInstance()
                         .getSearchIndex()
-                        .search(query, SolrSearchIndex.MAX_HITS, null,
-                                Arrays.asList(SolrConstants.LOGID, SolrConstants.ACCESSCONDITION));
-                if (results != null) {
-                    User user = retrieveUserFromContext(session);
-
-                    //                    long start = System.nanoTime();
-                    List<LicenseType> nonOpenAccessLicenseTypes = DataManager.getInstance().getDao().getRecordLicenseTypes();
-                    for (SolrDocument doc : results) {
-                        Set<String> requiredAccessConditions = new HashSet<>();
-                        Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                        if (fieldsAccessConddition != null) {
-                            for (Object accessCondition : fieldsAccessConddition) {
-                                requiredAccessConditions.add((String) accessCondition);
-                                // logger.trace("{}", accessCondition.toString()); //NOSONAR Debug
-                            }
-                        }
-
-                        String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
-                        if (logid != null) {
-                            ret.put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions, privilegeName, user,
-                                    NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query));
+                        .search(fetchQuery, SolrSearchIndex.MAX_HITS, null,
+                                Arrays.asList(SolrConstants.LOGID, SolrConstants.ACCESSCONDITION, SolrConstants.PI_TOPSTRUCT));
+                if (results == null) {
+                    continue;
+                }
+                for (SolrDocument doc : results) {
+                    String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+                    if (pi == null) {
+                        continue;
+                    }
+                    Set<String> uncachedForThisPi = uncachedPerIdentifier.get(pi);
+                    if (uncachedForThisPi == null) {
+                        continue;
+                    }
+                    String logid = (String) doc.getFieldValue(SolrConstants.LOGID);
+                    if (logid == null) {
+                        continue;
+                    }
+                    Set<String> requiredAccessConditions = new HashSet<>();
+                    Collection<Object> fieldsAccessCondition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+                    if (fieldsAccessCondition != null) {
+                        for (Object accessCondition : fieldsAccessCondition) {
+                            requiredAccessConditions.add((String) accessCondition);
                         }
                     }
-                    //                    long end = System.nanoTime();
+                    // INVARIANT (Risk #1, Moving-Wall): the `query` parameter passed to checkAccessPermission MUST be
+                    // the per-identifier legacy format produced by buildSinglePiPermissionQuery. LicenseType uses it
+                    // as a Map cache key in restrictionsExpired; the moving-wall hit-count check builds a Solr query
+                    // around it. Passing the cross-PI terms string here would break per-volume embargo evaluation —
+                    // see spec section 2 step 10 and the buildSinglePiPermissionQuery_shouldProduceLegacy... test.
+                    String perIdentifierQuery = buildSinglePiPermissionQuery(pi);
+                    String remoteAddress = NetTools.getIpAddress(request);
+                    Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
+                    for (String privilege : uncachedForThisPi) {
+                        ret.get(pi).get(privilege).put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions,
+                                privilege, user, remoteAddress, client, perIdentifierQuery));
+                    }
                 }
-
             } catch (PresentationException e) {
                 logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             }
         }
 
-        // Add permission check outcome to user session
-        addSessionPermission(attributeName, ret, session);
+        // Step 4: write per-(identifier, privilege) entries to session cache
+        for (Map.Entry<String, Set<String>> entry : uncachedPerIdentifier.entrySet()) {
+            for (String privilege : entry.getValue()) {
+                String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilege + "_" + entry.getKey();
+                addSessionPermission(attributeName, ret.get(entry.getKey()).get(privilege), session);
+            }
+        }
 
-        logger.trace("Found access permisstions for {} elements.", ret.size());
         return ret;
+    }
+
+    /**
+     * Builds the Solr fetch query using the terms query parser for a chunk of identifiers.
+     * Comma-separated values; PI_TOPSTRUCT values do not contain commas, so no escaping needed.
+     * Caller must guarantee a non-empty {@code identifiers} collection — an empty terms list would yield
+     * a syntactically invalid Solr query.
+     */
+    private static String buildTermsPermissionQuery(Collection<String> identifiers) {
+        return new StringBuilder()
+                .append("+{!terms f=").append(SolrConstants.PI_TOPSTRUCT).append('}')
+                .append(String.join(",", identifiers))
+                .append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name())
+                .toString();
+    }
+
+    /**
+     * Builds the legacy per-identifier query string used as the cache key for LicenseType.isRestrictionsExpired
+     * and as the basis for moving-wall hit-count checks. Format must match the legacy single-PI methods byte-for-byte.
+     * Package-private so tests can verify the format directly.
+     */
+    static String buildSinglePiPermissionQuery(String identifier) {
+        return new StringBuilder().append('+')
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(":\"")
+                .append(identifier)
+                .append("\" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.DOCSTRCT.name())
+                .toString();
     }
 
     /**
@@ -917,7 +1092,7 @@ public final class AccessConditionUtils {
             }
 
             User user = retrieveUserFromContext(request != null ? request.getSession() : null);
-            return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions,
+            return checkAccessPermission(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(), requiredAccessConditions,
                     privilegeName, user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
         } catch (PresentationException e) {
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
@@ -936,11 +1111,19 @@ public final class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return true if required access conditions empty
+     * @should return true if ip range allows access
+     * @should return true if required access conditions contain only open access
+     * @should return true if all license types allow privilege by default
+     * @should return false if not all license types allow privilege by default
+     * @should return true if ip range allows access to all conditions
+     * @should not return true if no ip range matches
      */
     public static AccessPermission checkAccessPermission(Set<String> requiredAccessConditions, String privilegeName, String query,
             HttpServletRequest request) throws IndexUnreachableException, PresentationException, DAOException {
         User user = retrieveUserFromContext(request != null ? request.getSession() : null);
-        return checkAccessPermission(DataManager.getInstance().getDao().getRecordLicenseTypes(), requiredAccessConditions, privilegeName, user,
+        List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
+        return checkAccessPermission(licenseTypes, requiredAccessConditions, privilegeName, user,
                 NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), query);
     }
 
@@ -1190,7 +1373,7 @@ public final class AccessConditionUtils {
             return AccessPermission.granted();
         }
 
-        LicenseType licenseType = DataManager.getInstance().getDao().getLicenseType(page.getAccessCondition());
+        LicenseType licenseType = DataManager.getInstance().getLicenseTypeCache().getLicenseType(page.getAccessCondition());
         if (licenseType == null) {
             logger.trace("LicenseType '{}' not configured, access denied.", page.getAccessCondition());
             return AccessPermission.denied();
@@ -1300,7 +1483,7 @@ public final class AccessConditionUtils {
                     return AccessPermission.granted();
                 }
                 // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-                for (IpRange ipRange : DataManager.getInstance().getDao().getAllIpRanges()) {
+                for (IpRange ipRange : DataManager.getInstance().getIpRangeCache().getAllIpRanges()) {
                     if (ipRange.matchIp(remoteAddress)) {
                         useIpRange = ipRange;
                         AccessPermission access = ipRange.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
@@ -1378,7 +1561,7 @@ public final class AccessConditionUtils {
         boolean containsOpenAccess =
                 requiredAccessConditions.stream().anyMatch(SolrConstants.OPEN_ACCESS_VALUE::equalsIgnoreCase);
         boolean openAccessIsConfiguredLicenceType =
-                allLicenseTypes == null ? DataManager.getInstance().getDao().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null
+                allLicenseTypes == null ? DataManager.getInstance().getLicenseTypeCache().getLicenseType(SolrConstants.OPEN_ACCESS_VALUE) != null
                         : allLicenseTypes.stream().anyMatch(license -> SolrConstants.OPEN_ACCESS_VALUE.equalsIgnoreCase(license.getName()));
         return containsOpenAccess && !openAccessIsConfiguredLicenceType;
     }
@@ -1459,8 +1642,6 @@ public final class AccessConditionUtils {
      * @should throw RecordNotFoundException if record not found
      * @should return 100 if record has no quota value
      * @should return 100 if record open access
-     * @should return 0 if no license configured
-     * @should return actual quota value if found
      */
     public static int getPdfDownloadQuotaForRecord(String pi)
             throws PresentationException, IndexUnreachableException, DAOException, RecordNotFoundException {
@@ -1488,7 +1669,7 @@ public final class AccessConditionUtils {
             return 100;
         }
 
-        List<LicenseType> relevantLicenseTypes = DataManager.getInstance().getDao().getLicenseTypes(requiredAccessConditions);
+        List<LicenseType> relevantLicenseTypes = DataManager.getInstance().getLicenseTypeCache().getLicenseTypes(requiredAccessConditions);
         // Deny access if record's license types aren't configured
         if (relevantLicenseTypes.isEmpty()) {
             logger.trace("Record '{}' hsd access conditions that aren't configured in the database", pi);
@@ -1522,7 +1703,7 @@ public final class AccessConditionUtils {
             return false;
         }
 
-        List<LicenseType> licenseTypes = DataManager.getInstance().getDao().getLicenseTypes(accessConditions);
+        List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getLicenseTypes(accessConditions);
         if (licenseTypes.isEmpty()) {
             return false;
         }
@@ -1570,10 +1751,12 @@ public final class AccessConditionUtils {
      * @param dao DAO instance used to retrieve licenses and IP ranges
      * @return List<License>
      * @throws DAOException
+     * @should return empty collection for given input
      */
     public static List<License> getApplyingLicenses(Optional<User> user, String ipAddress, LicenseType type, IDAO dao) throws DAOException {
         List<License> licenses = dao.getLicenses(type);
         List<UserGroup> userGroups = user.map(User::getAllUserGroups).orElse(Collections.emptyList());
+        // Use the injected DAO here (not the cache) to preserve testability via mock injection
         List<IpRange> ipRangesApplyingToGivenIp =
                 dao.getAllIpRanges().stream().filter(range -> range.matchIp(ipAddress)).toList();
 
@@ -1641,6 +1824,7 @@ public final class AccessConditionUtils {
      * @param attributeValue permission value to store in the session
      * @param session HTTP session to store the attribute in
      * @return true if successful; false otherwise
+     * @should return false for given input
      */
     public static boolean addSessionPermission(String attributeName, Object attributeValue, HttpSession session) {
         // logger.trace("addSessionPermission: {}", attributeName); //NOSONAR Debug
@@ -1703,17 +1887,16 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Removes all PRIV_* session attributes whose key references the given pi. The key schemes
-     * used in this class are
+     * Removes all PRIV_* session attributes whose key references the given pi. The key schemes used in this class are
      * <ul>
-     *   <li>{@code PRIV_<privilegeType>_<pi>_<fileName>} (see line 1113),</li>
-     *   <li>{@code PRIV_<privilegeName>_<identifier>} (see line 756),</li>
-     *   <li>{@code PRIV_DOWNLOAD_ORIGINAL_CONTENT_<identifier>} (see line 828).</li>
+     * <li>{@code PRIV_<privilegeType>_<pi>_<fileName>} (see line 1113),</li>
+     * <li>{@code PRIV_<privilegeName>_<identifier>} (see line 756),</li>
+     * <li>{@code PRIV_DOWNLOAD_ORIGINAL_CONTENT_<identifier>} (see line 828).</li>
      * </ul>
      * The middle-match catches the first scheme, the suffix-match catches the other two.
      *
-     * <p>Package-private so the unit test can exercise it in isolation from the Solr/DB-backed
-     * permission pipeline. refs #27880
+     * <p>
+     * Package-private so the unit test can exercise it in isolation from the Solr/DB-backed permission pipeline. refs #27880
      *
      * @param session HTTP session whose attribute table is inspected
      * @param pi persistent identifier whose cached PRIV_* attributes should be removed

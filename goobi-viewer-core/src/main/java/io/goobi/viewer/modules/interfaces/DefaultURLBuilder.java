@@ -54,7 +54,7 @@ public class DefaultURLBuilder implements IURLBuilder {
      * 
      * @should only add page if not topStruct or page greater than one
      * @should only add logId if not topStruct
-     * @should ignore page greater than one in toc view
+     * @should ignore page greated than one in toc view
      */
     @Override
     public String generateURL(BrowseElement ele) {

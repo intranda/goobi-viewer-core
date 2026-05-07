@@ -70,8 +70,7 @@ public final class PagePermissions {
     }
 
     /**
-     * @return {@code true} if this instance carries no pre-fetched data;
-     *         callers must fall back to per-page {@link io.goobi.viewer.model.viewer.PhysicalElement} checks
+     * @return true if no privilege map carries any entry; callers fall back to per-page checks
      * @should sentinel is empty
      */
     public boolean isEmpty() {
@@ -83,9 +82,8 @@ public final class PagePermissions {
     // --- "granted?" convenience accessors used by IIIF builders ---
 
     /**
-     * @param order physical page order number (Solr ORDER field)
-     * @return {@code true} if image access is granted for the given order;
-     *         {@code false} for unknown orders (fail-safe default)
+     * @param order physical page order number
+     * @return true if image access is granted for the given order
      * @should return true for granted order
      * @should return false for denied order
      * @should return false for unknown order
@@ -95,9 +93,8 @@ public final class PagePermissions {
     }
 
     /**
-     * @param order physical page order number (Solr ORDER field)
-     * @return {@code true} if thumbnail access is granted for the given order;
-     *         {@code false} for unknown orders (fail-safe default)
+     * @param order physical page order number
+     * @return true if thumbnail access is granted for the given order
      * @should return true for granted order
      * @should return false for unknown order
      */
@@ -106,9 +103,8 @@ public final class PagePermissions {
     }
 
     /**
-     * @param order physical page order number (Solr ORDER field)
-     * @return {@code true} if zoom access is granted for the given order;
-     *         {@code false} for unknown orders (fail-safe default)
+     * @param order physical page order number
+     * @return true if zoom access is granted for the given order
      * @should return true for granted order
      * @should return false for unknown order
      */
@@ -117,9 +113,8 @@ public final class PagePermissions {
     }
 
     /**
-     * @param order physical page order number (Solr ORDER field)
-     * @return {@code true} if download access is granted for the given order;
-     *         {@code false} for unknown orders (fail-safe default)
+     * @param order physical page order number
+     * @return true if download access is granted for the given order
      * @should return true for granted order
      * @should return false for unknown order
      */
@@ -128,9 +123,8 @@ public final class PagePermissions {
     }
 
     /**
-     * @param order physical page order number (Solr ORDER field)
-     * @return {@code true} if fulltext access is granted for the given order;
-     *         {@code false} for unknown orders (fail-safe default)
+     * @param order physical page order number
+     * @return true if fulltext access is granted for the given order
      * @should return true for granted order
      */
     public boolean isFulltextGranted(int order) {
@@ -138,9 +132,8 @@ public final class PagePermissions {
     }
 
     /**
-     * @param order physical page order number (Solr ORDER field)
-     * @return {@code true} if page-PDF download is granted for the given order;
-     *         {@code false} for unknown orders (fail-safe default)
+     * @param order physical page order number
+     * @return true if page-PDF download is granted for the given order
      * @should return false for denied order
      * @should return false for unknown order
      */

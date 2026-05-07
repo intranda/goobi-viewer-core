@@ -60,7 +60,7 @@ public class SolrFieldValueTranslationGroupItem extends TranslationGroupItem {
 
     /**
      * @see io.goobi.viewer.model.translations.admin.TranslationGroupItem#loadEntries()
-     * @should load hierarchical entries correctly
+     * @should add each hierarchical key only once when loading Solr field values
      */
     @Override
     protected void loadEntries() throws PresentationException, IndexUnreachableException {

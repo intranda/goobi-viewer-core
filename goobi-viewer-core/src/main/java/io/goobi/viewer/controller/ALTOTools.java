@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -48,6 +49,7 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
+import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
@@ -88,6 +90,8 @@ public final class ALTOTools {
      * @param encoding character encoding to use when reading the file
      * @return {@link String} containing plain text from ALTO at the given path
      * @throws IOException
+     * @should return non-empty text from valid ALTO file
+     * @should include authority data URI attributes in output
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
@@ -101,7 +105,7 @@ public final class ALTOTools {
      * @param charset character encoding of the ALTO document
      * @param mergeLineBreakWords merge words split across line breaks into one
      * @return the plain text extracted from the ALTO XML document, or null on error
-     * @should extract fulltext correctly
+     * @should return non-empty text from valid ALTO string
      */
     public static String getFulltext(String alto, String charset, boolean mergeLineBreakWords) {
         try {
@@ -120,6 +124,7 @@ public final class ALTOTools {
      * @param inCharset character encoding of the ALTO document
      * @param type NER tag type to filter by; null returns all types
      * @return a list of NER TagCount objects extracted from the given ALTO document
+     * @should add identifier to tag count
      */
     public static List<TagCount> getNERTags(String alto, final String inCharset, NERTag.Type type) {
         String charset = inCharset;
@@ -207,9 +212,7 @@ public final class ALTOTools {
      * @throws java.io.IOException if any.
      * @throws javax.xml.stream.XMLStreamException if any.
      * @throws JDOMException
-     * @should extract fulltext correctly
-     * @should concatenate word at line break correctly
-     * @should add uris correctly
+     * @should join hyphenated words split across line breaks into complete words
      */
     protected static String alto2Txt(String alto, String charset, boolean mergeLineBreakWords)
             throws IOException, JDOMException {
@@ -243,6 +246,11 @@ public final class ALTOTools {
      * @param charset character encoding of the ALTO document
      * @param searchTerms set of terms whose coordinates to locate
      * @return a list of coordinate strings for words matching any of the given search terms in the ALTO document
+     * @should return non empty collection for given input
+     * @should match hyphenated words
+     * @should match phrases
+     * @should match diacritics via base letter
+     * @should return collection with 3 elements
      */
     public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms) {
         return getWordCoords(altoString, charset, searchTerms, 0);
@@ -312,6 +320,7 @@ public final class ALTOTools {
      * @param rotation rotation angle in degrees (90, 180, 270)
      * @param imageSize dimensions of the image for computing the rotation
      * @return the rotated bounding rectangle
+     * @should return expected value for given input
      */
     protected static Rectangle rotate(Rectangle rect, int rotation, Dimension imageSize) {
 
@@ -382,6 +391,7 @@ public final class ALTOTools {
      * @param eleWord ALTO word element whose content to match against
      * @param words array of search words to match against the element
      * @return 1 if there is a match; 0 otherwise
+     * @should find fuzzy terms
      */
     public static int getMatchALTOWord(Word eleWord, String[] words) {
         if (eleWord == null) {
@@ -436,6 +446,16 @@ public final class ALTOTools {
             int hpos = (int) element.getRect().x;
             int vpos = (int) element.getRect().y;
             int height = (int) element.getRect().height;
+            if (height <= 0) {
+                int parentHeight = (int) Optional.ofNullable(element.getParent())
+                        .filter(p -> p instanceof GeometricData)
+                        .map(p -> (GeometricData) p)
+                        .map(GeometricData::getRect)
+                        .map(AltoCoords::getHeight)
+                        .orElse(0.0)
+                        .intValue();
+                height = parentHeight;
+            }
             int width = (int) element.getRect().width;
             coords = new StringBuilder().append(hpos)
                     .append(",")

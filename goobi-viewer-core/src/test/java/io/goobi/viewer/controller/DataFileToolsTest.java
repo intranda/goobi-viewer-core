@@ -40,11 +40,11 @@ import io.goobi.viewer.solr.SolrConstants;
 class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
-     * @see DataFileTools#getSourceFilePath(String,String,String)
-     * @verifies construct METS file path correctly
+     * @verifies return indexed_mets path with dataRepository when given and without when null
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
-    void getSourceFilePath_shouldConstructMETSFilePathCorrectly() {
+    void getSourceFilePath_shouldReturnIndexed_metsPathWithDataRepositoryWhenGivenAndWithoutWhenNull() {
         Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_METS));
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml",
@@ -52,11 +52,11 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see DataFileTools#getDataFolders(String,String[])
-     * @verifies return all requested data folders
+     * @see DataFileTools#getSourceFilePath(String,String,String)
+     * @verifies return correct source file paths for mets marc format
      */
     @Test
-    void getDataFolders_shouldReturnAllRequestedDataFolders() {
+    void getSourceFilePath_shouldReturnCorrectSourceFilePathsForMetsMarcFormat() {
         Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_METS_MARC));
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml",
@@ -64,11 +64,11 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see DataFileTools#getSourceFilePath(String,String,String)
-     * @verifies construct LIDO file path correctly
+     * @verifies return indexed_lido path with dataRepository when given and without when null
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
-    void getSourceFilePath_shouldConstructLIDOFilePathCorrectly() {
+    void getSourceFilePath_shouldReturnIndexed_lidoPathWithDataRepositoryWhenGivenAndWithoutWhenNull() {
         Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_lido/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_LIDO));
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_lido/PPN123.xml",
@@ -76,11 +76,11 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see DataFileTools#getSourceFilePath(String,String,String)
-     * @verifies construct EAD file path correctly
+     * @verifies return indexed_ead path with dataRepository when given and without when null
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
-    void getSourceFilePath_shouldConstructEADFilePathCorrectly() {
+    void getSourceFilePath_shouldReturnIndexed_eadPathWithDataRepositoryWhenGivenAndWithoutWhenNull() {
         Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_ead/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_EAD));
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_ead/PPN123.xml",
@@ -88,11 +88,11 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see DataFileTools#getSourceFilePath(String,String,String)
-     * @verifies construct DenkXweb file path correctly
+     * @verifies return indexed_denkxweb path with dataRepository when given and without when null
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
-    void getSourceFilePath_shouldConstructDenkXwebFilePathCorrectly() {
+    void getSourceFilePath_shouldReturnIndexed_denkxwebPathWithDataRepositoryWhenGivenAndWithoutWhenNull() {
         Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_denkxweb/PPN123.xml",
                 DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_DENKXWEB));
         Assertions.assertEquals("src/test/resources/data/viewer/indexed_denkxweb/PPN123.xml",
@@ -100,8 +100,8 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see DataFileTools#getSourceFilePath(String,String,String)
      * @verifies throw IllegalArgumentException if fileName is null
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
     void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFileNameIsNull() {
@@ -110,8 +110,8 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see DataFileTools#getSourceFilePath(String,String,String)
      * @verifies throw IllegalArgumentException if format is unknown
+     * @see DataFileTools#getSourceFilePath(String, String, String)
      */
     @Test
     void getSourceFilePath_shouldThrowIllegalArgumentExceptionIfFormatIsUnknown() {
@@ -119,7 +119,84 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see DataFileTools#getDataFolder(String,String,String)
+     * @see DataFileTools#getSourceFilePath(String, String, String)
+     * @verifies construct METS file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructMetsFilePathCorrectly() {
+        // Verify METS format resolves to the indexed_mets folder
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN123.xml",
+                DataFileTools.getSourceFilePath("PPN123.xml", "1", SolrConstants.SOURCEDOCFORMAT_METS));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN123.xml",
+                DataFileTools.getSourceFilePath("PPN123.xml", null, SolrConstants.SOURCEDOCFORMAT_METS));
+    }
+
+    /**
+     * @see DataFileTools#getSourceFilePath(String, String, String)
+     * @verifies construct METS_MARC file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructMetsMarcFilePathCorrectly() {
+        // Verify METS_MARC format also resolves to the indexed_mets folder (same as METS)
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_mets/PPN456.xml",
+                DataFileTools.getSourceFilePath("PPN456.xml", "1", SolrConstants.SOURCEDOCFORMAT_METS_MARC));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_mets/PPN456.xml",
+                DataFileTools.getSourceFilePath("PPN456.xml", null, SolrConstants.SOURCEDOCFORMAT_METS_MARC));
+    }
+
+    /**
+     * @see DataFileTools#getSourceFilePath(String, String, String)
+     * @verifies construct LIDO file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructLidoFilePathCorrectly() {
+        // Verify LIDO format resolves to the indexed_lido folder
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_lido/PPN789.xml",
+                DataFileTools.getSourceFilePath("PPN789.xml", "1", SolrConstants.SOURCEDOCFORMAT_LIDO));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_lido/PPN789.xml",
+                DataFileTools.getSourceFilePath("PPN789.xml", null, SolrConstants.SOURCEDOCFORMAT_LIDO));
+    }
+
+    /**
+     * @see DataFileTools#getSourceFilePath(String, String, String)
+     * @verifies construct EAD file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructEadFilePathCorrectly() {
+        // Verify EAD format resolves to the indexed_ead folder
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_ead/PPN101.xml",
+                DataFileTools.getSourceFilePath("PPN101.xml", "1", SolrConstants.SOURCEDOCFORMAT_EAD));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_ead/PPN101.xml",
+                DataFileTools.getSourceFilePath("PPN101.xml", null, SolrConstants.SOURCEDOCFORMAT_EAD));
+    }
+
+    /**
+     * @see DataFileTools#getSourceFilePath(String, String, String)
+     * @verifies construct DenkXweb file path correctly
+     */
+    @Test
+    void getSourceFilePath_shouldConstructDenkXwebFilePathCorrectly() {
+        // Verify DENKXWEB format resolves to the indexed_denkxweb folder
+        Assertions.assertEquals("src/test/resources/data/viewer/data/1/indexed_denkxweb/PPN202.xml",
+                DataFileTools.getSourceFilePath("PPN202.xml", "1", SolrConstants.SOURCEDOCFORMAT_DENKXWEB));
+        Assertions.assertEquals("src/test/resources/data/viewer/indexed_denkxweb/PPN202.xml",
+                DataFileTools.getSourceFilePath("PPN202.xml", null, SolrConstants.SOURCEDOCFORMAT_DENKXWEB));
+    }
+
+    /**
+     * @see DataFileTools#getTextFilePath(String, String, String)
+     * @verifies return correct path
+     */
+    @Test
+    void getTextFilePath_shouldReturnCorrectPath() throws Exception {
+        // Verify ALTO text file path resolves correctly for a known PI
+        String path = DataFileTools.getTextFilePath(PI_KLEIUNIV, "00000001.xml", SolrConstants.FILENAME_ALTO);
+        Assertions.assertNotNull(path);
+        Assertions.assertTrue(path.contains("alto"));
+        Assertions.assertTrue(path.endsWith("00000001.xml"));
+    }
+
+    /**
      * @verifies return correct folder if no data repository used
      */
     @Test
@@ -129,7 +206,6 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see DataFileTools#getDataFolder(String,String,String)
      * @verifies return correct folder if data repository used
      */
     @Test
@@ -147,7 +223,6 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see DataFileTools#getDataRepositoryPath(String)
      * @verifies return correct path for empty data repository
      */
     @Test
@@ -156,7 +231,6 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see DataFileTools#getDataRepositoryPath(String)
      * @verifies return correct path for data repository name
      */
     @Test
@@ -177,21 +251,21 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     /**
      * @throws IOException
      * @see DataFileTools#loadTei(String,String)
-     * @verifies load tei document correctly
+     * @verifies return TEI XML string containing TEI namespace for given document and language
      */
     @Test
-    void loadTei_shouldLoadTeiDocumentCorrectly() throws IOException {
+    void loadTei_shouldReturnTEIXMLStringContainingTEINamespaceForGivenDocumentAndLanguage() throws IOException {
         String tei = DataFileTools.loadTei("DE_2013_Riedel_PolitikUndCo_241__248", "eng");
         Assertions.assertNotNull(tei);
         Assertions.assertTrue(tei.contains("<TEI xmlns="));
     }
 
     /**
-     * @see DataFileTools#loadTei(String,String)
-     * @verifies throw RecordNotFoundException if pi not found
+     * @verifies throw record not found exception if pi not found
+     * @see DataFileTools#loadMei(String, HttpServletRequest)
      */
     @Test
-    void loadMei_shouldThrowRecordNotFoundExceptionIfPiNotDound() {
+    void loadMei_shouldThrowRecordNotFoundExceptionIfPiNotFound() {
         Assertions.assertThrows(RecordNotFoundException.class, () -> DataFileTools.loadMei("no_such_pi", null));
     }
 
@@ -202,8 +276,8 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
      * @throws IndexUnreachableException
      * @throws DAOException
      * @throws AccessDeniedException
-     * @see DataFileTools#loadTei(String,String)
      * @verifies return null if record has no mei
+     * @see DataFileTools#loadMei(String, HttpServletRequest)
      */
     @Test
     void loadMei_shouldReturnNullIfRecordHasNoMei()

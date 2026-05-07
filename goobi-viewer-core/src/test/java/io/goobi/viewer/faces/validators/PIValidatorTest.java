@@ -56,7 +56,7 @@ class PIValidatorTest {
 
     /**
      * @see PIValidator#validatePi(String)
-     * @verifies return false if pi empty, blank or null
+     * @verifies return false if pi empty blank or null
      */
     @Test
     void validatePi_shouldReturnFalseIfPiEmptyBlankOrNull() throws Exception {
@@ -115,7 +115,7 @@ class PIValidatorTest {
 
     /**
      * @see PIValidator#validatePi(String)
-     * @verifies return false if pi contains non-ASCII characters
+     * @verifies return false if pi contains non ascii characters
      */
     @Test
     void validatePi_shouldReturnFalseIfPiContainsNonAsciiCharacters() throws Exception {

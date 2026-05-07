@@ -25,9 +25,12 @@
                 </ui:fragment>
 
                 <!-- RENDER THE HTML OUTPUT/CONTENT -->
+                <!-- Sanitize through HtmlSanitizerBean as defense in depth: even if a stored value
+                     contains an XSS payload (e.g. older content from before the save-path converter
+                     was added), Jsoup with an explicit allowlist strips it before render. -->
                 <h:outputText
                     escape="false"
-                    value="#{cc.attrs.component.firstContentItem.content.text.textOrDefault}" />
+                    value="#{htmlSanitizer.cleanRichText(cc.attrs.component.firstContentItem.content.text.textOrDefault)}" />
             </div>
         </ui:fragment>
     </composite:implementation>

@@ -196,7 +196,7 @@ var viewerJS = (function (viewer) {
             viewer.calendarPopover.init(popoverConfig);
         }
     }
- 
+
     /**
      * Initialize date range picker for newspaper search.
      */

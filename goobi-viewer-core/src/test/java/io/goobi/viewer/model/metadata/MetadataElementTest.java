@@ -54,7 +54,6 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetadataElement#isSkip()
      * @verifies return true if all metadata fields blank
      */
     @Test
@@ -67,7 +66,6 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetadataElement#isSkip()
      * @verifies return true if all metadata fields hidden
      */
     @Test
@@ -91,7 +89,6 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetadataElement#isSkip()
      * @verifies return false if non hidden metadata fields exist
      */
     @Test
@@ -115,7 +112,6 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetadataElement#isDisplayBoxed(int)
      * @verifies return false if at least one metadata with same type not single string
      */
     @Test
@@ -141,7 +137,6 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * @see MetadataElement#isDisplayBoxed(int)
      * @verifies return true if all metadata of same type single string
      */
     @Test
@@ -190,8 +185,86 @@ class MetadataElementTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("Series", me.getDocStructTypeLabel());
     }
 
+    /**
+     * Verifies that MetadataType.getTabName() constructs the correct message key from the
+     * view index and type values, and returns it when a matching translation exists.
+     *
+     * @see MetadataElement.MetadataType#getTabName(int)
+     * @verifies return correct message key
+     */
     @Test
-    void test_getFoldPosition() throws PresentationException, IndexUnreachableException {
+    void getTabName_shouldReturnCorrectMessageKey() throws Exception {
+        MetadataElement me = new MetadataElement();
+        // MetadataType is an inner class of MetadataElement; create one with type=0
+        MetadataElement.MetadataType mt = me.new MetadataType(0);
+
+        // The key format is "metadataTab_<viewIndex>_<type>".
+        // With viewIndex=0 and type=0 the key is "metadataTab_0_0".
+        // If the key is not in the message bundles, getTabName returns "".
+        String result = mt.getTabName(0);
+        Assertions.assertEquals("", result, "Expected empty string when message key is not in the bundle");
+
+        // With a different type value that also doesn't exist, the result should still be ""
+        MetadataElement.MetadataType mt2 = me.new MetadataType(5);
+        Assertions.assertEquals("", mt2.getTabName(1), "Expected empty string for non-existent key metadataTab_1_5");
+    }
+
+    /**
+     * Verifies that getMetadata(name, language) returns the correct language-specific Metadata
+     * field when it exists in the metadata list.
+     *
+     * @see MetadataElement#getMetadata(String, String)
+     * @verifies return correct language metadata field
+     */
+    @Test
+    void getMetadata_shouldReturnCorrectLanguageMetadataField() throws Exception {
+        MetadataElement me = new MetadataElement();
+
+        // Add metadata entries for different languages
+        Metadata mdDe = new Metadata("", "MD_TITLE_LANG_DE", "", "German Title");
+        Metadata mdEn = new Metadata("", "MD_TITLE_LANG_EN", "", "English Title");
+        Metadata mdGeneric = new Metadata("", "MD_TITLE", "", "Generic Title");
+        me.getMetadataList().add(mdDe);
+        me.getMetadataList().add(mdEn);
+        me.getMetadataList().add(mdGeneric);
+
+        // Request the English variant
+        Metadata result = me.getMetadata("MD_TITLE", "EN");
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("MD_TITLE_LANG_EN", result.getLabel());
+
+        // Request the German variant
+        Metadata resultDe = me.getMetadata("MD_TITLE", "DE");
+        Assertions.assertNotNull(resultDe);
+        Assertions.assertEquals("MD_TITLE_LANG_DE", resultDe.getLabel());
+    }
+
+    /**
+     * Verifies that getMetadata falls back to the non-language-specific field
+     * when the requested language variant is not present in the metadata list.
+     *
+     * @see MetadataElement#getMetadata(String, String)
+     * @verifies fall back to non language field if language field not found
+     */
+    @Test
+    void getMetadata_shouldFallBackToNonLanguageFieldIfLanguageFieldNotFound() throws Exception {
+        MetadataElement me = new MetadataElement();
+
+        // Only add a generic (non-language) metadata entry — no French variant exists
+        Metadata mdGeneric = new Metadata("", "MD_TITLE", "", "Generic Title");
+        me.getMetadataList().add(mdGeneric);
+
+        // Request French variant, which does not exist — should fall back to generic
+        Metadata result = me.getMetadata("MD_TITLE", "FR");
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("MD_TITLE", result.getLabel());
+    }
+
+    /**
+     * @verifies get fold position
+     */
+    @Test
+    void getMetadataListBeforeFold_shouldGetFoldPosition() throws PresentationException, IndexUnreachableException {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier(PI_KLEIUNIV);
         Assertions.assertNotNull(iddoc);
         StructElement element = new StructElement(iddoc);

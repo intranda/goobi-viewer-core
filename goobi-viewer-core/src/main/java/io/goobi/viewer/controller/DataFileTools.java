@@ -118,6 +118,43 @@ public final class DataFileTools {
     }
 
     /**
+     * Returns the root paths of all media directories across every configured data repository,
+     * including the viewer-home media directory for records that are not assigned to any repository.
+     *
+     * <p>Each returned path has the form {@code …/mediaFolder/} and may or may not exist on disk.
+     * Callers should check {@link Files#isDirectory(Path, java.nio.file.LinkOption...)} before
+     * attempting to list contents.
+     *
+     * @return list of media root {@link Path}s; never {@code null}
+     */
+    public static List<Path> getAllMediaRoots() {
+        Configuration config = DataManager.getInstance().getConfiguration();
+        String mediaFolder = config.getMediaFolder();
+
+        List<Path> roots = new java.util.ArrayList<>();
+
+        // records stored directly in viewerHome (no data repository)
+        roots.add(Paths.get(config.getViewerHome(), mediaFolder));
+
+        // one media root per data repository sub-directory
+        String reposHome = config.getDataRepositoriesHome();
+        if (StringUtils.isNotBlank(reposHome)) {
+            Path reposRoot = Paths.get(reposHome);
+            if (Files.isDirectory(reposRoot)) {
+                try (Stream<Path> repos = Files.list(reposRoot)) {
+                    repos.filter(Files::isDirectory)
+                            .map(repo -> repo.resolve(mediaFolder))
+                            .forEach(roots::add);
+                } catch (IOException e) {
+                    logger.warn("Error listing data repositories in {}: {}", reposRoot, e.toString());
+                }
+            }
+        }
+
+        return roots;
+    }
+
+    /**
      * Constructs the pdf folder path for the given pi, either directly in viewer-home or within a data repository.
      *
      * @param pi The work PI. This is both the actual name of the folder and the identifier used to look up data repository in solr
@@ -177,6 +214,8 @@ public final class DataFileTools {
      * @return A Path to the data folder for the given PI
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return correct folder if no data repository used
+     * @should return correct folder if data repository used
      */
     public static Path getDataFolder(String pi, String dataFolderName) throws PresentationException, IndexUnreachableException {
         if (pi == null) {
@@ -268,6 +307,12 @@ public final class DataFileTools {
      * @return the absolute file system path to the source file
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return indexed_mets path with dataRepository when given and without when null
+     * @should return indexed_lido path with dataRepository when given and without when null
+     * @should return indexed_ead path with dataRepository when given and without when null
+     * @should return indexed_denkxweb path with dataRepository when given and without when null
+     * @should throw IllegalArgumentException if fileName is null
+     * @should throw IllegalArgumentException if format is unknown
      */
     public static String getSourceFilePath(String fileName, String format) throws PresentationException, IndexUnreachableException {
         String pi = FilenameUtils.getBaseName(fileName);
@@ -496,7 +541,7 @@ public final class DataFileTools {
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      * @throws java.io.IOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
-     * @should load tei document correctly
+     * @should return TEI XML string containing TEI namespace for given document and language
      */
     public static String loadTei(String pi, String language) throws IOException {
         logger.trace("loadTei: {}/{}", pi, language);
@@ -523,9 +568,8 @@ public final class DataFileTools {
      * @throws IOException
      * @throws PresentationException
      * @throws RecordNotFoundException
-     * @should throw RecordNotFoundException if pi not found
      * @should return null if record has no mei
-     * @should load mei document correctly
+     * @should throw record not found exception if pi not found
      */
     public static String loadMei(String pi, HttpServletRequest servletRequest)
             throws AccessDeniedException, DAOException, IndexUnreachableException, IOException, PresentationException, RecordNotFoundException {

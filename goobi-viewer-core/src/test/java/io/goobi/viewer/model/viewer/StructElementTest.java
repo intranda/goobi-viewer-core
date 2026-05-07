@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import java.util.Map;
+
 import jakarta.faces.component.UIViewRoot;
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
@@ -63,10 +65,10 @@ class StructElementTest extends AbstractSolrEnabledTest {
 
     /**
      * @see StructElement#createStub()
-     * @verifies create stub correctly
+     * @verifies copy all fields including PI, logid, doctype, label, and metadata to stub
      */
     @Test
-    void createStub_shouldCreateStubCorrectly() throws Exception {
+    void createStub_shouldCopyAllFieldsIncludingPILogidDoctypeLabelAndMetadataToStub() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0002");
         Assertions.assertNotNull(iddoc);
 
@@ -87,11 +89,10 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getParent()
-     * @verifies return parent correctly
+     * @verifies return parent StructElement with matching Lucene ID for child element
      */
     @Test
-    void getParent_shouldReturnParentCorrectly() throws Exception {
+    void getParent_shouldReturnParentStructElementWithMatchingLuceneIDForChildElement() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0002");
         Assertions.assertNotNull(iddoc);
 
@@ -102,7 +103,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#isAnchorChild()
      * @verifies return true if current record is volume
      */
     @Test
@@ -125,11 +125,54 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getImageUrl(int,int,int,boolean,boolean)
-     * @verifies construct url correctly
+     * @see StructElement#getGroupMembershipsExcludingAnchor()
+     * @verifies remove entries whose value equals the anchor pi
      */
     @Test
-    void getImageUrl_shouldConstructUrlCorrectly() throws Exception {
+    void getGroupMembershipsExcludingAnchor_shouldRemoveEntriesWhoseValueEqualsTheAnchorPi() throws Exception {
+        // Indexer pipelines sometimes emit a GROUPID_* field with the same value as
+        // PI_ANCHOR / PI_PARENT (e.g. GROUPID_NEWSPAPER on a record that already has a
+        // PI_PARENT-based anchor relationship). The raw map is preserved for callers that
+        // depend on it; the deduped getter must drop the redundant entry so widgets that
+        // render both a "group" listing and an "anchor" link don't show the same target twice.
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, "test-iddoc");
+        doc.setField(SolrConstants.PI, "test_volume");
+        doc.setField(SolrConstants.DOCSTRCT, "volume");
+        doc.setField(SolrConstants.PI_PARENT, "test_anchor");
+        doc.setField("GROUPID_NEWSPAPER", "test_anchor");
+
+        StructElement element = new StructElement("test-iddoc", doc);
+        Assertions.assertEquals(1, element.getGroupMemberships().size(), "raw map keeps the entry");
+        Assertions.assertTrue(element.getGroupMembershipsExcludingAnchor().isEmpty(), "deduped map drops anchor-equal entry");
+    }
+
+    /**
+     * @see StructElement#getGroupMembershipsExcludingAnchor()
+     * @verifies return all entries when no anchor pi is known
+     */
+    @Test
+    void getGroupMembershipsExcludingAnchor_shouldReturnAllEntriesWhenNoAnchorPiIsKnown() throws Exception {
+        // A standalone group member (no PI_PARENT/PI_ANCHOR) must still expose its
+        // GROUPID_* entries through the deduped getter — there's nothing to filter against.
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.IDDOC, "test-iddoc");
+        doc.setField(SolrConstants.PI, "test_volume");
+        doc.setField(SolrConstants.DOCSTRCT, "volume");
+        doc.setField("GROUPID_SERIES", "test_series");
+
+        StructElement element = new StructElement("test-iddoc", doc);
+        Map<String, String> deduped = element.getGroupMembershipsExcludingAnchor();
+        Assertions.assertEquals(1, deduped.size());
+        Assertions.assertEquals("test_series", deduped.get("GROUPID_SERIES"));
+    }
+
+    /**
+     * @see StructElement#getImageUrl(int,int,int,boolean,boolean)
+     * @verifies return IIIF image URL with given width and height constraints
+     */
+    @Test
+    void getImageUrl_shouldReturnIIIFImageURLWithGivenWidthAndHeightConstraints() throws Exception {
         StructElement element = new StructElement(iddocKleiuniv);
         Assertions.assertEquals(
                 TestUtils.APPLICATION_ROOT_URL + "api/v1/records/" + PI_KLEIUNIV + "/files/images/00000001.tif/full/!600,800/0/default.jpg",
@@ -137,11 +180,10 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getTopStruct()
-     * @verifies retrieve top struct correctly
+     * @verifies return top level struct element different from child element with expected lucene i d
      */
     @Test
-    void getTopStruct_shouldRetrieveTopStructCorrectly() throws Exception {
+    void getTopStruct_shouldReturnTopLevelStructElementDifferentFromChildElementWithExpectedLuceneID() throws Exception {
         String iddoc = DataManager.getInstance().getSearchIndex().getIddocByLogid(PI_KLEIUNIV, "LOG_0002");
         Assertions.assertNotNull(iddoc);
 
@@ -166,7 +208,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getTopStruct()
      * @verifies return self if anchor
      */
     @Test
@@ -181,7 +222,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getTopStruct()
      * @verifies return self if group
      */
     @Test
@@ -196,7 +236,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getFirstVolumeFieldValue(String)
      * @verifies return correct value
      */
     @Test
@@ -228,8 +267,8 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#isHasChildren()
      * @verifies return true if element has children
+     * @see StructElement#isHasChildren()
      */
     @Test
     void isHasChildren_shouldReturnTrueIfElementHasChildren() throws Exception {
@@ -258,7 +297,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#getPi()
      * @verifies retriveve pi from topstruct if not topstruct
      */
     @Test
@@ -271,7 +309,6 @@ class StructElementTest extends AbstractSolrEnabledTest {
     }
 
     /**
-     * @see StructElement#init(SolrDocument)
      * @verifies populate groupMemberships even if field is also in ancestorIdentifierFields
      */
     @Test

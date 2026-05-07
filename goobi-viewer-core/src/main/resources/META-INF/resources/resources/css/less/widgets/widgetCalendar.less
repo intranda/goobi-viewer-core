@@ -4,75 +4,70 @@
    Custom properties (--wc-*) defined in core-defaults.less,
    overridable via theme mixins (.mx-theme-light / .mx-theme-dark).
    ==============================================================*/
-.widget-calendar { 
+.widget-calendar {
     &__body {
         padding: 0;
         position: relative;
-	}
-        .flatpickr-calendar {
-            width: 100%;
-            max-width: 100%;
-            box-shadow: none;
-            border: 0;
-            border-radius: 0;
-            top: 0;
+    }
+    .flatpickr-calendar {
+        width: 100%;
+        max-width: 100%;
+        box-shadow: none;
+        border: 0;
+        border-radius: 0;
+        top: 0;
+    }
+
+    .flatpickr-innerContainer,
+    .flatpickr-rContainer,
+    .flatpickr-days {
+        width: 100%;
+    }
+
+    .dayContainer {
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+    }
+
+    .flatpickr-prev-month.-disabled-,
+    .flatpickr-next-month.-disabled- {
+        opacity: 0.3;
+        cursor: default;
+    }
+
+    .numInputWrapper span.arrowUp,
+    .numInputWrapper span.arrowDown {
+        display: block;
+        cursor: pointer;
+        padding: 0 3px;
+        opacity: 1;
+        border-color: transparent;
+        background: transparent;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.15);
         }
 
-        .flatpickr-innerContainer,
-        .flatpickr-rContainer,
-        .flatpickr-days {
-            width: 100%;
-        }
-
-        .dayContainer {
-            width: 100%;
-            max-width: 100%;
-            min-width: 100%;
-        }
-
-        .flatpickr-prev-month.-disabled-,
-        .flatpickr-next-month.-disabled- {
+        &.-disabled- {
             opacity: 0.3;
             cursor: default;
-        }
-
-        .numInputWrapper span.arrowUp,
-        .numInputWrapper span.arrowDown {
-            display: block;
-            cursor: pointer;
-            padding: 0 3px;
-            opacity: 1;
-            border-color: transparent;
-            background: transparent;
 
             &:hover {
-                background: rgba(255, 255, 255, 0.15);
-            }
-
-            &.-disabled- {
-                opacity: 0.3;
-                cursor: default;
-
-                &:hover {
-                    background: transparent;
-                }
-            }
-
-            &::after {
-                border-left: 4px solid transparent;
-                border-right: 4px solid transparent;
+                background: transparent;
             }
         }
 
-        .numInputWrapper span.arrowUp::after {
-            border-bottom: 4px solid white;
+        &::after {
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
         }
+    }
 
-        .numInputWrapper span.arrowDown::after {
+    .numInputWrapper span.arrowDown::after {
             border-top: 4px solid white;
         }
 		.flatpickr-day {
-			color: @gray;
 			border: none;
 			pointer-events: none;
 			&.-has-data- {
@@ -82,6 +77,7 @@
 //				color: red;
 //			}
 		}
+		.flactpickr
 		
 		.flatpickr-day.-has-data- {
 			color: #212529;
@@ -100,13 +96,42 @@
             background-color: var(--wc-dot-color);
         }
 
-        .flatpickr-day.-has-multiple-.-current-issue-::after {
-            background-color: var(--wc-dot-color-on-selected);
+    .flatpickr-day {
+        color: @gray;
+        border: none;
+        pointer-events: none;
+        &.-has-data- {
+            pointer-events: unset;
         }
+        //			&.nextMonthDay {
+        //				color: red;
+        //			}
+    }
 
-        .flatpickr-day.-has-multiple-.-current-issue-:hover::after {
-            background-color: var(--wc-dot-color);
-        }
+    .flatpickr-day.-has-data- {
+        color: #212529;
+        font-weight: 400;
+    }
+
+    .flatpickr-day.-has-multiple-::after {
+        content: '';
+        position: absolute;
+        bottom: 2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: var(--wc-dot-size);
+        height: var(--wc-dot-size);
+        border-radius: 50%;
+        background-color: var(--wc-dot-color);
+    }
+
+    .flatpickr-day.-has-multiple-.-current-issue-::after {
+        background-color: var(--wc-dot-color-on-selected);
+    }
+
+    .flatpickr-day.-has-multiple-.-current-issue-:hover::after {
+        background-color: var(--wc-dot-color);
+    }
 
     &__popover {
         position: fixed;
@@ -131,8 +156,8 @@
         text-overflow: ellipsis;
 
         &:hover,
-		&:focus,
-		&:active {
+        &:focus,
+        &:active {
             background-color: var(--wc-popover-item-hover-bg);
             color: var(--wc-popover-item-hover-color);
             text-decoration: none;
