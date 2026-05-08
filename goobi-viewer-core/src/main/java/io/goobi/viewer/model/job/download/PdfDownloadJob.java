@@ -40,6 +40,7 @@ import org.apache.logging.log4j.Logger;
 import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
@@ -187,9 +188,7 @@ public class PdfDownloadJob extends DownloadJob {
         }
 
         Map<String, String> params = new HashMap<>();
-        params.put("metsFile", work.getMetadataFilePath().toString());
         params.put("imageSource", work.getMediaFolderPath().getParent().toUri().toString());
-        divId.ifPresent(id -> params.put("divID", id));
 
         if (usePdfFiles && Files.exists(pdfFolder)) {
             params.put("pdfSource", pdfFolder.getParent().toUri().toString());
@@ -202,7 +201,7 @@ public class PdfDownloadJob extends DownloadJob {
         }
         params.put("metsFileGroup", "PRESENTATION");
         params.put("goobiMetsFile", "false");
-        MetsPdfRequest request = new MetsPdfRequest(params);
+        MetsPdfRequest request = new MetsPdfRequest(PathConverter.toURI(work.getMetadataFilePath()), divId.orElse(null), usePdfFiles, params);
         return request;
     }
 

@@ -98,8 +98,9 @@ public final class DataFileTools {
             return DataManager.getInstance().getConfiguration().getViewerHome();
         }
 
-        if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryPath)).isAbsolute()) {
-            return dataRepositoryPath + '/';
+        String adapted = FileTools.adaptPathForWindows(dataRepositoryPath);
+        if (Paths.get(adapted).isAbsolute()) {
+            return adapted + '/';
         }
 
         return DataManager.getInstance().getConfiguration().getDataRepositoriesHome() + dataRepositoryPath + '/';
@@ -242,7 +243,7 @@ public final class DataFileTools {
         if (StringUtils.isBlank(dataRepositoryFolder)) {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         } else if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryFolder)).isAbsolute()) {
-            repository = Paths.get(dataRepositoryFolder);
+            repository = Paths.get(FileTools.adaptPathForWindows(dataRepositoryFolder));
         } else {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepositoryFolder);
         }
@@ -627,7 +628,7 @@ public final class DataFileTools {
         if (StringUtils.isBlank(dataRepository)) {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome());
         } else if (Paths.get(FileTools.adaptPathForWindows(dataRepository)).isAbsolute()) {
-            repository = Paths.get(dataRepository);
+            repository = Paths.get(FileTools.adaptPathForWindows(dataRepository));
         } else {
             repository = Paths.get(DataManager.getInstance().getConfiguration().getDataRepositoriesHome(), dataRepository);
         }

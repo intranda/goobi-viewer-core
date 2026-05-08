@@ -105,7 +105,7 @@ public class ProcessDataResolver {
         }
 
         if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryPath)).isAbsolute()) {
-            return dataRepositoryPath + '/';
+            return FileTools.adaptPathForWindows(dataRepositoryPath) + '/';
         }
 
         return config.getDataRepositoriesHome() + dataRepositoryPath + '/';
@@ -185,7 +185,7 @@ public class ProcessDataResolver {
         if (StringUtils.isBlank(dataRepositoryFolder)) {
             repository = Paths.get(config.getViewerHome());
         } else if (Paths.get(FileTools.adaptPathForWindows(dataRepositoryFolder)).isAbsolute()) {
-            repository = Paths.get(dataRepositoryFolder);
+            repository = Paths.get(FileTools.adaptPathForWindows(dataRepositoryFolder));
         } else {
             repository = Paths.get(config.getDataRepositoriesHome(), dataRepositoryFolder);
         }
@@ -530,7 +530,7 @@ public class ProcessDataResolver {
         if (StringUtils.isBlank(dataRepository)) {
             repository = Paths.get(config.getViewerHome());
         } else if (Paths.get(FileTools.adaptPathForWindows(dataRepository)).isAbsolute()) {
-            repository = Paths.get(dataRepository);
+            repository = Paths.get(FileTools.adaptPathForWindows(dataRepository));
         } else {
             repository = Paths.get(config.getDataRepositoriesHome(), dataRepository);
         }
