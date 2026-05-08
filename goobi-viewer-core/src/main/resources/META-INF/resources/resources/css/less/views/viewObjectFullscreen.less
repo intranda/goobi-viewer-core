@@ -253,6 +253,11 @@
     [data-open="all-tabs"]::before {
       mask-image: url("../../icons/outline/plus.svg");
       -webkit-mask-image: url("../../icons/outline/plus.svg");
+		&__image {			
+			&.-thumbnailPreviewGallery {
+				display: block;
+			}
+		}
     }
   }
 
@@ -273,11 +278,12 @@
   }
 
   &__view-image {
-	flex-grow: 1;
-    .view-object__object-3d-world-before-load-text {
-      background: rgb(255, 255, 255);
-      border: 1px solid #ccc;
-    }
+      flex-grow: 1;
+
+      .view-object__object-3d-world-before-load-text {
+          background: rgb(255, 255, 255);
+          border: 1px solid #ccc;
+      }
   }
 
   &__view-image-inner {

@@ -220,10 +220,11 @@
         },
         datasets: {
             image: {
-                viewMode: "imageViewMode",
-                showNavigator: "showNavigator",
-                allowDownload: "allowDownload",
-                allowZoom: "allowZoom"
+                viewMode: 'imageViewMode',
+                showNavigator: 'imageShowNavigator',
+                allowDownload: 'allowDownload',
+                allowZoom: 'allowZoom',
+    			maxZoom: 'maxZoom'
             },
             data: { 
                 footerHeight: "height",
@@ -279,9 +280,9 @@
                             const overlays = new ZoomableImageOverlayGroup(this, coords, {
                                 styleclass: element.dataset[_config.datasets.data.styleclass],
                                 showTooltip: element.dataset[_config.datasets.data.showTooltip],
-                                highlightClassName: "focus",
-                                highlightOnHover: true
-                            });
+                                highlightClassName: 'focus',
+                                highlightOnHover: true,
+                            }); 
                             this.overlayGroups.push(overlays);
                         } catch(e) {
                             console.error("Error parsing coords string ", coordsString, e);
@@ -427,7 +428,8 @@
 
 
     function createZoomableImageConfig(imageElement) {
-        return  {
+    	console.log("navigator ", _config.datasets.image.showNavigator,imageElement.dataset[_config.datasets.image.showNavigator]);
+        return {
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
             margins:{
@@ -438,10 +440,11 @@
             },
             sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
             navigator: {
-                enabled: imageElement.dataset[_config.datasets.image.showNavigator] === "true"
-            }
-        }
-    } 
+                enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
+    			position: "TOP_RIGHT"
+            },
+        };
+    }
 
     function getSequenceSettings(viewMode) {
         switch((viewMode || "").toLowerCase()) {

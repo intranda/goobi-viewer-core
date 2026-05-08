@@ -545,21 +545,23 @@ var viewerJS = ( function( viewer ) {
             console.log( 'EXECUTE: _setResizable' );
             console.log( 'selector: ', selector );
         }
-    	
-    	$( selector ).resizable({
-    		handles: 'w',
-    		minWidth: 500,
-    		maxWidth: 900,
-    		resize: function( event, ui ) {
-    			_setSidebarWidth( $( '#fullscreenViewSidebar' ).outerWidth() );
-    			
-    			if ( $( '.fullscreen__view-image-thumbs-wrapper' ).is( ':visible' ) ) {
-    				setTimeout( function() {
-    					$( '.fullscreen__view-image-thumbs-wrapper' ).outerWidth( $( '#fullscreenView' ).outerWidth() - $( '#fullscreenViewSidebar' ).outerWidth() );    					
-    				}, 325 );
-    			}
-    		}
-    	});
+
+        $(selector).resizable({
+            handles: 'w',
+            minWidth: 500,
+            maxWidth: 900,
+            resize: function (event, ui) {
+                _setSidebarWidth($('#fullscreenViewSidebar').outerWidth());
+				image?.updateMargins();
+                if ($('.fullscreen__view-image-thumbs-wrapper').is(':visible')) {
+                    setTimeout(function () {
+                        $('.fullscreen__view-image-thumbs-wrapper').outerWidth(
+                            $('#fullscreenView').outerWidth() - $('#fullscreenViewSidebar').outerWidth()
+                        );
+                    }, 325);
+                }
+            },
+        });
     }
     
     /**

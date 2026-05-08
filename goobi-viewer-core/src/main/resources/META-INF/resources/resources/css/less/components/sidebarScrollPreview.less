@@ -107,17 +107,24 @@
 
 // FULLSCREEN STYLES
 .fullscreen {
-	.sidebar-scroll-preview {
-		padding-top: 80px;
-		width: 200px;
-		height: calc(~"100vh - 80px");
-		&__button {
-			color: white;
+    .sidebar-scroll-preview {
+        padding-top: 80px;
+        width: 200px;
+		height: calc(~'100vh - 50px');
+		position: absolute;
+		top:0;
+		left: 0;
+		background-color: rgba(0,0,0,0.7);
+        &__button {
+            color: white;
+        }
+        .simplebar-scrollbar::before {
+            background: white;
+        }
+		&__inner {
+			height: calc(100% - 80px);
 		}
-		.simplebar-scrollbar::before {
-			background: white;
-		}
-	}
+    }
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
