@@ -40,14 +40,13 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.Provider;
 
 /**
- * Pre-matching request filter that validates persistent identifiers in {@code /records/{pi}/...}
- * paths before the target resource is instantiated.
+ * Pre-matching request filter that validates persistent identifiers in {@code /records/{pi}/...} paths before the target resource is instantiated.
  *
- * <p>Without this filter, an invalid PI causes a {@link BadRequestException} thrown in the
- * resource constructor, which HK2 wraps in a {@code MultiException} and logs as an "Unknown
- * HK2 failure" — producing a verbose two-part stack trace for what is merely a client error.
- * By running {@link PreMatching} (before route matching and resource instantiation), this filter
- * intercepts the bad request early and emits a single WARN log line instead.
+ * <p>
+ * Without this filter, an invalid PI causes a {@link BadRequestException} thrown in the resource constructor, which HK2 wraps in a
+ * {@code MultiException} and logs as an "Unknown HK2 failure" — producing a verbose two-part stack trace for what is merely a client error. By
+ * running {@link PreMatching} (before route matching and resource instantiation), this filter intercepts the bad request early and emits a single
+ * WARN log line instead.
  */
 @Provider
 @PreMatching
@@ -61,7 +60,7 @@ public class RecordIdentifierValidationFilter implements ContainerRequestFilter 
         // getPathSegments() returns decoded segments, so %20 becomes a space here.
         List<PathSegment> segments = requestContext.getUriInfo().getPathSegments();
         for (int i = 0; i < segments.size() - 1; i++) {
-            if ("records".equals(segments.get(i).getPath())) {
+            if ("records".equals(segments.get(i).getPath()) && !isFooter(segments, i)) {
                 String pi = segments.get(i + 1).getPath();
                 if (!PIValidator.validatePi(pi)) {
                     // Sanitize user-controlled path segment before logging to prevent log injection (Sonar S5145)
@@ -77,4 +76,15 @@ public class RecordIdentifierValidationFilter implements ContainerRequestFilter 
             }
         }
     }
+
+    private boolean isFooter(List<PathSegment> segments, int recordSegment) {
+        if (segments.size() > recordSegment + 3) {
+            String resourceType = segments.get(recordSegment + 2).getPath();
+            String contentType = segments.get(recordSegment + 3).getPath();
+            return "files".equalsIgnoreCase(resourceType) && "footer".equalsIgnoreCase(contentType);
+        } else {
+            return false;
+        }
+    }
+
 }
