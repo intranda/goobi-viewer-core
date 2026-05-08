@@ -549,7 +549,7 @@ var viewerJS = (function (viewer) {
             maxWidth: 900,
             resize: function (event, ui) {
                 _setSidebarWidth($('#fullscreenViewSidebar').outerWidth());
-
+				image?.updateMargins();
                 if ($('.fullscreen__view-image-thumbs-wrapper').is(':visible')) {
                     setTimeout(function () {
                         $('.fullscreen__view-image-thumbs-wrapper').outerWidth(

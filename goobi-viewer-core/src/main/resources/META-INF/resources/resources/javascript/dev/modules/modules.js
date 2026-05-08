@@ -232,7 +232,7 @@
         datasets: {
             image: {
                 viewMode: 'imageViewMode',
-                showNavigator: 'showNavigator',
+                showNavigator: 'imageShowNavigator',
                 allowDownload: 'allowDownload',
                 allowZoom: 'allowZoom',
             },
@@ -293,7 +293,7 @@
                                 showTooltip: element.dataset[_config.datasets.data.showTooltip],
                                 highlightClassName: 'focus',
                                 highlightOnHover: true,
-                            });
+                            }); 
                             this.overlayGroups.push(overlays);
                         } catch (e) {
                             console.error('Error parsing coords string ', coordsString, e);
@@ -462,6 +462,7 @@
     }
 
     function createZoomableImageConfig(imageElement) {
+    	console.log("navigator ", _config.datasets.image.showNavigator,imageElement.dataset[_config.datasets.image.showNavigator]);
         return {
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
@@ -478,6 +479,7 @@
             sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
             navigator: {
                 enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
+    			position: "TOP_RIGHT"
             },
         };
     }

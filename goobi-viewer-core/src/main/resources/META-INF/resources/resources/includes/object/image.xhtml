@@ -50,6 +50,8 @@
                     #{contentBean.getCurrentUGCCoords(activeDocumentBean.viewManager.currentPage)}
                 </div>
                 <div data-image-data="rightMarginElement">#fullscreenViewSidebar</div>
+                <div data-image-data="topMarginElement">#fullscreenHeader</div>
+                <div data-image-data="leftMarginElement">#sidebarScrollPreview</div>
             </div>
         </div>
         <div
@@ -301,6 +303,7 @@
             }
         }
         zoomableImageLoaded.subscribe((image) => {
+        	window.image = image;
             initializeSequence(image);
 
             $('.openseadragon-canvas').get(0).focus = () => {
