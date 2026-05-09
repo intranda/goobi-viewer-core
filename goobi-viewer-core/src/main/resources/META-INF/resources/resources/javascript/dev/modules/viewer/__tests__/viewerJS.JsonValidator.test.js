@@ -1,13 +1,8 @@
 /**
  * Unit tests for viewerJS.jsonValidator.
  *
- * The module's IIFE call site reads `jQuery` as a free variable, so we
- * stub it before require() — the validator itself never invokes jQuery.
+ * jQuery is wired up by jest-setup-browser.js.
  */
-global.jQuery = function () {
-    return {};
-};
-
 const viewerJS = require('../viewerJS.JsonValidator.js');
 const validator = viewerJS.jsonValidator;
 

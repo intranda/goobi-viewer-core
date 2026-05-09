@@ -9,15 +9,12 @@
  * idiom so it loads cleanly in Node without the Crowdsourcing-style
  * indirect-eval workaround.
  */
-const $factory = require('jquery');
-const $ = typeof $factory === 'function' && !$factory.fn ? $factory(window) : $factory;
-global.jQuery = global.$ = $;
-
+// jQuery + jsdom are wired up by jest-setup-browser.js.
 // cmsJS.tagList wires the in-list <input> to jQuery UI's autocomplete plugin
 // for tag suggestions. The plugin is not part of the bare jquery package; in
 // the original Karma run it was loaded as a global script. The autocomplete
 // behaviour is out of scope for these unit tests, so we stub it as a no-op.
-$.fn.autocomplete = function () {
+global.$.fn.autocomplete = function () {
     return this;
 };
 

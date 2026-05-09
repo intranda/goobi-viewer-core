@@ -11,23 +11,20 @@
  * jqplot is not in our dev dependencies; it's stubbed with the shape the
  * module touches at load time and at plot-time.
  */
-const $factory = require('jquery');
-const $ = typeof $factory === 'function' && !$factory.fn ? $factory(window) : $factory;
-global.jQuery = global.$ = $;
-
-// Stub jqplot. The module reads $.jqplot.config.enablePlugins at load
-// and references PieRenderer/BarRenderer/CategoryAxisRenderer/AxisTickRenderer
+// jQuery + jsdom are wired up by jest-setup-browser.js.
+// Stub jqplot. The module reads $.jqplot.config.enablePlugins at load and
+// references PieRenderer/BarRenderer/CategoryAxisRenderer/AxisTickRenderer
 // inside plot(). We track every call to assert it gets invoked.
 const jqplotCalls = [];
-$.jqplot = function () {
+global.$.jqplot = function () {
     jqplotCalls.push(Array.prototype.slice.call(arguments));
     return {};
 };
-$.jqplot.config = { enablePlugins: false };
-$.jqplot.PieRenderer = function () {};
-$.jqplot.BarRenderer = function () {};
-$.jqplot.CategoryAxisRenderer = function () {};
-$.jqplot.AxisTickRenderer = function () {};
+global.$.jqplot.config = { enablePlugins: false };
+global.$.jqplot.PieRenderer = function () {};
+global.$.jqplot.BarRenderer = function () {};
+global.$.jqplot.CategoryAxisRenderer = function () {};
+global.$.jqplot.AxisTickRenderer = function () {};
 
 const Statistics = require('../statistics.js');
 

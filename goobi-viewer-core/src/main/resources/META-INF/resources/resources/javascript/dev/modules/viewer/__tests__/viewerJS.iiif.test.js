@@ -1,15 +1,10 @@
 /**
  * Unit tests for viewerJS.iiif.
  *
- * The module's IIFE call site reads `jQuery` as a free variable; we stub it
- * (the tested functions never invoke jQuery). `viewerJS.isString` lives in
- * viewerJS.helper.js and is required by getId(); we stub it before require()
- * so the iiif tests do not need to load helper.js.
+ * jQuery is wired up by jest-setup-browser.js. `viewerJS.isString` lives
+ * in viewerJS.helper.js and is referenced by iiif.getId(); we stub it
+ * locally instead of loading helper.js so this test stays standalone.
  */
-global.jQuery = global.$ = function () {
-    return {};
-};
-
 const viewerJS = require('../viewerJS.iiif.js');
 
 // getId() calls viewerJS.isString — see viewerJS.helper.js. Provide a minimal

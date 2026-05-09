@@ -1,17 +1,8 @@
 /**
  * Unit tests for selected functions in viewerJS.helper.
  *
- * The module's IIFE call site reads `jQuery` as a free variable, so we stub
- * it before require(). The functions under test below do not actually invoke
- * jQuery, which is why a thin stub is enough.
- *
- * This file runs in jsdom: window, document, navigator and localStorage are
- * available without spawning a real browser.
+ * jQuery and the jsdom DOM are wired up by jest-setup-browser.js.
  */
-global.jQuery = global.$ = function () {
-    return {};
-};
-
 const viewerJS = require('../viewerJS.helper.js');
 
 describe('viewerJS.helper.truncateString', function () {

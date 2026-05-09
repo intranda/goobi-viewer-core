@@ -12,10 +12,8 @@
  * The handler debounces via setTimeout(maxDoubleClickDelay), so we run
  * jest's fake timers and advance them manually.
  */
-const $factory = require('jquery');
-const $ = typeof $factory === 'function' && !$factory.fn ? $factory(window) : $factory;
-global.jQuery = global.$ = $;
-
+// jQuery + jsdom are wired up by jest-setup-browser.js.
+const $ = global.$;
 const viewerJS = require('../viewerJS.paginator.js');
 
 const LEFT = 37;

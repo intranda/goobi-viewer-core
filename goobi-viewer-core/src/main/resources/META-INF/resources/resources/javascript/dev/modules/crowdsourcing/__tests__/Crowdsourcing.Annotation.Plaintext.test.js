@@ -17,12 +17,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Bind jQuery to jsdom's window. jquery's CJS export is a factory function
-// until called with a window; once bound it has `.fn` defined.
-const $factory = require('jquery');
-const $ = typeof $factory === 'function' && !$factory.fn ? $factory(window) : $factory;
-global.jQuery = global.$ = $;
-
+// jQuery + jsdom are wired up by jest-setup-browser.js.
 // Load the namespace files in dependency order. Indirect eval places their
 // top-level `var Crowdsourcing = ...` in the global scope (sloppy mode).
 const crowdsourcingDir = path.resolve(__dirname, '..');
