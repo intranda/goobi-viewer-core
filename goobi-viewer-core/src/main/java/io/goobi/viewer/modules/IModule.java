@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.modules;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -173,6 +174,18 @@ public interface IModule extends IndexAugmenter {
      *         empty optional should be returned
      */
     default Optional<IURLBuilder> getURLBuilder() {
+        return Optional.empty();
+    }
+
+    /**
+     * Folder URL containing CMS component definition XMLs that this module contributes. The folder is scanned by
+     * {@link io.goobi.viewer.model.cms.pages.content.CMSPageContentManager} on startup. May resolve to a JAR-internal
+     * location.
+     *
+     * @return URL of the module's CMS component folder, or {@link Optional#empty()} if the module ships no components
+     * @should return empty optional by default
+     */
+    default Optional<URL> getCmsComponentFolderUrl() {
         return Optional.empty();
     }
 }
