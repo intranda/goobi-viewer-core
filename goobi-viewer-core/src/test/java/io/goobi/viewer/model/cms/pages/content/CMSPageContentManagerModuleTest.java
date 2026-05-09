@@ -23,11 +23,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+
+import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
@@ -38,12 +41,12 @@ import org.junit.jupiter.api.io.TempDir;
  * Verifies that {@link CMSPageContentManager} can ingest CMS components both from regular filesystem
  * directories and from JAR-mounted directories created via {@link FileSystems#newFileSystem(URI, Map)}.
  *
- * <p>Extends {@link io.goobi.viewer.AbstractDatabaseEnabledTest} so the {@code DataManager} singleton (and its
- * configuration backing the {@link io.goobi.viewer.model.cms.CMSTemplateManager} init path) is initialized from
+ * <p>Extends {@link AbstractDatabaseEnabledTest} so the {@code DataManager} singleton (and its
+ * configuration backing the {@code CMSTemplateManager} init path) is initialized from
  * {@code localConfig/config_viewer.xml}. Existing CMS tests follow the same pattern; copying it avoids brittle
  * direct-init issues observed in earlier review rounds.</p>
  */
-class CMSPageContentManagerModuleTest extends io.goobi.viewer.AbstractDatabaseEnabledTest {
+class CMSPageContentManagerModuleTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see CMSPageContentManager#CMSPageContentManager(Path...)
@@ -73,7 +76,7 @@ class CMSPageContentManagerModuleTest extends io.goobi.viewer.AbstractDatabaseEn
         Path jar = tmp.resolve("module.jar");
         try (JarOutputStream out = new JarOutputStream(Files.newOutputStream(jar))) {
             out.putNextEntry(new ZipEntry("META-INF/resources/resources/cms/templates/crowdsourcing/beta.xml"));
-            out.write(buildMinimalComponent("beta").getBytes());
+            out.write(buildMinimalComponent("beta").getBytes(StandardCharsets.UTF_8));
             out.closeEntry();
         }
 
