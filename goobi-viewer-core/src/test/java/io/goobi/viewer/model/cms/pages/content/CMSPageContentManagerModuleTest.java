@@ -20,6 +20,8 @@ package io.goobi.viewer.model.cms.pages.content;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,11 +31,17 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
+import io.goobi.viewer.modules.IModule;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -90,6 +98,40 @@ class CMSPageContentManagerModuleTest extends AbstractDatabaseEnabledTest {
             assertTrue(mgr.getComponent("alpha").isPresent());
             assertTrue(mgr.getComponent("beta").isPresent());
         }
+    }
+
+    /**
+     * @see CMSTemplateManager#reloadContentManager()
+     * @verifies include components contributed by registered modules
+     */
+    @Test
+    void reloadContentManager_shouldIncludeComponentsContributedByModules(@TempDir Path coreDir, @TempDir Path moduleDir) throws Exception {
+        // Provide a minimal "core" templates folder so CMSTemplateManager.init() finds something on disk; the
+        // module folder is what we actually exercise.
+        Files.writeString(coreDir.resolve("delta.xml"), buildMinimalComponent("delta"));
+        Files.writeString(moduleDir.resolve("gamma.xml"), buildMinimalComponent("gamma"));
+
+        IModule module = mock(IModule.class);
+        // Unique ID per invocation: DataManager.registerModule rejects duplicate IDs and DataManager has no
+        // public deregister method (DataManager.java:227-244). UUID-based ID avoids collisions across test methods
+        // within the same JVM.
+        String moduleId = "test-module-15809-" + UUID.randomUUID();
+        when(module.getId()).thenReturn(moduleId);
+        when(module.isLoaded()).thenReturn(true);
+        when(module.getCmsComponentFolderUrl()).thenReturn(Optional.of(moduleDir.toUri().toURL()));
+
+        // DataManager#getModules() returns a defensive copy (DataManager.java:161-163), so mutating that list does
+        // nothing. The public API for module registration is registerModule().
+        boolean registered = DataManager.getInstance().registerModule(module);
+        Assumptions.assumeTrue(registered, "Module registration must succeed for this test");
+
+        // Pass a real filesystem path so CMSTemplateManager.init() doesn't fail looking for a FacesContext
+        // (init() at CMSTemplateManager.java:113-119 requires either filesystemPath or a faces context).
+        CMSTemplateManager tm = new CMSTemplateManager(coreDir.toString(), null);
+        tm.reloadContentManager();
+
+        assertTrue(tm.getContentManager().getComponent("gamma").isPresent(),
+                "Module-contributed gamma.xml should appear in the merged content manager");
     }
 
     private static String buildMinimalComponent(String name) {
