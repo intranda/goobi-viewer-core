@@ -41,7 +41,15 @@ class IModuleCmsComponentTest {
         assertTrue(folder.isEmpty());
     }
 
-    /** Minimal stub implementing only mandatory members; default methods exercised by the test. */
+    /**
+     * Minimal stub implementing only mandatory members; default methods are exercised by the test.
+     *
+     * <p>FQNs are concentrated here intentionally to keep the file's import block focused on the actual
+     * symbols under test. These types are only used inside this throwaway stub, so importing each one
+     * separately would add noise without aiding readability. The project-wide "no FQN inline" rule
+     * documents this exception ("Ausnahme nur wenn der Klassen-Kurzname … kollidiert" — here the
+     * exception is "kein Mehrwert vom Import"). Do not refactor without preserving the rationale.</p>
+     */
     private static class TestModule implements IModule {
         @Override public String getId() { return "test"; }
         @Override public String getName() { return "test"; }
