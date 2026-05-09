@@ -57,6 +57,19 @@ module.exports = {
                 addFileAttribute: 'true',
             },
         ],
+        [
+            // jest-sonar writes Sonar's "Generic Test Execution" XML format
+            // (different from JUnit). Consumed by SonarCloud via
+            // sonar.testExecutionReportPaths in pom.xml.
+            require.resolve('jest-sonar'),
+            {
+                outputDirectory: path.join(__dirname, 'target/sonar'),
+                outputName: 'test-execution-report.xml',
+                // Paths in the report point back to absolute file system paths,
+                // which is what Sonar matches against to attribute test results.
+                reportedFilePath: 'absolute',
+            },
+        ],
     ],
 
     projects: [

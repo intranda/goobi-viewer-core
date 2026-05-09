@@ -76,6 +76,29 @@
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.source>21</sonar.java.source>
 		<sonar.java.target>21</sonar.java.target>
+		<!--
+		    JavaScript paths that should never be analysed:
+		      libs/  - third-party JS shipped under our resources tree
+		      dist/  - minified bundles produced from dev/ (avoid double-counting)
+		      node_modules/ - downloaded npm packages
+		-->
+		<sonar.exclusions>**/javascript/libs/**,**/javascript/dist/**,**/node_modules/**</sonar.exclusions>
+		<!-- JS coverage: Jest writes lcov.info under target/jest-coverage when
+		     `npm test` runs with the coverage flag (which it does, see the
+		     frontend-maven-plugin block below). Sonar's JS plugin reads it
+		     via this property. -->
+		<sonar.javascript.lcov.reportPaths>${project.build.directory}/jest-coverage/lcov.info</sonar.javascript.lcov.reportPaths>
+		<!--
+		    JS tests live alongside their sources at
+		    src/main/resources/.../javascript/dev/modules/*/__tests__/. Adding
+		    that path to sonar.tests (in addition to the Java test root) and
+		    narrowing with sonar.test.inclusions tells Sonar to treat
+		    __tests__/*.test.js as test code rather than production code.
+		    The execution count XML is produced by the jest-sonar reporter.
+		-->
+		<sonar.tests>src/test/java,src/main/resources/META-INF/resources/resources/javascript/dev/modules</sonar.tests>
+		<sonar.test.inclusions>**/__tests__/**,**/*.test.js</sonar.test.inclusions>
+		<sonar.testExecutionReportPaths>${project.build.directory}/sonar/test-execution-report.xml</sonar.testExecutionReportPaths>
 
 		<!-- Checkstyle -->
 		<checkstyle.max.violations>0</checkstyle.max.violations>
@@ -1188,8 +1211,15 @@
 						</goals>
 						<phase>test</phase>
 						<configuration>
-							<!-- The "ci" flag enables deterministic Jest output. -->
-							<arguments>test -- --ci</arguments>
+							<!--
+							    The "ci" flag enables deterministic Jest
+							    output (fails on snapshot drift instead of
+							    writing new ones). The "coverage" flag
+							    produces target/jest-coverage/lcov.info so
+							    Sonar can ingest JS coverage. Adds ~5s to
+							    the Jest run; trivially worth it.
+							-->
+							<arguments>test -- --ci --coverage</arguments>
 							<!--
 							    The plugin auto-skips any `npm` execution whose
 							    arguments contain "test" when -DskipTests is
