@@ -1,0 +1,71 @@
+// Styles for the Chart.js + DOM-list CMS components introduced in #15809.
+// Used by chartPublicationTypes / chartImportTrend / chartImportSummary (core) and
+// chartMostEditedRecords / chartAlmostCompletedRecords / chartMostActiveUsers (crowdsourcing module).
+
+.statistics-chart {
+    margin: 1rem 0;
+
+    canvas {
+        max-width: 100%;
+        height: auto !important; // override Chart.js inline height when the parent has a fixed aspect ratio
+    }
+
+    h2 {
+        margin-bottom: 0.5rem;
+    }
+}
+
+.statistics-chart--publication-types,
+.statistics-chart--import-trend,
+.statistics-chart--import-summary,
+.statistics-chart--most-edited {
+    // Reasonable default ratio so the canvas doesn't collapse to 0 height.
+    aspect-ratio: 16 / 9;
+    max-height: 400px;
+}
+
+.statistics-list {
+    margin: 1rem 0;
+
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color, #ddd);
+    }
+
+    .progress {
+        background: var(--progress-bg, #eee);
+        height: 0.5rem;
+        border-radius: 0.25rem;
+        overflow: hidden;
+        margin-top: 0.25rem;
+
+        .bar {
+            background: var(--progress-bar, #4a90d9);
+            height: 100%;
+            color: #fff;
+            font-size: 0.7rem;
+            line-height: 0.5rem;
+            padding-left: 0.25rem;
+        }
+    }
+
+    .completion-percent {
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+
+    .rank {
+        display: inline-block;
+        min-width: 2rem;
+        font-weight: bold;
+    }
+
+    .score {
+        float: right;
+    }
+}
