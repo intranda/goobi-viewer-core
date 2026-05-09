@@ -1,0 +1,32 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <composite:interface>
+        <composite:attribute
+            name="component"
+            required="true" />
+    </composite:interface>
+
+    <composite:implementation>
+        <h:panelGroup
+            layout="block"
+            styleClass="statistics-chart statistics-chart--publication-types"
+            id="chart-publication-types-#{cc.attrs.component.id}">
+            <h2>#{msg.cms_component__chart_publication_types__label}</h2>
+            <canvas id="canvas-publication-types-#{cc.attrs.component.id}" />
+        </h:panelGroup>
+
+        <script type="text/javascript">
+            (function() {
+                viewerJS.statistics.charts.renderPublicationTypes(
+                    'canvas-publication-types-#{cc.attrs.component.id}',
+                    '#{request.contextPath}/api/v1/statistics/index/publication-types',
+                    '#{request.contextPath}/search/'
+                );
+            })();
+        </script>
+    </composite:implementation>
+</ui:composition>
