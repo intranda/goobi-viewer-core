@@ -34,7 +34,10 @@ var viewerJS = (function (viewer) {
         })
             .then((response) => {
                 if (!response.ok) {
-                    throw reponse.errorMessage;
+                    // Was `reponse.errorMessage` (typo) — would have thrown a
+                    // ReferenceError instead of the intended message on a
+                    // non-OK response. refs #27937
+                    throw response.errorMessage;
                 }
                 return response.json();
             })
