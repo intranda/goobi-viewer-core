@@ -19,10 +19,10 @@
     "java": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp java",
     "prepare": "node ../scripts/pre-commit/install.js",
     "format": "prettier --write .",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "test:hooks": "jest --selectProjects node-scripts --passWithNoTests"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test:hooks": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --selectProjects node-scripts --passWithNoTests"
   },
   "engines": {
     "node": ">=18"

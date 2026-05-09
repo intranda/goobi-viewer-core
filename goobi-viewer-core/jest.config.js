@@ -95,5 +95,19 @@ module.exports = {
             rootDir: repoRoot,
             testMatch: ['<rootDir>/scripts/pre-commit/__tests__/**/*.test.js'],
         },
+        {
+            // ES-module project for src/.../media/*.mjs sources. Activated via
+            // `NODE_OPTIONS=--experimental-vm-modules` set in the npm scripts.
+            // Test files are *.test.mjs and use native `import` syntax.
+            displayName: 'media-mjs',
+            testEnvironment: 'jsdom',
+            rootDir: repoRoot,
+            testMatch: [
+                '<rootDir>/goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/media/__tests__/**/*.test.mjs',
+            ],
+            // No transform — Node executes .mjs natively under the experimental flag.
+            transform: {},
+            setupFiles: [path.join(__dirname, 'jest-setup-browser.js')],
+        },
     ],
 };

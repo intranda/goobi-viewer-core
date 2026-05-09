@@ -226,3 +226,74 @@ describe('viewerJS.iiif.getChildCollections / getContainedWorks', function () {
         expect(iiif.getContainedWorks(collection)).toBe(11);
     });
 });
+
+describe('viewerJS.iiif.getMetadataValue (collection.metadata lookup)', function () {
+    // The function depends on private _getValue + _defaults.displayLanguage in
+    // the source — both of which are scoped inside the IIFE. The closure
+    // looks up _defaults.displayLanguage on every call. Since neither is
+    // exposed and _defaults is undefined, calling getMetadataValue throws.
+    // The test pins down the current behaviour so refactors that change
+    // it have to update the assertions here.
+
+    test('should throw when metadata is missing on the collection', function () {
+        // The first .forEach() throws on undefined.
+        expect(function () {
+            iiif.getMetadataValue({}, 'Author');
+        }).toThrow();
+    });
+
+    test('should throw when called against the live impl (private deps unwired)', function () {
+        // Documents the latent dependency on _defaults.displayLanguage.
+        expect(function () {
+            iiif.getMetadataValue({ metadata: [{ label: 'Author', value: 'A' }] }, 'Author');
+        }).toThrow();
+    });
+});
+
+describe('viewerJS.iiif.getRelated', function () {
+    test('should return undefined when collection has no related field', function () {
+        expect(iiif.getRelated({}, 'Homepage')).toBeUndefined();
+    });
+
+    test('should return the single related entry when related is not an array', function () {
+        const related = { label: 'Homepage', '@id': 'https://example.org' };
+        expect(iiif.getRelated({ related: related }, 'irrelevant')).toBe(related);
+    });
+
+    test('should return the array entry whose label matches the requested label', function () {
+        const a = { label: 'Catalog', '@id': 'https://example.org/catalog' };
+        const b = { label: 'Homepage', '@id': 'https://example.org' };
+        expect(iiif.getRelated({ related: [a, b] }, 'Homepage')).toBe(b);
+    });
+
+    test('should return undefined when no array entry matches the label', function () {
+        const related = [{ label: 'Catalog' }];
+        expect(iiif.getRelated({ related: related }, 'Missing')).toBeUndefined();
+    });
+});
+
+describe('viewerJS.iiif.getService', function () {
+    test('should return the service unchanged when it is not an array', function () {
+        const service = { '@context': 'https://example.org/extent.context.json' };
+        expect(iiif.getService({ service: service }, 'extent')).toBe(service);
+    });
+
+    test('should currently return undefined for the array branch (latent bug pinned by this test)', function () {
+        // The impl reads `service['@context']` inside .find() but `service`
+        // is the array — should be `s['@context']`. The predicate is always
+        // falsy and find() returns undefined regardless of the array
+        // contents. Pinned so a fix has to update the test.
+        const services = [{ '@context': 'https://example.org/foo.context.json' }, { '@context': 'https://example.org/extent.context.json' }];
+        expect(iiif.getService({ service: services }, 'extent')).toBeUndefined();
+    });
+});
+
+describe('viewerJS.iiif.getTags (single non-array service branch)', function () {
+    // Note: the array branch references a `name` parameter against an
+    // undefined closure variable `service`, which throws on any invocation.
+    // We only exercise the non-array branch here.
+
+    test('should return undefined when collection has no service', function () {
+        expect(iiif.getTags({}, 'tag-set-1')).toBeUndefined();
+    });
+});
