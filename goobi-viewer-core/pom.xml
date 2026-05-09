@@ -1141,6 +1141,19 @@
 					<skip>${skipJsTests}</skip>
 					<installDirectory>target</installDirectory>
 					<nodeVersion>${frontend.node.version}</nodeVersion>
+					<!--
+					    The Jenkins testing-index image runs as UID 1000 with
+					    HOME=/home/ubuntu, which neither exists in the image nor
+					    is writable. Java sidesteps this via
+					    _JAVA_OPTIONS=-Duser.home=/var/maven, but that's a Java
+					    system property — npm only honours the HOME env var.
+					    Redirecting it to a per-build directory under target/
+					    keeps npm's cache and log files in a path the build
+					    user can always create, and `mvn clean` removes them.
+					-->
+					<environmentVariables>
+						<HOME>${project.build.directory}/npm-home</HOME>
+					</environmentVariables>
 				</configuration>
 				<executions>
 					<execution>
