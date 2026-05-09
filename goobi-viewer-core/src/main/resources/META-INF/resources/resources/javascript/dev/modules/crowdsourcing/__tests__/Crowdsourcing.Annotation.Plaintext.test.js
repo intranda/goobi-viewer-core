@@ -4,28 +4,11 @@
  * Ported from the deleted Jasmine spec
  * `tests/spec/crowdsourcing/Crowdsourcing.Annotation.Plaintext-spec.js`.
  *
- * The Crowdsourcing module set spans three source files that share a
- * `var Crowdsourcing` accumulator. Plain `require()` in Node breaks that
- * pattern: the hoisted module-scope `var Crowdsourcing` shadows the global
- * the next file's IIFE expects, so it gets fed `undefined` and crashes.
- *
- * Workaround: load the files via indirect eval (`(0, eval)(...)`). That
- * evaluates the source in the *global* scope, so `var Crowdsourcing` becomes
- * `global.Crowdsourcing` and the next file's IIFE call site finds it. No
- * change required to the production code.
+ * jQuery + jsdom are wired up by jest-setup-browser.js. The Crowdsourcing
+ * IIFE pattern needs special loading via indirect eval — see crowdsourcing-loader.js
+ * for the rationale.
  */
-const fs = require('fs');
-const path = require('path');
-
-// jQuery + jsdom are wired up by jest-setup-browser.js.
-// Load the namespace files in dependency order. Indirect eval places their
-// top-level `var Crowdsourcing = ...` in the global scope (sloppy mode).
-const crowdsourcingDir = path.resolve(__dirname, '..');
-['Crowdsourcing.js', 'Crowdsourcing.Annotation.js', 'Crowdsourcing.Annotation.Plaintext.js'].forEach(function (file) {
-    (0, eval)(fs.readFileSync(path.join(crowdsourcingDir, file), 'utf8'));
-});
-
-const Crowdsourcing = global.Crowdsourcing;
+const Crowdsourcing = require('./crowdsourcing-loader')(['Crowdsourcing.Annotation.Plaintext.js']);
 
 // Fixtures from the original spec, unchanged.
 const simpleAnnotation = {
