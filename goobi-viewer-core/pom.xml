@@ -1136,7 +1136,6 @@
 						<exclude>**/config_viewer.xml</exclude>
 						<exclude>**/contentServerConfig.xml</exclude>
 						<exclude>**/log4j2.xml</exclude>
-						<exclude>/META-INF/resources/resources/javascript/tests/</exclude>
 						<exclude>/META-INF/resources/resources/javascript/dev/</exclude>
 					</excludes>
 
