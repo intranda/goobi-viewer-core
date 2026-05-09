@@ -14,6 +14,31 @@
 const fs = require('fs');
 const path = require('path');
 
+// initWebsocket reads `viewerJS.WebSocket` and `viewerJS.WebSocket.PATH_CONFIG_EDITOR_SOCKET`.
+// We seed both before evaluating the source so the loaded module sees them.
+const sentMessages = [];
+global.viewerJS = global.viewerJS || {};
+global.viewerJS.WebSocket = function (host, contextPath, socketPath) {
+    this.host = host;
+    this.contextPath = contextPath;
+    this.socketPath = socketPath;
+    // onOpen is observed by initWebsocket. We capture the subscriber so
+    // each test can synthesize the open event by calling _fireOpen().
+    this.onOpen = {
+        _subs: [],
+        subscribe: function (handler) {
+            this._subs.push(handler);
+        },
+    };
+    this._fireOpen = function () {
+        this.onOpen._subs.forEach((h) => h());
+    };
+    this.sendMessage = function (msg) {
+        sentMessages.push(msg);
+    };
+};
+global.viewerJS.WebSocket.PATH_CONFIG_EDITOR_SOCKET = '/admin/config/edit.socket';
+
 global.adminJS = {};
 (0, eval)(fs.readFileSync(path.join(__dirname, '..', 'adminJS.configEditor.js'), 'utf8'));
 
@@ -71,6 +96,47 @@ describe('adminJS.configEditor.loadBackup', () => {
         configEditor.loadBackup({});
         await new Promise((resolve) => setTimeout(resolve, 0));
         expect(showOverlaySpy).not.toHaveBeenCalled();
+    });
+});
+
+describe('adminJS.configEditor.initWebsocket', () => {
+    beforeEach(() => {
+        sentMessages.length = 0;
+        // window.currentPath is a global the source reads as the
+        // websocket's context path. jsdom's window has no such property
+        // by default — set it before each test so the call is reproducible.
+        window.currentPath = '/viewer';
+    });
+
+    test('opens a WebSocket on PATH_CONFIG_EDITOR_SOCKET with the current host and path', () => {
+        configEditor.config = { currentFilePath: '/etc/cfg.xml' };
+        configEditor.initWebsocket();
+        expect(configEditor.socket).toBeDefined();
+        expect(configEditor.socket.host).toBe(window.location.host);
+        expect(configEditor.socket.contextPath).toBe('/viewer');
+        expect(configEditor.socket.socketPath).toBe('/admin/config/edit.socket');
+    });
+
+    test('sends a JSON {fileToLock} message when the socket opens', () => {
+        configEditor.config = { currentFilePath: '/etc/cfg.xml' };
+        configEditor.initWebsocket();
+
+        configEditor.socket._fireOpen();
+
+        expect(sentMessages).toHaveLength(1);
+        expect(JSON.parse(sentMessages[0])).toEqual({ fileToLock: '/etc/cfg.xml' });
+    });
+
+    test('reads currentFilePath at the moment the socket opens, not when initWebsocket runs', () => {
+        // The arrow callback captures `this` (the configEditor) so a
+        // later config change is reflected in the message. Pin that.
+        configEditor.config = { currentFilePath: '/old.xml' };
+        configEditor.initWebsocket();
+        configEditor.config.currentFilePath = '/new.xml';
+
+        configEditor.socket._fireOpen();
+
+        expect(JSON.parse(sentMessages[0]).fileToLock).toBe('/new.xml');
     });
 });
 
