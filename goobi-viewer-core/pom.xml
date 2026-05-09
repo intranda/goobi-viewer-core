@@ -58,6 +58,14 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<skipTests>true</skipTests>
+		<!--
+		    JS unit tests (Jest) are gated by their own flag so they can be
+		    enabled/disabled independently of the Java tests. Default ties them
+		    to ${skipTests}, so CI's `-DskipTests=false` runs both.
+		-->
+		<skipJsTests>${skipTests}</skipJsTests>
+		<frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
+		<frontend.node.version>v22.13.1</frontend.node.version>
 		<skipDependencyCheck>true</skipDependencyCheck>
 		<failOnSnapshot>false</failOnSnapshot>
 		<maven.compiler.release>21</maven.compiler.release>
@@ -1118,6 +1126,70 @@
 					<argLine>@{argLine} -javaagent:${mockito.agent.jar}</argLine>
 				</configuration>
 			</plugin>
+
+			<!--
+			    Runs the JavaScript Jest test suite as part of `mvn verify`.
+			    Downloads its own Node/npm into target/, so CI agents only need
+			    network access (not a pre-installed Node). Bound to the same
+			    skipTests flag as the Java tests via ${skipJsTests}.
+			-->
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>${frontend-maven-plugin.version}</version>
+				<configuration>
+					<skip>${skipJsTests}</skip>
+					<installDirectory>target</installDirectory>
+					<nodeVersion>${frontend.node.version}</nodeVersion>
+				</configuration>
+				<executions>
+					<execution>
+						<id>install-node-and-npm</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<phase>generate-test-resources</phase>
+					</execution>
+					<execution>
+						<id>npm-install</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<phase>generate-test-resources</phase>
+						<configuration>
+							<!--
+							    Using `install` rather than `ci` because this
+							    repository's .gitignore excludes package-lock.json,
+							    so a committed lockfile is not guaranteed in CI
+							    checkouts. The "ignore-scripts" flag suppresses
+							    the package's `prepare` step that installs lefthook
+							    git hooks, a dev convenience irrelevant in CI.
+							-->
+							<arguments>install --no-audit --no-fund --ignore-scripts</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>npm-test</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<phase>test</phase>
+						<configuration>
+							<!-- The "ci" flag enables deterministic Jest output. -->
+							<arguments>test -- --ci</arguments>
+							<!--
+							    The plugin auto-skips any `npm` execution whose
+							    arguments contain "test" when -DskipTests is
+							    true. Decoupling the two flags here lets devs
+							    skip just the Java tests while still running
+							    the JS tests via -DskipJsTests=false.
+							-->
+							<skipTests>${skipJsTests}</skipTests>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -1136,7 +1208,13 @@
 						<exclude>**/config_viewer.xml</exclude>
 						<exclude>**/contentServerConfig.xml</exclude>
 						<exclude>**/log4j2.xml</exclude>
+						<!-- The /dev/ tree contains unminified JS sources. Only the
+						     pre-built bundles in /dist/ ship in the WAR. -->
 						<exclude>/META-INF/resources/resources/javascript/dev/</exclude>
+						<!-- Defensive: keep Jest test files out of the JAR even if they
+						     ever live outside the /dev/ tree. -->
+						<exclude>**/__tests__/**</exclude>
+						<exclude>**/*.test.js</exclude>
 					</excludes>
 
 				</configuration>
