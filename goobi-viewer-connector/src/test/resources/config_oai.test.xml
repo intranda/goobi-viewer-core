@@ -82,11 +82,11 @@
         </accessConditions>
     </oai_dc>
 
-	<!-- ese: Value configuration for mandatory ESE fields -->
-	<ese>
+	<!-- europeana: Value configuration for mandatory ESE fields -->
+	<europeana>
         <enabled>true</enabled>
         <hitsPerToken>12</hitsPerToken>
-		<!-- types: Mapping of docstruct types to pre-defined values for europeana:type 
+		<!-- types: Mapping of docstruct types to pre-defined values for europeana:type
 			(@name: dostruct type; @type: ESE type) -->
 		<types>
 			<docstruct name="video" type="VIDEO" />
@@ -100,16 +100,20 @@
 		<providerField>MD_ACCESSCONDITIONCOPYRIGHT</providerField>
 		<!-- dataProviderField: Solr field that contains the value for europeana:dataProvider -->
 		<dataProviderField>MD_DEFAULTPROVIDER</dataProviderField>
-		<!-- defaultProvider: static default value for europeana:provider and europeana:dataProvider, 
+		<!-- defaultProvider: static default value for europeana:provider and europeana:dataProvider,
 			in case any of the configured Solr fields provide no value -->
 		<defaultProvider>Institution XYZ</defaultProvider>
-		<!-- rightsField: Solr field that contains the value for europeana:rights 
+		<!-- rightsField: Solr field that contains the value for europeana:rights
 			(value must be a URI) -->
 		<rightsField>TODO</rightsField>
-		<!-- defaultRightsUrl: static default value for europeana:rights, in case 
+		<!-- defaultRightsUrl: static default value for europeana:rights, in case
 			the configured Solr field provides no value -->
 		<defaultRightsUrl>http://www.example.com/rights</defaultRightsUrl>
-	</ese>
+		<setSpec>
+			<field>DC</field>
+			<field>DOCSTRCT</field>
+		</setSpec>
+	</europeana>
 	
     <mets>
         <enabled>true</enabled>

@@ -27,7 +27,7 @@ class SruRequestParameterTest {
      * @verifies set params correctly
      */
     @Test
-    void SruRequestParameter_shouldSetParamsCorrectly() throws Exception {
+    void SruRequestParameter_shouldSetParamsCorrectly() {
         SruRequestParameter parameter = new SruRequestParameter(SruOperation.SEARCHRETRIEVE, "1.2", "identifier=123", 1, 10, "recordPacking_value",
                 Metadata.MARCXML, "recordXPath_value", "resultSetTTL_value", "sortKeys_value", "stylesheet_value", "extraRequestData_value",
                 "scanClause_value", 5, 10);

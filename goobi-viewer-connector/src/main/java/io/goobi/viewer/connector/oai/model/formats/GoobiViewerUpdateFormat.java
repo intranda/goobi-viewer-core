@@ -25,12 +25,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import com.ctc.wstx.shaded.msv_core.verifier.ErrorInfo.ElementErrorInfo;
 
 import io.goobi.viewer.connector.DataManager;
 import io.goobi.viewer.connector.oai.RequestHandler;
@@ -47,6 +44,9 @@ import io.goobi.viewer.solr.SolrConstants;
 public class GoobiViewerUpdateFormat extends Format {
 
     private static final Logger logger = LogManager.getLogger(GoobiViewerUpdateFormat.class);
+
+    private static final String URL_PARAM_FROM = "&from=";
+    private static final String URL_PARAM_UNTIL = "&until=";
 
     /** {@inheritDoc} */
     @Override
@@ -65,10 +65,10 @@ public class GoobiViewerUpdateFormat extends Format {
                 return new ErrorCode().getBadArgument();
         }
         if (handler.getFrom() != null) {
-            sbUrl.append("&from=").append(handler.getFrom());
+            sbUrl.append(URL_PARAM_FROM).append(handler.getFrom());
         }
         if (handler.getUntil() != null) {
-            sbUrl.append("&until=").append(handler.getUntil());
+            sbUrl.append(URL_PARAM_UNTIL).append(handler.getUntil());
         }
         sbUrl.append("&first=").append(firstVirtualRow).append("&pageSize=").append(numRows);
 
@@ -84,11 +84,7 @@ public class GoobiViewerUpdateFormat extends Format {
             if (totalHits == 0) {
                 return new ErrorCode().getNoRecordsMatch();
             }
-            try {
-                return generateGoobiViewerUpdates(jsonArray, totalHits, firstVirtualRow, numRows, handler, "ListRecords");
-            } catch (JDOMException e) {
-                throw new IOException(e.getMessage());
-            }
+            return generateGoobiViewerUpdates(jsonArray, totalHits, firstVirtualRow, numRows, handler, "ListRecords");
         } catch (HTTPException e) {
             throw new IOException(e.getCode() + ": " + e.getMessage());
         }
@@ -104,10 +100,10 @@ public class GoobiViewerUpdateFormat extends Format {
         try {
             StringBuilder sbUrlRoot = new StringBuilder(DataManager.getInstance().getConfiguration().getHarvestUrl()).append('?');
             if (handler.getFrom() != null) {
-                sbUrlRoot.append("&from=").append(handler.getFrom());
+                sbUrlRoot.append(URL_PARAM_FROM).append(handler.getFrom());
             }
             if (handler.getUntil() != null) {
-                sbUrlRoot.append("&until=").append(handler.getUntil());
+                sbUrlRoot.append(URL_PARAM_UNTIL).append(handler.getUntil());
             }
             sbUrlRoot.append("&identifier=").append(handler.getIdentifier()).append("&action=");
             String urlRoot = sbUrlRoot.toString();
@@ -135,8 +131,6 @@ public class GoobiViewerUpdateFormat extends Format {
             return generateGoobiViewerUpdates(jsonArray, 1L, 0, 1, handler, "GetRecord");
         } catch (IOException e) {
             return new ErrorCode().getIdDoesNotExist();
-        } catch (JDOMException e) {
-            return new ErrorCode().getCannotDisseminateFormat();
         }
     }
 
@@ -149,13 +143,11 @@ public class GoobiViewerUpdateFormat extends Format {
      * @param numRows
      * @param handler
      * @param recordType "GetRecord" or "ListRecords"
-     * @return {@link ElementErrorInfo}
+     * @return {@link Element}
      * @throws IOException
-     * @throws JDOMException
-     * @throws SolrServerException
      */
     private Element generateGoobiViewerUpdates(JSONArray jsonArray, long totalHits, int firstRow, final int numRows, RequestHandler handler,
-            String recordType) throws JDOMException, IOException {
+            String recordType) throws IOException {
         if (jsonArray == null) {
             throw new IllegalArgumentException("jsonArray may not be null");
         }
@@ -172,10 +164,10 @@ public class GoobiViewerUpdateFormat extends Format {
 
         StringBuilder sbUrlRoot = new StringBuilder(DataManager.getInstance().getConfiguration().getHarvestUrl()).append('?');
         if (handler.getFrom() != null) {
-            sbUrlRoot.append("&from=").append(handler.getFrom());
+            sbUrlRoot.append(URL_PARAM_FROM).append(handler.getFrom());
         }
         if (handler.getUntil() != null) {
-            sbUrlRoot.append("&until=").append(handler.getUntil());
+            sbUrlRoot.append(URL_PARAM_UNTIL).append(handler.getUntil());
         }
         sbUrlRoot.append("&identifier=");
         String urlRoot = sbUrlRoot.toString();

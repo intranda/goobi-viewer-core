@@ -96,6 +96,10 @@ public abstract class Format {
 
     protected SolrSearchIndex solr = DataManager.getInstance().getSearchIndex();
 
+    private static final String TAG_DESCRIPTION = "description";
+    private static final String XSTREAM_ALLOWED_TYPES_WILDCARD = "io.goobi.viewer.**";
+
+
     /**
      * <p>
      * createListRecords.
@@ -183,10 +187,10 @@ public abstract class Format {
         granularity.setText(identifyTags.get("granularity"));
         identify.addContent(granularity);
 
-        if (StringUtils.isNoneEmpty(identifyTags.get("description"))) {
-            Element eleDescription = new Element("description", OAI_NS);
-            Element eleDcDescription = new Element("description", DC_NS);
-            eleDcDescription.setText(identifyTags.get("description"));
+        if (StringUtils.isNoneEmpty(identifyTags.get(TAG_DESCRIPTION))) {
+            Element eleDescription = new Element(TAG_DESCRIPTION, OAI_NS);
+            Element eleDcDescription = new Element(TAG_DESCRIPTION, DC_NS);
+            eleDcDescription.setText(identifyTags.get(TAG_DESCRIPTION));
             eleDescription.addContent(eleDcDescription);
             identify.addContent(eleDescription);
         }
@@ -404,7 +408,7 @@ public abstract class Format {
         // logger.trace("getHeader: {}", doc.getFieldValue(SolrConstants.PI)); //NOSONAR Debug
         Element header = new Element("header", OAI_NS);
         // identifier
-        if (doc.getFieldValue(SolrConstants.URN) != null && ((String) doc.getFieldValue(SolrConstants.URN)).length() > 0) {
+        if (doc.getFieldValue(SolrConstants.URN) != null && !((String) doc.getFieldValue(SolrConstants.URN)).isEmpty()) {
             Element urnIdentifier = new Element("identifier", OAI_NS);
             urnIdentifier.setText(DataManager.getInstance().getConfiguration().getOaiIdentifier().get("repositoryIdentifier")
                     + (String) doc.getFieldValue(SolrConstants.URN));
@@ -521,7 +525,7 @@ public abstract class Format {
     private static void saveToken(ResumptionToken token) throws IOException {
         File f = new File(DataManager.getInstance().getConfiguration().getResumptionTokenFolder(), token.getTokenName());
         XStream xStream = new XStream(new DomDriver());
-        xStream.allowTypesByWildcard(new String[] { "io.goobi.viewer.**" });
+        xStream.allowTypesByWildcard(new String[] { XSTREAM_ALLOWED_TYPES_WILDCARD });
         try (BufferedWriter outfile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f), StandardCharsets.UTF_8))) {
             xStream.toXML(token, outfile);
             outfile.flush();
@@ -607,7 +611,7 @@ public abstract class Format {
         try (FileInputStream fis = new FileInputStream(tokenFile); InputStreamReader isr = new InputStreamReader(fis);
                 BufferedReader infile = new BufferedReader(isr);) {
             XStream xStream = new XStream(new DomDriver());
-            xStream.allowTypesByWildcard(new String[] { "io.goobi.viewer.**" });
+            xStream.allowTypesByWildcard(new String[] { XSTREAM_ALLOWED_TYPES_WILDCARD });
             xStream.processAnnotations(ResumptionToken.class);
             return (ResumptionToken) xStream.fromXML(infile);
         }
@@ -623,7 +627,7 @@ public abstract class Format {
         if (tokenFolder.isDirectory()) {
             int count = 0;
             XStream xStream = new XStream(new DomDriver());
-            xStream.allowTypesByWildcard(new String[] { "io.goobi.viewer.**" });
+            xStream.allowTypesByWildcard(new String[] { XSTREAM_ALLOWED_TYPES_WILDCARD });
             for (File tokenFile : tokenFolder.listFiles()) {
                 if (tokenFile.isDirectory()) {
                     continue;

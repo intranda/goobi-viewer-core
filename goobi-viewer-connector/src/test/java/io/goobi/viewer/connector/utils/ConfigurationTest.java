@@ -234,7 +234,7 @@ class ConfigurationTest extends AbstractTest {
     void getHitsPerTokenForMetadataFormat_shouldReturnCorrectValue() {
         Assertions.assertEquals(11,
                 DataManager.getInstance().getConfiguration().getHitsPerTokenForMetadataFormat(Metadata.OAI_DC.getMetadataPrefix()));
-        Assertions.assertEquals(12, DataManager.getInstance().getConfiguration().getHitsPerTokenForMetadataFormat(Metadata.ESE.name().toLowerCase()));
+        Assertions.assertEquals(12, DataManager.getInstance().getConfiguration().getHitsPerTokenForMetadataFormat(Metadata.ESE.getMetadataPrefix()));
         Assertions.assertEquals(13, DataManager.getInstance().getConfiguration().getHitsPerTokenForMetadataFormat(Metadata.METS.getMetadataPrefix()));
         Assertions.assertEquals(14, DataManager.getInstance().getConfiguration().getHitsPerTokenForMetadataFormat(Metadata.LIDO.getMetadataPrefix()));
         Assertions.assertEquals(15,
@@ -273,7 +273,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isMetadataFormatEnabled_shouldReturnCorrectValue() {
         Assertions.assertTrue(DataManager.getInstance().getConfiguration().isMetadataFormatEnabled(Metadata.OAI_DC.getMetadataPrefix()));
-        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isMetadataFormatEnabled(Metadata.ESE.name().toLowerCase()));
+        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isMetadataFormatEnabled(Metadata.ESE.getMetadataPrefix()));
         Assertions.assertTrue(DataManager.getInstance().getConfiguration().isMetadataFormatEnabled(Metadata.METS.getMetadataPrefix()));
         Assertions.assertTrue(DataManager.getInstance().getConfiguration().isMetadataFormatEnabled(Metadata.LIDO.getMetadataPrefix()));
         Assertions.assertTrue(DataManager.getInstance().getConfiguration().isMetadataFormatEnabled(Metadata.MARCXML.getMetadataPrefix()));

@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.connector;
 
+import java.io.IOException;
+
 import io.goobi.viewer.connector.utils.Configuration;
 import io.goobi.viewer.connector.utils.SolrSearchIndex;
 import io.goobi.viewer.model.translations.language.LanguageHelper;
@@ -96,6 +98,12 @@ public final class DataManager {
         searchIndex.checkReloadNeeded();
 
         return searchIndex;
+    }
+
+    public void closeSearchIndex() throws IOException {
+        if (searchIndex != null) {
+            searchIndex.close();
+        }
     }
 
     /**

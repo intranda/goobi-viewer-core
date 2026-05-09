@@ -33,7 +33,7 @@ class SolrSearchToolsTest {
      * @verifies build query suffix correctly
      */
     @Test
-    void getAdditionalDocstructsQuerySuffix_shouldBuildQuerySuffixCorrectly() throws Exception {
+    void getAdditionalDocstructsQuerySuffix_shouldBuildQuerySuffixCorrectly() {
         Assertions.assertEquals(" OR (" + SolrConstants.DOCTYPE + ":DOCSTRCT AND (" + SolrConstants.DOCSTRCT + ":Article))",
                 SolrSearchTools.getAdditionalDocstructsQuerySuffix(Collections.singletonList("Article")));
     }
@@ -43,7 +43,7 @@ class SolrSearchToolsTest {
      * @verifies return 0 if no valid value is found
      */
     @Test
-    void getLatestValidDateUpdated_shouldReturn0IfNoValidValueIsFound() throws Exception {
+    void getLatestValidDateUpdated_shouldReturn0IfNoValidValueIsFound() {
         SolrDocument doc = new SolrDocument();
         Assertions.assertEquals(Long.valueOf(0), SolrSearchTools.getLatestValidDateUpdated(doc, System.currentTimeMillis()));
     }
@@ -53,7 +53,7 @@ class SolrSearchToolsTest {
      * @verifies normalize correctly
      */
     @Test
-    void normalizeDate_shouldNormalizeCorrectly() throws Exception {
+    void normalizeDate_shouldNormalizeCorrectly() {
         Assertions.assertNull(SolrSearchTools.normalizeDate(null));
         Assertions.assertEquals("-12345678", SolrSearchTools.normalizeDate("-12345678"));
         Assertions.assertEquals("1122334455667788", SolrSearchTools.normalizeDate("1122334455667788"));
@@ -69,7 +69,7 @@ class SolrSearchToolsTest {
      * @verifies return correct value
      */
     @Test
-    void getLatestValidDateUpdated_shouldReturnCorrectValue() throws Exception {
+    void getLatestValidDateUpdated_shouldReturnCorrectValue() {
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.DATEUPDATED, 1L);
         doc.addField(SolrConstants.DATEUPDATED, 2L);
@@ -83,7 +83,7 @@ class SolrSearchToolsTest {
      * @verifies ignore untilTimestamp if zero
      */
     @Test
-    void getLatestValidDateUpdated_shouldIgnoreUntilTimestampIfZero() throws Exception {
+    void getLatestValidDateUpdated_shouldIgnoreUntilTimestampIfZero() {
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.DATEUPDATED, 1L);
         doc.addField(SolrConstants.DATEUPDATED, 2L);
@@ -97,7 +97,7 @@ class SolrSearchToolsTest {
      * @verifies return empty list if doc null
      */
     @Test
-    void getMetadataValues_shouldReturnEmptyListIfDocNull() throws Exception {
+    void getMetadataValues_shouldReturnEmptyListIfDocNull() {
         List<String> result = SolrSearchTools.getMetadataValues(null, "MDNUM_FOO");
         Assertions.assertTrue(result.isEmpty());
     }
@@ -107,7 +107,7 @@ class SolrSearchToolsTest {
      * @verifies return empty list if no values for fieldName found
      */
     @Test
-    void getMetadataValues_shouldReturnEmptyListIfNoValuesForFieldNameFound() throws Exception {
+    void getMetadataValues_shouldReturnEmptyListIfNoValuesForFieldNameFound() {
         SolrDocument doc = new SolrDocument();
         List<String> result = SolrSearchTools.getMetadataValues(doc, "MDNUM_FOO");
         Assertions.assertTrue(result.isEmpty());
@@ -118,7 +118,7 @@ class SolrSearchToolsTest {
      * @verifies return all values for the given field
      */
     @Test
-    void getMetadataValues_shouldReturnAllValuesForTheGivenField() throws Exception {
+    void getMetadataValues_shouldReturnAllValuesForTheGivenField() {
         SolrDocument doc = new SolrDocument();
         for (int i = 1; i <= 5; ++i) {
             doc.addField("MDNUM_FOO", i);
@@ -132,7 +132,7 @@ class SolrSearchToolsTest {
      * @verifies throw IllegalArgumentException if queryResponse null
      */
     @Test
-    void getFieldCount_shouldThrowIllegalArgumentExceptionIfQueryResponseNull() throws Exception {
+    void getFieldCount_shouldThrowIllegalArgumentExceptionIfQueryResponseNull() {
         Exception e = Assertions.assertThrows(IllegalArgumentException.class, () -> SolrSearchTools.getFieldCount(null, "MD_FOO"));
         Assertions.assertEquals("queryResponse may not be null", e.getMessage());
     }
@@ -142,7 +142,7 @@ class SolrSearchToolsTest {
      * @verifies throw IllegalArgumentException if field null
      */
     @Test
-    void getFieldCount_shouldThrowIllegalArgumentExceptionIfFieldNull() throws Exception {
+    void getFieldCount_shouldThrowIllegalArgumentExceptionIfFieldNull() {
         QueryResponse qr = new QueryResponse();
         Exception e = Assertions.assertThrows(IllegalArgumentException.class, () -> SolrSearchTools.getFieldCount(qr, null));
         Assertions.assertEquals("field may not be null", e.getMessage());
@@ -153,7 +153,7 @@ class SolrSearchToolsTest {
      * @verifies build query suffix correctly
      */
     @Test
-    void getUrnPrefixBlacklistSuffix_shouldBuildQuerySuffixCorrectly() throws Exception {
+    void getUrnPrefixBlacklistSuffix_shouldBuildQuerySuffixCorrectly() {
         List<String> prefixes = new ArrayList<>();
         prefixes.add("urn:nbn:de:test-1");
         prefixes.add("urn:nbn:de:hidden-1");
@@ -167,7 +167,7 @@ class SolrSearchToolsTest {
      * @verifies add from until to setSpec queries
      */
     @Test
-    void buildQueryString_shouldAddFromUntilToSetSpecQueries() throws Exception {
+    void buildQueryString_shouldAddFromUntilToSetSpecQueries() {
         String query = SolrSearchTools.buildQueryString("2022-10-27T16:00:00Z", "2022-10-27T16:15:00Z", "goobi", "oai_dc", false, null);
         Assertions.assertTrue(query.contains(" +DATEUPDATED:[1666886400000 TO 1666887300999]"));
     }

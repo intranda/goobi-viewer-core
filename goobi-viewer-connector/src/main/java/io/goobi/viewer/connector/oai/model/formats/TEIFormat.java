@@ -184,24 +184,9 @@ public class TEIFormat extends Format {
                             .append(handler.getMetadataPrefix().getMetadataPrefix())
                             .append('/')
                             .append(version)
-                            .append('/')
                             .toString();
                     logger.trace("api url: {}", url);
                     String xml = NetTools.getWebContentGET(url);
-                    if (StringUtils.isEmpty(xml)) {
-                        // Old API fallback
-                        url = new StringBuilder(DataManager.getInstance().getConfiguration().getRestApiUrl())
-                                .append("content/")
-                                .append(handler.getMetadataPrefix().getMetadataPrefix())
-                                .append('/')
-                                .append(doc.getFieldValue(SolrConstants.PI_TOPSTRUCT))
-                                .append('/')
-                                .append(version)
-                                .append('/')
-                                .toString();
-                        logger.trace("old url: {}", url);
-                        xml = NetTools.getWebContentGET(url);
-                    }
                     if (StringUtils.isEmpty(xml)) {
                         xmlListRecords.addContent(new ErrorCode().getCannotDisseminateFormat());
                         continue;

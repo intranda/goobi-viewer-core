@@ -80,6 +80,16 @@ public class SruServlet extends HttpServlet {
     private static final Namespace DC_NAMEPSACE = Namespace.getNamespace("dc", "info:srw/schema/1/dc-schema");
     private static final Namespace LIDO_NAMESPACE = Namespace.getNamespace("lido", "http://www.lido-schema.org");
 
+    private static final String ELE_NAME_RECORD = "record";
+    private static final String ELE_NAME_RECORD_SCHEMA = "recordSchema";
+    private static final String ELE_NAME_TITLE = "title";
+    private static final String ELE_NAME_IDENTIFIER = "identifier";
+    private static final String ELE_NAME_DEFAULT = "default";
+    private static final String ATTR_NAME_SCHEMA_LOCATION = "schemaLocation";
+    private static final String ATTR_NAME_PRIMARY = "primary";
+    private static final String ATTR_VALUE_FALSE = "false";
+    private static final String LOG_HTTP_ERROR = "{}: {}";
+
     /* (non-Javadoc)
      * @see jakarta.servlet.http.HttpServlet#doGet(jakarta.servlet.http.HttpServletRequest, jakarta.servlet.http.HttpServletResponse)
      */
@@ -137,7 +147,7 @@ public class SruServlet extends HttpServlet {
 
                 if (parameter.getRecordSchema() == null) {
                     try {
-                        wrongSchema(parameter, response, request.getParameter("recordSchema"));
+                        wrongSchema(parameter, response, request.getParameter(ELE_NAME_RECORD_SCHEMA));
                     } catch (IOException e) {
                         try {
                             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -465,7 +475,7 @@ public class SruServlet extends HttpServlet {
         version.setText(parameter.getVersion());
         echoedSearchRetrieveRequest.addContent(version);
 
-        Element recordSchema = new Element("recordSchema", SRU_NAMESPACE);
+        Element recordSchema = new Element(ELE_NAME_RECORD_SCHEMA, SRU_NAMESPACE);
         recordSchema.setText(parameter.getRecordSchema().getMetadataPrefix());
         echoedSearchRetrieveRequest.addContent(recordSchema);
 
@@ -503,10 +513,10 @@ public class SruServlet extends HttpServlet {
         }
 
         for (SolrDocument document : solrDocuments) {
-            Element rec = new Element("record", SRU_NAMESPACE);
+            Element rec = new Element(ELE_NAME_RECORD, SRU_NAMESPACE);
             records.addContent(rec);
 
-            Element recordSchema = new Element("recordSchema", SRU_NAMESPACE);
+            Element recordSchema = new Element(ELE_NAME_RECORD_SCHEMA, SRU_NAMESPACE);
             recordSchema.setText(parameter.getRecordSchema().getMetadataPrefix());
             rec.addContent(recordSchema);
 
@@ -573,7 +583,7 @@ public class SruServlet extends HttpServlet {
         } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         } catch (HTTPException e) {
-            logger.error("{}: {}", e.getCode(), e.getMessage());
+            logger.error(LOG_HTTP_ERROR, e.getCode(), e.getMessage());
         }
     }
 
@@ -587,7 +597,7 @@ public class SruServlet extends HttpServlet {
      */
     private static void generateDcRecord(SolrDocument doc, Element recordData, SolrSearchIndex solr, String filterQuerySuffix)
             throws SolrServerException, IOException {
-        Element dc = new Element("record", DC_NAMEPSACE);
+        Element dc = new Element(ELE_NAME_RECORD, DC_NAMEPSACE);
 
         String title = null;
         String creators = null;
@@ -596,7 +606,7 @@ public class SruServlet extends HttpServlet {
         String yearpublish = null;
 
         // creating Element <dc:title />
-        Element eleDcTitle = new Element("title", DC_NAMEPSACE);
+        Element eleDcTitle = new Element(ELE_NAME_TITLE, DC_NAMEPSACE);
         if (doc.getFieldValues(SolrConstants.TITLE) != null) {
             title = (String) doc.getFieldValues("MD_TITLE").iterator().next();
         } else {
@@ -617,7 +627,7 @@ public class SruServlet extends HttpServlet {
             StringBuilder sb = new StringBuilder();
             for (Object fieldValue : doc.getFieldValues(io.goobi.viewer.connector.oai.model.formats.Format.MD_CREATOR)) {
                 String value = (String) fieldValue;
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                     sb.append(", ");
                 }
                 sb.append(value);
@@ -683,8 +693,8 @@ public class SruServlet extends HttpServlet {
         dc.addContent(eleDcFormat);
 
         // create <dc:identifier />
-        if (doc.getFieldValue(SolrConstants.URN) != null && ((String) doc.getFieldValue(SolrConstants.URN)).length() > 0) {
-            Element eleDcIdentifier = new Element("identifier", DC_NAMEPSACE);
+        if (doc.getFieldValue(SolrConstants.URN) != null && !((String) doc.getFieldValue(SolrConstants.URN)).isEmpty()) {
+            Element eleDcIdentifier = new Element(ELE_NAME_IDENTIFIER, DC_NAMEPSACE);
             eleDcIdentifier.setText(DataManager.getInstance().getConfiguration().getUrnResolverUrl() + (String) doc.getFieldValue(SolrConstants.URN));
             dc.addContent(eleDcIdentifier);
         }
@@ -754,7 +764,7 @@ public class SruServlet extends HttpServlet {
             newmods.addNamespaceDeclaration(XSI_NAMESPACE);
             newmods.addNamespaceDeclaration(MODS_NAMESPACE);
             newmods.addNamespaceDeclaration(XLINK_NAMESPACE);
-            newmods.setAttribute("schemaLocation", "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", XSI_NAMESPACE);
+            newmods.setAttribute(ATTR_NAME_SCHEMA_LOCATION, "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", XSI_NAMESPACE);
 
             List<Element> dmdList = xmlRoot.getChildren("dmdSec", METS_NAMESPACE);
             if (dmdList != null && !dmdList.isEmpty()) {
@@ -777,7 +787,7 @@ public class SruServlet extends HttpServlet {
                     org.jdom2.Document docTrans = transformer.transform(marcDoc);
                     Element root = docTrans.getRootElement();
 
-                    root.setAttribute("schemaLocation", "http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd",
+                    root.setAttribute(ATTR_NAME_SCHEMA_LOCATION, "http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd",
                             XSI_NAMESPACE);
                     recordData.addContent(root.cloneContent());
                 } catch (XSLTransformException e) {
@@ -799,7 +809,7 @@ public class SruServlet extends HttpServlet {
         } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         } catch (HTTPException e) {
-            logger.error("{}: {}", e.getCode(), e.getMessage());
+            logger.error(LOG_HTTP_ERROR, e.getCode(), e.getMessage());
         }
     }
 
@@ -822,7 +832,7 @@ public class SruServlet extends HttpServlet {
             newMods.addNamespaceDeclaration(XSI_NAMESPACE);
             newMods.addNamespaceDeclaration(MODS_NAMESPACE);
             newMods.addNamespaceDeclaration(XLINK_NAMESPACE);
-            newMods.setAttribute("schemaLocation", "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", XSI_NAMESPACE);
+            newMods.setAttribute(ATTR_NAME_SCHEMA_LOCATION, "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", XSI_NAMESPACE);
 
             List<Element> dmdList = xmlRoot.getChildren("dmdSec", METS_NAMESPACE);
             if (dmdList != null && !dmdList.isEmpty()) {
@@ -836,7 +846,7 @@ public class SruServlet extends HttpServlet {
         } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         } catch (HTTPException e) {
-            logger.error("{}: {}", e.getCode(), e.getMessage());
+            logger.error(LOG_HTTP_ERROR, e.getCode(), e.getMessage());
         }
     }
 
@@ -862,7 +872,7 @@ public class SruServlet extends HttpServlet {
             newMets.addNamespaceDeclaration(MODS_NAMESPACE);
             newMets.addNamespaceDeclaration(DV_NAMESPACE);
             newMets.addNamespaceDeclaration(XLINK_NAMESPACE);
-            newMets.setAttribute("schemaLocation",
+            newMets.setAttribute(ATTR_NAME_SCHEMA_LOCATION,
                     "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-3.xsd http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/version17/mets.v1-7.xsd",
                     XSI_NAMESPACE);
 
@@ -871,7 +881,7 @@ public class SruServlet extends HttpServlet {
         } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         } catch (HTTPException e) {
-            logger.error("{}: {}", e.getCode(), e.getMessage());
+            logger.error(LOG_HTTP_ERROR, e.getCode(), e.getMessage());
         }
     }
 
@@ -948,10 +958,10 @@ public class SruServlet extends HttpServlet {
         version.setText(parameter.getVersion());
         root.addContent(version);
 
-        Element eleRecord = new Element("record", SRU_NAMESPACE);
+        Element eleRecord = new Element(ELE_NAME_RECORD, SRU_NAMESPACE);
         root.addContent(eleRecord);
 
-        Element recordSchema = new Element("recordSchema", SRU_NAMESPACE);
+        Element recordSchema = new Element(ELE_NAME_RECORD_SCHEMA, SRU_NAMESPACE);
         recordSchema.setText(EXPLAIN_NAMESPACE.getURI());
         eleRecord.addContent(recordSchema);
 
@@ -985,8 +995,8 @@ public class SruServlet extends HttpServlet {
         Element databaseInfo = new Element("databaseInfo", EXPLAIN_NAMESPACE);
         explain.addContent(databaseInfo);
 
-        Element title = new Element("title", EXPLAIN_NAMESPACE);
-        title.setAttribute("primary", "true");
+        Element title = new Element(ELE_NAME_TITLE, EXPLAIN_NAMESPACE);
+        title.setAttribute(ATTR_NAME_PRIMARY, "true");
         title.setText("intranda viewer");
         databaseInfo.addContent(title);
 
@@ -1007,8 +1017,8 @@ public class SruServlet extends HttpServlet {
 
         Element cqlSet = new Element("set", EXPLAIN_NAMESPACE);
         cqlSet.setAttribute("name", "cql");
-        cqlSet.setAttribute("identifier", "info:srw/cql-context-set/1/cql-v1.1");
-        Element cqlTitle = new Element("title", EXPLAIN_NAMESPACE);
+        cqlSet.setAttribute(ELE_NAME_IDENTIFIER, "info:srw/cql-context-set/1/cql-v1.1");
+        Element cqlTitle = new Element(ELE_NAME_TITLE, EXPLAIN_NAMESPACE);
         cqlTitle.setText("CQL Standard Set");
         cqlSet.addContent(cqlTitle);
 
@@ -1016,16 +1026,16 @@ public class SruServlet extends HttpServlet {
 
         Element dcSet = new Element("set", EXPLAIN_NAMESPACE);
         dcSet.setAttribute("name", "dc");
-        dcSet.setAttribute("identifier", "info:srw/cql-context-set/1/dc-v1.1");
-        Element dcTitle = new Element("title", EXPLAIN_NAMESPACE);
+        dcSet.setAttribute(ELE_NAME_IDENTIFIER, "info:srw/cql-context-set/1/dc-v1.1");
+        Element dcTitle = new Element(ELE_NAME_TITLE, EXPLAIN_NAMESPACE);
         dcTitle.setText("Dublin Core Set");
         dcSet.addContent(dcTitle);
         indexInfo.addContent(dcSet);
 
         Element intrandaSet = new Element("set", EXPLAIN_NAMESPACE);
         intrandaSet.setAttribute("name", "iv");
-        intrandaSet.setAttribute("identifier", "http://intranda.com/iv-v1.2");
-        Element intrandaTitle = new Element("title", EXPLAIN_NAMESPACE);
+        intrandaSet.setAttribute(ELE_NAME_IDENTIFIER, "http://intranda.com/iv-v1.2");
+        Element intrandaTitle = new Element(ELE_NAME_TITLE, EXPLAIN_NAMESPACE);
         intrandaTitle.setText("intranda viewer Set");
         intrandaSet.addContent(intrandaTitle);
         indexInfo.addContent(intrandaSet);
@@ -1053,17 +1063,17 @@ public class SruServlet extends HttpServlet {
         Element configInfo = new Element("configInfo", EXPLAIN_NAMESPACE);
         explain.addContent(configInfo);
 
-        Element numOfRecords = new Element("default", EXPLAIN_NAMESPACE);
+        Element numOfRecords = new Element(ELE_NAME_DEFAULT, EXPLAIN_NAMESPACE);
         numOfRecords.setAttribute("type", "numberOfRecords");
         numOfRecords.setText("100");
         configInfo.addContent(numOfRecords);
 
-        Element retrieveSchema = new Element("default", EXPLAIN_NAMESPACE);
+        Element retrieveSchema = new Element(ELE_NAME_DEFAULT, EXPLAIN_NAMESPACE);
         retrieveSchema.setAttribute("type", "retrieveSchema");
         retrieveSchema.setText("mods");
         configInfo.addContent(retrieveSchema);
 
-        Element operator = new Element("default", EXPLAIN_NAMESPACE);
+        Element operator = new Element(ELE_NAME_DEFAULT, EXPLAIN_NAMESPACE);
         operator.setAttribute("type", "booleanOperator");
         operator.setText("and");
         configInfo.addContent(operator);
@@ -1095,13 +1105,13 @@ public class SruServlet extends HttpServlet {
 
         Element schema = new Element("schema", EXPLAIN_NAMESPACE);
         schema.setAttribute("retrieve", "true");
-        schema.setAttribute("sort", "false");
-        schema.setAttribute("identifier", identifier);
+        schema.setAttribute("sort", ATTR_VALUE_FALSE);
+        schema.setAttribute(ELE_NAME_IDENTIFIER, identifier);
         schema.setAttribute("location", location);
         schema.setAttribute("name", name);
 
-        Element schemaTitle = new Element("title", EXPLAIN_NAMESPACE);
-        schemaTitle.setAttribute("primary", "true");
+        Element schemaTitle = new Element(ELE_NAME_TITLE, EXPLAIN_NAMESPACE);
+        schemaTitle.setAttribute(ATTR_NAME_PRIMARY, "true");
         schemaTitle.setText(displayTitle);
         schema.addContent(schemaTitle);
         ret.addContent(schema);
@@ -1133,24 +1143,24 @@ public class SruServlet extends HttpServlet {
         if (field.isSeachable()) {
             index.setAttribute("search", "true");
         } else {
-            index.setAttribute("search", "false");
+            index.setAttribute("search", ATTR_VALUE_FALSE);
         }
 
         if (field.isScanable()) {
             index.setAttribute("scan", "true");
         } else {
-            index.setAttribute("scan", "false");
+            index.setAttribute("scan", ATTR_VALUE_FALSE);
         }
 
         if (field.isSortable()) {
             index.setAttribute("sort", "true");
         } else {
-            index.setAttribute("sort", "false");
+            index.setAttribute("sort", ATTR_VALUE_FALSE);
         }
 
         index.setAttribute("id", field.getInternalName());
-        Element titleElement = new Element("title", EXPLAIN_NAMESPACE);
-        titleElement.setAttribute("primary", "true");
+        Element titleElement = new Element(ELE_NAME_TITLE, EXPLAIN_NAMESPACE);
+        titleElement.setAttribute(ATTR_NAME_PRIMARY, "true");
         titleElement.setText(field.toString());
         index.addContent(titleElement);
 

@@ -22,7 +22,7 @@ class SruServletTest extends AbstractSolrEnabledTest {
      * @verifies create element correctly
      */
     @Test
-    void createSchemaInfoElement_shouldCreateElementCorrectly() throws Exception {
+    void createSchemaInfoElement_shouldCreateElementCorrectly() {
         Element ele = SruServlet.createSchemaInfoElement("Schema F", "sf", "info:srw/schema/1/f-1.0", "http://example.com/schemaf.xsd");
         Assertions.assertNotNull(ele);
         Element eleSchema = ele.getChild("schema", SruServlet.EXPLAIN_NAMESPACE);
@@ -41,7 +41,7 @@ class SruServletTest extends AbstractSolrEnabledTest {
      * @verifies create element correctly
      */
     @Test
-    void createSupportsElement_shouldCreateElementCorrectly() throws Exception {
+    void createSupportsElement_shouldCreateElementCorrectly() {
         Element ele = SruServlet.createSupportsElement("your mom");
         Assertions.assertNotNull(ele);
         Assertions.assertEquals("your mom", ele.getText());
@@ -76,7 +76,7 @@ class SruServletTest extends AbstractSolrEnabledTest {
      * @verifies create document correctly
      */
     @Test
-    void createWrongSchemaDocument_shouldCreateDocumentCorrectly() throws Exception {
+    void createWrongSchemaDocument_shouldCreateDocumentCorrectly() {
         Document doc = SruServlet.createWrongSchemaDocument("1.2", "sf");
         Assertions.assertNotNull(doc);
         Element eleRoot = doc.getRootElement();
@@ -96,7 +96,7 @@ class SruServletTest extends AbstractSolrEnabledTest {
      * @verifies create document correctly
      */
     @Test
-    void createMissingArgumentDocument_shouldCreateDocumentCorrectly() throws Exception {
+    void createMissingArgumentDocument_shouldCreateDocumentCorrectly() {
         Document doc = SruServlet.createMissingArgumentDocument("1.1", "scanClause");
         Assertions.assertNotNull(doc);
         Element eleRoot = doc.getRootElement();
@@ -116,7 +116,7 @@ class SruServletTest extends AbstractSolrEnabledTest {
      * @verifies create document correctly
      */
     @Test
-    void createUnsupportedOperationDocument_shouldCreateDocumentCorrectly() throws Exception {
+    void createUnsupportedOperationDocument_shouldCreateDocumentCorrectly() {
         Document doc = SruServlet.createUnsupportedOperationDocument("1.2", "foobar");
         Assertions.assertNotNull(doc);
         Element eleRoot = doc.getRootElement();
@@ -136,7 +136,7 @@ class SruServletTest extends AbstractSolrEnabledTest {
      * @verifies throw {@link IllegalArgumentException} if sruQuery null
      */
     @Test
-    void generateSearchQuery_shouldThrowLinkIllegalArgumentExceptionIfSruQueryNull() throws Exception {
+    void generateSearchQuery_shouldThrowLinkIllegalArgumentExceptionIfSruQueryNull() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> SruServlet.generateSearchQuery(null, Metadata.LIDO, null));
     }
 
@@ -145,7 +145,7 @@ class SruServletTest extends AbstractSolrEnabledTest {
      * @verifies create query correctly
      */
     @Test
-    void generateSearchQuery_shouldCreateQueryCorrectly() throws Exception {
+    void generateSearchQuery_shouldCreateQueryCorrectly() {
         String result = SruServlet.generateSearchQuery("dc.identifier=urn:nbn:foo;bar:123", Metadata.LIDO, " -DC:a.*");
         Assertions.assertEquals("URN:urn:nbn:foo;bar:123 AND SOURCEDOCFORMAT:LIDO AND (ISWORK:true OR ISANCHOR:true) -DC:a.*", result);
 
@@ -158,7 +158,7 @@ class SruServletTest extends AbstractSolrEnabledTest {
      * @verifies add correct element types
      */
     @Test
-    void generateSolrRecord_shouldAddCorrectElementTypes() throws Exception {
+    void generateSolrRecord_shouldAddCorrectElementTypes() {
         SolrDocument doc = new SolrDocument();
         doc.addField(SolrConstants.DOCSTRCT, "monograph");
         doc.addField(SolrConstants.DATECREATED, 123L);

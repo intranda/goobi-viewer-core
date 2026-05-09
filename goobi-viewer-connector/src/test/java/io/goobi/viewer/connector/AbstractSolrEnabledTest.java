@@ -29,7 +29,7 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
     public static final String SOLR_TEST_URL = "https://viewer-testing-index.goobi.io/solr/collection1";
 
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    public static void setUpClass() {
         AbstractTest.setUpClass();
     }
 

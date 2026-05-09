@@ -57,6 +57,7 @@ public final class Configuration {
     public static final String DEFAULT_CONFIG_FILE = "config_oai.xml";
 
     private static final String XML_PATH_ATTRIBUTE_NAME = "[@name]";
+    private static final String XML_PATH_ATTRIBUTE_TYPE = "[@type]";
 
     protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builder;
     protected ReloadingFileBasedConfigurationBuilder<XMLConfiguration> builderLocal;
@@ -468,11 +469,11 @@ public final class Configuration {
     public Map<String, String> getEseTypes() {
         Map<String, String> ret = new HashMap<>();
 
-        List<HierarchicalConfiguration<ImmutableNode>> types = getLocalConfigurationsAt("ese.types.docstruct");
+        List<HierarchicalConfiguration<ImmutableNode>> types = getLocalConfigurationsAt("europeana.types.docstruct");
         if (types != null) {
             for (Iterator it = types.iterator(); it.hasNext();) {
                 HierarchicalConfiguration sub = (HierarchicalConfiguration) it.next();
-                ret.put(sub.getString(XML_PATH_ATTRIBUTE_NAME), sub.getString("[@type]"));
+                ret.put(sub.getString(XML_PATH_ATTRIBUTE_NAME), sub.getString(XML_PATH_ATTRIBUTE_TYPE));
             }
         }
 
@@ -570,7 +571,7 @@ public final class Configuration {
      * @return a {@link java.lang.String} object.
      */
     public String getEseProviderField() {
-        return getLocalString("ese.providerField", null);
+        return getLocalString("europeana.providerField", null);
     }
 
     /**
@@ -582,7 +583,7 @@ public final class Configuration {
      * @return a {@link java.lang.String} object.
      */
     public String getEseDataProviderField() {
-        return getLocalString("ese.dataProviderField", null);
+        return getLocalString("europeana.dataProviderField", null);
     }
 
     /**
@@ -594,7 +595,7 @@ public final class Configuration {
      * @return a {@link java.lang.String} object.
      */
     public String getEseDefaultProvider() {
-        return getLocalString("ese.defaultProvider", null);
+        return getLocalString("europeana.defaultProvider", null);
     }
 
     /**
@@ -606,7 +607,7 @@ public final class Configuration {
      * @return a {@link java.lang.String} object.
      */
     public String getEseRightsField() {
-        return getLocalString("ese.rightsField", null);
+        return getLocalString("europeana.rightsField", null);
     }
 
     /**
@@ -618,7 +619,7 @@ public final class Configuration {
      * @return a {@link java.lang.String} object.
      */
     public String getEseDefaultRightsUrl() {
-        return getLocalString("ese.defaultRightsUrl", null);
+        return getLocalString("europeana.defaultRightsUrl", null);
     }
 
     /**

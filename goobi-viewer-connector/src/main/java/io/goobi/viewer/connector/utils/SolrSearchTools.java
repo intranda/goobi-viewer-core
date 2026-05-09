@@ -108,7 +108,7 @@ public final class SolrSearchTools {
                     }
                 }
             }
-            if (sbQuery.length() > 0) {
+            if (!sbQuery.isEmpty()) {
                 sbQuery.append(" +");
             }
             sbQuery.append(setQuery);

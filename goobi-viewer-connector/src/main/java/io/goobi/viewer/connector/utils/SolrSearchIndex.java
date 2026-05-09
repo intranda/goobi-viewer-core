@@ -15,6 +15,7 @@
  */
 package io.goobi.viewer.connector.utils;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,7 +26,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +34,6 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.Http2SolrClient;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
@@ -48,6 +47,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrTools;
 
 /**
  * <p>
@@ -55,7 +55,7 @@ import io.goobi.viewer.solr.SolrConstants.DocType;
  * </p>
  *
  */
-public class SolrSearchIndex {
+public class SolrSearchIndex implements Closeable {
 
     /** Logger for this class. */
     static final Logger logger = LogManager.getLogger(SolrSearchIndex.class);
@@ -65,6 +65,11 @@ public class SolrSearchIndex {
     private static final int TIMEOUT_SO = 300000;
     private static final int TIMEOUT_CONNECTION = 300000;
     private static final int RETRY_ATTEMPTS = 20;
+
+    private static final String PARAM_FROM = "from";
+    private static final String PARAM_UNTIL = "until";
+    private static final String PARAM_SET = "set";
+    private static final String PARAM_METADATA_PREFIX = "metadataPrefix";
 
     private long lastPing = 0;
 
@@ -92,9 +97,16 @@ public class SolrSearchIndex {
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        if (client != null) {
+            client.close();
+        }
+    }
+
     /**
      * Checks whether the server's configured URL matches that in the config file. If not, a new server instance is created.
-     * 
+     *
      * @should create new client if solr url changed
      * @should ping server if last ping too old
      */
@@ -140,13 +152,7 @@ public class SolrSearchIndex {
      * @return New {@link SolrClient}
      */
     public static SolrClient getNewSolrClient(String solrUrl) {
-        return new Http2SolrClient.Builder(solrUrl)
-                .withIdleTimeout(TIMEOUT_SO, TimeUnit.MILLISECONDS)
-                .withConnectionTimeout(TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
-                .withFollowRedirects(false)
-                .withRequestWriter(new BinaryRequestWriter())
-                // .allowCompression(DataManager.getInstance().getConfiguration().isSolrCompressionEnabled())
-                .build();
+        return SolrTools.newSolrClient(solrUrl, TIMEOUT_SO);
     }
 
     /**
@@ -313,8 +319,8 @@ public class SolrSearchIndex {
     public QueryResponse getListIdentifiers(Map<String, String> params, int firstRawRow, int numRows, String additionalQuery, List<String> fieldList,
             List<String> fieldStatistics, String filterQuerySuffix) throws SolrServerException {
         try {
-            return search(params.get("from"), params.get("until"), params.get("set"), params.get("metadataPrefix"), firstRawRow, numRows, false,
-                    additionalQuery, filterQuerySuffix, fieldList, fieldStatistics);
+            return search(params.get(PARAM_FROM), params.get(PARAM_UNTIL), params.get(PARAM_SET), params.get(PARAM_METADATA_PREFIX),
+                    firstRawRow, numRows, false, additionalQuery, filterQuerySuffix, fieldList, fieldStatistics);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -339,8 +345,8 @@ public class SolrSearchIndex {
     public QueryResponse getListRecords(Map<String, String> params, int firstRow, int numRows, boolean urnOnly, String additionalQuery,
             String filterQuerySuffix, List<String> fieldList, List<String> fieldStatistics) throws SolrServerException {
         try {
-            return search(params.get("from"), params.get("until"), params.get("set"), params.get("metadataPrefix"), firstRow, numRows, urnOnly,
-                    additionalQuery, filterQuerySuffix, fieldList, fieldStatistics);
+            return search(params.get(PARAM_FROM), params.get(PARAM_UNTIL), params.get(PARAM_SET), params.get(PARAM_METADATA_PREFIX),
+                    firstRow, numRows, urnOnly, additionalQuery, filterQuerySuffix, fieldList, fieldStatistics);
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -481,8 +487,8 @@ public class SolrSearchIndex {
      */
     public long getTotalHitNumber(Map<String, String> params, boolean urnOnly, String additionalQuery, List<String> fieldStatistics,
             String filterQuerySuffix) throws IOException, SolrServerException {
-        StringBuilder sbQuery = new StringBuilder(SolrSearchTools.buildQueryString(params.get("from"), params.get("until"), params.get("set"),
-                params.get("metadataPrefix"), urnOnly, additionalQuery));
+        StringBuilder sbQuery = new StringBuilder(SolrSearchTools.buildQueryString(params.get(PARAM_FROM), params.get(PARAM_UNTIL),
+                params.get(PARAM_SET), params.get(PARAM_METADATA_PREFIX), urnOnly, additionalQuery));
         if (urnOnly) {
             sbQuery.append(" AND (").append(SolrConstants.URN).append(":* OR ").append(SolrConstants.IMAGEURN_OAI).append(":*)");
         }

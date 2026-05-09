@@ -232,6 +232,22 @@
     <thumbnailCache useCache="true" useShortFileNames="false"/>
     <pdfCache useCache="true" useShortFileNames="false" path="/opt/digiverso/viewer/cache_pdf/" size="30000"/>
 
+    <!--
+    In-memory LRU cache of decoded source images. Coalesces concurrent tile decodes
+    (OpenSeadragon ~17-30 tile burst per page) so the master JPEG is decoded once and
+    every tile is served via near-free getSubimage(). Pairs with the Goobi viewer's
+    <prewarmSourceImageCache /> hook in config_viewer.xml.
+
+      -useCache: central switch
+      -maxEntries: LRU cap; rough heap budget = maxEntries × avg-image-MP × 4 bytes
+                   (~1.8 GB worst case at the defaults below for ~9 MP images)
+      -ttlSeconds: entry expiry on read; shorter values free heap sooner at the cost of more re-decodes
+      -burstWindowSeconds: window in which a second request for the same URI counts as a burst
+      -skipIfLargerThanMP: hard ceiling on cacheable image size in megapixels
+    -->
+    <sourceImageCache useCache="true" maxEntries="50" ttlSeconds="60"
+                      burstWindowSeconds="30" skipIfLargerThanMP="50" />
+
 
 
     <!-- TODO Documentation -->

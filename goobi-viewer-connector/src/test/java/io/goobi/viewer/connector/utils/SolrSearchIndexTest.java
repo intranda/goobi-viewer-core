@@ -19,8 +19,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -33,9 +31,6 @@ import io.goobi.viewer.connector.oai.enums.Metadata;
 import io.goobi.viewer.solr.SolrConstants;
 
 class SolrSearchIndexTest extends AbstractSolrEnabledTest {
-
-    /** Logger for this class. */
-    private static final Logger logger = LogManager.getLogger(SolrSearchIndexTest.class);
 
     /**
      * @see SolrSearchIndex#checkReloadNeeded()

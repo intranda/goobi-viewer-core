@@ -30,7 +30,7 @@ public abstract class AbstractTest {
     public static final String TEST_CONFIG_PATH_CORE = new File("src/test/resources/config_viewer.test.xml").getAbsolutePath();
 
     @BeforeAll
-    public static void setUpClass() throws Exception {
+    public static void setUpClass() {
         System.setProperty("log4j.configurationFile", "src/test/resources/log4j2.test.xml");
 
         // Initialize the instance with a custom config file

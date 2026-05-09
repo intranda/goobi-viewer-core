@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -47,14 +45,12 @@ import io.goobi.viewer.solr.SolrConstants;
  */
 public class EuropeanaFormat extends OAIDCFormat {
 
-    private static final Logger logger = LogManager.getLogger(EuropeanaFormat.class);
-
     private static Namespace nsDc = Namespace.getNamespace(Metadata.DC.getMetadataNamespacePrefix(), Metadata.DC.getMetadataNamespaceUri());
     private static Namespace nsDcTerms = Namespace.getNamespace("dcterms", "http://purl.org/dc/terms/");
     private static Namespace nsEuropeana = Namespace.getNamespace(Metadata.ESE.getMetadataNamespacePrefix(), Metadata.ESE.getMetadataNamespaceUri());
 
     private List<String> setSpecFields =
-            DataManager.getInstance().getConfiguration().getSetSpecFieldsForMetadataFormat(Metadata.ESE.name().toLowerCase());
+            DataManager.getInstance().getConfiguration().getSetSpecFieldsForMetadataFormat(Metadata.ESE.getMetadataPrefix());
 
     /** {@inheritDoc} */
     @Override

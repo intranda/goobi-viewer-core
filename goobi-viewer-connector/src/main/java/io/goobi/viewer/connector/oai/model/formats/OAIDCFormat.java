@@ -65,6 +65,10 @@ public class OAIDCFormat extends Format {
 
     private static final Logger logger = LogManager.getLogger(OAIDCFormat.class);
 
+    private static final String MSG_NO_TOPSTRUCT_FOUND =
+            "No topstruct found for IDDOC:{} - is this a page document? Please check the base query.";
+    private static final String ELE_NAME_SOURCE = "source";
+
     protected static Map<String, String> anchorTitles = new HashMap<>();
 
     private List<String> setSpecFields =
@@ -242,7 +246,7 @@ public class OAIDCFormat extends Format {
             }
         }
         if (topstructDoc == null && !doc.containsKey(SolrConstants.DATEDELETED)) {
-            logger.warn("No topstruct found for IDDOC:{} - is this a page document? Please check the base query.",
+            logger.warn(MSG_NO_TOPSTRUCT_FOUND,
                     doc.getFieldValue(SolrConstants.IDDOC));
         }
         SolrDocument anchorDoc = null;
@@ -315,9 +319,9 @@ public class OAIDCFormat extends Format {
                             }
                             finishedValues.add(val);
                             break;
-                        case "source":
+                        case ELE_NAME_SOURCE:
                             if (topstructDoc == null) {
-                                logger.warn("No topstruct found for IDDOC:{} - is this a page document? Please check the base query.",
+                                logger.warn(MSG_NO_TOPSTRUCT_FOUND,
                                         doc.getFieldValue(SolrConstants.IDDOC));
                                 continue;
                             }
@@ -325,7 +329,7 @@ public class OAIDCFormat extends Format {
                             break;
                         case "fulltext":
                             if (topstructDoc == null) {
-                                logger.warn("No topstruct found for IDDOC:{} - is this a page document? Please check the base query.",
+                                logger.warn(MSG_NO_TOPSTRUCT_FOUND,
                                         doc.getFieldValue(SolrConstants.IDDOC));
                                 continue;
                             }
@@ -342,24 +346,9 @@ public class OAIDCFormat extends Format {
                 } else if ("#TOC#".equals(md.getMasterValue())) {
                     // Generated TOC as plain text
                     String url = DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/"
-                            + (String) doc.getFieldValue(SolrConstants.PI) + "/toc/";
+                            + (String) doc.getFieldValue(SolrConstants.PI) + "/toc";
                     try {
-                        String val = null;
-                        try {
-                            val = NetTools.getWebContentGET(url);
-                        } catch (HTTPException e) {
-                            // If the API end point was not found, try the fallback, otherwise re-throw the exception
-                            if (e.getCode() != 404) {
-                                throw e;
-                            }
-                        }
-                        if (StringUtils.isEmpty(val)) {
-                            // Old API fallback
-                            url = DataManager.getInstance().getConfiguration().getRestApiUrl() + "records/toc/"
-                                    + (String) doc.getFieldValue(SolrConstants.PI) + "/";
-                            val = NetTools.getWebContentGET(url);
-                        }
-
+                        String val = NetTools.getWebContentGET(url);
                         if (StringUtils.isNotEmpty(val)) {
                             finishedValues.add(val);
                         }
@@ -510,7 +499,7 @@ public class OAIDCFormat extends Format {
             for (Object fieldValue : doc.getFieldValues(MD_CREATOR)) {
                 String val = (String) fieldValue;
                 if (!StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(val)) {
-                    if (sbSourceCreators.length() > 0) {
+                    if (!sbSourceCreators.isEmpty()) {
                         sbSourceCreators.append(", ");
                     }
                     sbSourceCreators.append(val);
@@ -520,14 +509,14 @@ public class OAIDCFormat extends Format {
             for (Object fieldValue : topstructDoc.getFieldValues(MD_CREATOR)) {
                 String val = (String) fieldValue;
                 if (!StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(val)) {
-                    if (sbSourceCreators.length() > 0) {
+                    if (!sbSourceCreators.isEmpty()) {
                         sbSourceCreators.append(", ");
                     }
                     sbSourceCreators.append(val);
                 }
             }
         }
-        if (sbSourceCreators.length() == 0) {
+        if (sbSourceCreators.isEmpty()) {
             sbSourceCreators.append('-');
         }
 
@@ -541,19 +530,19 @@ public class OAIDCFormat extends Format {
         if (anchorDoc != null && anchorDoc.getFirstValue(SolrConstants.TITLE) != null) {
             String val = (String) anchorDoc.getFirstValue(SolrConstants.TITLE);
             if (!StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(val)) {
-                if (sbSourceTitle.length() > 0) {
+                if (!sbSourceTitle.isEmpty()) {
                     sbSourceTitle.append("; ");
                 }
                 sbSourceTitle.append(val);
             }
         }
-        if (sbSourceTitle.length() == 0) {
+        if (sbSourceTitle.isEmpty()) {
             sbSourceTitle.append('-');
         }
         if (topstructDoc != doc && topstructDoc.getFirstValue(SolrConstants.TITLE) != null) {
             String val = (String) topstructDoc.getFirstValue(SolrConstants.TITLE);
             if (!StringConstants.ACCESSCONDITION_METADATA_ACCESS_RESTRICTED.equals(val)) {
-                if (sbSourceTitle.length() > 0) {
+                if (!sbSourceTitle.isEmpty()) {
                     sbSourceTitle.append("; ");
                 }
                 sbSourceTitle.append(val);
@@ -595,7 +584,7 @@ public class OAIDCFormat extends Format {
 
         sbSourceString.append('.');
 
-        Element eleDcSource = new Element("source", namespace);
+        Element eleDcSource = new Element(ELE_NAME_SOURCE, namespace);
         eleDcSource.setText(sbSourceString.toString());
 
         return eleDcSource;
@@ -661,7 +650,7 @@ public class OAIDCFormat extends Format {
             logger.trace(url);
 
             if (url != null) {
-                Element eleDcFulltext = new Element("source", namespace);
+                Element eleDcFulltext = new Element(ELE_NAME_SOURCE, namespace);
                 eleDcFulltext.setText(url);
                 ret.add(eleDcFulltext);
             }

@@ -195,9 +195,25 @@
 
         <!-- preventProxyCaching: If true, all HTTP responses will contain attributes preventing proxies etc. from caching contents. Default is false. -->
         <preventProxyCaching>false</preventProxyCaching>
-        
+
         <!-- databaseConnectonAttempts: Number of times JPADAO will attempt to establish a connection before failing. -->
         <databaseConnectionAttempts>5</databaseConnectionAttempts>
+
+        <!-- prewarmSourceImageCache: Pre-decode the source image of the currently selected page on a background thread while
+             HTML is rendering, so the OpenSeadragon tile burst that follows finds the master image
+             already decoded and resident in the ContentServer's source image cache. Effective only
+             when the ContentServer's <sourceImageCache useCache="true"/> is set in
+             config_contentServer.xml; otherwise this is a silent no-op. Default: enabled. -->
+        <prewarmSourceImageCache enabled="true" />
+
+        <!-- maxAggregateAltoSize: hard byte cap on the aggregate response size of /api/v1/records/{pi}/alto.
+             Requests whose summed page-file size exceeds this fail with HTTP 400 and a hint to use
+             /alto.zip instead. Prevents OOMs on multi-thousand-page works. Default: 50 MB. -->
+        <maxAggregateAltoSize>50000000</maxAggregateAltoSize>
+
+        <!-- maxAggregateFulltextSize: same as maxAggregateAltoSize but for /api/v1/records/{pi}/plaintext.
+             Default: 50 MB. -->
+        <maxAggregateFulltextSize>50000000</maxAggregateFulltextSize>
     </performance>
 
 
@@ -647,8 +663,20 @@
                 <field>DOCTYPE</field>
                 <field>ORDER</field>
             </excel>
-            <!-- ris/@enabled: If true, RIS text file export of search hits will be available in the search options. Default is false. -->
+            <!-- DEPRECATED ris/@enabled: If true, RIS text file export of search hits will be available in the search options. Default is false. -->
             <ris enabled="false" />
+            <!-- XSLT-based export formats. Each <format> element defines one export type.
+                 To add a new format, add a <format> element here and drop the XSLT file
+                 into the viewer config directory or the classpath under resources/xsl/.
+                 Attributes:
+                   name          - unique identifier, used in the REST URL: /api/v1/search/export/{name}
+                   enabled       - whether this format is available (default: false)
+                   xslt          - XSLT stylesheet file name (resolved from config dir, then classpath)
+                   contentType   - HTTP Content-Type for the response
+                   fileExtension - file extension for the Content-Disposition header -->
+            <format name="ris"     enabled="false" xslt="solr2ris.xsl"     contentType="text/plain"      fileExtension="ris" />
+            <format name="endnote" enabled="false" xslt="solr2endnote.xsl" contentType="application/xml" fileExtension="xml" />
+            <format name="bibtex"  enabled="false" xslt="solr2bibtex.xsl"  contentType="text/plain"      fileExtension="bib" />
         </export>
 
         <!-- useFacetsAsExpandQuery/@enabled: If true, currently active facets will be used to build the expand query to produce child hits,
@@ -1518,6 +1546,14 @@
             <field>PI_PARENT</field>
         </ancestorIdentifierFields>
 
+        <!-- calendarDocStructTypes: DOCSTRCT names for which the calendar TOC view applies. For an anchor/group record whose docstruct matches one of these types AND that has volumes spanning more than
+            one calendar year, the calendar branch in viewToc.xhtml replaces the issue-list TOC and the (potentially heavy) issue-list build is skipped. Records whose docstruct is not listed always get
+            the regular TOC build, even if they have multi-year date metadata. Leave empty to preserve legacy behavior (defer for any multi-year anchor/group). -->
+        <calendarDocStructTypes>
+            <docstruct>Newspaper</docstruct>
+            <docstruct>newspaper</docstruct>
+        </calendarDocStructTypes>
+
         <!-- useTreeView: if true, the toc is displayed as an interactive tree view. Default is false. -->
         <useTreeView showDocStructs="_ALL">false</useTreeView>
 
@@ -1641,7 +1677,7 @@
                 <displayWidget name="record-notes" />
                 <displayWidget name="downloads" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="citation" collapsible="true" collapsedByDefault="true" />
-                <displayWidget name="related-groups" />
+                <displayWidget name="related-groups" showDetails="true" />
                 <displayWidget name="toc" />
                 <displayWidget name="version-history" />
             </view>
@@ -1893,7 +1929,21 @@
                 <!-- collapseLengthThreshold: max length of level before it gets collapsed -->
                 <collapseLengthThreshold lowestLevelToTest="2">0</collapseLengthThreshold>
             </widget>
-            
+
+            <!-- widget[@name="related-groups"]: configuration for the related-groups widget and section (controls which sibling volumes / group members are fetched when showDetails="true"). -->
+            <widget name="related-groups">
+                <!-- maxResults: maximum number of related records shown in the content section (under the record). Default is 3. -->
+                <maxResults>3</maxResults>
+                <!-- sortField: solr field used for sorting the related records. Default is SORT_YEARPUBLISH (newest publication year first). -->
+                <sortField>SORT_YEARPUBLISH</sortField>
+                <!-- sortOrder: sort order (asc or desc). Default is desc. -->
+                <sortOrder>desc</sortOrder>
+                <!-- titleField: solr field used as the card title. Default is MD_TITLE. -->
+                <titleField>MD_TITLE</titleField>
+                <!-- subtitleField: solr field used as the card subtitle (e.g. author or subtitle). Default is MD_CREATOR. -->
+                <subtitleField>MD_CREATOR</subtitleField>
+            </widget>
+
             <!-- OTHER WIDGETS -->
             <!-- widget[@name="browsing-terms"]: Term browsing widget. -->
             <widget name="browsing-terms" enabled="true" />

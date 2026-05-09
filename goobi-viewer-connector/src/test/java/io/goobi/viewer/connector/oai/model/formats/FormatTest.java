@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.solr.common.SolrDocument;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.junit.jupiter.api.Assertions;
@@ -29,6 +30,7 @@ import io.goobi.viewer.connector.AbstractSolrEnabledTest;
 import io.goobi.viewer.connector.DataManager;
 import io.goobi.viewer.connector.oai.RequestHandler;
 import io.goobi.viewer.connector.oai.model.ResumptionToken;
+import io.goobi.viewer.solr.SolrConstants;
 
 class FormatTest extends AbstractSolrEnabledTest {
 
@@ -64,7 +66,7 @@ class FormatTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals("ListMetadataFormats", ele.getName());
         List<Element> eleListMetadataFormat = ele.getChildren("metadataFormat", null);
         Assertions.assertNotNull(eleListMetadataFormat);
-        Assertions.assertEquals(9, eleListMetadataFormat.size());
+        Assertions.assertEquals(10, eleListMetadataFormat.size());
         for (Element eleMetadataFormat : eleListMetadataFormat) {
             Assertions.assertNotNull(eleMetadataFormat.getChildText("metadataPrefix", null));
             Assertions.assertNotNull(eleMetadataFormat.getChildText("metadataNamespace", null));
@@ -132,6 +134,43 @@ class FormatTest extends AbstractSolrEnabledTest {
         Element result = Format.handleToken("foo", "");
         Assertions.assertEquals("error", result.getName());
         Assertions.assertEquals("badResumptionToken", result.getAttributeValue("code"));
+    }
+
+    /**
+     * @see Format#getHeader(SolrDocument,SolrDocument,RequestHandler,String,java.util.List,String)
+     * @verifies use urn identifier if urn set
+     */
+    @Test
+    void getHeader_shouldUseUrnIdentifierIfUrnSet() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.PI, "PPN123456789");
+        doc.setField(SolrConstants.URN, "urn:nbn:de:test-1");
+
+        Element header = Format.getHeader(doc, null, new RequestHandler(), null, null, null);
+        Assertions.assertNotNull(header);
+        // Identifier must be built from the URN, not the PI
+        String identifier = header.getChildText("identifier", Format.OAI_NS);
+        Assertions.assertNotNull(identifier);
+        Assertions.assertTrue(identifier.contains("urn:nbn:de:test-1"), "Expected URN-based identifier, got: " + identifier);
+        Assertions.assertFalse(identifier.contains("PPN123456789"), "Expected no PI in identifier, got: " + identifier);
+    }
+
+    /**
+     * @see Format#getHeader(SolrDocument,SolrDocument,RequestHandler,String,java.util.List,String)
+     * @verifies use pi identifier if urn empty
+     */
+    @Test
+    void getHeader_shouldUsePiIdentifierIfUrnEmpty() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.PI, "PPN123456789");
+        // Empty string URN must fall through to PI-based identifier
+        doc.setField(SolrConstants.URN, "");
+
+        Element header = Format.getHeader(doc, null, new RequestHandler(), null, null, null);
+        Assertions.assertNotNull(header);
+        String identifier = header.getChildText("identifier", Format.OAI_NS);
+        Assertions.assertNotNull(identifier);
+        Assertions.assertTrue(identifier.contains("PPN123456789"), "Expected PI-based identifier, got: " + identifier);
     }
 
     /**

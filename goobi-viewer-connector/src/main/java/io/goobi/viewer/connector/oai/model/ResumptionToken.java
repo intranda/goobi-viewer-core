@@ -33,7 +33,7 @@ public class ResumptionToken {
     public static final String TOKEN_NAME_PREFIX = "oai_";
     
     /** Constant <code>TOKEN_NAME_PATTERN</code> */
-    public static final Pattern TOKEN_NAME_PATTERN = Pattern.compile("^" + TOKEN_NAME_PREFIX + "[0-9]{13}$");
+    public static final Pattern TOKEN_NAME_PATTERN = Pattern.compile("^" + TOKEN_NAME_PREFIX + "\\d{13}$");
 
     @XStreamAsAttribute
     @XStreamAlias("tokenName")

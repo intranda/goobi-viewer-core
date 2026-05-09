@@ -194,10 +194,7 @@ public class EpicurFormat extends Format {
             getRecord.addContent(eleRecord);
 
             return getRecord;
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            return new ErrorCode().getIdDoesNotExist();
-        } catch (SolrServerException e) {
+        } catch (IOException | SolrServerException e) {
             logger.error(e.getMessage());
             return new ErrorCode().getIdDoesNotExist();
         }

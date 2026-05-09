@@ -15,6 +15,8 @@
  */
 package io.goobi.viewer.connector;
 
+import java.io.IOException;
+
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 
@@ -47,6 +49,11 @@ public class ContextListener implements ServletContextListener {
     /** {@inheritDoc} */
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        try {
+            DataManager.getInstance().closeSearchIndex();
+        } catch (IOException e) {
+            logger.error("Error closing Solr client", e);
+        }
         // Shut all loggers down to prevent memory leaks when re-deploying the context
         LogManager.shutdown();
     }

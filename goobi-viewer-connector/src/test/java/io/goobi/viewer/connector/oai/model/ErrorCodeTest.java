@@ -29,7 +29,7 @@ class ErrorCodeTest extends AbstractTest {
      * @verifies construct element correctly
      */
     @Test
-    void getBadArgument_shouldConstructElementCorrectly() throws Exception {
+    void getBadArgument_shouldConstructElementCorrectly() {
         Element ele = new ErrorCode().getBadArgument();
         Assertions.assertNotNull(ele);
         Assertions.assertEquals(XmlConstants.ELE_NAME_ERROR, ele.getName());
@@ -42,7 +42,7 @@ class ErrorCodeTest extends AbstractTest {
      * @verifies construct element correctly
      */
     @Test
-    void getBadResumptionToken_shouldConstructElementCorrectly() throws Exception {
+    void getBadResumptionToken_shouldConstructElementCorrectly() {
         Element ele = new ErrorCode().getBadResumptionToken();
         Assertions.assertNotNull(ele);
         Assertions.assertEquals(XmlConstants.ELE_NAME_ERROR, ele.getName());
@@ -55,7 +55,7 @@ class ErrorCodeTest extends AbstractTest {
      * @verifies construct element correctly
      */
     @Test
-    void getBadVerb_shouldConstructElementCorrectly() throws Exception {
+    void getBadVerb_shouldConstructElementCorrectly() {
         Element ele = new ErrorCode().getBadVerb();
         Assertions.assertNotNull(ele);
         Assertions.assertEquals(XmlConstants.ELE_NAME_ERROR, ele.getName());
@@ -68,7 +68,7 @@ class ErrorCodeTest extends AbstractTest {
      * @verifies construct element correctly
      */
     @Test
-    void getCannotDisseminateFormat_shouldConstructElementCorrectly() throws Exception {
+    void getCannotDisseminateFormat_shouldConstructElementCorrectly() {
         Element ele = new ErrorCode().getCannotDisseminateFormat();
         Assertions.assertNotNull(ele);
         Assertions.assertEquals(XmlConstants.ELE_NAME_ERROR, ele.getName());
@@ -81,7 +81,7 @@ class ErrorCodeTest extends AbstractTest {
      * @verifies construct element correctly
      */
     @Test
-    void getIdDoesNotExist_shouldConstructElementCorrectly() throws Exception {
+    void getIdDoesNotExist_shouldConstructElementCorrectly() {
         Element ele = new ErrorCode().getIdDoesNotExist();
         Assertions.assertNotNull(ele);
         Assertions.assertEquals(XmlConstants.ELE_NAME_ERROR, ele.getName());
@@ -94,7 +94,7 @@ class ErrorCodeTest extends AbstractTest {
      * @verifies construct element correctly
      */
     @Test
-    void getNoMetadataFormats_shouldConstructElementCorrectly() throws Exception {
+    void getNoMetadataFormats_shouldConstructElementCorrectly() {
         Element ele = new ErrorCode().getNoMetadataFormats();
         Assertions.assertNotNull(ele);
         Assertions.assertEquals(XmlConstants.ELE_NAME_ERROR, ele.getName());
@@ -107,7 +107,7 @@ class ErrorCodeTest extends AbstractTest {
      * @verifies construct element correctly
      */
     @Test
-    void getNoRecordsMatch_shouldConstructElementCorrectly() throws Exception {
+    void getNoRecordsMatch_shouldConstructElementCorrectly() {
         Element ele = new ErrorCode().getNoRecordsMatch();
         Assertions.assertNotNull(ele);
         Assertions.assertEquals(XmlConstants.ELE_NAME_ERROR, ele.getName());
@@ -120,7 +120,7 @@ class ErrorCodeTest extends AbstractTest {
      * @verifies construct element correctly
      */
     @Test
-    void getNoSetHierarchy_shouldConstructElementCorrectly() throws Exception {
+    void getNoSetHierarchy_shouldConstructElementCorrectly() {
         Element ele = new ErrorCode().getNoSetHierarchy();
         Assertions.assertNotNull(ele);
         Assertions.assertEquals(XmlConstants.ELE_NAME_ERROR, ele.getName());

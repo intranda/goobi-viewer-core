@@ -27,7 +27,7 @@ class RequestHandlerTest extends AbstractTest {
      * @verifies convert date to timestamp correctly
      */
     @Test
-    void getFromTimestamp_shouldConvertDateToTimestampCorrectly() throws Exception {
+    void getFromTimestamp_shouldConvertDateToTimestampCorrectly() {
         String from = "2015-01-01T00:00:00Z";
         Assertions.assertEquals(1420070400000L, RequestHandler.getFromTimestamp(from));
     }
@@ -37,7 +37,7 @@ class RequestHandlerTest extends AbstractTest {
      * @verifies set time to 000000 if none given
      */
     @Test
-    void getFromTimestamp_shouldSetTimeTo000000IfNoneGiven() throws Exception {
+    void getFromTimestamp_shouldSetTimeTo000000IfNoneGiven() {
         String from = "2015-01-01";
         Assertions.assertEquals(1420070400000L, RequestHandler.getFromTimestamp(from));
     }
@@ -47,7 +47,7 @@ class RequestHandlerTest extends AbstractTest {
      * @verifies convert date to timestamp correctly
      */
     @Test
-    void getUntilTimestamp_shouldConvertDateToTimestampCorrectly() throws Exception {
+    void getUntilTimestamp_shouldConvertDateToTimestampCorrectly() {
         String until = "2015-01-01T00:00:00Z";
         Assertions.assertEquals(1420070400999L, RequestHandler.getUntilTimestamp(until));
     }
@@ -57,7 +57,7 @@ class RequestHandlerTest extends AbstractTest {
      * @verifies set time to 235959 if none given
      */
     @Test
-    void getUntilTimestamp_shouldSetTimeTo235959IfNoneGiven() throws Exception {
+    void getUntilTimestamp_shouldSetTimeTo235959IfNoneGiven() {
         String until = "2015-01-01";
         Assertions.assertEquals(1420156799999L, RequestHandler.getUntilTimestamp(until));
     }
