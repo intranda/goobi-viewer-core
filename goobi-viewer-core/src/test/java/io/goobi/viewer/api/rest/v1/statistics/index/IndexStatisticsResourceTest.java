@@ -1,0 +1,118 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package io.goobi.viewer.api.rest.v1.statistics.index;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+import io.goobi.viewer.api.rest.model.statistics.index.ImportSummary;
+import io.goobi.viewer.api.rest.model.statistics.index.ImportTrendBucket;
+import io.goobi.viewer.api.rest.model.statistics.index.PublicationTypeStatistic;
+import io.goobi.viewer.model.statistics.index.IndexStatisticsService;
+import io.goobi.viewer.model.statistics.index.StatisticsUnavailableException;
+import jakarta.ws.rs.core.Response;
+
+class IndexStatisticsResourceTest {
+
+    /**
+     * @see IndexStatisticsResource#getPublicationTypes()
+     * @verifies return service result with cache control header
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    void getPublicationTypes_shouldReturnServiceResultWithCacheControlHeader() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getPublicationTypes())
+                .thenReturn(List.of(new PublicationTypeStatistic("Monograph", 5, "Monograph")));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        Response response = res.getPublicationTypes();
+
+        assertEquals(200, response.getStatus());
+        List<PublicationTypeStatistic> body = (List<PublicationTypeStatistic>) response.getEntity();
+        assertEquals(1, body.size());
+        assertEquals("Monograph", body.get(0).label());
+        // Cache-Control must be present for CDN-friendliness.
+        String cc = response.getHeaderString("Cache-Control");
+        assertNotNull(cc);
+        assertTrue(cc.contains("max-age=3600"), "Cache-Control was: " + cc);
+    }
+
+    /**
+     * @see IndexStatisticsResource#getPublicationTypes()
+     * @verifies return 503 when service throws StatisticsUnavailableException
+     */
+    @Test
+    void getPublicationTypes_shouldReturn503WhenServiceThrowsStatisticsUnavailableException() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getPublicationTypes())
+                .thenThrow(new StatisticsUnavailableException("solr down", new RuntimeException("x")));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        Response response = res.getPublicationTypes();
+
+        assertEquals(503, response.getStatus());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getImportTrend(int, int)
+     * @verifies pass through query parameters
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    void getImportTrend_shouldPassThroughQueryParameters() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getImportTrend(eq(180), eq(12))).thenReturn(List.of(new ImportTrendBucket(0, 0)));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        Response response = res.getImportTrend(180, 12);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(1, ((List<ImportTrendBucket>) response.getEntity()).size());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getImportSummary()
+     * @verifies return summary from service
+     */
+    @Test
+    void getImportSummary_shouldReturnSummaryFromService() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getImportSummary()).thenReturn(new ImportSummary(100, 40));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        Response response = res.getImportSummary();
+
+        assertEquals(200, response.getStatus());
+        ImportSummary summary = (ImportSummary) response.getEntity();
+        assertEquals(100, summary.pages());
+        assertEquals(40, summary.fulltexts());
+    }
+}
