@@ -65,3 +65,8 @@ adminJS.codemirror = function (element, mode, readonly, config) {
         codemirror: cm,
     };
 };
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = adminJS;
+}
