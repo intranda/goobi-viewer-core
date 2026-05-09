@@ -52,6 +52,16 @@ public class CMSPageContentManager implements Serializable {
 
     private final List<CMSComponent> components = new ArrayList<>();
 
+    /**
+     * Loads CMS components from one or more folders. Folders may live on the regular filesystem or be
+     * mounted from a JAR via {@link java.nio.file.FileSystems#newFileSystem(java.net.URI, java.util.Map)},
+     * which is the realistic case for module-contributed templates shipped inside a deployed JAR.
+     *
+     * @param configFolders one or more folders containing component XML template files
+     * @throws IOException if reading any of the folders fails
+     * @should merge components from multiple real filesystem folders
+     * @should merge components from a real folder and a jar backed folder
+     */
     public CMSPageContentManager(Path... configFolders) throws IOException {
         for (Path path : configFolders) {
             if (path != null && Files.exists(path)) {
