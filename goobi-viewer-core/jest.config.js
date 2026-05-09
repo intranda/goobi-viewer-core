@@ -61,9 +61,13 @@ module.exports = {
             // jest-sonar writes Sonar's "Generic Test Execution" XML format
             // (different from JUnit). Consumed by SonarCloud via
             // sonar.testExecutionReportPaths in pom.xml.
+            //
+            // NOT under target/sonar/: Sonar's Maven plugin uses that
+            // directory as its own working directory and wipes it on start,
+            // which would delete our report before it gets read.
             require.resolve('jest-sonar'),
             {
-                outputDirectory: path.join(__dirname, 'target/sonar'),
+                outputDirectory: path.join(__dirname, 'target/jest-sonar'),
                 outputName: 'test-execution-report.xml',
                 // Paths in the report point back to absolute file system paths,
                 // which is what Sonar matches against to attribute test results.

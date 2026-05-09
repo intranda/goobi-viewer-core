@@ -95,10 +95,12 @@
 		    narrowing with sonar.test.inclusions tells Sonar to treat
 		    __tests__/*.test.js as test code rather than production code.
 		    The execution count XML is produced by the jest-sonar reporter.
+		    The report MUST live outside target/sonar/ — Sonar's Maven plugin
+		    uses that directory as its own working dir and wipes it on start.
 		-->
 		<sonar.tests>src/test/java,src/main/resources/META-INF/resources/resources/javascript/dev/modules</sonar.tests>
 		<sonar.test.inclusions>**/__tests__/**,**/*.test.js</sonar.test.inclusions>
-		<sonar.testExecutionReportPaths>${project.build.directory}/sonar/test-execution-report.xml</sonar.testExecutionReportPaths>
+		<sonar.testExecutionReportPaths>${project.build.directory}/jest-sonar/test-execution-report.xml</sonar.testExecutionReportPaths>
 
 		<!-- Checkstyle -->
 		<checkstyle.max.violations>0</checkstyle.max.violations>
@@ -1466,4 +1468,5 @@
 			</plugin>
 		</plugins>
 	</reporting>
+
 </project>
