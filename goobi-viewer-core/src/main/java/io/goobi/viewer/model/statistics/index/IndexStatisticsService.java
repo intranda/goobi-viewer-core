@@ -53,16 +53,15 @@ import io.goobi.viewer.solr.SolrSearchIndex;
  * dependency so unit tests can mock it; production callers use the no-arg constructor that pulls the singleton.
  *
  * <p>
- * Each method caches its result for one day (mirroring the legacy {@code StatisticsBean.lastUpdateMap}) and throws
- * {@link StatisticsUnavailableException} when the upstream is down and no cached snapshot is available, so the
- * resource layer can translate to HTTP 503 instead of silently returning empty data.
+ * Each method caches its result for one day and throws {@link StatisticsUnavailableException} when the upstream is
+ * down and no cached snapshot is available, so the resource layer can translate to HTTP 503 instead of silently
+ * returning empty data.
  * </p>
  */
 public class IndexStatisticsService {
 
     private static final Logger logger = LogManager.getLogger(IndexStatisticsService.class);
 
-    // 1 day TTL — mirrors the per-key TTL in the legacy StatisticsBean.lastUpdateMap.
     private static final long CACHE_TTL_MS = 24L * 60L * 60L * 1000L;
 
     private final SolrSearchIndex searchIndex;
@@ -99,8 +98,6 @@ public class IndexStatisticsService {
             return snap.getValue();
         }
         try {
-            // Ported from StatisticsBean.getTopStructTypesByNumber (StatisticsBean.java:176-219); same Solr query,
-            // but emit DTOs instead of "name::count::token" strings, and translate labels to the request locale.
             String query = "+" + SolrConstants.PI + ":*"
                     + " +(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true)"
                     + " +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name()
@@ -164,8 +161,6 @@ public class IndexStatisticsService {
     /** Solr-query body, separated so the public method can wrap it in cache+throw logic. */
     private List<ImportTrendBucket> computeImportTrend(int days, int dataPoints)
             throws PresentationException, IndexUnreachableException {
-        // Logic preserved from StatisticsBean.getImportedRecordsTrend (StatisticsBean.java:101-167).
-        // Output shape changed from "millis::count" strings to ImportTrendBucket records.
         String query = "+" + SolrConstants.PI + ":*" + SearchHelper.getAllSuffixes();
         QueryResponse resp = searchIndex.search(query, 0, 0, null,
                 Collections.singletonList(SolrConstants.DATECREATED), "count",

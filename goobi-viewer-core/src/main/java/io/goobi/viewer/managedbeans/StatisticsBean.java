@@ -71,10 +71,6 @@ public class StatisticsBean implements Serializable {
 
     private transient Map<String, StatisticsSummary> recordUsageStatisticsMap = new ConcurrentHashMap<>();
 
-    // jqplot-era methods (getImportedRecordsTrend, getTopStructTypesByNumber, getImportedPages,
-    // getImportedFullTexts, isIndexEmpty) were removed in #15809 along with statistics.xhtml. The
-    // equivalent data is now served by IndexStatisticsService and the chart-* CMS components.
-
     /**
      * getCoreVersion.
      *
