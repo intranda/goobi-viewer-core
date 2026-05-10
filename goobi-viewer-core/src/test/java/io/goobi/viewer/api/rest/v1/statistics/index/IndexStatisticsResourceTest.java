@@ -30,8 +30,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import io.goobi.viewer.api.rest.model.statistics.index.ImportSummary;
 import io.goobi.viewer.api.rest.model.statistics.index.ImportTrendBucket;
@@ -83,6 +85,24 @@ class IndexStatisticsResourceTest {
     }
 
     /**
+     * @see IndexStatisticsResource#getPublicationTypes(String)
+     * @verifies forward lang query parameter to service
+     */
+    @Test
+    void getPublicationTypes_shouldForwardLangQueryParameterToService() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        // ArgumentCaptor on the Locale parameter — the resource turns the lang string into a Locale
+        // before calling the service, and we want to be sure the conversion didn't get dropped.
+        ArgumentCaptor<Locale> localeCaptor = ArgumentCaptor.forClass(Locale.class);
+        when(svc.getPublicationTypes(localeCaptor.capture())).thenReturn(List.of());
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        res.getPublicationTypes("de");
+
+        assertEquals(Locale.forLanguageTag("de"), localeCaptor.getValue());
+    }
+
+    /**
      * @see IndexStatisticsResource#getImportTrend(int, int)
      * @verifies pass through query parameters
      */
@@ -97,6 +117,22 @@ class IndexStatisticsResourceTest {
 
         assertEquals(200, response.getStatus());
         assertEquals(1, ((List<ImportTrendBucket>) response.getEntity()).size());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getImportTrend(int, int)
+     * @verifies return 503 when service throws StatisticsUnavailableException
+     */
+    @Test
+    void getImportTrend_shouldReturn503WhenServiceThrowsStatisticsUnavailableException() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getImportTrend(eq(180), eq(12)))
+                .thenThrow(new StatisticsUnavailableException("solr down", new RuntimeException("x")));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        Response response = res.getImportTrend(180, 12);
+
+        assertEquals(503, response.getStatus());
     }
 
     /**
@@ -115,5 +151,21 @@ class IndexStatisticsResourceTest {
         ImportSummary summary = (ImportSummary) response.getEntity();
         assertEquals(100, summary.pages());
         assertEquals(40, summary.fulltexts());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getImportSummary()
+     * @verifies return 503 when service throws StatisticsUnavailableException
+     */
+    @Test
+    void getImportSummary_shouldReturn503WhenServiceThrowsStatisticsUnavailableException() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getImportSummary())
+                .thenThrow(new StatisticsUnavailableException("solr down", new RuntimeException("x")));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        Response response = res.getImportSummary();
+
+        assertEquals(503, response.getStatus());
     }
 }

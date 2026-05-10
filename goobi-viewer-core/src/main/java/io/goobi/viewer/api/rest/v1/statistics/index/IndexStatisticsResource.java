@@ -94,6 +94,7 @@ public class IndexStatisticsResource {
      * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
      * @should return service result with cache control header
      * @should return 503 when service throws StatisticsUnavailableException
+     * @should forward lang query parameter to service
      */
     @GET
     @Path("/publication-types")
