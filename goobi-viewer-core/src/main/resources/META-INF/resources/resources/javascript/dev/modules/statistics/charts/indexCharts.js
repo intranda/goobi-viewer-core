@@ -12,6 +12,27 @@
 (function () {
     'use strict';
 
+    // Shared palette across statistics charts so visually-related charts (publication-types pie,
+    // import-summary bars, most-edited-records bars) draw their slices/bars from the same set of
+    // colors. Order chosen to match Chart.js' classic categorical palette.
+    const PALETTE = [
+        'rgb(255, 99, 132)', // pink-red
+        'rgb(54, 162, 235)', // blue
+        'rgb(255, 206, 86)', // yellow
+        'rgb(75, 192, 192)', // teal
+        'rgb(153, 102, 255)', // purple
+        'rgb(255, 159, 64)', // orange
+        'rgb(199, 199, 199)', // grey
+    ];
+
+    function paletteColors(count) {
+        const out = new Array(count);
+        for (let i = 0; i < count; i++) {
+            out[i] = PALETTE[i % PALETTE.length];
+        }
+        return out;
+    }
+
     function ensureNamespace() {
         if (typeof window === 'undefined') {
             return null;
@@ -19,6 +40,9 @@
         window.viewerJS = window.viewerJS || {};
         window.viewerJS.statistics = window.viewerJS.statistics || {};
         window.viewerJS.statistics.charts = window.viewerJS.statistics.charts || {};
+        // Expose the palette so the crowdsourcing module's renderers can reuse it.
+        window.viewerJS.statistics.charts._palette = PALETTE;
+        window.viewerJS.statistics.charts._paletteColors = paletteColors;
         return window.viewerJS.statistics.charts;
     }
 
@@ -49,14 +73,16 @@
                         queries: data.map(function (d) {
                             return d.query;
                         }),
+                        backgroundColor: paletteColors(data.length),
                     },
                 ],
             },
             options: {
                 responsive: true,
                 plugins: {
-                    // Legend on the right so docstruct labels sit next to the pie instead of below it.
-                    legend: { position: 'right' },
+                    // No legend — docstruct labels are visible via tooltip on hover, and the user
+                    // requested a clean pie without the side-list.
+                    legend: { display: false },
                     tooltip: {
                         callbacks: {
                             label: function (item) {
@@ -93,6 +119,11 @@
                             return { x: d.timestamp, y: d.count };
                         }),
                         tension: 0.3,
+                        borderColor: PALETTE[1], // blue, matches second slice in the pie
+                        backgroundColor: PALETTE[1],
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
                     },
                 ],
             },
@@ -117,7 +148,14 @@
             type: 'bar',
             data: {
                 labels: [pagesLabel, fulltextsLabel],
-                datasets: [{ data: [data.pages, data.fulltexts] }],
+                datasets: [
+                    {
+                        data: [data.pages, data.fulltexts],
+                        // Two distinct colors so pages vs. full-texts are visually distinguishable
+                        // (reusing the first two pie palette colors keeps the page visually consistent).
+                        backgroundColor: [PALETTE[0], PALETTE[1]],
+                    },
+                ],
             },
             options: {
                 responsive: true,
