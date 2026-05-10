@@ -70,7 +70,7 @@ class IndexStatisticsServiceTest extends AbstractTest {
                         .thenReturn(resp);
 
         IndexStatisticsService svc = new IndexStatisticsService(index);
-        List<PublicationTypeStatistic> result = svc.getPublicationTypes();
+        List<PublicationTypeStatistic> result = svc.getPublicationTypes(null);
 
         assertEquals(2, result.size());
         assertEquals("Monograph", result.get(0).query());
@@ -91,7 +91,7 @@ class IndexStatisticsServiceTest extends AbstractTest {
                 .thenThrow(new IndexUnreachableException("solr down"));
         IndexStatisticsService svc = new IndexStatisticsService(index);
 
-        assertThrows(StatisticsUnavailableException.class, svc::getPublicationTypes);
+        assertThrows(StatisticsUnavailableException.class, () -> svc.getPublicationTypes(null));
     }
 
     /**

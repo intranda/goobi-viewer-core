@@ -21,9 +21,12 @@
  */
 package io.goobi.viewer.api.rest.v1.statistics.index;
 
+import java.util.IllformedLocaleException;
+import java.util.Locale;
 import java.util.Map;
 
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.statistics.index.IndexStatisticsService;
 import io.goobi.viewer.model.statistics.index.StatisticsUnavailableException;
 import jakarta.ws.rs.DefaultValue;
@@ -66,8 +69,28 @@ public class IndexStatisticsResource {
     }
 
     /**
+     * Resolves the locale for label translation. Prefers an explicit {@code lang} query parameter (the composite
+     * forwards {@code #{navigationHelper.localeString}}, which is the user's session-bound UI language) because
+     * JAX-RS requests do not always have an active CDI session-scope and {@link BeanUtils#getLocale()} would then
+     * silently fall back to the FacesContext default. Falls back to {@code BeanUtils.getLocale()} when the parameter
+     * is absent — keeps the endpoint usable from non-JSF callers (curl, sitemap probes, etc.).
+     */
+    private Locale resolveLocale(String langParam) {
+        if (langParam != null && !langParam.isBlank()) {
+            try {
+                return Locale.forLanguageTag(langParam);
+            } catch (IllformedLocaleException e) {
+                // Bad client input — ignore and fall through to the BeanUtils path.
+            }
+        }
+        return BeanUtils.getLocale();
+    }
+
+    /**
      * Lists each top-level docstruct type with its record count.
      *
+     * @param lang IETF BCP 47 language tag (e.g. {@code de}, {@code en}); typically supplied by the composite as
+     *            {@code #{navigationHelper.localeString}} so the response matches the user's UI language
      * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
      * @should return service result with cache control header
      * @should return 503 when service throws StatisticsUnavailableException
@@ -75,9 +98,9 @@ public class IndexStatisticsResource {
     @GET
     @Path("/publication-types")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPublicationTypes() {
+    public Response getPublicationTypes(@QueryParam("lang") String lang) {
         try {
-            return ok(service.getPublicationTypes());
+            return ok(service.getPublicationTypes(resolveLocale(lang)));
         } catch (StatisticsUnavailableException e) {
             return unavailable(e);
         }

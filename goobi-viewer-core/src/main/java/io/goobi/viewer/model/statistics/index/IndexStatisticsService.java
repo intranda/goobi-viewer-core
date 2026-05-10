@@ -27,6 +27,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,7 +67,9 @@ public class IndexStatisticsService {
 
     private final SolrSearchIndex searchIndex;
 
-    private volatile CachedSnapshot<List<PublicationTypeStatistic>> publicationTypesCache;
+    // Publication-types must be cached per locale, because the docstruct labels are translated server-side
+    // and the cached value is locale-specific. Concurrent map keyed by locale tag (e.g. "de", "en", "").
+    private final Map<String, CachedSnapshot<List<PublicationTypeStatistic>>> publicationTypesCachePerLocale = new ConcurrentHashMap<>();
     private volatile CachedTrend importTrendCache;
     private volatile CachedSnapshot<ImportSummary> importSummaryCache;
 
@@ -77,22 +82,25 @@ public class IndexStatisticsService {
     }
 
     /**
-     * Lists each top-level docstruct type with its record count.
+     * Lists each top-level docstruct type with its record count, with labels translated to the given locale.
      *
+     * @param locale the user's locale for label translation; falls back to default if null
      * @return DTOs in Solr's facet order (by count, descending), never null
-     * @throws StatisticsUnavailableException if Solr is unreachable and no cached snapshot exists
+     * @throws StatisticsUnavailableException if Solr is unreachable and no cached snapshot exists for this locale
      * @should issue exact docstruct facet query and map facet values to dtos
      * @should return cached snapshot on solr error if cache available
      * @should throw StatisticsUnavailableException on solr error if no cache
      */
-    public List<PublicationTypeStatistic> getPublicationTypes() throws StatisticsUnavailableException {
-        CachedSnapshot<List<PublicationTypeStatistic>> snap = publicationTypesCache;
+    public List<PublicationTypeStatistic> getPublicationTypes(Locale locale) throws StatisticsUnavailableException {
+        // Cache key derived from locale.toLanguageTag() (or "" for null) so de/en/fr each get their own slot.
+        String key = locale != null ? locale.toLanguageTag() : "";
+        CachedSnapshot<List<PublicationTypeStatistic>> snap = publicationTypesCachePerLocale.get(key);
         if (snap != null && snap.isFresh(CACHE_TTL_MS)) {
             return snap.getValue();
         }
         try {
             // Ported from StatisticsBean.getTopStructTypesByNumber (StatisticsBean.java:176-219); same Solr query,
-            // but emit DTOs instead of "name::count::token" strings.
+            // but emit DTOs instead of "name::count::token" strings, and translate labels to the request locale.
             String query = "+" + SolrConstants.PI + ":*"
                     + " +(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true)"
                     + " +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name()
@@ -103,16 +111,16 @@ public class IndexStatisticsService {
             if (resp == null || resp.getFacetField(SolrConstants.DOCSTRCT) == null
                     || resp.getFacetField(SolrConstants.DOCSTRCT).getValues() == null) {
                 List<PublicationTypeStatistic> empty = Collections.emptyList();
-                publicationTypesCache = new CachedSnapshot<>(empty, System.currentTimeMillis());
+                publicationTypesCachePerLocale.put(key, new CachedSnapshot<>(empty, System.currentTimeMillis()));
                 return empty;
             }
             List<Count> counts = resp.getFacetField(SolrConstants.DOCSTRCT).getValues();
             List<PublicationTypeStatistic> out = new ArrayList<>(counts.size());
             for (Count count : counts) {
-                String label = ViewerResourceBundle.getTranslation(count.getName(), null).replace(",", "");
+                String label = ViewerResourceBundle.getTranslation(count.getName(), locale).replace(",", "");
                 out.add(new PublicationTypeStatistic(label, count.getCount(), count.getName()));
             }
-            publicationTypesCache = new CachedSnapshot<>(out, System.currentTimeMillis());
+            publicationTypesCachePerLocale.put(key, new CachedSnapshot<>(out, System.currentTimeMillis()));
             return out;
         } catch (PresentationException | IndexUnreachableException e) {
             logger.warn("Solr query for publication types failed; will serve cache if available: {}", e.getMessage());

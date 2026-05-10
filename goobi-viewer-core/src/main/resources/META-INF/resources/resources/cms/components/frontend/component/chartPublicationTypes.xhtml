@@ -24,7 +24,7 @@
             (function() {
                 viewerJS.statistics.charts.renderPublicationTypes(
                     'canvas-publication-types',
-                    '#{request.contextPath}/api/v1/statistics/index/publication-types',
+                    '#{request.contextPath}/api/v1/statistics/index/publication-types?lang=#{navigationHelper.localeString}',
                     '#{request.contextPath}/search/'
                 );
             })();

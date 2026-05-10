@@ -24,6 +24,7 @@ package io.goobi.viewer.api.rest.v1.statistics.index;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,11 +50,11 @@ class IndexStatisticsResourceTest {
     @SuppressWarnings("unchecked")
     void getPublicationTypes_shouldReturnServiceResultWithCacheControlHeader() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
-        when(svc.getPublicationTypes())
+        when(svc.getPublicationTypes(any()))
                 .thenReturn(List.of(new PublicationTypeStatistic("Monograph", 5, "Monograph")));
 
         IndexStatisticsResource res = new IndexStatisticsResource(svc);
-        Response response = res.getPublicationTypes();
+        Response response = res.getPublicationTypes(null);
 
         assertEquals(200, response.getStatus());
         List<PublicationTypeStatistic> body = (List<PublicationTypeStatistic>) response.getEntity();
@@ -72,11 +73,11 @@ class IndexStatisticsResourceTest {
     @Test
     void getPublicationTypes_shouldReturn503WhenServiceThrowsStatisticsUnavailableException() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
-        when(svc.getPublicationTypes())
+        when(svc.getPublicationTypes(any()))
                 .thenThrow(new StatisticsUnavailableException("solr down", new RuntimeException("x")));
 
         IndexStatisticsResource res = new IndexStatisticsResource(svc);
-        Response response = res.getPublicationTypes();
+        Response response = res.getPublicationTypes(null);
 
         assertEquals(503, response.getStatus());
     }
