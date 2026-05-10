@@ -2,6 +2,15 @@
 // Used by chartPublicationTypes / chartImportTrend / chartImportSummary (core) and
 // chartMostEditedRecords / chartAlmostCompletedRecords / chartMostActiveUsers (crowdsourcing module).
 
+// Visual frame shared by all statistics CMS components — matches the look of htmltext content
+// boxes so chart components blend in with surrounding text content on a CMS page.
+.content-component__statistics-chart,
+.content-component__statistics-list {
+    padding: 10px;
+    border: var(--border);
+    background-color: var(--bg-content-box);
+}
+
 .statistics-chart {
     margin: 1rem 0;
     // Chart.js renders inside an 800x400 default canvas; cap the wrapper at the same width
@@ -24,7 +33,7 @@
 .statistics-chart--most-edited {
     // Reasonable default ratio so the canvas doesn't collapse to 0 height.
     aspect-ratio: 16 / 9;
-    max-height: 400px;
+    min-height: 400px;
 }
 
 .statistics-list {
