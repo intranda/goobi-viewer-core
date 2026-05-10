@@ -13,15 +13,15 @@
         <h:panelGroup
             layout="block"
             styleClass="statistics-chart statistics-chart--import-summary"
-            id="chart-import-summary-#{cc.attrs.component.id}">
+            id="chart-import-summary">
             <h2>#{msg.cms_component__chart_import_summary__label}</h2>
-            <canvas id="canvas-import-summary-#{cc.attrs.component.id}" />
+            <canvas id="canvas-import-summary" />
         </h:panelGroup>
 
         <script type="text/javascript">
             (function() {
                 viewerJS.statistics.charts.renderImportSummary(
-                    'canvas-import-summary-#{cc.attrs.component.id}',
+                    'canvas-import-summary',
                     '#{request.contextPath}/api/v1/statistics/index/imports-summary',
                     '#{msg.statistics_importedPages}',
                     '#{msg.statistics_importedFullTexts}'

@@ -13,9 +13,9 @@
         <h:panelGroup
             layout="block"
             styleClass="statistics-chart statistics-chart--import-trend"
-            id="chart-import-trend-#{cc.attrs.component.id}">
+            id="chart-import-trend">
             <h2>#{msg.cms_component__chart_import_trend__label}</h2>
-            <canvas id="canvas-import-trend-#{cc.attrs.component.id}" />
+            <canvas id="canvas-import-trend" />
         </h:panelGroup>
 
         <script type="text/javascript">
@@ -23,7 +23,7 @@
             // so we omit query params here to keep the URL whitespace-safe across formatter passes.
             (function() {
                 viewerJS.statistics.charts.renderImportTrend(
-                    'canvas-import-trend-#{cc.attrs.component.id}',
+                    'canvas-import-trend',
                     '#{request.contextPath}/api/v1/statistics/index/import-trend'
                 );
             })();
