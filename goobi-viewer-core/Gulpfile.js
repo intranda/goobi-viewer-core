@@ -606,7 +606,8 @@ function bundleViewerJS(changedFilePath = null) {
 }
 
 /**
- * Bundles statistics module into `statistics.min.js`.
+ * Bundles legacy jqplot statistics module into `statistics.min.js` (still consumed by the legacy
+ * `/viewer/statistics.xhtml` page until its scheduled removal).
  *
  * @param {?string=} changedFilePath Optional path that triggered rebuild (for logging).
  * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
@@ -618,16 +619,7 @@ function bundleStatisticsJS(changedFilePath = null) {
     const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/statistics.min.js');
 
     return gulp
-        .src(
-            [
-                // Legacy jqplot-based statistics module (still consumed by /viewer/statistics.xhtml until removal).
-                joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'),
-                // New Chart.js renderers for the CMS statistics components introduced in #15809. Browser-style
-                // (no `export`), so safe to concat with the legacy file.
-                joinPosix(paths.jsModulesRoot, 'statistics', 'charts', '*.js'),
-            ],
-            { allowEmpty: true }
-        )
+        .src(joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'), { allowEmpty: true })
         .pipe(guard())
         .pipe(concat('statistics.min.js'))
         .pipe(terser())
@@ -640,7 +632,44 @@ function bundleStatisticsJS(changedFilePath = null) {
                 name: 'js_statistics',
                 started,
                 changed: changedFilePath,
-                src: joinPosix(paths.jsModulesRoot, 'statistics', '**', '*.js'),
+                src: joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'),
+                projOut: [outProj],
+                deployOut: deployOutputs,
+            });
+        });
+}
+
+/**
+ * Bundles the new Chart.js renderers for #15809 into `statistics-charts.min.js`.
+ *
+ * Kept separate from {@link bundleStatisticsJS} because the legacy file requires jQuery + jqplot at module-eval
+ * time ({@code jQuery.jqplot.config.enablePlugins = true}); concatenating both would crash the bundle on any page
+ * where jqplot is not loaded (which is the case on every CMS page using the new chart components).
+ *
+ * @param {?string=} changedFilePath Optional path that triggered rebuild (for logging).
+ * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
+ */
+function bundleStatisticsChartsJS(changedFilePath = null) {
+    requireDeploymentDir();
+    const started = process.hrtime.bigint();
+    const outProj = path.resolve(paths.jsDistRoot, 'statistics-charts.min.js');
+    const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/statistics-charts.min.js');
+
+    return gulp
+        .src(joinPosix(paths.jsModulesRoot, 'statistics', 'charts', '*.js'), { allowEmpty: true })
+        .pipe(guard())
+        .pipe(concat('statistics-charts.min.js'))
+        .pipe(terser())
+        .pipe(header(banner))
+        .pipe(gulp.dest(paths.jsDistRoot))
+        .pipe(safeDest('resources/javascript/dist'))
+        .on('finish', () => {
+            const deployOutputs = fs.existsSync(outDeploy) ? [outDeploy] : [];
+            logTask({
+                name: 'js_statistics_charts',
+                started,
+                changed: changedFilePath,
+                src: joinPosix(paths.jsModulesRoot, 'statistics', 'charts', '*.js'),
                 projOut: [outProj],
                 deployOut: deployOutputs,
             });
@@ -957,7 +986,8 @@ function watchMode() {
         bundleViewerJS(p);
     });
 
-    gulp.watch(joinPosix(paths.jsModulesRoot, 'statistics', '**', '*.js')).on('change', (p) => bundleStatisticsJS(p));
+    gulp.watch(joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js')).on('change', (p) => bundleStatisticsJS(p));
+    gulp.watch(joinPosix(paths.jsModulesRoot, 'statistics', 'charts', '*.js')).on('change', (p) => bundleStatisticsChartsJS(p));
     gulp.watch(joinPosix(paths.jsModulesRoot, 'browsersupport', '**', '*.js')).on('change', (p) =>
         bundleBrowserSupportJS(p)
     );
@@ -1061,7 +1091,7 @@ function printTargets(cb) {
    ║ Task composition & exports                                           ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
-const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleStatisticsJS, bundleBrowserSupportJS, verovio);
+const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleStatisticsJS, bundleStatisticsChartsJS, bundleBrowserSupportJS, verovio);
 const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags));
 
 exports.build = buildAll;
