@@ -618,7 +618,16 @@ function bundleStatisticsJS(changedFilePath = null) {
     const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/statistics.min.js');
 
     return gulp
-        .src(joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'), { allowEmpty: true })
+        .src(
+            [
+                // Legacy jqplot-based statistics module (still consumed by /viewer/statistics.xhtml until removal).
+                joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'),
+                // New Chart.js renderers for the CMS statistics components introduced in #15809. Browser-style
+                // (no `export`), so safe to concat with the legacy file.
+                joinPosix(paths.jsModulesRoot, 'statistics', 'charts', '*.js'),
+            ],
+            { allowEmpty: true }
+        )
         .pipe(guard())
         .pipe(concat('statistics.min.js'))
         .pipe(terser())
@@ -631,7 +640,7 @@ function bundleStatisticsJS(changedFilePath = null) {
                 name: 'js_statistics',
                 started,
                 changed: changedFilePath,
-                src: joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'),
+                src: joinPosix(paths.jsModulesRoot, 'statistics', '**', '*.js'),
                 projOut: [outProj],
                 deployOut: deployOutputs,
             });

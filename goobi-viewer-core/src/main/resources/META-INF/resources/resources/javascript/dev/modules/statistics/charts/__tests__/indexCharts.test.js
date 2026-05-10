@@ -1,14 +1,16 @@
 /**
  * @jest-environment jsdom
  */
-import { renderPublicationTypes, renderImportTrend, renderImportSummary } from '../indexCharts.js';
 
-describe('indexCharts', () => {
+// Browser-style file (no exports). Load it for its global side-effects: the IIFE attaches
+// renderPublicationTypes / renderImportTrend / renderImportSummary onto window.viewerJS.statistics.charts.
+require('../indexCharts.js');
+
+describe('indexCharts (browser-bundle namespace)', () => {
     let mockChartCtor;
-    let canvas;
 
     beforeEach(() => {
-        canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas');
         canvas.id = 'test-canvas';
         document.body.appendChild(canvas);
         mockChartCtor = jest.fn();
@@ -31,7 +33,7 @@ describe('indexCharts', () => {
             ],
         });
 
-        await renderPublicationTypes('test-canvas', '/api/x', '/search/');
+        await window.viewerJS.statistics.charts.renderPublicationTypes('test-canvas', '/api/x', '/search/');
 
         expect(global.fetch).toHaveBeenCalledWith('/api/x');
         expect(mockChartCtor).toHaveBeenCalledTimes(1);
@@ -50,7 +52,7 @@ describe('indexCharts', () => {
             ],
         });
 
-        await renderImportTrend('test-canvas', '/api/y');
+        await window.viewerJS.statistics.charts.renderImportTrend('test-canvas', '/api/y');
 
         expect(mockChartCtor).toHaveBeenCalledTimes(1);
         const config = mockChartCtor.mock.calls[0][1];
@@ -66,7 +68,7 @@ describe('indexCharts', () => {
             json: async () => ({ pages: 100, fulltexts: 40 }),
         });
 
-        await renderImportSummary('test-canvas', '/api/z', 'Pages', 'Fulltexts');
+        await window.viewerJS.statistics.charts.renderImportSummary('test-canvas', '/api/z', 'Pages', 'Fulltexts');
 
         expect(mockChartCtor).toHaveBeenCalledTimes(1);
         const config = mockChartCtor.mock.calls[0][1];
