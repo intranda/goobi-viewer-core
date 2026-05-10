@@ -11,27 +11,32 @@
     </composite:interface>
 
     <composite:implementation>
-        <h:panelGroup
-            layout="block"
-            styleClass="content-component content-component__statistics-chart -width-100 statistics-chart statistics-chart--publication-types"
-            style="max-width: 800px;"
-            id="chart-publication-types">
-            <h2>#{msg.cms_component__chart_publication_types__label}</h2>
+        <ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
             <h:panelGroup
                 layout="block"
-                styleClass="statistics-chart__canvas-wrap">
-                <canvas id="canvas-publication-types" />
+                styleClass="content-component content-component__statistics-chart -width-100 statistics-chart statistics-chart--publication-types #{cc.attrs.hideOnScreenSizes} #{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} #{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''} #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}"
+                style="max-width: 800px;"
+                id="chart-publication-types">
+                <ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
+                    <div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
+                </ui:fragment>
+                <h2>#{msg.cms_component__chart_publication_types__label}</h2>
+                <h:panelGroup
+                    layout="block"
+                    styleClass="statistics-chart__canvas-wrap">
+                    <canvas id="canvas-publication-types" />
+                </h:panelGroup>
             </h:panelGroup>
-        </h:panelGroup>
 
-        <script type="text/javascript">
-            (function() {
-                viewerJS.statistics.charts.renderPublicationTypes(
-                    'canvas-publication-types',
-                    '#{request.contextPath}/api/v1/statistics/index/publication-types?lang=#{navigationHelper.localeString}',
-                    '#{request.contextPath}/search/'
-                );
-            })();
-        </script>
+            <script type="text/javascript">
+                (function() {
+                    viewerJS.statistics.charts.renderPublicationTypes(
+                        'canvas-publication-types',
+                        '#{request.contextPath}/api/v1/statistics/index/publication-types?lang=#{navigationHelper.localeString}',
+                        '#{request.contextPath}/search/'
+                    );
+                })();
+            </script>
+        </ui:fragment>
     </composite:implementation>
 </ui:composition>

@@ -10,28 +10,33 @@
     </composite:interface>
 
     <composite:implementation>
-        <h:panelGroup
-            layout="block"
-            styleClass="content-component content-component__statistics-chart -width-100 statistics-chart statistics-chart--import-summary"
-            style="max-width: 800px;"
-            id="chart-import-summary">
-            <h2>#{msg.cms_component__chart_import_summary__label}</h2>
+        <ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
             <h:panelGroup
                 layout="block"
-                styleClass="statistics-chart__canvas-wrap">
-                <canvas id="canvas-import-summary" />
+                styleClass="content-component content-component__statistics-chart -width-100 statistics-chart statistics-chart--import-summary #{cc.attrs.hideOnScreenSizes} #{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} #{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''} #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}"
+                style="max-width: 800px;"
+                id="chart-import-summary">
+                <ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
+                    <div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
+                </ui:fragment>
+                <h2>#{msg.cms_component__chart_import_summary__label}</h2>
+                <h:panelGroup
+                    layout="block"
+                    styleClass="statistics-chart__canvas-wrap">
+                    <canvas id="canvas-import-summary" />
+                </h:panelGroup>
             </h:panelGroup>
-        </h:panelGroup>
 
-        <script type="text/javascript">
-            (function() {
-                viewerJS.statistics.charts.renderImportSummary(
-                    'canvas-import-summary',
-                    '#{request.contextPath}/api/v1/statistics/index/imports-summary',
-                    '#{msg.statistics_importedPages}',
-                    '#{msg.statistics_importedFullTexts}'
-                );
-            })();
-        </script>
+            <script type="text/javascript">
+                (function() {
+                    viewerJS.statistics.charts.renderImportSummary(
+                        'canvas-import-summary',
+                        '#{request.contextPath}/api/v1/statistics/index/imports-summary',
+                        '#{msg.statistics_importedPages}',
+                        '#{msg.statistics_importedFullTexts}'
+                    );
+                })();
+            </script>
+        </ui:fragment>
     </composite:implementation>
 </ui:composition>
