@@ -55,7 +55,8 @@
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { position: 'bottom' },
+                    // Legend on the right so docstruct labels sit next to the pie instead of below it.
+                    legend: { position: 'right' },
                     tooltip: {
                         callbacks: {
                             label: function (item) {
