@@ -35,8 +35,11 @@ import java.util.Locale;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import io.goobi.viewer.api.rest.model.statistics.index.CollectionStatistic;
 import io.goobi.viewer.api.rest.model.statistics.index.ImportSummary;
 import io.goobi.viewer.api.rest.model.statistics.index.ImportTrendBucket;
+import io.goobi.viewer.api.rest.model.statistics.index.LanguageStatistic;
+import io.goobi.viewer.api.rest.model.statistics.index.PublicationCenturyStatistic;
 import io.goobi.viewer.api.rest.model.statistics.index.PublicationTypeStatistic;
 import io.goobi.viewer.model.statistics.index.IndexStatisticsService;
 import io.goobi.viewer.model.statistics.index.StatisticsUnavailableException;
@@ -215,5 +218,152 @@ class IndexStatisticsResourceTest {
         res.getImportSummary("DC:test");
 
         assertEquals("DC:test", filterCaptor.getValue());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getPublicationCenturies(String)
+     * @verifies return service result with cache control header
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    void getPublicationCenturies_shouldReturnServiceResult() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getPublicationCenturies(any()))
+                .thenReturn(List.of(new PublicationCenturyStatistic(19, 100)));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        Response response = res.getPublicationCenturies(null);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(1, ((List<PublicationCenturyStatistic>) response.getEntity()).size());
+        assertNotNull(response.getHeaderString("Cache-Control"));
+    }
+
+    /**
+     * @see IndexStatisticsResource#getPublicationCenturies(String)
+     * @verifies return 503 when service throws StatisticsUnavailableException
+     */
+    @Test
+    void getPublicationCenturies_shouldReturn503WhenServiceThrowsStatisticsUnavailableException() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getPublicationCenturies(any()))
+                .thenThrow(new StatisticsUnavailableException("solr down", new RuntimeException("x")));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        assertEquals(503, res.getPublicationCenturies(null).getStatus());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getPublicationCenturies(String)
+     * @verifies forward filter query parameter to service
+     */
+    @Test
+    void getPublicationCenturies_shouldForwardFilterQueryParameterToService() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        ArgumentCaptor<String> filterCaptor = ArgumentCaptor.forClass(String.class);
+        when(svc.getPublicationCenturies(filterCaptor.capture())).thenReturn(List.of());
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        res.getPublicationCenturies("DC:zeitschriften");
+
+        assertEquals("DC:zeitschriften", filterCaptor.getValue());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getLanguages(String, String)
+     * @verifies return service result with cache control header
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    void getLanguages_shouldReturnServiceResult() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getLanguages(any(), any()))
+                .thenReturn(List.of(new LanguageStatistic("en", "English", 50)));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        Response response = res.getLanguages(null, null);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(1, ((List<LanguageStatistic>) response.getEntity()).size());
+        assertNotNull(response.getHeaderString("Cache-Control"));
+    }
+
+    /**
+     * @see IndexStatisticsResource#getLanguages(String, String)
+     * @verifies return 503 when service throws StatisticsUnavailableException
+     */
+    @Test
+    void getLanguages_shouldReturn503WhenServiceThrowsStatisticsUnavailableException() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getLanguages(any(), any()))
+                .thenThrow(new StatisticsUnavailableException("solr down", new RuntimeException("x")));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        assertEquals(503, res.getLanguages(null, null).getStatus());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getLanguages(String, String)
+     * @verifies forward filter query parameter to service
+     */
+    @Test
+    void getLanguages_shouldForwardFilterQueryParameterToService() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        ArgumentCaptor<String> filterCaptor = ArgumentCaptor.forClass(String.class);
+        when(svc.getLanguages(any(), filterCaptor.capture())).thenReturn(List.of());
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        res.getLanguages("de", "DC:bilder");
+
+        assertEquals("DC:bilder", filterCaptor.getValue());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getTopCollections(int, String, String)
+     * @verifies return service result with cache control header
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    void getTopCollections_shouldReturnServiceResult() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getTopCollections(eq(10), any(), any()))
+                .thenReturn(List.of(new CollectionStatistic("col1", "Coll. 1", 7)));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        Response response = res.getTopCollections(10, null, null);
+
+        assertEquals(200, response.getStatus());
+        assertEquals(1, ((List<CollectionStatistic>) response.getEntity()).size());
+        assertNotNull(response.getHeaderString("Cache-Control"));
+    }
+
+    /**
+     * @see IndexStatisticsResource#getTopCollections(int, String, String)
+     * @verifies return 503 when service throws StatisticsUnavailableException
+     */
+    @Test
+    void getTopCollections_shouldReturn503WhenServiceThrowsStatisticsUnavailableException() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        when(svc.getTopCollections(eq(10), any(), any()))
+                .thenThrow(new StatisticsUnavailableException("solr down", new RuntimeException("x")));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        assertEquals(503, res.getTopCollections(10, null, null).getStatus());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getTopCollections(int, String, String)
+     * @verifies forward filter query parameter to service
+     */
+    @Test
+    void getTopCollections_shouldForwardFilterQueryParameterToService() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        ArgumentCaptor<String> filterCaptor = ArgumentCaptor.forClass(String.class);
+        when(svc.getTopCollections(eq(10), any(), filterCaptor.capture())).thenReturn(List.of());
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        res.getTopCollections(10, "de", "DC:zeitschriften");
+
+        assertEquals("DC:zeitschriften", filterCaptor.getValue());
     }
 }

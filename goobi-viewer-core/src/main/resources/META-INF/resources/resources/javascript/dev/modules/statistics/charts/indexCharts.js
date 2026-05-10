@@ -54,10 +54,23 @@
         return resp.json();
     }
 
+    /**
+     * Tear down any pre-existing Chart.js instance bound to {@code canvas}. JSF re-renders the CMS page (and any
+     * f:ajax-driven update on a parent) cause our composite scripts to run again on the same canvas; without this,
+     * Chart.js throws "Canvas is already in use". Idempotent — no-op if no chart is bound yet.
+     */
+    function destroyExistingChart(canvas) {
+        if (typeof Chart !== 'undefined' && Chart.getChart) {
+            const existing = Chart.getChart(canvas);
+            if (existing) existing.destroy();
+        }
+    }
+
     async function renderPublicationTypes(canvasId, endpointUrl, searchBaseUrl, filter) {
         const data = await fetchJson(endpointUrl);
         const ctx = document.getElementById(canvasId);
         if (!ctx) return;
+        destroyExistingChart(ctx);
         // queries piggy-back on the dataset for click-through; consumed by the onClick handler below.
         new Chart(ctx, {
             type: 'pie',
@@ -118,6 +131,7 @@
         const sorted = data.slice().sort(function (a, b) {
             return a.timestamp - b.timestamp;
         });
+        destroyExistingChart(ctx);
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -155,6 +169,7 @@
         const data = await fetchJson(endpointUrl);
         const ctx = document.getElementById(canvasId);
         if (!ctx) return;
+        destroyExistingChart(ctx);
         new Chart(ctx, {
             type: 'bar',
             data: {
@@ -177,10 +192,113 @@
         });
     }
 
+    async function renderPublicationCenturies(canvasId, endpointUrl) {
+        const data = await fetchJson(endpointUrl);
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return;
+        // X-axis labels are formatted client-side as "{century}. Jh." — see the plan footnote about pushing this
+        // to the server if locale-specific formatting becomes important.
+        const labels = data.map(function (d) {
+            return d.century + '. Jh.';
+        });
+        destroyExistingChart(ctx);
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        data: data.map(function (d) {
+                            return d.count;
+                        }),
+                        backgroundColor: paletteColors(data.length),
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+            },
+        });
+    }
+
+    async function renderLanguages(canvasId, endpointUrl) {
+        const data = await fetchJson(endpointUrl);
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return;
+        destroyExistingChart(ctx);
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.map(function (d) {
+                    return d.label;
+                }),
+                datasets: [
+                    {
+                        data: data.map(function (d) {
+                            return d.count;
+                        }),
+                        backgroundColor: paletteColors(data.length),
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+            },
+        });
+    }
+
+    async function renderTopCollections(canvasId, endpointUrl, browseBaseUrl) {
+        const data = await fetchJson(endpointUrl);
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return;
+        destroyExistingChart(ctx);
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(function (d) {
+                    return d.label;
+                }),
+                datasets: [
+                    {
+                        data: data.map(function (d) {
+                            return d.count;
+                        }),
+                        // queries piggy-back on the dataset for click-through; consumed by onClick below.
+                        names: data.map(function (d) {
+                            return d.name;
+                        }),
+                        backgroundColor: paletteColors(data.length),
+                    },
+                ],
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                onClick: function (evt, elements) {
+                    if (!elements.length || !browseBaseUrl) return;
+                    const idx = elements[0].index;
+                    const name = data[idx].name;
+                    // Pretty-config browse mapping: /browse/{collection}/{search}/{page}/{sort}/{activeFacets}/.
+                    // The DC token belongs in the activeFacets slot, not the search slot.
+                    window.location.href = browseBaseUrl + '-/-/1/-/' + encodeURIComponent('DC:' + name) + '/';
+                },
+            },
+        });
+    }
+
     const ns = ensureNamespace();
     if (ns) {
         ns.renderPublicationTypes = renderPublicationTypes;
         ns.renderImportTrend = renderImportTrend;
         ns.renderImportSummary = renderImportSummary;
+        ns.renderPublicationCenturies = renderPublicationCenturies;
+        ns.renderLanguages = renderLanguages;
+        ns.renderTopCollections = renderTopCollections;
     }
 })();

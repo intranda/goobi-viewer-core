@@ -156,6 +156,73 @@ public class IndexStatisticsResource {
         }
     }
 
+    /**
+     * Histogram of works by publication century.
+     *
+     * @param filter optional Lucene sub-query forwarded from the CMS-admin filter input.
+     * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
+     * @should return service result with cache control header
+     * @should return 503 when service throws StatisticsUnavailableException
+     * @should forward filter query parameter to service
+     */
+    @GET
+    @Path("/publication-centuries")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getPublicationCenturies(@QueryParam("filter") String filter) {
+        try {
+            return ok(service.getPublicationCenturies(filter));
+        } catch (StatisticsUnavailableException e) {
+            return unavailable(e);
+        }
+    }
+
+    /**
+     * Distribution of works by language with locale-translated labels.
+     *
+     * @param lang IETF BCP 47 language tag for label translation; typically supplied by the composite as
+     *            {@code #{navigationHelper.localeString}}.
+     * @param filter optional Lucene sub-query forwarded from the CMS-admin filter input.
+     * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
+     * @should return service result with cache control header
+     * @should return 503 when service throws StatisticsUnavailableException
+     * @should forward filter query parameter to service
+     */
+    @GET
+    @Path("/languages")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getLanguages(@QueryParam("lang") String lang, @QueryParam("filter") String filter) {
+        try {
+            return ok(service.getLanguages(resolveLocale(lang), filter));
+        } catch (StatisticsUnavailableException e) {
+            return unavailable(e);
+        }
+    }
+
+    /**
+     * Top {@code size} collections by record count, with locale-translated labels.
+     *
+     * @param size maximum number of collections to return
+     * @param lang IETF BCP 47 language tag for label translation
+     * @param filter optional Lucene sub-query forwarded from the CMS-admin filter input.
+     * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
+     * @should return service result with cache control header
+     * @should return 503 when service throws StatisticsUnavailableException
+     * @should forward filter query parameter to service
+     */
+    @GET
+    @Path("/top-collections")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTopCollections(
+            @QueryParam("size") @DefaultValue("10") int size,
+            @QueryParam("lang") String lang,
+            @QueryParam("filter") String filter) {
+        try {
+            return ok(service.getTopCollections(size, resolveLocale(lang), filter));
+        } catch (StatisticsUnavailableException e) {
+            return unavailable(e);
+        }
+    }
+
     private Response ok(Object body) {
         CacheControl cc = new CacheControl();
         cc.setMaxAge(CACHE_MAX_AGE_SECONDS);

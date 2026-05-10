@@ -41,8 +41,11 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.api.rest.model.statistics.index.CollectionStatistic;
 import io.goobi.viewer.api.rest.model.statistics.index.ImportSummary;
 import io.goobi.viewer.api.rest.model.statistics.index.ImportTrendBucket;
+import io.goobi.viewer.api.rest.model.statistics.index.LanguageStatistic;
+import io.goobi.viewer.api.rest.model.statistics.index.PublicationCenturyStatistic;
 import io.goobi.viewer.api.rest.model.statistics.index.PublicationTypeStatistic;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -252,5 +255,196 @@ class IndexStatisticsServiceTest extends AbstractTest {
         IndexStatisticsService svc = new IndexStatisticsService(index);
 
         assertThrows(StatisticsUnavailableException.class, () -> svc.getImportSummary(null));
+    }
+
+    /**
+     * @see IndexStatisticsService#getPublicationCenturies(String)
+     * @verifies bucket years into centuries
+     * @verifies sort centuries chronologically
+     * @verifies drop pre-modern centuries
+     */
+    @Test
+    void getPublicationCenturies_shouldBucketYearsIntoCenturiesAndSortChronologicallyAndDropPreModern() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        QueryResponse resp = mock(QueryResponse.class);
+        FacetField field = mock(FacetField.class);
+        // Sample years: 1873 + 1899 → century 18 (count 5); 1900 → century 19 (count 1); 2010 → century 20 (count 2);
+        // -50 (BCE) and "" (empty) must be dropped.
+        FacetField.Count y1873 = new FacetField.Count(field, "1873", 3);
+        FacetField.Count y1899 = new FacetField.Count(field, "1899", 2);
+        FacetField.Count y1900 = new FacetField.Count(field, "1900", 1);
+        FacetField.Count y2010 = new FacetField.Count(field, "2010", 2);
+        FacetField.Count yBCE = new FacetField.Count(field, "-50", 9);
+        FacetField.Count yEmpty = new FacetField.Count(field, "", 4);
+        when(field.getValues()).thenReturn(Arrays.asList(y1873, y1899, y1900, y2010, yBCE, yEmpty));
+        when(resp.getFacetField("SORTNUM_YEAR")).thenReturn(field);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any())).thenReturn(resp);
+
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+        List<PublicationCenturyStatistic> result = svc.getPublicationCenturies(null);
+
+        // Three buckets: 18 (1800–1899), 19 (1900–1999), 20 (2000–2099). BCE and empty are dropped.
+        assertEquals(3, result.size());
+        assertEquals(18, result.get(0).century());
+        assertEquals(5L, result.get(0).count());
+        assertEquals(19, result.get(1).century());
+        assertEquals(1L, result.get(1).count());
+        assertEquals(20, result.get(2).century());
+        assertEquals(2L, result.get(2).count());
+    }
+
+    /**
+     * @see IndexStatisticsService#getPublicationCenturies(String)
+     * @verifies append filter to solr query when non-blank
+     */
+    @Test
+    void getPublicationCenturies_shouldAppendFilterToSolrQueryWhenNonBlank() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        QueryResponse resp = mock(QueryResponse.class);
+        FacetField field = mock(FacetField.class);
+        when(field.getValues()).thenReturn(Collections.emptyList());
+        when(resp.getFacetField("SORTNUM_YEAR")).thenReturn(field);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any())).thenReturn(resp);
+
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+        svc.getPublicationCenturies("DC:zeitschriften");
+
+        verify(index).search(argThat(q -> q != null && q.contains(" +(DC:zeitschriften)")),
+                eq(0), eq(0), isNull(), any(), any(), any(), isNull(), isNull());
+    }
+
+    /**
+     * @see IndexStatisticsService#getPublicationCenturies(String)
+     * @verifies throw StatisticsUnavailableException on solr error if no cache
+     */
+    @Test
+    void getPublicationCenturies_shouldThrowStatisticsUnavailableExceptionOnSolrErrorIfNoCache() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any()))
+                .thenThrow(new IndexUnreachableException("solr down"));
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+
+        assertThrows(StatisticsUnavailableException.class, () -> svc.getPublicationCenturies(null));
+    }
+
+    /**
+     * @see IndexStatisticsService#getLanguages(java.util.Locale, String)
+     * @verifies translate language codes via resource bundle
+     * @verifies fall back to raw code when language translation is missing
+     */
+    @Test
+    void getLanguages_shouldTranslateLanguageCodesViaResourceBundle() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        QueryResponse resp = mock(QueryResponse.class);
+        FacetField field = mock(FacetField.class);
+        // "en" exists in messages_en.properties as en=English; "xyz" has no translation and the bundle echoes the key.
+        FacetField.Count en = new FacetField.Count(field, "en", 100);
+        FacetField.Count xyz = new FacetField.Count(field, "xyz", 5);
+        when(field.getValues()).thenReturn(Arrays.asList(en, xyz));
+        when(resp.getFacetField("FACET_LANGUAGE")).thenReturn(field);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any())).thenReturn(resp);
+
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+        List<LanguageStatistic> result = svc.getLanguages(java.util.Locale.ENGLISH, null);
+
+        assertEquals(2, result.size());
+        assertEquals("en", result.get(0).code());
+        assertEquals("English", result.get(0).label());
+        // For unknown codes, ViewerResourceBundle.getTranslation echoes the key — that's the raw-code fallback.
+        assertEquals("xyz", result.get(1).code());
+        assertEquals("xyz", result.get(1).label());
+    }
+
+    /**
+     * @see IndexStatisticsService#getLanguages(java.util.Locale, String)
+     * @verifies append filter to solr query when non-blank
+     */
+    @Test
+    void getLanguages_shouldAppendFilterToSolrQueryWhenNonBlank() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        QueryResponse resp = mock(QueryResponse.class);
+        FacetField field = mock(FacetField.class);
+        when(field.getValues()).thenReturn(Collections.emptyList());
+        when(resp.getFacetField("FACET_LANGUAGE")).thenReturn(field);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any())).thenReturn(resp);
+
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+        svc.getLanguages(null, "DC:bilder");
+
+        verify(index).search(argThat(q -> q != null && q.contains(" +(DC:bilder)")),
+                eq(0), eq(0), isNull(), any(), any(), any(), isNull(), isNull());
+    }
+
+    /**
+     * @see IndexStatisticsService#getLanguages(java.util.Locale, String)
+     * @verifies throw StatisticsUnavailableException on solr error if no cache
+     */
+    @Test
+    void getLanguages_shouldThrowStatisticsUnavailableExceptionOnSolrErrorIfNoCache() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any()))
+                .thenThrow(new IndexUnreachableException("solr down"));
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+
+        assertThrows(StatisticsUnavailableException.class, () -> svc.getLanguages(null, null));
+    }
+
+    /**
+     * @see IndexStatisticsService#getTopCollections(int, java.util.Locale, String)
+     * @verifies limit collections to requested size
+     */
+    @Test
+    void getTopCollections_shouldLimitCollectionsToRequestedSize() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        QueryResponse resp = mock(QueryResponse.class);
+        FacetField field = mock(FacetField.class);
+        when(field.getValues()).thenReturn(Collections.emptyList());
+        when(resp.getFacetField("DC")).thenReturn(field);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any())).thenReturn(resp);
+
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+        svc.getTopCollections(5, null, null);
+
+        // The 9th argument (params) must carry facet.limit=5; without that override SolrSearchIndex's hardcoded
+        // setFacetLimit(-1) returns ALL DC values and the size parameter is silently ignored.
+        verify(index).search(any(), eq(0), eq(0), isNull(), any(), any(), any(), isNull(),
+                argThat((java.util.Map<String, String> p) -> p != null && "5".equals(p.get("facet.limit"))));
+    }
+
+    /**
+     * @see IndexStatisticsService#getTopCollections(int, java.util.Locale, String)
+     * @verifies append filter to solr query when non-blank
+     */
+    @Test
+    void getTopCollections_shouldAppendFilterToSolrQueryWhenNonBlank() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        QueryResponse resp = mock(QueryResponse.class);
+        FacetField field = mock(FacetField.class);
+        FacetField.Count dc = new FacetField.Count(field, "newspapers", 42);
+        when(field.getValues()).thenReturn(Arrays.asList(dc));
+        when(resp.getFacetField("DC")).thenReturn(field);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any())).thenReturn(resp);
+
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+        List<CollectionStatistic> result = svc.getTopCollections(10, null, "DC:zeitschriften");
+
+        assertEquals(1, result.size());
+        assertEquals("newspapers", result.get(0).name());
+        verify(index).search(argThat(q -> q != null && q.contains(" +(DC:zeitschriften)")),
+                eq(0), eq(0), isNull(), any(), any(), any(), isNull(), any());
+    }
+
+    /**
+     * @see IndexStatisticsService#getTopCollections(int, java.util.Locale, String)
+     * @verifies throw StatisticsUnavailableException on solr error if no cache
+     */
+    @Test
+    void getTopCollections_shouldThrowStatisticsUnavailableExceptionOnSolrErrorIfNoCache() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any()))
+                .thenThrow(new IndexUnreachableException("solr down"));
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+
+        assertThrows(StatisticsUnavailableException.class, () -> svc.getTopCollections(10, null, null));
     }
 }

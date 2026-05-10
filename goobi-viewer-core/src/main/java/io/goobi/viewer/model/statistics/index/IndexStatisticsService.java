@@ -36,8 +36,11 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
+import io.goobi.viewer.api.rest.model.statistics.index.CollectionStatistic;
 import io.goobi.viewer.api.rest.model.statistics.index.ImportSummary;
 import io.goobi.viewer.api.rest.model.statistics.index.ImportTrendBucket;
+import io.goobi.viewer.api.rest.model.statistics.index.LanguageStatistic;
+import io.goobi.viewer.api.rest.model.statistics.index.PublicationCenturyStatistic;
 import io.goobi.viewer.api.rest.model.statistics.index.PublicationTypeStatistic;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -72,6 +75,11 @@ public class IndexStatisticsService {
     private final Map<String, CachedSnapshot<List<PublicationTypeStatistic>>> publicationTypesCachePerLocale = new ConcurrentHashMap<>();
     private final Map<String, CachedTrend> importTrendCache = new ConcurrentHashMap<>();
     private final Map<String, CachedSnapshot<ImportSummary>> importSummaryCache = new ConcurrentHashMap<>();
+    // Centuries: keyed by filter only (no locale-specific labels — the JS renderer formats the X-axis tick).
+    private final Map<String, CachedSnapshot<List<PublicationCenturyStatistic>>> publicationCenturiesCache = new ConcurrentHashMap<>();
+    // Languages and top-collections both translate labels server-side, so the cache key includes the locale tag.
+    private final Map<String, CachedSnapshot<List<LanguageStatistic>>> languagesCache = new ConcurrentHashMap<>();
+    private final Map<String, CachedSnapshot<List<CollectionStatistic>>> topCollectionsCache = new ConcurrentHashMap<>();
 
     public IndexStatisticsService() {
         this(DataManager.getInstance().getSearchIndex());
@@ -267,6 +275,174 @@ public class IndexStatisticsService {
                 return snap.getValue();
             }
             throw new StatisticsUnavailableException("Solr query for import summary failed", e);
+        }
+    }
+
+    /**
+     * Histogram of works by publication century (e.g. century 18 = 1800–1899). Pre-modern centuries are dropped.
+     *
+     * @param filter optional Lucene sub-query to constrain the histogram; wrapped in MUST so it can only narrow.
+     * @return DTOs ordered chronologically (oldest century first), never null
+     * @throws StatisticsUnavailableException if Solr is unreachable and no cached snapshot exists for this filter
+     * @should bucket years into centuries
+     * @should sort centuries chronologically
+     * @should drop pre-modern centuries
+     * @should append filter to solr query when non-blank
+     * @should treat null and empty filter as same cache slot
+     * @should return cached snapshot on solr error if cache available
+     * @should throw StatisticsUnavailableException on solr error if no cache
+     */
+    public List<PublicationCenturyStatistic> getPublicationCenturies(String filter) throws StatisticsUnavailableException {
+        String key = cacheKey(filter);
+        CachedSnapshot<List<PublicationCenturyStatistic>> snap = publicationCenturiesCache.get(key);
+        if (snap != null && snap.isFresh(CACHE_TTL_MS)) {
+            return snap.getValue();
+        }
+        try {
+            String query = "+" + SolrConstants.PI + ":*"
+                    + " +(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true)"
+                    + appendFilter(filter)
+                    + SearchHelper.getAllSuffixes();
+            QueryResponse resp = searchIndex.search(query, 0, 0, null,
+                    Collections.singletonList(SolrConstants.SORTNUM_YEAR), "count",
+                    Collections.singletonList(SolrConstants.SORTNUM_YEAR), null, null);
+            // Group facet rows by floor-divided century. Empty values, BCE/garbage years and pre-modern centuries are
+            // dropped — the chart targets the modern publishing record and the X-axis label "-1. Jh." reads oddly.
+            Map<Integer, Long> byCentury = new java.util.TreeMap<>();
+            if (resp != null && resp.getFacetField(SolrConstants.SORTNUM_YEAR) != null
+                    && resp.getFacetField(SolrConstants.SORTNUM_YEAR).getValues() != null) {
+                for (Count c : resp.getFacetField(SolrConstants.SORTNUM_YEAR).getValues()) {
+                    int year;
+                    try {
+                        year = Integer.parseInt(c.getName());
+                    } catch (NumberFormatException e) {
+                        // Empty or non-numeric — ignore.
+                        continue;
+                    }
+                    int century = Math.floorDiv(year, 100);
+                    if (century < 0) {
+                        continue;
+                    }
+                    byCentury.merge(century, c.getCount(), Long::sum);
+                }
+            }
+            List<PublicationCenturyStatistic> out = new ArrayList<>(byCentury.size());
+            for (Map.Entry<Integer, Long> e : byCentury.entrySet()) {
+                out.add(new PublicationCenturyStatistic(e.getKey(), e.getValue()));
+            }
+            publicationCenturiesCache.put(key, new CachedSnapshot<>(out, System.currentTimeMillis()));
+            return out;
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Solr query for publication centuries failed; will serve cache if available: {}", e.getMessage());
+            if (snap != null) {
+                return snap.getValue();
+            }
+            throw new StatisticsUnavailableException("Solr query for publication centuries failed", e);
+        }
+    }
+
+    /**
+     * Distribution of works by language with locale-translated display names.
+     *
+     * @param locale the user's locale for label translation; falls back to default if null
+     * @param filter optional Lucene sub-query to constrain the distribution; wrapped in MUST.
+     * @return DTOs in Solr's facet order (by count, descending), never null
+     * @throws StatisticsUnavailableException if Solr is unreachable and no cached snapshot exists
+     * @should translate language codes via resource bundle
+     * @should fall back to raw code when language translation is missing
+     * @should append filter to solr query when non-blank
+     * @should treat null and empty filter as same cache slot
+     * @should throw StatisticsUnavailableException on solr error if no cache
+     */
+    public List<LanguageStatistic> getLanguages(Locale locale, String filter) throws StatisticsUnavailableException {
+        String key = (locale != null ? locale.toLanguageTag() : "") + " " + cacheKey(filter);
+        CachedSnapshot<List<LanguageStatistic>> snap = languagesCache.get(key);
+        if (snap != null && snap.isFresh(CACHE_TTL_MS)) {
+            return snap.getValue();
+        }
+        try {
+            String query = "+" + SolrConstants.PI + ":*"
+                    + " +(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true)"
+                    + appendFilter(filter)
+                    + SearchHelper.getAllSuffixes();
+            // FACET_LANGUAGE is the indexer's facet-enabled twin of MD_LANGUAGE — same convention as FACET_DC for
+            // collections (see SolrConstants.FACET_DC). The bare "LANGUAGE" / "MD_LANGUAGE" fields are stored but
+            // not necessarily docValues-enabled, so faceting on them comes back empty on real instances.
+            String facetField = "FACET_LANGUAGE";
+            QueryResponse resp = searchIndex.search(query, 0, 0, null,
+                    Collections.singletonList(facetField), "count",
+                    Collections.singletonList(facetField), null, null);
+            List<LanguageStatistic> out = new ArrayList<>();
+            if (resp != null && resp.getFacetField(facetField) != null
+                    && resp.getFacetField(facetField).getValues() != null) {
+                for (Count c : resp.getFacetField(facetField).getValues()) {
+                    String code = c.getName();
+                    // The viewer's message bundles use the bare ISO code as the resource-bundle key (e.g. en=English).
+                    // ViewerResourceBundle.getTranslation echoes the key back when no translation is found, which is
+                    // exactly the raw-code fallback we want for unknown languages.
+                    String label = ViewerResourceBundle.getTranslation(code, locale);
+                    out.add(new LanguageStatistic(code, label, c.getCount()));
+                }
+            }
+            languagesCache.put(key, new CachedSnapshot<>(out, System.currentTimeMillis()));
+            return out;
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Solr query for languages failed; will serve cache if available: {}", e.getMessage());
+            if (snap != null) {
+                return snap.getValue();
+            }
+            throw new StatisticsUnavailableException("Solr query for languages failed", e);
+        }
+    }
+
+    /**
+     * Top {@code size} collections by record count, with locale-translated labels.
+     *
+     * @param size maximum number of collections to return
+     * @param locale the user's locale for label translation; falls back to default if null
+     * @param filter optional Lucene sub-query to constrain the collections; wrapped in MUST.
+     * @return DTOs in Solr's facet order (by count, descending), never null
+     * @throws StatisticsUnavailableException if Solr is unreachable and no cached snapshot exists
+     * @should limit collections to requested size
+     * @should translate collection names via resource bundle
+     * @should append filter to solr query when non-blank
+     * @should use separate cache slot per size
+     * @should throw StatisticsUnavailableException on solr error if no cache
+     */
+    public List<CollectionStatistic> getTopCollections(int size, Locale locale, String filter) throws StatisticsUnavailableException {
+        String key = size + " " + (locale != null ? locale.toLanguageTag() : "") + " " + cacheKey(filter);
+        CachedSnapshot<List<CollectionStatistic>> snap = topCollectionsCache.get(key);
+        if (snap != null && snap.isFresh(CACHE_TTL_MS)) {
+            return snap.getValue();
+        }
+        try {
+            String query = "+" + SolrConstants.PI + ":*"
+                    + " +(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true)"
+                    + appendFilter(filter)
+                    + SearchHelper.getAllSuffixes();
+            // SolrSearchIndex.search hardcodes setFacetLimit(-1); the params map runs after that and overrides it,
+            // letting Solr return only the top {@code size} buckets directly instead of post-filtering in Java.
+            Map<String, String> params = Map.of("facet.limit", String.valueOf(size));
+            QueryResponse resp = searchIndex.search(query, 0, 0, null,
+                    Collections.singletonList(SolrConstants.DC), "count",
+                    Collections.singletonList(SolrConstants.DC), null, params);
+            List<CollectionStatistic> out = new ArrayList<>();
+            if (resp != null && resp.getFacetField(SolrConstants.DC) != null
+                    && resp.getFacetField(SolrConstants.DC).getValues() != null) {
+                for (Count c : resp.getFacetField(SolrConstants.DC).getValues()) {
+                    String name = c.getName();
+                    String label = ViewerResourceBundle.getTranslation(name, locale);
+                    out.add(new CollectionStatistic(name, label, c.getCount()));
+                }
+            }
+            topCollectionsCache.put(key, new CachedSnapshot<>(out, System.currentTimeMillis()));
+            return out;
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Solr query for top collections failed; will serve cache if available: {}", e.getMessage());
+            if (snap != null) {
+                return snap.getValue();
+            }
+            throw new StatisticsUnavailableException("Solr query for top collections failed", e);
         }
     }
 
