@@ -29,14 +29,20 @@
 
             <script type="text/javascript">
                 (function() {
+                    // Both filter and logarithmicScale come from the same CMSStatisticsFilterContent attached to the
+                    // "filter" item; the centuries-specific backend editor (statisticsFilterCenturies.xhtml) renders
+                    // the checkbox below the Solr-input so they're visually grouped. EL renders the boolean as the
+                    // string "true" / "false" (or empty when content is missing), hence the explicit comparison.
                     const filter = '#{cc.attrs.component.getContent("filter").filterQuery}';
+                    const logScale = '#{cc.attrs.component.getContent("filter").logarithmicScale}' === 'true';
                     const url = new URL('#{request.contextPath}/api/v1/statistics/index/publication-centuries', window.location.origin);
                     if (filter) {
                         url.searchParams.set('filter', filter);
                     }
                     viewerJS.statistics.charts.renderPublicationCenturies(
                         'canvas-publication-centuries',
-                        url.toString()
+                        url.toString(),
+                        logScale
                     );
                 })();
             </script>

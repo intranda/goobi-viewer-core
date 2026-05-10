@@ -24,6 +24,7 @@ package io.goobi.viewer.model.cms.pages.content.types;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,19 +35,24 @@ class CMSStatisticsFilterContentTest {
     /**
      * @see CMSStatisticsFilterContent#copy()
      * @verifies produce an independent copy with same filter query
+     * @verifies copy logarithmic scale flag
      */
     @Test
-    void copy_shouldProduceAnIndependentCopyWithSameFilterQuery() {
+    void copy_shouldProduceAnIndependentCopyWithSameFilterQueryAndLogarithmicScale() {
         CMSStatisticsFilterContent orig = new CMSStatisticsFilterContent();
         orig.setFilterQuery("DC:zeitschriften");
+        orig.setLogarithmicScale(true);
 
         CMSContent copy = orig.copy();
 
         assertNotSame(orig, copy);
         assertEquals("DC:zeitschriften", ((CMSStatisticsFilterContent) copy).getFilterQuery());
+        assertTrue(((CMSStatisticsFilterContent) copy).isLogarithmicScale());
         // Mutate the copy and verify the original is unaffected — guards against shared-state copies.
         ((CMSStatisticsFilterContent) copy).setFilterQuery("DC:other");
+        ((CMSStatisticsFilterContent) copy).setLogarithmicScale(false);
         assertEquals("DC:zeitschriften", orig.getFilterQuery());
+        assertTrue(orig.isLogarithmicScale());
     }
 
     /**

@@ -192,7 +192,7 @@
         });
     }
 
-    async function renderPublicationCenturies(canvasId, endpointUrl) {
+    async function renderPublicationCenturies(canvasId, endpointUrl, logarithmicScale) {
         const data = await fetchJson(endpointUrl);
         const ctx = document.getElementById(canvasId);
         if (!ctx) return;
@@ -219,6 +219,14 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
+                // Y-axis scale is admin-toggleable: log compresses the long-tail centuries when one bucket
+                // dominates (typical for periodicals over a few decades), linear is the default.
+                scales: {
+                    y: {
+                        type: logarithmicScale ? 'logarithmic' : 'linear',
+                        beginAtZero: !logarithmicScale,
+                    },
+                },
             },
         });
     }
@@ -229,7 +237,9 @@
         if (!ctx) return;
         destroyExistingChart(ctx);
         new Chart(ctx, {
-            type: 'pie',
+            // Doughnut instead of pie so the centre is empty and the side legend reads as the main key —
+            // most languages collapse to a long tail and the side legend is the readable layout.
+            type: 'doughnut',
             data: {
                 labels: data.map(function (d) {
                     return d.label;
@@ -246,7 +256,9 @@
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: { display: true, position: 'right' },
+                },
             },
         });
     }

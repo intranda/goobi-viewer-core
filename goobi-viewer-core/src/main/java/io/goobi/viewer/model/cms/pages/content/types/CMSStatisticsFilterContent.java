@@ -58,6 +58,14 @@ public class CMSStatisticsFilterContent extends CMSContent {
     @Column(name = "filter_query", columnDefinition = "LONGTEXT")
     private String filterQuery = "";
 
+    /**
+     * Used by the publication-centuries chart to switch its Y-axis between linear and logarithmic. Persisted on every
+     * {@code CMSStatisticsFilterContent} instance to keep the entity uniform; the languages and top-collections charts
+     * persist the field but ignore it (their backend editor doesn't even render the checkbox).
+     */
+    @Column(name = "logarithmic_scale")
+    private boolean logarithmicScale = false;
+
     public CMSStatisticsFilterContent() {
         super();
     }
@@ -65,6 +73,7 @@ public class CMSStatisticsFilterContent extends CMSContent {
     private CMSStatisticsFilterContent(CMSStatisticsFilterContent orig) {
         super(orig);
         this.filterQuery = orig.filterQuery;
+        this.logarithmicScale = orig.logarithmicScale;
     }
 
     @Override
@@ -87,6 +96,14 @@ public class CMSStatisticsFilterContent extends CMSContent {
 
     public void setFilterQuery(String filterQuery) {
         this.filterQuery = filterQuery;
+    }
+
+    public boolean isLogarithmicScale() {
+        return logarithmicScale;
+    }
+
+    public void setLogarithmicScale(boolean logarithmicScale) {
+        this.logarithmicScale = logarithmicScale;
     }
 
     @Override
