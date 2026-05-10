@@ -16,7 +16,11 @@
             style="max-width: 800px;"
             id="chart-import-summary">
             <h2>#{msg.cms_component__chart_import_summary__label}</h2>
-            <canvas id="canvas-import-summary" />
+            <h:panelGroup
+                layout="block"
+                styleClass="statistics-chart__canvas-wrap">
+                <canvas id="canvas-import-summary" />
+            </h:panelGroup>
         </h:panelGroup>
 
         <script type="text/javascript">

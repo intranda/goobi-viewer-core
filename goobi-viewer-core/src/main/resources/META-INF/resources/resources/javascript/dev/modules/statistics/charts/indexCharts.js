@@ -79,6 +79,11 @@
             },
             options: {
                 responsive: true,
+                // The composite places the canvas inside a flex wrapper that already reserves the
+                // remaining space below the heading. With maintainAspectRatio Chart.js would force
+                // a 1:1 box and bleed past the container; letting the wrapper drive the size keeps
+                // the canvas inside the framed box.
+                maintainAspectRatio: false,
                 plugins: {
                     // No legend — docstruct labels are visible via tooltip on hover, and the user
                     // requested a clean pie without the side-list.
@@ -129,6 +134,8 @@
             },
             options: {
                 responsive: true,
+                // Wrapper-driven sizing — see the publication-types renderer above.
+                maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
                     x: {
@@ -159,6 +166,8 @@
             },
             options: {
                 responsive: true,
+                // Wrapper-driven sizing — see the publication-types renderer above.
+                maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
             },
         });

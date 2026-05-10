@@ -16,6 +16,10 @@
     // Chart.js renders inside an 800x400 default canvas; cap the wrapper at the same width
     // so the chart and its surrounding box (heading, etc.) don't stretch past it.
     max-width: 800px;
+    // Stack the heading and the canvas wrapper vertically; the wrapper takes the remaining
+    // height via flex:1 so the canvas can never overflow the framed box.
+    display: flex;
+    flex-direction: column;
 
     canvas {
         max-width: 100%;
@@ -24,6 +28,15 @@
 
     h2 {
         margin-bottom: 0.5rem;
+    }
+
+    // Holds the canvas. Chart.js with maintainAspectRatio:false sizes the canvas to its parent,
+    // so this wrapper is what defines the available area below the heading.
+    &__canvas-wrap {
+        flex: 1 1 auto;
+        min-height: 0; // required so the wrapper can actually shrink inside the flex parent
+        position: relative; // Chart.js needs a positioned ancestor for correct resizing
+        width: 100%;
     }
 }
 

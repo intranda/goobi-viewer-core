@@ -16,7 +16,11 @@
             style="max-width: 800px;"
             id="chart-import-trend">
             <h2>#{msg.cms_component__chart_import_trend__label}</h2>
-            <canvas id="canvas-import-trend" />
+            <h:panelGroup
+                layout="block"
+                styleClass="statistics-chart__canvas-wrap">
+                <canvas id="canvas-import-trend" />
+            </h:panelGroup>
         </h:panelGroup>
 
         <script type="text/javascript">
