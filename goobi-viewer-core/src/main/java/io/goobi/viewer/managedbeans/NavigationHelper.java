@@ -486,15 +486,6 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * setCurrentPageStatistics.
-     */
-    public void setCurrentPageStatistics() {
-        setCurrentPage("statistics", true, true);
-        breadcrumbBean.updateBreadcrumbs(new LabeledLink("statistics", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/statistics/",
-                BreadcrumbBean.WEIGHT_TAG_MAIN_MENU));
-    }
-
-    /**
      * Sets the current page to a crowdsourcing annotation page with the given campaign as parent and the given pi as current identifier.
      *
      * @param campaign crowdsourcing campaign to use as breadcrumb parent

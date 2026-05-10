@@ -24,17 +24,11 @@ package io.goobi.viewer.managedbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,8 +39,6 @@ import jakarta.ws.rs.WebApplicationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,21 +48,15 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.ApplicationInfo;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ApplicationResource;
 import io.goobi.viewer.Version;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.JsonTools;
-import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.statistics.usage.StatisticsLuceneFields;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummary;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummaryBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummaryFilter;
 import io.goobi.viewer.model.viewer.StringPair;
-import io.goobi.viewer.solr.SolrConstants;
-import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * Bean for the statistics page.
@@ -83,212 +69,11 @@ public class StatisticsBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(StatisticsBean.class);
 
-    /** Constant <code>SEPARATOR="::"</code>. */
-    public static final String SEPARATOR = "::";
-    private static final int DAY_MS = 86400000;
-
-    private Map<String, Long> lastUpdateMap = new HashMap<>();
-    private transient Map<String, Object> valueMap = new HashMap<>();
     private transient Map<String, StatisticsSummary> recordUsageStatisticsMap = new ConcurrentHashMap<>();
 
-    /**
-     * getImportedRecordsTrend.
-     *
-     * @param days total number of days covered by the trend
-     * @param dataPoints number of data points to plot
-     * @return a list of "timestamp;count" strings representing the record import trend over the given period
-     */
-    public List<String> getImportedRecordsTrend(final int days, final int dataPoints) {
-        logger.debug("getImportedRecordsTrend start");
-
-        List<Integer> countList = new ArrayList<>();
-        List<String> dateList = new ArrayList<>();
-        // Facetting
-        try {
-            QueryResponse resp = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(new StringBuilder("+").append(SolrConstants.PI).append(":*").append(SearchHelper.getAllSuffixes()).toString(), 0, 0, null,
-                            Collections.singletonList(SolrConstants.DATECREATED), "count", Collections.singletonList(SolrConstants.DATECREATED), null,
-                            null);
-            if (resp != null && resp.getFacetField(SolrConstants.DATECREATED) != null
-                    && resp.getFacetField(SolrConstants.DATECREATED).getValues() != null) {
-                List<Count> counts = resp.getFacetField(SolrConstants.DATECREATED).getValues();
-                countList = new ArrayList<>(counts.size() + dataPoints + 1);
-                dateList = new ArrayList<>(counts.size());
-                for (Count count : counts) {
-                    String name = ViewerResourceBundle.getTranslation(count.getName(), null);
-                    dateList.add(name);
-                }
-            }
-        } catch (PresentationException e) {
-            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-            return Collections.emptyList();
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-            return Collections.emptyList();
-        }
-
-        logger.debug("getImportedRecordsTrend mid");
-
-        int localDataPoints = dataPoints;
-        if (localDataPoints > days) {
-            localDataPoints = days;
-        }
-        List<Long> dataPointList = new ArrayList<>();
-        int dataPointDiv = days / localDataPoints;
-        dataPointList.add(DateTools.getMillisFromLocalDateTime(LocalDateTime.now(), false));
-        countList.add(0);
-        GregorianCalendar cal = new GregorianCalendar();
-        for (int i = 1; i < localDataPoints; i++) {
-            cal.add(Calendar.DAY_OF_MONTH, -dataPointDiv);
-            dataPointList.add(cal.getTime().getTime());
-            countList.add(0);
-        }
-        Collections.sort(dataPointList);
-        Collections.reverse(dataPointList);
-
-        for (String string : dateList) {
-            long creationTime = Long.parseLong(string);
-            int count = 0;
-            for (Long time : dataPointList) {
-                if (creationTime < time) {
-                    countList.set(count, countList.get(count) + 1);
-                }
-                count++;
-            }
-        }
-
-        List<String> ret = new ArrayList<>(countList.size());
-        for (int i = 0; i < countList.size(); i++) {
-            ret.add(new StringBuilder(String.valueOf(dataPointList.get(i))).append(SEPARATOR).append(countList.get(i)).toString());
-        }
-
-        logger.debug("getImportedRecordsTrend end");
-        return ret;
-    }
-
-    /**
-     * Returns a list of size two arrays which each contain the name and total number of imported works of a type of work (DocStructType).
-     *
-     * @return a list of "name;count" strings for each top-level document structure type ordered by number of records
-     * @should return list of docstruct types
-     */
-    public List<String> getTopStructTypesByNumber() {
-        logger.debug("getTopStructTypesByNumber start");
-
-        try {
-            QueryResponse resp = DataManager.getInstance()
-                    .getSearchIndex()
-                    .search(new StringBuilder("+").append(SolrConstants.PI)
-                            .append(":*")
-                            .append(" +(")
-                            .append(SolrConstants.ISWORK)
-                            .append(":true ")
-                            .append(SolrConstants.ISANCHOR)
-                            .append(":true)")
-                            .append(" +")
-                            .append(SolrConstants.DOCTYPE)
-                            .append(":")
-                            .append(DocType.DOCSTRCT.name())
-                            .append(SearchHelper.getAllSuffixes())
-                            .toString(), 0, 0, null, Collections.singletonList(SolrConstants.DOCSTRCT), "count",
-                            Collections.singletonList(SolrConstants.DOCSTRCT), null, null);
-            if (resp != null && resp.getFacetField(SolrConstants.DOCSTRCT) != null
-                    && resp.getFacetField(SolrConstants.DOCSTRCT).getValues() != null) {
-                List<Count> counts = resp.getFacetField(SolrConstants.DOCSTRCT).getValues();
-                List<String> ret = new ArrayList<>(counts.size());
-                for (Count count : counts) {
-                    String name = ViewerResourceBundle.getTranslation(count.getName(), null).replace(",", "");
-                    ret.add(name + SEPARATOR + count.getCount() + SEPARATOR + count.getName());
-                }
-                return ret;
-            }
-        } catch (PresentationException e) {
-            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-        } finally {
-            logger.debug("getTopStructTypesByNumber end");
-        }
-
-        return Collections.emptyList();
-    }
-
-    /**
-     * Returns the total number of imported pages.
-     *
-     * @return the total number of imported page documents in the Solr index
-     * @should return a non zero number
-     */
-    public Long getImportedPages() {
-        logger.debug("getImportedPages start");
-        long now = System.currentTimeMillis();
-        try {
-            if (lastUpdateMap.get("getImportedPages") == null || now - lastUpdateMap.get("getImportedPages") >= DAY_MS) {
-                logger.debug("Refreshing number of imported pages...");
-                long pages = DataManager.getInstance()
-                        .getSearchIndex()
-                        .getHitCount("+" + SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes());
-                valueMap.put("getImportedPages", pages);
-                lastUpdateMap.put("getImportedPages", now);
-            }
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-        } catch (PresentationException e) {
-            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-        } finally {
-            logger.debug("getImportedPages end");
-        }
-
-        return (Long) valueMap.get("getImportedPages");
-    }
-
-    /**
-     * Returns the total number of pages with OCR data.
-     *
-     * @return the total number of page documents with full-text in the Solr index
-     * @should return a non zero number
-     */
-    public Long getImportedFullTexts() {
-        logger.debug("getImportedFullTexts start");
-        long now = System.currentTimeMillis();
-        try {
-            if (lastUpdateMap.get("getImportedFullTexts") == null || now - lastUpdateMap.get("getImportedFullTexts") >= DAY_MS) {
-                logger.debug("Refreshing number of imported fulltexts...");
-                String query = "+" + SolrConstants.DOCTYPE + ":" + SolrConstants.DocType.PAGE.name() + " +" + SolrConstants.FULLTEXTAVAILABLE
-                        + ":true" + SearchHelper.getAllSuffixes();
-                long pages = DataManager.getInstance().getSearchIndex().getHitCount(query);
-                valueMap.put("getImportedFullTexts", pages);
-                lastUpdateMap.put("getImportedFullTexts", now);
-            }
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-        } catch (PresentationException e) {
-            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-        } finally {
-            logger.debug("getImportedFullTexts end");
-        }
-
-        return (Long) valueMap.get("getImportedFullTexts");
-    }
-
-    /**
-     * Checks whether there are no records in the index.
-     *
-     * @return true if record count is 0; false otherwise.
-     * @should return false if index online
-     */
-    public boolean isIndexEmpty() {
-        try {
-            return DataManager.getInstance().getSearchIndex().getHitCount(new StringBuilder(SolrConstants.PI).append(":*").toString()) == 0;
-        } catch (IndexUnreachableException e) {
-            logger.debug("IndexUnreachableException thrown here: {}", e.getMessage());
-        } catch (PresentationException e) {
-            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
-        }
-
-        return true;
-    }
+    // jqplot-era methods (getImportedRecordsTrend, getTopStructTypesByNumber, getImportedPages,
+    // getImportedFullTexts, isIndexEmpty) were removed in #15809 along with statistics.xhtml. The
+    // equivalent data is now served by IndexStatisticsService and the chart-* CMS components.
 
     /**
      * getCoreVersion.
