@@ -151,9 +151,9 @@
                 datasets: [
                     {
                         data: [data.pages, data.fulltexts],
-                        // Two distinct colors so pages vs. full-texts are visually distinguishable
-                        // (reusing the first two pie palette colors keeps the page visually consistent).
-                        backgroundColor: [PALETTE[0], PALETTE[1]],
+                        // Yellow + green — distinct from the publication-types pie above, and visually
+                        // less aggressive than the original red/blue pair.
+                        backgroundColor: [PALETTE[2], PALETTE[3]],
                     },
                 ],
             },

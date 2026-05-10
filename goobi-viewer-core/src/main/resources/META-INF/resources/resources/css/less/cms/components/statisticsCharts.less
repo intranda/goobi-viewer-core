@@ -33,6 +33,14 @@
     // don't visually break out of the page rhythm next to the charts.
     max-width: 800px;
 
+    // Subtitle right above the list explains what the bare numbers mean (e.g. that the score is
+    // a count of saved contributions, not edits-over-time). Injected by renderMostActiveUsers.
+    &__subtitle {
+        font-size: 0.85rem;
+        color: var(--text-muted, #666);
+        margin-bottom: 0.5rem;
+    }
+
     ul {
         list-style: none;
         padding: 0;
