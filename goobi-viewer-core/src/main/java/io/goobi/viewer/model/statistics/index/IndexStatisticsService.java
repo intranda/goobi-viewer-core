@@ -66,11 +66,12 @@ public class IndexStatisticsService {
 
     private final SolrSearchIndex searchIndex;
 
-    // Publication-types must be cached per locale, because the docstruct labels are translated server-side
-    // and the cached value is locale-specific. Concurrent map keyed by locale tag (e.g. "de", "en", "").
+    // Each method caches per filter (and additionally per locale or per (days, dataPoints) configuration). Separator
+    // between key components is a literal space because BCP-47 language tags never contain whitespace, so the
+    // composition is unambiguous and stays human-readable in log output.
     private final Map<String, CachedSnapshot<List<PublicationTypeStatistic>>> publicationTypesCachePerLocale = new ConcurrentHashMap<>();
-    private volatile CachedTrend importTrendCache;
-    private volatile CachedSnapshot<ImportSummary> importSummaryCache;
+    private final Map<String, CachedTrend> importTrendCache = new ConcurrentHashMap<>();
+    private final Map<String, CachedSnapshot<ImportSummary>> importSummaryCache = new ConcurrentHashMap<>();
 
     public IndexStatisticsService() {
         this(DataManager.getInstance().getSearchIndex());
@@ -81,18 +82,40 @@ public class IndexStatisticsService {
     }
 
     /**
+     * Wraps an admin-supplied Solr filter in a MUST clause so it can only narrow the surrounding query. This is a
+     * security-relevant invariant: even a clever filter like {@code "*:* OR -DC:hidden"} cannot escape the surrounding
+     * {@code "+(...)"} envelope and broaden access rules established by {@link SearchHelper#getAllSuffixes()}.
+     *
+     * @param filter raw Solr sub-query supplied by a CMS admin; may be null or blank
+     * @return either an empty string or {@code " +(<filter>)"} ready to splice into an existing query
+     */
+    private static String appendFilter(String filter) {
+        return (filter != null && !filter.isBlank()) ? " +(" + filter + ")" : "";
+    }
+
+    /** Canonical cache-key fragment for a filter. Treats null and blank as the same "no filter" slot. */
+    private static String cacheKey(String filter) {
+        return (filter != null && !filter.isBlank()) ? filter : "";
+    }
+
+    /**
      * Lists each top-level docstruct type with its record count, with labels translated to the given locale.
      *
      * @param locale the user's locale for label translation; falls back to default if null
+     * @param filter optional Lucene sub-query to constrain the docstructs; wrapped in MUST so it can only narrow.
+     *            null or blank means no constraint.
      * @return DTOs in Solr's facet order (by count, descending), never null
-     * @throws StatisticsUnavailableException if Solr is unreachable and no cached snapshot exists for this locale
+     * @throws StatisticsUnavailableException if Solr is unreachable and no cached snapshot exists for this locale+filter
      * @should issue exact docstruct facet query and map facet values to dtos
+     * @should append filter to solr query when non-blank
+     * @should treat null and empty filter as same cache slot
      * @should return cached snapshot on solr error if cache available
      * @should throw StatisticsUnavailableException on solr error if no cache
      */
-    public List<PublicationTypeStatistic> getPublicationTypes(Locale locale) throws StatisticsUnavailableException {
-        // Cache key derived from locale.toLanguageTag() (or "" for null) so de/en/fr each get their own slot.
-        String key = locale != null ? locale.toLanguageTag() : "";
+    public List<PublicationTypeStatistic> getPublicationTypes(Locale locale, String filter) throws StatisticsUnavailableException {
+        // Key composition: BCP-47 language tag (or "") plus a space plus the canonical filter slot. Whitespace is
+        // never part of a language tag, so the two halves are always cleanly separable.
+        String key = (locale != null ? locale.toLanguageTag() : "") + " " + cacheKey(filter);
         CachedSnapshot<List<PublicationTypeStatistic>> snap = publicationTypesCachePerLocale.get(key);
         if (snap != null && snap.isFresh(CACHE_TTL_MS)) {
             return snap.getValue();
@@ -101,6 +124,7 @@ public class IndexStatisticsService {
             String query = "+" + SolrConstants.PI + ":*"
                     + " +(" + SolrConstants.ISWORK + ":true " + SolrConstants.ISANCHOR + ":true)"
                     + " +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name()
+                    + appendFilter(filter)
                     + SearchHelper.getAllSuffixes();
             QueryResponse resp = searchIndex.search(query, 0, 0, null,
                     Collections.singletonList(SolrConstants.DOCSTRCT), "count",
@@ -133,21 +157,25 @@ public class IndexStatisticsService {
      *
      * @param days size of the look-back window
      * @param dataPoints number of buckets to produce; capped at {@code days}
+     * @param filter optional Lucene sub-query to constrain the time-series; wrapped in MUST so it can only narrow.
+     *            null or blank means no constraint.
      * @return DTOs ordered newest first, never null
      * @throws StatisticsUnavailableException if Solr is unreachable and no compatible cached snapshot exists
      * @should return one bucket per data point with cumulative counts
      * @should clamp dataPoints to days when dataPoints exceeds days
+     * @should use separate cache slot per filter
      * @should return cached snapshot on solr error if cache available
      * @should throw StatisticsUnavailableException on solr error if no cache
      */
-    public List<ImportTrendBucket> getImportTrend(int days, int dataPoints) throws StatisticsUnavailableException {
-        CachedTrend snap = importTrendCache;
+    public List<ImportTrendBucket> getImportTrend(int days, int dataPoints, String filter) throws StatisticsUnavailableException {
+        String key = cacheKey(filter);
+        CachedTrend snap = importTrendCache.get(key);
         if (snap != null && snap.matches(days, dataPoints) && snap.isFresh(CACHE_TTL_MS)) {
             return snap.getValue();
         }
         try {
-            List<ImportTrendBucket> out = computeImportTrend(days, dataPoints);
-            importTrendCache = new CachedTrend(days, dataPoints, out, System.currentTimeMillis());
+            List<ImportTrendBucket> out = computeImportTrend(days, dataPoints, filter);
+            importTrendCache.put(key, new CachedTrend(days, dataPoints, out, System.currentTimeMillis()));
             return out;
         } catch (PresentationException | IndexUnreachableException e) {
             logger.warn("Solr query for import trend failed; will serve cache if available: {}", e.getMessage());
@@ -159,9 +187,9 @@ public class IndexStatisticsService {
     }
 
     /** Solr-query body, separated so the public method can wrap it in cache+throw logic. */
-    private List<ImportTrendBucket> computeImportTrend(int days, int dataPoints)
+    private List<ImportTrendBucket> computeImportTrend(int days, int dataPoints, String filter)
             throws PresentationException, IndexUnreachableException {
-        String query = "+" + SolrConstants.PI + ":*" + SearchHelper.getAllSuffixes();
+        String query = "+" + SolrConstants.PI + ":*" + appendFilter(filter) + SearchHelper.getAllSuffixes();
         QueryResponse resp = searchIndex.search(query, 0, 0, null,
                 Collections.singletonList(SolrConstants.DATECREATED), "count",
                 Collections.singletonList(SolrConstants.DATECREATED), null, null);
@@ -204,25 +232,34 @@ public class IndexStatisticsService {
     /**
      * Total page and full-text counts in the index.
      *
+     * @param filter optional Lucene sub-query to constrain both counts; wrapped in MUST so it can only narrow.
+     *            null or blank means no constraint.
      * @return summary; both numbers populated from Solr or returned from cache on error
      * @throws StatisticsUnavailableException if Solr is unreachable and no cached snapshot exists
      * @should return aggregated page and fulltext counts
+     * @should apply filter to both page and fulltext queries
+     * @should treat null and empty filter as same cache slot
      * @should return cached snapshot on solr error if cache available
      * @should throw StatisticsUnavailableException on solr error if no cache
      */
-    public ImportSummary getImportSummary() throws StatisticsUnavailableException {
-        CachedSnapshot<ImportSummary> snap = importSummaryCache;
+    public ImportSummary getImportSummary(String filter) throws StatisticsUnavailableException {
+        String key = cacheKey(filter);
+        CachedSnapshot<ImportSummary> snap = importSummaryCache.get(key);
         if (snap != null && snap.isFresh(CACHE_TTL_MS)) {
             return snap.getValue();
         }
         try {
-            long pages = searchIndex.getHitCount("+" + SolrConstants.DOCTYPE + ":" + DocType.PAGE.name() + SearchHelper.getAllSuffixes());
+            long pages = searchIndex.getHitCount(
+                    "+" + SolrConstants.DOCTYPE + ":" + DocType.PAGE.name()
+                            + appendFilter(filter)
+                            + SearchHelper.getAllSuffixes());
             long fulltexts = searchIndex.getHitCount(
                     "+" + SolrConstants.DOCTYPE + ":" + DocType.PAGE.name()
                             + " +" + SolrConstants.FULLTEXTAVAILABLE + ":true"
+                            + appendFilter(filter)
                             + SearchHelper.getAllSuffixes());
             ImportSummary summary = new ImportSummary(pages, fulltexts);
-            importSummaryCache = new CachedSnapshot<>(summary, System.currentTimeMillis());
+            importSummaryCache.put(key, new CachedSnapshot<>(summary, System.currentTimeMillis()));
             return summary;
         } catch (PresentationException | IndexUnreachableException e) {
             logger.warn("Solr query for import summary failed; will serve cache if available: {}", e.getMessage());

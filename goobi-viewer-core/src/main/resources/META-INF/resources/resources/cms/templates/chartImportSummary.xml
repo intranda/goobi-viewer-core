@@ -7,7 +7,17 @@
     <label>cms_component__chart_import_summary__label</label>
     <description>cms_component__chart_import_summary__desc</description>
     <type>statistics</type>
-    <content />
+    <content>
+        <item id="filter">
+            <label>cms_component__chart_filter_label</label>
+            <description>cms_component__chart_filter_desc</description>
+            <className>io.goobi.viewer.model.cms.pages.content.types.CMSStatisticsFilterContent</className>
+            <jsfComponent>
+                <library>cms/components/backend/content</library>
+                <name>statisticsFilter</name>
+            </jsfComponent>
+        </item>
+    </content>
 
     <attribute
         name="hideOnScreenSizes"

@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +52,7 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 class IndexStatisticsServiceTest extends AbstractTest {
 
     /**
-     * @see IndexStatisticsService#getPublicationTypes()
+     * @see IndexStatisticsService#getPublicationTypes(java.util.Locale, String)
      * @verifies issue exact docstruct facet query and map facet values to dtos
      */
     @Test
@@ -70,7 +71,7 @@ class IndexStatisticsServiceTest extends AbstractTest {
                         .thenReturn(resp);
 
         IndexStatisticsService svc = new IndexStatisticsService(index);
-        List<PublicationTypeStatistic> result = svc.getPublicationTypes(null);
+        List<PublicationTypeStatistic> result = svc.getPublicationTypes(null, null);
 
         assertEquals(2, result.size());
         assertEquals("Monograph", result.get(0).query());
@@ -81,7 +82,49 @@ class IndexStatisticsServiceTest extends AbstractTest {
     }
 
     /**
-     * @see IndexStatisticsService#getPublicationTypes()
+     * @see IndexStatisticsService#getPublicationTypes(java.util.Locale, String)
+     * @verifies append filter to solr query when non-blank
+     */
+    @Test
+    void getPublicationTypes_shouldAppendFilterToSolrQueryWhenNonBlank() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        QueryResponse resp = mock(QueryResponse.class);
+        FacetField field = mock(FacetField.class);
+        when(field.getValues()).thenReturn(Collections.emptyList());
+        when(resp.getFacetField("DOCSTRCT")).thenReturn(field);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any())).thenReturn(resp);
+
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+        svc.getPublicationTypes(null, "DC:zeitschriften");
+
+        // The filter must appear wrapped in MUST so the surrounding query can only narrow, never broaden.
+        verify(index).search(argThat(q -> q != null && q.contains(" +(DC:zeitschriften)")),
+                eq(0), eq(0), isNull(), any(), any(), any(), isNull(), isNull());
+    }
+
+    /**
+     * @see IndexStatisticsService#getPublicationTypes(java.util.Locale, String)
+     * @verifies treat null and empty filter as same cache slot
+     */
+    @Test
+    void getPublicationTypes_shouldTreatNullAndEmptyFilterAsSameCacheSlot() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        QueryResponse resp = mock(QueryResponse.class);
+        FacetField field = mock(FacetField.class);
+        when(field.getValues()).thenReturn(Collections.emptyList());
+        when(resp.getFacetField("DOCSTRCT")).thenReturn(field);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any())).thenReturn(resp);
+
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+        svc.getPublicationTypes(null, null);
+        svc.getPublicationTypes(null, "");
+
+        // Both calls share the same cache slot — Solr must be hit only once.
+        verify(index, times(1)).search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any());
+    }
+
+    /**
+     * @see IndexStatisticsService#getPublicationTypes(java.util.Locale, String)
      * @verifies throw StatisticsUnavailableException on solr error if no cache
      */
     @Test
@@ -91,11 +134,11 @@ class IndexStatisticsServiceTest extends AbstractTest {
                 .thenThrow(new IndexUnreachableException("solr down"));
         IndexStatisticsService svc = new IndexStatisticsService(index);
 
-        assertThrows(StatisticsUnavailableException.class, () -> svc.getPublicationTypes(null));
+        assertThrows(StatisticsUnavailableException.class, () -> svc.getPublicationTypes(null, null));
     }
 
     /**
-     * @see IndexStatisticsService#getImportTrend(int, int)
+     * @see IndexStatisticsService#getImportTrend(int, int, String)
      * @verifies return one bucket per data point with cumulative counts
      */
     @Test
@@ -112,7 +155,7 @@ class IndexStatisticsServiceTest extends AbstractTest {
         when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any())).thenReturn(resp);
 
         IndexStatisticsService svc = new IndexStatisticsService(index);
-        List<ImportTrendBucket> result = svc.getImportTrend(180, 12);
+        List<ImportTrendBucket> result = svc.getImportTrend(180, 12, null);
 
         assertEquals(12, result.size());
         // The current epoch bucket is at index 0; its count must include both sample timestamps.
@@ -120,7 +163,28 @@ class IndexStatisticsServiceTest extends AbstractTest {
     }
 
     /**
-     * @see IndexStatisticsService#getImportTrend(int, int)
+     * @see IndexStatisticsService#getImportTrend(int, int, String)
+     * @verifies use separate cache slot per filter
+     */
+    @Test
+    void getImportTrend_shouldUseSeparateCacheSlotPerFilter() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        QueryResponse resp = mock(QueryResponse.class);
+        FacetField field = mock(FacetField.class);
+        when(field.getValues()).thenReturn(Collections.emptyList());
+        when(resp.getFacetField("DATECREATED")).thenReturn(field);
+        when(index.search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any())).thenReturn(resp);
+
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+        svc.getImportTrend(180, 12, "DC:zeitschriften");
+        svc.getImportTrend(180, 12, "DC:bilder");
+
+        // Two different filters must NOT share a cache slot.
+        verify(index, times(2)).search(any(), eq(0), eq(0), any(), any(), any(), any(), any(), any());
+    }
+
+    /**
+     * @see IndexStatisticsService#getImportTrend(int, int, String)
      * @verifies throw StatisticsUnavailableException on solr error if no cache
      */
     @Test
@@ -130,11 +194,11 @@ class IndexStatisticsServiceTest extends AbstractTest {
                 .thenThrow(new IndexUnreachableException("solr down"));
         IndexStatisticsService svc = new IndexStatisticsService(index);
 
-        assertThrows(StatisticsUnavailableException.class, () -> svc.getImportTrend(180, 12));
+        assertThrows(StatisticsUnavailableException.class, () -> svc.getImportTrend(180, 12, null));
     }
 
     /**
-     * @see IndexStatisticsService#getImportSummary()
+     * @see IndexStatisticsService#getImportSummary(String)
      * @verifies return aggregated page and fulltext counts
      */
     @Test
@@ -149,14 +213,35 @@ class IndexStatisticsServiceTest extends AbstractTest {
                 .thenReturn(40L);
 
         IndexStatisticsService svc = new IndexStatisticsService(index);
-        ImportSummary summary = svc.getImportSummary();
+        ImportSummary summary = svc.getImportSummary(null);
 
         assertEquals(100L, summary.pages());
         assertEquals(40L, summary.fulltexts());
     }
 
     /**
-     * @see IndexStatisticsService#getImportSummary()
+     * @see IndexStatisticsService#getImportSummary(String)
+     * @verifies apply filter to both page and fulltext queries
+     */
+    @Test
+    void getImportSummary_shouldApplyFilterToBothPageAndFulltextQueries() throws Exception {
+        SolrSearchIndex index = mock(SolrSearchIndex.class);
+        when(index.getHitCount(any())).thenReturn(0L);
+
+        IndexStatisticsService svc = new IndexStatisticsService(index);
+        svc.getImportSummary("DC:zeitschriften");
+
+        // The filter must be appended to both the page-count and the fulltext-count queries — otherwise the fulltext
+        // count could exceed the page count and break the chart's ratio display.
+        verify(index).getHitCount(argThat(q -> q != null && q.contains("+DOCTYPE:PAGE")
+                && !q.contains("FULLTEXTAVAILABLE")
+                && q.contains(" +(DC:zeitschriften)")));
+        verify(index).getHitCount(argThat(q -> q != null && q.contains("+FULLTEXTAVAILABLE:true")
+                && q.contains(" +(DC:zeitschriften)")));
+    }
+
+    /**
+     * @see IndexStatisticsService#getImportSummary(String)
      * @verifies throw StatisticsUnavailableException on solr error if no cache
      */
     @Test
@@ -166,6 +251,6 @@ class IndexStatisticsServiceTest extends AbstractTest {
                 .thenThrow(new IndexUnreachableException("solr down"));
         IndexStatisticsService svc = new IndexStatisticsService(index);
 
-        assertThrows(StatisticsUnavailableException.class, svc::getImportSummary);
+        assertThrows(StatisticsUnavailableException.class, () -> svc.getImportSummary(null));
     }
 }

@@ -29,9 +29,14 @@
 
             <script type="text/javascript">
                 (function() {
+                    const filter = '#{cc.attrs.component.getContent("filter").filterQuery}';
+                    let url = '#{request.contextPath}/api/v1/statistics/index/imports-summary';
+                    if (filter) {
+                        url += '?filter=' + encodeURIComponent(filter);
+                    }
                     viewerJS.statistics.charts.renderImportSummary(
                         'canvas-import-summary',
-                        '#{request.contextPath}/api/v1/statistics/index/imports-summary',
+                        url,
                         '#{msg.statistics_importedPages}',
                         '#{msg.statistics_importedFullTexts}'
                     );

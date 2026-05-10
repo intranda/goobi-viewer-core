@@ -91,17 +91,21 @@ public class IndexStatisticsResource {
      *
      * @param lang IETF BCP 47 language tag (e.g. {@code de}, {@code en}); typically supplied by the composite as
      *            {@code #{navigationHelper.localeString}} so the response matches the user's UI language
+     * @param filter optional Lucene sub-query forwarded from the CMS-admin filter input; restricts the docstruct
+     *            facet to a subset of the index. No validation here — the backend editor's {@code solrQueryValidator}
+     *            gate-keeps before persistence, and the service wraps the value in MUST so it can only narrow.
      * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
      * @should return service result with cache control header
      * @should return 503 when service throws StatisticsUnavailableException
      * @should forward lang query parameter to service
+     * @should forward filter query parameter to service
      */
     @GET
     @Path("/publication-types")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPublicationTypes(@QueryParam("lang") String lang) {
+    public Response getPublicationTypes(@QueryParam("lang") String lang, @QueryParam("filter") String filter) {
         try {
-            return ok(service.getPublicationTypes(resolveLocale(lang)));
+            return ok(service.getPublicationTypes(resolveLocale(lang), filter));
         } catch (StatisticsUnavailableException e) {
             return unavailable(e);
         }
@@ -112,18 +116,21 @@ public class IndexStatisticsResource {
      *
      * @param days size of the look-back window
      * @param buckets number of data points to produce
+     * @param filter optional Lucene sub-query forwarded from the CMS-admin filter input; restricts the time-series.
      * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
      * @should pass through query parameters
      * @should return 503 when service throws StatisticsUnavailableException
+     * @should forward filter query parameter to service
      */
     @GET
     @Path("/import-trend")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getImportTrend(
             @QueryParam("days") @DefaultValue("180") int days,
-            @QueryParam("buckets") @DefaultValue("12") int buckets) {
+            @QueryParam("buckets") @DefaultValue("12") int buckets,
+            @QueryParam("filter") String filter) {
         try {
-            return ok(service.getImportTrend(days, buckets));
+            return ok(service.getImportTrend(days, buckets, filter));
         } catch (StatisticsUnavailableException e) {
             return unavailable(e);
         }
@@ -132,16 +139,18 @@ public class IndexStatisticsResource {
     /**
      * Total page and full-text counts in the index.
      *
+     * @param filter optional Lucene sub-query forwarded from the CMS-admin filter input; applies to both counts.
      * @return 200 + JSON summary on success, 503 + JSON error body when the service signals unavailability
      * @should return summary from service
      * @should return 503 when service throws StatisticsUnavailableException
+     * @should forward filter query parameter to service
      */
     @GET
     @Path("/imports-summary")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getImportSummary() {
+    public Response getImportSummary(@QueryParam("filter") String filter) {
         try {
-            return ok(service.getImportSummary());
+            return ok(service.getImportSummary(filter));
         } catch (StatisticsUnavailableException e) {
             return unavailable(e);
         }

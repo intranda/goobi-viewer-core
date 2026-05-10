@@ -45,18 +45,18 @@ import jakarta.ws.rs.core.Response;
 class IndexStatisticsResourceTest {
 
     /**
-     * @see IndexStatisticsResource#getPublicationTypes()
+     * @see IndexStatisticsResource#getPublicationTypes(String, String)
      * @verifies return service result with cache control header
      */
     @Test
     @SuppressWarnings("unchecked")
     void getPublicationTypes_shouldReturnServiceResultWithCacheControlHeader() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
-        when(svc.getPublicationTypes(any()))
+        when(svc.getPublicationTypes(any(), any()))
                 .thenReturn(List.of(new PublicationTypeStatistic("Monograph", 5, "Monograph")));
 
         IndexStatisticsResource res = new IndexStatisticsResource(svc);
-        Response response = res.getPublicationTypes(null);
+        Response response = res.getPublicationTypes(null, null);
 
         assertEquals(200, response.getStatus());
         List<PublicationTypeStatistic> body = (List<PublicationTypeStatistic>) response.getEntity();
@@ -69,23 +69,23 @@ class IndexStatisticsResourceTest {
     }
 
     /**
-     * @see IndexStatisticsResource#getPublicationTypes()
+     * @see IndexStatisticsResource#getPublicationTypes(String, String)
      * @verifies return 503 when service throws StatisticsUnavailableException
      */
     @Test
     void getPublicationTypes_shouldReturn503WhenServiceThrowsStatisticsUnavailableException() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
-        when(svc.getPublicationTypes(any()))
+        when(svc.getPublicationTypes(any(), any()))
                 .thenThrow(new StatisticsUnavailableException("solr down", new RuntimeException("x")));
 
         IndexStatisticsResource res = new IndexStatisticsResource(svc);
-        Response response = res.getPublicationTypes(null);
+        Response response = res.getPublicationTypes(null, null);
 
         assertEquals(503, response.getStatus());
     }
 
     /**
-     * @see IndexStatisticsResource#getPublicationTypes(String)
+     * @see IndexStatisticsResource#getPublicationTypes(String, String)
      * @verifies forward lang query parameter to service
      */
     @Test
@@ -94,58 +94,90 @@ class IndexStatisticsResourceTest {
         // ArgumentCaptor on the Locale parameter — the resource turns the lang string into a Locale
         // before calling the service, and we want to be sure the conversion didn't get dropped.
         ArgumentCaptor<Locale> localeCaptor = ArgumentCaptor.forClass(Locale.class);
-        when(svc.getPublicationTypes(localeCaptor.capture())).thenReturn(List.of());
+        when(svc.getPublicationTypes(localeCaptor.capture(), any())).thenReturn(List.of());
 
         IndexStatisticsResource res = new IndexStatisticsResource(svc);
-        res.getPublicationTypes("de");
+        res.getPublicationTypes("de", null);
 
         assertEquals(Locale.forLanguageTag("de"), localeCaptor.getValue());
     }
 
     /**
-     * @see IndexStatisticsResource#getImportTrend(int, int)
+     * @see IndexStatisticsResource#getPublicationTypes(String, String)
+     * @verifies forward filter query parameter to service
+     */
+    @Test
+    void getPublicationTypes_shouldForwardFilterQueryParameterToService() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        ArgumentCaptor<String> filterCaptor = ArgumentCaptor.forClass(String.class);
+        when(svc.getPublicationTypes(any(), filterCaptor.capture())).thenReturn(List.of());
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        res.getPublicationTypes("de", "DC:zeitschriften");
+
+        assertEquals("DC:zeitschriften", filterCaptor.getValue());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getImportTrend(int, int, String)
      * @verifies pass through query parameters
      */
     @Test
     @SuppressWarnings("unchecked")
     void getImportTrend_shouldPassThroughQueryParameters() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
-        when(svc.getImportTrend(eq(180), eq(12))).thenReturn(List.of(new ImportTrendBucket(0, 0)));
+        when(svc.getImportTrend(eq(180), eq(12), any())).thenReturn(List.of(new ImportTrendBucket(0, 0)));
 
         IndexStatisticsResource res = new IndexStatisticsResource(svc);
-        Response response = res.getImportTrend(180, 12);
+        Response response = res.getImportTrend(180, 12, null);
 
         assertEquals(200, response.getStatus());
         assertEquals(1, ((List<ImportTrendBucket>) response.getEntity()).size());
     }
 
     /**
-     * @see IndexStatisticsResource#getImportTrend(int, int)
+     * @see IndexStatisticsResource#getImportTrend(int, int, String)
      * @verifies return 503 when service throws StatisticsUnavailableException
      */
     @Test
     void getImportTrend_shouldReturn503WhenServiceThrowsStatisticsUnavailableException() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
-        when(svc.getImportTrend(eq(180), eq(12)))
+        when(svc.getImportTrend(eq(180), eq(12), any()))
                 .thenThrow(new StatisticsUnavailableException("solr down", new RuntimeException("x")));
 
         IndexStatisticsResource res = new IndexStatisticsResource(svc);
-        Response response = res.getImportTrend(180, 12);
+        Response response = res.getImportTrend(180, 12, null);
 
         assertEquals(503, response.getStatus());
     }
 
     /**
-     * @see IndexStatisticsResource#getImportSummary()
+     * @see IndexStatisticsResource#getImportTrend(int, int, String)
+     * @verifies forward filter query parameter to service
+     */
+    @Test
+    void getImportTrend_shouldForwardFilterQueryParameterToService() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        ArgumentCaptor<String> filterCaptor = ArgumentCaptor.forClass(String.class);
+        when(svc.getImportTrend(eq(180), eq(12), filterCaptor.capture())).thenReturn(List.of());
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        res.getImportTrend(180, 12, "DC:bilder");
+
+        assertEquals("DC:bilder", filterCaptor.getValue());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getImportSummary(String)
      * @verifies return summary from service
      */
     @Test
     void getImportSummary_shouldReturnSummaryFromService() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
-        when(svc.getImportSummary()).thenReturn(new ImportSummary(100, 40));
+        when(svc.getImportSummary(any())).thenReturn(new ImportSummary(100, 40));
 
         IndexStatisticsResource res = new IndexStatisticsResource(svc);
-        Response response = res.getImportSummary();
+        Response response = res.getImportSummary(null);
 
         assertEquals(200, response.getStatus());
         ImportSummary summary = (ImportSummary) response.getEntity();
@@ -154,18 +186,34 @@ class IndexStatisticsResourceTest {
     }
 
     /**
-     * @see IndexStatisticsResource#getImportSummary()
+     * @see IndexStatisticsResource#getImportSummary(String)
      * @verifies return 503 when service throws StatisticsUnavailableException
      */
     @Test
     void getImportSummary_shouldReturn503WhenServiceThrowsStatisticsUnavailableException() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
-        when(svc.getImportSummary())
+        when(svc.getImportSummary(any()))
                 .thenThrow(new StatisticsUnavailableException("solr down", new RuntimeException("x")));
 
         IndexStatisticsResource res = new IndexStatisticsResource(svc);
-        Response response = res.getImportSummary();
+        Response response = res.getImportSummary(null);
 
         assertEquals(503, response.getStatus());
+    }
+
+    /**
+     * @see IndexStatisticsResource#getImportSummary(String)
+     * @verifies forward filter query parameter to service
+     */
+    @Test
+    void getImportSummary_shouldForwardFilterQueryParameterToService() throws Exception {
+        IndexStatisticsService svc = mock(IndexStatisticsService.class);
+        ArgumentCaptor<String> filterCaptor = ArgumentCaptor.forClass(String.class);
+        when(svc.getImportSummary(filterCaptor.capture())).thenReturn(new ImportSummary(0, 0));
+
+        IndexStatisticsResource res = new IndexStatisticsResource(svc);
+        res.getImportSummary("DC:test");
+
+        assertEquals("DC:test", filterCaptor.getValue());
     }
 }

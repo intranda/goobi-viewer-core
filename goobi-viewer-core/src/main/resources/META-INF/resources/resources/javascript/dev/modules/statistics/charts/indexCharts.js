@@ -54,7 +54,7 @@
         return resp.json();
     }
 
-    async function renderPublicationTypes(canvasId, endpointUrl, searchBaseUrl) {
+    async function renderPublicationTypes(canvasId, endpointUrl, searchBaseUrl, filter) {
         const data = await fetchJson(endpointUrl);
         const ctx = document.getElementById(canvasId);
         if (!ctx) return;
@@ -97,6 +97,10 @@
                     },
                 },
                 onClick: function (evt, elements) {
+                    // When a filter is active, click-through is disabled: safely combining the admin's filter with
+                    // the slice's DOCSTRCT term is non-trivial (the filter can contain its own boolean structure),
+                    // so v1 just skips navigation. Tooltip on hover still works.
+                    if (filter) return;
                     if (!elements.length || !searchBaseUrl) return;
                     const idx = elements[0].index;
                     const query = data[idx].query;

@@ -29,11 +29,16 @@
 
             <script type="text/javascript">
                 // Defaults (days=180, buckets=12) match IndexStatisticsResource @DefaultValue annotations,
-                // so we omit query params here to keep the URL whitespace-safe across formatter passes.
+                // so we only emit the filter param when one is configured.
                 (function() {
+                    const filter = '#{cc.attrs.component.getContent("filter").filterQuery}';
+                    let url = '#{request.contextPath}/api/v1/statistics/index/import-trend';
+                    if (filter) {
+                        url += '?filter=' + encodeURIComponent(filter);
+                    }
                     viewerJS.statistics.charts.renderImportTrend(
                         'canvas-import-trend',
-                        '#{request.contextPath}/api/v1/statistics/index/import-trend'
+                        url
                     );
                 })();
             </script>

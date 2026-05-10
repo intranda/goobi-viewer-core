@@ -30,10 +30,21 @@
 
             <script type="text/javascript">
                 (function() {
+                    // Filter comes from the admin-edited CMSStatisticsFilterContent attached to the "filter" item
+                    // defined in chartPublicationTypes.xml. EL renders an empty string if no content is persisted yet,
+                    // which the `if (filter)` guard below treats as "no filter".
+                    const filter = '#{cc.attrs.component.getContent("filter").filterQuery}';
+                    let url = '#{request.contextPath}/api/v1/statistics/index/publication-types?lang=#{navigationHelper.localeString}';
+                    if (filter) {
+                        // Use the XML entity here because Facelets parses this script block as XML;
+                        // JS still receives a single ampersand at runtime.
+                        url += ' &amp; filter=' + encodeURIComponent(filter);
+                    }
                     viewerJS.statistics.charts.renderPublicationTypes(
                         'canvas-publication-types',
-                        '#{request.contextPath}/api/v1/statistics/index/publication-types?lang=#{navigationHelper.localeString}',
-                        '#{request.contextPath}/search/'
+                        url,
+                        '#{request.contextPath}/search/',
+                        filter
                     );
                 })();
             </script>
