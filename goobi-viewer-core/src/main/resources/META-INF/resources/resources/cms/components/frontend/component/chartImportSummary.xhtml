@@ -23,7 +23,7 @@
                 <h:panelGroup
                     layout="block"
                     styleClass="statistics-chart__canvas-wrap">
-                    <canvas id="canvas-import-summary" />
+                    <canvas id="canvas-import-summary#{cc.clientId}" />
                 </h:panelGroup>
             </h:panelGroup>
 
@@ -35,7 +35,7 @@
                         url += '?filter=' + encodeURIComponent(filter);
                     }
                     viewerJS.statistics.charts.renderImportSummary(
-                        'canvas-import-summary',
+                        'canvas-import-summary#{cc.clientId}',
                         url,
                         '#{msg.statistics_importedPages}',
                         '#{msg.statistics_importedFullTexts}'

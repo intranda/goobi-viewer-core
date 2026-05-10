@@ -23,7 +23,7 @@
                 <h:panelGroup
                     layout="block"
                     styleClass="statistics-chart__canvas-wrap">
-                    <canvas id="canvas-top-collections" />
+                    <canvas id="canvas-top-collections#{cc.clientId}" />
                 </h:panelGroup>
             </h:panelGroup>
 
@@ -36,7 +36,7 @@
                         url.searchParams.set('filter', filter);
                     }
                     viewerJS.statistics.charts.renderTopCollections(
-                        'canvas-top-collections',
+                        'canvas-top-collections#{cc.clientId}',
                         url.toString(),
                         '#{request.contextPath}/browse/'
                     );

@@ -23,7 +23,7 @@
                 <h:panelGroup
                     layout="block"
                     styleClass="statistics-chart__canvas-wrap">
-                    <canvas id="canvas-publication-centuries" />
+                    <canvas id="canvas-publication-centuries#{cc.clientId}" />
                 </h:panelGroup>
             </h:panelGroup>
 
@@ -40,7 +40,7 @@
                         url.searchParams.set('filter', filter);
                     }
                     viewerJS.statistics.charts.renderPublicationCenturies(
-                        'canvas-publication-centuries',
+                        'canvas-publication-centuries#{cc.clientId}',
                         url.toString(),
                         logScale
                     );

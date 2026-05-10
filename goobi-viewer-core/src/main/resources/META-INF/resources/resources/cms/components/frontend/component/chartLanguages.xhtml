@@ -23,7 +23,7 @@
                 <h:panelGroup
                     layout="block"
                     styleClass="statistics-chart__canvas-wrap">
-                    <canvas id="canvas-languages" />
+                    <canvas id="canvas-languages#{cc.clientId}" />
                 </h:panelGroup>
             </h:panelGroup>
 
@@ -36,7 +36,7 @@
                         url.searchParams.set('filter', filter);
                     }
                     viewerJS.statistics.charts.renderLanguages(
-                        'canvas-languages',
+                        'canvas-languages#{cc.clientId}',
                         url.toString()
                     );
                 })();

@@ -24,7 +24,7 @@
                 <h:panelGroup
                     layout="block"
                     styleClass="statistics-chart__canvas-wrap">
-                    <canvas id="canvas-publication-types" />
+                    <canvas id="canvas-publication-types#{cc.clientId}" />
                 </h:panelGroup>
             </h:panelGroup>
 
@@ -42,7 +42,7 @@
                         url.searchParams.set('filter', filter);
                     }
                     viewerJS.statistics.charts.renderPublicationTypes(
-                        'canvas-publication-types',
+                        'canvas-publication-types#{cc.clientId}',
                         url.toString(),
                         '#{request.contextPath}/search/',
                         filter

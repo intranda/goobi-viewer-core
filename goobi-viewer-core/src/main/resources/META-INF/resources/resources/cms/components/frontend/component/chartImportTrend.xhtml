@@ -23,7 +23,7 @@
                 <h:panelGroup
                     layout="block"
                     styleClass="statistics-chart__canvas-wrap">
-                    <canvas id="canvas-import-trend" />
+                    <canvas id="canvas-import-trend#{cc.clientId}" />
                 </h:panelGroup>
             </h:panelGroup>
 
@@ -37,7 +37,7 @@
                         url += '?filter=' + encodeURIComponent(filter);
                     }
                     viewerJS.statistics.charts.renderImportTrend(
-                        'canvas-import-trend',
+                        'canvas-import-trend#{cc.clientId}',
                         url
                     );
                 })();
