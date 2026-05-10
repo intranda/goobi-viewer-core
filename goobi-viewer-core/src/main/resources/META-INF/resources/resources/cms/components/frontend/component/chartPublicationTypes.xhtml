@@ -30,19 +30,20 @@
 
             <script type="text/javascript">
                 (function() {
-                    // Filter comes from the admin-edited CMSStatisticsFilterContent attached to the "filter" item
-                    // defined in chartPublicationTypes.xml. EL renders an empty string if no content is persisted yet,
-                    // which the `if (filter)` guard below treats as "no filter".
+                    // Filter comes from the admin-edited CMSStatisticsFilterContent attached to the "filter" item.
+                    // URLSearchParams is used here instead of manual string concatenation, because writing query
+                    // separators by hand inside a Facelets script block is fragile: an XML parser reads bare
+                    // ampersands as entity-references, and a code formatter can interpret an unescaped one as a
+                    // bitwise-AND operator. The URL builder sidesteps both issues.
                     const filter = '#{cc.attrs.component.getContent("filter").filterQuery}';
-                    let url = '#{request.contextPath}/api/v1/statistics/index/publication-types?lang=#{navigationHelper.localeString}';
+                    const url = new URL('#{request.contextPath}/api/v1/statistics/index/publication-types', window.location.origin);
+                    url.searchParams.set('lang', '#{navigationHelper.localeString}');
                     if (filter) {
-                        // Use the XML entity here because Facelets parses this script block as XML;
-                        // JS still receives a single ampersand at runtime.
-                        url += ' &amp; filter=' + encodeURIComponent(filter);
+                        url.searchParams.set('filter', filter);
                     }
                     viewerJS.statistics.charts.renderPublicationTypes(
                         'canvas-publication-types',
-                        url,
+                        url.toString(),
                         '#{request.contextPath}/search/',
                         filter
                     );
