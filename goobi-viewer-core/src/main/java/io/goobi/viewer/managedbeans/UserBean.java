@@ -714,7 +714,7 @@ public class UserBean implements Serializable {
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (u != null && u.isActive() && !u.isOpenIdUser()) {
             if (StringUtils.isNotEmpty(activationKey) && activationKey.equals(u.getActivationKey())) {
-                byte[] pwBytes = new byte[4];
+                byte[] pwBytes = new byte[7];
                 SECURE_RANDOM.nextBytes(pwBytes);
                 String newPassword = HexFormat.of().formatHex(pwBytes);
                 u.setNewPassword(newPassword);
