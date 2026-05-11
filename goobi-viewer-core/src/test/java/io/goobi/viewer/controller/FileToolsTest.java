@@ -287,4 +287,58 @@ class FileToolsTest extends AbstractTest {
         Assertions.assertEquals("shadow", FileTools.sanitizeFileName("../../../../etc/shadow"));
         Assertions.assertEquals("web.xml", FileTools.sanitizeFileName("../../WEB-INF/web.xml"));
     }
+
+    /**
+     * @see FileTools#copyWithSizeLimit(InputStream, Path, long)
+     * @verifies write small file completely
+     */
+    @Test
+    void copyWithSizeLimit_shouldWriteSmallFileCompletely(@TempDir Path tempDir) throws IOException {
+        Path target = tempDir.resolve("ok.bin");
+        byte[] payload = "hello world".getBytes();
+        try (InputStream in = new java.io.ByteArrayInputStream(payload)) {
+            FileTools.copyWithSizeLimit(in, target, 1024);
+        }
+        Assertions.assertArrayEquals(payload, Files.readAllBytes(target));
+    }
+
+    /**
+     * @see FileTools#copyWithSizeLimit(InputStream, Path, long)
+     * @verifies throw IOException when input exceeds maxBytes
+     */
+    @Test
+    void copyWithSizeLimit_shouldThrowIOExceptionWhenInputExceedsMaxBytes(@TempDir Path tempDir) throws IOException {
+        Path target = tempDir.resolve("too-large.bin");
+        byte[] payload = new byte[2048];
+        try (InputStream in = new java.io.ByteArrayInputStream(payload)) {
+            Assertions.assertThrows(IOException.class, () -> FileTools.copyWithSizeLimit(in, target, 1024));
+        }
+    }
+
+    /**
+     * @see FileTools#copyWithSizeLimit(InputStream, Path, long)
+     * @verifies delete partial file on abort
+     */
+    @Test
+    void copyWithSizeLimit_shouldDeletePartialFileOnAbort(@TempDir Path tempDir) throws IOException {
+        Path target = tempDir.resolve("partial.bin");
+        byte[] payload = new byte[16 * 1024];
+        try (InputStream in = new java.io.ByteArrayInputStream(payload)) {
+            Assertions.assertThrows(IOException.class, () -> FileTools.copyWithSizeLimit(in, target, 1024));
+        }
+        Assertions.assertFalse(Files.exists(target), "partial file must be cleaned up on size-limit abort");
+    }
+
+    /**
+     * @see FileTools#copyWithSizeLimit(InputStream, Path, long)
+     * @verifies reject non positive maxBytes
+     */
+    @Test
+    void copyWithSizeLimit_shouldRejectNonPositiveMaxBytes(@TempDir Path tempDir) throws IOException {
+        Path target = tempDir.resolve("nope.bin");
+        try (InputStream in = new java.io.ByteArrayInputStream(new byte[0])) {
+            Assertions.assertThrows(IOException.class, () -> FileTools.copyWithSizeLimit(in, target, 0));
+            Assertions.assertThrows(IOException.class, () -> FileTools.copyWithSizeLimit(in, target, -1));
+        }
+    }
 }

@@ -30,7 +30,6 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -72,8 +71,9 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -102,6 +102,15 @@ public class UserAvatarResource extends ImageResource {
     protected HttpServletResponse servletResponse;
 
     private static final String FILENAME_TEMPLATE = "user_{id}";
+
+    /**
+     * Maximum upload size accepted by this REST endpoint, in bytes. Kept in sync with the
+     * {@code maxsize} attribute of the OmniFaces {@code o:inputFile} component in
+     * {@code resources/tags/user/userAvatar.xhtml} (16 MiB), which guards the JSF
+     * upload path. Without an equivalent cap here, the REST endpoint would be an
+     * unbounded disk-fill DoS vector for any authenticated user.
+     */
+    private static final long MAX_AVATAR_UPLOAD_BYTES = 16L * 1024L * 1024L;
 
     public UserAvatarResource(
             @Context ContainerRequestContext context, 
@@ -213,6 +222,8 @@ public class UserAvatarResource extends ImageResource {
     @ApiResponse(responseCode = "404", description = "User not found")
     @ApiResponse(responseCode = "406", description = "Invalid upload — missing file stream or no active user session")
     @ApiResponse(responseCode = "409", description = "A file with this name already exists")
+    @ApiResponse(responseCode = "413",
+            description = "Upload exceeds the maximum avatar size (mirrors the JSF maxsize attribute)")
     @ApiResponse(responseCode = "500", description = "Internal server error during file upload")
     public Response uploadAvatarFile(@DefaultValue("true") @FormDataParam("enabled") boolean enabled,
             @FormDataParam("filename") String uploadFilename,
@@ -234,7 +245,20 @@ public class UserAvatarResource extends ImageResource {
                 Files.createDirectories(mediaFolder);
             }
 
-            Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
+            // Bounded streaming copy so an authenticated client cannot fill the disk by posting
+            // an arbitrarily large body to this endpoint. The 16 MiB cap mirrors the OmniFaces
+            // o:inputFile maxsize in userAvatar.xhtml; on overrun the helper deletes the partial
+            // file and the IOException is mapped to HTTP 413 below.
+            try {
+                FileTools.copyWithSizeLimit(uploadedInputStream, mediaFile, MAX_AVATAR_UPLOAD_BYTES);
+            } catch (IOException e) {
+                if (e.getMessage() != null && e.getMessage().startsWith("Upload exceeds maximum allowed size")) {
+                    return Response.status(413)
+                            .entity("Avatar upload exceeds maximum allowed size of " + MAX_AVATAR_UPLOAD_BYTES + " bytes.")
+                            .build();
+                }
+                throw e;
+            }
 
             if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
                 logger.debug("Successfully downloaded file {}", mediaFile);

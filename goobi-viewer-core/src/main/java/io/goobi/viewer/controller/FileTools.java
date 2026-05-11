@@ -42,6 +42,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
@@ -782,5 +783,52 @@ public final class FileTools {
         }
 
         return sanitizedFileName;
+    }
+
+    /**
+     * Streams bytes from {@code source} to {@code targetFile} and aborts with an
+     * {@link IOException} as soon as the read count exceeds {@code maxBytes}. The partial
+     * target file is removed on abort so callers do not have to clean up themselves.
+     *
+     * <p>Defense against unbounded uploads (DoS via disk exhaustion). The caller should
+     * map the thrown {@link IOException} to an HTTP {@code 413 Payload Too Large} or
+     * comparable application-level response.
+     *
+     * <p>The input stream is not closed by this method, matching the semantics of
+     * {@link Files#copy(InputStream, Path, java.nio.file.CopyOption...)}.
+     *
+     * @param source byte source to read from; not closed by this method
+     * @param targetFile target file path; overwritten if it already exists
+     * @param maxBytes maximum number of bytes that may be written; must be {@code > 0}
+     * @throws IOException if the input exceeds {@code maxBytes}, if writing fails, or if
+     *         {@code maxBytes <= 0}
+     * @should write small file completely
+     * @should throw IOException when input exceeds maxBytes
+     * @should delete partial file on abort
+     * @should reject non positive maxBytes
+     */
+    public static void copyWithSizeLimit(final InputStream source, final Path targetFile, final long maxBytes) throws IOException {
+        if (maxBytes <= 0) {
+            throw new IOException("maxBytes must be > 0 but was " + maxBytes);
+        }
+        // Stream in 8 KiB chunks so the limit is enforced before the whole upload reaches
+        // disk. CREATE + TRUNCATE_EXISTING mirrors REPLACE_EXISTING semantics for regular
+        // files. The partial file is deleted on any IOException, including limit breach.
+        try (OutputStream out = Files.newOutputStream(targetFile,
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+            byte[] buffer = new byte[8192];
+            long total = 0;
+            int read;
+            while ((read = source.read(buffer)) >= 0) {
+                total += read;
+                if (total > maxBytes) {
+                    throw new IOException("Upload exceeds maximum allowed size of " + maxBytes + " bytes");
+                }
+                out.write(buffer, 0, read);
+            }
+        } catch (IOException e) {
+            Files.deleteIfExists(targetFile);
+            throw e;
+        }
     }
 }
