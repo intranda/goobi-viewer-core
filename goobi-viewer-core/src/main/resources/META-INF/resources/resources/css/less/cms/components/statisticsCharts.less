@@ -52,6 +52,39 @@
     min-height: 400px;
 }
 
+// Mobile fix: on narrow viewports the desktop rule above would force a minimum width of
+// ~711px (min-height 400px × 16/9), causing horizontal page overflow on phones (375–430px
+// viewports). Drop the fixed minimum and move the aspect-ratio onto the inner canvas wrapper
+// so the chart height follows the available container width instead of dictating it.
+@media (max-width: 768px) {
+    .statistics-chart--publication-types,
+    .statistics-chart--import-trend,
+    .statistics-chart--import-summary,
+    .statistics-chart--most-edited,
+    .statistics-chart--publication-centuries,
+    .statistics-chart--languages,
+    .statistics-chart--top-collections {
+        aspect-ratio: auto;
+        min-height: 0;
+    }
+
+    .statistics-chart {
+        max-width: 100%;
+    }
+
+    .statistics-chart__canvas-wrap {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+
+    .statistics-chart canvas {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+}
+
 .statistics-list {
     margin: 1rem 0;
     // Match the chart components so list-style components (almost-completed, most-active-users)
