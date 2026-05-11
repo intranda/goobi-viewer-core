@@ -31,7 +31,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +147,10 @@ public class TempMediaFileResource {
             Path targetFile = targetDir.resolve(sanitizedFilename);
 
             try {
-                Files.copy(uploadedInputStream, targetFile, StandardCopyOption.REPLACE_EXISTING);
+                // Defense-in-depth (CWE-59): use OS-enforced NOFOLLOW open via the helper
+                // instead of Files.copy(...), which would follow symlinks at the target path
+                // and could be abused to overwrite files outside the temp media folder.
+                FileTools.copyRejectingSymlinks(uploadedInputStream, targetFile);
 
                 if (Files.exists(targetFile) && Files.size(targetFile) > 0) {
                     return Response.status(Status.OK).entity(message("Successfully uploaded " + targetFile)).build();
@@ -157,9 +159,9 @@ public class TempMediaFileResource {
             } catch (IOException e) {
                 String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), targetFile.getFileName().toString());
                 try {
-                    if (Files.exists(targetFile)) {
-                        Files.delete(targetFile);
-                    }
+                    // CWE-367: atomic single-syscall delete replaces previous exists()+delete()
+                    // TOCTOU pattern where the file state could change between the two calls.
+                    Files.deleteIfExists(targetFile);
                 } catch (IOException e1) {
                     logger.error("Error deleting failed upload file {}", targetFile, e1);
                 }

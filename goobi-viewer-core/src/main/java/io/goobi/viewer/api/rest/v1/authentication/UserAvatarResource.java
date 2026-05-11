@@ -30,7 +30,6 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -72,8 +71,9 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -230,11 +230,14 @@ public class UserAvatarResource extends ImageResource {
         Path mediaFile = getAvatarFilePath(uploadFilename, user.get().getId());
         try {
 
-            if (!Files.exists(mediaFolder)) {
-                Files.createDirectories(mediaFolder);
-            }
+            // createDirectories is already idempotent; the previous exists() guard was redundant.
+            Files.createDirectories(mediaFolder);
 
-            Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
+            // Defense-in-depth (CWE-59): use OS-enforced NOFOLLOW open via the helper.
+            // The previous Files.copy(...) call followed symlinks at the target and could
+            // be abused to overwrite arbitrary writable files if an attacker had write
+            // access to the user avatar folder.
+            FileTools.copyRejectingSymlinks(uploadedInputStream, mediaFile);
 
             if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
                 logger.debug("Successfully downloaded file {}", mediaFile);
@@ -243,9 +246,8 @@ public class UserAvatarResource extends ImageResource {
                 return Response.status(Status.OK).build();
             }
             String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
-            if (Files.exists(mediaFile)) {
-                Files.delete(mediaFile);
-            }
+            // CWE-367: atomic single-syscall delete replaces previous exists()+delete() TOCTOU.
+            Files.deleteIfExists(mediaFile);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
         } catch (FileAlreadyExistsException e) {
             String message =
