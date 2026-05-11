@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+    <!-- false positive -->
+    <suppress>
+       <notes><![CDATA[
+       file name: commons-jxpath-1.3.jar
+       ]]></notes>
+       <packageUrl regex="true">^pkg:maven/commons-jxpath/commons-jxpath@.*$</packageUrl>
+       <vulnerabilityName>CVE-2022-41852</vulnerabilityName>
+    </suppress>
+    <suppress>
+       <notes><![CDATA[
+       file name: commons-jxpath-1.3.jar
+       ]]></notes>
+       <packageUrl regex="true">^pkg:maven/commons-jxpath/commons-jxpath@.*$</packageUrl>
+       <cve>CVE-2022-40159</cve>
+    </suppress>
+    <suppress>
+       <notes><![CDATA[
+       file name: commons-jxpath-1.3.jar
+       ]]></notes>
+       <packageUrl regex="true">^pkg:maven/commons-jxpath/commons-jxpath@.*$</packageUrl>
+       <cve>CVE-2022-40160</cve>
+    </suppress>
+</suppressions>
+
