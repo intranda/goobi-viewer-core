@@ -36,12 +36,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
@@ -782,5 +786,62 @@ public final class FileTools {
         }
 
         return sanitizedFileName;
+    }
+
+    /**
+     * Copies bytes from the given input stream to the given target file (replacing it if it exists),
+     * but refuses to follow symbolic links at the target path or its immediate parent directory.
+     *
+     * <p>Defense-in-depth against symlink-based file overwrite attacks (CWE-59 / OWASP A05).
+     * The target file is opened via {@link FileChannel#open(Path, java.nio.file.OpenOption...)}
+     * with {@link LinkOption#NOFOLLOW_LINKS}, so the operating system rejects the open if the
+     * leaf path element is a symbolic link (Linux: {@code O_NOFOLLOW}). The parent directory is
+     * checked separately via {@link Files#isSymbolicLink(Path)} because {@code NOFOLLOW_LINKS}
+     * only constrains the last path element.
+     *
+     * <p>Limitations: hard links and symlinks higher up the path (above the immediate parent)
+     * are not detected; mitigations for those require platform-specific attribute inspection
+     * or a configured base-path allowlist and are out of scope for this helper.
+     *
+     * <p>The input stream is not closed by this method, matching the semantics of
+     * {@link Files#copy(InputStream, Path, java.nio.file.CopyOption...)}; the caller is
+     * responsible for closing it.
+     *
+     * @param source input stream of bytes to write; not closed by this method
+     * @param targetFile target file path to write to
+     * @throws IOException if {@code targetFile} or its parent is a symbolic link, if the target
+     *         is a directory, or if the write itself fails
+     * @should reject symbolic link at target path
+     * @should reject symbolic link to nonexistent target
+     * @should reject symbolic link at parent directory
+     * @should write bytes when target is regular file
+     * @should write zero byte file when source is empty
+     * @should copy large payload completely across multiple buffer reads
+     * @should overwrite existing regular file at target
+     * @should fail when target is an existing directory
+     * @should not close the source input stream
+     */
+    public static void copyRejectingSymlinks(final InputStream source, final Path targetFile) throws IOException {
+        Path parent = targetFile.getParent();
+        if (parent != null && Files.isSymbolicLink(parent)) {
+            throw new IOException("Refusing to write through symlinked parent directory: " + parent);
+        }
+        // FileChannel.open with NOFOLLOW_LINKS makes the OS refuse to follow a symlink at the
+        // leaf path element; this closes the TOCTOU window that a separate isSymbolicLink()
+        // pre-check would have. TRUNCATE_EXISTING gives REPLACE_EXISTING-equivalent semantics
+        // for regular files.
+        // The InputStream is intentionally not wrapped in try-with-resources here, matching
+        // Files.copy(InputStream, Path, ...) semantics (caller closes the stream).
+        // Channels.newOutputStream(channel).close() closes the channel; using transferTo
+        // on the InputStream (Java 9+, spec'd "until end of stream") avoids the partial-read
+        // pitfall that FileChannel.transferFrom over Channels.newChannel(in) would have.
+        try (FileChannel ch = FileChannel.open(targetFile,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                LinkOption.NOFOLLOW_LINKS);
+                OutputStream out = Channels.newOutputStream(ch)) {
+            source.transferTo(out);
+        }
     }
 }
