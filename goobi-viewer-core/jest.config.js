@@ -28,7 +28,7 @@ module.exports = {
 
     // Aggregated coverage for both projects in a single Maven-friendly location.
     coverageDirectory: path.join(__dirname, 'target/jest-coverage'),
-    coverageReporters: ['text-summary', 'lcov'],
+    coverageReporters: ['text-summary', 'lcov', 'html'],
     collectCoverageFrom: [
         'goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/**/*.js',
         'scripts/pre-commit/*.js',
@@ -53,7 +53,7 @@ module.exports = {
                 suiteNameTemplate: '{filepath}',
                 classNameTemplate: '{classname}',
                 titleTemplate: '{title}',
-                ancestorSeparator: ' › ',
+                ancestorSeparator: ' > ',
                 addFileAttribute: 'true',
             },
         ],
@@ -105,7 +105,7 @@ module.exports = {
             testMatch: [
                 '<rootDir>/goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/media/__tests__/**/*.test.mjs',
             ],
-            // No transform — Node executes .mjs natively under the experimental flag.
+            // No transform - Node executes .mjs natively under the experimental flag.
             transform: {},
             setupFiles: [path.join(__dirname, 'jest-setup-browser.js')],
         },

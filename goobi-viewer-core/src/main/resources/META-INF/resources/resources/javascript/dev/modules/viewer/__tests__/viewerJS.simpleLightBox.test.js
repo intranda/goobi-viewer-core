@@ -49,9 +49,9 @@ describe('viewerJS.simpleLightBox click flow', () => {
         $('.lightbox-image').trigger('click');
         const box = document.querySelector('.lightbox-modal-box');
         // Under jsdom outerWidth/outerHeight are 0 (no layout), so the
-        // computed offset stringifies to "0px"; but the inline-style
-        // properties must be set as proof that _centerModalBox ran.
-        expect(box.style.marginTop).toBe('0px');
-        expect(box.style.marginLeft).toBe('0px');
+        // computed offset is 0; but the inline-style properties must be set
+        // as proof that _centerModalBox ran. Match both "0px" and "-0px".
+        expect(box.style.marginTop).toMatch(/^-?0px$/);
+        expect(box.style.marginLeft).toMatch(/^-?0px$/);
     });
 });
