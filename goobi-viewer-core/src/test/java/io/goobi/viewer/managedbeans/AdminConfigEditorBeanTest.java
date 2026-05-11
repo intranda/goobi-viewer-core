@@ -32,6 +32,7 @@ class AdminConfigEditorBeanTest extends AbstractTest {
 
     @Test
     void unlockFile_shouldDeleteSwpFile() throws IOException {
+        AdminConfigEditorBean.lockFile(testFile, "session-a");
         VimSwapFile.create(testFile, "testhost");
 
         AdminConfigEditorBean.unlockFile(testFile, "session-a");

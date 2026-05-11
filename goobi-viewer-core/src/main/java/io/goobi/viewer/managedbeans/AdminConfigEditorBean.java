@@ -445,6 +445,17 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
+     * Locks the given file for the given session id in the static (global) fileLocks object.
+     *
+     * @param file path of the config file to lock
+     * @param sessionId HTTP session ID acquiring the lock
+     * @return true if the lock was acquired; false if held by another session
+     */
+    public static boolean lockFile(Path file, String sessionId) {
+        return file != null && fileLocks.lockFile(file, sessionId);
+    }
+
+    /**
      * Unlocks the given file for the given session id in the static (global) fileLocks object.
      *
      * @param file path of the config file to unlock
