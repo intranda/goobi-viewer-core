@@ -219,6 +219,8 @@ public final class NetTools {
         addHostFromUrl(hosts, config.getSolrUrl());
         addHostFromUrl(hosts, config.getWorkflowRestUrl());
         addHostFromUrl(hosts, config.getRestApiUrl());
+        addHostFromUrl(hosts, config.getIIIFApiUrl());
+        addHostFromUrl(hosts, config.getViewerBaseUrl());
         for (IAuthenticationProvider provider
                 : config.getAuthenticationProviders()) {
             if (provider instanceof HttpAuthenticationProvider) {
