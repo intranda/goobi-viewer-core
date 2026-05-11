@@ -2,6 +2,7 @@ package io.goobi.viewer.model.administration.configeditor;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -35,7 +36,9 @@ public final class VimSwapFile {
         STALE_VIM
     }
 
-    private VimSwapFile() {}
+    private VimSwapFile() {
+        // utility class
+    }
 
     /**
      * Returns the path of the vim-style swap file for the given file.
@@ -156,7 +159,7 @@ public final class VimSwapFile {
     private static String getLocalHostname() {
         try {
             return InetAddress.getLocalHost().getHostName();
-        } catch (Exception e) {
+        } catch (UnknownHostException e) {
             return "unknown";
         }
     }

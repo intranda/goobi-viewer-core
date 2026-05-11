@@ -401,7 +401,7 @@ public class AdminConfigEditorBean implements Serializable {
                 logger.trace("{} locked for session ID {}", filePath.toAbsolutePath(), sessionId);
                 try {
                     VimSwapFile.create(filePath, null);
-                } catch (Exception e) {
+                } catch (IOException e) {
                     logger.warn("Could not create swap file for {}: {}", filePath, e.getMessage(), e);
                 }
                 // outputLock also locks reading this file in Windows, so read it prior to creating the lock
