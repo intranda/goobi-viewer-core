@@ -28,6 +28,9 @@ package io.goobi.viewer.api.rest.model.statistics.index;
  * {@code century=18} stands for years 1800–1899, {@code century=20} stands for years 2000–2099, etc. Pre-modern
  * centuries (negative values) are dropped by the service to avoid the grammatically odd "-1. Jh." UI label.
  * </p>
+ *
+ * @param century century index (e.g. 18 for 1800–1899, 20 for 2000–2099)
+ * @param count number of records dated to this century
  */
 public record PublicationCenturyStatistic(int century, long count) {
 }

@@ -29,6 +29,10 @@ package io.goobi.viewer.api.rest.model.statistics.index;
  * {@code label} is the locale-translated display value used by the pie tooltip. Translation lookup uses the bare
  * code as resource-bundle key, matching the existing message convention ({@code en=English}).
  * </p>
+ *
+ * @param code raw ISO language token from Solr (e.g. {@code "en"}, {@code "fra"}, {@code "ger"})
+ * @param label locale-translated display value, or {@code code} if no translation exists
+ * @param count number of records in this language
  */
 public record LanguageStatistic(String code, String label, long count) {
 }

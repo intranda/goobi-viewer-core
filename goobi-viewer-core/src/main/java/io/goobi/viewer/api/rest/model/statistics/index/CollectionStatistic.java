@@ -29,6 +29,10 @@ package io.goobi.viewer.api.rest.model.statistics.index;
  * locale-translated display value. The frontend uses {@code name} unchanged when building the click-through
  * browse URL ({@code /browse/-/-/1/-/DC:<name>/}), matching the pretty-config browse mapping.
  * </p>
+ *
+ * @param name raw Solr {@code DC} token (e.g. {@code "newspapers.early"})
+ * @param label locale-translated display value, or {@code name} if no translation exists
+ * @param count number of records in this collection
  */
 public record CollectionStatistic(String name, String label, long count) {
 }
