@@ -54,6 +54,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
@@ -218,6 +219,7 @@ public class CampaignItemResource {
      * @param persistentIdentifier persistent identifier of the target record
      * @param page page order number within the record
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should ignore creatorURI from body
      */
     @PUT
     @Path("/{pi}/{page}")
@@ -250,11 +252,13 @@ public class CampaignItemResource {
             return;
         }
 
-        User user = null;
-        Long userId = User.getId(item.getCreatorURI());
-        if (userId != null) {
-            user = DataManager.getInstance().getDao().getUser(userId);
-        }
+        // Resolve the user that "owns" the status update strictly from the authenticated session,
+        // never from the request body. The body-supplied creatorURI used to drive this lookup,
+        // which let any campaign collaborator attribute updates to arbitrary other users.
+        // The campaign-level @CrowdsourcingCampaignBinding has already validated that the caller
+        // is allowed for this campaign — so the caller IS the rightful user. Same accessor as
+        // the filter (CrowdsourcingCampaignFilter) to stay consistent.
+        User user = BeanUtils.getUserBean() != null ? BeanUtils.getUserBean().getUser() : null;
 
         switch (campaign.getStatisticMode()) {
             case RECORD:
