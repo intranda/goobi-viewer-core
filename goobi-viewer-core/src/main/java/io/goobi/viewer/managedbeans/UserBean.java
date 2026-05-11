@@ -365,6 +365,7 @@ public class UserBean implements Serializable {
      * @param provider Authentication provider that performed the login
      * @param result Result object containing user and request/response data
      * @throws IllegalStateException
+     * @should rotate session id after successful login
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
         logger.debug("completeLogin: {}", this);
@@ -404,6 +405,30 @@ public class UserBean implements Serializable {
                     }
 
                     BeanUtils.wipeSessionAttributes(session);
+
+                    // Mitigate session fixation: rotate JSESSIONID after
+                    // successful authentication (OWASP A07:2021).
+                    // changeSessionId() preserves the HttpSession instance
+                    // and all attributes.
+                    HttpSession currentSession =
+                            request != null
+                                    ? request.getSession(false)
+                                    : null;
+                    if (currentSession != null) {
+                        try {
+                            String oldId = currentSession.getId();
+                            String newId = request.changeSessionId();
+                            logger.debug(
+                                    "Rotated session id after login:"
+                                            + " {} -> {}",
+                                    oldId, newId);
+                        } catch (IllegalStateException e) {
+                            logger.debug(
+                                    "changeSessionId failed: {}",
+                                    e.getMessage());
+                        }
+                    }
+
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
                     u.setLastLogin(LocalDateTime.now());
