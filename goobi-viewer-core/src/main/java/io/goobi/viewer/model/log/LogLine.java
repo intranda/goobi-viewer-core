@@ -2,6 +2,12 @@ package io.goobi.viewer.model.log;
 
 /**
  * Immutable representation of a single parsed log line.
+ *
+ * @param timestamp ISO-formatted timestamp string from the log entry
+ * @param level     log level (INFO, WARN, ERROR, DEBUG, TRACE)
+ * @param thread    name of the thread that produced the log entry
+ * @param location  source location (logger name or class) of the log entry
+ * @param message   message body, including any stacktrace continuation lines
  */
 public record LogLine(String timestamp, String level, String thread, String location, String message) {
 
@@ -14,7 +20,9 @@ public record LogLine(String timestamp, String level, String thread, String loca
     }
 
     private static String escape(String s) {
-        if (s == null) return "";
+        if (s == null) {
+            return "";
+        }
         StringBuilder sb = new StringBuilder(s.length());
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);

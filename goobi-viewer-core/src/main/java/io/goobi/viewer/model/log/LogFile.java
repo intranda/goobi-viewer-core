@@ -33,7 +33,9 @@ public enum LogFile {
      */
     public Optional<Path> getPath() {
         String configured = DataManager.getInstance().getConfiguration().getLogViewerFilePath(name);
-        if (configured == null || configured.isBlank()) return Optional.empty();
+        if (configured == null || configured.isBlank()) {
+            return Optional.empty();
+        }
         return Optional.of(Path.of(configured));
     }
 
@@ -42,9 +44,13 @@ public enum LogFile {
      * Returns empty for any unknown or null name — never throws.
      */
     public static Optional<LogFile> fromName(String name) {
-        if (name == null || name.isBlank()) return Optional.empty();
+        if (name == null || name.isBlank()) {
+            return Optional.empty();
+        }
         for (LogFile lf : values()) {
-            if (lf.name.equalsIgnoreCase(name)) return Optional.of(lf);
+            if (lf.name.equalsIgnoreCase(name)) {
+                return Optional.of(lf);
+            }
         }
         return Optional.empty();
     }

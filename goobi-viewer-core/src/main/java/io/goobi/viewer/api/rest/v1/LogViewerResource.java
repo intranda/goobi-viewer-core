@@ -93,7 +93,9 @@ public class LogViewerResource {
 
             StringBuilder json = new StringBuilder("{\"lines\":[");
             for (int i = 0; i < lines.size(); i++) {
-                if (i > 0) json.append(',');
+                if (i > 0) {
+                    json.append(',');
+                }
                 json.append(lines.get(i).toJson());
             }
             json.append("],\"nextOffset\":").append(currentSize).append("}");
@@ -135,12 +137,18 @@ public class LogViewerResource {
      * Reads all log content after the given byte offset.
      */
     static List<LogLine> readFromOffset(Path logPath, long offset) throws IOException {
-        if (!Files.exists(logPath)) return Collections.emptyList();
+        if (!Files.exists(logPath)) {
+            return Collections.emptyList();
+        }
         long fileSize = Files.size(logPath);
-        if (offset >= fileSize) return Collections.emptyList();
+        if (offset >= fileSize) {
+            return Collections.emptyList();
+        }
         try (FileInputStream fis = new FileInputStream(logPath.toFile())) {
             long skipped = fis.skip(offset);
-            if (skipped < offset) return Collections.emptyList();
+            if (skipped < offset) {
+                return Collections.emptyList();
+            }
             byte[] bytes = fis.readNBytes(MAX_READ_BYTES);
             return LogLineParser.parse(new String(bytes, StandardCharsets.UTF_8));
         }

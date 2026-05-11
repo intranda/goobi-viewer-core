@@ -48,7 +48,9 @@ public class LogViewerManager {
             sessions.remove(session);
             if (sessions.isEmpty()) {
                 Tailer tailer = activeTailers.remove(logFile);
-                if (tailer != null) tailer.stop();
+                if (tailer != null) {
+                    tailer.stop();
+                }
                 return null;
             }
             return sessions;
@@ -75,15 +77,21 @@ public class LogViewerManager {
      */
     void broadcastParsed(LogFile logFile, String rawBlock) {
         Set<Session> sessions = activeSessions.get(logFile);
-        if (sessions == null || sessions.isEmpty()) return;
+        if (sessions == null || sessions.isEmpty()) {
+            return;
+        }
 
         List<LogLine> entries = LogLineParser.parse(rawBlock);
-        if (entries.isEmpty()) return;
+        if (entries.isEmpty()) {
+            return;
+        }
 
         // Build one JSON array payload for all entries in this flush cycle
         StringBuilder json = new StringBuilder("[");
         for (int i = 0; i < entries.size(); i++) {
-            if (i > 0) json.append(',');
+            if (i > 0) {
+                json.append(',');
+            }
             json.append(entries.get(i).toJson());
         }
         json.append("]");
@@ -108,8 +116,13 @@ public class LogViewerManager {
             private final StringBuilder pending = new StringBuilder();
             private ScheduledFuture<?> flushTask;
 
-            @Override public void init(Tailer tailer) {}
-            @Override public void fileNotFound() {
+            @Override
+            public void init(Tailer tailer) {
+                // no-op
+            }
+
+            @Override
+            public void fileNotFound() {
                 logger.debug("Log file not found: {}", logFile.getName());
             }
             @Override public void fileRotated() {
@@ -137,7 +150,9 @@ public class LogViewerManager {
             }
 
             private synchronized void flush() {
-                if (pending.length() == 0) return;
+                if (pending.length() == 0) {
+                    return;
+                }
                 String raw = pending.toString();
                 pending.setLength(0);
                 cancelFlushTimer();

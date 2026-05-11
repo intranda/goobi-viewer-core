@@ -25,7 +25,9 @@ public final class LogLineParser {
 
     public static List<LogLine> parse(String raw) {
         List<LogLine> result = new ArrayList<>();
-        if (StringUtils.isBlank(raw)) return result;
+        if (StringUtils.isBlank(raw)) {
+            return result;
+        }
 
         String[] lines = raw.split("\\r?\\n");
         String currentLevel = null, currentTimestamp = null, currentThread = null, currentLocation = null;
@@ -46,7 +48,9 @@ public final class LogLineParser {
                 String msg = m.group(5);
                 currentMessage = new StringBuilder(msg != null ? msg : "");
             } else if (currentLevel != null) {
-                if (currentMessage.length() > 0) currentMessage.append("\n");
+                if (currentMessage.length() > 0) {
+                    currentMessage.append("\n");
+                }
                 currentMessage.append(line.stripLeading());
             }
         }
