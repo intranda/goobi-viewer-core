@@ -31,7 +31,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,14 +65,14 @@ import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Upload of resouces for DC record creation. Files uploaded here are directly written to a subfolder of the viewer hotfolder
@@ -87,6 +86,16 @@ import io.goobi.viewer.messages.Messages;
 public class TempMediaFileResource {
 
     private static final Logger logger = LogManager.getLogger(TempMediaFileResource.class);
+
+    /**
+     * Maximum size in bytes accepted for a single uploaded temp-media file (2 GiB). The DC-record
+     * creation UI advertises the same limit in the {@code admin__create_record__files__description}
+     * message; keep the two in sync. Large TIFF facsimiles are common in newspaper/map workflows,
+     * which is why this is much higher than the avatar cap, but bounded so an authenticated admin
+     * cannot exhaust the disk by accident or by a compromised account.
+     */
+    private static final long MAX_TEMP_MEDIA_UPLOAD_BYTES = 2L * 1024L * 1024L * 1024L;
+
     @Context
     protected HttpServletRequest servletRequest;
     @Context
@@ -113,6 +122,7 @@ public class TempMediaFileResource {
     @ApiResponse(responseCode = "400", description = "Invalid filename or missing upload stream")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "413", description = "Upload exceeds the maximum allowed size")
     @ApiResponse(responseCode = "500", description = "Internal error during file upload")
     public Response uploadMediaFiles(
             @Parameter(description = "Target folder name") @PathParam("folder") String foldername,
@@ -148,14 +158,25 @@ public class TempMediaFileResource {
             Path targetFile = targetDir.resolve(sanitizedFilename);
 
             try {
-                Files.copy(uploadedInputStream, targetFile, StandardCopyOption.REPLACE_EXISTING);
+                // Bounded streaming copy so an admin cannot fill the disk by uploading a huge
+                // file (CWE-770). The 2 GiB cap is advertised in the matching UI hint
+                // (admin__create_record__files__description). The helper deletes the partial
+                // target on overrun; the IOException is mapped to HTTP 413 below.
+                FileTools.copyWithSizeLimit(uploadedInputStream, targetFile, MAX_TEMP_MEDIA_UPLOAD_BYTES);
 
                 if (Files.exists(targetFile) && Files.size(targetFile) > 0) {
                     return Response.status(Status.OK).entity(message("Successfully uploaded " + targetFile)).build();
                 }
                 throw new IOException("Uploaded file doesn't exist or is empty");
             } catch (IOException e) {
+                if (e.getMessage() != null && e.getMessage().startsWith("Upload exceeds maximum allowed size")) {
+                    return Response.status(413)
+                            .entity(errorMessage("Upload exceeds maximum allowed size of " + MAX_TEMP_MEDIA_UPLOAD_BYTES + " bytes."))
+                            .build();
+                }
                 String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), targetFile.getFileName().toString());
+                // The helper already deletes the partial file on size-limit abort, but other
+                // IOExceptions (write failures etc.) leave the target around — clean up here.
                 try {
                     if (Files.exists(targetFile)) {
                         Files.delete(targetFile);
