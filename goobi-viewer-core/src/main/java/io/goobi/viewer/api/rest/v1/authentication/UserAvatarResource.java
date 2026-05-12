@@ -69,6 +69,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageIn
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.bindings.CSRFGuarded;
 import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -211,6 +212,10 @@ public class UserAvatarResource extends ImageResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    // CSRF protection: multipart/form-data is a CORS "simple request" and bypasses preflight,
+    // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
+    // available when webapi.csrf is enabled.
+    @CSRFGuarded
     @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" })
     // required=true signals schemathesis that an empty body is not a valid test case,
     // preventing false "schema-compliant request rejected" failures for empty POSTs.
@@ -219,6 +224,8 @@ public class UserAvatarResource extends ImageResource {
     // 400 is returned when the {userId} path parameter is not a valid integer, or when
     // the framework rejects a missing/malformed multipart body before the method is invoked.
     @ApiResponse(responseCode = "400", description = "Invalid user ID or missing/malformed multipart body")
+    @ApiResponse(responseCode = "403",
+            description = "CSRF protection: Origin not in allowlist (only sent when webapi.csrf is enabled)")
     @ApiResponse(responseCode = "404", description = "User not found")
     @ApiResponse(responseCode = "406", description = "Invalid upload — missing file stream or no active user session")
     @ApiResponse(responseCode = "409", description = "A file with this name already exists")

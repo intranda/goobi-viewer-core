@@ -62,6 +62,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
+import io.goobi.viewer.api.rest.bindings.CSRFGuarded;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
@@ -117,11 +118,16 @@ public class TempMediaFileResource {
     @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    // CSRF protection: multipart/form-data is a CORS "simple request" and bypasses preflight,
+    // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
+    // available when webapi.csrf is enabled. The existing 403 description is extended below.
+    @CSRFGuarded
     @Operation(summary = "Upload a media file to the temporary hotfolder for DC record creation", tags = { "media" })
     @ApiResponse(responseCode = "200", description = "File uploaded successfully")
     @ApiResponse(responseCode = "400", description = "Invalid filename or missing upload stream")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "403",
+            description = "Not authorized (admin login required) or CSRF protection violated (when webapi.csrf is enabled)")
     @ApiResponse(responseCode = "413", description = "Upload exceeds the maximum allowed size")
     @ApiResponse(responseCode = "500", description = "Internal error during file upload")
     public Response uploadMediaFiles(

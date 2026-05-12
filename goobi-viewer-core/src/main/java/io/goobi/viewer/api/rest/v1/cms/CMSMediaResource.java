@@ -67,6 +67,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.CSRFGuarded;
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
@@ -583,11 +584,16 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    // CSRF protection: multipart/form-data is a CORS "simple request" and bypasses preflight,
+    // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
+    // available when webapi.csrf is enabled. Existing 403 already covers the rejection code.
+    @CSRFGuarded
     @Operation(tags = { "cms" }, summary = "Upload a CMS media file")
     @RequestBody(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA))
     @ApiResponse(responseCode = "200", description = "File uploaded successfully")
     @ApiResponse(responseCode = "401", description = "Not authorized")
-    @ApiResponse(responseCode = "403", description = "User does not have permission to upload media files")
+    @ApiResponse(responseCode = "403",
+            description = "User does not have permission to upload media files, or CSRF protection violated (when webapi.csrf is enabled)")
     @ApiResponse(responseCode = "500", description = "Error saving the uploaded file")
     @UserLoggedInBinding
     public Response

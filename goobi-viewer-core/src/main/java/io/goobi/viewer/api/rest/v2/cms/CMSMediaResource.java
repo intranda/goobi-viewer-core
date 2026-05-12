@@ -84,6 +84,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.cache.CacheUtils;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.CSRFGuarded;
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
@@ -536,10 +537,15 @@ public class CMSMediaResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @UserLoggedInBinding
+    // CSRF protection: multipart/form-data is a CORS "simple request" and bypasses preflight,
+    // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
+    // available when webapi.csrf is enabled. Existing 403 already covers the rejection code.
+    @CSRFGuarded
     @Operation(tags = { "media" }, summary = "Upload a new CMS media file (requires login)")
     @ApiResponse(responseCode = "200", description = "File successfully uploaded; returns the CMS media item metadata")
     @ApiResponse(responseCode = "401", description = "Not logged in")
-    @ApiResponse(responseCode = "403", description = "User does not have rights to upload media")
+    @ApiResponse(responseCode = "403",
+            description = "User does not have rights to upload media, or CSRF protection violated (when webapi.csrf is enabled)")
     @ApiResponse(responseCode = "406", description = "Upload stream is null")
     @ApiResponse(responseCode = "500", description = "Upload failed due to an internal error")
     public Response uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
