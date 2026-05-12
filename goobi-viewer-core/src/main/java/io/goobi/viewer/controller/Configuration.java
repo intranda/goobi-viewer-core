@@ -5768,6 +5768,37 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns whether the CSRF Origin/Referer guard filter is active.
+     *
+     * <p>When {@code false} (default), the {@code @CSRFGuarded}-annotated endpoints accept
+     * any cross-site request - preserves pre-existing behavior for upgrades. When {@code true},
+     * the filter rejects requests whose Origin/Referer does not match
+     * {@link #getViewerBaseUrl()} or one of the entries in
+     * {@link #getCsrfAdditionalAllowedOrigins()}.
+     *
+     * @return {@code true} when the filter is enabled; {@code false} by default
+     * @should return false by default
+     */
+    public boolean isCsrfFilterEnabled() {
+        return getLocalBoolean("webapi.csrf[@enabled]", false);
+    }
+
+    /**
+     * Returns the additional Origins (scheme + host + optional port) that are accepted by the
+     * CSRF Origin filter on top of the self-origin {@link #getViewerBaseUrl()}.
+     *
+     * <p>Use this for external theme frontends that live on a different host than the viewer
+     * application. Each entry is matched verbatim after normalization (scheme://host[:port],
+     * no path, no trailing slash).
+     *
+     * @return list of allowed Origins; empty when not configured
+     * @should return empty list when not configured
+     */
+    public List<String> getCsrfAdditionalAllowedOrigins() {
+        return getLocalList("webapi.csrf.additionalAllowedOrigin");
+    }
+
+    /**
      * @return true if the IIIF image content location should be disclosed in responses, false otherwise
      */
     public boolean isDiscloseImageContentLocation() {

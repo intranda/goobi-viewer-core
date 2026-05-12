@@ -3210,6 +3210,24 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isCsrfFilterEnabled()
+     * @verifies return false by default
+     */
+    @Test
+    void isCsrfFilterEnabled_shouldReturnFalseByDefault() {
+        assertFalse(DataManager.getInstance().getConfiguration().isCsrfFilterEnabled());
+    }
+
+    /**
+     * @see Configuration#getCsrfAdditionalAllowedOrigins()
+     * @verifies return empty list when not configured
+     */
+    @Test
+    void getCsrfAdditionalAllowedOrigins_shouldReturnEmptyListWhenNotConfigured() {
+        assertTrue(DataManager.getInstance().getConfiguration().getCsrfAdditionalAllowedOrigins().isEmpty());
+    }
+
+    /**
      * @see Configuration#isAllowRedirectCollectionToWork()
      * @verifies return correct value
      */
