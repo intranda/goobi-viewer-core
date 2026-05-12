@@ -36,10 +36,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -786,48 +789,85 @@ public final class FileTools {
     }
 
     /**
-     * Streams bytes from {@code source} to {@code targetFile} and aborts with an
-     * {@link IOException} as soon as the read count exceeds {@code maxBytes}. The partial
-     * target file is removed on abort so callers do not have to clean up themselves.
+     * Convenience overload without size limit. Delegates to {@link #copyRejectingSymlinks(InputStream, Path, long)} with {@code maxBytes = -1}
+     * (unlimited).
      *
-     * <p>Defense against unbounded uploads (DoS via disk exhaustion). The caller should
-     * map the thrown {@link IOException} to an HTTP {@code 413 Payload Too Large} or
-     * comparable application-level response.
-     *
-     * <p>The input stream is not closed by this method, matching the semantics of
-     * {@link Files#copy(InputStream, Path, java.nio.file.CopyOption...)}.
-     *
-     * @param source byte source to read from; not closed by this method
-     * @param targetFile target file path; overwritten if it already exists
-     * @param maxBytes maximum number of bytes that may be written; must be {@code > 0}
-     * @throws IOException if the input exceeds {@code maxBytes}, if writing fails, or if
-     *         {@code maxBytes <= 0}
-     * @should write small file completely
-     * @should throw IOException when input exceeds maxBytes
-     * @should delete partial file on abort
-     * @should reject non positive maxBytes
+     * @param source input stream of bytes to write; not closed by this method
+     * @param targetFile target file path to write to
+     * @throws IOException if {@code targetFile} or its parent is a symbolic link, if the target is a directory, or if the write fails
+     * @should reject symbolic link at target path
+     * @should reject symbolic link to nonexistent target
+     * @should reject symbolic link at parent directory
+     * @should write bytes when target is regular file
+     * @should write zero byte file when source is empty
+     * @should copy large payload completely across multiple buffer reads
+     * @should overwrite existing regular file at target
+     * @should fail when target is an existing directory
+     * @should not close the source input stream
      */
-    public static void copyWithSizeLimit(final InputStream source, final Path targetFile, final long maxBytes) throws IOException {
-        if (maxBytes <= 0) {
-            throw new IOException("maxBytes must be > 0 but was " + maxBytes);
+    public static void copyRejectingSymlinks(
+            final InputStream source, final Path targetFile)
+            throws IOException {
+        copyRejectingSymlinks(source, targetFile, -1);
+    }
+
+    /**
+     * Copies bytes from the given input stream to the given target file (replacing it if it exists), but refuses to follow symbolic links at the
+     * target path or its immediate parent directory. If {@code maxBytes} is positive the copy is aborted as soon as the byte count exceeds the limit,
+     * the partial file is deleted, and an {@link IOException} is thrown.
+     *
+     * <p>
+     * Defense-in-depth against symlink-based file overwrite attacks (CWE-59 / OWASP A05) and unbounded uploads (DoS via disk exhaustion). The target
+     * file is opened via {@link FileChannel#open(Path, java.nio.file.OpenOption...)} with {@link LinkOption#NOFOLLOW_LINKS}, so the operating system
+     * rejects the open if the leaf path element is a symbolic link (Linux: {@code O_NOFOLLOW}). The parent directory is checked separately via
+     * {@link Files#isSymbolicLink(Path)} because {@code NOFOLLOW_LINKS} only constrains the last path element.
+     *
+     * <p>
+     * The input stream is not closed by this method, matching the semantics of {@link Files#copy(InputStream, Path, java.nio.file.CopyOption...)};
+     * the caller is responsible for closing it.
+     *
+     * @param source input stream of bytes to write; not closed by this method
+     * @param targetFile target file path to write to
+     * @param maxBytes maximum number of bytes allowed; {@code <= 0} means unlimited
+     * @throws IOException if {@code targetFile} or its parent is a symbolic link, if the target is a directory, if the input exceeds
+     *             {@code maxBytes}, or if the write itself fails
+     * @should write small file completely with size limit
+     * @should throw IOException when input exceeds maxBytes
+     * @should delete partial file on size limit abort
+     * @should reject symbolic link at target path with size limit
+     * @should copy without limit when maxBytes is negative
+     */
+    public static void copyRejectingSymlinks(final InputStream source, final Path targetFile, final long maxBytes) throws IOException {
+        Path parent = targetFile.getParent();
+        if (parent != null && Files.isSymbolicLink(parent)) {
+            throw new IOException(
+                    "Refusing to write through symlinked parent directory: " + parent);
         }
-        // Stream in 8 KiB chunks so the limit is enforced before the whole upload reaches
-        // disk. CREATE + TRUNCATE_EXISTING mirrors REPLACE_EXISTING semantics for regular
-        // files. The partial file is deleted on any IOException, including limit breach.
-        try (OutputStream out = Files.newOutputStream(targetFile,
-                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
-            byte[] buffer = new byte[8192];
-            long total = 0;
-            int read;
-            while ((read = source.read(buffer)) >= 0) {
-                total += read;
-                if (total > maxBytes) {
-                    throw new IOException("Upload exceeds maximum allowed size of " + maxBytes + " bytes");
+        try (FileChannel ch = FileChannel.open(targetFile,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                LinkOption.NOFOLLOW_LINKS);
+                OutputStream out = Channels.newOutputStream(ch)) {
+            if (maxBytes <= 0) {
+                source.transferTo(out);
+            } else {
+                byte[] buffer = new byte[8192];
+                long total = 0;
+                int read;
+                while ((read = source.read(buffer)) >= 0) {
+                    total += read;
+                    if (total > maxBytes) {
+                        throw new IOException(
+                                "Upload exceeds maximum allowed size of " + maxBytes + " bytes");
+                    }
+                    out.write(buffer, 0, read);
                 }
-                out.write(buffer, 0, read);
             }
         } catch (IOException e) {
-            Files.deleteIfExists(targetFile);
+            if (maxBytes > 0) {
+                Files.deleteIfExists(targetFile);
+            }
             throw e;
         }
     }

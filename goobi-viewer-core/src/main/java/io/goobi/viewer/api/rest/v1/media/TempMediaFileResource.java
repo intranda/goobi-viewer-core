@@ -164,11 +164,10 @@ public class TempMediaFileResource {
             Path targetFile = targetDir.resolve(sanitizedFilename);
 
             try {
-                // Bounded streaming copy so an admin cannot fill the disk by uploading a huge
-                // file (CWE-770). The 2 GiB cap is advertised in the matching UI hint
-                // (admin__create_record__files__description). The helper deletes the partial
-                // target on overrun; the IOException is mapped to HTTP 413 below.
-                FileTools.copyWithSizeLimit(uploadedInputStream, targetFile, MAX_TEMP_MEDIA_UPLOAD_BYTES);
+                // Defense-in-depth (CWE-59): use OS-enforced NOFOLLOW open via the helper
+                // instead of Files.copy(...), which would follow symlinks at the target path
+                // and could be abused to overwrite files outside the temp media folder.
+                FileTools.copyRejectingSymlinks(uploadedInputStream, targetFile);
 
                 if (Files.exists(targetFile) && Files.size(targetFile) > 0) {
                     return Response.status(Status.OK).entity(message("Successfully uploaded " + targetFile)).build();
@@ -184,9 +183,9 @@ public class TempMediaFileResource {
                 // The helper already deletes the partial file on size-limit abort, but other
                 // IOExceptions (write failures etc.) leave the target around — clean up here.
                 try {
-                    if (Files.exists(targetFile)) {
-                        Files.delete(targetFile);
-                    }
+                    // CWE-367: atomic single-syscall delete replaces previous exists()+delete()
+                    // TOCTOU pattern where the file state could change between the two calls.
+                    Files.deleteIfExists(targetFile);
                 } catch (IOException e1) {
                     logger.error("Error deleting failed upload file {}", targetFile, e1);
                 }

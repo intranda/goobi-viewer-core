@@ -248,20 +248,23 @@ public class UserAvatarResource extends ImageResource {
         Path mediaFile = getAvatarFilePath(uploadFilename, user.get().getId());
         try {
 
-            if (!Files.exists(mediaFolder)) {
-                Files.createDirectories(mediaFolder);
-            }
+            // createDirectories is already idempotent; the previous exists() guard was redundant.
+            Files.createDirectories(mediaFolder);
 
-            // Bounded streaming copy so an authenticated client cannot fill the disk by posting
-            // an arbitrarily large body to this endpoint. The 16 MiB cap mirrors the OmniFaces
-            // o:inputFile maxsize in userAvatar.xhtml; on overrun the helper deletes the partial
-            // file and the IOException is mapped to HTTP 413 below.
             try {
-                FileTools.copyWithSizeLimit(uploadedInputStream, mediaFile, MAX_AVATAR_UPLOAD_BYTES);
+                FileTools.copyRejectingSymlinks(
+                        uploadedInputStream, mediaFile,
+                        MAX_AVATAR_UPLOAD_BYTES);
             } catch (IOException e) {
-                if (e.getMessage() != null && e.getMessage().startsWith("Upload exceeds maximum allowed size")) {
+                if (e.getMessage() != null
+                        && e.getMessage().startsWith(
+                                "Upload exceeds maximum"
+                                        + " allowed size")) {
                     return Response.status(413)
-                            .entity("Avatar upload exceeds maximum allowed size of " + MAX_AVATAR_UPLOAD_BYTES + " bytes.")
+                            .entity("Avatar upload exceeds"
+                                    + " maximum allowed size of "
+                                    + MAX_AVATAR_UPLOAD_BYTES
+                                    + " bytes.")
                             .build();
                 }
                 throw e;
@@ -274,9 +277,8 @@ public class UserAvatarResource extends ImageResource {
                 return Response.status(Status.OK).build();
             }
             String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
-            if (Files.exists(mediaFile)) {
-                Files.delete(mediaFile);
-            }
+            // CWE-367: atomic single-syscall delete replaces previous exists()+delete() TOCTOU.
+            Files.deleteIfExists(mediaFile);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
         } catch (FileAlreadyExistsException e) {
             String message =

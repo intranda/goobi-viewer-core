@@ -42,7 +42,6 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -620,9 +619,9 @@ public class CMSMediaResource {
 
                 Optional<CMSCategory> requiredCategory = getRequiredCategoryForUser(user.get());
 
-                if (!Files.exists(cmsMediaFolder)) {
-                    Files.createDirectory(cmsMediaFolder);
-                }
+                // Idempotent and atomic; replaces previous exists()+createDirectory() pattern
+                // and additionally creates missing intermediate directories.
+                Files.createDirectories(cmsMediaFolder);
 
                 CMSMediaItem item = null;
                 if (Files.exists(mediaFile)) {
@@ -632,7 +631,11 @@ public class CMSMediaResource {
                         logger.error("Found existing media file without mediaItem entry in database. Deleting file");
                     }
                 }
-                Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
+                // Defense-in-depth (CWE-59): use OS-enforced NOFOLLOW open via the helper.
+                // The previous Files.copy(...) call followed symlinks at the target and could
+                // be abused to overwrite files outside the CMS media folder if an attacker had
+                // write access to the configured media folder path.
+                FileTools.copyRejectingSymlinks(uploadedInputStream, mediaFile);
 
                 if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
                     logger.debug("Successfully downloaded file {}", mediaFile);
@@ -650,9 +653,8 @@ public class CMSMediaResource {
                     return Response.status(Status.OK).entity(jsonItem).build();
                 }
                 String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
-                if (Files.exists(mediaFile)) {
-                    Files.delete(mediaFile);
-                }
+                // CWE-367: atomic single-syscall delete replaces previous exists()+delete() TOCTOU.
+                Files.deleteIfExists(mediaFile);
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
             }
         } catch (AccessDeniedException e) {
