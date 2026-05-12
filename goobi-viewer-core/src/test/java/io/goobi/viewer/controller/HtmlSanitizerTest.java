@@ -695,4 +695,202 @@ class HtmlSanitizerTest {
         assertTrue(HtmlSanitizer.isCleanComment(
                 "<a href=\"/viewer/image/10089470_1919/1/LOG_0003/\">1919</a>"));
     }
+
+    // -------- cleanFulltextSnippet --------
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies return null when input is null
+     */
+    @Test
+    void cleanFulltextSnippet_shouldReturnNullWhenInputIsNull() {
+        assertNull(HtmlSanitizer.cleanFulltextSnippet(null));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies return empty string when input is empty
+     */
+    @Test
+    void cleanFulltextSnippet_shouldReturnEmptyStringWhenInputIsEmpty() {
+        assertEquals("", HtmlSanitizer.cleanFulltextSnippet(""));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies preserve mark tag with class attribute
+     */
+    @Test
+    void cleanFulltextSnippet_shouldPreserveMarkTagWithClassAttribute() {
+        String input = "Treffer mit <mark class=\"search-list--highlight\">Berlin</mark> drin";
+        String output = HtmlSanitizer.cleanFulltextSnippet(input);
+        assertEquals(input, output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies strip script tags
+     */
+    @Test
+    void cleanFulltextSnippet_shouldStripScriptTags() {
+        String output = HtmlSanitizer.cleanFulltextSnippet("Treffer<script>alert(1)</script> Ende");
+        assertFalse(output.contains("<script"), "output: " + output);
+        assertFalse(output.contains("alert"), "output: " + output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies strip event handler attributes on mark tag
+     */
+    @Test
+    void cleanFulltextSnippet_shouldStripEventHandlerAttributesOnMarkTag() {
+        String output = HtmlSanitizer.cleanFulltextSnippet("<mark class=\"x\" onclick=\"alert(1)\">term</mark>");
+        assertFalse(output.contains("onclick"), "output: " + output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies strip anchor tags entirely
+     */
+    @Test
+    void cleanFulltextSnippet_shouldStripAnchorTagsEntirely() {
+        String output = HtmlSanitizer.cleanFulltextSnippet("<a href=\"javascript:alert(1)\">click</a>");
+        assertFalse(output.contains("<a "), "output: " + output);
+        assertFalse(output.contains("javascript"), "output: " + output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies strip img tags with onerror payload
+     */
+    @Test
+    void cleanFulltextSnippet_shouldStripImgTagsWithOnerrorPayload() {
+        String output = HtmlSanitizer.cleanFulltextSnippet("<img src=x onerror=\"alert(1)\">");
+        assertFalse(output.contains("<img"), "output: " + output);
+        assertFalse(output.contains("onerror"), "output: " + output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies strip em tag
+     */
+    @Test
+    void cleanFulltextSnippet_shouldStripEmTag() {
+        String output = HtmlSanitizer.cleanFulltextSnippet("no <em>emphasis</em> allowed");
+        assertFalse(output.contains("<em"), "output: " + output);
+        assertTrue(output.contains("emphasis"), "output: " + output);
+    }
+
+    // -------- cleanFulltextWithNamedEntities --------
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies return null when input is null
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldReturnNullWhenInputIsNull() {
+        assertNull(HtmlSanitizer.cleanFulltextWithNamedEntities(null));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies return empty string when input is empty
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldReturnEmptyStringWhenInputIsEmpty() {
+        assertEquals("", HtmlSanitizer.cleanFulltextWithNamedEntities(""));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies preserve full NamedEntityEnricher button markup
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldPreserveFullNamedEntityEnricherButtonMarkup() {
+        String input = "<button class=\"view-fulltext__entity-action-button\" type=\"button\""
+                + " data-entity-id=\"Tag0\" data-entity-type=\"location\""
+                + " data-entity-authority-data-uri=\"https://example.invalid/auth?id=42\""
+                + " data-entity-authority-data-search=\"https://example.invalid/search?q=Berlin\">Berlin</button>";
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities(input);
+        assertTrue(output.contains("<button"), "missing button tag: " + output);
+        assertTrue(output.contains("class=\"view-fulltext__entity-action-button\""), output);
+        assertTrue(output.contains("type=\"button\""), output);
+        assertTrue(output.contains("data-entity-id=\"Tag0\""), output);
+        assertTrue(output.contains("data-entity-type=\"location\""), output);
+        assertTrue(output.contains("data-entity-authority-data-uri="), output);
+        assertTrue(output.contains("data-entity-authority-data-search="), output);
+        assertTrue(output.contains(">Berlin</button>"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip script tags
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripScriptTags() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities("Text<script>alert(1)</script>more");
+        assertFalse(output.contains("<script"), output);
+        assertFalse(output.contains("alert"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip onclick attribute on button
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripOnclickAttributeOnButton() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities("<button onclick=\"alert(1)\">x</button>");
+        assertFalse(output.contains("onclick"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip mark tag
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripMarkTag() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities("<mark class=\"x\">highlight</mark>");
+        assertFalse(output.contains("<mark"), output);
+        assertTrue(output.contains("highlight"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip anchor tag
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripAnchorTag() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities("<a href=\"http://example.com\">link</a>");
+        assertFalse(output.contains("<a "), output);
+        assertTrue(output.contains("link"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip unknown data attribute on button
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripUnknownDataAttributeOnButton() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities(
+                "<button data-remotecontent=\"javascript:alert(1)\">x</button>");
+        assertFalse(output.contains("data-remotecontent"), output);
+        assertFalse(output.contains("javascript"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies preserve plain text content alongside button
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldPreservePlainTextContentAlongsideButton() {
+        String input = "Vorwort. <button class=\"view-fulltext__entity-action-button\" type=\"button\""
+                + " data-entity-id=\"T0\" data-entity-type=\"location\""
+                + " data-entity-authority-data-uri=\"https://x.invalid/a\""
+                + " data-entity-authority-data-search=\"https://x.invalid/s\">Europa</button>"
+                + " in vielen Punkten";
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities(input);
+        assertTrue(output.contains("Vorwort."), output);
+        assertTrue(output.contains("Europa"), output);
+        assertTrue(output.contains("in vielen Punkten"), output);
+    }
 }
