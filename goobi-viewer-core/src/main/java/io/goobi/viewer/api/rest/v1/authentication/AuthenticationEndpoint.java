@@ -62,7 +62,6 @@ import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.SecurityManager;
-import io.goobi.viewer.exceptions.AuthenticationException;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.UserBean;
@@ -73,7 +72,6 @@ import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -81,7 +79,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -113,68 +110,6 @@ public class AuthenticationEndpoint {
      * should wait after the redirect, otherwise it will not have any effect
      */
     private static Future<Boolean> redirected = null;
-
-    /**
-     * authenticateUser.
-     *
-     * @param email user email address for authentication
-     * @param password user password for authentication
-     * @return the HTTP response containing the authentication token on success, or a 403/500 status on failure
-     */
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Hidden
-    @Operation(summary = "Authenticate a user with username and password", tags = { "auth" })
-    @ApiResponse(responseCode = "200", description = "Authentication successful, session established")
-    @ApiResponse(responseCode = "403", description = "Authentication failed — invalid username or password or insufficient privileges")
-    @ApiResponse(responseCode = "500", description = "Internal server error")
-    public Response authenticateUser(@FormParam("email") String email, @FormParam("password") String password) {
-        try {
-
-            // Authenticate the user using the credentials provided
-            authenticate(email, password);
-
-            // Issue a token for the user
-            String token = issueToken(email);
-
-            // Return the token on the response
-            return Response.ok(token).build();
-
-        } catch (AuthenticationException e) {
-            logger.debug(e.getMessage());
-            return Response.status(Response.Status.FORBIDDEN).build();
-        } catch (DAOException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    /**
-     *
-     * @param email user email address
-     * @param password user password
-     * @throws AuthenticationException
-     * @throws DAOException
-     */
-    private static void authenticate(String email, String password) throws AuthenticationException, DAOException {
-        User user = new User().auth(email, password);
-        if (!user.isSuperuser()) {
-            throw new AuthenticationException("Superuser access required");
-        }
-    }
-
-    /**
-     *
-     * @param email user email address
-     * @return email
-     */
-    private static String issueToken(String email) {
-        // Issue a token (can be a random String persisted to a database or a JWT token)
-        // The issued token must be associated to a user
-        // Return the issued token
-
-        return email;
-    }
 
     /**
      * Authenticates a local user (e-mail + password) and returns a Bearer token.

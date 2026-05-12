@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -114,6 +115,32 @@ import jakarta.ws.rs.core.MediaType;
 public class IndexResource {
 
     private static final Logger logger = LogManager.getLogger(IndexResource.class);
+
+    /**
+     * Snapshot of the computed Solr field list together with its expiry timestamp.
+     * Held in a volatile static reference because the JAX-RS resource is instantiated
+     * per request — the cache must live across requests.
+     */
+    private record CachedFieldInfo(List<SolrFieldInfo> value, long expiresAtMillis) {
+    }
+
+    private static volatile CachedFieldInfo cachedFieldInfo;
+
+    /**
+     * TTL for the {@link #cachedFieldInfo} snapshot. Hard-coded because Solr field schemas
+     * change rarely (only with redeployments) and the endpoint is otherwise a cheap DoS
+     * vector for unauthenticated callers. Five minutes balances staleness after a schema
+     * update against repeated full-field recomputation.
+     */
+    private static final long INDEX_FIELDS_CACHE_TTL_MILLIS = TimeUnit.MINUTES.toMillis(5);
+
+    /**
+     * Test-only hook to drop the cached snapshot so unit tests start from a clean state.
+     * Visible to tests in the same package via package-private access.
+     */
+    static void invalidateAllIndexFieldsCacheForTesting() {
+        cachedFieldInfo = null;
+    }
 
     //limits of hits per clickable marker. This does not affect the number of total hits found by the heatmap
     private static final int MAX_RECORD_HITS = 50_000;
@@ -287,18 +314,39 @@ public class IndexResource {
      *
      * @return List<SolrFieldInfo>
      * @throws IOException
+     * @should serve repeat requests from cache within ttl
      */
     @GET
     @Path(INDEX_FIELDS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
+    @Operation(summary = "Retrieves a JSON list of all existing Solr fields.",
+            description = "The response is cached server-side for 5 minutes; updates to the Solr"
+                    + " schema may take up to that long to become visible here.",
+            tags = { "index" })
     @ApiResponse(responseCode = "200", description = "JSON array of Solr field metadata")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public List<SolrFieldInfo> getAllIndexFields() throws IOException {
         logger.trace("getAllIndexFields");
-
         try {
-            return collectFieldInfo();
+            long now = System.currentTimeMillis();
+            CachedFieldInfo snapshot = cachedFieldInfo;
+            if (snapshot != null && snapshot.expiresAtMillis() > now) {
+                return snapshot.value();
+            }
+            // Single-flight recompute: synchronizing on the class lock makes concurrent
+            // expiry-storm requests share a single Solr+i18n round-trip instead of fanning
+            // out. Trade-off: callers wait while the cold-cache compute (a few hundred ms
+            // for typical schemas) runs. Acceptable for an endpoint with a 5-minute cache.
+            synchronized (IndexResource.class) {
+                // Re-check inside the lock — another thread may have populated the cache.
+                snapshot = cachedFieldInfo;
+                if (snapshot != null && snapshot.expiresAtMillis() > now) {
+                    return snapshot.value();
+                }
+                List<SolrFieldInfo> fresh = collectFieldInfo();
+                cachedFieldInfo = new CachedFieldInfo(fresh, now + INDEX_FIELDS_CACHE_TTL_MILLIS);
+                return fresh;
+            }
         } catch (IndexUnreachableException e) {
             logger.error(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());

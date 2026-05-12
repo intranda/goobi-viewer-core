@@ -29,6 +29,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STATISTICS;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -86,6 +87,10 @@ class IndexResourceTest extends AbstractRestApiTest {
     @Override
     @AfterEach
     public void tearDown() throws Exception {
+        // Drop the static field-list cache so cached snapshots (e.g. from the
+        // serve-from-cache test) do not survive into unrelated tests in this class
+        // or in other classes that share the JVM.
+        IndexResource.invalidateAllIndexFieldsCacheForTesting();
         super.tearDown();
     }
 
@@ -243,5 +248,20 @@ class IndexResourceTest extends AbstractRestApiTest {
         assertEquals(SolrConstants.ACCESSCONDITION, info.getField());
         assertTrue(info.isIndexed());
         assertTrue(info.isStored());
+    }
+
+    /**
+     * @see IndexResource#getAllIndexFields()
+     * @verifies serve repeat requests from cache within ttl
+     */
+    @Test
+    void getAllIndexFields_shouldServeRepeatRequestsFromCacheWithinTtl() throws Exception {
+        // The cache is process-global, so make sure no earlier test populated it.
+        IndexResource.invalidateAllIndexFieldsCacheForTesting();
+        IndexResource resource = new IndexResource();
+        List<SolrFieldInfo> first = resource.getAllIndexFields();
+        List<SolrFieldInfo> second = resource.getAllIndexFields();
+        // Same list reference => served from the cache snapshot, not recomputed.
+        assertSame(first, second, "second call within TTL must return the cached list");
     }
 }

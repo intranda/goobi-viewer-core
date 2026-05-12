@@ -107,7 +107,8 @@ class FileToolsTest extends AbstractTest {
      * @verifies create file on disk from string content
      */
     @Test
-    void getFileFromString_shouldCreateFileOnDiskFromStringContent(@TempDir File tempDir) throws Exception {
+    void getFileFromString_shouldCreateFileOnDiskFromStringContent(@TempDir
+    File tempDir) throws Exception {
         File file = new File(tempDir, "temp.txt");
         String text = "Lorem ipsum dolor sit amet";
         FileTools.getFileFromString(text, file.getAbsolutePath(), null, false);
@@ -118,7 +119,8 @@ class FileToolsTest extends AbstractTest {
      * @verifies append string to existing file content when append flag is true
      */
     @Test
-    void getFileFromString_shouldAppendStringToExistingFileContentWhenAppendFlagIsTrue(@TempDir File tempDir) throws Exception {
+    void getFileFromString_shouldAppendStringToExistingFileContentWhenAppendFlagIsTrue(@TempDir
+    File tempDir) throws Exception {
         File file = new File(tempDir, "temp.txt");
         String text = "XY";
         String text2 = "Z";
@@ -202,7 +204,8 @@ class FileToolsTest extends AbstractTest {
      * @see FileTools#isYoungerThan(Path, Path)
      */
     @Test
-    void isYoungerThan_shouldReturnTrueIfFileIsYounger(@TempDir Path tempDir) throws IOException, InterruptedException {
+    void isYoungerThan_shouldReturnTrueIfFileIsYounger(@TempDir
+    Path tempDir) throws IOException, InterruptedException {
         Path file1 = tempDir.resolve("file1.txt");
         Path file2 = tempDir.resolve("file2.txt");
 
@@ -293,11 +296,110 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
+     * @see FileTools#copyRejectingSymlinks(InputStream, Path, long)
+     * @verifies write small file completely with size limit
+     */
+    @Test
+    void copyRejectingSymlinks_shouldWriteSmallFileCompletelyWithSizeLimit(
+            @TempDir Path tempDir) throws IOException {
+        Path target = tempDir.resolve("ok.bin");
+        byte[] payload = "hello world".getBytes();
+        try (InputStream in =
+                new java.io.ByteArrayInputStream(payload)) {
+            FileTools.copyRejectingSymlinks(in, target, 1024);
+        }
+        Assertions.assertArrayEquals(
+                payload, Files.readAllBytes(target));
+    }
+
+    /**
+     * @see FileTools#copyRejectingSymlinks(InputStream, Path, long)
+     * @verifies throw IOException when input exceeds maxBytes
+     */
+    @Test
+    void copyRejectingSymlinks_shouldThrowIOExceptionWhenInputExceedsMaxBytes(
+            @TempDir Path tempDir) throws IOException {
+        Path target = tempDir.resolve("too-large.bin");
+        byte[] payload = new byte[2048];
+        try (InputStream in =
+                new java.io.ByteArrayInputStream(payload)) {
+            Assertions.assertThrows(IOException.class,
+                    () -> FileTools.copyRejectingSymlinks(
+                            in, target, 1024));
+        }
+    }
+
+    /**
+     * @see FileTools#copyRejectingSymlinks(InputStream, Path, long)
+     * @verifies delete partial file on size limit abort
+     */
+    @Test
+    void copyRejectingSymlinks_shouldDeletePartialFileOnSizeLimitAbort(
+            @TempDir Path tempDir) throws IOException {
+        Path target = tempDir.resolve("partial.bin");
+        byte[] payload = new byte[16 * 1024];
+        try (InputStream in =
+                new java.io.ByteArrayInputStream(payload)) {
+            Assertions.assertThrows(IOException.class,
+                    () -> FileTools.copyRejectingSymlinks(
+                            in, target, 1024));
+        }
+        Assertions.assertFalse(Files.exists(target),
+                "partial file must be cleaned up on"
+                        + " size-limit abort");
+    }
+
+    /**
+     * @see FileTools#copyRejectingSymlinks(InputStream, Path, long)
+     * @verifies copy without limit when maxBytes is negative
+     */
+    @Test
+    void copyRejectingSymlinks_shouldCopyWithoutLimitWhenMaxBytesIsNegative(
+            @TempDir Path tempDir) throws IOException {
+        Path target = tempDir.resolve("unlimited.bin");
+        byte[] payload = new byte[32 * 1024];
+        try (InputStream in =
+                new java.io.ByteArrayInputStream(payload)) {
+            FileTools.copyRejectingSymlinks(in, target, -1);
+        }
+        Assertions.assertArrayEquals(
+                payload, Files.readAllBytes(target));
+    }
+
+    /**
+     * @see FileTools#copyRejectingSymlinks(InputStream, Path, long)
+     * @verifies reject symbolic link at target path with size limit
+     */
+    @Test
+    void copyRejectingSymlinks_shouldRejectSymbolicLinkAtTargetPathWithSizeLimit(
+            @TempDir Path tempDir) throws IOException {
+        Path real = tempDir.resolve("real.txt");
+        Files.writeString(real, "original");
+        Path link = tempDir.resolve("link.txt");
+        try {
+            Files.createSymbolicLink(link, real);
+        } catch (UnsupportedOperationException
+                | IOException e) {
+            org.junit.jupiter.api.Assumptions.assumeTrue(
+                    false,
+                    "Symlinks not supported on this OS/config");
+        }
+        try (InputStream in =
+                new java.io.ByteArrayInputStream(
+                        "pwned".getBytes())) {
+            Assertions.assertThrows(IOException.class,
+                    () -> FileTools.copyRejectingSymlinks(
+                            in, link, 4096));
+        }
+    }
+
+    /**
      * @see FileTools#copyRejectingSymlinks(InputStream, Path)
      * @verifies write bytes when target is regular file
      */
     @Test
-    void copyRejectingSymlinks_shouldWriteBytesWhenTargetIsRegularFile(@TempDir Path tempDir) throws IOException {
+    void copyRejectingSymlinks_shouldWriteBytesWhenTargetIsRegularFile(@TempDir
+    Path tempDir) throws IOException {
         Path target = tempDir.resolve("upload.txt");
         byte[] payload = "hello".getBytes(StandardCharsets.UTF_8);
         try (InputStream in = new ByteArrayInputStream(payload)) {
@@ -313,7 +415,8 @@ class FileToolsTest extends AbstractTest {
      * @verifies write zero byte file when source is empty
      */
     @Test
-    void copyRejectingSymlinks_shouldWriteZeroByteFileWhenSourceIsEmpty(@TempDir Path tempDir) throws IOException {
+    void copyRejectingSymlinks_shouldWriteZeroByteFileWhenSourceIsEmpty(@TempDir
+    Path tempDir) throws IOException {
         Path target = tempDir.resolve("empty.txt");
         try (InputStream in = new ByteArrayInputStream(new byte[0])) {
             FileTools.copyRejectingSymlinks(in, target);
@@ -327,7 +430,8 @@ class FileToolsTest extends AbstractTest {
      * @verifies copy large payload completely across multiple buffer reads
      */
     @Test
-    void copyRejectingSymlinks_shouldCopyLargePayloadCompletelyAcrossMultipleBufferReads(@TempDir Path tempDir) throws IOException {
+    void copyRejectingSymlinks_shouldCopyLargePayloadCompletelyAcrossMultipleBufferReads(@TempDir
+    Path tempDir) throws IOException {
         Path target = tempDir.resolve("big.bin");
         byte[] payload = new byte[4 * 1024 * 1024];
         for (int i = 0; i < payload.length; i++) {
@@ -345,7 +449,8 @@ class FileToolsTest extends AbstractTest {
      * @verifies overwrite existing regular file at target
      */
     @Test
-    void copyRejectingSymlinks_shouldOverwriteExistingRegularFileAtTarget(@TempDir Path tempDir) throws IOException {
+    void copyRejectingSymlinks_shouldOverwriteExistingRegularFileAtTarget(@TempDir
+    Path tempDir) throws IOException {
         Path target = tempDir.resolve("upload.txt");
         Files.writeString(target, "old", StandardCharsets.UTF_8);
         try (InputStream in = new ByteArrayInputStream("new".getBytes(StandardCharsets.UTF_8))) {
@@ -359,7 +464,8 @@ class FileToolsTest extends AbstractTest {
      * @verifies reject symbolic link at target path
      */
     @Test
-    void copyRejectingSymlinks_shouldRejectSymbolicLinkAtTargetPath(@TempDir Path tempDir) throws IOException {
+    void copyRejectingSymlinks_shouldRejectSymbolicLinkAtTargetPath(@TempDir
+    Path tempDir) throws IOException {
         Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
         Path victim = tempDir.resolve("victim.txt");
         Files.writeString(victim, "untouched", StandardCharsets.UTF_8);
@@ -379,7 +485,8 @@ class FileToolsTest extends AbstractTest {
      * @verifies reject symbolic link to nonexistent target
      */
     @Test
-    void copyRejectingSymlinks_shouldRejectSymbolicLinkToNonexistentTarget(@TempDir Path tempDir) throws IOException {
+    void copyRejectingSymlinks_shouldRejectSymbolicLinkToNonexistentTarget(@TempDir
+    Path tempDir) throws IOException {
         Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
         Path nonexistent = tempDir.resolve("does-not-exist.txt");
         Path target = tempDir.resolve("upload.txt");
@@ -398,7 +505,8 @@ class FileToolsTest extends AbstractTest {
      * @verifies reject symbolic link at parent directory
      */
     @Test
-    void copyRejectingSymlinks_shouldRejectSymbolicLinkAtParentDirectory(@TempDir Path tempDir) throws IOException {
+    void copyRejectingSymlinks_shouldRejectSymbolicLinkAtParentDirectory(@TempDir
+    Path tempDir) throws IOException {
         Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
         Path realDir = tempDir.resolve("real");
         Files.createDirectories(realDir);
@@ -421,7 +529,8 @@ class FileToolsTest extends AbstractTest {
      * @verifies fail when target is an existing directory
      */
     @Test
-    void copyRejectingSymlinks_shouldFailWhenTargetIsAnExistingDirectory(@TempDir Path tempDir) throws IOException {
+    void copyRejectingSymlinks_shouldFailWhenTargetIsAnExistingDirectory(@TempDir
+    Path tempDir) throws IOException {
         Path target = tempDir.resolve("a-directory");
         Files.createDirectories(target);
 
@@ -437,7 +546,8 @@ class FileToolsTest extends AbstractTest {
      * @verifies not close the source input stream
      */
     @Test
-    void copyRejectingSymlinks_shouldNotCloseTheSourceInputStream(@TempDir Path tempDir) throws IOException {
+    void copyRejectingSymlinks_shouldNotCloseTheSourceInputStream(@TempDir
+    Path tempDir) throws IOException {
         Path target = tempDir.resolve("upload.txt");
         AtomicBoolean closed = new AtomicBoolean(false);
         InputStream tracking = new ByteArrayInputStream("data".getBytes(StandardCharsets.UTF_8)) {
@@ -453,9 +563,8 @@ class FileToolsTest extends AbstractTest {
     }
 
     /**
-     * Probes whether the given filesystem location supports creating symbolic links.
-     * Used to gate symlink tests so they skip on Windows / restrictive containers
-     * instead of failing.
+     * Probes whether the given filesystem location supports creating symbolic links. Used to gate symlink tests so they skip on Windows / restrictive
+     * containers instead of failing.
      */
     private static boolean supportsSymlinks(Path dir) {
         Path link = dir.resolve(".symlink-probe");

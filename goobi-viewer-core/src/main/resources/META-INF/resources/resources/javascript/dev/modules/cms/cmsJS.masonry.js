@@ -160,7 +160,11 @@ var cmsJS = (function (cms) {
             if (description) {
                 $gridItemCaption = $('<div />');
                 $gridItemCaption.addClass('grid-item-caption');
-                $gridItemCaption.html('<span>' + description + '</span>');
+                // Use .text() on a dedicated <span> rather than .html('<span>' + description + '</span>')
+                // to prevent stored XSS via CMS media description (CWE-79). The description field is
+                // backed by a plain-text <h:inputTextarea> in adminCmsMedia, so plain-text rendering
+                // matches the editorial intent and removes any HTML interpretation surface.
+                $gridItemCaption.append($('<span></span>').text(description));
 
                 // grid item caption heading
                 $gridItemCaptionHeading = $('<h2 />');

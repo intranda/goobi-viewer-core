@@ -62,17 +62,18 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
+import io.goobi.viewer.api.rest.bindings.CSRFGuarded;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * Upload of resouces for DC record creation. Files uploaded here are directly written to a subfolder of the viewer hotfolder
@@ -86,6 +87,16 @@ import io.goobi.viewer.messages.Messages;
 public class TempMediaFileResource {
 
     private static final Logger logger = LogManager.getLogger(TempMediaFileResource.class);
+
+    /**
+     * Maximum size in bytes accepted for a single uploaded temp-media file (2 GiB). The DC-record
+     * creation UI advertises the same limit in the {@code admin__create_record__files__description}
+     * message; keep the two in sync. Large TIFF facsimiles are common in newspaper/map workflows,
+     * which is why this is much higher than the avatar cap, but bounded so an authenticated admin
+     * cannot exhaust the disk by accident or by a compromised account.
+     */
+    private static final long MAX_TEMP_MEDIA_UPLOAD_BYTES = 2L * 1024L * 1024L * 1024L;
+
     @Context
     protected HttpServletRequest servletRequest;
     @Context
@@ -107,11 +118,17 @@ public class TempMediaFileResource {
     @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FOLDER)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    // CSRF protection: multipart/form-data is a CORS "simple request" and bypasses preflight,
+    // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
+    // available when webapi.csrf is enabled. The existing 403 description is extended below.
+    @CSRFGuarded
     @Operation(summary = "Upload a media file to the temporary hotfolder for DC record creation", tags = { "media" })
     @ApiResponse(responseCode = "200", description = "File uploaded successfully")
     @ApiResponse(responseCode = "400", description = "Invalid filename or missing upload stream")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
-    @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")
+    @ApiResponse(responseCode = "403",
+            description = "Not authorized (admin login required) or CSRF protection violated (when webapi.csrf is enabled)")
+    @ApiResponse(responseCode = "413", description = "Upload exceeds the maximum allowed size")
     @ApiResponse(responseCode = "500", description = "Internal error during file upload")
     public Response uploadMediaFiles(
             @Parameter(description = "Target folder name") @PathParam("folder") String foldername,
@@ -157,7 +174,14 @@ public class TempMediaFileResource {
                 }
                 throw new IOException("Uploaded file doesn't exist or is empty");
             } catch (IOException e) {
+                if (e.getMessage() != null && e.getMessage().startsWith("Upload exceeds maximum allowed size")) {
+                    return Response.status(413)
+                            .entity(errorMessage("Upload exceeds maximum allowed size of " + MAX_TEMP_MEDIA_UPLOAD_BYTES + " bytes."))
+                            .build();
+                }
                 String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), targetFile.getFileName().toString());
+                // The helper already deletes the partial file on size-limit abort, but other
+                // IOExceptions (write failures etc.) leave the target around — clean up here.
                 try {
                     // CWE-367: atomic single-syscall delete replaces previous exists()+delete()
                     // TOCTOU pattern where the file state could change between the two calls.

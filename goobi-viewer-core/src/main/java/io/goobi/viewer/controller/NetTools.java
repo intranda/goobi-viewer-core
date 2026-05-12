@@ -25,16 +25,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +60,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.conn.DnsResolver;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -69,6 +74,8 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.HTTPException;
+import io.goobi.viewer.model.security.authentication.HttpAuthenticationProvider;
+import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.PasswordAuthentication;
@@ -116,6 +123,201 @@ public final class NetTools {
     }
 
     /**
+     * Validates the given URL for outbound HTTP calls. Blocks SSRF attempts
+     * against private/loopback/link-local ranges and cloud metadata services.
+     * Hosts that appear in the application configuration (Solr, Workflow,
+     * REST API, authentication providers) are implicitly allowed.
+     *
+     * @param url URL to validate
+     * @throws IllegalArgumentException if the URL is null, malformed,
+     *         uses a non-HTTP scheme, or resolves to a blocked address
+     * @should reject null url
+     * @should reject blank url
+     * @should reject non-http scheme
+     * @should reject url without host
+     * @should reject loopback address when not allowed
+     * @should allow loopback address when configured
+     * @should reject private network address
+     * @should reject link-local address
+     * @should allow implicitly whitelisted host
+     * @should allow public address
+     */
+    public static void validateOutboundUrl(String url) {
+        if (StringUtils.isBlank(url)) {
+            throw new IllegalArgumentException("url may not be blank");
+        }
+        URI uri;
+        try {
+            uri = new URI(url);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(
+                    "Malformed URL: " + e.getMessage());
+        }
+        String scheme = uri.getScheme();
+        if (!"http".equalsIgnoreCase(scheme)
+                && !"https".equalsIgnoreCase(scheme)) {
+            throw new IllegalArgumentException(
+                    "Only http/https schemes allowed, got: " + scheme);
+        }
+        String host = uri.getHost();
+        if (StringUtils.isBlank(host)) {
+            throw new IllegalArgumentException(
+                    "URL has no host: " + url);
+        }
+
+        if (buildImplicitAllowlist().contains(host.toLowerCase())) {
+            return;
+        }
+
+        Configuration config =
+                DataManager.getInstance().getConfiguration();
+        boolean allowLoopback = config.isOutboundHttpAllowLoopback();
+
+        InetAddress[] addresses;
+        try {
+            addresses = InetAddress.getAllByName(host);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException(
+                    "Unresolvable host: " + host);
+        }
+        for (InetAddress addr : addresses) {
+            if (addr.isLoopbackAddress() && allowLoopback) {
+                continue;
+            }
+            if (isBlockedAddress(addr)) {
+                throw new IllegalArgumentException(
+                        "Host resolves to blocked address: "
+                                + host + " -> "
+                                + addr.getHostAddress());
+            }
+        }
+    }
+
+    /**
+     * @param addr address to check
+     * @return true if the address belongs to a blocked range
+     */
+    static boolean isBlockedAddress(InetAddress addr) {
+        return addr.isLoopbackAddress()
+                || addr.isLinkLocalAddress()
+                || addr.isSiteLocalAddress()
+                || addr.isAnyLocalAddress()
+                || addr.isMulticastAddress();
+    }
+
+    /**
+     * Builds a set of hostnames that are implicitly allowed for outbound
+     * HTTP calls because they appear in the application configuration.
+     *
+     * @return lower-cased hostnames from Solr, Workflow, REST API and
+     *         authentication provider URLs
+     */
+    static Set<String> buildImplicitAllowlist() {
+        Set<String> hosts = new HashSet<>();
+        Configuration config =
+                DataManager.getInstance().getConfiguration();
+        addHostFromUrl(hosts, config.getSolrUrl());
+        addHostFromUrl(hosts, config.getWorkflowRestUrl());
+        addHostFromUrl(hosts, config.getRestApiUrl());
+        addHostFromUrl(hosts, config.getIIIFApiUrl());
+        addHostFromUrl(hosts, config.getViewerBaseUrl());
+        for (IAuthenticationProvider provider
+                : config.getAuthenticationProviders()) {
+            if (provider instanceof HttpAuthenticationProvider) {
+                addHostFromUrl(hosts,
+                        ((HttpAuthenticationProvider) provider)
+                                .getUrl());
+            }
+        }
+        return hosts;
+    }
+
+    private static void addHostFromUrl(Set<String> hosts, String url) {
+        if (StringUtils.isBlank(url)) {
+            return;
+        }
+        try {
+            String prefixed = url;
+            if (!prefixed.contains("://")) {
+                prefixed = "http://" + prefixed;
+            }
+            String host = new URI(prefixed).getHost();
+            if (host != null) {
+                hosts.add(host.toLowerCase());
+            }
+        } catch (URISyntaxException e) {
+            logger.warn("Cannot extract host from configured URL: {}",
+                    url);
+        }
+    }
+
+    /**
+     * Creates an HttpClient that pins DNS resolution to the addresses
+     * obtained at validation time, preventing DNS rebinding attacks.
+     *
+     * @param validatedHost the already-validated hostname
+     * @param pinnedAddresses the addresses resolved during validation
+     * @param config optional RequestConfig (may be null)
+     * @return a CloseableHttpClient with pinned DNS
+     */
+    static CloseableHttpClient createSsrfSafeHttpClient(
+            String validatedHost, InetAddress[] pinnedAddresses,
+            RequestConfig config) {
+        DnsResolver pinnedResolver = host -> {
+            if (host.equalsIgnoreCase(validatedHost)) {
+                return pinnedAddresses;
+            }
+            return InetAddress.getAllByName(host);
+        };
+        org.apache.http.impl.client.HttpClientBuilder builder =
+                HttpClients.custom().setDnsResolver(pinnedResolver);
+        if (config != null) {
+            builder.setDefaultRequestConfig(config);
+        }
+        return builder.build();
+    }
+
+    /**
+     * Resolves and validates the host of the given URL, then returns
+     * an SSRF-safe HttpClient with pinned DNS. For hosts on the
+     * implicit allowlist, returns a regular HttpClient (no DNS pinning
+     * needed since these are trusted).
+     *
+     * @param url the outbound URL (must have been validated already)
+     * @param config optional RequestConfig (may be null)
+     * @return a CloseableHttpClient safe against SSRF/DNS-rebinding
+     */
+    public static CloseableHttpClient buildHttpClientForUrl(
+            String url, RequestConfig config) {
+        URI uri;
+        try {
+            uri = new URI(url);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(
+                    "Malformed URL: " + e.getMessage());
+        }
+        String host = uri.getHost();
+        if (host != null
+                && buildImplicitAllowlist().contains(
+                        host.toLowerCase())) {
+            org.apache.http.impl.client.HttpClientBuilder builder =
+                    HttpClients.custom();
+            if (config != null) {
+                builder.setDefaultRequestConfig(config);
+            }
+            return builder.build();
+        }
+        InetAddress[] addresses;
+        try {
+            addresses = InetAddress.getAllByName(host);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException(
+                    "Unresolvable host: " + host);
+        }
+        return createSsrfSafeHttpClient(host, addresses, config);
+    }
+
+    /**
      * Checks whether the given redirect URL is allowed. A URL is allowed if it starts with the given application base URL
      * or if its host is in the configured redirect whitelist.
      *
@@ -160,9 +362,11 @@ public final class NetTools {
      *         or the error message.
      */
     public static String[] callUrlGET(String url) {
+        validateOutboundUrl(url);
         // logger.trace("callUrlGET: {}", url); //NOSONAR Debug
         String[] ret = new String[2];
-        try (CloseableHttpClient httpClient = HttpClients.custom().build()) {
+        try (CloseableHttpClient httpClient =
+                buildHttpClientForUrl(url, null)) {
             HttpGet httpGet = new HttpGet(url);
             try (CloseableHttpResponse response = httpClient.execute(httpGet); StringWriter writer = new StringWriter()) {
                 ret[0] = String.valueOf(response.getStatusLine().getStatusCode());
@@ -212,12 +416,14 @@ public final class NetTools {
      * @throws io.goobi.viewer.exceptions.HTTPException if any.
      */
     public static String getWebContentGET(String url, int timeout) throws IOException, HTTPException {
+        validateOutboundUrl(url);
         RequestConfig defaultRequestConfig = RequestConfig.custom()
                 .setSocketTimeout(timeout)
                 .setConnectTimeout(timeout)
                 .setConnectionRequestTimeout(timeout)
                 .build();
-        try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
+        try (CloseableHttpClient httpClient =
+                buildHttpClientForUrl(url, defaultRequestConfig)) {
             HttpGet get = new HttpGet(url);
             try (CloseableHttpResponse response = httpClient.execute(get); StringWriter writer = new StringWriter()) {
                 int code = response.getStatusLine().getStatusCode();
@@ -293,6 +499,7 @@ public final class NetTools {
         if (url == null) {
             throw new IllegalArgumentException("url may not be null");
         }
+        validateOutboundUrl(url);
 
         logger.debug("url: {}", url);
         List<NameValuePair> nameValuePairs = null;
@@ -301,7 +508,9 @@ public final class NetTools {
         } else {
             nameValuePairs = new ArrayList<>(params.size());
             for (Entry<String, String> entry : params.entrySet()) {
-                nameValuePairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+                nameValuePairs.add(
+                        new BasicNameValuePair(
+                                entry.getKey(), entry.getValue()));
             }
         }
         HttpClientContext context = null;
@@ -309,7 +518,9 @@ public final class NetTools {
         if (cookies != null && !cookies.isEmpty()) {
             context = HttpClientContext.create();
             for (Entry<String, String> entry : cookies.entrySet()) {
-                BasicClientCookie cookie = new BasicClientCookie(entry.getKey(), entry.getValue());
+                BasicClientCookie cookie =
+                        new BasicClientCookie(
+                                entry.getKey(), entry.getValue());
                 cookie.setPath("/");
                 cookie.setDomain("0.0.0.0");
                 cookieStore.addCookie(cookie);
@@ -322,7 +533,9 @@ public final class NetTools {
                 .setConnectTimeout(HTTP_TIMEOUT)
                 .setConnectionRequestTimeout(HTTP_TIMEOUT)
                 .build();
-        try (CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build()) {
+        try (CloseableHttpClient httpClient =
+                buildHttpClientForUrl(
+                        url, defaultRequestConfig)) {
 
             HttpRequestBase requestBase;
             switch (method.toUpperCase()) {
