@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.controller;
 
+import java.net.InetAddress;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -162,5 +164,169 @@ class NetToolsTest extends AbstractTest {
             Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn(null);
             Assertions.assertEquals("127.0.0.1", NetTools.getIpAddress(request));
         }
+    }
+
+    // --- SSRF validation tests ---
+
+    /**
+     * @see NetTools#validateOutboundUrl(String)
+     * @verifies reject null url
+     */
+    @Test
+    void validateOutboundUrl_shouldRejectNullUrl() {
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> NetTools.validateOutboundUrl(null));
+    }
+
+    /**
+     * @see NetTools#validateOutboundUrl(String)
+     * @verifies reject blank url
+     */
+    @Test
+    void validateOutboundUrl_shouldRejectBlankUrl() {
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> NetTools.validateOutboundUrl("  "));
+    }
+
+    /**
+     * @see NetTools#validateOutboundUrl(String)
+     * @verifies reject non-http scheme
+     */
+    @Test
+    void validateOutboundUrl_shouldRejectNonHttpScheme() {
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> NetTools.validateOutboundUrl("file:///etc/passwd"));
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> NetTools.validateOutboundUrl(
+                        "ftp://example.com/file"));
+    }
+
+    /**
+     * @see NetTools#validateOutboundUrl(String)
+     * @verifies reject url without host
+     */
+    @Test
+    void validateOutboundUrl_shouldRejectUrlWithoutHost() {
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> NetTools.validateOutboundUrl("http://"));
+    }
+
+    /**
+     * @see NetTools#validateOutboundUrl(String)
+     * @verifies reject private network address
+     */
+    @Test
+    void validateOutboundUrl_shouldRejectPrivateNetworkAddress() {
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> NetTools.validateOutboundUrl(
+                        "http://10.0.0.1/admin"));
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> NetTools.validateOutboundUrl(
+                        "http://192.168.1.1/admin"));
+    }
+
+    /**
+     * @see NetTools#validateOutboundUrl(String)
+     * @verifies reject link-local address
+     */
+    @Test
+    void validateOutboundUrl_shouldRejectLinkLocalAddress() {
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> NetTools.validateOutboundUrl(
+                        "http://169.254.169.254/latest/"
+                                + "meta-data/"));
+    }
+
+    /**
+     * @see NetTools#validateOutboundUrl(String)
+     * @verifies allow implicitly whitelisted host
+     */
+    @Test
+    void validateOutboundUrl_shouldAllowImplicitlyWhitelistedHost() {
+        Assertions.assertDoesNotThrow(
+                () -> NetTools.validateOutboundUrl(
+                        "http://localhost:8089/solr/select"));
+    }
+
+    /**
+     * @see NetTools#validateOutboundUrl(String)
+     * @verifies allow public address
+     */
+    @Test
+    void validateOutboundUrl_shouldAllowPublicAddress() {
+        Assertions.assertDoesNotThrow(
+                () -> NetTools.validateOutboundUrl(
+                        "https://example.com/api"));
+    }
+
+    /**
+     * @see NetTools#isBlockedAddress(InetAddress)
+     * @verifies block loopback addresses
+     */
+    @Test
+    void isBlockedAddress_shouldBlockLoopbackAddresses()
+            throws Exception {
+        Assertions.assertTrue(NetTools.isBlockedAddress(
+                InetAddress.getByName("127.0.0.1")));
+        Assertions.assertTrue(NetTools.isBlockedAddress(
+                InetAddress.getByName("::1")));
+    }
+
+    /**
+     * @see NetTools#isBlockedAddress(InetAddress)
+     * @verifies block site-local addresses
+     */
+    @Test
+    void isBlockedAddress_shouldBlockSiteLocalAddresses()
+            throws Exception {
+        Assertions.assertTrue(NetTools.isBlockedAddress(
+                InetAddress.getByName("10.0.0.1")));
+        Assertions.assertTrue(NetTools.isBlockedAddress(
+                InetAddress.getByName("172.16.0.1")));
+        Assertions.assertTrue(NetTools.isBlockedAddress(
+                InetAddress.getByName("192.168.1.1")));
+    }
+
+    /**
+     * @see NetTools#isBlockedAddress(InetAddress)
+     * @verifies block link-local addresses
+     */
+    @Test
+    void isBlockedAddress_shouldBlockLinkLocalAddresses()
+            throws Exception {
+        Assertions.assertTrue(NetTools.isBlockedAddress(
+                InetAddress.getByName("169.254.169.254")));
+    }
+
+    /**
+     * @see NetTools#isBlockedAddress(InetAddress)
+     * @verifies allow public addresses
+     */
+    @Test
+    void isBlockedAddress_shouldAllowPublicAddresses()
+            throws Exception {
+        Assertions.assertFalse(NetTools.isBlockedAddress(
+                InetAddress.getByName("8.8.8.8")));
+        Assertions.assertFalse(NetTools.isBlockedAddress(
+                InetAddress.getByName("93.184.216.34")));
+    }
+
+    /**
+     * @see NetTools#buildImplicitAllowlist()
+     * @verifies contain configured hosts
+     */
+    @Test
+    void buildImplicitAllowlist_shouldContainConfiguredHosts() {
+        Assertions.assertTrue(
+                NetTools.buildImplicitAllowlist()
+                        .contains("localhost"));
     }
 }

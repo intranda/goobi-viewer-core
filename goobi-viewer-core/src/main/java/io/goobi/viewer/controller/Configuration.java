@@ -6424,6 +6424,15 @@ public class Configuration extends AbstractConfiguration {
         return getLocalList("user.authenticationProviders.redirectWhitelist.host");
     }
 
+    /**
+     * @should return false by default
+     * @should return true if configured
+     * @return whether outbound HTTP calls are allowed to reach loopback addresses
+     */
+    public boolean isOutboundHttpAllowLoopback() {
+        return getLocalBoolean("outboundHttp.allowLoopback", false);
+    }
+
     // active mq configuration //
 
     public boolean isStartInternalMessageBroker() {
