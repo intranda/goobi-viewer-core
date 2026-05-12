@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -233,6 +234,27 @@ class ALTOToolsTest extends AbstractTest {
         String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);
         Assertions.assertNotNull(text);
         Assertions.assertTrue(text.contains("data-entity-authority-data-uri="));
+    }
+
+    /**
+     * Regression guard for the dead MAX_ENRICHMENTS=1 limit in NamedEntityEnricher that
+     * previously emitted only the first named-entity button per page-render and silently
+     * downgraded every subsequent reference to plain text. The fixture references multiple
+     * NER tags on distinct words, so the enriched output must contain at least one button
+     * per referenced word.
+     *
+     * @see NamedEntityEnricher#enrich(String, de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.LineElement)
+     * @verifies enrich every word that references a named entity tag
+     */
+    @Test
+    void enrich_shouldEnrichEveryWordThatReferencesANamedEntityTag() throws Exception {
+        File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
+        Assertions.assertTrue(file.isFile());
+        String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);
+        Assertions.assertNotNull(text);
+        int buttonCount = StringUtils.countMatches(text, "view-fulltext__entity-action-button");
+        Assertions.assertTrue(buttonCount >= 2,
+                "Expected at least 2 enriched entity buttons (regression for MAX_ENRICHMENTS=1 limit), found " + buttonCount);
     }
 
     /**
