@@ -105,21 +105,25 @@ public class UserAvatarResource extends ImageResource {
     private static final String FILENAME_TEMPLATE = "user_{id}";
 
     /**
-     * Maximum upload size accepted by this REST endpoint, in bytes. Kept in sync with the
-     * {@code maxsize} attribute of the OmniFaces {@code o:inputFile} component in
-     * {@code resources/tags/user/userAvatar.xhtml} (16 MiB), which guards the JSF
-     * upload path. Without an equivalent cap here, the REST endpoint would be an
-     * unbounded disk-fill DoS vector for any authenticated user.
+     * Maximum upload size accepted by this REST endpoint, in bytes. Kept in sync with the {@code maxsize} attribute of the OmniFaces
+     * {@code o:inputFile} component in {@code resources/tags/user/userAvatar.xhtml} (16 MiB), which guards the JSF upload path. Without an equivalent
+     * cap here, the REST endpoint would be an unbounded disk-fill DoS vector for any authenticated user.
      */
     private static final long MAX_AVATAR_UPLOAD_BYTES = 16L * 1024L * 1024L;
 
     public UserAvatarResource(
-            @Context ContainerRequestContext context, 
-            @Context HttpServletRequest request, 
-            @Context HttpServletResponse response,
+            @Context
+            ContainerRequestContext context,
+            @Context
+            HttpServletRequest request,
+            @Context
+            HttpServletResponse response,
             @Parameter(description = "User id",
-                    schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("userId") Long userId,
-            @Context ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
+                    schema = @Schema(minimum = "1", maximum = "9223372036854775807"))
+            @PathParam("userId")
+            Long userId,
+            @Context
+            ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
         super(context, request, response, "", getMediaFileUrl(userId).toString(), cacheManager);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         if (urls == null) {
@@ -232,9 +236,14 @@ public class UserAvatarResource extends ImageResource {
     @ApiResponse(responseCode = "413",
             description = "Upload exceeds the maximum avatar size (mirrors the JSF maxsize attribute)")
     @ApiResponse(responseCode = "500", description = "Internal server error during file upload")
-    public Response uploadAvatarFile(@DefaultValue("true") @FormDataParam("enabled") boolean enabled,
-            @FormDataParam("filename") String uploadFilename,
-            @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) {
+    public Response uploadAvatarFile(@DefaultValue("true")
+    @FormDataParam("enabled")
+    boolean enabled,
+            @FormDataParam("filename")
+            String uploadFilename,
+            @FormDataParam("file")
+            InputStream uploadedInputStream, @FormDataParam("file")
+            FormDataContentDisposition fileDetail) {
 
         if (uploadedInputStream == null) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
@@ -257,9 +266,10 @@ public class UserAvatarResource extends ImageResource {
                         MAX_AVATAR_UPLOAD_BYTES);
             } catch (IOException e) {
                 if (e.getMessage() != null
-                        && e.getMessage().startsWith(
-                                "Upload exceeds maximum"
-                                        + " allowed size")) {
+                        && e.getMessage()
+                                .startsWith(
+                                        "Upload exceeds maximum"
+                                                + " allowed size")) {
                     return Response.status(413)
                             .entity("Avatar upload exceeds"
                                     + " maximum allowed size of "
@@ -310,8 +320,7 @@ public class UserAvatarResource extends ImageResource {
      */
     private Optional<User> getUser() {
         try {
-            Optional<User> tokenUser = UserLoggedInFilter.getUserToken(servletRequest)
-                    .filter(token -> !token.isExpired())
+            Optional<User> tokenUser = UserLoggedInFilter.getValidUserToken(servletRequest)
                     .map(token -> token.getUser());
             if (tokenUser.isPresent()) {
                 return tokenUser;

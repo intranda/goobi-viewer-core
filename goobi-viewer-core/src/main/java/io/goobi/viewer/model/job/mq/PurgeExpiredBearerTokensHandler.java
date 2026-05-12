@@ -29,19 +29,32 @@ import io.goobi.viewer.controller.mq.MessageHandler;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.MessageStatus;
 import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.job.TaskType;
 
 /**
- * Message handler that removes all expired bearer tokens from the in-memory token manager.
+ * Message handler that removes all expired bearer tokens from both the in-memory IIIF token manager
+ * and the database-persisted user authentication tokens.
  */
 public class PurgeExpiredBearerTokensHandler implements MessageHandler<MessageStatus> {
 
     private static final Logger logger = LogManager.getLogger(PurgeExpiredBearerTokensHandler.class);
 
+    /**
+     * @should purge both IIIF and database tokens
+     */
     @Override
     public MessageStatus call(ViewerMessage message, MessageQueueManager queueManager) {
-        int count = DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
-        logger.info("{} expired bearer tokens removed.", count);
+        int iiifCount = DataManager.getInstance().getBearerTokenManager().purgeExpiredTokens();
+        logger.info("{} expired IIIF bearer tokens removed.", iiifCount);
+
+        try {
+            int dbCount = DataManager.getInstance().getDao().deleteAllExpiredUserTokens();
+            logger.info("{} expired user authentication tokens removed.", dbCount);
+        } catch (DAOException e) {
+            logger.error("Error purging expired user tokens from database", e);
+            return MessageStatus.ERROR;
+        }
 
         return MessageStatus.FINISH;
     }

@@ -122,11 +122,10 @@ public class BookmarkResource {
         }
     }
 
-    private User getUser(HttpServletRequest request) {
+    private static User getUser(HttpServletRequest request) {
         User user = null;
         try {
-            user = UserLoggedInFilter.getUserToken(request)
-                    .filter(token -> !token.isExpired())
+            user = UserLoggedInFilter.getValidUserToken(request)
                     .map(token -> token.getUser())
                     .orElse(null);
         } catch (DAOException e) {

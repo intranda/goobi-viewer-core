@@ -4131,11 +4131,10 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getTokenExpirationDays()
-     * @verifies return default value of 30 when not configured
+     * @verifies return default value of 7 when not configured
      */
-
     @Test
-    void getTokenExpirationDays_shouldReturnDefaultValueOf30WhenNotConfigured() {
-        assertEquals(30, DataManager.getInstance().getConfiguration().getTokenExpirationDays());
+    void getTokenExpirationDays_shouldReturnDefaultValueOf7WhenNotConfigured() {
+        assertEquals(7, DataManager.getInstance().getConfiguration().getTokenExpirationDays());
     }
 }

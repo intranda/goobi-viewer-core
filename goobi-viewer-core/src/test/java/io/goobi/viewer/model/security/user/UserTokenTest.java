@@ -54,12 +54,12 @@ class UserTokenTest {
 
     /**
      * @see UserToken#isExpired()
-     * @verifies return false when expiration date is null
+     * @verifies return true when expiration date is null
      */
     @Test
-    void isExpired_shouldReturnFalseWhenExpirationDateIsNull() {
+    void isExpired_shouldReturnTrueWhenExpirationDateIsNull() {
         UserToken token = new UserToken();
         token.setExpirationDate(null);
-        assertFalse(token.isExpired());
+        assertTrue(token.isExpired());
     }
 }

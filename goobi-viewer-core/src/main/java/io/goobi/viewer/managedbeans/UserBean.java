@@ -85,18 +85,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * JSF session-scoped backing bean responsible for user authentication, registration, and account
- * management. Holds the currently logged-in {@link io.goobi.viewer.model.security.user.User}
- * and mediates login/logout across local and OpenID Connect providers.
+ * JSF session-scoped backing bean responsible for user authentication, registration, and account management. Holds the currently logged-in
+ * {@link io.goobi.viewer.model.security.user.User} and mediates login/logout across local and OpenID Connect providers.
  *
- * <p><b>Lifecycle:</b> Created once per HTTP session; destroyed when the session expires or the
- * user explicitly logs out. Sensitive credential fields ({@code password}, {@code passwordOne},
- * {@code passwordTwo}) are declared {@code transient} and are therefore not included in session
+ * <p>
+ * <b>Lifecycle:</b> Created once per HTTP session; destroyed when the session expires or the user explicitly logs out. Sensitive credential fields
+ * ({@code password}, {@code passwordOne}, {@code passwordTwo}) are declared {@code transient} and are therefore not included in session
  * serialisation.
  *
- * <p><b>Thread safety:</b> Mostly confined to the JSF request thread. The
- * {@code getAuthenticationProviders()} method is {@code synchronized} to prevent concurrent
- * lazy initialisation of the provider list.
+ * <p>
+ * <b>Thread safety:</b> Mostly confined to the JSF request thread. The {@code getAuthenticationProviders()} method is {@code synchronized} to prevent
+ * concurrent lazy initialisation of the provider list.
  */
 @Named
 @SessionScoped
@@ -749,6 +748,8 @@ public class UserBean implements Serializable {
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
                             && DataManager.getInstance().getDao().updateUser(u)) {
+                        DataManager.getInstance().getDao().deleteAllUserTokensForUser(u);
+                        logger.info("Revoked all bearer tokens for user {} due to password reset", u.getEmail());
                         email = null;
                         Messages.info("user_retrieveAccountPasswordResetMessage");
                         return "user?faces-redirect=true";
@@ -1075,12 +1076,10 @@ public class UserBean implements Serializable {
         }
     }
 
-    
     public String getOrigin() {
         return origin;
     }
 
-    
     public void setOrigin(String origin) {
         logger.debug("setOrigin: {}", origin);
         this.origin = origin;

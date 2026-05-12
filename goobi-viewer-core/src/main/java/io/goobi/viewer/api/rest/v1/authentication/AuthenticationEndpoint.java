@@ -96,6 +96,8 @@ public class AuthenticationEndpoint {
 
     private static final Logger logger = LogManager.getLogger(AuthenticationEndpoint.class);
 
+    private static final int MAX_ACTIVE_TOKENS_PER_USER = 20;
+
     static final String REASON_PHRASE_ILLEGAL_REDIRECT_URL = "Illegal redirect URL or URL cannot be checked.";
     static final String REASON_PHRASE_NO_PROVIDERS_CONFIGURED = "No authentication providers of type 'httpHeader' configured.";
     static final String REASON_PHRASE_NO_PROVIDER_FOUND = "No matching provider found.";
@@ -128,6 +130,8 @@ public class AuthenticationEndpoint {
      * @should return 429 with retryAfterSeconds on IP delay
      * @should return 429 with retryAfterSeconds on username delay
      * @should reset failed attempt counters on successful login
+     * @should use default expiration when configured value is zero or negative
+     * @should rotate oldest tokens when cap is reached
      */
     @POST
     @Path(ApiUrls.AUTH_LOGIN)
@@ -135,7 +139,9 @@ public class AuthenticationEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Local user login",
-            description = "Authenticates a local user (e-mail + password) and returns a Bearer token.")
+            description = "Authenticates a local user (e-mail + password) and returns a Bearer token. "
+                    + "Store the token securely; it is returned only once and cannot be retrieved again. "
+                    + "Do not log or expose it in URLs.")
     @ApiResponse(responseCode = "200", description = "Login successful; plaintext token returned in response body")
     @ApiResponse(responseCode = "401", description = "Invalid credentials, user inactive or suspended")
     @ApiResponse(responseCode = "429", description = "Too many failed attempts; retryAfterSeconds indicates seconds until retry")
@@ -202,10 +208,19 @@ public class AuthenticationEndpoint {
             String plaintext = UUID.randomUUID().toString();
             String tokenHash = SecurityManager.hashToken(plaintext);
             DataManager.getInstance().getDao().deleteExpiredUserTokensForUser(user);
+            List<UserToken> activeTokens = DataManager.getInstance().getDao().getActiveUserTokensForUser(user);
+            if (activeTokens.size() >= MAX_ACTIVE_TOKENS_PER_USER) {
+                for (int i = 0; i <= activeTokens.size() - MAX_ACTIVE_TOKENS_PER_USER; i++) {
+                    DataManager.getInstance().getDao().deleteUserToken(activeTokens.get(i));
+                }
+            }
             UserToken userToken = new UserToken();
             userToken.setUser(user);
             userToken.setTokenHash(tokenHash);
             int expirationDays = DataManager.getInstance().getConfiguration().getTokenExpirationDays();
+            if (expirationDays <= 0) {
+                expirationDays = 7;
+            }
             userToken.setExpirationDate(LocalDateTime.now().plusDays(expirationDays));
             DataManager.getInstance().getDao().addUserToken(userToken);
 

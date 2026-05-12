@@ -674,6 +674,62 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void deleteAllUserTokensForUser(io.goobi.viewer.model.security.user.User user) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.createQuery("DELETE FROM UserToken t WHERE t.user = :user")
+                    .setParameter("user", user)
+                    .executeUpdate();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public java.util.List<io.goobi.viewer.model.security.user.UserToken> getActiveUserTokensForUser(
+            io.goobi.viewer.model.security.user.User user) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT t FROM UserToken t WHERE t.user = :user AND t.expirationDate >= :now ORDER BY t.dateCreated ASC",
+                    io.goobi.viewer.model.security.user.UserToken.class)
+                    .setParameter("user", user)
+                    .setParameter("now", java.time.LocalDateTime.now())
+                    .getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int deleteAllExpiredUserTokens() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            int count = em.createQuery("DELETE FROM UserToken t WHERE t.expirationDate < :now")
+                    .setParameter("now", java.time.LocalDateTime.now())
+                    .executeUpdate();
+            commitTransaction(em);
+            return count;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return 0;
+        } finally {
+            close(em);
+        }
+    }
+
     // UserGroup
 
     /** {@inheritDoc} */
