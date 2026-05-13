@@ -28,7 +28,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 
 /**
@@ -82,7 +81,7 @@ public class SearchQueryItemLine implements Serializable {
      */
     public void setValue(final String value) {
         // logger.trace("setValue: {}", value); //NOSONAR Debug
-        String val = StringTools.stripJS(value);
+        String val = value;
         if (values.isEmpty()) {
             values.add(0, val);
         } else {
@@ -107,7 +106,7 @@ public class SearchQueryItemLine implements Serializable {
      * @should unset values correctly
      */
     public void toggleValue(final String value) {
-        String val = StringTools.stripJS(value);
+        String val = value;
         int index = this.values.indexOf(val);
         if (index >= 0) {
             this.values.remove(index);
@@ -128,7 +127,7 @@ public class SearchQueryItemLine implements Serializable {
     
     public void setValue2(final String value2) {
         logger.trace("setValue2: {}", value2);
-        String val2 = StringTools.stripJS(value2);
+        String val2 = value2;
         if (values.isEmpty()) {
             values.add(null);
         }

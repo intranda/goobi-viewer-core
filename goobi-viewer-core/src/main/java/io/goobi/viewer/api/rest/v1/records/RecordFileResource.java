@@ -231,9 +231,6 @@ public class RecordFileResource {
             @Parameter(description = "Source file name",
                     schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
-        if (!filename.equals(StringTools.stripJS(filename))) {
-            throw new ServiceNotAllowedException("Script detected in input");
-        }
         // DataFileTools.getDataFilePath calls FileTools.sanitizeFileName which throws
         // IllegalArgumentException for filenames with illegal characters (e.g. control chars).
         // Wrap it as IllegalRequestException so ContentExceptionMapper returns HTTP 400.
@@ -282,10 +279,6 @@ public class RecordFileResource {
             @Parameter(description = "Media file name",
                     schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
-        if (!filename.equals(StringTools.stripJS(filename))) {
-            throw new ServiceNotAllowedException("Script detected in input");
-        }
-
         // DataFileTools.getDataFilePath calls FileTools.sanitizeFileName which throws
         // IllegalArgumentException for filenames with illegal characters (e.g. control chars).
         // Wrap it as IllegalRequestException so ContentExceptionMapper returns HTTP 400.
@@ -382,7 +375,7 @@ public class RecordFileResource {
         final Language language =
                 DataManager.getInstance()
                         .getLanguageHelper()
-                        .getLanguage(lang == null ? BeanUtils.getLocale().getLanguage() : StringTools.stripJS(lang));
+                        .getLanguage(lang == null ? BeanUtils.getLocale().getLanguage() : lang);
         Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         Path filePath = getDocumentLanguageVersion(cmdiPath, language);
         if (filePath != null && Files.isRegularFile(filePath)) {

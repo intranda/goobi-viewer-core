@@ -93,19 +93,6 @@ class StringToolsTest {
     }
 
     /**
-     * @see StringTools#stripJS(String)
-     * @verifies remove script tags, self-closing scripts, and SVG event handler elements regardless of case
-     */
-    @Test
-    void stripJS_shouldRemoveScriptTagsSelfClosingScriptsAndSVGEventHandlerElementsRegardlessOfCase() throws Exception {
-        assertEquals("foo  bar", StringTools.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
-        assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
-        assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT src=\"http://dangerousscript.js\"/> bar"));
-        assertEquals("foo  bar", StringTools.stripJS("foo <svG onLoad=alert(\"Hello_XSS_World\")></svG> bar"));
-        assertEquals("foo  bar", StringTools.stripJS("foo <svG onLoad=alert(\"Hello_XSS_World\")/> bar"));
-    }
-
-    /**
      * @see StringTools#stripPatternBreakingChars(String)
      * @verifies replace tabs and line break characters with underscores
      */

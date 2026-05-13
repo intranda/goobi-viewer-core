@@ -59,11 +59,6 @@ import org.jsoup.safety.Safelist;
  *       {@code <br>} injection).</li>
  * </ul>
  *
- * <p>
- * Replaces the regex-based {@link StringTools#stripJS(String)} which only removed {@code
- * <script>} and {@code <svg>} blocks and was bypassable through any other XSS vector
- * (event-handler attributes, {@code javascript:} URIs, etc.).
- * </p>
  */
 public final class HtmlSanitizer {
 

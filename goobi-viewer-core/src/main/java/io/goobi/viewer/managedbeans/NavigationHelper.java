@@ -884,7 +884,7 @@ public class NavigationHelper implements Serializable {
         if (request != null) {
             URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
             if (url != null) {
-                return getApplicationUrl() + StringTools.stripJS(url.toURL().substring(1));
+                return getApplicationUrl() + url.toURL().substring(1);
             }
         }
         return null;
