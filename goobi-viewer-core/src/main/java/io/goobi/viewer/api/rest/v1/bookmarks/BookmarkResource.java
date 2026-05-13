@@ -162,16 +162,19 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
     @ApiResponse(responseCode = "409", description = "Session users may only have one bookmark list")
     @ApiResponse(responseCode = "500", description = "Error querying database")
-    // Provide explicit content spec to avoid OpenAPI schema validation error ("Invalid requestBody definition")
-    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BookmarkList.class)))
-    public Response addBookmarkList(BookmarkList list) throws DAOException, IOException, RestApiException, IllegalRequestException {
-        // Reject null body (e.g. JSON literal "null") with 400 instead of NPE → 500
-        if (list == null) {
+    // type = "object" prevents schemathesis from sending primitives (integer/string) as the request body —
+    // mirrors the PATCH endpoint's annotation.
+    @RequestBody(required = true,
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = BookmarkListCreateDto.class, type = "object")))
+    public Response addBookmarkList(BookmarkListCreateDto dto)
+            throws DAOException, IOException, RestApiException, IllegalRequestException {
+        if (dto == null) {
             throw new BadRequestException("Request body must not be null");
         }
         BookmarkList created;
-        if (StringUtils.isNotBlank(list.getName())) {
-            created = builder.addBookmarkList(list.getName());
+        if (StringUtils.isNotBlank(dto.getName())) {
+            created = builder.addBookmarkList(dto.getName());
         } else {
             created = builder.addBookmarkList();
         }
@@ -215,28 +218,31 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "404", description = "No bookmark list found for the given id")
     @ApiResponse(responseCode = "409", description = "Session bookmark lists cannot be updated")
     @ApiResponse(responseCode = "500", description = "Error querying database")
-    // Provide explicit content spec to avoid OpenAPI schema validation error ("Invalid requestBody definition").
-    // type = "object" prevents schemathesis from sending primitives (e.g. the integer 0) as the request body.
+    // Use BookmarkListPatchDto to express the partial-update contract precisely: each field is optional
+    // (boxed Boolean for isPublic distinguishes "field absent" from "set to false"), and shareKey /
+    // ownership fields are intentionally not patchable.
     @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = BookmarkList.class, type = "object")))
+            schema = @Schema(implementation = BookmarkListPatchDto.class, type = "object")))
     public BookmarkList patchBookmarkList(
             @Parameter(description = "The id of the bookmark list",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long id,
-            BookmarkList list) throws DAOException, IOException, RestApiException, IllegalRequestException {
-        // Guard against NPE when the client sends a PATCH request without a JSON body
-        if (list == null) {
+            BookmarkListPatchDto patch) throws DAOException, IOException, RestApiException, IllegalRequestException {
+        requireValidListId(id);
+        if (patch == null) {
             throw new IllegalRequestException("Request body required");
         }
         BookmarkList orig = getBookmarkList(id);
-        if (StringUtils.isNotBlank(list.getName())) {
-            orig.setName(list.getName());
+        // Partial update: only fields explicitly present in the patch DTO are applied.
+        // shareKey is intentionally not patchable here — server-side generators (BookmarkBean,
+        // BookmarkList.generateShareKey) are the only legitimate path.
+        if (StringUtils.isNotBlank(patch.getName())) {
+            orig.setName(patch.getName());
         }
-        if (StringUtils.isNotBlank(list.getDescription())) {
-            orig.setDescription(list.getDescription());
+        if (StringUtils.isNotBlank(patch.getDescription())) {
+            orig.setDescription(patch.getDescription());
         }
-        orig.setIsPublic(list.isIsPublic());
-        if (StringUtils.isNotBlank(list.getShareKey())) {
-            orig.setShareKey(list.getShareKey());
+        if (patch.getIsPublic() != null) {
+            orig.setIsPublic(patch.getIsPublic());
         }
         builder.updateBookmarkList(orig);
         return orig;
@@ -281,7 +287,8 @@ public class BookmarkResource {
     public Response addItemToBookmarkList(
             @Parameter(description = "The id of the bookmark list",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long id,
-            Bookmark item) throws DAOException, IOException, RestApiException {
+            Bookmark item) throws DAOException, IOException, RestApiException, IllegalRequestException {
+        requireValidListId(id);
         // Reject null body (e.g. JSON literal "null") with 400 instead of NPE → 500
         if (item == null) {
             throw new BadRequestException("Request body must not be null");
@@ -310,7 +317,8 @@ public class BookmarkResource {
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long listId,
             @Parameter(description = "The id of the bookmark",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("bookmarkId") Long bookmarkId)
-            throws RestApiException, DAOException, IOException {
+            throws RestApiException, DAOException, IOException, IllegalRequestException {
+        requireValidListId(listId);
         BookmarkList list = getBookmarkList(listId);
         Bookmark item = list.getItems().stream().filter(i -> i.getId().equals(bookmarkId)).findAny().orElse(null);
         if (item != null) {
@@ -333,7 +341,8 @@ public class BookmarkResource {
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long listId,
             @Parameter(description = "The id of the bookmark",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("bookmarkId") Long bookmarkId)
-            throws RestApiException, DAOException, IOException {
+            throws RestApiException, DAOException, IOException, IllegalRequestException {
+        requireValidListId(listId);
         BookmarkList list = getBookmarkList(listId);
         Bookmark item = list.getItems().stream().filter(i -> i.getId().equals(bookmarkId)).findAny().orElse(null);
         if (item != null) {
@@ -403,7 +412,8 @@ public class BookmarkResource {
             // Accept max as String to gracefully handle the literal string "null" sent by some clients,
             // which cannot be parsed directly into Integer by JAX-RS and would cause a 500 error.
             @Parameter(description = "Limit for results to return") @QueryParam("max") String maxStr)
-            throws DAOException, IOException, RestApiException, ContentLibException {
+            throws DAOException, IOException, RestApiException, ContentLibException, IllegalRequestException {
+        requireValidListId(id);
         BookmarkList list = getBookmarkList(id);
         String query = list.generateSolrQueryForItems();
         return RSSFeed.createRssFeedString(language, parseMaxHits(maxStr), null, query, null, servletRequest, null, true);
@@ -428,7 +438,8 @@ public class BookmarkResource {
             // Accept max as String to gracefully handle the literal string "null" sent by some clients,
             // which cannot be parsed directly into Integer by JAX-RS and would cause a 500 error.
             @Parameter(description = "Limit for results to return") @QueryParam("max") String maxStr)
-            throws DAOException, IOException, RestApiException, ContentLibException {
+            throws DAOException, IOException, RestApiException, ContentLibException, IllegalRequestException {
+        requireValidListId(id);
         BookmarkList list = getBookmarkList(id);
         String query = list.generateSolrQueryForItems();
         return RSSFeed.createRssResponse(language, parseMaxHits(maxStr), null, query, null, servletRequest, null, true);
