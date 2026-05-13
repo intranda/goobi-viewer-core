@@ -257,7 +257,7 @@ public class RecordFileResource {
         }
 
         StreamingOutput so = out -> {
-            try (InputStream in = Files.newInputStream(path)) {
+            try (InputStream in = FileTools.openRejectingSymlinks(path)) {
                 IOUtils.copy(in, out);
             }
         };
@@ -320,7 +320,7 @@ public class RecordFileResource {
                     FileTools.compressZipFile(fileList, zipFile.toFile(), 9);
                     mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, zipFile.getFileName().toString(), zipFile);
                     StreamingOutput so = out -> {
-                        try (InputStream in = Files.newInputStream(zipFile)) {
+                        try (InputStream in = FileTools.openRejectingSymlinks(zipFile)) {
                             IOUtils.copy(in, out);
                         } finally {
                             FileUtils.deleteQuietly(tempFolder.toFile());
@@ -334,7 +334,7 @@ public class RecordFileResource {
             }
         }
         StreamingOutput so = out -> {
-            try (InputStream in = Files.newInputStream(path)) {
+            try (InputStream in = FileTools.openRejectingSymlinks(path)) {
                 IOUtils.copy(in, out);
             }
         };
@@ -421,7 +421,7 @@ public class RecordFileResource {
                 logger.error("Failed to probe file content type");
             }
             StreamingOutput so = out -> {
-                try (InputStream in = Files.newInputStream(resourceFile)) {
+                try (InputStream in = FileTools.openRejectingSymlinks(resourceFile)) {
                     IOUtils.copy(in, out);
                 }
             };
@@ -469,12 +469,21 @@ public class RecordFileResource {
         }
 
         java.nio.file.Path ret;
+        // Strict-reject: if a deployment mounts TEI folders via symlinks (e.g. NFS), this will
+        // fail and is to be addressed via config whitelist follow-up.
+        if (Files.isSymbolicLink(folder)) {
+            throw new IOException("Refusing to list symlinked directory: " + folder);
+        }
         // This will return the file with the requested language or alternatively the first file in the TEI folder
         try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
             ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(null);
         }
         // Fallback to ISO-2
         if (ret == null) {
+            // Strict-reject: see above.
+            if (Files.isSymbolicLink(folder)) {
+                throw new IOException("Refusing to list symlinked directory: " + folder);
+            }
             try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
                 ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml"))
                         .findFirst()

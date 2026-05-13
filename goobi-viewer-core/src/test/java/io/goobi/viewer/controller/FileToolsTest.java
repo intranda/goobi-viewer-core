@@ -23,6 +23,7 @@ package io.goobi.viewer.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,7 +31,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
@@ -560,6 +563,264 @@ class FileToolsTest extends AbstractTest {
         FileTools.copyRejectingSymlinks(tracking, target);
         Assertions.assertFalse(closed.get(),
                 "Helper must follow Files.copy(InputStream,...) semantics and leave stream open");
+    }
+
+    // ------------------------------------------------------------------------
+    // openRejectingSymlinks
+    // ------------------------------------------------------------------------
+
+    /**
+     * @see FileTools#openRejectingSymlinks(Path)
+     * @verifies reject symbolic link at source path
+     */
+    @Test
+    void openRejectingSymlinks_shouldRejectSymbolicLinkAtSourcePath(@TempDir
+    Path tempDir) throws IOException {
+        Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
+        Path victim = tempDir.resolve("victim.txt");
+        Files.writeString(victim, "secret", StandardCharsets.UTF_8);
+        Path source = tempDir.resolve("source.txt");
+        Files.createSymbolicLink(source, victim);
+
+        Assertions.assertThrows(IOException.class, () -> FileTools.openRejectingSymlinks(source));
+    }
+
+    /**
+     * @see FileTools#openRejectingSymlinks(Path)
+     * @verifies reject symbolic link at parent directory
+     */
+    @Test
+    void openRejectingSymlinks_shouldRejectSymbolicLinkAtParentDirectory(@TempDir
+    Path tempDir) throws IOException {
+        Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
+        Path realDir = tempDir.resolve("real");
+        Files.createDirectories(realDir);
+        Files.writeString(realDir.resolve("file.txt"), "content", StandardCharsets.UTF_8);
+        Path linkedDir = tempDir.resolve("linked");
+        Files.createSymbolicLink(linkedDir, realDir);
+        Path source = linkedDir.resolve("file.txt");
+
+        IOException ex = Assertions.assertThrows(IOException.class, () -> FileTools.openRejectingSymlinks(source));
+        Assertions.assertTrue(ex.getMessage().contains("symlinked parent"),
+                "Expected message to mention symlinked parent, was: " + ex.getMessage());
+    }
+
+    /**
+     * @see FileTools#openRejectingSymlinks(Path)
+     * @verifies read bytes when source is regular file
+     */
+    @Test
+    void openRejectingSymlinks_shouldReadBytesWhenSourceIsRegularFile(@TempDir
+    Path tempDir) throws IOException {
+        Path source = tempDir.resolve("source.txt");
+        Files.writeString(source, "hello", StandardCharsets.UTF_8);
+
+        try (InputStream in = FileTools.openRejectingSymlinks(source)) {
+            Assertions.assertEquals("hello", new String(in.readAllBytes(), StandardCharsets.UTF_8));
+        }
+    }
+
+    /**
+     * @see FileTools#openRejectingSymlinks(Path)
+     * @verifies propagate NoSuchFileException when source is missing
+     */
+    @Test
+    void openRejectingSymlinks_shouldPropagateNoSuchFileExceptionWhenSourceIsMissing(@TempDir
+    Path tempDir) {
+        Path source = tempDir.resolve("does-not-exist.txt");
+        Assertions.assertThrows(NoSuchFileException.class, () -> FileTools.openRejectingSymlinks(source));
+    }
+
+    // ------------------------------------------------------------------------
+    // moveRejectingSymlinks
+    // ------------------------------------------------------------------------
+
+    /**
+     * @see FileTools#moveRejectingSymlinks(Path, Path, java.nio.file.CopyOption...)
+     * @verifies reject symbolic link at source
+     */
+    @Test
+    void moveRejectingSymlinks_shouldRejectSymbolicLinkAtSource(@TempDir
+    Path tempDir) throws IOException {
+        Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
+        Path victim = tempDir.resolve("victim.txt");
+        Files.writeString(victim, "secret", StandardCharsets.UTF_8);
+        Path source = tempDir.resolve("source.txt");
+        Files.createSymbolicLink(source, victim);
+        Path target = tempDir.resolve("target.txt");
+
+        Assertions.assertThrows(IOException.class, () -> FileTools.moveRejectingSymlinks(source, target));
+        Assertions.assertTrue(Files.exists(victim), "Symlink source target must not be moved");
+    }
+
+    /**
+     * @see FileTools#moveRejectingSymlinks(Path, Path, java.nio.file.CopyOption...)
+     * @verifies reject symbolic link at target
+     */
+    @Test
+    void moveRejectingSymlinks_shouldRejectSymbolicLinkAtTarget(@TempDir
+    Path tempDir) throws IOException {
+        Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
+        Path source = tempDir.resolve("source.txt");
+        Files.writeString(source, "new", StandardCharsets.UTF_8);
+        Path victim = tempDir.resolve("victim.txt");
+        Files.writeString(victim, "untouched", StandardCharsets.UTF_8);
+        Path target = tempDir.resolve("target.txt");
+        Files.createSymbolicLink(target, victim);
+
+        Assertions.assertThrows(IOException.class,
+                () -> FileTools.moveRejectingSymlinks(source, target, StandardCopyOption.REPLACE_EXISTING));
+        Assertions.assertEquals("untouched", Files.readString(victim, StandardCharsets.UTF_8),
+                "Symlink target file must not be overwritten");
+    }
+
+    /**
+     * @see FileTools#moveRejectingSymlinks(Path, Path, java.nio.file.CopyOption...)
+     * @verifies reject symbolic link at source parent
+     */
+    @Test
+    void moveRejectingSymlinks_shouldRejectSymbolicLinkAtSourceParent(@TempDir
+    Path tempDir) throws IOException {
+        Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
+        Path realDir = tempDir.resolve("real");
+        Files.createDirectories(realDir);
+        Files.writeString(realDir.resolve("source.txt"), "content", StandardCharsets.UTF_8);
+        Path linkedDir = tempDir.resolve("linked");
+        Files.createSymbolicLink(linkedDir, realDir);
+        Path source = linkedDir.resolve("source.txt");
+        Path target = tempDir.resolve("target.txt");
+
+        IOException ex = Assertions.assertThrows(IOException.class, () -> FileTools.moveRejectingSymlinks(source, target));
+        Assertions.assertTrue(ex.getMessage().contains("symlinked parent"),
+                "Expected message to mention symlinked parent, was: " + ex.getMessage());
+    }
+
+    /**
+     * @see FileTools#moveRejectingSymlinks(Path, Path, java.nio.file.CopyOption...)
+     * @verifies reject symbolic link at target parent
+     */
+    @Test
+    void moveRejectingSymlinks_shouldRejectSymbolicLinkAtTargetParent(@TempDir
+    Path tempDir) throws IOException {
+        Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
+        Path source = tempDir.resolve("source.txt");
+        Files.writeString(source, "content", StandardCharsets.UTF_8);
+        Path realDir = tempDir.resolve("real");
+        Files.createDirectories(realDir);
+        Path linkedDir = tempDir.resolve("linked");
+        Files.createSymbolicLink(linkedDir, realDir);
+        Path target = linkedDir.resolve("target.txt");
+
+        IOException ex = Assertions.assertThrows(IOException.class, () -> FileTools.moveRejectingSymlinks(source, target));
+        Assertions.assertTrue(ex.getMessage().contains("symlinked parent"),
+                "Expected message to mention symlinked parent, was: " + ex.getMessage());
+    }
+
+    /**
+     * @see FileTools#moveRejectingSymlinks(Path, Path, java.nio.file.CopyOption...)
+     * @verifies move regular file when neither side is symlinked
+     */
+    @Test
+    void moveRejectingSymlinks_shouldMoveRegularFileWhenNeitherSideIsSymlinked(@TempDir
+    Path tempDir) throws IOException {
+        Path source = tempDir.resolve("source.txt");
+        Files.writeString(source, "payload", StandardCharsets.UTF_8);
+        Path target = tempDir.resolve("target.txt");
+
+        FileTools.moveRejectingSymlinks(source, target);
+
+        Assertions.assertFalse(Files.exists(source), "Source must have been moved away");
+        Assertions.assertEquals("payload", Files.readString(target, StandardCharsets.UTF_8));
+    }
+
+    /**
+     * @see FileTools#moveRejectingSymlinks(Path, Path, java.nio.file.CopyOption...)
+     * @verifies support atomic move for regular files
+     */
+    @Test
+    void moveRejectingSymlinks_shouldSupportAtomicMoveForRegularFiles(@TempDir
+    Path tempDir) throws IOException {
+        Path source = tempDir.resolve("source.txt");
+        Files.writeString(source, "payload", StandardCharsets.UTF_8);
+        Path target = tempDir.resolve("target.txt");
+        Files.writeString(target, "old", StandardCharsets.UTF_8);
+
+        FileTools.moveRejectingSymlinks(source, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+
+        Assertions.assertFalse(Files.exists(source));
+        Assertions.assertEquals("payload", Files.readString(target, StandardCharsets.UTF_8));
+    }
+
+    // ------------------------------------------------------------------------
+    // newBufferedWriterRejectingSymlinks
+    // ------------------------------------------------------------------------
+
+    /**
+     * @see FileTools#newBufferedWriterRejectingSymlinks(Path)
+     * @verifies reject symbolic link at target path
+     */
+    @Test
+    void newBufferedWriterRejectingSymlinks_shouldRejectSymbolicLinkAtTargetPath(@TempDir
+    Path tempDir) throws IOException {
+        Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
+        Path victim = tempDir.resolve("victim.txt");
+        Files.writeString(victim, "untouched", StandardCharsets.UTF_8);
+        Path target = tempDir.resolve("target.txt");
+        Files.createSymbolicLink(target, victim);
+
+        Assertions.assertThrows(IOException.class, () -> FileTools.newBufferedWriterRejectingSymlinks(target));
+        Assertions.assertEquals("untouched", Files.readString(victim, StandardCharsets.UTF_8),
+                "Symlink target file must not be overwritten");
+    }
+
+    /**
+     * @see FileTools#newBufferedWriterRejectingSymlinks(Path)
+     * @verifies reject symbolic link at parent directory
+     */
+    @Test
+    void newBufferedWriterRejectingSymlinks_shouldRejectSymbolicLinkAtParentDirectory(@TempDir
+    Path tempDir) throws IOException {
+        Assumptions.assumeTrue(supportsSymlinks(tempDir), "Filesystem does not support symbolic links");
+        Path realDir = tempDir.resolve("real");
+        Files.createDirectories(realDir);
+        Path linkedDir = tempDir.resolve("linked");
+        Files.createSymbolicLink(linkedDir, realDir);
+        Path target = linkedDir.resolve("target.txt");
+
+        IOException ex = Assertions.assertThrows(IOException.class,
+                () -> FileTools.newBufferedWriterRejectingSymlinks(target));
+        Assertions.assertTrue(ex.getMessage().contains("symlinked parent"),
+                "Expected message to mention symlinked parent, was: " + ex.getMessage());
+    }
+
+    /**
+     * @see FileTools#newBufferedWriterRejectingSymlinks(Path)
+     * @verifies write bytes when target is regular file
+     */
+    @Test
+    void newBufferedWriterRejectingSymlinks_shouldWriteBytesWhenTargetIsRegularFile(@TempDir
+    Path tempDir) throws IOException {
+        Path target = tempDir.resolve("target.txt");
+        try (BufferedWriter writer = FileTools.newBufferedWriterRejectingSymlinks(target)) {
+            writer.write("hello");
+        }
+        Assertions.assertEquals("hello", Files.readString(target, StandardCharsets.UTF_8));
+    }
+
+    /**
+     * @see FileTools#newBufferedWriterRejectingSymlinks(Path)
+     * @verifies truncate existing regular file
+     */
+    @Test
+    void newBufferedWriterRejectingSymlinks_shouldTruncateExistingRegularFile(@TempDir
+    Path tempDir) throws IOException {
+        Path target = tempDir.resolve("target.txt");
+        Files.writeString(target, "AAAAAAAAAAAAAAAAAAAA", StandardCharsets.UTF_8);
+        try (BufferedWriter writer = FileTools.newBufferedWriterRejectingSymlinks(target)) {
+            writer.write("short");
+        }
+        Assertions.assertEquals("short", Files.readString(target, StandardCharsets.UTF_8),
+                "Existing content must be truncated, not appended to");
     }
 
     /**

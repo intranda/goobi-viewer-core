@@ -51,6 +51,7 @@ import de.unigoettingen.sub.commons.util.MimeType;
 import de.unigoettingen.sub.commons.util.MimeType.UnknownMimeTypeException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.files.ZipUnpacker;
 import io.goobi.viewer.exceptions.ArchiveSizeExceededException;
 import io.goobi.viewer.model.security.encryption.Decrypter;
@@ -146,7 +147,7 @@ public class ExternalFilesDownloader {
         Path sourcePath = PathConverter.getPath(uri);
         if (Files.exists(sourcePath)) {
             Path target = this.destinationFolder.resolve(sourcePath.getFileName());
-            try (InputStream in = Files.newInputStream(sourcePath)) {
+            try (InputStream in = FileTools.openRejectingSymlinks(sourcePath)) {
                 return extractContentToPath(target, in, Files.probeContentType(sourcePath), Files.size(sourcePath));
             } catch (ArchiveSizeExceededException e) {
                 throw new IOException(
@@ -201,7 +202,7 @@ public class ExternalFilesDownloader {
 
     private static Path writeFile(Path entryFile, InputStream zis) throws IOException {
         Files.deleteIfExists(entryFile);
-        Files.copy(zis, entryFile);
+        FileTools.copyRejectingSymlinks(zis, entryFile);
         return entryFile;
     }
 
