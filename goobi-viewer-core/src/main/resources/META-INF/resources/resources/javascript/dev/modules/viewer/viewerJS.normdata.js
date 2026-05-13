@@ -215,19 +215,19 @@ var viewerJS = (function (viewer) {
         html += '<dl class="dl-horizontal">';
         $.each(data, function (i, object) {
             $.each(object, function (property, value) {
-                html += '<dt title="' + property + '">' + property + '</dt>';
+                html += '<dt title="' + _escapeHtml(property) + '">' + _escapeHtml(property) + '</dt>';
                 html += '<dd>';
                 $.each(value, function (p, v) {
                     if (v.image) {
-                        html += '<img class="normdata-popover-content__icon" src="' + _defaults.path + '/' + v.image + '" /> ';
+                        html += '<img class="normdata-popover-content__icon" src="' + _defaults.path + '/' + _escapeHtml(v.image) + '" /> ';
                     }
                     if (v.text) {
                         if (v.text.startsWith('http://') || v.text.startsWith('https://')) {
-                            html += '<a href="' + v.text + '" target="_blank">';
-                            html += v.text;
+                            html += '<a href="' + _escapeHtml(v.text) + '" target="_blank">';
+                            html += _escapeHtml(v.text);
                             html += '</a>';
                         } else {
-                            html += v.text;
+                            html += _escapeHtml(v.text);
                         }
                     }
                     if (v.url) {
@@ -257,12 +257,32 @@ var viewerJS = (function (viewer) {
     }
 
     /**
-     * Replaces /\?% with corresponding Unicode sequences.
+     * Escapes HTML special characters in a string to prevent XSS when the value
+     * is concatenated into an HTML string. Mirrors the server-side guarantee that
+     * NormDataValue.getText() returns raw Unicode (not pre-escaped HTML entities),
+     * so a single escaping pass here is both necessary and sufficient.
+     *
+     * @param str value to escape; null/undefined are treated as empty string
+     * @returns {String} HTML-safe string
+     */
+    function _escapeHtml(str) {
+        if (str == null) {
+            return '';
+        }
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    /**
+     * Replaces URL-critical characters with their Unicode escape sequences so the
+     * resulting string can be safely embedded as a query-parameter value in a URL
+     * that is processed server-side by StringTools.unescapeCriticalUrlChracters().
+     * All six replacements mirror StringTools.escapeCriticalUrlChracters() exactly.
      *
      * @param uri URI to escape
+     * @returns {String} escaped URI
      */
     function _unicodeEscapeUri(uri) {
-        return uri.replace(/\//g, 'U002F').replace('/\\/g', 'U005C').replace('/?/g', 'U003F').replace('/%/g', 'U0025');
+        return String(uri).replace(/\//g, 'U002F').replace(/\\/g, 'U005C').replace(/\|/g, 'U007C').replace(/\?/g, 'U003F').replace(/%/g, 'U0025').replace(/\+/g, 'U002B');
     }
 
     /**
