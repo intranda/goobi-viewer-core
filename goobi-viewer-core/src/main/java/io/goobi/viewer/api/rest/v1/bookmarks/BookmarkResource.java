@@ -67,6 +67,7 @@ import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.rss.Channel;
 import io.goobi.viewer.model.rss.RSSFeed;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -126,7 +127,7 @@ public class BookmarkResource {
         User user = null;
         try {
             user = UserLoggedInFilter.getValidUserToken(request)
-                    .map(token -> token.getUser())
+                    .map(UserToken::getUser)
                     .orElse(null);
         } catch (DAOException e) {
             logger.warn("Error getting user from authorization token", e);
@@ -167,8 +168,7 @@ public class BookmarkResource {
     @RequestBody(required = true,
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(implementation = BookmarkListCreateDto.class, type = "object")))
-    public Response addBookmarkList(BookmarkListCreateDto dto)
-            throws DAOException, IOException, RestApiException, IllegalRequestException {
+    public Response addBookmarkList(BookmarkListCreateDto dto) throws DAOException, IOException, RestApiException, IllegalRequestException {
         if (dto == null) {
             throw new BadRequestException("Request body must not be null");
         }
@@ -317,7 +317,7 @@ public class BookmarkResource {
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long listId,
             @Parameter(description = "The id of the bookmark",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("bookmarkId") Long bookmarkId)
-            throws RestApiException, DAOException, IOException, IllegalRequestException {
+            throws RestApiException, DAOException, IOException {
         requireValidListId(listId);
         BookmarkList list = getBookmarkList(listId);
         Bookmark item = list.getItems().stream().filter(i -> i.getId().equals(bookmarkId)).findAny().orElse(null);
@@ -341,7 +341,7 @@ public class BookmarkResource {
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("listId") Long listId,
             @Parameter(description = "The id of the bookmark",
                     schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("bookmarkId") Long bookmarkId)
-            throws RestApiException, DAOException, IOException, IllegalRequestException {
+            throws RestApiException, DAOException, IOException {
         requireValidListId(listId);
         BookmarkList list = getBookmarkList(listId);
         Bookmark item = list.getItems().stream().filter(i -> i.getId().equals(bookmarkId)).findAny().orElse(null);
@@ -412,7 +412,7 @@ public class BookmarkResource {
             // Accept max as String to gracefully handle the literal string "null" sent by some clients,
             // which cannot be parsed directly into Integer by JAX-RS and would cause a 500 error.
             @Parameter(description = "Limit for results to return") @QueryParam("max") String maxStr)
-            throws DAOException, IOException, RestApiException, ContentLibException, IllegalRequestException {
+            throws DAOException, IOException, RestApiException, ContentLibException {
         requireValidListId(id);
         BookmarkList list = getBookmarkList(id);
         String query = list.generateSolrQueryForItems();
@@ -438,7 +438,7 @@ public class BookmarkResource {
             // Accept max as String to gracefully handle the literal string "null" sent by some clients,
             // which cannot be parsed directly into Integer by JAX-RS and would cause a 500 error.
             @Parameter(description = "Limit for results to return") @QueryParam("max") String maxStr)
-            throws DAOException, IOException, RestApiException, ContentLibException, IllegalRequestException {
+            throws DAOException, IOException, RestApiException, ContentLibException {
         requireValidListId(id);
         BookmarkList list = getBookmarkList(id);
         String query = list.generateSolrQueryForItems();
