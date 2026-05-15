@@ -4,15 +4,11 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:c="http://java.sun.com/jsp/jstl/core">
-    <!-- Use ${} (immediate JSTL eval) so values are frozen as literals at build time.
-         ui:param / c:set with #{} stores a deferred expression that re-evaluates styleClass
-         at render time — outside the tag-invocation scope — causing class bleeding across
-         composite components in ui:repeat sidebars. -->
     <c:set var="_iconVariant"      value="${filled == 'true' ? 'filled' : 'outline'}" />
     <c:set var="_iconPath"         value="${facesContext.externalContext.requestContextPath}/resources/icons/${_iconVariant}/${icon}.svg#icon" />
     <c:set var="_iconWrapperClass" value="${not empty styleClass ? 'icon-wrapper '.concat(styleClass) : 'icon-wrapper'}" />
     <c:set var="_iconSvgClass"     value="${not empty svgClass   ? 'icon-svg '.concat(svgClass)       : 'icon-svg'}" />
-        
+
     <h:panelGroup styleClass="#{_iconWrapperClass}">
         <f:passThroughAttribute
             name="aria-hidden"
@@ -29,6 +25,9 @@
             focusable="false">
             <use href="#{_iconPath}" />
         </svg>
-        <span>xxxyz</span>
     </h:panelGroup>
+    <c:set var="styleClass" value="" />
+    <c:set var="svgClass"   value="" />
+    <c:set var="filled"     value="" />
+    <c:set var="ariaLabel"  value="" />
 </ui:component>
