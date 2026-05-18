@@ -111,7 +111,7 @@ public class ConfigurationBean implements Serializable {
      * useTiles.
      *
      * @param pageType name of the page type to look up settings for
-     * @param mimeType MIME type of the image being displayed
+     * @param viewManager provides context (work/MIME type) for resolving conditional image view settings
      * @return true if tiles should be used for the given page type and MIME type, false otherwise
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -125,7 +125,7 @@ public class ConfigurationBean implements Serializable {
      * Returns whether a navigator element should be shown in the OpenSeadragon viewer.
      * 
      * @param pageType get settings for this pageType
-     * @param mimeType get settings for this image type
+     * @param viewManager provides context (work/MIME type) for resolving conditional image view settings
      * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
@@ -139,7 +139,7 @@ public class ConfigurationBean implements Serializable {
      * getFooterHeight.
      *
      * @param pageType name of the page type to look up settings for
-     * @param mimeType MIME type of the image being displayed
+     * @param viewManager provides context (work/MIME type) for resolving conditional image view settings
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -153,7 +153,7 @@ public class ConfigurationBean implements Serializable {
      * getImageSizes.
      *
      * @param pageType name of the page type to look up settings for
-     * @param mimeType MIME type of the image being displayed
+     * @param viewManager provides context (work/MIME type) for resolving conditional image view settings
      * @return a list of configured zoom scale values for the given page type and MIME type
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
@@ -167,7 +167,7 @@ public class ConfigurationBean implements Serializable {
      * getTileSizes.
      *
      * @param pageType name of the page type to look up settings for
-     * @param mimeType MIME type of the image being displayed
+     * @param viewManager provides context (work/MIME type) for resolving conditional image view settings
      * @return a map of tile sizes (resolution) to lists of scale factors for the given page type and MIME type
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
