@@ -4046,7 +4046,14 @@ public class Configuration extends AbstractConfiguration {
         return Collections.emptyMap();
     }
 
+    public boolean isExternalResourceUrlsEnabled() {
+        return getLocalBoolean("externalResource[@enabled]", false);
+    }
+
     public List<String> getExternalResourceUrlTemplates() {
+        if (!isExternalResourceUrlsEnabled()) {
+            return Collections.emptyList();
+        }
         List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
         List<String> templates = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {

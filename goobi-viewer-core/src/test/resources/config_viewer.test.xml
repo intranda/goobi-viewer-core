@@ -97,6 +97,11 @@
 		<download>https://viewer.goobi.io/download/</download>
 	</urls>
 
+	<outboundHttp>
+		<!-- Allow loopback addresses (127.x.x.x) in test environments for mock servers -->
+		<allowLoopback>true</allowLoopback>
+	</outboundHttp>
+
 	<user>
 		<!-- registration/@enabled: If false, widgets for user registration / password retrieval are hidden. Default is true. -->
 		<registration enabled="false" />
