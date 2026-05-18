@@ -1564,7 +1564,7 @@
         </scripts>
     </developer>
 
-	<externalResource>
+	<externalResource enabled="true">
 	    <urls>
 	        <template>
 	            <url>http://d-nb.info/{MD_DOWNLOAD_IDENTIFIER}/34</url>
