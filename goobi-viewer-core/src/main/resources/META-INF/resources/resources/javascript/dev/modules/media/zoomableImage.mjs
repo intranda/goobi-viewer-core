@@ -275,7 +275,6 @@ function initControls(zoom, rotation) {
 }
 
 function createZoomableImageConfig(imageElement) {
-	console.log("navigator ", _config.datasets.image.showNavigator,imageElement.dataset[_config.datasets.image.showNavigator])
     return {
         element: imageElement,
         fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
@@ -292,7 +291,7 @@ function createZoomableImageConfig(imageElement) {
         sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
         navigator: {
             enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
-			position: "TOP_RIGHT"
+			position: "BOTTOM_RIGHT"
         },
     };
 }
