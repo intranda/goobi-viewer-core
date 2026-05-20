@@ -442,12 +442,51 @@
 
         <script type="text/javascript">
             //<![CDATA[
+            console.log('[searchHitDownload] script block executing, modal in DOM:', $('#searchHitDownloadModal').length);
+
+            function _formatFileSize(bytes) {
+                if (!bytes || bytes <= 0) { return null; }
+                var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+                var i = 0;
+                var size = bytes;
+                while (size >= 1024 && i < units.length - 1) { size /= 1024; i++; }
+                return size.toFixed(2) + ' ' + units[i];
+            }
+
             $('#searchHitDownloadModal').on('show.bs.modal', function(e) {
                 var $btn = $(e.relatedTarget);
                 var title = $('<div>').html($btn.data('title')).text();
-                $(this).find('.modal-title').text(title);
-                $(this).find('dd.col-sm-9').first().text(title);
-                $(this).find('input[type="hidden"][id$="__pi"]').val($btn.data('pi'));
+                var pi = $btn.data('pi');
+                var $modal = $(this);
+                $modal.find('.modal-title').text(title);
+                $modal.find('dd.col-sm-9').first().text(title);
+                $modal.find('input[type="hidden"][id$="__pi"]').val(pi);
+
+                // Remove any file size row from a previous modal open
+                $modal.find('[data-filesize-row]').remove();
+
+                // Fetch file size from REST API and inject into the dl if available
+                var infoUrl = '#{request.contextPath}/api/v1/records/' + encodeURIComponent(pi) + '/pdf/info.json';
+                console.log('[searchHitDownload] fetching:', infoUrl);
+                fetch(infoUrl)
+                    .then(function(response) {
+                        console.log('[searchHitDownload] HTTP status:', response.status);
+                        return response.json();
+                    })
+                    .then(function(info) {
+                        console.log('[searchHitDownload] info response:', info);
+                        var displaySize = info && info.size ? _formatFileSize(info.size) : null;
+                        console.log('[searchHitDownload] displaySize:', displaySize);
+                        if (displaySize) {
+                            $modal.find('dl.row').append(
+                                '<dt class="col-sm-3" data-filesize-row="1">#{msg.downloadInfoFileSize}:</dt>' +
+                                '<dd class="col-sm-9" data-filesize-row="1">~ ' + $('<span>').text(displaySize).html() + '</dd>'
+                            );
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error('[searchHitDownload] fetch error:', err);
+                    });
             });
             //]]>
         </script>

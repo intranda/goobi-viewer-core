@@ -21,8 +21,11 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -36,8 +39,12 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.faces.validators.PIValidator;
+import io.goobi.viewer.solr.SolrConstants;
 import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -67,6 +74,7 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     private static final Logger logger = LogManager.getLogger(ViewerRecordPDFResource.class);
 
     private String filename;
+    private final String pi;
 
     public ViewerRecordPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
@@ -79,6 +87,7 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
         // requireValidPi() must be called here inside super() because Java requires the
         // super-constructor call to be the first statement.
         super(context, request, response, "pdf", requireValidPi(pi) + ".xml", cacheManager);
+        this.pi = pi;
         this.filename = pi + ".pdf";
         request.setAttribute("pi", pi);
     }
@@ -113,13 +122,29 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @ApiResponse(responseCode = "404", description = "Record not found")
     @ApiResponse(responseCode = "500", description = "Error reading PDF information")
     public PdfInformation getInfoAsJson() throws ContentLibException {
-        // ContentLib wraps a missing METS file as ContentLibPdfException (not ContentNotFoundException),
-        // which ContentExceptionMapper would map to HTTP 500. Rethrow as 404 instead.
+        // ContentLib's MetsPdfResource.extractBaseURIs() appends File.separator ("\") to the METS
+        // folder path before calling URI.create(), which fails on Windows with "Illegal character
+        // in path". Use Solr MDNUM_FILESIZE fields instead — same approach as ActiveDocumentBean.getPdfSize().
+        PdfInformation info = new PdfInformation();
+        info.setTitle(pi);
         try {
-            return super.getInfoAsJson();
-        } catch (ContentLibPdfException e) {
-            throw new ContentNotFoundException("Record not found: " + filename, e);
+            String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.DOCTYPE + ":PAGE";
+            List<SolrDocument> pageDocs = DataManager.getInstance().getSearchIndex()
+                    .getDocs(query, List.of(SolrConstants.MDNUM_FILESIZE));
+            long totalBytes = 0;
+            if (pageDocs != null) {
+                for (SolrDocument doc : pageDocs) {
+                    Object size = doc.getFieldValue(SolrConstants.MDNUM_FILESIZE);
+                    if (size instanceof Number n) {
+                        totalBytes += n.longValue();
+                    }
+                }
+            }
+            info.setSize(totalBytes);
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.warn("Could not get PDF size from Solr for PI '{}': {}", pi, e.toString());
         }
+        return info;
     }
 
     @GET

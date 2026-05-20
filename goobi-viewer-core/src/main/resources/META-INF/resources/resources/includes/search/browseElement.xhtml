@@ -15,14 +15,7 @@
 
 	<div class="search-list__hit-inner-structure">
 
-		<div class="search-list__hit-thumb-wrapper">
-			<!-- THUMBNAIL -->
-			<ui:include
-				src="/resources/includes/search/browseElementThumbnail.xhtml">
-				<ui:param name="browseElement" value="#{browseElement}" />
-			</ui:include>
 
-		</div>
 
 		<!-- ALL CONTENT/VALUES WRAPPER -->
 		<div
@@ -47,7 +40,51 @@
 						</a>
 					</h3>
 				</div>
-				<div class="search-list__hit-options-wrapper">
+			</div>
+
+			<!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
+			<h:panelGroup
+				rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
+				<div class="search-list__hit-docstruct">
+					<ul>
+						<ui:repeat value="#{browseElement.structElements}"
+							varStatus="stat" var="struct">
+							<li><ui:fragment
+									rendered="#{struct.sourceDocFormat != 'CMS'}">
+									<a href="#{struct.url}"
+										aria-label="#{msg[struct.docStructType]}"> <h:outputText
+											value="#{msg[struct.docStructType]}" />
+									</a>
+								</ui:fragment> <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">
+									<h:outputText
+										value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
+								</ui:fragment></li>
+						</ui:repeat>
+					</ul>
+				</div>
+			</h:panelGroup>
+
+			<h:panelGroup rendered="#{browseElement.displayGroupStatus}">
+				<div class="search-list__hit-docstruct">
+					<h:outputText
+						value="#{msg['doctype_'.concat(browseElement.docType)]}" />
+				</div>
+			</h:panelGroup>
+
+			<ui:include
+				src="/resources/includes/search/browseElementMetadata.xhtml">
+				<ui:param name="browseElement" value="#{browseElement}" />
+			</ui:include>
+		</div>
+		
+		<div class="search-list__hit-thumb-wrapper">
+			<!-- THUMBNAIL -->
+			<ui:include
+				src="/resources/includes/search/browseElementThumbnail.xhtml">
+				<ui:param name="browseElement" value="#{browseElement}" />
+			</ui:include>
+
+				<div class="search-list__hit-options-wrapper #{browseElement.showThumbnail ? '' : '-noThumbnail'}">
 					<!-- ADD TO BOOKMARKS BUTTON (ICON) -->
 					<ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
 						<!-- 	                <div class="search-list__thumb-bookmark-wrapper"> -->
@@ -182,56 +219,25 @@
 					
 					<!-- TOGGLE BS TOOLTIPS ON BUTTONS/LINKS "MANUALLY" BY JS -->
 					<script>
-						$('[data-trigger="bstooltip"]').tooltip({
-							placement: 'top',
-							trigger: 'hover'
+						$('[data-trigger="bstooltip"]').each(function() {
+							if (!$(this).data('bs.tooltip')) {
+								$(this).tooltip({
+									placement: 'top',
+									trigger: 'hover'
+								});
+							}
 						});
+					</script>
+
+					<!-- COPY TO CLIPBOARD INIT FOR THIS ELEMENT -->
+					<script>
+						viewerJS.clipboard.init(null, null, '#{msg.copied_to_clipboard}');
 					</script>
 
 
 				</div>
-			</div>
 
-			<!-- COPY TO CLIPBOARD INIT FOR THIS ELEMENT -->
-			<script>
-				viewerJS.clipboard.init(null, null, '#{msg.copied_to_clipboard}');
-			</script>
-
-
-
-			<!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
-			<h:panelGroup
-				rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
-				<div class="search-list__hit-docstruct">
-					<ul>
-						<ui:repeat value="#{browseElement.structElements}"
-							varStatus="stat" var="struct">
-							<li><ui:fragment
-									rendered="#{struct.sourceDocFormat != 'CMS'}">
-									<a href="#{struct.url}"
-										aria-label="#{msg[struct.docStructType]}"> <h:outputText
-											value="#{msg[struct.docStructType]}" />
-									</a>
-								</ui:fragment> <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">
-									<h:outputText
-										value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
-								</ui:fragment></li>
-						</ui:repeat>
-					</ul>
-				</div>
-			</h:panelGroup>
-
-			<h:panelGroup rendered="#{browseElement.displayGroupStatus}">
-				<div class="search-list__hit-docstruct">
-					<h:outputText
-						value="#{msg['doctype_'.concat(browseElement.docType)]}" />
-				</div>
-			</h:panelGroup>
-
-			<ui:include
-				src="/resources/includes/search/browseElementMetadata.xhtml">
-				<ui:param name="browseElement" value="#{browseElement}" />
-			</ui:include>
 		</div>
+		
 	</div>
 </ui:composition>
