@@ -444,13 +444,18 @@
             //<![CDATA[
             console.log('[searchHitDownload] script block executing, modal in DOM:', $('#searchHitDownloadModal').length);
 
-            function _formatFileSize(bytes) {
-                if (!bytes || bytes <= 0) { return null; }
-                var units = ['B', 'KB', 'MB', 'GB', 'TB'];
-                var i = 0;
-                var size = bytes;
-                while (size >= 1024 && i < units.length - 1) { size /= 1024; i++; }
-                return size.toFixed(2) + ' ' + units[i];
+            function _parseDisplaySize(sizeVal) {
+                if (!sizeVal) { return null; }
+                if (typeof sizeVal === 'number') {
+                    if (sizeVal <= 0) { return null; }
+                    var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+                    var i = 0;
+                    var s = sizeVal;
+                    while (s >= 1024 && i < units.length - 1) { s /= 1024; i++; }
+                    return s.toFixed(2) + ' ' + units[i];
+                }
+                var numeric = parseFloat(String(sizeVal).replace(',', '.'));
+                return (!isNaN(numeric) && numeric > 0) ? sizeVal : null;
             }
 
             $('#searchHitDownloadModal').on('show.bs.modal', function(e) {
@@ -475,7 +480,7 @@
                     })
                     .then(function(info) {
                         console.log('[searchHitDownload] info response:', info);
-                        var displaySize = info && info.size ? _formatFileSize(info.size) : null;
+                        var displaySize = _parseDisplaySize(info && info.size);
                         console.log('[searchHitDownload] displaySize:', displaySize);
                         if (displaySize) {
                             $modal.find('dl.row').append(
