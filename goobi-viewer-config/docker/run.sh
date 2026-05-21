@@ -4,10 +4,10 @@ set -e
 [ -z "$CONFIGSOURCE" ] && CONFIGSOURCE="default"
 [ -z "$USE_SSL" ] && USE_SSL="false"
 [ -z "$DEV" ] && DEV="false"
-[ -z "$DB_HOST"] && DB_HOST="viewer-db"
-[ -z "$DB_NAME"] && DB_NAME="viewer"
-[ -z "$DB_USER"] && DB_USER="viewer"
-[ -z "$DB_PORT"] && DB_PORT=3306
+[ -z "$DB_HOST" ] && DB_HOST="viewer-db"
+[ -z "$DB_NAME" ] && DB_NAME="viewer"
+[ -z "$DB_USER" ] && DB_USER="viewer"
+[ -z "$DB_PORT" ] && DB_PORT=3306
 [ -z "$SOLR_HOST" ] && SOLR_HOST="solr"
 [ -z "$TOMCAT_SAMESITECOOKIES" ] && TOMCAT_SAMESITECOOKIES="strict"
 [ -z "$STOPWORDS_LANG" ] && STOPWORDS_LANG="de"
