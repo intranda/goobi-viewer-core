@@ -4,6 +4,13 @@ set -e
 [ -z "$CONFIGSOURCE" ] && CONFIGSOURCE="default"
 [ -z "$USE_SSL" ] && USE_SSL="false"
 [ -z "$DEV" ] && DEV="false"
+[ -z "$DB_HOST"] && DB_HOST="viewer-db"
+[ -z "$DB_NAME"] && DB_NAME="viewer"
+[ -z "$DB_USER"] && DB_USER="viewer"
+[ -z "$DB_PORT"] && DB_PORT=3306
+[ -z "$SOLR_HOST" ] && SOLR_HOST="solr"
+[ -z "$TOMCAT_SAMESITECOOKIES" ] && TOMCAT_SAMESITECOOKIES="strict"
+[ -z "$STOPWORDS_LANG" ] && STOPWORDS_LANG="de"
 [ -z "$VIEWER_DOMAIN" ] && VIEWER_DOMAIN="localhost:8080"
 [ -z "$THEME_NAME" ] && THEME_NAME="reference"
 [ -z "$STOPWORDS_LANG" ] && STOPWORDS_LANG="de"
@@ -45,9 +52,9 @@ else
   echo "[WARN] Developer options enabled. Don't use in production ('DEV'=false)"
 fi
 
-if [[ -n "${THEME_PATH-}" ]]; then
+if [[ -n "${THEME_DIR-}" ]]; then
   echo "Configuring theme as tomcat preresource..."
-  envsubst "\$THEME_PATH" </viewer-template/insert_theme_preresource.patch.template > /viewer-template/insert_theme_preresource.patch
+  envsubst "\$THEME_DIR" </viewer-template/insert_theme_preresource.patch.template > /viewer-template/insert_theme_preresource.patch
   patch ${CATALINA_HOME}/conf/context.xml.template < /viewer-template/insert_theme_preresource.patch
 fi
 
@@ -60,7 +67,7 @@ envsubst "\$VIEWER_DOMAIN" <"${CATALINA_HOME}/conf/server.xml.template" >"${CATA
 envsubst "\$TOMCAT_SAMESITECOOKIES" <"${CATALINA_HOME}/conf/context.xml.template" >"${CATALINA_HOME}/conf/context.xml"
 
 if ! [[ -v SOLR_URL ]]; then
-  export SOLR_URL="http://${SOLR_HOST}:8983/solr/collection1"
+  export SOLR_URL="http://${SOLR_HOST}:8983/solr/current"
 fi
 
 echo "Setting SOLR URL from environment..."
@@ -79,37 +86,9 @@ for part in "${parts[@]}"; do
     [[ -f "$file" ]] && cat "$file" >> "$OUTPUT_FILE"
 done
 
-case $CONFIGSOURCE in
-  folder)
-    if [ -z "$CONFIG_FOLDER" ]
-    then
-      echo "CONFIG_FOLDER is required"
-      exit 1
-    fi
-
-    if ! [ -d "$CONFIG_FOLDER" ]
-    then
-      echo "CONFIG_FOLDER:$CONFIG_FOLDER does not exists or is not a folder"
-      exit 1
-    fi
-    
-    if [ -z "$CONFIG_TARGET_FOLDER" ]
-    then
-      CONFIG_TARGET_FOLDER=/opt/digiverso/viewer/config
-    fi
-
-    echo "Copying configuration from local folder"
-    [ -d "$CONFIG_FOLDER" ] && cp -arv --update=none "$CONFIG_FOLDER"/* "$CONFIG_TARGET_FOLDER"/
-    ;;
-
-  *)
-    echo "Keeping configuration"
-    ;;
-esac
-
-if [[ -n "$THEME_NAME" && -n "${THEME_PATH-}" ]]; then
+if [[ -n "$THEME_NAME" && -n "${THEME_DIR-}" ]]; then
   echo "Setting theme to '${THEME_NAME}'"
-  THEME_WEBCONTENT_DIR="/opt/digiverso/viewer/themes/${THEME_PATH}/WebContent"
+  THEME_WEBCONTENT_DIR="/opt/digiverso/viewer/themes/${THEME_DIR}/WebContent"
   sed -i 's|mainTheme="[^"]*" discriminatorField="">|mainTheme="'"${THEME_NAME}"'" discriminatorField="">\
           <rootPath>'"${THEME_WEBCONTENT_DIR}/resources/themes"'</rootPath>|' "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
   [ -f "${THEME_WEBCONTENT_DIR}/WEB-INF/web.xml" ] && cp "${THEME_WEBCONTENT_DIR}/WEB-INF/web.xml" "${WEBAPP_DIR}/WEB-INF/web.xml"
@@ -129,11 +108,52 @@ else
   sed -Ei "s#http://localhost:8080/viewer#http://${BASE_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_oai.xml"
 fi
 
-export MYSQL_PWS=${DB_PASSWORD}
+export MYSQL_PWD=${DB_PASSWORD}
 while ! mysqladmin ping -h "${DB_HOST}" -u "${DB_USER}" --silent; do
       echo "Waiting for database to boot..."
       sleep 2
 done
 
+# No initial user password given
+if [[ -z "${VIEWER_USERPASS-}" ]]; then
+  echo "Starting application server..."
+  exec catalina.sh run
+fi
+
+VIEWER_USERMAIL="${VIEWER_USERMAIL:-goobi@intranda.com}"
+EMAIL_SQL="${VIEWER_USERMAIL//\'/\'\'}"
+run_sql() { mysql -h "${DB_HOST}" -u "${DB_USER}" "${DB_NAME}" -B -N -e "$1"; }
+
+# Initialize DB to insert the initial user into the db
+if [[ -z "$(run_sql "SHOW TABLES LIKE 'viewer_users'")" ]]; then
+  echo "Initializing database..."
+  catalina.sh run > /dev/null 2>&1 &
+  TOMCAT_PID=$!
+  until [[ -n "$(run_sql "SHOW TABLES LIKE 'viewer_users'")" ]]; do
+    echo "Waiting for schema initialization..."
+    sleep 5
+  done
+  sleep 3  # grace period for remaining migrations after viewer_users appears
+  echo "Stopping bootstrap Tomcat..."
+  kill -TERM "$TOMCAT_PID"
+  wait "$TOMCAT_PID" 2>/dev/null || true
+fi
+
+STORED_HASH=$(run_sql "SELECT password_hash FROM viewer_users WHERE email = '${EMAIL_SQL}'")
+
+# Insert / Update initial user
+if [[ -n "$STORED_HASH" ]]; then
+  STORED_2B="${STORED_HASH/#\$2a\$/\$2b\$}"
+  if [[ "$(mkpasswd -m bcrypt -S "$STORED_2B" -s <<<"$VIEWER_USERPASS" 2>/dev/null)" != "$STORED_2B" ]]; then
+    NEW_HASH=$(mkpasswd -m bcrypt -R 10 -s <<<"$VIEWER_USERPASS" | sed 's/^\$2[yb]\$/\$2a\$/')
+    run_sql "UPDATE viewer_users SET password_hash = '${NEW_HASH}' WHERE email = '${EMAIL_SQL}'"
+  fi
+else
+  NEW_HASH=$(mkpasswd -m bcrypt -R 10 -s <<<"$VIEWER_USERPASS" | sed 's/^\$2[yb]\$/\$2a\$/')
+  run_sql "INSERT INTO viewer_users (email, active, superuser, password_hash, agreed_to_terms_of_use) VALUES ('${EMAIL_SQL}', 1, 1, '${NEW_HASH}', 1)"
+fi
+unset STORED_HASH STORED_2B NEW_HASH EMAIL_SQL
+
+# Finally, start application
 echo "Starting application server..."
 exec catalina.sh run

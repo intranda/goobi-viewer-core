@@ -7,6 +7,6 @@
 +    <Resources>
 +        <PreResources
 +            className="org.apache.catalina.webresources.DirResourceSet"
-+            base="/opt/digiverso/viewer/themes/${THEME_PATH}/WebContent/resources/themes"
++            base="/opt/digiverso/viewer/themes/${THEME_DIR}/WebContent/resources/themes"
 +            webAppMount="/resources/themes" />
 +    </Resources>

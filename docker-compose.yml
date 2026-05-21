@@ -20,6 +20,10 @@ services:
       USE_SSL: false
       TOMCAT_SAMESITECOOKIES: strict
       STOPWORDS_LANG: "de"
+      THEME_NAME: reference
+      # THEME_PATH: directory-name-of-theme-that-contains-WebContent-dir-relative-to-themes-dir
+      VIEWER_USERMAIL: goobi@intranda.com
+      VIEWER_USERPASS: CHANGEME
     volumes:
       - type: bind
         source: ./viewer
@@ -35,7 +39,7 @@ services:
         target: /usr/local/tomcat/logs
 
   viewer-db:
-    image: mariadb:lts
+    image: mariadb:latest
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]

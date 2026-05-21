@@ -14,14 +14,7 @@ RUN echo $build; if [ "$build" = "true" ]; then mvn clean package; elif [ -f "/v
 # Build actual application container
 FROM tomcat:10-jre21 AS assemble-stage
 
-# CATALINA_HOME is set to /usr/local/tomcat in the base image
-
-ENV SOLR_HOST=solr
-ENV TOMCAT_SAMESITECOOKIES=strict
-ENV CONFIGSOURCE=folder
-ENV CONFIG_FOLDER=/viewer-template
-ENV CONFIG_TARGET_FOLDER=/opt/digiverso/viewer
-ENV STOPWORDS_LANG="de"
+# ENV CATALINA_HOME is set to /usr/local/tomcat in the base image
 
 RUN sed -i 's|main$|main contrib|' /etc/apt/sources.list
 RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
@@ -31,12 +24,13 @@ RUN apt-get update && \
 	  ttf-mscorefonts-installer \
 	  libopenjp2-7 \
 	  unzip \
-      mysql-client && \
+      mysql-client \
+      whois && \
 	apt-get -y clean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
 	rm -rf ${CATALINA_HOME}/webapps/*
 
-RUN ["/bin/bash", "-c", "mkdir -p /opt/digiverso/{config/bin,indexer,logs,viewer/{abbyy,cmdi,deleted_mets,hotfolder,media,orig_lido,orig_denkxweb,ccess,ugc,alto,cms_media,error_mets,indexed_lido,mix,pdf,tei,updated_mets,cache,config,fulltext,indexed_mets,oai/token,ptif,themes,wc,bin}}"]
+RUN ["/bin/bash", "-c", "mkdir -p /opt/digiverso/{config/bin,indexer,logs,viewer/{abbyy,cmdi,deleted_mets,hotfolder,media,orig_lido,orig_denkxweb,ccess,ugc,alto,cms_media,error_mets,mix,pdf,tei,mei,updated_mets,cache,config,fulltext,indexed_lido,indexed_mets,indexed_ead,indexed_statistics,oai/token,ptif,themes,wc,bin}}"]
 RUN ["/bin/bash", "-c", "mkdir -p /viewer-template/{config,oai}" ]
 RUN mkdir -p ${CATALINA_HOME}/conf/Catalina/localhost/ && mkdir -p ${CATALINA_HOME}/webapps/viewer
 
