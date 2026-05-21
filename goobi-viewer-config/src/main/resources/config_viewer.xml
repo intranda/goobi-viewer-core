@@ -2259,6 +2259,15 @@
 
         <!-- If @enabled is 'true' add a Access-Control-Allow-Origin Header with this value to all REST-api calls referencing the @CORSBinding annotation -->
         <cors enabled="false">*</cors>
+
+        <!-- If @enabled is 'true', requests to multipart upload endpoints annotated with @CSRFGuarded are rejected with HTTP 403
+             unless their Origin (or Referer as fallback) matches <urls><base> or one of the <additionalAllowedOrigin> entries.
+             Bearer-token authenticated requests are always bypassed. Default is false. -->
+        <!--
+        <csrf enabled="false">
+            <additionalAllowedOrigin>https://cdn.example.com</additionalAllowedOrigin>
+        </csrf>
+        -->
     </webapi>
 
 
