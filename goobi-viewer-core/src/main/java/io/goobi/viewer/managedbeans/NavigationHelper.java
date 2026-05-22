@@ -1990,7 +1990,7 @@ public class NavigationHelper implements Serializable {
         Path file = FileTools.replaceExtension(themePath, suffix);
         if (Files.exists(file)) {
             Path resourcePath = FileTools.replaceExtension(Path.of(path), suffix);
-            return Optional.ofNullable(this.fileResourceManager.getThemeResourceURI(resourcePath.toString()).toString());
+            return Optional.ofNullable(this.fileResourceManager.getThemeResourceURI(resourcePath.toString().replace('\\', '/')).toString());
         }
         return Optional.empty();
     }
