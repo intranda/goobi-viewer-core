@@ -1,0 +1,373 @@
+/* ==============================================================
+   Admin Log Viewer
+   Light header, dark terminal output, dark status bar.
+   ==============================================================*/
+
+// ── Terminal palette ─────────────────────────────────────────
+@lv-bg: @adminBackend-bg;
+@lv-border-dark: #313244;
+@lv-text: #cdd6f4;
+@lv-text-dim: #6c7086;
+@lv-text-muted: #45475a;
+
+// ── Level colors (Catppuccin Mocha, soft tones) ──────────────
+@lv-error: #f38ba8;
+@lv-warn: #f9e2af;
+@lv-info: #a6e3a1;
+@lv-debug: #89b4fa;
+@lv-mauve: #cba6f7;
+
+// ── Syntax highlighting (Catppuccin Mocha) ───────────────────
+@lv-hl-number: @lv-mauve;
+@lv-hl-string: @lv-warn;
+@lv-hl-error-kw: @lv-error;
+@lv-hl-key: #fab387;
+@lv-hl-operator: #eba0ac;
+@lv-hl-url: @lv-info;
+
+#adminLogViewer {
+    .admin__content-side .admin__default-block {
+        overflow-y: auto;
+    }
+
+    .logviewer {
+        overflow: hidden;
+        padding: 0;
+        border: 1px solid @middlegray;
+        border-radius: 7px;
+
+        // ── Header: tabs left, filters right ─────────────────
+        &__header {
+            display: flex;
+            align-items: stretch;
+            background: @white;
+            border-bottom: 1px solid @middlegray;
+        }
+
+        &__tabs {
+            display: flex;
+            align-items: stretch;
+        }
+
+        &__tab {
+            padding: 0 1.4rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: @gray;
+            font-family: inherit;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            transition:
+                color 150ms,
+                border-color 150ms;
+
+            &:hover {
+                color: @darkgray;
+                background: @neutralgray2;
+            }
+
+            &--active {
+                border-bottom-color: @blue;
+                color: @black;
+                font-weight: 600;
+            }
+        }
+
+        &__tab-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: @middlegray;
+            margin-right: 0.6rem;
+
+            &--live {
+                background: @validSuccess;
+                animation: lv-pulse 2s ease-in-out infinite;
+            }
+
+            &--polling {
+                background: @yellowBar;
+            }
+
+            &--error {
+                background: @redBar;
+                animation: lv-pulse 1.5s ease-in-out infinite;
+            }
+        }
+
+        &__filters {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-left: auto;
+            padding: 0.5rem 1rem;
+        }
+
+        &__filter-select {
+            height: 3rem;
+            font-size: 1.2rem;
+            padding: 0 2.2rem 0 0.8rem;
+            border: 1px solid @middlegray;
+            border-radius: 4px;
+            background: @neutralgray2
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6' fill='%236f6f6f'/%3E%3C/svg%3E")
+                no-repeat right 0.7rem center;
+            color: @black;
+            appearance: none;
+            cursor: pointer;
+            transition: border-color 150ms;
+
+            &:hover {
+                border-color: @darkgray;
+            }
+
+            &:focus {
+                border-color: @blue;
+                outline: none;
+            }
+        }
+
+        &__filter-input {
+            height: 3rem;
+            font-size: 1.2rem;
+            padding: 0 0.8rem;
+            border: 1px solid @middlegray;
+            border-radius: 4px;
+            background: @neutralgray2;
+            color: @black;
+            width: 16rem;
+            transition: border-color 150ms;
+
+            &::placeholder {
+                color: @middlegray;
+            }
+
+            &:hover {
+                border-color: @darkgray;
+            }
+
+            &:focus {
+                border-color: @blue;
+                background: @white;
+                outline: none;
+            }
+        }
+
+        // ── Log Output (dark terminal) ───────────────────────
+        &__output-wrap {
+            position: relative;
+        }
+
+        &__output {
+            background: @lv-bg;
+            height: 300px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            border-radius: 0 0 6px 6px;
+            font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', 'SF Mono', 'Menlo', monospace;
+            font-size: 1.2rem;
+            line-height: 1.7;
+            padding: 0;
+
+            &::-webkit-scrollbar {
+                width: 8px;
+            }
+            &::-webkit-scrollbar-track {
+                background: @lv-bg;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: @lv-border-dark;
+                border-radius: 4px;
+
+                &:hover {
+                    background: @lv-text-muted;
+                }
+            }
+        }
+
+        &__scroll-fab {
+            display: none;
+            position: absolute;
+            bottom: 1.2rem;
+            right: 1.8rem;
+            width: 3.6rem;
+            height: 3.6rem;
+            border-radius: 50%;
+            border: none;
+            background: @blue;
+            color: @white;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition:
+                background 200ms,
+                transform 200ms;
+
+            .icon-wrapper {
+                width: 2rem;
+                height: 2rem;
+            }
+
+            &:hover {
+                background: @hoverblue;
+                transform: scale(1.1);
+            }
+        }
+
+        // ── Log Lines (inside dark output) ───────────────────
+        &__line {
+            white-space: pre-wrap;
+            word-break: break-word;
+            padding: 0 0 0 1.2rem;
+        }
+
+        &__line-timestamp {
+            color: @lv-hl-number;
+        }
+
+        &__line-level {
+            font-weight: 700;
+            color: @lv-text;
+
+            &--error {
+                color: @lv-error;
+            }
+        }
+
+        &__line-dim {
+            color: @lv-text-dim;
+        }
+
+        &__line-location {
+            color: @lv-text;
+        }
+
+        &__line-message {
+            color: @lv-text;
+        }
+
+        // Search highlight
+        &__hl-search {
+            background: fade(@lv-warn, 40%);
+            color: inherit;
+            border-radius: 2px;
+            padding: 0 1px;
+        }
+
+        // Syntax highlighting
+        &__hl-exc {
+            color: @lv-hl-error-kw;
+        }
+
+        &__hl-cause {
+            color: @lv-error;
+            font-weight: 700;
+        }
+
+        &__hl-jar {
+            color: @lv-text-dim;
+        }
+
+        &__hl-ver {
+            color: @lv-mauve;
+        }
+
+        &__hl-url {
+            color: @lv-hl-url;
+            text-decoration: underline;
+
+            &:hover {
+                color: lighten(@lv-hl-url, 10%);
+            }
+        }
+
+        &__hl-str {
+            color: @lv-hl-string;
+        }
+
+        &__hl-num {
+            color: @lv-hl-number;
+        }
+
+        &__hl-date {
+            color: @lv-hl-number;
+        }
+
+        &__hl-key {
+            color: @lv-hl-key;
+            font-style: italic;
+        }
+
+        &__hl-op {
+            color: @lv-hl-operator;
+        }
+
+        &__hl-ip {
+            color: @lv-hl-number;
+        }
+    }
+}
+
+// ── Animations ──────────────────────────────────────────────
+@keyframes lv-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.35;
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+    #adminLogViewer .logviewer__filter-input {
+        width: 14rem;
+    }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+    #adminLogViewer .logviewer__filter-input {
+        width: 12rem;
+    }
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    #adminLogViewer .logviewer {
+        &__line-dim,
+        &__line-location {
+            display: none;
+        }
+
+        &__filters {
+            display: none;
+        }
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    #adminLogViewer .logviewer {
+        &__output {
+            font-size: 1.05rem;
+        }
+
+        &__tab {
+            font-size: 1.2rem;
+            padding: 0 1rem;
+        }
+
+        &__statusbar {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+    }
+}

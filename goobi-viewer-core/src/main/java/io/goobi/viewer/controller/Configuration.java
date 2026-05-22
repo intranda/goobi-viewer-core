@@ -237,7 +237,7 @@ public class Configuration extends AbstractConfiguration {
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             stopwords = HashSet.newHashSet(0);
         } catch (IOException | IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
@@ -1255,7 +1255,7 @@ public class Configuration extends AbstractConfiguration {
                             .setPattern(pattern)
                             .setTopstructValueFallback(topstructValueFallback));
                 } catch (IllegalArgumentException e) {
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
@@ -6544,6 +6544,27 @@ public class Configuration extends AbstractConfiguration {
         }
         return Duration.of((long) num, unit.toChronoUnit());
 
+    }
+
+    /**
+     * Returns the configured file path for the given log file name.
+     * Reads from: &lt;logViewer&gt;&lt;logFiles&gt;&lt;logFile name="viewer" path="/opt/..."&gt;
+     * Returns null if not found.
+     */
+    public String getLogViewerFilePath(String name) {
+        return getLocalConfigurationsAt("logViewer.logFiles.logFile").stream()
+            .filter(c -> name.equalsIgnoreCase(c.getString("[@name]")))
+            .map(c -> c.getString("[@path]"))
+            .findFirst()
+            .orElse(null);
+    }
+
+    /**
+     * Returns the number of initial lines to show in the log viewer.
+     * Default: 500
+     */
+    public int getLogViewerInitialLines() {
+        return getLocalInt("logViewer.initialLines", 500);
     }
 
 }
