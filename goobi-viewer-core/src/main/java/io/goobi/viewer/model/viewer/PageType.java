@@ -144,7 +144,7 @@ public enum PageType {
     adminCrowdsourcingCampaigns("admin/crowdsourcing/campaigns", "admin__crowdsourcing_campaigns", adminDashboard),
     adminCrowdsourcingCampaignsNew("admin/crowdsourcing/campaigns/new", "admin__crowdsourcing_campaign_new", adminCrowdsourcingCampaigns),
     adminCrowdsourcingCampaignsEdit("admin/crowdsourcing/campaigns/edit", "admin__crowdsourcing_campaign_edit", adminCrowdsourcingCampaigns),
-    adminUserActivity("admin/user/activity/"),
+    adminUserActivity("admin/user/activity/", "admin__user_activity", adminDashboard),
     annotations("annotations"),
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),
