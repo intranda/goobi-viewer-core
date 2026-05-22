@@ -6622,7 +6622,8 @@ public class JPADAO implements IDAO {
                         where = mainTableKey + ".userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:" + keyValueParam + ")";
                         break;
                     case "a.name":
-                        where = mainTableKey + ".id IN (SELECT t.owner.id FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :"
+                        where = mainTableKey
+                                + ".id IN (SELECT t.owner.id FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.translationValue) LIKE :"
                                 + keyValueParam + ")";
                         break;
                     default:

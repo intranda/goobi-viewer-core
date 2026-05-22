@@ -237,32 +237,44 @@ public class AdminThemesBean implements Serializable {
     }
 
     public boolean stylesheetExists(String themeName) {
-        return getConfiguredThemes().stream()
-                .filter(theme -> theme.getName().equals(themeName))
-                .map(ThemeConfiguration::getStyleSheet)
-                .anyMatch(StringUtils::isNotBlank);
+        if (StringUtils.isBlank(themeName)) {
+            return false;
+        }
+        try {
+            ThemeConfiguration theme = DataManager.getInstance().getDao().getTheme(themeName);
+            return theme != null && StringUtils.isNotBlank(theme.getStyleSheet());
+        } catch (DAOException e) {
+            logger.error("Unable to load theme '{}': {}", themeName, e.toString());
+            return false;
+        }
     }
 
     public boolean javascriptExists(String themeName) {
-        return getConfiguredThemes().stream()
-                .filter(theme -> theme.getName().equals(themeName))
-                .map(ThemeConfiguration::getJavascript)
-                .anyMatch(StringUtils::isNotBlank);
+        if (StringUtils.isBlank(themeName)) {
+            return false;
+        }
+        try {
+            ThemeConfiguration theme = DataManager.getInstance().getDao().getTheme(themeName);
+            return theme != null && StringUtils.isNotBlank(theme.getJavascript());
+        } catch (DAOException e) {
+            logger.error("Unable to load theme '{}': {}", themeName, e.toString());
+            return false;
+        }
     }
 
     public String getStylesheet(String themeName) throws DAOException {
-        return getConfiguredThemes().stream()
-                .filter(theme -> theme.getName().equals(themeName))
-                .map(ThemeConfiguration::getStyleSheet)
-                .findAny()
-                .orElse("");
+        if (StringUtils.isBlank(themeName)) {
+            return "";
+        }
+        ThemeConfiguration theme = DataManager.getInstance().getDao().getTheme(themeName);
+        return theme != null ? StringUtils.defaultString(theme.getStyleSheet()) : "";
     }
 
     public String getJavascript(String themeName) throws DAOException {
-        return getConfiguredThemes().stream()
-                .filter(theme -> theme.getName().equals(themeName))
-                .map(ThemeConfiguration::getJavascript)
-                .findAny()
-                .orElse("");
+        if (StringUtils.isBlank(themeName)) {
+            return "";
+        }
+        ThemeConfiguration theme = DataManager.getInstance().getDao().getTheme(themeName);
+        return theme != null ? StringUtils.defaultString(theme.getJavascript()) : "";
     }
 }
