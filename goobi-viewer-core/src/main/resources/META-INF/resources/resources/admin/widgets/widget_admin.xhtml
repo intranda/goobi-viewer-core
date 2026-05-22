@@ -19,8 +19,7 @@
 
                 <ul>
                     <ui:fragment rendered="#{userBean.admin}">
-                        <li
-                            class="#{navigationHelper.currentPage == 'adminUsers' ? 'active' : '' or navigationHelper.currentPage == 'adminUser' ? 'active' : ''}">
+                        <li class="#{navigationHelper.currentPage == 'adminUsers' ? 'active' : '' or navigationHelper.currentPage == 'adminUser' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUsers')}/">
                                 <util:icon-text
                                     icon="user"
@@ -28,8 +27,7 @@
                                     styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
-                        <li
-                            class="#{navigationHelper.currentPage == 'adminUserGroups' ? 'active' : '' or navigationHelper.currentPage == 'adminUserGroup' ? 'active' : ''}">
+                        <li class="#{navigationHelper.currentPage == 'adminUserGroups' ? 'active' : '' or navigationHelper.currentPage == 'adminUserGroup' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminUserGroups')}/">
                                 <util:icon-text
                                     icon="users"
@@ -37,8 +35,7 @@
                                     styleClass="icon-text--nav" />
                             </h:outputLink>
                         </li>
-                        <li
-                            class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : '' or navigationHelper.currentPage == 'adminIpRange' ? 'active' : ''}">
+                        <li class="#{navigationHelper.currentPage == 'adminIpRanges' ? 'active' : '' or navigationHelper.currentPage == 'adminIpRange' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminIpRanges')}/">
                                 <util:icon-text
                                     icon="bolt"
@@ -84,8 +81,7 @@
                             </h:outputLink>
                             <div />
                         </li>
-                        <li
-                            class="#{navigationHelper.currentPage == 'adminRights' ? 'active' : '' or navigationHelper.currentPage == 'adminRight' ? 'active' : ''}">
+                        <li class="#{navigationHelper.currentPage == 'adminRights' ? 'active' : '' or navigationHelper.currentPage == 'adminRight' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminRights')}/">
                                 <util:icon-text
                                     icon="lock"
@@ -203,7 +199,7 @@
                         <li class="#{navigationHelper.currentPage == 'adminLogViewer' ? 'active' : ''}">
                             <h:outputLink value="#{navigationHelper.getPageUrl('adminLogViewer')}/">
                                 <util:icon-text
-                                    icon="file-lines"
+                                    icon="file-text"
                                     text="#{msg.admin__log_viewer}"
                                     styleClass="icon-text--nav" />
                             </h:outputLink>
