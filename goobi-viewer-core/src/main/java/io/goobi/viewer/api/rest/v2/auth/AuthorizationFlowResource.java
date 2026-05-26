@@ -267,7 +267,7 @@ public class AuthorizationFlowResource {
                     MediaType.APPLICATION_JSON, origin);
         }
 
-        logger.debug("Authorization: {}", authHeader);
+        // logger.debug("Authorization: {}", authHeader); // do not log bearer tokens
         if (!authHeader.startsWith("Bearer ")) {
             // Invalid token header value
             logger.debug("Authorization header has bad format.");
@@ -278,7 +278,7 @@ public class AuthorizationFlowResource {
         }
 
         String tokenValue = authHeader.substring(7);
-        logger.trace("Token: {}", tokenValue);
+        // logger.trace("Token: {}", tokenValue); // do not log bearer tokens
         AuthAccessToken2 token = DataManager.getInstance()
                 .getBearerTokenManager()
                 .getTokenMap()
