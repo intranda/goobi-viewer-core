@@ -987,6 +987,15 @@ public final class SolrTools {
         return string;
     }
 
+    private static final Pattern INNERMOST_BRACE_BLOCK = Pattern.compile("\\{([^{}]*)\\}");
+
+    private static final String PLACEHOLDER_PREFIX = " WLP";
+
+    private static final String[] WHITELISTED_LOCAL_PARAMS = {
+            "{!join from=PI_TOPSTRUCT to=PI}",
+            "{!join from=IDDOC to=IDDOC_OWNER}",
+            "{!terms f=PI_TOPSTRUCT}" };
+
     /**
      *
      * @param query Solr query string to clean up
@@ -996,22 +1005,60 @@ public final class SolrTools {
      * @should keep single braces
      * @should preserve nested solr local params
      * @should not double wrap already wrapped join parameter
+     * @should strip single brace local param
+     * @should strip double brace local param
+     * @should strip double wrapped block join injection
+     * @should keep terms local param
+     * @should strip function query injection
+     * @should strip graph local param
      */
     public static String cleanUpQuery(String query) {
         if (StringUtils.isBlank(query)) {
             return query;
         }
 
-        // The previous greedy regex "\{(.+)\}" matched from the first "{" to the last "}" in the
-        // entire string, which stripped the closing brace of any inner Solr local params such as
-        // the nested "{!join from=IDDOC to=IDDOC_OWNER}" emitted by SearchQueryItem.generateQuery()
-        // for CALENDAR_DAY ranges and — combined with the unconditional PI_TOPSTRUCT replace below —
-        // produced a "{!join from=PI_TOPSTRUCT to=PI}}" double brace, turning the whole query into
-        // a near-match-all that returned ~the entire index. The refined pattern skips any "{!..."
-        // local param (negative lookahead on the "!") and the wrapping replace now only fires when
-        // the token is not already surrounded by braces, so repeated calls are idempotent.
-        return query.replaceAll("\\{([^!][^}]*)\\}", "$1")
-                .replaceAll("(?<!\\{)!join from=PI_TOPSTRUCT to=PI(?!\\})", "{!join from=PI_TOPSTRUCT to=PI}");
+        // Replace each whitelisted internal Solr local param with an opaque placeholder, then strip
+        // every remaining brace-delimited block. Any "{...}" pair that still surrounds a placeholder
+        // after substitution is, by construction, an attacker-supplied wrapper (e.g. the
+        // "{{!join from=PI_TOPSTRUCT to=PI}}" double-brace bypass) and gets stripped together with
+        // its contents. The strip loop works on the innermost brace pair at each step so arbitrary
+        // wrapping depth is handled. Whitelisted local params are restored at the end.
+        String result = query;
+        for (int i = 0; i < WHITELISTED_LOCAL_PARAMS.length; i++) {
+            result = result.replace(WHITELISTED_LOCAL_PARAMS[i], placeholderFor(i));
+        }
+        String previous;
+        do {
+            previous = result;
+            result = stripBraceBlocks(result);
+        } while (!result.equals(previous));
+        for (int i = 0; i < WHITELISTED_LOCAL_PARAMS.length; i++) {
+            result = result.replace(placeholderFor(i), WHITELISTED_LOCAL_PARAMS[i]);
+        }
+        return result.replaceAll("(?<!\\{)!join from=PI_TOPSTRUCT to=PI(?!\\})", "{!join from=PI_TOPSTRUCT to=PI}");
+    }
+
+    private static String placeholderFor(int index) {
+        return PLACEHOLDER_PREFIX + index + " ";
+    }
+
+    private static String stripBraceBlocks(String s) {
+        Matcher m = INNERMOST_BRACE_BLOCK.matcher(s);
+        StringBuilder sb = new StringBuilder();
+        int last = 0;
+        while (m.find()) {
+            sb.append(s, last, m.start());
+            String inner = m.group(1);
+            // Drop injected Solr local params ("!...") and any block that still contains a
+            // placeholder (an attacker-supplied wrapper around a whitelisted internal block).
+            // Other "{foo:bar}" style groups have their braces stripped but the content preserved.
+            if (!inner.startsWith("!") && !inner.contains(PLACEHOLDER_PREFIX)) {
+                sb.append(inner);
+            }
+            last = m.end();
+        }
+        sb.append(s, last, s.length());
+        return sb.toString();
     }
 
     /**
