@@ -66,8 +66,8 @@ public class AccessTicket {
 
     /** Default validity for a ticket in days. */
     public static final int VALIDITY_DAYS = 30;
-    /** Static salt for password hashes. */
-    public static final String SALT = "$2a$10$H580saN37o2P03A5myUCm.";
+    /** BCrypt cost factor for password hashing. */
+    private static final int BCRYPT_LOG_ROUNDS = 12;
     /** Random object for password generation. */
     protected static final Random RANDOM = new SecureRandom();
 
@@ -158,7 +158,7 @@ public class AccessTicket {
     public void activate() {
         if (passwordHash == null) {
             password = StringTools.generateHash("xxx" + RANDOM.nextInt()).substring(0, 12);
-            passwordHash = BCrypt.hashpw(password, SALT);
+            passwordHash = BCrypt.hashpw(password, BCrypt.gensalt(BCRYPT_LOG_ROUNDS));
         }
         expirationDate = LocalDateTime.now().plusDays(VALIDITY_DAYS);
     }

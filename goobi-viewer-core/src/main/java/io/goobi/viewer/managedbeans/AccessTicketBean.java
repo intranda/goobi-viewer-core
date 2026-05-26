@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
@@ -106,15 +105,21 @@ public class AccessTicketBean implements Serializable {
         }
 
         try {
-            String hash = BCrypt.hashpw(ticketPassword, AccessTicket.SALT);
-            AccessTicket ticket = DataManager.getInstance().getDao().getTicketByPasswordHash(hash);
             String pi = activeDocumentBean.getPersistentIdentifier();
             if ("-".equals(pi)) {
                 Messages.error("errPassword");
                 return "";
             }
-            if (ticket != null && ticket.isActive() && ticket.getPi().equals(pi) && ticket.checkPassword(ticketPassword)
-                    && AccessConditionUtils.addDownloadTicketToSession(pi, BeanUtils.getSession())) {
+
+            AccessTicket match = null;
+            for (AccessTicket ticket : DataManager.getInstance().getDao().getActiveTicketsByPi(pi)) {
+                if (ticket.isActive() && ticket.checkPassword(ticketPassword)) {
+                    match = ticket;
+                    break;
+                }
+            }
+
+            if (match != null && AccessConditionUtils.addDownloadTicketToSession(pi, BeanUtils.getSession())) {
                 logger.trace("Born digital download permission for {} added to user session.", pi);
                 DataManager.getInstance().getSecurityManager().resetFailedLoginAttemptForIpAddress(ipAddress);
                 Messages.info("");

@@ -814,12 +814,17 @@ public interface IDAO {
     public AccessTicket getTicket(Long id) throws DAOException;
 
     /**
-     * 
-     * @param passwordHash password hash of the access ticket
-     * @return {@link AccessTicket} with the given passwordHash
+     * Returns all access tickets for the given record identifier.
+     * <p>
+     * Used by the password verification flow: callers iterate the result and verify the submitted password
+     * against each ticket's stored hash via {@link AccessTicket#checkPassword(String)}. The number of tickets
+     * per record is operationally bounded.
+     *
+     * @param pi record identifier
+     * @return list of {@link AccessTicket}s with the given pi (never null)
      * @throws DAOException
      */
-    public AccessTicket getTicketByPasswordHash(String passwordHash) throws DAOException;
+    public List<AccessTicket> getActiveTicketsByPi(String pi) throws DAOException;
 
     /**
      * getActiveTicketCount.

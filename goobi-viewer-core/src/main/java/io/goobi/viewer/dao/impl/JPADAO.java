@@ -1936,17 +1936,15 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public AccessTicket getTicketByPasswordHash(String passwordHash) throws DAOException {
+    public List<AccessTicket> getActiveTicketsByPi(String pi) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<AccessTicket> cq = cb.createQuery(AccessTicket.class);
             Root<AccessTicket> root = cq.from(AccessTicket.class);
-            cq.select(root).where(cb.equal(root.get("passwordHash"), passwordHash));
-            return em.createQuery(cq).getSingleResult();
-        } catch (NoResultException e) {
-            return null;
+            cq.select(root).where(cb.equal(root.get("pi"), pi));
+            return em.createQuery(cq).getResultList();
         } finally {
             close(em);
         }
