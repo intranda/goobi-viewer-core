@@ -71,7 +71,13 @@ public class RssResolver extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String query = null;
         if (request.getParameterMap().get("q") != null) {
-            query = "(" + request.getParameterMap().get("q")[0] + ")";
+            String rawQ = request.getParameterMap().get("q")[0];
+            if (!isPrintableAscii(rawQ)) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "Query must contain only printable ASCII characters");
+                return;
+            }
+            query = "(" + rawQ + ")";
         }
         String language = "de";
         if (request.getParameterMap().get("lang") != null && request.getParameterMap().get("lang").length > 0) {
@@ -99,6 +105,11 @@ public class RssResolver extends HttpServlet {
         String filterQuery = "";
         if (request.getParameterMap().get(PARAM_FILTERQUERY) != null && request.getParameterMap().get(PARAM_FILTERQUERY).length > 0) {
             filterQuery = request.getParameterMap().get(PARAM_FILTERQUERY)[0];
+            if (!isPrintableAscii(filterQuery)) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "filterQuery must contain only printable ASCII characters");
+                return;
+            }
         }
         // logger.trace("RSS request filter query: {}", filterQuery); //NOSONAR Debug
 
@@ -201,5 +212,18 @@ public class RssResolver extends HttpServlet {
             logger.error(e.getMessage());
         }
 
+    }
+
+    private static boolean isPrintableAscii(String s) {
+        if (s == null) {
+            return true;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c < 0x20 || c > 0x7E) {
+                return false;
+            }
+        }
+        return true;
     }
 }
