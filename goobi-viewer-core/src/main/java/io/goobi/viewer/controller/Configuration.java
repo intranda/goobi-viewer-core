@@ -159,13 +159,11 @@ public class Configuration extends AbstractConfiguration {
     private Set<String> stopwords;
 
     /**
-     * Caches resolved facet-field attribute lookups for {@link #getPropertyForFacetField(String, String, String)}
-     * to avoid rebuilding a {@code BaseHierarchicalConfiguration} sub-config (with full interpolator init)
-     * for every facet node on every call. The key is {@code facetField + ' ' + property} (safe: neither
-     * Solr field names nor XPath property expressions contain spaces); the value is an {@link Optional}
-     * holding the raw XML string at that property (empty = no matching node / attribute absent, so the
-     * caller must fall back to its own default). Invalidated on config reload and on
-     * {@link #overrideValue(String, Object)} for {@code search.facets.*} paths.
+     * Caches resolved facet-field attribute lookups for {@link #getPropertyForFacetField(String, String, String)} to avoid rebuilding a
+     * {@code BaseHierarchicalConfiguration} sub-config (with full interpolator init) for every facet node on every call. The key is
+     * {@code facetField + ' ' + property} (safe: neither Solr field names nor XPath property expressions contain spaces); the value is an
+     * {@link Optional} holding the raw XML string at that property (empty = no matching node / attribute absent, so the caller must fall back to its
+     * own default). Invalidated on config reload and on {@link #overrideValue(String, Object)} for {@code search.facets.*} paths.
      */
     private final ConcurrentHashMap<String, Optional<String>> facetFieldPropertyCache = new ConcurrentHashMap<>();
 
@@ -1133,7 +1131,7 @@ public class Configuration extends AbstractConfiguration {
      * is returned, all downloads should remain visible
      *
      * @return a regex or an empty string if no downloads should be hidden
-      * @should return configured value
+     * @should return configured value
      */
     public List<IFilterConfiguration> getAdditionalFilesDisplayFilters() {
         HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("additional-files");
@@ -1520,7 +1518,8 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Gets all configured sortOrders for collections in the given field, mapped against a regex matching the collection(s).
      *
-     * <p>Whether subcollections should be sorted according to the sortOrder.
+     * <p>
+     * Whether subcollections should be sorted according to the sortOrder.
      * 
      * @param field the solr fild on which the collection is based
      * @return a map of regular expressions matching collection names and associated sortOrders
@@ -3025,9 +3024,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the sidebar view configuration for the given view name.
      *
-     * <p>If no exact match is found, falls back to the prefix before the last underscore
-     * (e.g. "metadata_codicological" → "metadata"), allowing dynamically created metadata
-     * subpages to inherit the sidebar configuration of their base view.
+     * <p>
+     * If no exact match is found, falls back to the prefix before the last underscore (e.g. "metadata_codicological" → "metadata"), allowing
+     * dynamically created metadata subpages to inherit the sidebar configuration of their base view.
      *
      * @param name View name
      * @return HierarchicalConfiguration or null if neither the name nor any prefix matches
@@ -3123,8 +3122,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Checks whether the TOC <strong>link</strong> in the sidebar views widget is enabled. To check whether the sidebar TOC
-     * <strong>widget</strong> is enabled, use <code>isSidebarTocVisible()</code>.
+     * Checks whether the TOC <strong>link</strong> in the sidebar views widget is enabled. To check whether the sidebar TOC <strong>widget</strong>
+     * is enabled, use <code>isSidebarTocVisible()</code>.
      *
      * @should return correct value
      * @return true if the TOC view link in the sidebar views widget is visible, false otherwise
@@ -3184,8 +3183,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views
-     * widget is enabled, use <code>isSidebarTocVisible()</code>.
+     * Checks whether the TOC <strong>widget</strong> is enabled. To check whether the sidebar TOC <strong>link</strong> in the views widget is
+     * enabled, use <code>isSidebarTocVisible()</code>.
      *
      * @should return correct value
      * @return true if the sidebar TOC widget is visible in fullscreen mode, false otherwise
@@ -3619,12 +3618,12 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.
      *
-     * <p>Hot path: called dozens of times per facet field during every search-result render.
-     * The underlying {@code getLocalConfigurationsAt} rebuilds a fresh {@code BaseHierarchicalConfiguration}
-     * (with full {@code ConfigurationInterpolator} init) for every facet node on every call, which
-     * dominated the server-side latency on result pages with many configured facet fields. Results are
-     * therefore cached in {@link #facetFieldPropertyCache}; the cache is invalidated on config reload
-     * and on {@link #overrideValue(String, Object)} for {@code search.facets.*} paths.
+     * <p>
+     * Hot path: called dozens of times per facet field during every search-result render. The underlying {@code getLocalConfigurationsAt} rebuilds a
+     * fresh {@code BaseHierarchicalConfiguration} (with full {@code ConfigurationInterpolator} init) for every facet node on every call, which
+     * dominated the server-side latency on result pages with many configured facet fields. Results are therefore cached in
+     * {@link #facetFieldPropertyCache}; the cache is invalidated on config reload and on {@link #overrideValue(String, Object)} for
+     * {@code search.facets.*} paths.
      *
      * @param facetField Facet field
      * @param property Element or attribute name to check
@@ -3655,14 +3654,13 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Raw XML lookup for {@link #getPropertyForFacetField(String, String, String)}, without caching.
-     * Preserves the original lookup order (regular fields first, then hierarchical fields) and the
-     * "first matching, non-null value wins" semantics of the previous inlined implementation.
+     * Raw XML lookup for {@link #getPropertyForFacetField(String, String, String)}, without caching. Preserves the original lookup order (regular
+     * fields first, then hierarchical fields) and the "first matching, non-null value wins" semantics of the previous inlined implementation.
      *
      * @param facetField non-blank facet field name
      * @param property element or attribute path to read (e.g. {@code [@sortOrder]})
-     * @return present {@link Optional} with the XML value if a matching field node exposes this property;
-     *         empty {@link Optional} otherwise (caller applies default)
+     * @return present {@link Optional} with the XML value if a matching field node exposes this property; empty {@link Optional} otherwise (caller
+     *         applies default)
      */
     private Optional<String> resolveFacetFieldProperty(String facetField, String property) {
         String facetifiedField = SearchHelper.facetifyField(facetField);
@@ -3701,9 +3699,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * {@inheritDoc}
      *
-     * <p>Overridden to invalidate {@link #facetFieldPropertyCache} whenever a {@code search.facets.*}
-     * property is changed at runtime, so tests and admin-tooling that mutate the config see the updated
-     * value on the next lookup.
+     * <p>
+     * Overridden to invalidate {@link #facetFieldPropertyCache} whenever a {@code search.facets.*} property is changed at runtime, so tests and
+     * admin-tooling that mutate the config see the updated value on the next lookup.
      *
      * @should invalidate facet field property cache for facet paths
      * @should not invalidate facet field property cache for non facet paths
@@ -3717,8 +3715,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Exposed for unit tests that need to inspect the {@link #facetFieldPropertyCache} state.
-     * Not intended as a public API.
+     * Exposed for unit tests that need to inspect the {@link #facetFieldPropertyCache} state. Not intended as a public API.
      *
      * @return the number of entries currently cached in the facet-field property cache
      */
@@ -4203,12 +4200,24 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Whether the viewer pre-decodes the source image of the currently selected page into the
-     * ContentServer's source image cache while the HTML is rendering, so the OpenSeadragon tile
-     * burst that follows finds the decoded master already cached. Only useful when the
-     * ContentServer's {@code sourceImageCache useCache="true"} is set; otherwise the call is a
-     * no-op. Defaults to {@code true} since the cost (one async decode per page view) is small
-     * compared to the typical 800 ms tile-burst stall on cold first-views.
+     * <<<<<<< master Whether the viewer pre-decodes the source image of the currently selected page into the ContentServer's source image cache while
+     * the HTML is rendering, so the OpenSeadragon tile burst that follows finds the decoded master already cached. Only useful when the
+     * ContentServer's {@code sourceImageCache useCache="true"} is set; otherwise the call is a no-op. Defaults to {@code true} since the cost (one
+     * async decode per page view) is small compared to the typical 800 ms tile-burst stall on cold first-views. ======= maxZoom for an image view
+     *
+     * @param viewAttributes view context attributes selecting the zoom config
+     * @return the maximum zoom level, defaults to 5
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public int getMaxZoom(ViewAttributes viewAttributes) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(viewAttributes).getInt("[@maxZoom]", 5);
+    }
+
+    /**
+     * Whether the viewer pre-decodes the source image of the currently selected page into the ContentServer's source image cache while the HTML is
+     * rendering, so the OpenSeadragon tile burst that follows finds the decoded master already cached. Only useful when the ContentServer's
+     * {@code sourceImageCache useCache="true"} is set; otherwise the call is a no-op. Defaults to {@code true} since the cost (one async decode per
+     * page view) is small compared to the typical 800 ms tile-burst stall on cold first-views. >>>>>>> a3870b3 allow configuring max image zoom
      *
      * @return true if pre-warming the source image cache on page selection is enabled
      */
@@ -4605,11 +4614,10 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getMaxAggregateAltoSize.
      *
-     * Aggregate-text REST endpoints (e.g. /api/v1/records/{pi}/alto) build a single concatenated
-     * response in memory. For very large works (e.g. multi-thousand-page newspapers) this can
-     * OOM the JVM; clients should use the streaming /alto.zip endpoint instead. This config
-     * exposes a hard byte cap on the aggregate file size (sum of Files.size() over all page-level
-     * ALTO files) above which the REST layer rejects the request with HTTP 400.
+     * Aggregate-text REST endpoints (e.g. /api/v1/records/{pi}/alto) build a single concatenated response in memory. For very large works (e.g.
+     * multi-thousand-page newspapers) this can OOM the JVM; clients should use the streaming /alto.zip endpoint instead. This config exposes a hard
+     * byte cap on the aggregate file size (sum of Files.size() over all page-level ALTO files) above which the REST layer rejects the request with
+     * HTTP 400.
      *
      * @return configured limit in bytes; default 50 MB
      * @should return correct value
@@ -4621,8 +4629,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getMaxAggregateFulltextSize.
      *
-     * Same as {@link #getMaxAggregateAltoSize()} but for the plain-text aggregate endpoint
-     * (/api/v1/records/{pi}/plaintext). Default 50 MB.
+     * Same as {@link #getMaxAggregateAltoSize()} but for the plain-text aggregate endpoint (/api/v1/records/{pi}/plaintext). Default 50 MB.
      *
      * @return configured limit in bytes; default 50 MB
      * @should return correct value
@@ -4976,13 +4983,11 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getCalendarDocStructTypes.
      *
-     * <p>List of DOCSTRCT names for which the calendar TOC view applies. When the
-     * top struct of an anchor/group record matches one of these types and multiple
-     * calendar years are indexed, the calendar view replaces the issue-list TOC and
-     * the (potentially heavy) issue list is skipped. Records whose docstruct is not
-     * in this list always get the regular TOC build, even when they have multi-year
-     * date metadata. An empty list preserves legacy behavior — defer for any anchor
-     * or group with more than one indexed calendar year.
+     * <p>
+     * List of DOCSTRCT names for which the calendar TOC view applies. When the top struct of an anchor/group record matches one of these types and
+     * multiple calendar years are indexed, the calendar view replaces the issue-list TOC and the (potentially heavy) issue list is skipped. Records
+     * whose docstruct is not in this list always get the regular TOC build, even when they have multi-year date metadata. An empty list preserves
+     * legacy behavior — defer for any anchor or group with more than one indexed calendar year.
      *
      * @should return all configured values
      * @return a list of configured docstruct names that use the calendar TOC view
@@ -6508,5 +6513,4 @@ public class Configuration extends AbstractConfiguration {
         return Duration.of((long) num, unit.toChronoUnit());
 
     }
-
 }

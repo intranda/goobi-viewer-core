@@ -1738,6 +1738,17 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     }
 
     /**
+     * get maximum image zoom
+     * 
+     * @param pageType name of the page type for image configuration lookup
+     * @return an integer
+     * @throws ViewerConfigurationException
+     */
+    public int getMaxImageZoom(String pageType) throws ViewerConfigurationException {
+        return DataManager.getInstance().getConfiguration().getMaxZoom(new ViewAttributes(this, PageType.getByName(pageType)));
+    }
+
+    /**
      * getComments.
      *
      * @return a list of crowdsourcing comment annotations for this page, sorted by creation date
