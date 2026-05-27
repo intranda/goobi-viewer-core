@@ -23,7 +23,8 @@
             data-image-view-mode="#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}"
             data-image-show-navigator="#{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager)}"
             data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"
-            data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
+            data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}"
+            data-max-zoom="#{activeDocumentBean.viewManager.currentPage.getMaxImageZoom(navigationHelper.currentPageType)}">
             <div
                 id="mainImageData"
                 class="d-none">

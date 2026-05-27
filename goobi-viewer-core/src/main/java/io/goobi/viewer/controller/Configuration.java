@@ -4207,6 +4207,17 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * maxZoom for an image view
+     *
+     * @param viewAttributes view context attributes selecting the zoom config
+     * @return the maximum zoom level, defaults to 5
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public int getMaxZoom(ViewAttributes viewAttributes) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(viewAttributes).getInt("[@maxZoom]", 5);
+    }
+
+    /**
      * Whether the viewer pre-decodes the source image of the currently selected page into the ContentServer's source image cache while the HTML is
      * rendering, so the OpenSeadragon tile burst that follows finds the decoded master already cached. Only useful when the ContentServer's
      * {@code sourceImageCache useCache="true"} is set; otherwise the call is a no-op. Defaults to {@code true} since the cost (one async decode per
@@ -6547,21 +6558,19 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the configured file path for the given log file name.
-     * Reads from: &lt;logViewer&gt;&lt;logFiles&gt;&lt;logFile name="viewer" path="/opt/..."&gt;
-     * Returns null if not found.
+     * Returns the configured file path for the given log file name. Reads from: &lt;logViewer&gt;&lt;logFiles&gt;&lt;logFile name="viewer"
+     * path="/opt/..."&gt; Returns null if not found.
      */
     public String getLogViewerFilePath(String name) {
         return getLocalConfigurationsAt("logViewer.logFiles.logFile").stream()
-            .filter(c -> name.equalsIgnoreCase(c.getString("[@name]")))
-            .map(c -> c.getString("[@path]"))
-            .findFirst()
-            .orElse(null);
+                .filter(c -> name.equalsIgnoreCase(c.getString("[@name]")))
+                .map(c -> c.getString("[@path]"))
+                .findFirst()
+                .orElse(null);
     }
 
     /**
-     * Returns the number of initial lines to show in the log viewer.
-     * Default: 500
+     * Returns the number of initial lines to show in the log viewer. Default: 500
      */
     public int getLogViewerInitialLines() {
         return getLocalInt("logViewer.initialLines", 500);

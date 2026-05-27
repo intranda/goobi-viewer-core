@@ -41,6 +41,7 @@ const _config = {
             showNavigator: 'imageShowNavigator',
             allowDownload: 'allowDownload',
             allowZoom: 'allowZoom',
+			maxZoom: 'maxZoom'
         },
         data: {
             footerHeight: 'height',
@@ -287,6 +288,7 @@ function createZoomableImageConfig(imageElement) {
         },
         zoom: {
             enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
+			max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
         },
         sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
         navigator: {
