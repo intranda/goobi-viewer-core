@@ -83,13 +83,18 @@ public class AuthorizationFilter implements ContainerRequestFilter {
      */
     private static boolean checkPermissions(String ip, String token, String pathInfo) {
 
-        if (token == null) {
+        String configToken = DataManager.getInstance().getConfiguration().getWebApiToken();
+        if (StringUtils.isBlank(configToken)) {
+            logger.warn("Authorization rejected: webapi.authorization.token is not configured; "
+                    + "REST API access is disabled until a non-empty token is set.");
+            return false;
+        }
+        if (StringUtils.isBlank(token)) {
             logger.trace("No token");
             return false;
         }
         // Use constant-time comparison to prevent timing attacks that could allow
         // an attacker to guess the token character by character via response time analysis.
-        String configToken = DataManager.getInstance().getConfiguration().getWebApiToken();
         return MessageDigest.isEqual(token.getBytes(StandardCharsets.UTF_8), configToken.getBytes(StandardCharsets.UTF_8));
     }
 }
