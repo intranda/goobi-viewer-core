@@ -5811,8 +5811,8 @@ public class Configuration extends AbstractConfiguration {
      *
      * <p>
      * When {@code false} (default), {@code @ServerEndpoint} classes accept handshakes from any origin (server-side authentication on the endpoint is
-     * still enforced separately). When {@code true}, the handshake is rejected unless the {@code Origin} header matches {@link #getViewerBaseUrl()} or
-     * one of the entries in {@link #getCsrfAdditionalAllowedOrigins()} - the same allowlist used by {@link #isCsrfFilterEnabled()}.
+     * still enforced separately). When {@code true}, the handshake is rejected unless the {@code Origin} header matches {@link #getViewerBaseUrl()}
+     * or one of the entries in {@link #getCsrfAdditionalAllowedOrigins()} - the same allowlist used by {@link #isCsrfFilterEnabled()}.
      *
      * <p>
      * Decoupled from the HTTP CSRF switch so that operators can opt into WebSocket origin enforcement (defense-in-depth against CSWSH) without also
