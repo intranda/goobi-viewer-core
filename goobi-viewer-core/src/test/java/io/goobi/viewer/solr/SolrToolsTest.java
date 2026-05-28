@@ -528,6 +528,19 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies not synthesise local param braces around bare join token
+     */
+    @Test
+    void cleanUpQuery_shouldNotSynthesiseLocalParamBracesAroundBareJoinToken() {
+        // A previous legacy step re-wrapped a bare "!join from=PI_TOPSTRUCT to=PI" substring with
+        // braces, which turned attacker-supplied plain text into a valid Solr block-join local
+        // param. The input must pass through unchanged.
+        String query = "!join from=PI_TOPSTRUCT to=PI ACCESSCONDITION:restricted";
+        assertEquals(query, SolrTools.cleanUpQuery(query));
+    }
+
+    /**
      * @verifies return true for language-coded field names
      * @see SolrTools#isLanguageCodedField(String)
      */

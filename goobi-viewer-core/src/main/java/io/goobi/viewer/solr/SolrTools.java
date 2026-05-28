@@ -1035,7 +1035,7 @@ public final class SolrTools {
         for (int i = 0; i < WHITELISTED_LOCAL_PARAMS.length; i++) {
             result = result.replace(placeholderFor(i), WHITELISTED_LOCAL_PARAMS[i]);
         }
-        return result.replaceAll("(?<!\\{)!join from=PI_TOPSTRUCT to=PI(?!\\})", "{!join from=PI_TOPSTRUCT to=PI}");
+        return result;
     }
 
     private static String placeholderFor(int index) {
