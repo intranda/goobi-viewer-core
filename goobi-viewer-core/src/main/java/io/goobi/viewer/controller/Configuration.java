@@ -5807,6 +5807,25 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns whether the WebSocket handshake Origin guard is active.
+     *
+     * <p>
+     * When {@code false} (default), {@code @ServerEndpoint} classes accept handshakes from any origin (server-side authentication on the endpoint is
+     * still enforced separately). When {@code true}, the handshake is rejected unless the {@code Origin} header matches {@link #getViewerBaseUrl()} or
+     * one of the entries in {@link #getCsrfAdditionalAllowedOrigins()} - the same allowlist used by {@link #isCsrfFilterEnabled()}.
+     *
+     * <p>
+     * Decoupled from the HTTP CSRF switch so that operators can opt into WebSocket origin enforcement (defense-in-depth against CSWSH) without also
+     * enabling the REST CSRF filter, and vice-versa.
+     *
+     * @return {@code true} when the WebSocket origin guard is enabled; {@code false} by default
+     * @should return false by default
+     */
+    public boolean isWebSocketOriginValidationEnabled() {
+        return getLocalBoolean("webapi.websocket.originValidation[@enabled]", false);
+    }
+
+    /**
      * @return true if the IIIF image content location should be disclosed in responses, false otherwise
      */
     public boolean isDiscloseImageContentLocation() {

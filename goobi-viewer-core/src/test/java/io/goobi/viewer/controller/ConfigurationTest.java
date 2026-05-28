@@ -3228,6 +3228,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isWebSocketOriginValidationEnabled()
+     * @verifies return false by default
+     */
+    @Test
+    void isWebSocketOriginValidationEnabled_shouldReturnFalseByDefault() {
+        assertFalse(DataManager.getInstance().getConfiguration().isWebSocketOriginValidationEnabled());
+    }
+
+    /**
      * @see Configuration#isAllowRedirectCollectionToWork()
      * @verifies return correct value
      */

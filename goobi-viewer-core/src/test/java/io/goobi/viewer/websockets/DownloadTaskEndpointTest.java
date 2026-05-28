@@ -37,6 +37,9 @@ import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.model.resources.download.ExternalResourceUrlService;
+import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.RemoteEndpoint.Basic;
 import jakarta.websocket.Session;
 
@@ -103,4 +106,21 @@ class DownloadTaskEndpointTest extends AbstractTest {
         assertEquals(serverTemplate, mqCaptor.getValue().getProperties().get("urlTemplate"));
     }
 
+    /**
+     * @verifies close socket when no authenticated user is in the HTTP session
+     */
+    @Test
+    void onOpen_noUserInSession_socketClosed() throws Exception {
+        Session ws = Mockito.mock(Session.class);
+        HttpSession http = Mockito.mock(HttpSession.class);
+        Mockito.when(http.getAttributeNames()).thenReturn(Collections.emptyEnumeration());
+        EndpointConfig cfg = Mockito.mock(EndpointConfig.class);
+        Mockito.when(cfg.getUserProperties()).thenReturn(Collections.singletonMap(HttpSession.class.getName(), http));
+
+        new DownloadTaskEndpoint().onOpen(ws, cfg);
+
+        ArgumentCaptor<CloseReason> reason = ArgumentCaptor.forClass(CloseReason.class);
+        Mockito.verify(ws).close(reason.capture());
+        assertEquals(CloseReason.CloseCodes.VIOLATED_POLICY, reason.getValue().getCloseCode());
+    }
 }

@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.websockets;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +30,12 @@ import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;
 
 /**
- * Custom configurator that exposes the HTTP session to the web socket endpoint.
+ * Custom configurator that exposes the HTTP session and the {@code Origin} request header
+ * to web socket endpoints. The captured values are stashed in
+ * {@link ServerEndpointConfig#getUserProperties()} under
+ * {@link HttpSession#getClass()} name and {@link WebSocketTools#ORIGIN_PROPERTY}
+ * respectively, so endpoints can run the auth and origin guard from
+ * {@link WebSocketTools} on every handshake.
  */
 public class GetHttpSessionConfigurator extends ServerEndpointConfig.Configurator {
 
@@ -40,8 +44,16 @@ public class GetHttpSessionConfigurator extends ServerEndpointConfig.Configurato
             HandshakeRequest request,
             HandshakeResponse response) {
         HttpSession httpSession = (HttpSession) request.getHttpSession();
-        Map<String, List<String>> map = request.getParameterMap();
-        Principal principal = request.getUserPrincipal();
         config.getUserProperties().put(HttpSession.class.getName(), httpSession);
+
+        // JSR-356: HandshakeRequest.getHeaders() returns a case-insensitive header map.
+        // Take only the first value - a well-formed Origin request carries exactly one.
+        Map<String, List<String>> headers = request.getHeaders();
+        if (headers != null) {
+            List<String> originValues = headers.get("Origin");
+            if (originValues != null && !originValues.isEmpty()) {
+                config.getUserProperties().put(WebSocketTools.ORIGIN_PROPERTY, originValues.get(0));
+            }
+        }
     }
 }

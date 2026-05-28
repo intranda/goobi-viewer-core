@@ -1,12 +1,10 @@
 package io.goobi.viewer.websockets;
 
 import java.io.EOFException;
-import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.log.LogFile;
 import io.goobi.viewer.model.log.LogViewerManager;
 import io.goobi.viewer.model.security.user.User;
@@ -36,11 +34,16 @@ public class LogViewerEndpoint {
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
-        // Auth: superusers only
+        if (!WebSocketTools.requireAllowedOrigin(config, session)) {
+            return;
+        }
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        User user = BeanUtils.getUserFromSession(httpSession);
-        if (user == null || !user.isSuperuser()) {
-            closeSession(session, CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized");
+        User user = WebSocketTools.requireUser(httpSession, session);
+        if (user == null) {
+            return;
+        }
+        if (!user.isSuperuser()) {
+            WebSocketTools.closeSession(session, CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized");
             return;
         }
 
@@ -49,7 +52,7 @@ public class LogViewerEndpoint {
         String logfileName = (params != null && !params.isEmpty()) ? params.get(0) : null;
         var optLogFile = LogFile.fromName(logfileName);
         if (optLogFile.isEmpty()) {
-            closeSession(session, CloseReason.CloseCodes.CANNOT_ACCEPT, "Unknown log file: " + logfileName);
+            WebSocketTools.closeSession(session, CloseReason.CloseCodes.CANNOT_ACCEPT, "Unknown log file: " + logfileName);
             return;
         }
 
@@ -72,15 +75,6 @@ public class LogViewerEndpoint {
         }
         if (logFile != null) {
             MANAGER.unregisterSession(logFile, session);
-        }
-    }
-
-    private static void closeSession(Session session, CloseReason.CloseCode code, String reason) {
-        try {
-            session.close(new CloseReason(code, reason));
-        } catch (IOException e) {
-            // Stack trace intentionally omitted - best-effort close, session may already be gone
-            logger.debug("Could not close WebSocket session: {}", e.getMessage());
         }
     }
 

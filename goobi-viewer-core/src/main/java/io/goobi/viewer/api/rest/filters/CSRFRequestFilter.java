@@ -92,7 +92,17 @@ public class CSRFRequestFilter implements ContainerRequestFilter {
         }
     }
 
-    private static boolean isAllowedOrigin(String origin, Configuration config) {
+    /**
+     * Returns true if {@code origin} matches the viewer's own base URL or any entry in
+     * {@link Configuration#getCsrfAdditionalAllowedOrigins()}. Comparison is on the
+     * normalized {@code scheme://host[:port]} form. Exposed for reuse by the WebSocket
+     * handshake guard ({@code io.goobi.viewer.websockets.WebSocketTools}).
+     *
+     * @param origin already-normalized origin string (see {@link #normalizeOrigin(String)})
+     * @param config viewer configuration
+     * @return true if the origin is allowed
+     */
+    public static boolean isAllowedOrigin(String origin, Configuration config) {
         String self = normalizeOrigin(config.getViewerBaseUrl());
         if (self == null) {
             // Operator misconfig: urls.base unset and urls.rest fallback yielded a string
@@ -120,7 +130,7 @@ public class CSRFRequestFilter implements ContainerRequestFilter {
      * @param urlOrOrigin URL or origin string
      * @return normalized origin or {@code null}
      */
-    static String normalizeOrigin(String urlOrOrigin) {
+    public static String normalizeOrigin(String urlOrOrigin) {
         if (urlOrOrigin == null || urlOrOrigin.isBlank()) {
             return null;
         }
