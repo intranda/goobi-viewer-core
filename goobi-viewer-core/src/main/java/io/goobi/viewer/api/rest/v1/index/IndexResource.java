@@ -41,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
@@ -79,16 +80,14 @@ import io.goobi.viewer.model.maps.features.LabelCreator;
 import io.goobi.viewer.model.maps.features.MetadataDocument;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -144,6 +143,17 @@ public class IndexResource {
 
     //limits of hits per clickable marker. This does not affect the number of total hits found by the heatmap
     private static final int MAX_RECORD_HITS = 50_000;
+
+    /**
+     * Allow-list pattern for the {@code region} query parameter of the spatial search/heatmap endpoints.
+     * Accepts only the characters needed by WKT range literals (e.g. {@code ["-180 -90" TO "180 90"]})
+     * and WKT shape literals ({@code POINT(...)}, {@code POLYGON(...)}, {@code MULTIPOLYGON(...)}).
+     * The letter set is the union of letters appearing in {@code POLYGON}, {@code POINT},
+     * {@code MULTIPOLYGON} and {@code TO}; this excludes characters Solr query syntax needs for
+     * local-param ({@code {}!}), boolean ({@code OR}, {@code AND} — the letters {@code R}, {@code A},
+     * {@code D} are not in the allow-list), wildcard ({@code *}) or field-name injection ({@code :}).
+     */
+    private static final Pattern WKT_REGION_PATTERN = Pattern.compile("^[\\s\\[\\]\",.\\-+0-9()PONLYGITMU]*$");
 
     @Context
     private HttpServletRequest servletRequest;
@@ -463,9 +473,25 @@ public class IndexResource {
             @Parameter(description = "The scope of documents to search in. "
                     + "One of 'RECORDS', 'DOCSTRUCTS' and 'METADATA'") @QueryParam("scope") String searchScope)
             throws IndexUnreachableException, PresentationException, IllegalRequestException, ContentNotFoundException {
+        // Validate solrField before sending to Solr: an invalid name (e.g. "0") causes an
+        // unhandled exception deep in the Solr client that surfaces as HTTP 500.
+        // Solr field names must start with a letter or underscore and contain only
+        // letters, digits, and underscores.
+        if (solrField == null || !solrField.matches("[A-Za-z_][A-Za-z0-9_]*")) {
+            throw new IllegalRequestException("Not a valid Solr field name: " + solrField);
+        }
+        // Validate region against a strict WKT allow-list. The value is later concatenated
+        // into the Solr query string by raw String.replace, so any Solr-syntax character
+        // ('{', '}', '*', ':', etc.) reaching the composition would enable query injection.
+        if (wktRegion != null && !WKT_REGION_PATTERN.matcher(wktRegion).matches()) {
+            throw new IllegalRequestException("region parameter contains characters not allowed in WKT syntax");
+        }
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
-        String finalQuery = StringTools.unescapeCriticalUrlChracters(filterQuery);
+        // Run filterQuery through cleanUpQuery to strip non-whitelisted Solr local-params
+        // ({!type=...}, {!parent ...} etc.) that would otherwise bypass the access-condition
+        // suffix appended after this fragment.
+        String finalQuery = SolrTools.cleanUpQuery(StringTools.unescapeCriticalUrlChracters(filterQuery));
         List<String> facetQueries = new ArrayList<>();
 
         if (StringUtils.isNotBlank(facetQuery)) {

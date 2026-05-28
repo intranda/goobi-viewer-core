@@ -67,7 +67,16 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     public static boolean isAuthorized(HttpServletRequest request) {
         String token = request.getHeader("token");
         if (StringUtils.isBlank(token)) {
-            token = request.getParameter("token");
+            // Deprecated since 2026-05-28: token may also be passed as a "token" query parameter.
+            // Logging via WARN so operators can find and migrate remaining callers.
+            // TODO Remove this fall-back on or after 2027-05-28 (GVC-2026-17).
+            String queryToken = request.getParameter("token");
+            if (StringUtils.isNotBlank(queryToken)) {
+                logger.warn("Deprecated: webapi.authorization.token submitted as URL query parameter on {}. "
+                        + "Migrate to HTTP header 'token: <value>'. This fall-back will be removed on 2027-05-28.",
+                        request.getPathInfo());
+                token = queryToken;
+            }
         }
         String pathInfo = request.getPathInfo();
         String ip = NetTools.getIpAddress(request);

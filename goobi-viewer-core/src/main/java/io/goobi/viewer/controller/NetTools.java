@@ -900,11 +900,10 @@ public final class NetTools {
      * @param mode cache clear mode (all, content, thumbs, pdf)
      * @param pi persistent identifier of the record
      * @param rootUrl base URL of the viewer application
-     * @param webApiToken authentication token for the web API
      * @return Generated URL
      * @should compose cache API URL with correct query params for each cache type
      */
-    public static String buildClearCacheUrl(String mode, String pi, String rootUrl, String webApiToken) {
+    public static String buildClearCacheUrl(String mode, String pi, String rootUrl) {
         if (mode == null) {
             throw new IllegalArgumentException("mode may not be null");
         }
@@ -914,16 +913,15 @@ public final class NetTools {
                         .append(ApiUrls.CACHE)
                         .append('/')
                         .append(pi)
-                        .append("/?token=")
-                        .append(webApiToken);
+                        .append('/');
         switch (mode) {
             case NetTools.PARAM_CLEAR_CACHE_ALL:
-                sbUrl.append("&content=true&thumbs=true&pdf=true");
+                sbUrl.append("?content=true&thumbs=true&pdf=true");
                 break;
             case NetTools.PARAM_CLEAR_CACHE_CONTENT:
             case NetTools.PARAM_CLEAR_CACHE_THUMBS:
             case NetTools.PARAM_CLEAR_CACHE_PDF:
-                sbUrl.append("&").append(mode).append("=true");
+                sbUrl.append('?').append(mode).append("=true");
                 break;
             default:
                 return "";

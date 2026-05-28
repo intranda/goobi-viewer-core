@@ -61,19 +61,19 @@ class NetToolsTest extends AbstractTest {
     }
 
     /**
-     * @see NetTools#buildClearCacheUrl(String,String,String,String)
+     * @see NetTools#buildClearCacheUrl(String,String,String)
      * @verifies compose cache API URL with correct query params for each cache type
      */
     @Test
     void buildClearCacheUrl_shouldComposeCacheAPIURLWithCorrectQueryParamsForEachCacheType() throws Exception {
-        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true&thumbs=true&pdf=true",
-                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_ALL, "PPN123", "https://example.com/", "test"));
-        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&content=true",
-                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_CONTENT, "PPN123", "https://example.com/", "test"));
-        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&thumbs=true",
-                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_THUMBS, "PPN123", "https://example.com/", "test"));
-        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?token=test&pdf=true",
-                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_PDF, "PPN123", "https://example.com/", "test"));
+        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?content=true&thumbs=true&pdf=true",
+                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_ALL, "PPN123", "https://example.com/"));
+        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?content=true",
+                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_CONTENT, "PPN123", "https://example.com/"));
+        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?thumbs=true",
+                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_THUMBS, "PPN123", "https://example.com/"));
+        Assertions.assertEquals("https://example.com/api/v1/cache/PPN123/?pdf=true",
+                NetTools.buildClearCacheUrl(NetTools.PARAM_CLEAR_CACHE_PDF, "PPN123", "https://example.com/"));
     }
 
     /**
