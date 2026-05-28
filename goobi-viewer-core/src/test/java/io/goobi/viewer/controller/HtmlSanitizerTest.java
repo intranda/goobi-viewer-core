@@ -402,6 +402,95 @@ class HtmlSanitizerTest {
     }
 
     /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve inline style attribute from tinymce
+     */
+    @Test
+    void cleanRichText_shouldPreserveInlineStyleAttributeFromTinymce() {
+        String result = HtmlSanitizer.cleanRichText("<p><span style=\"font-size: 16pt;\">text</span></p>");
+        assertTrue(result.contains("style=\"font-size: 16pt;\""), "style must survive sanitization, got: " + result);
+        assertTrue(result.contains("text"), result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies strip css expression from style attribute
+     */
+    @Test
+    void cleanRichText_shouldStripCssExpressionFromStyleAttribute() {
+        String result = HtmlSanitizer.cleanRichText("<p style=\"width: expression(alert(1))\">x</p>");
+        assertFalse(result.toLowerCase().contains("expression("), "expression() must be stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies strip javascript url from style attribute
+     */
+    @Test
+    void cleanRichText_shouldStripJavascriptUrlFromStyleAttribute() {
+        String result = HtmlSanitizer.cleanRichText("<p style=\"background: url(javascript:alert(1))\">x</p>");
+        assertFalse(result.toLowerCase().contains("javascript:"), "javascript: URL must be stripped from style: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies return empty string for null input
+     */
+    @Test
+    void sanitizeCssValue_shouldReturnEmptyStringForNullInput() {
+        assertEquals("", HtmlSanitizer.sanitizeCssValue(null));
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies preserve safe font size value
+     */
+    @Test
+    void sanitizeCssValue_shouldPreserveSafeFontSizeValue() {
+        assertEquals("font-size: 16pt;", HtmlSanitizer.sanitizeCssValue("font-size: 16pt;"));
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies strip expression attack
+     */
+    @Test
+    void sanitizeCssValue_shouldStripExpressionAttack() {
+        String result = HtmlSanitizer.sanitizeCssValue("width: expression(alert(1))");
+        assertFalse(result.toLowerCase().contains("expression("), result);
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies strip behavior attack
+     */
+    @Test
+    void sanitizeCssValue_shouldStripBehaviorAttack() {
+        String result = HtmlSanitizer.sanitizeCssValue("behavior: url(evil.htc)");
+        assertFalse(result.toLowerCase().contains("behavior:"), result);
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies strip moz binding attack
+     */
+    @Test
+    void sanitizeCssValue_shouldStripMozBindingAttack() {
+        String result = HtmlSanitizer.sanitizeCssValue("-moz-binding: url(evil.xml)");
+        assertFalse(result.toLowerCase().contains("-moz-binding:"), result);
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies strip javascript url in css
+     */
+    @Test
+    void sanitizeCssValue_shouldStripJavascriptUrlInCss() {
+        String result = HtmlSanitizer.sanitizeCssValue("background: url(javascript:alert(1))");
+        assertFalse(result.toLowerCase().contains("javascript:"), result);
+    }
+
+    /**
      * @see HtmlSanitizer#isCleanRichText(String)
      * @verifies return true for null input
      */

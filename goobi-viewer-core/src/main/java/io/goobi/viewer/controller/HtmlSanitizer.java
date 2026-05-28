@@ -22,6 +22,7 @@
 package io.goobi.viewer.controller;
 
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 // Added Jsoup imports for the cleanRichText/isCleanRichText implementation (Task 1).
 // Jsoup is encapsulated here — callers must never import org.jsoup.* directly.
@@ -74,6 +75,18 @@ public final class HtmlSanitizer {
      */
     private static final String SANITIZER_BASE_URI = "https://placeholder.invalid/";
 
+    /**
+     * Patterns matching CSS inline-style attack vectors. Matched case-insensitively with
+     * optional whitespace before the delimiter to catch obfuscation like {@code expression (}
+     * or {@code javascript :}. Applied by {@link #sanitizeCssValue(String)}.
+     */
+    private static final Pattern CSS_EXPRESSION = Pattern.compile("expression\\s*\\(", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CSS_JAVASCRIPT = Pattern.compile("javascript\\s*:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CSS_BEHAVIOR = Pattern.compile("behavior\\s*:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CSS_MOZ_BINDING = Pattern.compile("-moz-binding\\s*:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CSS_URL_DANGEROUS =
+            Pattern.compile("url\\s*\\(\\s*[\"']?\\s*(javascript|data)\\s*:", Pattern.CASE_INSENSITIVE);
+
     private HtmlSanitizer() {
         // Utility class
     }
@@ -115,6 +128,9 @@ public final class HtmlSanitizer {
      * @should preserve data attributes on any element
      * @should preserve bootstrap tab navigation markup
      * @should still remove onclick when class is allowed
+     * @should preserve inline style attribute from tinymce
+     * @should strip css expression from style attribute
+     * @should strip javascript url from style attribute
      */
     public static String cleanRichText(String input) {
         if (input == null) {
@@ -350,21 +366,30 @@ public final class HtmlSanitizer {
         //     ARIA controls (aria-controls, aria-expanded, ...). aria-* carries only
         //     accessibility semantics; data-* is an HTML5 storage hook that is not a
         //     URL attribute, so neither widens the XSS attack surface.
+        //   - style via the isSafeAttribute override below: TinyMCE emits inline styles for
+        //     font-size, color, text-align, etc. Jsoup does not sanitize CSS, so we sanitize
+        //     the value ourselves via sanitizeCssValue() before allowing the attribute.
         //   - preserveRelativeLinks(true): keep CMS-internal hrefs like "/viewer/image/..."
         //     intact. Without this, Jsoup resolves relative hrefs against the (empty) baseUri
         //     to "" and the protocol allowlist then drops them, leaving anchors stripped of
         //     their href. The protocol allowlist still applies to absolute URIs, so
         //     javascript: / data: stay blocked.
         // We intentionally do NOT add the data: scheme on src/href — would allow
-        // data:image/svg+xml XSS. We intentionally do NOT add the style attribute —
-        // CSS expression()/url(javascript:) bypasses are subtle and Jsoup does not
-        // sanitize CSS.
+        // data:image/svg+xml XSS.
         Safelist safelist = new Safelist(Safelist.relaxed()) {
             @Override
             public boolean isSafeAttribute(String tagName, Element el, Attribute attr) {
-                // Open-ended ARIA and data-* attribute families — see rationale above.
                 String key = attr.getKey().toLowerCase(Locale.ROOT);
+                // Open-ended ARIA and data-* attribute families — see rationale above.
                 if (key.startsWith("aria-") || key.startsWith("data-")) {
+                    return true;
+                }
+                // Inline styles from TinyMCE (font-size, color, text-align, …): sanitize the
+                // CSS value in place to strip expression()/javascript:/behavior: attack vectors,
+                // then allow the attribute. Modifying attr.setValue() here is reflected in the
+                // Jsoup cleaner output because the cleaner uses the same Attribute object.
+                if ("style".equals(key)) {
+                    attr.setValue(sanitizeCssValue(attr.getValue()));
                     return true;
                 }
                 return super.isSafeAttribute(tagName, el, attr);
@@ -375,6 +400,35 @@ public final class HtmlSanitizer {
                 .addAttributes("a", "target", "rel")
                 .addAttributes(":all", "class", "id", "role")
                 .preserveRelativeLinks(true);
+    }
+
+    /**
+     * Strip known CSS inline-style XSS attack vectors from a single {@code style} attribute
+     * value. Removes IE CSS {@code expression()}, {@code behavior:}, Firefox {@code -moz-binding:},
+     * and {@code url(javascript:)} / {@code url(data:)} patterns. Safe formatting properties
+     * such as {@code font-size}, {@code color}, and {@code text-align} are passed through
+     * unchanged.
+     *
+     * @param cssValue raw value of a {@code style} attribute; may be {@code null}
+     * @return sanitized CSS value; empty string if input was {@code null}
+     * @should return empty string for null input
+     * @should preserve safe font size value
+     * @should strip expression attack
+     * @should strip behavior attack
+     * @should strip moz binding attack
+     * @should strip javascript url in css
+     */
+    static String sanitizeCssValue(String cssValue) {
+        if (cssValue == null) {
+            return "";
+        }
+        String result = cssValue;
+        result = CSS_EXPRESSION.matcher(result).replaceAll("");
+        result = CSS_JAVASCRIPT.matcher(result).replaceAll("");
+        result = CSS_BEHAVIOR.matcher(result).replaceAll("");
+        result = CSS_MOZ_BINDING.matcher(result).replaceAll("");
+        result = CSS_URL_DANGEROUS.matcher(result).replaceAll("url(about:");
+        return result;
     }
 
     /**
