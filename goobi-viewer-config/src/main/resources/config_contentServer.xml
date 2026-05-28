@@ -245,7 +245,8 @@
       -burstWindowSeconds: window in which a second request for the same URI counts as a burst
       -skipIfLargerThanMP: hard ceiling on cacheable image size in megapixels
     -->
-    <sourceImageCache useCache="true" maxEntries="50" ttlSeconds="60"
+    <!-- disable per default, because it can lead to errors in image loading for large images, probably due ru differing subsampling rates -->
+    <sourceImageCache useCache="false" maxEntries="50" ttlSeconds="60"
                       burstWindowSeconds="30" skipIfLargerThanMP="50" />
 
 
