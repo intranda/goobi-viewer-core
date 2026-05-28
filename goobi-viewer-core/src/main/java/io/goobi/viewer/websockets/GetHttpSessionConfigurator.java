@@ -32,8 +32,8 @@ import jakarta.websocket.server.ServerEndpointConfig;
 /**
  * Custom configurator that exposes the HTTP session and the {@code Origin} request header
  * to web socket endpoints. The captured values are stashed in
- * {@link ServerEndpointConfig#getUserProperties()} under
- * {@link HttpSession#getClass()} name and {@link WebSocketTools#ORIGIN_PROPERTY}
+ * {@link ServerEndpointConfig#getUserProperties()} under the keys
+ * {@code HttpSession.class.getName()} and {@link WebSocketTools#ORIGIN_PROPERTY}
  * respectively, so endpoints can run the auth and origin guard from
  * {@link WebSocketTools} on every handshake.
  */
