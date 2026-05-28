@@ -4200,10 +4200,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * <<<<<<< master Whether the viewer pre-decodes the source image of the currently selected page into the ContentServer's source image cache while
-     * the HTML is rendering, so the OpenSeadragon tile burst that follows finds the decoded master already cached. Only useful when the
-     * ContentServer's {@code sourceImageCache useCache="true"} is set; otherwise the call is a no-op. Defaults to {@code true} since the cost (one
-     * async decode per page view) is small compared to the typical 800 ms tile-burst stall on cold first-views. ======= maxZoom for an image view
+     * Whether the viewer pre-decodes the source image of the currently selected page into the ContentServer's source image cache while the HTML is
+     * rendering, so the OpenSeadragon tile burst that follows finds the decoded master already cached. Only useful when the ContentServer's
+     * {@code sourceImageCache useCache="true"} is set; otherwise the call is a no-op. Defaults to {@code true} since the cost (one async decode per
+     * page view) is small compared to the typical 800 ms tile-burst stall on cold first-views. ======= maxZoom for an image view
      *
      * @param viewAttributes view context attributes selecting the zoom config
      * @return the maximum zoom level, defaults to 5
