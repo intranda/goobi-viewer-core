@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+rm -f /tmp/startup-succeeded
+
+fail_startup() {
+  echo "ERROR: $*" >&2
+  exec sleep infinity
+}
+
 [ -z "$CONFIGSOURCE" ] && CONFIGSOURCE="default"
 [ -z "$USE_SSL" ] && USE_SSL="false"
 [ -z "$DEV" ] && DEV="false"
@@ -15,6 +22,12 @@ set -e
 [ -z "$THEME_NAME" ] && THEME_NAME="reference"
 [ -z "$STOPWORDS_LANG" ] && STOPWORDS_LANG="de"
 [ -z "${VIEWER_BASE_PATH+x}" ] && VIEWER_BASE_PATH="/viewer"
+
+# Required env vars — validate before `set -u` so we get a clear message
+# rather than an opaque "unbound variable" failure later.
+if [[ -z "${DB_PASSWORD:-}" ]]; then
+  fail_startup "DB_PASSWORD must be set (database password for user '${DB_USER}')"
+fi
 
 # /path/to/application -> path#to#application  (Tomcat nested-context convention)
 # / (root)             -> ROOT
@@ -39,15 +52,16 @@ fi
 
 if [[ -z "$API_TOKEN" ]]; then
   API_TOKEN="$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32)"
-  echo "No API Token specified, using random token."
+  echo "No API Token specified, using random token as fallback."
   sed -i "s|<token>[^<]*</token>|<token>${API_TOKEN}</token>|" "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
 fi
 
 set -u
 
+cp "${CATALINA_HOME}/conf/context.xml.template" /tmp/
 # Enable / Disable developer option (hot reloading for theme developers)
 if ! [[ "$DEV" == "true" ]]; then
-  patch ${CATALINA_HOME}/conf/context.xml.template < /viewer-template/disable_dev_options.patch
+  patch /tmp/context.xml.template < /viewer-template/disable_dev_options.patch
 else
   echo "[WARN] Developer options enabled. Don't use in production ('DEV'=false)"
 fi
@@ -55,7 +69,7 @@ fi
 if [[ -n "${THEME_DIR-}" ]]; then
   echo "Configuring theme as tomcat preresource..."
   envsubst "\$THEME_DIR" </viewer-template/insert_theme_preresource.patch.template > /viewer-template/insert_theme_preresource.patch
-  patch ${CATALINA_HOME}/conf/context.xml.template < /viewer-template/insert_theme_preresource.patch
+  patch /tmp/context.xml.template < /viewer-template/insert_theme_preresource.patch
 fi
 
 # Generate directory structure in case the viewer directory is bind mounted
@@ -64,15 +78,15 @@ mkdir -p /opt/digiverso/{config/bin,indexer,logs,viewer/{abbyy,cmdi,deleted_mets
 echo "Setting database configuration from environment..."
 envsubst "\$DB_HOST \$DB_PORT \$DB_NAME \$DB_USER \$DB_PASSWORD" <"${CATALINA_HOME}/conf/viewer.xml.template" > "${CATALINA_HOME}/conf/Catalina/localhost/${WEBAPP_NAME}.xml"
 envsubst "\$VIEWER_DOMAIN" <"${CATALINA_HOME}/conf/server.xml.template" >"${CATALINA_HOME}/conf/server.xml"
-envsubst "\$TOMCAT_SAMESITECOOKIES" <"${CATALINA_HOME}/conf/context.xml.template" >"${CATALINA_HOME}/conf/context.xml"
+envsubst "\$TOMCAT_SAMESITECOOKIES" </tmp/context.xml.template >"${CATALINA_HOME}/conf/context.xml"
 
 if ! [[ -v SOLR_URL ]]; then
   export SOLR_URL="http://${SOLR_HOST}:8983/solr/current"
 fi
 
 echo "Setting SOLR URL from environment..."
-sed -i "s#http://localhost:8983/solr/collection1#${SOLR_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
-sed -i "s#http://localhost:8983/solr/collection1#${SOLR_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_oai.xml"
+sed -i "s#<solr>[^<]*</solr>#<solr>${SOLR_URL}</solr>#" "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
+sed -i "s#<solrUrl>[^<]*</solrUrl>#<solrUrl>${SOLR_URL}</solrUrl>#" "${WEBAPP_DIR}/WEB-INF/classes/config_oai.xml"
 
 # Create stopwords file from env var
 echo "Generating stopwords file"
@@ -89,6 +103,7 @@ done
 if [[ -n "$THEME_NAME" && -n "${THEME_DIR-}" ]]; then
   echo "Setting theme to '${THEME_NAME}'"
   THEME_WEBCONTENT_DIR="/opt/digiverso/viewer/themes/${THEME_DIR}/WebContent"
+  sed -i '/^[[:space:]]*<rootPath>.*<\/rootPath>[[:space:]]*$/d' "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
   sed -i 's|mainTheme="[^"]*" discriminatorField="">|mainTheme="'"${THEME_NAME}"'" discriminatorField="">\
           <rootPath>'"${THEME_WEBCONTENT_DIR}/resources/themes"'</rootPath>|' "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
   [ -f "${THEME_WEBCONTENT_DIR}/WEB-INF/web.xml" ] && cp "${THEME_WEBCONTENT_DIR}/WEB-INF/web.xml" "${WEBAPP_DIR}/WEB-INF/web.xml"
@@ -117,6 +132,7 @@ done
 # No initial user password given
 if [[ -z "${VIEWER_USERPASS-}" ]]; then
   echo "Starting application server..."
+  touch /tmp/startup-succeeded
   exec catalina.sh run
 fi
 
@@ -156,4 +172,5 @@ unset STORED_HASH STORED_2B NEW_HASH EMAIL_SQL
 
 # Finally, start application
 echo "Starting application server..."
+touch /tmp/startup-succeeded
 exec catalina.sh run

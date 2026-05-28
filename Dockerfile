@@ -50,8 +50,11 @@ COPY --from=build-stage  /viewer/goobi-viewer-theme-reference/target/viewer.war 
 RUN unzip /viewer.war -d ${CATALINA_HOME}/webapps/viewer && rm /viewer.war
 
 COPY goobi-viewer-config/docker/run.sh /
+COPY goobi-viewer-config/docker/healthcheck.sh /
 
 EXPOSE 8080
 EXPOSE 8009
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=4 CMD ["/healthcheck.sh"]
 
 CMD ["/run.sh"]
