@@ -21,7 +21,11 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +43,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+import de.undercouch.citeproc.CSL;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
@@ -51,19 +58,27 @@ import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.citation.Citation;
+import io.goobi.viewer.model.citation.CitationProcessorWrapper;
+import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
+import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
@@ -161,6 +176,12 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     private final String dataRepository;
     @JsonIgnore
     private AccessPermission accessPermissionThumbnail = null;
+    @JsonIgnore
+    private Boolean downloadPdfAllowed = null;
+    @JsonIgnore
+    private Boolean hasPrerenderedPagePdfs = null;
+    @JsonIgnore
+    private String citationStringPlain;
 
     private List<String> recordLanguages;
 
@@ -268,6 +289,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         this.url = generateUrl();
         sidebarPrevUrl = generateSidebarUrl("prevHit");
         sidebarNextUrl = generateSidebarUrl("nextHit");
+
+        initCitationString(hierarchy.top());
 
         Collections.reverse(structElements);
     }
@@ -1398,6 +1421,106 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
+    }
+
+    public boolean isDownloadPdfAllowed() {
+        if (downloadPdfAllowed == null) {
+            if (anchor || DocType.GROUP.equals(docType)) {
+                downloadPdfAllowed = false;
+                return downloadPdfAllowed;
+            }
+            HttpServletRequest request = BeanUtils.getRequest();
+            if (request == null) {
+                downloadPdfAllowed = false;
+                return downloadPdfAllowed;
+            }
+            try {
+                downloadPdfAllowed = AccessConditionUtils
+                        .checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_PDF, request)
+                        .isGranted();
+            } catch (IndexUnreachableException | DAOException | RecordNotFoundException e) {
+                logger.error(e.getMessage());
+                downloadPdfAllowed = false;
+            }
+        }
+        return downloadPdfAllowed;
+    }
+
+    public boolean isHasPrerenderedPagePdfs() {
+        if (hasPrerenderedPagePdfs == null) {
+            try {
+                Path pdfFolder = new ProcessDataResolver().getDataFolders(pi, "pdf").get("pdf");
+                hasPrerenderedPagePdfs = pdfFolder != null && Files.exists(pdfFolder) && !FileTools.isFolderEmpty(pdfFolder);
+            } catch (IndexUnreachableException | PresentationException | IOException e) {
+                logger.error(e.getMessage());
+                hasPrerenderedPagePdfs = false;
+            }
+        }
+        return hasPrerenderedPagePdfs;
+    }
+
+    public String getPdfDownloadLink() {
+        return buildPdfDownloadLink(null);
+    }
+
+    public String getPdfDownloadLinkSmall() {
+        return buildPdfDownloadLink("usePdfSource=true");
+    }
+
+    public String getPdfDownloadLinkFull() {
+        return buildPdfDownloadLink("usePdfSource=false");
+    }
+
+    private String buildPdfDownloadLink(String queryParam) {
+        ImageDeliveryBean imageDelivery = BeanUtils.getImageDeliveryBean();
+        if (imageDelivery == null) {
+            return "";
+        }
+        String url = imageDelivery.getPdf().getPdfUrl(pi, Optional.empty(), Optional.empty());
+        if (queryParam == null || url.isEmpty()) {
+            return url;
+        }
+        return url + (url.contains("?") ? "&" : "?") + queryParam;
+    }
+
+    private void initCitationString(StructElement topStructElement) {
+        citationStringPlain = "";
+        Configuration config = DataManager.getInstance().getConfiguration();
+        if (!config.isDisplaySidebarWidgetCitationCitationRecommendation()) {
+            return;
+        }
+        if (topStructElement == null) {
+            return;
+        }
+        List<String> availableStyles = config.getSidebarWidgetCitationCitationRecommendationStyles();
+        if (availableStyles.isEmpty()) {
+            return;
+        }
+        try {
+            CitationProcessorWrapper wrapper = new CitationProcessorWrapper();
+            CSL processor = wrapper.getCitationProcessor(availableStyles.get(0));
+            Metadata md = config.getSidebarWidgetCitationCitationRecommendationSource();
+            if (md == null) {
+                return;
+            }
+            md.populate(topStructElement, String.valueOf(topStructElement.getLuceneId()), null, locale);
+            for (MetadataValue val : md.getValues()) {
+                if (!val.getCitationValues().isEmpty()) {
+                    Citation citation = new Citation(pi, processor, wrapper.getCitationItemDataProvider(),
+                            CitationTools.getCSLTypeForDocstrct(topStructElement.getDocStructType(),
+                                    topStructElement.getDocStructType()),
+                            val.getCitationValues());
+                    citationStringPlain = citation.getCitationString("text");
+                    return;
+                }
+            }
+        } catch (IOException | IndexUnreachableException | PresentationException | DateTimeException e) {
+            logger.error("Failed to generate citation string for {}: {}", pi, e.getMessage());
+        }
+    }
+
+    public String getCitationStringPlain() {
+        return citationStringPlain != null ? citationStringPlain : "";
     }
 
     /**

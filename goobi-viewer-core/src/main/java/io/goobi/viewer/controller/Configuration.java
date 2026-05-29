@@ -80,6 +80,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -5299,6 +5300,44 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isSearchRisExportEnabled() {
         return getLocalBoolean("search.export.ris[@enabled]", false);
+    }
+
+    /**
+     * Returns all XSLT-based export format definitions configured under {@code <search><export><format>} in {@code config_viewer.xml}.
+     *
+     * @return list of configured export formats (may be empty, never null)
+     * @should return all configured formats
+     */
+    public List<ExportFormat> getSearchExportFormats() {
+        List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt("search.export.format");
+        List<ExportFormat> ret = new ArrayList<>(nodes.size());
+        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
+            String name = node.getString(XML_PATH_ATTRIBUTE_NAME, "");
+            if (StringUtils.isNotBlank(name)) {
+                boolean enabled = node.getBoolean("[@enabled]", false);
+                String xslt = node.getString("[@xslt]", "");
+                String contentType = node.getString("[@contentType]", "text/plain");
+                String fileExtension = node.getString("[@fileExtension]", "txt");
+                ret.add(new ExportFormat(name, enabled, xslt, contentType, fileExtension));
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Returns the enabled XSLT-based export format with the given name, or {@link Optional#empty()} if no such format is configured or it is
+     * disabled.
+     *
+     * @param name the format name (e.g. "bibtex", "endnote", "ris")
+     * @return an Optional containing the matching enabled format, or empty
+     */
+    public Optional<ExportFormat> getSearchExportFormat(String name) {
+        if (name == null) {
+            return Optional.empty();
+        }
+        return getSearchExportFormats().stream()
+                .filter(f -> name.equals(f.getName()) && f.isEnabled())
+                .findFirst();
     }
 
     /**
