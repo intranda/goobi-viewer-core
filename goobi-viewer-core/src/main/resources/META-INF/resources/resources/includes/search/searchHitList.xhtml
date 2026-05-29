@@ -442,8 +442,6 @@
 
         <script type="text/javascript">
             //<![CDATA[
-            console.log('[searchHitDownload] script block executing, modal in DOM:', $('#searchHitDownloadModal').length);
-
             function _parseDisplaySize(sizeVal) {
                 if (!sizeVal) { return null; }
                 if (typeof sizeVal === 'number') {
@@ -472,16 +470,12 @@
 
                 // Fetch file size from REST API and inject into the dl if available
                 var infoUrl = '#{request.contextPath}/api/v1/records/' + encodeURIComponent(pi) + '/pdf/info.json';
-                console.log('[searchHitDownload] fetching:', infoUrl);
                 fetch(infoUrl)
                     .then(function(response) {
-                        console.log('[searchHitDownload] HTTP status:', response.status);
                         return response.json();
                     })
                     .then(function(info) {
-                        console.log('[searchHitDownload] info response:', info);
                         var displaySize = _parseDisplaySize(info && info.size);
-                        console.log('[searchHitDownload] displaySize:', displaySize);
                         if (displaySize) {
                             $modal.find('dl.row').append(
                                 '<dt class="col-sm-3" data-filesize-row="1">#{msg.downloadInfoFileSize}:</dt>' +
