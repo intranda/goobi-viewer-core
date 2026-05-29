@@ -97,6 +97,11 @@
 		<download>https://viewer.goobi.io/download/</download>
 	</urls>
 
+	<outboundHttp>
+		<!-- Allow loopback addresses (127.x.x.x) in test environments for mock servers -->
+		<allowLoopback>true</allowLoopback>
+	</outboundHttp>
+
 	<user>
 		<!-- registration/@enabled: If false, widgets for user registration / password retrieval are hidden. Default is true. -->
 		<registration enabled="false" />
@@ -559,16 +564,11 @@
 		<export>
             <!-- enabled: If true, Excel (.xlsx) export is enabled (default is false). -->
 			<excel enabled="true">
-				<!-- field: Solr fields to put into the export sheet. One element per
+				<!-- field: Solr fields to put into the export sheet. One element per 
 					field. -->
 				<field>PI</field>
 				<field>LABEL</field>
 			</excel>
-			<ris enabled="true" />
-			<format name="ris"      enabled="true"  xslt="solr2ris.xsl"     contentType="text/plain"      fileExtension="ris" />
-			<format name="endnote"  enabled="true"  xslt="solr2endnote.xsl" contentType="application/xml" fileExtension="xml" />
-			<format name="bibtex"   enabled="true"  xslt="solr2bibtex.xsl"  contentType="text/plain"      fileExtension="bib" />
-			<format name="disabled" enabled="false" xslt="solr2ris.xsl"     contentType="text/plain"      fileExtension="txt" />
 		</export>
         
         <!-- useFacetsAsExpandQuery/@enabled: If true, currently active facets will be used to build the expand query to produce child hits,
@@ -1564,7 +1564,7 @@
         </scripts>
     </developer>
 
-	<externalResource>
+	<externalResource enabled="true">
 	    <urls>
 	        <template>
 	            <url>http://d-nb.info/{MD_DOWNLOAD_IDENTIFIER}/34</url>

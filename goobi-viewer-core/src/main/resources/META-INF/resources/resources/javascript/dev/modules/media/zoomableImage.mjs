@@ -38,9 +38,10 @@ const _config = {
     datasets: {
         image: {
             viewMode: 'imageViewMode',
-            showNavigator: 'showNavigator',
+            showNavigator: 'imageShowNavigator',
             allowDownload: 'allowDownload',
             allowZoom: 'allowZoom',
+			maxZoom: 'maxZoom'
         },
         data: {
             footerHeight: 'height',
@@ -103,7 +104,7 @@ export default class ZoomableImage {
                             showTooltip: element.dataset[_config.datasets.data.showTooltip],
                             highlightClassName: 'focus',
                             highlightOnHover: true,
-                        });
+                        }); 
                         this.overlayGroups.push(overlays);
                     } catch (e) {
                         console.error('Error parsing coords string ', coordsString, e);
@@ -287,10 +288,12 @@ function createZoomableImageConfig(imageElement) {
         },
         zoom: {
             enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
+			max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
         },
         sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
         navigator: {
             enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
+			position: "BOTTOM_RIGHT"
         },
     };
 }

@@ -198,6 +198,55 @@ class HtmlSanitizerTest {
 
     /**
      * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve root relative anchor href
+     */
+    @Test
+    void cleanRichText_shouldPreserveRootRelativeAnchorHref() {
+        // Regression: with the default Jsoup safelist (no preserveRelativeLinks) and an empty
+        // baseUri, root-relative hrefs were resolved to "" and then dropped by the protocol
+        // allowlist, leaving CMS-internal links like "/viewer/image/..." stripped to bare anchors.
+        String result = HtmlSanitizer.cleanRichText(
+                "<a class=\"link\" href=\"/viewer/image/10089470_1919/1/LOG_0003/\""
+                        + " target=\"_blank\" rel=\"noopener noreferrer\">1919</a>");
+        assertTrue(result.contains("href=\"/viewer/image/10089470_1919/1/LOG_0003/\""),
+                "root-relative href must survive sanitization, got: " + result);
+        assertTrue(result.contains("target=\"_blank\""));
+        assertTrue(result.contains("1919"));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve path relative anchor href
+     */
+    @Test
+    void cleanRichText_shouldPreservePathRelativeAnchorHref() {
+        // Path-relative hrefs (no leading slash) must also survive sanitization.
+        String result = HtmlSanitizer.cleanRichText(
+                "<a href=\"viewer/image/10089470_1919/1/LOG_0003/\">1919</a>");
+        assertTrue(result.contains("href=\"viewer/image/10089470_1919/1/LOG_0003/\""),
+                "path-relative href must survive sanitization, got: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies still remove javascript URI when relative links are preserved
+     */
+    @Test
+    void cleanRichText_shouldStillRemoveJavascriptUriWhenRelativeLinksArePreserved() {
+        // Security regression guard: enabling preserveRelativeLinks must NOT weaken the
+        // protocol allowlist for absolute URIs. javascript: still has a scheme and must be
+        // dropped — preserveRelativeLinks only affects strings without a resolvable scheme.
+        String result = HtmlSanitizer.cleanRichText(
+                "<a href=\"javascript:alert(1)\">click</a>"
+                        + "<a href=\"/safe/relative\">ok</a>");
+        assertFalse(result.toLowerCase().contains("javascript:"),
+                "javascript: URI must still be stripped, got: " + result);
+        assertTrue(result.contains("href=\"/safe/relative\""),
+                "relative href must survive in the same document, got: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
      * @verifies preserve table markup
      */
     @Test
@@ -229,6 +278,216 @@ class HtmlSanitizerTest {
         assertTrue(result.contains("line1"));
         assertTrue(result.contains("line2"));
         assertTrue(result.contains("\n"));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve class attribute on any element
+     */
+    @Test
+    void cleanRichText_shouldPreserveClassAttributeOnAnyElement() {
+        // CMS authors use class attributes as CSS hooks; the rich-text profile must keep
+        // them on arbitrary tags (not only the few Jsoup happens to allow by default).
+        String result = HtmlSanitizer.cleanRichText(
+                "<div class=\"intro\"><p class=\"lead\">hello</p></div>");
+        assertTrue(result.contains("class=\"intro\""), "class on div lost: " + result);
+        assertTrue(result.contains("class=\"lead\""), "class on p lost: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve id attribute on any element
+     */
+    @Test
+    void cleanRichText_shouldPreserveIdAttributeOnAnyElement() {
+        // id is required as the target of in-page anchor hrefs (#fragment) — without it,
+        // Bootstrap tabs / TOC links would link to nothing after sanitization.
+        String result = HtmlSanitizer.cleanRichText("<div id=\"uebersicht\">x</div>");
+        assertTrue(result.contains("id=\"uebersicht\""), "id stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve role attribute on any element
+     */
+    @Test
+    void cleanRichText_shouldPreserveRoleAttributeOnAnyElement() {
+        String result = HtmlSanitizer.cleanRichText(
+                "<ul role=\"tablist\"><li role=\"presentation\">x</li></ul>");
+        assertTrue(result.contains("role=\"tablist\""), "role on ul stripped: " + result);
+        assertTrue(result.contains("role=\"presentation\""), "role on li stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve aria attributes on any element
+     */
+    @Test
+    void cleanRichText_shouldPreserveAriaAttributesOnAnyElement() {
+        // aria-* is an open-ended family; the override in buildRichTextSafelist must let any
+        // aria-prefixed attribute pass — not just an enumerated subset. <span> is used
+        // because it is in the allowlist; <button> would be stripped as a tag.
+        String result = HtmlSanitizer.cleanRichText(
+                "<span aria-controls=\"panel\" aria-expanded=\"false\""
+                        + " aria-label=\"open\" aria-describedby=\"desc\">x</span>");
+        assertTrue(result.contains("aria-controls=\"panel\""), "aria-controls stripped: " + result);
+        assertTrue(result.contains("aria-expanded=\"false\""), "aria-expanded stripped: " + result);
+        assertTrue(result.contains("aria-label=\"open\""), "aria-label stripped: " + result);
+        assertTrue(result.contains("aria-describedby=\"desc\""), "aria-describedby stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve data attributes on any element
+     */
+    @Test
+    void cleanRichText_shouldPreserveDataAttributesOnAnyElement() {
+        // data-* is also open-ended; required for Bootstrap data-toggle / data-target hooks
+        // and arbitrary custom JS bindings that CMS authors add to rich-text components.
+        String result = HtmlSanitizer.cleanRichText(
+                "<a href=\"#x\" data-toggle=\"tab\" data-target=\"#x\""
+                        + " data-bs-toggle=\"modal\">x</a>");
+        assertTrue(result.contains("data-toggle=\"tab\""), "data-toggle stripped: " + result);
+        assertTrue(result.contains("data-target=\"#x\""), "data-target stripped: " + result);
+        assertTrue(result.contains("data-bs-toggle=\"modal\""), "data-bs-toggle stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve bootstrap tab navigation markup
+     */
+    @Test
+    void cleanRichText_shouldPreserveBootstrapTabNavigationMarkup() {
+        // End-to-end regression: the actual CMS author markup (calendar widget tabs) must
+        // round-trip the sanitizer without losing class / role / aria / data hooks, otherwise
+        // the tab JS no longer works after save.
+        String input = "<ul class=\"nav nav-tabs\" role=\"tablist\">"
+                + "<li class=\"active\" role=\"presentation\">"
+                + "<a class=\"nav-link active\" role=\"tab\" href=\"#uebersicht\""
+                + " aria-controls=\"uebersicht\" data-toggle=\"tab\">Jahresübersicht</a>"
+                + "</li>"
+                + "<li role=\"presentation\">"
+                + "<a class=\"nav-link\" role=\"tab\" href=\"#titel\""
+                + " aria-controls=\"Titel\" data-toggle=\"tab\">Titelübersicht</a>"
+                + "</li>"
+                + "</ul>";
+        String result = HtmlSanitizer.cleanRichText(input);
+        assertTrue(result.contains("class=\"nav nav-tabs\""), "ul class lost: " + result);
+        assertTrue(result.contains("role=\"tablist\""), "ul role lost: " + result);
+        assertTrue(result.contains("class=\"active\""), "li class lost: " + result);
+        assertTrue(result.contains("class=\"nav-link active\""), "first a class lost: " + result);
+        assertTrue(result.contains("role=\"tab\""), "a role lost: " + result);
+        assertTrue(result.contains("aria-controls=\"uebersicht\""), "aria-controls lost: " + result);
+        assertTrue(result.contains("data-toggle=\"tab\""), "data-toggle lost: " + result);
+        assertTrue(result.contains("href=\"#uebersicht\""), "fragment href lost: " + result);
+        assertTrue(result.contains("href=\"#titel\""), "second fragment href lost: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies still remove onclick when class is allowed
+     */
+    @Test
+    void cleanRichText_shouldStillRemoveOnclickWhenClassIsAllowed() {
+        // Security regression guard: opening up class/role/aria/data must not accidentally
+        // open up event-handler attributes like onclick / onmouseover. The Safelist override
+        // only relaxes aria-*/data-*, never on*-prefixed attributes.
+        String result = HtmlSanitizer.cleanRichText(
+                "<div class=\"x\" onclick=\"alert(1)\" onmouseover=\"alert(2)\">x</div>");
+        assertTrue(result.contains("class=\"x\""), "class must survive: " + result);
+        assertFalse(result.toLowerCase().contains("onclick"),
+                "onclick must still be stripped: " + result);
+        assertFalse(result.toLowerCase().contains("onmouseover"),
+                "onmouseover must still be stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies preserve inline style attribute from tinymce
+     */
+    @Test
+    void cleanRichText_shouldPreserveInlineStyleAttributeFromTinymce() {
+        String result = HtmlSanitizer.cleanRichText("<p><span style=\"font-size: 16pt;\">text</span></p>");
+        assertTrue(result.contains("style=\"font-size: 16pt;\""), "style must survive sanitization, got: " + result);
+        assertTrue(result.contains("text"), result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies strip css expression from style attribute
+     */
+    @Test
+    void cleanRichText_shouldStripCssExpressionFromStyleAttribute() {
+        String result = HtmlSanitizer.cleanRichText("<p style=\"width: expression(alert(1))\">x</p>");
+        assertFalse(result.toLowerCase().contains("expression("), "expression() must be stripped: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies strip javascript url from style attribute
+     */
+    @Test
+    void cleanRichText_shouldStripJavascriptUrlFromStyleAttribute() {
+        String result = HtmlSanitizer.cleanRichText("<p style=\"background: url(javascript:alert(1))\">x</p>");
+        assertFalse(result.toLowerCase().contains("javascript:"), "javascript: URL must be stripped from style: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies return empty string for null input
+     */
+    @Test
+    void sanitizeCssValue_shouldReturnEmptyStringForNullInput() {
+        assertEquals("", HtmlSanitizer.sanitizeCssValue(null));
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies preserve safe font size value
+     */
+    @Test
+    void sanitizeCssValue_shouldPreserveSafeFontSizeValue() {
+        assertEquals("font-size: 16pt;", HtmlSanitizer.sanitizeCssValue("font-size: 16pt;"));
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies strip expression attack
+     */
+    @Test
+    void sanitizeCssValue_shouldStripExpressionAttack() {
+        String result = HtmlSanitizer.sanitizeCssValue("width: expression(alert(1))");
+        assertFalse(result.toLowerCase().contains("expression("), result);
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies strip behavior attack
+     */
+    @Test
+    void sanitizeCssValue_shouldStripBehaviorAttack() {
+        String result = HtmlSanitizer.sanitizeCssValue("behavior: url(evil.htc)");
+        assertFalse(result.toLowerCase().contains("behavior:"), result);
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies strip moz binding attack
+     */
+    @Test
+    void sanitizeCssValue_shouldStripMozBindingAttack() {
+        String result = HtmlSanitizer.sanitizeCssValue("-moz-binding: url(evil.xml)");
+        assertFalse(result.toLowerCase().contains("-moz-binding:"), result);
+    }
+
+    /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies strip javascript url in css
+     */
+    @Test
+    void sanitizeCssValue_shouldStripJavascriptUrlInCss() {
+        String result = HtmlSanitizer.sanitizeCssValue("background: url(javascript:alert(1))");
+        assertFalse(result.toLowerCase().contains("javascript:"), result);
     }
 
     /**
@@ -265,6 +524,18 @@ class HtmlSanitizerTest {
     @Test
     void isCleanRichText_shouldReturnFalseForScriptInjection() {
         assertFalse(HtmlSanitizer.isCleanRichText("<p>hi</p><script>alert(1)</script>"));
+    }
+
+    /**
+     * @see HtmlSanitizer#isCleanRichText(String)
+     * @verifies return true for relative anchor href
+     */
+    @Test
+    void isCleanRichText_shouldReturnTrueForRelativeAnchorHref() {
+        // CMS rich-text content commonly contains internal relative links; they must be
+        // accepted as clean so the save-pipeline does not flag them as suspect.
+        assertTrue(HtmlSanitizer.isCleanRichText(
+                "<p><a href=\"/viewer/image/10089470_1919/1/LOG_0003/\">1919</a></p>"));
     }
 
     /**
@@ -339,6 +610,34 @@ class HtmlSanitizerTest {
     void cleanComment_shouldRemoveJavascriptUriFromAnchorHref() {
         String result = HtmlSanitizer.cleanComment("<a href=\"javascript:alert(1)\">x</a>");
         assertFalse(result.toLowerCase().contains("javascript:"));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanComment(String)
+     * @verifies preserve relative anchor href
+     */
+    @Test
+    void cleanComment_shouldPreserveRelativeAnchorHref() {
+        // Same regression as cleanRichText: relative hrefs in user comments must not be
+        // dropped by the protocol allowlist when no baseUri is provided.
+        String result = HtmlSanitizer.cleanComment(
+                "<a href=\"/viewer/image/10089470_1919/1/LOG_0003/\">1919</a>");
+        assertTrue(result.contains("href=\"/viewer/image/10089470_1919/1/LOG_0003/\""),
+                "root-relative href must survive comment sanitization, got: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanComment(String)
+     * @verifies still remove javascript URI when relative links are preserved
+     */
+    @Test
+    void cleanComment_shouldStillRemoveJavascriptUriWhenRelativeLinksArePreserved() {
+        String result = HtmlSanitizer.cleanComment(
+                "<a href=\"javascript:alert(1)\">x</a><a href=\"/ok\">y</a>");
+        assertFalse(result.toLowerCase().contains("javascript:"),
+                "javascript: URI must still be stripped from comments, got: " + result);
+        assertTrue(result.contains("href=\"/ok\""),
+                "relative href must survive in the same comment, got: " + result);
     }
 
     /**
@@ -474,5 +773,213 @@ class HtmlSanitizerTest {
     @Test
     void isCleanComment_shouldReturnFalseForImgTagInComment() {
         assertFalse(HtmlSanitizer.isCleanComment("hello<img src=\"x\">"));
+    }
+
+    /**
+     * @see HtmlSanitizer#isCleanComment(String)
+     * @verifies return true for relative anchor href
+     */
+    @Test
+    void isCleanComment_shouldReturnTrueForRelativeAnchorHref() {
+        assertTrue(HtmlSanitizer.isCleanComment(
+                "<a href=\"/viewer/image/10089470_1919/1/LOG_0003/\">1919</a>"));
+    }
+
+    // -------- cleanFulltextSnippet --------
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies return null when input is null
+     */
+    @Test
+    void cleanFulltextSnippet_shouldReturnNullWhenInputIsNull() {
+        assertNull(HtmlSanitizer.cleanFulltextSnippet(null));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies return empty string when input is empty
+     */
+    @Test
+    void cleanFulltextSnippet_shouldReturnEmptyStringWhenInputIsEmpty() {
+        assertEquals("", HtmlSanitizer.cleanFulltextSnippet(""));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies preserve mark tag with class attribute
+     */
+    @Test
+    void cleanFulltextSnippet_shouldPreserveMarkTagWithClassAttribute() {
+        String input = "Treffer mit <mark class=\"search-list--highlight\">Berlin</mark> drin";
+        String output = HtmlSanitizer.cleanFulltextSnippet(input);
+        assertEquals(input, output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies strip script tags
+     */
+    @Test
+    void cleanFulltextSnippet_shouldStripScriptTags() {
+        String output = HtmlSanitizer.cleanFulltextSnippet("Treffer<script>alert(1)</script> Ende");
+        assertFalse(output.contains("<script"), "output: " + output);
+        assertFalse(output.contains("alert"), "output: " + output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies strip event handler attributes on mark tag
+     */
+    @Test
+    void cleanFulltextSnippet_shouldStripEventHandlerAttributesOnMarkTag() {
+        String output = HtmlSanitizer.cleanFulltextSnippet("<mark class=\"x\" onclick=\"alert(1)\">term</mark>");
+        assertFalse(output.contains("onclick"), "output: " + output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies strip anchor tags entirely
+     */
+    @Test
+    void cleanFulltextSnippet_shouldStripAnchorTagsEntirely() {
+        String output = HtmlSanitizer.cleanFulltextSnippet("<a href=\"javascript:alert(1)\">click</a>");
+        assertFalse(output.contains("<a "), "output: " + output);
+        assertFalse(output.contains("javascript"), "output: " + output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies strip img tags with onerror payload
+     */
+    @Test
+    void cleanFulltextSnippet_shouldStripImgTagsWithOnerrorPayload() {
+        String output = HtmlSanitizer.cleanFulltextSnippet("<img src=x onerror=\"alert(1)\">");
+        assertFalse(output.contains("<img"), "output: " + output);
+        assertFalse(output.contains("onerror"), "output: " + output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextSnippet(String)
+     * @verifies strip em tag
+     */
+    @Test
+    void cleanFulltextSnippet_shouldStripEmTag() {
+        String output = HtmlSanitizer.cleanFulltextSnippet("no <em>emphasis</em> allowed");
+        assertFalse(output.contains("<em"), "output: " + output);
+        assertTrue(output.contains("emphasis"), "output: " + output);
+    }
+
+    // -------- cleanFulltextWithNamedEntities --------
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies return null when input is null
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldReturnNullWhenInputIsNull() {
+        assertNull(HtmlSanitizer.cleanFulltextWithNamedEntities(null));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies return empty string when input is empty
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldReturnEmptyStringWhenInputIsEmpty() {
+        assertEquals("", HtmlSanitizer.cleanFulltextWithNamedEntities(""));
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies preserve full NamedEntityEnricher button markup
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldPreserveFullNamedEntityEnricherButtonMarkup() {
+        String input = "<button class=\"view-fulltext__entity-action-button\" type=\"button\""
+                + " data-entity-id=\"Tag0\" data-entity-type=\"location\""
+                + " data-entity-authority-data-uri=\"https://example.invalid/auth?id=42\""
+                + " data-entity-authority-data-search=\"https://example.invalid/search?q=Berlin\">Berlin</button>";
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities(input);
+        assertTrue(output.contains("<button"), "missing button tag: " + output);
+        assertTrue(output.contains("class=\"view-fulltext__entity-action-button\""), output);
+        assertTrue(output.contains("type=\"button\""), output);
+        assertTrue(output.contains("data-entity-id=\"Tag0\""), output);
+        assertTrue(output.contains("data-entity-type=\"location\""), output);
+        assertTrue(output.contains("data-entity-authority-data-uri="), output);
+        assertTrue(output.contains("data-entity-authority-data-search="), output);
+        assertTrue(output.contains(">Berlin</button>"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip script tags
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripScriptTags() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities("Text<script>alert(1)</script>more");
+        assertFalse(output.contains("<script"), output);
+        assertFalse(output.contains("alert"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip onclick attribute on button
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripOnclickAttributeOnButton() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities("<button onclick=\"alert(1)\">x</button>");
+        assertFalse(output.contains("onclick"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip mark tag
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripMarkTag() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities("<mark class=\"x\">highlight</mark>");
+        assertFalse(output.contains("<mark"), output);
+        assertTrue(output.contains("highlight"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip anchor tag
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripAnchorTag() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities("<a href=\"http://example.com\">link</a>");
+        assertFalse(output.contains("<a "), output);
+        assertTrue(output.contains("link"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip unknown data attribute on button
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripUnknownDataAttributeOnButton() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities(
+                "<button data-remotecontent=\"javascript:alert(1)\">x</button>");
+        assertFalse(output.contains("data-remotecontent"), output);
+        assertFalse(output.contains("javascript"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies preserve plain text content alongside button
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldPreservePlainTextContentAlongsideButton() {
+        String input = "Vorwort. <button class=\"view-fulltext__entity-action-button\" type=\"button\""
+                + " data-entity-id=\"T0\" data-entity-type=\"location\""
+                + " data-entity-authority-data-uri=\"https://x.invalid/a\""
+                + " data-entity-authority-data-search=\"https://x.invalid/s\">Europa</button>"
+                + " in vielen Punkten";
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities(input);
+        assertTrue(output.contains("Vorwort."), output);
+        assertTrue(output.contains("Europa"), output);
+        assertTrue(output.contains("in vielen Punkten"), output);
     }
 }

@@ -200,7 +200,7 @@
     isMediaSelectModal: true,
 };
 
-viewerJS.clipboard.init('[data-copy]', null, '#{msg.copied_to_clipboard}');
+viewerJS.clipboard.init('[data-copy]');
 cmsJS.media.init(adminMediaConfig);
 riot.mount('adminMediaUpload', adminMediaConfig);
 

@@ -42,7 +42,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -228,17 +227,30 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                 json.put(thirdPartyLoginReqParamDef, array);
                 final StringEntity entity = new StringEntity(json.toString());
 
-                HttpPost externalRequest = new HttpPost(thirdPartyLoginUrl);
-                String[] thirdPartyLoginApiKeyParams = thirdPartyLoginApiKey.split(" ");
-                externalRequest.addHeader(thirdPartyLoginApiKeyParams[0], thirdPartyLoginApiKeyParams[1]);
-                externalRequest.addHeader("content-type", "application/json");
+                HttpPost externalRequest =
+                        new HttpPost(thirdPartyLoginUrl);
+                String[] thirdPartyLoginApiKeyParams =
+                        thirdPartyLoginApiKey.split(" ");
+                externalRequest.addHeader(
+                        thirdPartyLoginApiKeyParams[0],
+                        thirdPartyLoginApiKeyParams[1]);
+                externalRequest.addHeader(
+                        "content-type", "application/json");
                 externalRequest.setEntity(entity);
 
-                CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-                HttpResponse externalResponse = httpClient.execute(externalRequest);
-
-                JSONObject externalResponseObj = new JSONObject(EntityUtils.toString(externalResponse.getEntity()));
-                email = JsonTools.getNestedValue(externalResponseObj, thirdPartyLoginClaim);
+                NetTools.validateOutboundUrl(thirdPartyLoginUrl);
+                try (CloseableHttpClient httpClient =
+                        NetTools.buildHttpClientForUrl(
+                                thirdPartyLoginUrl, null)) {
+                    HttpResponse externalResponse =
+                            httpClient.execute(externalRequest);
+                    JSONObject externalResponseObj =
+                            new JSONObject(EntityUtils.toString(
+                                    externalResponse.getEntity()));
+                    email = JsonTools.getNestedValue(
+                            externalResponseObj,
+                            thirdPartyLoginClaim);
+                }
             }
 
             User user = null;

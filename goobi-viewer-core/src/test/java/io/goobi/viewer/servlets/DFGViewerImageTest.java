@@ -114,4 +114,56 @@ class DFGViewerImageTest extends AbstractTest {
         Mockito.verify(response).sendRedirect(expectedForwardUrl);
     }
 
+    /**
+     * @see DFGViewerImage#doGet(HttpServletRequest, HttpServletResponse)
+     * @verifies return 400 when path info is blank
+     */
+    @Test
+    void doGet_shouldReturn400WhenPathInfoIsBlank() throws ServletException, IOException {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        Mockito.when(request.getPathInfo()).thenReturn(null);
+
+        servlet.doGet(request, response);
+
+        Mockito.verify(response).sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing image path");
+    }
+
+    /**
+     * @see DFGViewerImage#doGet(HttpServletRequest, HttpServletResponse)
+     * @verifies return 400 when path has wrong segment count
+     */
+    @Test
+    void doGet_shouldReturn400WhenPathHasWrongSegmentCount() throws ServletException, IOException {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        Mockito.when(request.getPathInfo()).thenReturn("/only/three/segments");
+
+        servlet.doGet(request, response);
+
+        Mockito.verify(response).sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid image path format");
+    }
+
+    /**
+     * @see DFGViewerImage#doGet(HttpServletRequest, HttpServletResponse)
+     * @verifies normalize traversal segments before processing
+     */
+    @Test
+    void doGet_shouldNormalizeTraversalSegmentsBeforeProcessing() throws ServletException, IOException {
+        // '/../PI/...' has 5 raw segments; without normalization getName(1) = "1574750503285_37"
+        // is treated as widthString → IllegalRequestException → 400, no redirect.
+        // With normalization the path collapses to 4 segments and redirect is correct.
+        String requestUrl = "/../1574750503285_37/800/0/1575272395963.jpg";
+        String expectedForwardUrl = DataManager.getInstance().getConfiguration().getIIIFApiUrl()
+                + "records/1574750503285_37/files/images/1575272395963/full/800,/0/default.jpg";
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        Mockito.when(request.getPathInfo()).thenReturn(requestUrl);
+
+        servlet.doGet(request, response);
+
+        Mockito.verify(response).sendRedirect(expectedForwardUrl);
+    }
+
 }

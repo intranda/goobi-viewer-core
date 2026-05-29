@@ -109,6 +109,13 @@
                                         list="#{annotationBean.lazyModelAnnotations}" />
                                 </div>
 
+                                <!-- PAGE COL -->
+                                <div
+                                    class="col-1 d-flex"
+                                    role="columnheader">
+                                    #{msg.page}
+                                </div>
+
                                 <!-- DATE COL -->
                                 <div class="col-2 d-flex">
                                     <viewerComponent:sortingArrow
@@ -191,12 +198,14 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="col-2 d-flex"
+                                        class="col-2 d-flex align-items-center"
                                         role="gridcell">
-                                        #{annotation.targetPI}
-                                        <h:outputText
-                                            rendered="#{annotation.targetPageOrder != null}"
-                                            value=", #{msg.page} #{annotation.targetPageOrder}" />
+                                        <h:outputText value="#{annotation.targetPI}" />
+                                    </div>
+                                    <div
+                                        class="col-1 d-flex align-items-center"
+                                        role="gridcell">
+                                        <h:outputText value="#{annotation.targetPageOrder}" />
                                     </div>
                                     <div
                                         class="col-2 d-flex"
@@ -277,13 +286,9 @@
                                          });
                                   }
 
-                                  // Create no entries found message
-                        	if($('.admin__table-entry').length == 0) {
-                        		$('.admin__table-content').append('
-                        <br />
-                        <p>#{msg.hitsZero}</p>
-                        ');
-                        	}
+                                  if ($('.admin__table-entry').length === 0) {
+                                      $(document.createElement('p')).addClass('admin__table-empty').text('#{msg.hitsZero}').appendTo('.admin__table-content');
+                                  }
                     </script>
                 </h:form>
             </div>

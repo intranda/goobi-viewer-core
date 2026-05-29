@@ -21,10 +21,15 @@
  */
 package io.goobi.viewer.controller;
 
+import java.util.Locale;
+import java.util.regex.Pattern;
+
 // Added Jsoup imports for the cleanRichText/isCleanRichText implementation (Task 1).
 // Jsoup is encapsulated here — callers must never import org.jsoup.* directly.
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.safety.Safelist;
 
 /**
@@ -55,13 +60,32 @@ import org.jsoup.safety.Safelist;
  *       {@code <br>} injection).</li>
  * </ul>
  *
- * <p>
- * Replaces the regex-based {@link StringTools#stripJS(String)} which only removed {@code
- * <script>} and {@code <svg>} blocks and was bypassable through any other XSS vector
- * (event-handler attributes, {@code javascript:} URIs, etc.).
- * </p>
  */
 public final class HtmlSanitizer {
+
+    /**
+     * Synthetic base URI used when resolving relative hrefs during sanitization. Jsoup's cleaner
+     * resolves every URL attribute against the document base URI before applying the protocol
+     * allowlist; with an empty base, relative URLs resolve to {@code ""} and are then dropped
+     * because the empty string does not match any allowed scheme. Pairing a non-empty base URI
+     * with {@link Safelist#preserveRelativeLinks(boolean)} keeps the original (relative) form
+     * in the output while still letting the protocol filter block {@code javascript:},
+     * {@code data:} and other absolute-URL attacks. The {@code .invalid} TLD is reserved by
+     * RFC 2606 and never collides with real content.
+     */
+    private static final String SANITIZER_BASE_URI = "https://placeholder.invalid/";
+
+    /**
+     * Patterns matching CSS inline-style attack vectors. Matched case-insensitively with
+     * optional whitespace before the delimiter to catch obfuscation like {@code expression (}
+     * or {@code javascript :}. Applied by {@link #sanitizeCssValue(String)}.
+     */
+    private static final Pattern CSS_EXPRESSION = Pattern.compile("expression\\s*\\(", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CSS_JAVASCRIPT = Pattern.compile("javascript\\s*:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CSS_BEHAVIOR = Pattern.compile("behavior\\s*:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CSS_MOZ_BINDING = Pattern.compile("-moz-binding\\s*:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern CSS_URL_DANGEROUS =
+            Pattern.compile("url\\s*\\(\\s*[\"']?\\s*(javascript|data)\\s*:", Pattern.CASE_INSENSITIVE);
 
     private HtmlSanitizer() {
         // Utility class
@@ -94,6 +118,19 @@ public final class HtmlSanitizer {
      * @should preserve table markup
      * @should remove data URI from img src
      * @should preserve newlines without collapsing whitespace
+     * @should preserve root relative anchor href
+     * @should preserve path relative anchor href
+     * @should still remove javascript URI when relative links are preserved
+     * @should preserve class attribute on any element
+     * @should preserve id attribute on any element
+     * @should preserve role attribute on any element
+     * @should preserve aria attributes on any element
+     * @should preserve data attributes on any element
+     * @should preserve bootstrap tab navigation markup
+     * @should still remove onclick when class is allowed
+     * @should preserve inline style attribute from tinymce
+     * @should strip css expression from style attribute
+     * @should strip javascript url from style attribute
      */
     public static String cleanRichText(String input) {
         if (input == null) {
@@ -102,8 +139,10 @@ public final class HtmlSanitizer {
         if (input.isEmpty()) {
             return input;
         }
-        // Use prettyPrint(false) so whitespace and newlines inside elements are not collapsed
-        return Jsoup.clean(input, "", buildRichTextSafelist(),
+        // Use prettyPrint(false) so whitespace and newlines inside elements are not collapsed.
+        // SANITIZER_BASE_URI is required for preserveRelativeLinks(true) to keep relative hrefs
+        // such as "/viewer/image/..." (the placeholder is never written to output).
+        return Jsoup.clean(input, SANITIZER_BASE_URI, buildRichTextSafelist(),
                 new Document.OutputSettings().prettyPrint(false));
     }
 
@@ -120,6 +159,7 @@ public final class HtmlSanitizer {
      * @should return true for empty input
      * @should return true for legitimate markup
      * @should return false for script injection
+     * @should return true for relative anchor href
      */
     public static boolean isCleanRichText(String input) {
         if (input == null || input.isEmpty()) {
@@ -145,6 +185,8 @@ public final class HtmlSanitizer {
      * @should preserve safe anchor tags
      * @should remove javascript URI from anchor href
      * @should preserve plain text line breaks as br tags
+     * @should preserve relative anchor href
+     * @should still remove javascript URI when relative links are preserved
      */
     public static String cleanComment(String input) {
         if (input == null) {
@@ -155,7 +197,9 @@ public final class HtmlSanitizer {
         }
         // Convert plain-text newlines to <br> before sanitization to preserve line breaks,
         // then sanitize using the comment-profile safelist (no images, tables, headings).
-        return Jsoup.clean(preprocessPlainTextNewlines(input), "", buildCommentSafelist(),
+        // SANITIZER_BASE_URI: see field javadoc — required so relative hrefs survive
+        // preserveRelativeLinks(true) without weakening the protocol filter.
+        return Jsoup.clean(preprocessPlainTextNewlines(input), SANITIZER_BASE_URI, buildCommentSafelist(),
                 new Document.OutputSettings().prettyPrint(false));
     }
 
@@ -199,6 +243,89 @@ public final class HtmlSanitizer {
     }
 
     /**
+     * Sanitize fulltext snippets produced by the Solr highlighter for display in search-result
+     * hit boxes. Allows only the {@code <mark>} tag with the single {@code class} attribute,
+     * matching the markup emitted by
+     * {@link io.goobi.viewer.model.search.SearchHelper#replaceHighlightingPlaceholders(String)}
+     * (which produces {@code <mark class="search-list--highlight">…</mark>}). Every other tag
+     * and every other attribute is stripped.
+     *
+     * <p>
+     * If a future highlight emitter introduces additional markup (for example {@code <em>} or
+     * phrase-level wrappers), the allowlist must be extended explicitly — silent acceptance
+     * of new tags is exactly what this profile prevents.
+     * </p>
+     *
+     * @param input raw snippet HTML; may be {@code null}
+     * @return sanitized snippet containing only allowlisted {@code <mark>} markup; {@code null}
+     *         if input was {@code null}
+     * @should return null when input is null
+     * @should return empty string when input is empty
+     * @should preserve mark tag with class attribute
+     * @should strip script tags
+     * @should strip event handler attributes on mark tag
+     * @should strip anchor tags entirely
+     * @should strip img tags with onerror payload
+     * @should strip em tag
+     */
+    public static String cleanFulltextSnippet(String input) {
+        if (input == null) {
+            return null;
+        }
+        if (input.isEmpty()) {
+            return input;
+        }
+        // Empty base URI is fine here — no URL-bearing attribute is allowed, so there is
+        // nothing for Jsoup to resolve. prettyPrint(false) keeps whitespace untouched so
+        // the caller's downstream "\n -> space" replacement still works deterministically.
+        return Jsoup.clean(input, "", buildFulltextSnippetSafelist(),
+                new Document.OutputSettings().prettyPrint(false));
+    }
+
+    /**
+     * Sanitize page-level fulltext output produced by the ALTO reading pipeline (see
+     * {@link io.goobi.viewer.controller.ALTOTools#getFulltext(String, String, boolean)} and the
+     * {@code NamedEntityEnricher} it pipes through). Allows only the {@code <button>} tag with
+     * the exact attribute set that {@code NamedEntityEnricher.CONTENT_TEMPLATE} emits:
+     * {@code class}, {@code type}, and the four
+     * {@code data-entity-id|data-entity-type|data-entity-authority-data-uri|data-entity-authority-data-search}
+     * attributes. No {@code href}, no other URL-bearing attribute, no other tag.
+     *
+     * <p>
+     * Used for the ALTO branch of {@code PhysicalElement.getFullText()}. The plain-fulltext
+     * branch (server-trusted indexer-pipeline content such as the KHI theme files) is
+     * deliberately not sanitized — see the audit memory entry for HIGH 5.
+     * </p>
+     *
+     * @param input raw fulltext HTML from the ALTO pipeline; may be {@code null}
+     * @return sanitized HTML containing only allowlisted {@code <button>} markup; {@code null}
+     *         if input was {@code null}
+     * @should return null when input is null
+     * @should return empty string when input is empty
+     * @should preserve full NamedEntityEnricher button markup
+     * @should strip script tags
+     * @should strip onclick attribute on button
+     * @should strip mark tag
+     * @should strip anchor tag
+     * @should strip unknown data attribute on button
+     * @should preserve plain text content alongside button
+     */
+    public static String cleanFulltextWithNamedEntities(String input) {
+        if (input == null) {
+            return null;
+        }
+        if (input.isEmpty()) {
+            return input;
+        }
+        // Empty base URI: no URL-bearing attribute is allowed (data-entity-authority-data-uri
+        // and data-entity-authority-data-search are data-* attributes, not URL attributes as
+        // far as Jsoup's protocol filter is concerned). prettyPrint(false) keeps the
+        // structural whitespace produced by AltoTextReader (page/block/line separators) intact.
+        return Jsoup.clean(input, "", buildFulltextWithNamedEntitiesSafelist(),
+                new Document.OutputSettings().prettyPrint(false));
+    }
+
+    /**
      * Validate whether the given input would survive {@link #cleanComment(String)} unchanged.
      * Plain-text line breaks are first converted to {@code <br>} (matching the sanitize path)
      * so a multi-line plain-text comment is considered clean.
@@ -210,6 +337,7 @@ public final class HtmlSanitizer {
      * @should return true for plain text with newlines
      * @should return false for script injection
      * @should return false for img tag in comment
+     * @should return true for relative anchor href
      */
     public static boolean isCleanComment(String input) {
         if (input == null || input.isEmpty()) {
@@ -229,10 +357,78 @@ public final class HtmlSanitizer {
         // Safelist.relaxed() already permits a/href with http, https, ftp, mailto. We add:
         //   - figure/figcaption: TinyMCE default markup for captioned images
         //   - target, rel on a: required for target="_blank" rel="noopener" patterns
-        // We intentionally do NOT add data: scheme — would allow data:image/svg+xml XSS.
-        return Safelist.relaxed()
+        //   - class/id/role globally on every tag: required for CSS hooks, in-page anchor
+        //     targets (#fragment links to id="..."), and ARIA roles. None of these are
+        //     attributes Jsoup interprets as URLs, so the protocol allowlist is unaffected.
+        //   - aria-*/data-* via the isSafeAttribute override below: these are open-ended
+        //     attribute families that Jsoup's static enumeration cannot express. Required
+        //     for CMS markup that uses Bootstrap-style data-toggle/data-target hooks and
+        //     ARIA controls (aria-controls, aria-expanded, ...). aria-* carries only
+        //     accessibility semantics; data-* is an HTML5 storage hook that is not a
+        //     URL attribute, so neither widens the XSS attack surface.
+        //   - style via the isSafeAttribute override below: TinyMCE emits inline styles for
+        //     font-size, color, text-align, etc. Jsoup does not sanitize CSS, so we sanitize
+        //     the value ourselves via sanitizeCssValue() before allowing the attribute.
+        //   - preserveRelativeLinks(true): keep CMS-internal hrefs like "/viewer/image/..."
+        //     intact. Without this, Jsoup resolves relative hrefs against the (empty) baseUri
+        //     to "" and the protocol allowlist then drops them, leaving anchors stripped of
+        //     their href. The protocol allowlist still applies to absolute URIs, so
+        //     javascript: / data: stay blocked.
+        // We intentionally do NOT add the data: scheme on src/href — would allow
+        // data:image/svg+xml XSS.
+        Safelist safelist = new Safelist(Safelist.relaxed()) {
+            @Override
+            public boolean isSafeAttribute(String tagName, Element el, Attribute attr) {
+                String key = attr.getKey().toLowerCase(Locale.ROOT);
+                // Open-ended ARIA and data-* attribute families — see rationale above.
+                if (key.startsWith("aria-") || key.startsWith("data-")) {
+                    return true;
+                }
+                // Inline styles from TinyMCE (font-size, color, text-align, …): sanitize the
+                // CSS value in place to strip expression()/javascript:/behavior: attack vectors,
+                // then allow the attribute. Modifying attr.setValue() here is reflected in the
+                // Jsoup cleaner output because the cleaner uses the same Attribute object.
+                if ("style".equals(key)) {
+                    attr.setValue(sanitizeCssValue(attr.getValue()));
+                    return true;
+                }
+                return super.isSafeAttribute(tagName, el, attr);
+            }
+        };
+        return safelist
                 .addTags("figure", "figcaption")
-                .addAttributes("a", "target", "rel");
+                .addAttributes("a", "target", "rel")
+                .addAttributes(":all", "class", "id", "role")
+                .preserveRelativeLinks(true);
+    }
+
+    /**
+     * Strip known CSS inline-style XSS attack vectors from a single {@code style} attribute
+     * value. Removes IE CSS {@code expression()}, {@code behavior:}, Firefox {@code -moz-binding:},
+     * and {@code url(javascript:)} / {@code url(data:)} patterns. Safe formatting properties
+     * such as {@code font-size}, {@code color}, and {@code text-align} are passed through
+     * unchanged.
+     *
+     * @param cssValue raw value of a {@code style} attribute; may be {@code null}
+     * @return sanitized CSS value; empty string if input was {@code null}
+     * @should return empty string for null input
+     * @should preserve safe font size value
+     * @should strip expression attack
+     * @should strip behavior attack
+     * @should strip moz binding attack
+     * @should strip javascript url in css
+     */
+    static String sanitizeCssValue(String cssValue) {
+        if (cssValue == null) {
+            return "";
+        }
+        String result = cssValue;
+        result = CSS_EXPRESSION.matcher(result).replaceAll("");
+        result = CSS_JAVASCRIPT.matcher(result).replaceAll("");
+        result = CSS_BEHAVIOR.matcher(result).replaceAll("");
+        result = CSS_MOZ_BINDING.matcher(result).replaceAll("");
+        result = CSS_URL_DANGEROUS.matcher(result).replaceAll("url(about:");
+        return result;
     }
 
     /**
@@ -253,10 +449,54 @@ public final class HtmlSanitizer {
      * </p>
      */
     private static Safelist buildCommentSafelist() {
+        // preserveRelativeLinks(true): same rationale as in buildRichTextSafelist() —
+        // viewer-internal links in comments must survive sanitization; the protocol allowlist
+        // continues to block javascript:/data: because those are absolute URIs with a scheme.
         return new Safelist()
                 .addTags("p", "br", "b", "i", "em", "strong", "u", "span", "a")
                 .addAttributes("a", "href", "title", "target", "rel")
-                .addProtocols("a", "href", "http", "https", "mailto");
+                .addProtocols("a", "href", "http", "https", "mailto")
+                .preserveRelativeLinks(true);
+    }
+
+    /**
+     * Build a fresh {@code Safelist} for the fulltext-snippet profile. Returned per call
+     * (defensive copy) — see rationale on {@link #buildRichTextSafelist()}.
+     *
+     * <p>
+     * Deny-by-default. The only legitimate markup in a Solr-highlight snippet is the
+     * {@code <mark class="search-list--highlight">} wrapper injected by
+     * {@code SearchHelper.replaceHighlightingPlaceholders}. {@code class} is scoped to
+     * {@code <mark>} only so attribute pollution on hypothetical other tags cannot
+     * smuggle in CSS hooks.
+     * </p>
+     */
+    private static Safelist buildFulltextSnippetSafelist() {
+        return new Safelist()
+                .addTags("mark")
+                .addAttributes("mark", "class");
+    }
+
+    /**
+     * Build a fresh {@code Safelist} for the fulltext-with-named-entities profile. Returned
+     * per call (defensive copy) — see rationale on {@link #buildRichTextSafelist()}.
+     *
+     * <p>
+     * Deny-by-default. Only {@code <button>} survives, and only with the six attributes
+     * emitted by {@code NamedEntityEnricher.CONTENT_TEMPLATE}. Any other attribute
+     * ({@code formaction}, {@code onclick}, unknown {@code data-*}, …) is dropped.
+     * </p>
+     */
+    private static Safelist buildFulltextWithNamedEntitiesSafelist() {
+        return new Safelist()
+                .addTags("button")
+                .addAttributes("button",
+                        "class",
+                        "type",
+                        "data-entity-id",
+                        "data-entity-type",
+                        "data-entity-authority-data-uri",
+                        "data-entity-authority-data-search");
     }
 
     /**

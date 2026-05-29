@@ -76,6 +76,22 @@ import io.goobi.viewer.model.xml.XMLError;
 
 /**
  * JSF backing bean for the admin configuration editor, allowing administrators to view and modify the viewer config file.
+ *
+ * <p>
+ * <b>Symlink note:</b> the configuration directory ({@code /opt/digiverso/viewer/config/}) legitimately contains symbolic
+ * links to files that live outside the viewer's own filesystem tree:
+ * </p>
+ * <ul>
+ *   <li>{@code config_indexer.xml} &rarr; {@code /opt/digiverso/indexer/config_indexer.xml}</li>
+ *   <li>{@code robots.txt} &rarr; {@code /var/www/robots.txt}</li>
+ * </ul>
+ * <p>
+ * These symlinks are intentional and must keep working. Any future migration of this bean's {@link java.nio.file.Files}
+ * calls to symlink-rejecting helpers (see {@code FileTools.copyRejectingSymlinks} / {@code openRejectingSymlinks} /
+ * {@code moveRejectingSymlinks} / {@code newBufferedWriterRejectingSymlinks}) must therefore introduce a path-allowlist
+ * for these two files (or the entire config directory) — applying strict-reject here unconditionally would break the
+ * config editor's read/write of the indexer config and the robots file.
+ * </p>
  */
 @Named
 @SessionScoped

@@ -1,231 +1,124 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:util="http://goobi.io/util"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:jsf="http://xmlns.jcp.org/jsf"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-	xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-	xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
-	<ui:param name="browseElement"
-		value="#{browseElement != null ? browseElement : null}" />
-	<ui:param name="showBookmarkIcon"
-		value="#{showBookmarkIcon != null ? showBookmarkIcon : false}" />
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    <ui:param
+        name="browseElement"
+        value="#{browseElement != null ? browseElement : null}" />
+    <ui:param
+        name="showBookmarkIcon"
+        value="#{showBookmarkIcon != null ? showBookmarkIcon : false}" />
 
-	<div class="search-list__hit-inner-structure">
+    <div class="search-list__hit-inner-structure">
+        <!-- ALL CONTENT/VALUES WRAPPER -->
+        <div class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+            <!-- TITLE -->
+            <div
+                class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'} #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+                <!-- Display search hit number -->
+                <h3>
+                    <a
+                        class="search-list__hit-title-link"
+                        href="#{navigationHelper.applicationUrl}#{browseElement.url}"
+                        title="#{msg[browseElement.label]}">
+                        <h:panelGroup
+                            styleClass="search-list__hit-number-wrapper"
+                            rendered="#{configurationBean.displaySearchHitNumbers}">
+                            <span
+                                title="#{hit.hitNumber}"
+                                class="search-list__hit-number">
+                                #{hit.hitNumber}
+                            </span>
+                        </h:panelGroup>
+                        <h:outputText
+                            value="#{msg[browseElement.labelShort]}"
+                            escape="false" />
+                    </a>
+                </h3>
+            </div>
 
-		<div class="search-list__hit-thumb-wrapper">
-			<!-- THUMBNAIL -->
-			<ui:include
-				src="/resources/includes/search/browseElementThumbnail.xhtml">
-				<ui:param name="browseElement" value="#{browseElement}" />
-			</ui:include>
+            <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
+            <h:panelGroup
+                rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
+                <div class="search-list__hit-docstruct">
+                    <ul>
+                        <ui:repeat
+                            value="#{browseElement.structElements}"
+                            varStatus="stat"
+                            var="struct">
+                            <li>
+                                <ui:fragment rendered="#{struct.sourceDocFormat != 'CMS'}">
+                                    <a
+                                        href="#{struct.url}"
+                                        aria-label="#{msg[struct.docStructType]}">
+                                        <h:outputText value="#{msg[struct.docStructType]}" />
+                                    </a>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">
+                                    <h:outputText
+                                        value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
+                                </ui:fragment>
+                            </li>
+                        </ui:repeat>
+                    </ul>
+                </div>
+            </h:panelGroup>
 
-		</div>
+            <h:panelGroup rendered="#{browseElement.displayGroupStatus}">
+                <div class="search-list__hit-docstruct">
+                    <h:outputText value="#{msg['doctype_'.concat(browseElement.docType)]}" />
+                </div>
+            </h:panelGroup>
 
-		<!-- ALL CONTENT/VALUES WRAPPER -->
-		<div
-			class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-
-			<!-- TOP WRAPPER -->
-			<div class="search-list__hit-top-wrapper">
-				<!-- TITLE -->
-				<div
-					class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'} #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-					<!-- Display search hit number -->
-					<h3>
-						<a class="search-list__hit-title-link"
-							href="#{navigationHelper.applicationUrl}#{browseElement.url}"
-							title="#{msg[browseElement.label]}"> <h:panelGroup
-								styleClass="search-list__hit-number-wrapper"
-								rendered="#{configurationBean.displaySearchHitNumbers}">
-								<span title="#{hit.hitNumber}" class="search-list__hit-number">
-									#{hit.hitNumber} </span>
-							</h:panelGroup> <h:outputText value="#{msg[browseElement.labelShort]}"
-								escape="false" />
-						</a>
-					</h3>
-				</div>
-				<div class="search-list__hit-options-wrapper">
-					<!-- ADD TO BOOKMARKS BUTTON (ICON) -->
-					<ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
-						<!-- 	                <div class="search-list__thumb-bookmark-wrapper"> -->
-						<button type="button"
-							class="btn btn--icon search-list__thumb-bookmark
-							search-list__hit-options-button bookmark-toggle__button
-							search-list__hit-options-button-bookmark"
-
-							data-pi="#{browseElement.pi}"
-							aria-label="#{msg.bookmarkList_addToBookmarkList}"
-							role="switch"
-							aria-checked="false"
-							data-target="bookmarkToggle"
-							data-bookmark-list-type="add"
-							data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-							data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
-							title="#{msg.bookmarkList_addToBookmarkList}"
-							data-toggle="tooltip">
-							<span class="bookmark-toggle">
-								<util:icon icon="bookmark"
-									styleClass="bookmark-toggle__icon bookmark-toggle__icon--outline" />
-								<util:icon icon="bookmark" filled="true"
-									styleClass="bookmark-toggle__icon bookmark-toggle__icon--filled" />
-							</span>
-						</button>
-						<!-- 	                </div> -->
-					</ui:fragment>
-
-					<!-- DOWNLOAD PDF BUTTON -->
-					<ui:fragment rendered="#{browseElement.downloadPdfAllowed}">
-
-						<!-- Direct download — pre-rendered PDFs exist: show small + full links -->
-						<ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue and browseElement.hasPrerenderedPagePdfs}">
-							<a href="#{browseElement.pdfDownloadLinkSmall}"
-								class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
-								data-toggle="tooltip" data-placement="top"
-								title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
-								aria-label="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
-								target="_blank"
-								rel="nofollow noopener">
-								<util:icon icon="download" />
-							</a>
-							<a href="#{browseElement.pdfDownloadLinkFull}"
-								class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
-								data-toggle="tooltip" data-placement="top"
-								title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
-								aria-label="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
-								target="_blank"
-								rel="nofollow noopener">
-								<util:icon icon="download" />
-							</a>
-						</ui:fragment>
-
-						<!-- Direct download — no pre-rendered PDFs: single link -->
-						<ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue and !browseElement.hasPrerenderedPagePdfs}">
-							<a href="#{browseElement.pdfDownloadLink}"
-								class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
-								data-toggle="tooltip" data-placement="top"
-								title="#{msg.action__search_hit_download_pdf}"
-								aria-label="#{msg.action__search_hit_download_pdf}"
-								target="_blank"
-								rel="nofollow noopener">
-								<util:icon icon="download" />
-							</a>
-						</ui:fragment>
-
-						<!-- Message queue mode — stub, wired up later -->
-						<ui:fragment rendered="#{configurationBean.generatePdfInMessageQueue}">
-							<a type="button"
-								class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
-								data-toggle="tooltip" data-placement="top"
-								title="#{msg.action__search_hit_download_pdf}"
-								aria-label="#{msg.action__search_hit_download_pdf}">
-								<util:icon icon="download" />
-							</a>
-						</ui:fragment>
-
-					</ui:fragment>
-
-
-					<!-- COPY LINK TO CLIPBOARD BUTTON -->
-					<button type="button"
-						class="btn btn--icon search-list__hit-options-button
-						search-list__hit-options-button-clipboard"
-						data-copy-value="#{navigationHelper.applicationUrl}#{browseElement.url}"
-						data-toggle="tooltip" data-placement="top"
-						title="#{msg.action__search_hit_copy_link}"
-						aria-label="#{msg.action__search_hit_copy_link}">
-						<util:icon icon="link" />
-					</button>
-
-					<!-- CITATION RECOMMENDATION BUTTON -->
-					<ui:fragment rendered="#{not empty browseElement.citationStringPlain}">
-						<button type="button"
-							class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-citation"
-							data-copy-value="#{browseElement.citationStringPlain}"
-							data-toggle="tooltip" data-placement="top"
-							title="#{msg.action__search_hit_cite}"
-							aria-label="#{msg.action__search_hit_cite}">
-							<util:icon icon="quote" />
-						</button>
-					</ui:fragment>
-
-					<!-- EXPORT FILE FORMAT DROPDOWN/BUTTON -->
-					<div class="dropdown">
-						<button type="button"
-							class="btn btn--icon search-list__hit-options-button
-							search-list__hit-export-dropdown-toggle dropdown-toggle"
-							data-toggle="dropdown"
-							aria-haspopup="true"
-							aria-expanded="false"
-							title="#{msg.action__search_hit_export}"
-							aria-label="#{msg.action__search_hit_export}">
-							<util:icon icon="file-export" />
-						</button>
-						<div class="dropdown-menu dropdown-menu-right">
-						<h6 class="dropdown-header">Export record data</h6>
-							<ui:repeat var="exportFormat" value="#{configurationBean.enabledSearchExportFormats}">
-								<a class="dropdown-item"
-									href="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}?query=PI:&quot;#{browseElement.pi}&quot;"
-									target="_blank">
-									#{msg['search_export_'.concat(exportFormat.name)]}
-								</a>
-							</ui:repeat>
-						</div> 
-					</div>
-					<!-- TOGGLE TOOLTIP ON EXPORT BUTTON BY JS -->
-					<script>
-						$('.search-list__hit-export-dropdown-toggle').tooltip({
-							placement: 'top',
-							trigger: 'hover'
-						});
-					</script>
-
-
-				</div>
-			</div>
-
-			<!-- COPY TO CLIPBOARD INIT FOR THIS ELEMENT -->
-			<script>
-				viewerJS.clipboard.init(null, null, '#{msg.copied_to_clipboard}');
-			</script>
-
-
-
-			<!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
-			<h:panelGroup
-				rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
-				<div class="search-list__hit-docstruct">
-					<ul>
-						<ui:repeat value="#{browseElement.structElements}"
-							varStatus="stat" var="struct">
-							<li><ui:fragment
-									rendered="#{struct.sourceDocFormat != 'CMS'}">
-									<a href="#{struct.url}"
-										aria-label="#{msg[struct.docStructType]}"> <h:outputText
-											value="#{msg[struct.docStructType]}" />
-									</a>
-								</ui:fragment> <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">
-									<h:outputText
-										value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
-								</ui:fragment></li>
-						</ui:repeat>
-					</ul>
-				</div>
-			</h:panelGroup>
-
-			<h:panelGroup rendered="#{browseElement.displayGroupStatus}">
-				<div class="search-list__hit-docstruct">
-					<h:outputText
-						value="#{msg['doctype_'.concat(browseElement.docType)]}" />
-				</div>
-			</h:panelGroup>
-
-			<ui:include
-				src="/resources/includes/search/browseElementMetadata.xhtml">
-				<ui:param name="browseElement" value="#{browseElement}" />
-			</ui:include>
-		</div>
-	</div>
+            <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
+                <ui:param
+                    name="browseElement"
+                    value="#{browseElement}" />
+            </ui:include>
+        </div>
+        <div class="search-list__thumb-wrapper">
+            <!-- THUMBNAIL -->
+            <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
+                <ui:param
+                    name="browseElement"
+                    value="#{browseElement}" />
+            </ui:include>
+            <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
+            <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
+                <div class="search-list__thumb-bookmark-wrapper">
+                    <button
+                        type="button"
+                        class="btn btn--icon search-list__thumb-bookmark bookmark-toggle__button"
+                        data-bookmark-list-type="add"
+                        data-pi="#{browseElement.pi}"
+                        aria-label="#{msg.bookmarkList_addToBookmarkList}"
+                        role="switch"
+                        aria-checked="false">
+                        <span
+                            class="bookmark-toggle"
+                            data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+                            data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+                            data-toggle="tooltip">
+                            <util:icon
+                                icon="bookmark"
+                                svgClass="icon icon-lg"
+                                styleClass="bookmark-toggle__icon bookmark-toggle__icon--outline" />
+                            <util:icon
+                                icon="bookmark"
+                                filled="true"
+                                svgClass="icon icon-lg"
+                                styleClass="bookmark-toggle__icon bookmark-toggle__icon--filled" />
+                        </span>
+                    </button>
+                </div>
+            </ui:fragment>
+        </div>
+    </div>
 </ui:composition>

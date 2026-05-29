@@ -51,6 +51,8 @@ import de.unigoettingen.sub.commons.util.MimeType;
 import de.unigoettingen.sub.commons.util.MimeType.UnknownMimeTypeException;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.files.ZipUnpacker;
 import io.goobi.viewer.exceptions.ArchiveSizeExceededException;
 import io.goobi.viewer.model.security.encryption.Decrypter;
@@ -58,8 +60,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.core.Response.Status;
 
 /**
- * Downloads files or ZIP archives from remote URIs to a local target directory, with optional decryption and progress tracking.
- * Supports plain files as well as ZIP archives that are automatically extracted after download.
+ * Downloads files or ZIP archives from remote URIs to a local target directory, with optional decryption and progress tracking. Supports plain files
+ * as well as ZIP archives that are automatically extracted after download.
  */
 public class ExternalFilesDownloader {
 
@@ -84,17 +86,23 @@ public class ExternalFilesDownloader {
         return downloadExternalFiles(downloadUri, getHeader(urlTemplate));
     }
 
+    /**
+     * @should download and extract zip file
+     * @should throw IOException for file scheme URI
+     * @should throw IOException for private network address
+     */
     public Path downloadExternalFiles(URI uri, Map<String, String> httpHeader) throws IOException {
-        logger.trace("download from url {}", uri);
-        switch (uri.getScheme()) {
-            case "http", "https":
-                return downloadHttpResource(uri, httpHeader);
-            case "file":
-                return downloadFileResource(uri);
-            default:
-                throw new IllegalArgumentException("Cannot download from " + uri + ": No download implementation for scheme " + uri.getScheme());
+        String scheme = uri.getScheme();
+        if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+            throw new IOException("Download rejected: scheme '" + scheme + "' is not allowed for " + uri);
         }
-
+        try {
+            NetTools.validateOutboundUrl(uri.toString());
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Download rejected: " + e.getMessage());
+        }
+        logger.trace("download from url {}", uri);
+        return downloadHttpResource(uri, httpHeader);
     }
 
     public static boolean resourceExists(String url, String urlTemplate) {
@@ -106,20 +114,28 @@ public class ExternalFilesDownloader {
         }
     }
 
+    /**
+     * @should return false for file scheme URI
+     * @should return false for private network address
+     */
     public static boolean resourceExists(URI uri, Map<String, String> httpHeader) {
+        String scheme = uri.getScheme();
+        if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
+            logger.warn("Scheme '{}' is not supported for resource check of {}", scheme, uri);
+            return false;
+        }
+        try {
+            NetTools.validateOutboundUrl(uri.toString());
+        } catch (IllegalArgumentException e) {
+            logger.warn("SSRF check rejected URL {}: {}", uri, e.getMessage());
+            return false;
+        }
         logger.trace("checking url {}", uri);
-        switch (uri.getScheme()) {
-            case "http", "https":
-                try {
-                    return checkHttpResource(uri, httpHeader);
-                } catch (IOException e) {
-                    logger.debug("Checking http resource {} resulted in IOException {}", uri, e.toString());
-                    return false;
-                }
-            case "file":
-                return checkFileResource(uri);
-            default:
-                throw new IllegalArgumentException("Cannot check " + uri + ": No implementation for scheme " + uri.getScheme());
+        try {
+            return checkHttpResource(uri, httpHeader);
+        } catch (IOException e) {
+            logger.debug("Checking http resource {} resulted in IOException {}", uri, e.toString());
+            return false;
         }
     }
 
@@ -130,7 +146,7 @@ public class ExternalFilesDownloader {
     }
 
     private static boolean checkHttpResource(URI uri, Map<String, String> httpHeader) throws IOException {
-        try (final CloseableHttpClient client = createHttpClient()) {
+        try (final CloseableHttpClient client = NetTools.buildHttpClientForUrl(uri.toString(), null)) {
             try (final CloseableHttpResponse response = createHttpHeadResponse(client, uri, httpHeader)) {
                 return Status.OK.getStatusCode() == response.getStatusLine().getStatusCode();
             }
@@ -146,7 +162,7 @@ public class ExternalFilesDownloader {
         Path sourcePath = PathConverter.getPath(uri);
         if (Files.exists(sourcePath)) {
             Path target = this.destinationFolder.resolve(sourcePath.getFileName());
-            try (InputStream in = Files.newInputStream(sourcePath)) {
+            try (InputStream in = FileTools.openRejectingSymlinks(sourcePath)) {
                 return extractContentToPath(target, in, Files.probeContentType(sourcePath), Files.size(sourcePath));
             } catch (ArchiveSizeExceededException e) {
                 throw new IOException(
@@ -157,7 +173,7 @@ public class ExternalFilesDownloader {
     }
 
     public Path downloadHttpResource(URI uri, Map<String, String> httpHeader) throws IOException {
-        final CloseableHttpClient client = createHttpClient();
+        final CloseableHttpClient client = NetTools.buildHttpClientForUrl(uri.toString(), null);
         final CloseableHttpResponse response = createHttpGetResponse(client, uri, httpHeader);
         final int statusCode = response.getStatusLine().getStatusCode();
         switch (statusCode) {
@@ -201,7 +217,7 @@ public class ExternalFilesDownloader {
 
     private static Path writeFile(Path entryFile, InputStream zis) throws IOException {
         Files.deleteIfExists(entryFile);
-        Files.copy(zis, entryFile);
+        FileTools.copyRejectingSymlinks(zis, entryFile);
         return entryFile;
     }
 
@@ -211,7 +227,7 @@ public class ExternalFilesDownloader {
         if (StringUtils.isNotBlank(dispositionHeader) && dispositionHeader.contains("filename=")) {
             Matcher matcher = Pattern.compile("filename=(.+?)(;|$)").matcher(dispositionHeader);
             if (matcher.find() && StringUtils.isNotBlank(matcher.group(1))) {
-                filename = matcher.group(1);
+                filename = Path.of(matcher.group(1)).getFileName().toString();
             }
         }
         if (FilenameUtils.indexOfExtension(filename) < filename.length() - 6) {

@@ -19,35 +19,36 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.export;
+package io.goobi.viewer.model.files.external;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Path;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-class ExportFormatTest {
+class ExternalFilesDownloaderSchemeTest {
 
+    /**
+     * @verifies throw IOException for file scheme URI
+     */
     @Test
-    void constructor_shouldSetAllFields() {
-        ExportFormat format = new ExportFormat("bibtex", true, "solr2bibtex.xsl", "text/plain", "bib");
-        assertEquals("bibtex", format.getName());
-        assertTrue(format.isEnabled());
-        assertEquals("solr2bibtex.xsl", format.getXslt());
-        assertEquals("text/plain", format.getContentType());
-        assertEquals("bib", format.getFileExtension());
+    void downloadExternalFiles_shouldThrowIOExceptionForFileSchemeUri(@TempDir Path downloadFolder) {
+        ExternalFilesDownloader downloader = new ExternalFilesDownloader(downloadFolder, progress -> {});
+        assertThrows(IOException.class, () -> downloader.downloadExternalFiles(URI.create("file:///etc/passwd"), Map.of()));
     }
 
+    /**
+     * @verifies return false for file scheme URI
+     */
     @Test
-    void constructor_shouldHandleDisabledFormat() {
-        ExportFormat format = new ExportFormat("disabled", false, "test.xsl", "text/plain", "txt");
-        assertFalse(format.isEnabled());
+    void resourceExists_shouldReturnFalseForFileSchemeUri() {
+        assertFalse(ExternalFilesDownloader.resourceExists(URI.create("file:///etc/passwd"), Map.of()));
     }
 
-    @Test
-    void toString_shouldContainName() {
-        ExportFormat format = new ExportFormat("endnote", true, "solr2endnote.xsl", "application/xml", "xml");
-        assertTrue(format.toString().contains("endnote"));
-    }
 }

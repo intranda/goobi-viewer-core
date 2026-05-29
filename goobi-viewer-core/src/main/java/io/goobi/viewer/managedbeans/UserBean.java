@@ -32,7 +32,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimerTask;
-import java.util.UUID;
+import java.security.SecureRandom;
+import java.util.HexFormat;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -83,18 +84,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 /**
- * JSF session-scoped backing bean responsible for user authentication, registration, and account
- * management. Holds the currently logged-in {@link io.goobi.viewer.model.security.user.User}
- * and mediates login/logout across local and OpenID Connect providers.
+ * JSF session-scoped backing bean responsible for user authentication, registration, and account management. Holds the currently logged-in
+ * {@link io.goobi.viewer.model.security.user.User} and mediates login/logout across local and OpenID Connect providers.
  *
- * <p><b>Lifecycle:</b> Created once per HTTP session; destroyed when the session expires or the
- * user explicitly logs out. Sensitive credential fields ({@code password}, {@code passwordOne},
- * {@code passwordTwo}) are declared {@code transient} and are therefore not included in session
+ * <p>
+ * <b>Lifecycle:</b> Created once per HTTP session; destroyed when the session expires or the user explicitly logs out. Sensitive credential fields
+ * ({@code password}, {@code passwordOne}, {@code passwordTwo}) are declared {@code transient} and are therefore not included in session
  * serialisation.
  *
- * <p><b>Thread safety:</b> Mostly confined to the JSF request thread. The
- * {@code getAuthenticationProviders()} method is {@code synchronized} to prevent concurrent
- * lazy initialisation of the provider list.
+ * <p>
+ * <b>Thread safety:</b> Mostly confined to the JSF request thread. The {@code getAuthenticationProviders()} method is {@code synchronized} to prevent
+ * concurrent lazy initialisation of the provider list.
  */
 @Named
 @SessionScoped
@@ -103,6 +103,7 @@ public class UserBean implements Serializable {
     private static final long serialVersionUID = 5917173704087714181L;
 
     private static final Logger logger = LogManager.getLogger(UserBean.class);
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Inject
     private CaptchaBean captchaBean;
@@ -362,6 +363,7 @@ public class UserBean implements Serializable {
      * @param provider Authentication provider that performed the login
      * @param result Result object containing user and request/response data
      * @throws IllegalStateException
+     * @should rotate session id after successful login
      */
     private void completeLogin(IAuthenticationProvider provider, LoginResult result) {
         logger.debug("completeLogin: {}", this);
@@ -401,6 +403,30 @@ public class UserBean implements Serializable {
                     }
 
                     BeanUtils.wipeSessionAttributes(session);
+
+                    // Mitigate session fixation: rotate JSESSIONID after
+                    // successful authentication (OWASP A07:2021).
+                    // changeSessionId() preserves the HttpSession instance
+                    // and all attributes.
+                    HttpSession currentSession =
+                            request != null
+                                    ? request.getSession(false)
+                                    : null;
+                    if (currentSession != null) {
+                        try {
+                            String oldId = currentSession.getId();
+                            String newId = request.changeSessionId();
+                            logger.debug(
+                                    "Rotated session id after login:"
+                                            + " {} -> {}",
+                                    oldId, newId);
+                        } catch (IllegalStateException e) {
+                            logger.debug(
+                                    "changeSessionId failed: {}",
+                                    e.getMessage());
+                        }
+                    }
+
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
                     u.setLastLogin(LocalDateTime.now());
@@ -605,7 +631,7 @@ public class UserBean implements Serializable {
         if (StringUtils.isNotEmpty(user.getEmail())) {
             // Generate and save the activation key, if not yet set
             if (user.getActivationKey() == null) {
-                user.setActivationKey(StringTools.generateHash(UUID.randomUUID() + String.valueOf(System.currentTimeMillis())));
+                user.setActivationKey(StringTools.generateRandomToken(24));
             }
 
             // Generate e-mail text
@@ -656,7 +682,9 @@ public class UserBean implements Serializable {
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (u != null && !u.isOpenIdUser()) {
             if (u.isActive()) {
-                u.setActivationKey(StringTools.generateHash(String.valueOf(System.currentTimeMillis())));
+                byte[] tokenBytes = new byte[32];
+                SECURE_RANDOM.nextBytes(tokenBytes);
+                u.setActivationKey(HexFormat.of().formatHex(tokenBytes));
                 String requesterIp = "???";
                 if (FacesContext.getCurrentInstance().getExternalContext() != null
                         && FacesContext.getCurrentInstance().getExternalContext().getRequest() != null) {
@@ -709,7 +737,9 @@ public class UserBean implements Serializable {
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (u != null && u.isActive() && !u.isOpenIdUser()) {
             if (StringUtils.isNotEmpty(activationKey) && activationKey.equals(u.getActivationKey())) {
-                String newPassword = StringTools.generateHash(String.valueOf(System.currentTimeMillis())).substring(0, 8);
+                byte[] pwBytes = new byte[7];
+                SECURE_RANDOM.nextBytes(pwBytes);
+                String newPassword = HexFormat.of().formatHex(pwBytes);
                 u.setNewPassword(newPassword);
                 u.setActivationKey(null);
                 try {
@@ -717,6 +747,8 @@ public class UserBean implements Serializable {
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
                             && DataManager.getInstance().getDao().updateUser(u)) {
+                        DataManager.getInstance().getDao().deleteAllUserTokensForUser(u);
+                        logger.info("Revoked all bearer tokens for user {} due to password reset", u.getEmail());
                         email = null;
                         Messages.info("user_retrieveAccountPasswordResetMessage");
                         return "user?faces-redirect=true";
@@ -1043,12 +1075,10 @@ public class UserBean implements Serializable {
         }
     }
 
-    
     public String getOrigin() {
         return origin;
     }
 
-    
     public void setOrigin(String origin) {
         logger.debug("setOrigin: {}", origin);
         this.origin = origin;

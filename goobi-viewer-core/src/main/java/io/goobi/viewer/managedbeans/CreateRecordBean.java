@@ -40,6 +40,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.LicenseDescription;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
@@ -202,7 +203,7 @@ public class CreateRecordBean implements Serializable {
                 addFiles(writer, tempImagesFolder);
             }
             Path hotfolder = Paths.get(DataManager.getInstance().getConfiguration().getHotfolder());
-            Files.move(tempImagesFolder, hotfolder.resolve(tempImagesFolder.getFileName()));
+            FileTools.moveRejectingSymlinks(tempImagesFolder, hotfolder.resolve(tempImagesFolder.getFileName()));
             writer.write(hotfolder);
             Messages.info(ViewerResourceBundle.getTranslationWithParameters("admin__create_record__write_record__success", null, true,
                     writer.getMetadataValue("identifier")));
@@ -223,6 +224,11 @@ public class CreateRecordBean implements Serializable {
      * @throws IOException
      */
     private static void addFiles(DCRecordWriter writer, Path mediaFolder) throws IOException {
+        // Strict-reject: if a deployment mounts media folders via symlinks, this will fail
+        // and is to be addressed via config whitelist follow-up.
+        if (Files.isSymbolicLink(mediaFolder)) {
+            throw new IOException("Refusing to list symlinked directory: " + mediaFolder);
+        }
         try (Stream<Path> stream = Files.list(mediaFolder)) {
             stream.sorted().forEach(path -> {
                 if (Files.isRegularFile(path)) {
@@ -293,6 +299,11 @@ public class CreateRecordBean implements Serializable {
     @PreDestroy
     public void destroy() {
         if (Files.exists(tempImagesFolder)) {
+            // @PreDestroy must not propagate exceptions (CDI teardown), so log + skip rather than throw.
+            if (Files.isSymbolicLink(this.tempImagesFolder)) {
+                logger.warn("Refusing to clean up symlinked temp folder: {}", this.tempImagesFolder);
+                return;
+            }
             try (Stream<Path> stream = Files.list(this.tempImagesFolder)) {
                 List<Path> uploadedFiles = stream.collect(Collectors.toList());
                 for (Path file : uploadedFiles) {

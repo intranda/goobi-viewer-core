@@ -76,4 +76,18 @@ class CalendarViewTest extends AbstractSolrEnabledTest {
         Assertions.assertFalse(cv.isDisplay());
     }
 
+    /**
+     * @see CalendarView#isDisplay()
+     * @verifies return true when whitelisted docstruct provided (issue inheriting from anchor)
+     */
+    @Test
+    void isDisplay_shouldReturnTrueWhenWhitelistedDocstructProvided() throws Exception {
+        // ViewManager passes the anchor's docstruct rather than the issue/volume's own when
+        // constructing CalendarView, so a newspaper issue (top struct = "NewspaperIssue") is
+        // expected to receive its anchor's docstruct ("Newspaper") here. With that whitelisted
+        // value the gate must not suppress the calendar that widget_calendar.xhtml renders.
+        CalendarView cv = new CalendarView("168714434_1805", "168714434", null, null, "Newspaper");
+        Assertions.assertTrue(cv.isDisplay());
+    }
+
 }

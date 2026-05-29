@@ -23,16 +23,18 @@ package io.goobi.viewer.model.job.upload;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+import io.goobi.viewer.controller.FileTools;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.ResponseHandler;
@@ -252,7 +254,13 @@ public class UploadJob implements Serializable {
             String fileName = Servlets.getSubmittedFileName(file);
             Path tempFile = Paths.get(tempFolder.toAbsolutePath().toString(), fileName);
             try {
-                long bytes = Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+                // CWE-59 hardening: parallel to TempMediaFileResource's REST upload path. The
+                // helper returns void, so the byte count is read separately afterwards.
+                long bytes;
+                try (InputStream in = file.getInputStream()) {
+                    FileTools.copyRejectingSymlinks(in, tempFile);
+                    bytes = Files.size(tempFile);
+                }
                 if (bytes > 0) {
                     logger.trace("Temp file: {}", tempFile.toAbsolutePath());
                     uploadFile(tempFile.toFile());

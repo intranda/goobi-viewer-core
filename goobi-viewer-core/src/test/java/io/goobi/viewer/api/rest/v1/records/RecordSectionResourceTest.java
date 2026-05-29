@@ -23,6 +23,8 @@ package io.goobi.viewer.api.rest.v1.records;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RIS_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RIS_TEXT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -65,6 +67,45 @@ class RecordSectionResourceTest extends AbstractRestApiTest {
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    /**
+     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordSectionResource#getRISAsFile()}.
+     * @verifies return non null result
+     * @see RecordSectionResource#getRISAsFile
+     */
+    @Test
+    void getRISAsFile_shouldReturnNonNullResult() {
+        try(Response response = target(urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RIS_FILE).params(PI, DIVID).build())
+                .request()
+                .get()) {
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
+            String entity = response.readEntity(String.class);
+            assertTrue(entity.contains("TY  - FIGURE"));
+            assertTrue(entity.contains("TI  - Wappen 1"));
+            String fileName = PI + "_LOG_0004.ris";
+            assertEquals( "attachment; filename=\"" + fileName + "\"", response.getHeaderString("Content-Disposition"));
+        }
+    }
+
+    /**
+     * Test method for {@link io.goobi.viewer.api.rest.v1.records.RecordSectionResource#getRISAsText()}.
+     * @verifies return non null result
+     * @see RecordSectionResource#getRISAsText()
+     */
+    @Test
+    void getRISAsText_shouldReturnNonNullResult() {
+        try(Response response = target(urls.path(RECORDS_SECTIONS, RECORDS_SECTIONS_RIS_TEXT).params(PI, DIVID).build())
+                .request()
+                .accept(MediaType.TEXT_PLAIN)
+                .get()) {
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            assertNotNull(response.getEntity(), "Should return user object as JSON");
+            String entity = response.readEntity(String.class);
+            assertTrue(entity.contains("TY  - FIGURE"));
+            assertTrue(entity.contains("TI  - Wappen 1"));
+        }
     }
 
     /**

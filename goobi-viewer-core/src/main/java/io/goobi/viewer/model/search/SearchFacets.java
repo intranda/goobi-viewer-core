@@ -28,13 +28,13 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,8 +44,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 import com.ocpsoft.pretty.PrettyContext;
 import com.ocpsoft.pretty.faces.url.URL;
@@ -60,6 +58,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Current faceting settings for a search.
@@ -72,8 +71,10 @@ public class SearchFacets implements Serializable {
 
     private final transient Object lock = new Object();
 
-    /** Available regular facets for the current search result. ConcurrentHashMap allows concurrent reads and fine-grained write locks,
-     *  replacing the single-mutex synchronizedMap bottleneck. Display order is controlled by getAllFacetFields(), not map insertion order. */
+    /**
+     * Available regular facets for the current search result. ConcurrentHashMap allows concurrent reads and fine-grained write locks, replacing the
+     * single-mutex synchronizedMap bottleneck. Display order is controlled by getAllFacetFields(), not map insertion order.
+     */
     private final Map<String, List<IFacetItem>> availableFacets = new ConcurrentHashMap<>();
     /** Currently applied facets. */
     private final List<IFacetItem> activeFacets = new ArrayList<>();
@@ -316,8 +317,8 @@ public class SearchFacets implements Serializable {
      * isFacetListSizeSufficient.
      *
      * @param field Solr facet field name to check
-     * @return true if the facet list for the given field has enough elements to be shown (more than one,
-     *         or more than zero for DOCSTRCT_SUB), false otherwise
+     * @return true if the facet list for the given field has enough elements to be shown (more than one, or more than zero for DOCSTRCT_SUB), false
+     *         otherwise
      * @should return false for unknown field
      * @should return false for single item field
      * @should return true for field with two or more items
@@ -1186,11 +1187,11 @@ public class SearchFacets implements Serializable {
     /**
      * Returns a snapshot copy of the currently active facet filters.
      *
-     * <p>Returns a defensive copy so that callers (e.g. JSF {@code c:forEach} templates) cannot
-     * receive a {@link java.util.ConcurrentModificationException} if a concurrent request modifies
-     * the list. Uses the same {@code lock} object as all write operations so that the copy is taken
-     * atomically with respect to any concurrent {@link #setActiveFacetString} or
-     * {@link #setGeoFacetFeature} call.
+     * <p>
+     * Returns a defensive copy so that callers (e.g. JSF {@code c:forEach} templates) cannot receive a
+     * {@link java.util.ConcurrentModificationException} if a concurrent request modifies the list. Uses the same {@code lock} object as all write
+     * operations so that the copy is taken atomically with respect to any concurrent {@link #setActiveFacetString} or {@link #setGeoFacetFeature}
+     * call.
      *
      * @return a new, mutable {@link ArrayList} snapshot of the active facet filters; never {@code null}
      */

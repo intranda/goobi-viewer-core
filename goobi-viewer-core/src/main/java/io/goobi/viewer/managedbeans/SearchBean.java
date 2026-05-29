@@ -66,6 +66,7 @@ import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
@@ -78,6 +79,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
 import io.goobi.viewer.model.export.ExcelExport;
+import io.goobi.viewer.model.export.RISExport;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.maps.Location;
@@ -1261,7 +1263,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (StringUtils.isEmpty(searchString)) {
             return "-";
         }
-        return StringTools.stripJS(searchString);
+        return searchString;
     }
 
     /**
@@ -1285,7 +1287,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("setSearchString: {}", searchString);
         // Reset search result page
         currentPage = 1;
-        this.searchString = StringTools.stripJS(searchString);
+        this.searchString = searchString;
         generateSimpleSearchString(this.searchString);
     }
 
@@ -2431,12 +2433,92 @@ public class SearchBean implements SearchInterface, Serializable {
      *
      * @return the empty navigation outcome string after writing the RIS export to the HTTP response
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @deprecated Superseded by the generic XSLT export endpoint {@code /api/v1/search/export/{format}}. The RIS format button in the search list now
-     *             links directly to that endpoint.
      */
-    @Deprecated(since = "26.04", forRemoval = true)
     public String exportSearchAsRisAction() throws IndexUnreachableException {
-        logger.warn("exportSearchAsRisAction is deprecated and no longer functional; use /api/v1/search/export/ris instead");
+        logger.trace("exportSearchAsRisAction");
+        final FacesContext facesContext = FacesContext.getCurrentInstance();
+
+        String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
+        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
+        Locale locale = navigationHelper.getLocale();
+        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
+
+        BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
+            if (!facesContext.getResponseComplete()) {
+                try {
+                    if (Thread.interrupted()) {
+                        job.setError("Execution cancelled");
+                    } else {
+                        Callable<Boolean> download = new Callable<Boolean>() {
+
+                            @Override
+                            public Boolean call() {
+                                try {
+                                    RISExport export = new RISExport();
+                                    export.executeSearch(finalQuery, currentSearch.getAllSortFields(),
+                                            facets.generateFacetFilterQueries(true), null, searchTerms, locale, proximitySearchDistance);
+                                    if (export.isHasResults()) {
+                                        ((HttpServletResponse) facesContext.getExternalContext().getResponse())
+                                                .addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
+                                                        NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + export.getFileName() + "\"");
+                                        return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
+                                    }
+                                    return false;
+                                } catch (IndexUnreachableException | DAOException | PresentationException | ViewerConfigurationException
+                                        | IOException e) {
+                                    logger.error(e.getMessage(), e);
+                                    return false;
+                                } finally {
+                                    facesContext.responseComplete();
+                                }
+                            }
+                        };
+
+                        downloadComplete = new FutureTask<>(download);
+                        EXECUTOR.submit(downloadComplete);
+                        downloadComplete.get(timeout, TimeUnit.SECONDS);
+                    }
+                } catch (TimeoutException e) {
+                    job.setError("Timeout for RIS download");
+                } catch (InterruptedException e) {
+                    job.setError("Timeout for RIS download");
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException e) {
+                    logger.error(e.getMessage(), e);
+                    job.setError("Failed to create RIS export");
+                }
+            } else {
+                job.setError("Response is already committed");
+            }
+        };
+
+        try {
+            Task excelCreationJob = new Task(new TaskParameter(TaskType.SEARCH_EXCEL_EXPORT), task);
+            Long jobId = DataManager.getInstance().getRestApiJobManager().addTask(excelCreationJob);
+            Future<?> ready = DataManager.getInstance()
+                    .getRestApiJobManager()
+                    .triggerTaskInThread(jobId, (HttpServletRequest) facesContext.getExternalContext().getRequest());
+            ready.get(timeout, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            logger.debug("Download interrupted");
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            logger.debug("Download execution error", e);
+            Messages.error("download_internal_error");
+        } catch (TimeoutException e) {
+            logger.debug("Downloadtimed out");
+            Messages.error("download_timeout");
+
+        } finally {
+            if (downloadReady != null && !downloadReady.isDone()) {
+                downloadReady.cancel(true);
+            }
+            if (downloadComplete != null && !downloadComplete.isDone()) {
+                downloadComplete.cancel(true);
+            }
+            this.downloadComplete = null;
+            this.downloadReady = null;
+        }
         return "";
     }
 

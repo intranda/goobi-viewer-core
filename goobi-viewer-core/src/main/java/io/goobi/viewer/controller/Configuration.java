@@ -80,7 +80,6 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
-import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -160,13 +159,11 @@ public class Configuration extends AbstractConfiguration {
     private Set<String> stopwords;
 
     /**
-     * Caches resolved facet-field attribute lookups for {@link #getPropertyForFacetField(String, String, String)}
-     * to avoid rebuilding a {@code BaseHierarchicalConfiguration} sub-config (with full interpolator init)
-     * for every facet node on every call. The key is {@code facetField + ' ' + property} (safe: neither
-     * Solr field names nor XPath property expressions contain spaces); the value is an {@link Optional}
-     * holding the raw XML string at that property (empty = no matching node / attribute absent, so the
-     * caller must fall back to its own default). Invalidated on config reload and on
-     * {@link #overrideValue(String, Object)} for {@code search.facets.*} paths.
+     * Caches resolved facet-field attribute lookups for {@link #getPropertyForFacetField(String, String, String)} to avoid rebuilding a
+     * {@code BaseHierarchicalConfiguration} sub-config (with full interpolator init) for every facet node on every call. The key is
+     * {@code facetField + ' ' + property} (safe: neither Solr field names nor XPath property expressions contain spaces); the value is an
+     * {@link Optional} holding the raw XML string at that property (empty = no matching node / attribute absent, so the caller must fall back to its
+     * own default). Invalidated on config reload and on {@link #overrideValue(String, Object)} for {@code search.facets.*} paths.
      */
     private final ConcurrentHashMap<String, Optional<String>> facetFieldPropertyCache = new ConcurrentHashMap<>();
 
@@ -240,7 +237,7 @@ public class Configuration extends AbstractConfiguration {
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             stopwords = HashSet.newHashSet(0);
         } catch (IOException | IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
@@ -1134,7 +1131,7 @@ public class Configuration extends AbstractConfiguration {
      * is returned, all downloads should remain visible
      *
      * @return a regex or an empty string if no downloads should be hidden
-      * @should return configured value
+     * @should return configured value
      */
     public List<IFilterConfiguration> getAdditionalFilesDisplayFilters() {
         HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("additional-files");
@@ -1258,7 +1255,7 @@ public class Configuration extends AbstractConfiguration {
                             .setPattern(pattern)
                             .setTopstructValueFallback(topstructValueFallback));
                 } catch (IllegalArgumentException e) {
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
@@ -2681,11 +2678,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return number of days until a UserToken expires; 0 or negative means no expiry
-     * @should return default value of 30 when not configured
+     * @return configured token expiration in days; must be positive, default 7
+     * @should return default value of 7 when not configured
      */
     public int getTokenExpirationDays() {
-        return getLocalInt("user.authentication.tokenExpirationDays", 30);
+        return getLocalInt("user.authentication.tokenExpirationDays", 7);
     }
 
     /**
@@ -3621,12 +3618,12 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Boilerplate code for retrieving values from regular and hierarchical facet field configurations.
      *
-     * <p>Hot path: called dozens of times per facet field during every search-result render.
-     * The underlying {@code getLocalConfigurationsAt} rebuilds a fresh {@code BaseHierarchicalConfiguration}
-     * (with full {@code ConfigurationInterpolator} init) for every facet node on every call, which
-     * dominated the server-side latency on result pages with many configured facet fields. Results are
-     * therefore cached in {@link #facetFieldPropertyCache}; the cache is invalidated on config reload
-     * and on {@link #overrideValue(String, Object)} for {@code search.facets.*} paths.
+     * <p>
+     * Hot path: called dozens of times per facet field during every search-result render. The underlying {@code getLocalConfigurationsAt} rebuilds a
+     * fresh {@code BaseHierarchicalConfiguration} (with full {@code ConfigurationInterpolator} init) for every facet node on every call, which
+     * dominated the server-side latency on result pages with many configured facet fields. Results are therefore cached in
+     * {@link #facetFieldPropertyCache}; the cache is invalidated on config reload and on {@link #overrideValue(String, Object)} for
+     * {@code search.facets.*} paths.
      *
      * @param facetField Facet field
      * @param property Element or attribute name to check
@@ -3657,14 +3654,13 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Raw XML lookup for {@link #getPropertyForFacetField(String, String, String)}, without caching.
-     * Preserves the original lookup order (regular fields first, then hierarchical fields) and the
-     * "first matching, non-null value wins" semantics of the previous inlined implementation.
+     * Raw XML lookup for {@link #getPropertyForFacetField(String, String, String)}, without caching. Preserves the original lookup order (regular
+     * fields first, then hierarchical fields) and the "first matching, non-null value wins" semantics of the previous inlined implementation.
      *
      * @param facetField non-blank facet field name
      * @param property element or attribute path to read (e.g. {@code [@sortOrder]})
-     * @return present {@link Optional} with the XML value if a matching field node exposes this property;
-     *         empty {@link Optional} otherwise (caller applies default)
+     * @return present {@link Optional} with the XML value if a matching field node exposes this property; empty {@link Optional} otherwise (caller
+     *         applies default)
      */
     private Optional<String> resolveFacetFieldProperty(String facetField, String property) {
         String facetifiedField = SearchHelper.facetifyField(facetField);
@@ -3703,9 +3699,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * {@inheritDoc}
      *
-     * <p>Overridden to invalidate {@link #facetFieldPropertyCache} whenever a {@code search.facets.*}
-     * property is changed at runtime, so tests and admin-tooling that mutate the config see the updated
-     * value on the next lookup.
+     * <p>
+     * Overridden to invalidate {@link #facetFieldPropertyCache} whenever a {@code search.facets.*} property is changed at runtime, so tests and
+     * admin-tooling that mutate the config see the updated value on the next lookup.
      *
      * @should invalidate facet field property cache for facet paths
      * @should not invalidate facet field property cache for non facet paths
@@ -3719,8 +3715,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Exposed for unit tests that need to inspect the {@link #facetFieldPropertyCache} state.
-     * Not intended as a public API.
+     * Exposed for unit tests that need to inspect the {@link #facetFieldPropertyCache} state. Not intended as a public API.
      *
      * @return the number of entries currently cached in the facet-field property cache
      */
@@ -4051,7 +4046,14 @@ public class Configuration extends AbstractConfiguration {
         return Collections.emptyMap();
     }
 
+    public boolean isExternalResourceUrlsEnabled() {
+        return getLocalBoolean("externalResource[@enabled]", false);
+    }
+
     public List<String> getExternalResourceUrlTemplates() {
+        if (!isExternalResourceUrlsEnabled()) {
+            return Collections.emptyList();
+        }
         List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
         List<String> templates = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
@@ -4205,12 +4207,21 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Whether the viewer pre-decodes the source image of the currently selected page into the
-     * ContentServer's source image cache while the HTML is rendering, so the OpenSeadragon tile
-     * burst that follows finds the decoded master already cached. Only useful when the
-     * ContentServer's {@code sourceImageCache useCache="true"} is set; otherwise the call is a
-     * no-op. Defaults to {@code true} since the cost (one async decode per page view) is small
-     * compared to the typical 800 ms tile-burst stall on cold first-views.
+     * maxZoom for an image view
+     *
+     * @param viewAttributes view context attributes selecting the zoom config
+     * @return the maximum zoom level, defaults to 5
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public int getMaxZoom(ViewAttributes viewAttributes) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(viewAttributes).getInt("[@maxZoom]", 5);
+    }
+
+    /**
+     * Whether the viewer pre-decodes the source image of the currently selected page into the ContentServer's source image cache while the HTML is
+     * rendering, so the OpenSeadragon tile burst that follows finds the decoded master already cached. Only useful when the ContentServer's
+     * {@code sourceImageCache useCache="true"} is set; otherwise the call is a no-op. Defaults to {@code true} since the cost (one async decode per
+     * page view) is small compared to the typical 800 ms tile-burst stall on cold first-views.
      *
      * @return true if pre-warming the source image cache on page selection is enabled
      */
@@ -4607,11 +4618,10 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getMaxAggregateAltoSize.
      *
-     * Aggregate-text REST endpoints (e.g. /api/v1/records/{pi}/alto) build a single concatenated
-     * response in memory. For very large works (e.g. multi-thousand-page newspapers) this can
-     * OOM the JVM; clients should use the streaming /alto.zip endpoint instead. This config
-     * exposes a hard byte cap on the aggregate file size (sum of Files.size() over all page-level
-     * ALTO files) above which the REST layer rejects the request with HTTP 400.
+     * Aggregate-text REST endpoints (e.g. /api/v1/records/{pi}/alto) build a single concatenated response in memory. For very large works (e.g.
+     * multi-thousand-page newspapers) this can OOM the JVM; clients should use the streaming /alto.zip endpoint instead. This config exposes a hard
+     * byte cap on the aggregate file size (sum of Files.size() over all page-level ALTO files) above which the REST layer rejects the request with
+     * HTTP 400.
      *
      * @return configured limit in bytes; default 50 MB
      * @should return correct value
@@ -4623,8 +4633,7 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getMaxAggregateFulltextSize.
      *
-     * Same as {@link #getMaxAggregateAltoSize()} but for the plain-text aggregate endpoint
-     * (/api/v1/records/{pi}/plaintext). Default 50 MB.
+     * Same as {@link #getMaxAggregateAltoSize()} but for the plain-text aggregate endpoint (/api/v1/records/{pi}/plaintext). Default 50 MB.
      *
      * @return configured limit in bytes; default 50 MB
      * @should return correct value
@@ -4978,13 +4987,11 @@ public class Configuration extends AbstractConfiguration {
     /**
      * getCalendarDocStructTypes.
      *
-     * <p>List of DOCSTRCT names for which the calendar TOC view applies. When the
-     * top struct of an anchor/group record matches one of these types and multiple
-     * calendar years are indexed, the calendar view replaces the issue-list TOC and
-     * the (potentially heavy) issue list is skipped. Records whose docstruct is not
-     * in this list always get the regular TOC build, even when they have multi-year
-     * date metadata. An empty list preserves legacy behavior — defer for any anchor
-     * or group with more than one indexed calendar year.
+     * <p>
+     * List of DOCSTRCT names for which the calendar TOC view applies. When the top struct of an anchor/group record matches one of these types and
+     * multiple calendar years are indexed, the calendar view replaces the issue-list TOC and the (potentially heavy) issue list is skipped. Records
+     * whose docstruct is not in this list always get the regular TOC build, even when they have multi-year date metadata. An empty list preserves
+     * legacy behavior — defer for any anchor or group with more than one indexed calendar year.
      *
      * @should return all configured values
      * @return a list of configured docstruct names that use the calendar TOC view
@@ -5290,18 +5297,11 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      * @return true if RIS export of search results is enabled, false otherwise
      */
-    @Deprecated(since = "26.04", forRemoval = true)
     public boolean isSearchRisExportEnabled() {
-        // return getLocalBoolean("search.export.ris[@enabled]", false);
-        List<ExportFormat> allFormats = getSearchExportFormats();
-        Optional<ExportFormat> match = allFormats.stream()
-                .filter(f -> "ris".equals(f.getName()) && f.isEnabled())
-                .findFirst();
-
-        return match.isPresent();
+        return getLocalBoolean("search.export.ris[@enabled]", false);
     }
 
-    /** 
+    /**
      * isSearchExcelExportEnabled.
      *
      * @should return correct value
@@ -5342,51 +5342,6 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return ret;
-    }
-
-    /**
-     * Returns all XSLT-based export format definitions configured under {@code <search><export><format>} in {@code config_viewer.xml}.
-     *
-     * <p>
-     * Each {@code <format>} element must have the attributes {@code name}, {@code enabled}, {@code xslt}, {@code contentType} and
-     * {@code fileExtension}.
-     *
-     * @return list of configured export formats (may be empty, never null)
-     * @should return all configured formats
-     */
-    public List<ExportFormat> getSearchExportFormats() {
-        List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt("search.export.format");
-        List<ExportFormat> ret = new ArrayList<>(nodes.size());
-        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
-            String name = node.getString(XML_PATH_ATTRIBUTE_NAME, "");
-            if (StringUtils.isNotBlank(name)) {
-                boolean enabled = node.getBoolean("[@enabled]", false);
-                String xslt = node.getString("[@xslt]", "");
-                String contentType = node.getString("[@contentType]", "text/plain");
-                String fileExtension = node.getString("[@fileExtension]", "txt");
-                ret.add(new ExportFormat(name, enabled, xslt, contentType, fileExtension));
-            }
-        }
-        return ret;
-    }
-
-    /**
-     * Returns the enabled XSLT-based export format with the given name, or {@link Optional#empty()} if no such format is configured or it is
-     * disabled.
-     *
-     * @param name the format name (e.g. "bibtex", "endnote", "ris")
-     * @return an Optional containing the matching enabled format, or empty
-     * @should return matching format
-     * @should return empty optional for disabled format
-     * @should return empty optional for unknown name
-     */
-    public Optional<ExportFormat> getSearchExportFormat(String name) {
-        if (name == null) {
-            return Optional.empty();
-        }
-        return getSearchExportFormats().stream()
-                .filter(f -> name.equals(f.getName()) && f.isEnabled())
-                .findFirst();
     }
 
     /**
@@ -5819,6 +5774,55 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getCORSHeaderValue() {
         return getLocalString("webapi.cors", "*");
+    }
+
+    /**
+     * Returns whether the CSRF Origin/Referer guard filter is active.
+     *
+     * <p>
+     * When {@code false} (default), the {@code @CSRFGuarded}-annotated endpoints accept any cross-site request - preserves pre-existing behavior for
+     * upgrades. When {@code true}, the filter rejects requests whose Origin/Referer does not match {@link #getViewerBaseUrl()} or one of the entries
+     * in {@link #getCsrfAdditionalAllowedOrigins()}.
+     *
+     * @return {@code true} when the filter is enabled; {@code false} by default
+     * @should return false by default
+     */
+    public boolean isCsrfFilterEnabled() {
+        return getLocalBoolean("webapi.csrf[@enabled]", false);
+    }
+
+    /**
+     * Returns the additional Origins (scheme + host + optional port) that are accepted by the CSRF Origin filter on top of the self-origin
+     * {@link #getViewerBaseUrl()}.
+     *
+     * <p>
+     * Use this for external theme frontends that live on a different host than the viewer application. Each entry is matched verbatim after
+     * normalization (scheme://host[:port], no path, no trailing slash).
+     *
+     * @return list of allowed Origins; empty when not configured
+     * @should return empty list when not configured
+     */
+    public List<String> getCsrfAdditionalAllowedOrigins() {
+        return getLocalList("webapi.csrf.additionalAllowedOrigin");
+    }
+
+    /**
+     * Returns whether the WebSocket handshake Origin guard is active.
+     *
+     * <p>
+     * When {@code false} (default), {@code @ServerEndpoint} classes accept handshakes from any origin (server-side authentication on the endpoint is
+     * still enforced separately). When {@code true}, the handshake is rejected unless the {@code Origin} header matches {@link #getViewerBaseUrl()}
+     * or one of the entries in {@link #getCsrfAdditionalAllowedOrigins()} - the same allowlist used by {@link #isCsrfFilterEnabled()}.
+     *
+     * <p>
+     * Decoupled from the HTTP CSRF switch so that operators can opt into WebSocket origin enforcement (defense-in-depth against CSWSH) without also
+     * enabling the REST CSRF filter, and vice-versa.
+     *
+     * @return {@code true} when the WebSocket origin guard is enabled; {@code false} by default
+     * @should return false by default
+     */
+    public boolean isWebSocketOriginValidationEnabled() {
+        return getLocalBoolean("webapi.websocket.originValidation[@enabled]", false);
     }
 
     /**
@@ -6447,6 +6451,15 @@ public class Configuration extends AbstractConfiguration {
         return getLocalList("user.authenticationProviders.redirectWhitelist.host");
     }
 
+    /**
+     * @should return false by default
+     * @should return true if configured
+     * @return whether outbound HTTP calls are allowed to reach loopback addresses
+     */
+    public boolean isOutboundHttpAllowLoopback() {
+        return getLocalBoolean("outboundHttp.allowLoopback", false);
+    }
+
     // active mq configuration //
 
     public boolean isStartInternalMessageBroker() {
@@ -6561,6 +6574,25 @@ public class Configuration extends AbstractConfiguration {
         }
         return Duration.of((long) num, unit.toChronoUnit());
 
+    }
+
+    /**
+     * Returns the configured file path for the given log file name. Reads from: &lt;logViewer&gt;&lt;logFiles&gt;&lt;logFile name="viewer"
+     * path="/opt/..."&gt; Returns null if not found.
+     */
+    public String getLogViewerFilePath(String name) {
+        return getLocalConfigurationsAt("logViewer.logFiles.logFile").stream()
+                .filter(c -> name.equalsIgnoreCase(c.getString("[@name]")))
+                .map(c -> c.getString("[@path]"))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Returns the number of initial lines to show in the log viewer. Default: 500
+     */
+    public int getLogViewerInitialLines() {
+        return getLocalInt("logViewer.initialLines", 500);
     }
 
 }

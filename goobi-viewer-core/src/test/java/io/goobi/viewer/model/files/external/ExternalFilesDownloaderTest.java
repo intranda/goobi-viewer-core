@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.files.external;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -39,9 +41,10 @@ import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 
+import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.TestServlet;
 
-class ExternalFilesDownloaderTest {
+class ExternalFilesDownloaderTest extends AbstractTest {
 
     private final Path testZipFile = Path.of("src/test/resources/data/viewer/external-files/1287088031.zip");
     private final TestServlet server = new TestServlet("127.0.0.1", 9191);

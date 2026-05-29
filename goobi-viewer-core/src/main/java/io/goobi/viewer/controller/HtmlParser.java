@@ -62,16 +62,6 @@ public final class HtmlParser {
         return matcher.find();
     }
 
-    /**
-     * Duplicate of {@link StringTools#stripJS(String)} because it seemed to fit here.
-     *
-     * @param s string to strip of JavaScript
-     * @return s stripped of any JavaScript
-     */
-    public static String stripJS(String s) {
-        return StringTools.stripJS(s);
-    }
-
     public static String getPlaintext(String htmlText) {
         Document doc = Jsoup.parse(htmlText);
         return doc.text();

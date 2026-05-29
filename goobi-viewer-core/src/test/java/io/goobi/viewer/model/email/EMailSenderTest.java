@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.export.RISExport;
 import jakarta.mail.Message;
 import jakarta.mail.internet.InternetAddress;
 
@@ -69,5 +70,38 @@ class EMailSenderTest extends AbstractTest {
         Assertions.assertEquals("alice@example.com", result[0].getAddress());
         Assertions.assertEquals("bob@example.com", result[1].getAddress());
         Assertions.assertEquals("charlie@example.com", result[2].getAddress());
+    }
+
+    /**
+     * @see EMailSender#sanitizeHeaderValue(String)
+     * @verifies return null when input is null
+     */
+    @Test
+    void sanitizeHeaderValue_shouldReturnNullWhenInputIsNull() {
+        Assertions.assertNull(EMailSender.sanitizeHeaderValue(null));
+    }
+
+    /**
+     * @see EMailSender#sanitizeHeaderValue(String)
+     * @verifies leave value without cr or lf unchanged
+     */
+    @Test
+    void sanitizeHeaderValue_shouldLeaveValueWithoutCrOrLfUnchanged() {
+        String input = "Plain subject without line breaks";
+        Assertions.assertEquals(input, EMailSender.sanitizeHeaderValue(input));
+    }
+
+    /**
+     * @see EMailSender#sanitizeHeaderValue(String)
+     * @verifies replace carriage return and line feed with space
+     */
+    @Test
+    void sanitizeHeaderValue_shouldReplaceCarriageReturnAndLineFeedWithSpace() {
+        // Attacker-style payload that would otherwise inject an additional Bcc header.
+        String input = "Hello\r\nBcc: attacker@example.com";
+        String sanitized = EMailSender.sanitizeHeaderValue(input);
+        Assertions.assertEquals("Hello  Bcc: attacker@example.com", sanitized);
+        Assertions.assertFalse(sanitized.contains("\r"), "CR must be stripped");
+        Assertions.assertFalse(sanitized.contains("\n"), "LF must be stripped");
     }
 }

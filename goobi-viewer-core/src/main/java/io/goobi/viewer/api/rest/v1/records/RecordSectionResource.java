@@ -23,33 +23,11 @@ package io.goobi.viewer.api.rest.v1.records;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RANGE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RIS_FILE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_SECTIONS_RIS_TEXT;
 
 import java.net.URISyntaxException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.solr.common.SolrDocument;
-
-import de.intranda.api.iiif.presentation.IPresentationModelElement;
-import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
-import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
-import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
-import io.goobi.viewer.api.rest.filters.FilterTools;
-import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
-import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.exceptions.IndexUnreachableException;
-import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.faces.validators.PIValidator;
-import io.goobi.viewer.model.viewer.StructElement;
-import io.goobi.viewer.solr.SolrConstants;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -59,6 +37,34 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+
+import org.apache.solr.common.SolrDocument;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
+import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
+import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.filters.FilterTools;
+import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
+import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.faces.validators.PIValidator;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.solr.SolrConstants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
  * @author Florian Alpers
@@ -100,6 +106,46 @@ public class RecordSectionResource {
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_LOGID, divId);
 
+    }
+
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_FILE)
+    @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(tags = { "records" }, summary = "Download ris as file")
+    @ApiResponse(responseCode = "200", description = "RIS citation for the section downloaded as plain text file")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
+    public String getRISAsFile()
+            throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
+
+        StructElement se = getStructElement(pi, divId);
+        String fileName = se.getPi() + "_" + se.getLogid() + ".ris";
+        servletResponse.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + fileName + "\"");
+        return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
+    }
+
+    /**
+     * getRISAsText.
+     *
+     * @return the RIS citation for the section as plain text
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return non null result
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)
+    @Produces({ MediaType.TEXT_PLAIN })
+    @Operation(tags = { "records" }, summary = "Get ris as text")
+    @ApiResponse(responseCode = "200", description = "RIS citation for the section as plain text")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
+    public String getRISAsText()
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
+
+        StructElement se = getStructElement(pi, divId);
+        return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
 
     @GET

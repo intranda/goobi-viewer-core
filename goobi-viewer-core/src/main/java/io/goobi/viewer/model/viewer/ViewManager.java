@@ -85,6 +85,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.imaging.ImageHandler;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -121,7 +122,7 @@ import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationList;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
-import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
+import io.goobi.viewer.model.resources.download.ExternalResourceUrlService;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -240,7 +241,7 @@ public class ViewManager implements Serializable {
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
     private Map<CitationLinkLevel, CitationList> citationLinks = new HashMap<>();
-    private Map<String, String> externalResourceUrls = null;
+    private ExternalResourceUrlService externalResourceUrlService = null;
     private List<PhysicalResource> downloadResources = null;
     private String meiUrl = null;
 
@@ -363,9 +364,16 @@ public class ViewManager implements Serializable {
             anchorPi = groupEntry.getValue();
         }
 
+        // Calendar applicability is determined by the anchor's docstruct (e.g. "Newspaper"),
+        // not the issue/volume's own docstruct ("NewspaperIssue" etc.). For anchors the top
+        // struct is itself the anchor; for issues/volumes anchorStructElement is populated by
+        // ViewManager's constructor when topDocument.isAnchorChild() is true.
+        String calendarDocStructType = anchorStructElement != null
+                ? anchorStructElement.getDocStructType()
+                : topStructElement.getDocStructType();
         return new CalendarView(pi, anchorPi, anchorField,
                 topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR),
-                topStructElement.getDocStructType());
+                calendarDocStructType);
     }
 
     /**
@@ -507,6 +515,12 @@ public class ViewManager implements Serializable {
         try {
             ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
             if (info.getWidth() * info.getHeight() == 0) {
+                String id = info.getId().toString();
+                if (ImageHandler.isExternalUrl(id) && ImageHandler.isImageUrl(info.getId().getPath(), false)) {
+                    // Return the original filepath to avoid double-encoding of special characters
+                    // (PathConverter.toURI re-encodes %2F to %252F)
+                    return page.getFilepath();
+                }
                 return UriBuilder.fromUri(info.getId()).path("info.json").build().toString();
             }
             return JsonTools.getAsJson(info);
@@ -4227,10 +4241,10 @@ public class ViewManager implements Serializable {
     }
 
     public Map<String, String> getExternalResourceUrls() throws IndexUnreachableException {
-        if (this.externalResourceUrls == null) {
-            this.externalResourceUrls = loadExternalResourceUrls();
+        if (externalResourceUrlService == null) {
+            externalResourceUrlService = new ExternalResourceUrlService();
         }
-        return this.externalResourceUrls;
+        return externalResourceUrlService.getExistingUrls(new VariableReplacer(this));
     }
 
     public String getExternalResourceUrlsAsJson() {
@@ -4240,16 +4254,6 @@ public class ViewManager implements Serializable {
             logger.error("Cannot map external resource urls map to json", e);
             return "{}";
         }
-    }
-
-    private Map<String, String> loadExternalResourceUrls() throws IndexUnreachableException {
-        List<String> urlTemplates =
-                DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
-        VariableReplacer vr = new VariableReplacer(this);
-        return urlTemplates.stream()
-                .flatMap(templ -> vr.replace(templ).stream().map(url -> new StringPair(url, templ)))
-                .filter(pair -> ExternalFilesDownloader.resourceExists(pair.getOne(), pair.getTwo()))
-                .collect(Collectors.toMap(StringPair::getOne, StringPair::getTwo));
     }
 
     public StructElement getAnchorStructElement() {

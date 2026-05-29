@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -191,7 +192,7 @@ public class FeatureGenerator {
                             getValueMap(this.additionalFields, metadata, topDocument)));
             feature.setFilterQuery(filterQuery);
             return feature;
-        }).toList();
+        }).filter(Objects::nonNull).toList();
     }
 
     private Map<String, List<IMetadataValue>> getValueMap(List<String> fields, MetadataContainer... metadata) {
@@ -252,6 +253,9 @@ public class FeatureGenerator {
 
     protected GeoMapFeature getFeature(String point) {
         Geometry geometry = this.coordinateReaderProvider.getReader(point).read(point);
+        if (geometry == null) {
+            return null;
+        }
         return new GeoMapFeature(geometry);
     }
 

@@ -35,10 +35,14 @@ import org.json.JSONObject;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordStatistic;
+import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
+import io.goobi.viewer.model.security.user.User;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.EncodeException;
 import jakarta.websocket.EndpointConfig;
@@ -102,12 +106,21 @@ public class CampaignEndpoint {
 
     private String httpSessionId;
     private Session session;
+    private User user;
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
         logger.trace("onOpen: {}", session.getId());
+        if (!WebSocketTools.requireAllowedOrigin(config, session)) {
+            return;
+        }
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        this.httpSessionId = httpSession == null ? null : httpSession.getId();
+        User u = WebSocketTools.requireUser(httpSession, session);
+        if (u == null) {
+            return;
+        }
+        this.user = u;
+        this.httpSessionId = httpSession.getId();
         this.session = session;
     }
 
@@ -126,6 +139,17 @@ public class CampaignEndpoint {
             int pageNo = json.getInt("page");
             long campaignId = json.getLong("campaign");
 
+            Campaign campaign = DataManager.getInstance().getDao().getCampaign(campaignId);
+            if (campaign == null || !mayLockPagesIn(campaign, user)) {
+                logger.info("CampaignEndpoint: user {} not allowed to lock pages in campaign {}",
+                        user == null ? null : user.getId(), campaignId);
+                JSONObject warning = new JSONObject();
+                warning.put("status", "warning");
+                warning.put("message", "notify__crowdsourcing_not_allowed");
+                session.getBasicRemote().sendText(warning.toString());
+                return;
+            }
+
             if (getLockedPages(httpSessionId).contains(pageNo)) {
                 sendPageLocks(campaignId, pi);
             } else {
@@ -135,6 +159,34 @@ public class CampaignEndpoint {
             }
         }
 
+    }
+
+    /**
+     * Permissive policy: superusers, campaign editors, and users allowed to annotate or
+     * review the given campaign may lock pages on it. Treats checked exceptions from the
+     * Campaign authorization helpers as a deny.
+     */
+    private static boolean mayLockPagesIn(Campaign campaign, User user) {
+        if (user == null) {
+            return false;
+        }
+        if (user.isSuperuser()) {
+            return true;
+        }
+        try {
+            if (campaign.isUserMayEdit(user)) {
+                return true;
+            }
+            if (campaign.isUserAllowedAction(user, CrowdsourcingStatus.ANNOTATE)) {
+                return true;
+            }
+            if (campaign.isUserAllowedAction(user, CrowdsourcingStatus.REVIEW)) {
+                return true;
+            }
+        } catch (DAOException | PresentationException | IndexUnreachableException e) {
+            logger.warn("CampaignEndpoint: campaign-authorization check failed, denying: {}", e.getMessage());
+        }
+        return false;
     }
 
     private static PageLock removePageLock(String sessionId) {
@@ -157,6 +209,11 @@ public class CampaignEndpoint {
     public void onError(Session session, Throwable t) {
         if (!(t instanceof EOFException)) {
             logger.warn("CampaignEndpoint:" + t.getMessage());
+        }
+        // Mirror onClose cleanup: an unexpected error may bypass onClose, leaving a stale
+        // entry in the static pageLocks map.
+        if (httpSessionId != null) {
+            removePageLock(httpSessionId);
         }
     }
 
