@@ -13,7 +13,6 @@ fail_startup() {
   exec sleep infinity
 }
 
-[ -z "$CONFIGSOURCE" ] && CONFIGSOURCE="default"
 [ -z "$USE_SSL" ] && USE_SSL="false"
 [ -z "$DEV" ] && DEV="false"
 [ -z "$DB_HOST" ] && DB_HOST="viewer-db"
@@ -129,7 +128,7 @@ else
 fi
 
 export MYSQL_PWD=${DB_PASSWORD}
-while ! mysql -h "${DB_HOST}" -u "${DB_USER}" -e "SELECT 1" >/dev/null 2>&1; do
+while ! mysql -h "${DB_HOST}" -u "${DB_USER}" -P "${DB_PORT}" -e "SELECT 1" >/dev/null 2>&1; do
       echo "Waiting for database to boot..."
       sleep 2
 done
@@ -145,7 +144,7 @@ fi
 
 VIEWER_USERMAIL="${VIEWER_USERMAIL:-goobi@intranda.com}"
 EMAIL_SQL="${VIEWER_USERMAIL//\'/\'\'}"
-run_sql() { mysql -h "${DB_HOST}" -u "${DB_USER}" "${DB_NAME}" -B -N -e "$1"; }
+run_sql() { mysql -h "${DB_HOST}" -u "${DB_USER}" -P "${DB_PORT}" "${DB_NAME}" -B -N -e "$1"; }
 
 # Initialize DB to insert the initial user into the db
 if [[ -z "$(run_sql "SHOW TABLES LIKE 'viewer_users'")" ]]; then
