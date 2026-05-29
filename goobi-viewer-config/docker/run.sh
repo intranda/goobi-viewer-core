@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+VIEWER_UID=${VIEWER_UID:-1000}
+VIEWER_GID=${VIEWER_GID:-1000}
+groupmod -o -g "${VIEWER_GID}" user
+usermod -o -u "${VIEWER_UID}" user
+
 rm -f /tmp/startup-succeeded
 
 fail_startup() {
@@ -124,16 +129,18 @@ else
 fi
 
 export MYSQL_PWD=${DB_PASSWORD}
-while ! mysqladmin ping -h "${DB_HOST}" -u "${DB_USER}" --silent; do
+while ! mysql -h "${DB_HOST}" -u "${DB_USER}" -e "SELECT 1" >/dev/null 2>&1; do
       echo "Waiting for database to boot..."
       sleep 2
 done
+
+chown -R user:user ${CATALINA_HOME} /opt/digiverso/viewer/ /opt/digiverso/logs/
 
 # No initial user password given
 if [[ -z "${VIEWER_USERPASS-}" ]]; then
   echo "Starting application server..."
   touch /tmp/startup-succeeded
-  exec catalina.sh run
+  exec gosu user catalina.sh run
 fi
 
 VIEWER_USERMAIL="${VIEWER_USERMAIL:-goobi@intranda.com}"
@@ -143,7 +150,7 @@ run_sql() { mysql -h "${DB_HOST}" -u "${DB_USER}" "${DB_NAME}" -B -N -e "$1"; }
 # Initialize DB to insert the initial user into the db
 if [[ -z "$(run_sql "SHOW TABLES LIKE 'viewer_users'")" ]]; then
   echo "Initializing database..."
-  catalina.sh run > /dev/null 2>&1 &
+  gosu user catalina.sh run > /dev/null 2>&1 &
   TOMCAT_PID=$!
   until [[ -n "$(run_sql "SHOW TABLES LIKE 'viewer_users'")" ]]; do
     echo "Waiting for schema initialization..."
@@ -173,4 +180,4 @@ unset STORED_HASH STORED_2B NEW_HASH EMAIL_SQL
 # Finally, start application
 echo "Starting application server..."
 touch /tmp/startup-succeeded
-exec catalina.sh run
+exec gosu user catalina.sh run
