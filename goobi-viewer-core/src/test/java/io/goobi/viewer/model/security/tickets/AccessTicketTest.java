@@ -118,4 +118,18 @@ class AccessTicketTest extends AbstractTest {
         Assertions.assertTrue(ticket.checkPassword(ticket.getPassword()));
         Assertions.assertFalse(ticket.checkPassword("definitely-not-the-password"));
     }
+
+    /**
+     * @see AccessTicket#activate()
+     * @verifies generate a 22-character URL-safe Base64 password (128 bits of entropy)
+     */
+    @Test
+    void activate_shouldGenerate22CharUrlSafePassword() throws Exception {
+        AccessTicket ticket = new AccessTicket();
+        ticket.activate();
+        String password = ticket.getPassword();
+        Assertions.assertNotNull(password);
+        Assertions.assertEquals(22, password.length());
+        Assertions.assertTrue(password.matches("^[A-Za-z0-9_-]+$"), "Password contains non-URL-safe characters: " + password);
+    }
 }
