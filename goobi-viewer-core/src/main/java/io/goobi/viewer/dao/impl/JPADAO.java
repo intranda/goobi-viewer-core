@@ -45,6 +45,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.controller.DataManager;
@@ -165,8 +166,7 @@ public class JPADAO implements IDAO {
     }
 
     /**
-     * Creates a new JPADAO instance using an existing EntityManagerFactory.
-     * Intended for tests that share a single factory across test classes.
+     * Creates a new JPADAO instance using an existing EntityManagerFactory. Intended for tests that share a single factory across test classes.
      *
      * @param existingFactory pre-built EntityManagerFactory to reuse
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -200,7 +200,15 @@ public class JPADAO implements IDAO {
         final Thread currentThread = Thread.currentThread();
         final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
         currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
-        factory = Persistence.createEntityManagerFactory(persistenceUnitName);
+        // Allow overriding the persistence.xml DDL generation mode via system property (e.g. -Declipselink.ddl-generation=none
+        // in a dev environment to skip the CREATE/ALTER TABLE attempts against an existing schema). Empty map = unchanged behavior.
+        Map<String, Object> overrides = new HashMap<>();
+        String ddlGeneration = System.getProperty(PersistenceUnitProperties.DDL_GENERATION);
+        if (StringUtils.isNotEmpty(ddlGeneration)) {
+            overrides.put(PersistenceUnitProperties.DDL_GENERATION, ddlGeneration);
+            logger.info("Overriding eclipselink.ddl-generation with '{}' from system property", ddlGeneration);
+        }
+        factory = Persistence.createEntityManagerFactory(persistenceUnitName, overrides);
         currentThread.setContextClassLoader(saveClassLoader);
 
         int attempts = DataManager.getInstance().getConfiguration().getDatabaseConnectionAttempts() - 1;
