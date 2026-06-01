@@ -85,6 +85,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.imaging.ImageHandler;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -94,6 +95,7 @@ import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
+import io.goobi.viewer.controller.imaging.SourceImagePrewarmService;
 import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -244,6 +246,7 @@ public class ViewManager implements Serializable {
     private String meiUrl = null;
 
     private PageNavigation pageNavigation = PageNavigation.SINGLE;
+    private boolean pagePermissionsPrefetched = false;
 
     /**
      * Creates a new ViewManager instance.
@@ -361,8 +364,16 @@ public class ViewManager implements Serializable {
             anchorPi = groupEntry.getValue();
         }
 
+        // Calendar applicability is determined by the anchor's docstruct (e.g. "Newspaper"),
+        // not the issue/volume's own docstruct ("NewspaperIssue" etc.). For anchors the top
+        // struct is itself the anchor; for issues/volumes anchorStructElement is populated by
+        // ViewManager's constructor when topDocument.isAnchorChild() is true.
+        String calendarDocStructType = anchorStructElement != null
+                ? anchorStructElement.getDocStructType()
+                : topStructElement.getDocStructType();
         return new CalendarView(pi, anchorPi, anchorField,
-                topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR));
+                topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR),
+                calendarDocStructType);
     }
 
     /**
@@ -396,26 +407,7 @@ public class ViewManager implements Serializable {
                         .ifPresent(p -> infos.put(p.getOrder(), getImageInfo(p, pageType)));
                 break;
             case SEQUENCE:
-                // Batch-prefetch all five per-page privileges in a single Solr query + one DAO
-                // call and seed every PhysicalElement so the render loop's isAccessPermission*
-                // calls stay in-memory. Avoids O(n) per-page Solr/DAO traffic on sequence view
-                // (refs #27883). Reuses BeanUtils.getRequest() rather than re-implementing the
-                // FacesContext → ExternalContext → HttpServletRequest extraction inline.
-                PagePermissions prefetched = AccessConditionUtils.fetchPagePermissions(pi, BeanUtils.getRequest());
                 for (PhysicalElement page : this.getAllPages()) {
-                    if (!prefetched.isEmpty()) {
-                        int order = page.getOrder();
-                        page.seedAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES,
-                                prefetched.getImagePermission(order));
-                        page.seedAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS,
-                                prefetched.getThumbnailPermission(order));
-                        page.seedAccessPermission(IPrivilegeHolder.PRIV_ZOOM_IMAGES,
-                                prefetched.getZoomPermission(order));
-                        page.seedAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES,
-                                prefetched.getDownloadPermission(order));
-                        page.seedAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF,
-                                prefetched.getPdfPermission(order));
-                    }
                     if (page.isHasImage()) {
                         infos.put(page.getOrder(), getImageInfo(page, pageType));
                     }
@@ -523,6 +515,12 @@ public class ViewManager implements Serializable {
         try {
             ImageInformation info = imageDeliveryBean.getImages().getImageInformation(page, pageType);
             if (info.getWidth() * info.getHeight() == 0) {
+                String id = info.getId().toString();
+                if (ImageHandler.isExternalUrl(id) && ImageHandler.isImageUrl(info.getId().getPath(), false)) {
+                    // Return the original filepath to avoid double-encoding of special characters
+                    // (PathConverter.toURI re-encodes %2F to %252F)
+                    return page.getFilepath();
+                }
                 return UriBuilder.fromUri(info.getId()).path("info.json").build().toString();
             }
             return JsonTools.getAsJson(info);
@@ -1243,11 +1241,25 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public List<PhysicalElement> getAllPages() throws IndexUnreachableException, DAOException {
+
         List<PhysicalElement> ret = new ArrayList<>();
         if (pageLoader != null) {
+            PagePermissions prefetched = PagePermissions.EMPTY;
+            if (!pagePermissionsPrefetched) {
+                prefetched = AccessConditionUtils.fetchPagePermissions(pi, BeanUtils.getRequest());
+                pagePermissionsPrefetched = true;
+            }
             for (int i = pageLoader.getFirstPageOrder(); i <= pageLoader.getLastPageOrder(); ++i) {
                 PhysicalElement page = pageLoader.getPage(i);
                 if (page != null) {
+                    if (!prefetched.isEmpty()) {
+                        int order = page.getOrder();
+                        page.seedAccessPermission(IPrivilegeHolder.PRIV_VIEW_IMAGES, prefetched.getImagePermission(order));
+                        page.seedAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS, prefetched.getThumbnailPermission(order));
+                        page.seedAccessPermission(IPrivilegeHolder.PRIV_ZOOM_IMAGES, prefetched.getZoomPermission(order));
+                        page.seedAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, prefetched.getDownloadPermission(order));
+                        page.seedAccessPermission(IPrivilegeHolder.PRIV_DOWNLOAD_PAGE_PDF, prefetched.getPdfPermission(order));
+                    }
                     ret.add(page);
                 }
             }
@@ -1429,6 +1441,13 @@ public class ViewManager implements Serializable {
         if (currentStructElement == null || !Objects.equals(currentStructElement.getLuceneId(), currentStructElementIddoc)) {
             setCurrentStructElement(new StructElement(currentStructElementIddoc));
         }
+
+        // Kick off an async pre-decode of the master image. The OpenSeadragon tile burst that
+        // follows HTML render typically arrives ~1-2 s later; by then the SourceImageCache will
+        // hold the decoded BufferedImage and every tile request becomes a cheap getSubimage()
+        // instead of paying source-decode latency. Silent no-op when prewarm or the underlying
+        // cache is disabled.
+        SourceImagePrewarmService.getInstance().prewarm(getPage(useOrder).orElse(null));
     }
 
     public void setPageNavigation(PageNavigation navigation) {

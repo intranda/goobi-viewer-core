@@ -97,15 +97,14 @@ import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * JSF session-scoped backing bean providing navigation state, URL building, and breadcrumb
- * tracking for the viewer frontend. Initialised via {@code @PostConstruct init()} which resolves
- * the user's locale from the current JSF view root and seeds the status map with default values.
+ * JSF session-scoped backing bean providing navigation state, URL building, and breadcrumb tracking for the viewer frontend. Initialised via
+ * {@code @PostConstruct init()} which resolves the user's locale from the current JSF view root and seeds the status map with default values.
  *
- * <p><b>Lifecycle:</b> Created once per HTTP session; survives across page navigations and is
- * destroyed when the session expires.
+ * <p>
+ * <b>Lifecycle:</b> Created once per HTTP session; survives across page navigations and is destroyed when the session expires.
  *
- * <p><b>Thread safety:</b> Not explicitly synchronised; all state is expected to be accessed
- * from the JSF request thread of the owning session only.
+ * <p>
+ * <b>Thread safety:</b> Not explicitly synchronised; all state is expected to be accessed from the JSF request thread of the owning session only.
  */
 @Named
 @SessionScoped
@@ -231,7 +230,7 @@ public class NavigationHelper implements Serializable {
      * searchPage.
      *
      * @return the search page name after setting it as the current navigation page
-      * @should return expected value for given input
+     * @should return expected value for given input
      */
     public String searchPage() {
         this.setCurrentPage(SEARCH_PAGE);
@@ -307,9 +306,9 @@ public class NavigationHelper implements Serializable {
     /**
      * Sets the CMS page as the current page for navigation purposes.
      *
-     * <p>Skips execution on JSF postback requests to avoid triggering during AJAX calls,
-     * which could conflict with parallel record loads. This mirrors the former
-     * {@code <f:viewAction onPostback="false">} behavior that was declared in the view.
+     * <p>
+     * Skips execution on JSF postback requests to avoid triggering during AJAX calls, which could conflict with parallel record loads. This mirrors
+     * the former {@code <f:viewAction onPostback="false">} behavior that was declared in the view.
      *
      * @param cmsPage CMS page to set as current page
      */
@@ -343,11 +342,11 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Sets the current page for the error page, mapping generic error types (general, general_no_url)
-     * to the "error" page name so that the browser title shows "Fehler" instead of unrelated translations.
+     * Sets the current page for the error page, mapping generic error types (general, general_no_url) to the "error" page name so that the browser
+     * title shows "Fehler" instead of unrelated translations.
      *
-     * <p>Specific error types (e.g. recordNotFound, download) are passed through directly so that
-     * their own message keys are used as the page title.
+     * <p>
+     * Specific error types (e.g. recordNotFound, download) are passed through directly so that their own message keys are used as the page title.
      *
      * @param errorType the error type string set by the exception handler; may be null
      * @should map null and generic error types to error
@@ -1066,6 +1065,14 @@ public class NavigationHelper implements Serializable {
         return subThemeDiscriminatorValue;
     }
 
+    public CMSPage getCurrentCMSPage() {
+        if (cmsBean != null) {
+            return cmsBean.getCurrentPage();
+        } else {
+            return null;
+        }
+    }
+
     public void setSubThemeDiscriminatorValue() {
         String subThemeDiscriminatorValue = determineCurrentSubThemeDiscriminatorValue();
         setSubThemeDiscriminatorValue(subThemeDiscriminatorValue);
@@ -1111,6 +1118,28 @@ public class NavigationHelper implements Serializable {
     /**
      * resetTheme.
      */
+    public void applySubThemeFromUrl(String subTheme) {
+        setSubThemeDiscriminatorValue(StringUtils.defaultString(subTheme));
+    }
+
+    public String getSubThemeQueryParam() {
+        try {
+            String value = getSubThemeDiscriminatorValue();
+            return getSubThemeQueryParam(value);
+        } catch (IndexUnreachableException e) {
+            logger.debug("Cannot read subtheme discriminator value: {}", e.getMessage());
+        }
+        return "";
+    }
+
+    public static String getSubThemeQueryParam(String subtheme) {
+        if (StringUtils.isNotBlank(subtheme) && !"-".equals(subtheme)) {
+            return "?subtheme=" + subtheme;
+        } else {
+            return "";
+        }
+    }
+
     public void resetTheme() {
         logger.trace("resetTheme");
         // Resetting the current page here would result in the current record being flushed, which is bad for CMS overview pages
@@ -1571,7 +1600,8 @@ public class NavigationHelper implements Serializable {
     /**
      * Returns the translation for the given <code>msgKey</code> and replaces all {i} placeholders with values from the given <code>params</code>.
      *
-     * <p>Does not carry out character escaping
+     * <p>
+     * Does not carry out character escaping
      *
      * @param msgKey Message key to translate
      * @param params One or more parameter values to replace the placeholders.
@@ -1655,8 +1685,13 @@ public class NavigationHelper implements Serializable {
      * @return the Solr query suffix for filtering by the current sub-theme discriminator value
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public String getSubThemeDiscriminatorQuerySuffix() throws IndexUnreachableException {
-        return SearchHelper.getDiscriminatorFieldFilterSuffix(this, DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+    public String getSubThemeDiscriminatorQuerySuffix() {
+        try {
+            return SearchHelper.getDiscriminatorFieldFilterSuffix(this, DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField());
+        } catch (IndexUnreachableException e) {
+            logger.warn("Cannot determine subTheme", e);
+            return "";
+        }
     }
 
     /**
@@ -1929,9 +1964,9 @@ public class NavigationHelper implements Serializable {
     }
 
     /**
-     * Resolves a list of licence icon names to their resource URIs, filtering out any icons whose resolved path is blank or a
-     * directory (trailing slash). This method is intended for use in Facelets templates that pass the result directly to
-     * {@code <ui:include>}, where an invalid path would cause a {@code TagAttributeException} at view-build time.
+     * Resolves a list of licence icon names to their resource URIs, filtering out any icons whose resolved path is blank or a directory (trailing
+     * slash). This method is intended for use in Facelets templates that pass the result directly to {@code <ui:include>}, where an invalid path
+     * would cause a {@code TagAttributeException} at view-build time.
      *
      * @param icons list of icon file names (e.g. "cc0.svg"); blank entries are ignored
      * @return ordered list of resolved resource URIs suitable for use as {@code <ui:include src="...">} values

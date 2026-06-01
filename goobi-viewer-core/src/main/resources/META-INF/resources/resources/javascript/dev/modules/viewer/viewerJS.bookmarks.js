@@ -323,13 +323,9 @@ var viewerJS = (function (viewer) {
                             // render bookmarks popup with timeout to finish handling click event first.
                             setTimeout(() => this.renderBookmarksPopup(currPi, currLogid, currPage, currBtn), 0);
                         } else if (this.contained(currPi, currPage, currLogid)) {
-                            this.removeFromBookmarkList(0, currPi, undefined, undefined, false).then(() =>
-                                this.listsNeedUpdate.next()
-                            );
+                            this.removeFromBookmarkList(0, currPi, undefined, undefined, false).then(() => this.listsNeedUpdate.next());
                         } else {
-                            this.addToBookmarkList(0, currPi, undefined, undefined, false).then(() =>
-                                this.listsNeedUpdate.next()
-                            );
+                            this.addToBookmarkList(0, currPi, undefined, undefined, false).then(() => this.listsNeedUpdate.next());
                         }
                     }.bind(this)
                 );
@@ -488,11 +484,7 @@ var viewerJS = (function (viewer) {
         getItem: function (list, pi, page, logid) {
             if (list) {
                 return list.items.find((item) => {
-                    return (
-                        item.pi == pi &&
-                        (page == undefined || page == item.order) &&
-                        (logid == undefined || logid == item.logId)
-                    );
+                    return item.pi == pi && (page == undefined || page == item.order) && (logid == undefined || logid == item.logId);
                 });
             }
             return undefined;

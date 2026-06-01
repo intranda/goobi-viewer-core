@@ -62,6 +62,7 @@ var viewerJS = (function (viewer) {
                 let requestBody = JSON.stringify({
                     query: query,
                     resultFields: fields,
+                    resolveRecordUrl: true,
                 });
 
                 fetch(_defaults.indexResourceUrl, {
@@ -82,7 +83,7 @@ var viewerJS = (function (viewer) {
                                 selector: _defaults.calendarWrapperSelector,
                             },
                             html: true,
-                        }; 
+                        };
 
                         $(_defaults.popoverTriggerSelector).popover('dispose');
                         _this.popover(_popoverConfig);
@@ -99,7 +100,7 @@ var viewerJS = (function (viewer) {
                             $popover.trigger('focus');
 
                             $popover.on('keydown.calendarPopover', function (e) {
-                                if (e.key === 'Escape') { 
+                                if (e.key === 'Escape') {
                                     // Escape: close popover, return focus to trigger
                                     $trigger.popover('dispose');
                                     $trigger.trigger('focus');
@@ -162,7 +163,7 @@ var viewerJS = (function (viewer) {
         workList += '<ul class="list">';
         if (data && data.docs) {
             data.docs.forEach((item) => {
-                workListLink =
+                workListLink = item.url ||
                     config.appUrl + 'image/' + item.PI_TOPSTRUCT + '/' + item.THUMBPAGENO + '/' + item.LOGID + '/';
 
                 workList += '<li>';

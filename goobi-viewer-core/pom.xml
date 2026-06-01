@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.goobi.viewer</groupId>
 	<artifactId>viewer-core</artifactId>
-	<version>26.04-SNAPSHOT</version>
+	<version>26.05-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Goobi viewer - Core</name>
 	<description>The Goobi viewer is an open source solution for the presentation of digitized cultural assets.</description>
@@ -79,9 +79,9 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.8.0</alto.version>
-		<ics.version>4.2.4</ics.version>
+		<ics.version>4.4.0-SNAPSHOT</ics.version>
 		<tei-conversion.version>1.4.0</tei-conversion.version>
-		<intranda-content-view.version>0.5.1</intranda-content-view.version>
+		<intranda-content-view.version>0.6-SNAPSHOT</intranda-content-view.version>
 		<iiif-api-model.version>3.2.0</iiif-api-model.version>
 		<normdataimporter.version>2.1.3</normdataimporter.version>
 
@@ -105,7 +105,7 @@
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
 		<icu.version>78.3</icu.version>
-		<jackson.version>2.21.2</jackson.version>
+		<jackson.version>2.21.3</jackson.version>
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
 		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
@@ -119,7 +119,7 @@
 		<jakarta.websocket.version>2.2.0</jakarta.websocket.version>
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
 		<jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
-		<java-jwt.version>4.5.1</java-jwt.version>
+		<java-jwt.version>4.5.2</java-jwt.version>
 		<jwks-rsa.version>0.23.1</jwks-rsa.version>
 		<jaxen.version>2.0.1</jaxen.version>
 		<jaxb-runtime.version>4.0.7</jaxb-runtime.version>
@@ -131,12 +131,12 @@
 		<jsoup.version>1.22.2</jsoup.version>
 		<junit.version>6.0.3</junit.version>
 		<log4j.version>2.25.4</log4j.version>
-		<netty.version>4.1.119.Final</netty.version>
+		<netty.version>4.1.132.Final</netty.version>
 		<mariadb-java-client.version>3.5.8</mariadb-java-client.version>
 		<mockito.version>5.23.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 		<mockserver.version>5.15.0</mockserver.version>
-		<omnifaces.version>4.7.8</omnifaces.version>
+		<omnifaces.version>4.7.9</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.5.1</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>
@@ -146,7 +146,7 @@
 		<spring.version>6.2.18</spring.version>
 		<slf4j.version>2.0.17</slf4j.version>
 		<solr.version>9.10.1</solr.version>
-		<swagger.version>2.2.48</swagger.version>
+		<swagger.version>2.2.49</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.7.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -1254,7 +1254,7 @@
 			<plugin>
 				<groupId>org.owasp</groupId>
 				<artifactId>dependency-check-maven</artifactId>
-				<version>12.2.0</version>
+				<version>12.2.1</version>
 				<configuration>
 					<!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
@@ -1283,7 +1283,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>13.4.0</version>
+						<version>13.4.1</version>
 					</dependency>
 				</dependencies>
 				<executions>

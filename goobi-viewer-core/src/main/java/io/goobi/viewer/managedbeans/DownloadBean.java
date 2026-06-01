@@ -163,10 +163,14 @@ public class DownloadBean implements Serializable {
     /**
      * Matches an absolute Unix filesystem path (at least two segments) ending in a filename — capture group 1 is the
      * filename. The negative lookbehind anchors the match to a path boundary (start of string or whitespace) so we
-     * don't accidentally consume parts of arbitrary identifiers that happen to contain slashes.
+     * don't accidentally consume parts of arbitrary identifiers that happen to contain slashes (e.g. {@code I/O}).
      */
+    // Avoid (?:...)*-style group repetition (Sonar S5998: stack overflow risk on long inputs, since Java's regex
+    // engine recurses per group iteration). Greedy \S+ followed by /([^/\s]+) backtracks once to the last slash and
+    // is matched iteratively, eliminating the per-segment recursion. Behaviour for path-shaped substrings is
+    // unchanged for all realistic worker error messages.
     private static final Pattern ABSOLUTE_PATH_PATTERN =
-            Pattern.compile("(?<!\\S)/[^\\s/]+(?:/[^\\s/]+)*/([^/\\s]+)");
+            Pattern.compile("(?<!\\S)/\\S+/([^/\\s]+)");
 
     /**
      * Matches the contentlib's most common PDF generation failure, e.g.
@@ -196,6 +200,7 @@ public class DownloadBean implements Serializable {
      * @should rewrite contentlib image not found pattern into friendly form with pi
      * @should append pi when not already present and pattern does not match
      * @should return null when raw is blank
+     * @should not overflow stack on very long paths
      */
     static String sanitizeDownloadErrorMessage(String raw, String pi) {
         if (StringUtils.isBlank(raw)) {

@@ -30,6 +30,43 @@ import io.goobi.viewer.model.security.user.User;
 class CommentLegacyTest extends AbstractTest {
 
     /**
+     * @see CommentLegacy#getDisplayText()
+     * @verifies remove script tags from display text
+     */
+    @Test
+    void getDisplayText_shouldRemoveScriptTagsFromDisplayText() {
+        CommentLegacy c = new CommentLegacy();
+        c.setText("hello<script>alert(1)</script>world");
+        String display = c.getDisplayText();
+        Assertions.assertFalse(display.toLowerCase().contains("<script"));
+        Assertions.assertTrue(display.contains("hello"));
+    }
+
+    /**
+     * @see CommentLegacy#checkAndCleanScripts()
+     * @verifies remove scripts correctly
+     */
+    @Test
+    void checkAndCleanScripts_shouldRemoveScriptsCorrectly() {
+        CommentLegacy c = new CommentLegacy();
+        c.setText("<script>alert(1)</script>hello");
+        c.checkAndCleanScripts();
+        Assertions.assertFalse(c.getText().toLowerCase().contains("<script"));
+    }
+
+    /**
+     * @see CommentLegacy#checkAndCleanScripts()
+     * @verifies also remove event handler attributes
+     */
+    @Test
+    void checkAndCleanScripts_shouldAlsoRemoveEventHandlerAttributes() {
+        CommentLegacy c = new CommentLegacy();
+        c.setText("<b onclick=\"alert(1)\">hello</b>");
+        c.checkAndCleanScripts();
+        Assertions.assertFalse(c.getText().toLowerCase().contains("onclick"));
+    }
+
+    /**
      * Verifies that the parameterized constructor correctly assigns all fields.
      *
      * @see CommentLegacy#CommentLegacy(String, int, User, String, CommentLegacy)

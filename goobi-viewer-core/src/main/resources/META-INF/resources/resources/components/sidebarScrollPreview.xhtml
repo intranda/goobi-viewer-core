@@ -21,6 +21,7 @@
                     <ui:repeat
                         var="page"
                         value="#{activeDocumentBean.viewManager.allPages}">
+                                                
                         <div class="sidebar-scroll-preview__item">
                             <ui:fragment rendered="#{page != null}">
                                 <!-- NON SEQUENCE MODE LINKS -->
@@ -73,10 +74,18 @@
         </div>
 
         <script>
+     		// <![CDATA[
             // fade in lazy loaded images
-             $('[data-script="fadeIn"]').on('load', function(){
-                $(this).addClass('-loaded');
-             });
+			$('[data-script="fadeIn"]').each(function() {
+			    var $img = $(this);
+			    if (this.complete && this.naturalWidth > 0) {
+			        $img.addClass('-loaded');
+			    } else {
+			        $img.on('load', function() {
+			            $(this).addClass('-loaded');
+			        });
+			    }
+			});
 
             $( document ).ready(function() {
                // console.log('current picture is:' + #{activeDocumentBean.viewManager.currentImageOrder})
@@ -152,6 +161,7 @@
             } );
 
             });
+         // ]]>
         </script>
     </composite:implementation>
 </ui:composition>

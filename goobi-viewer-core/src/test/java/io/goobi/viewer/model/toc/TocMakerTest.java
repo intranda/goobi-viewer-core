@@ -23,9 +23,11 @@ package io.goobi.viewer.model.toc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
@@ -335,5 +337,71 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
                 "Anchor must be at index 0 — the ancestor-containing tree was selected as the largest");
         // Volume elements immediately follow the anchor
         Assertions.assertEquals("306653648_1891", elements.get(1).getTopStructPi());
+    }
+
+    /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
+     * @verifies render unique PIs that match the existing anchor structure invariant
+     */
+    @Test
+    void generateToc_shouldRenderUniquePisThatMatchTheExistingAnchorStructureInvariant() throws Exception {
+        // Anchor 306653648 has 7 volumes (1891/1892/1893/1894/1897/1898/1899). Opening volume 306653648_1891
+        // with addAllSiblings=true renders a TOC containing the volume itself plus the 6 sibling top-elements,
+        // per existing TocMakerTest.generateToc_shouldIncludeAnchorElementFullVolumeTreeAndSiblingVolumeTopElementsInTOC.
+        // The total list has 111 elements (1 anchor + 104 volume struct elements + 6 sibling volume top elements),
+        // referencing 8 unique top-struct PIs (anchor + main volume + 6 siblings).
+        String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
+        Assertions.assertNotNull(iddoc);
+        StructElement structElement = new StructElement(iddoc);
+        Map<String, List<TOCElement>> tocElements = TocMaker.generateToc(new TOC(), structElement, true, "image/tiff", 1, -1);
+
+        Set<String> uniquePis = new HashSet<>();
+        for (TOCElement element : tocElements.get(StringConstants.DEFAULT_NAME)) {
+            if (element.getTopStructPi() != null) uniquePis.add(element.getTopStructPi());
+        }
+        Assertions.assertFalse(uniquePis.isEmpty(), "Rendered TOC has no top-struct PIs at all");
+        Assertions.assertEquals(8, uniquePis.size(), "Rendered TOC should reference exactly 8 unique PIs");
+    }
+
+    /**
+     * @see TocMaker#isCalendarEligibleParent(SolrDocument)
+     * @verifies return false when doc is null
+     */
+    @Test
+    void isCalendarEligibleParent_shouldReturnFalseWhenDocIsNull() throws Exception {
+        Assertions.assertFalse(TocMaker.isCalendarEligibleParent(null));
+    }
+
+    /**
+     * @see TocMaker#isCalendarEligibleParent(SolrDocument)
+     * @verifies return false when doc is neither anchor nor group
+     */
+    @Test
+    void isCalendarEligibleParent_shouldReturnFalseWhenDocIsNeitherAnchorNorGroup() throws Exception {
+        // Plain DOCSTRCT doc (not anchor, not group) — early-out before any Solr access.
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        doc.setField(SolrConstants.DOCSTRCT, "Newspaper");
+        doc.setField(SolrConstants.PI, "test_pi");
+        Assertions.assertFalse(TocMaker.isCalendarEligibleParent(doc));
+    }
+
+    /**
+     * @see TocMaker#isCalendarEligibleParent(SolrDocument)
+     * @verifies return false when docstruct is not in the whitelist
+     */
+    @Test
+    void isCalendarEligibleParent_shouldReturnFalseWhenDocstructIsNotInTheWhitelist() throws Exception {
+        // Test config whitelist is [Newspaper, Periodical]. An anchor with a different docstruct
+        // must NOT trigger the sibling-skip — protects multi-volume monographs etc. from accidental
+        // TOC suppression. Early-out before the multi-year facet query, so no Solr access required.
+        Assertions.assertFalse(DataManager.getInstance().getConfiguration().getCalendarDocStructTypes().isEmpty(),
+                "Test config has unexpectedly an empty calendar docstruct whitelist; this test needs entries");
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.ISANCHOR, Boolean.TRUE);
+        doc.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        doc.setField(SolrConstants.DOCSTRCT, "MultiVolumeWork");
+        doc.setField(SolrConstants.PI, "test_pi");
+        Assertions.assertFalse(TocMaker.isCalendarEligibleParent(doc));
     }
 }

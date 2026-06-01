@@ -810,6 +810,46 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * Returns the group memberships with any entry whose value matches this element's anchor PI removed.
+     *
+     * <p>Some indexer pipelines emit a {@code GROUPID_*} field whose value is identical to the
+     * record's {@code PI_ANCHOR} / {@code PI_PARENT}, e.g. a newspaper volume tagged with
+     * {@code GROUPID_NEWSPAPER} pointing at the same anchor that {@code PI_ANCHOR} already
+     * references. The raw {@link #getGroupMemberships()} map then contains an entry that
+     * is semantically a duplicate of the anchor relationship; UI code that renders both a
+     * group listing and an anchor link (such as {@code widget_relatedGroups.xhtml}) ends up
+     * showing the same target twice.
+     *
+     * <p>The raw map is left untouched for callers that depend on it (e.g.
+     * {@link io.goobi.viewer.model.viewer.ViewManager#createCalendarView()} for records
+     * indexed without {@code PI_ANCHOR}), so the dedupe is opt-in via this getter.
+     *
+     * @return a copy of {@code groupMemberships} with anchor-equal entries filtered out;
+     *         never null
+     * @should return all entries when no anchor pi is known
+     * @should remove entries whose value equals the anchor pi
+     */
+    public Map<String, String> getGroupMembershipsExcludingAnchor() {
+        if (groupMemberships.isEmpty()) {
+            return groupMemberships;
+        }
+        String anchorPi = ancestors.get(SolrConstants.PI_ANCHOR);
+        if (anchorPi == null) {
+            anchorPi = ancestors.get(SolrConstants.PI_PARENT);
+        }
+        if (anchorPi == null) {
+            return groupMemberships;
+        }
+        Map<String, String> filtered = new HashMap<>(groupMemberships.size());
+        for (Map.Entry<String, String> entry : groupMemberships.entrySet()) {
+            if (!anchorPi.equals(entry.getValue())) {
+                filtered.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return filtered;
+    }
+
+    /**
      * getMultiLanguageDisplayLabel.
      *
      * @return the multilingual display label derived from the TITLE or LABEL metadata fields

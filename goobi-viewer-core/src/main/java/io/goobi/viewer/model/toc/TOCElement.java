@@ -71,7 +71,7 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     private final boolean anchorOrGroup;
     private String urlPrefix = "";
     private String urlSuffix = "";
-    private final boolean accessPermissionPdf;
+    private boolean accessPermissionPdf;
     private AccessPermission accessPermissionThumbnail = null;
     /** Element is visible in the current tree. */
     private boolean visible = true;
@@ -207,6 +207,17 @@ public class TOCElement implements IAccessDeniedThumbnailOutput, Serializable {
     
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
+    }
+
+    /**
+     * Updates the PDF access flag. Used by TocMaker's two-pass build to apply permissions resolved
+     * after structure construction.
+     *
+     * @param accessPermissionPdf true if PDF download is permitted
+     * @should update accessPermissionPdf field
+     */
+    public void setAccessPermissionPdf(boolean accessPermissionPdf) {
+        this.accessPermissionPdf = accessPermissionPdf;
     }
 
     /**

@@ -63,7 +63,9 @@
                                                 class="btn btn--clean widget-search-facets__filter-button"
                                                 data-toggle="searchFacetFilter"
                                                 aria-label="#{msg.placeholder__filter_search_results}">
-                                                <util:icon icon="search" svgClass="widget__topbar-icon-svg widget-search-facets__topbar-icon-svg" />
+                                                <util:icon
+                                                    icon="search"
+                                                    svgClass="widget__topbar-icon-svg widget-search-facets__topbar-icon-svg" />
                                             </button>
                                         </div>
                                     </ui:fragment>
@@ -102,7 +104,7 @@
                                                     <h:outputLink
                                                         styleClass="btn widget-search-facets__boolean-button"
                                                         title="#{msg.yes} (#{searchBean.facets.getFacet(field.key,'true').count})"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/">
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:true/#{navigationHelper.subThemeQueryParam}">
                                                         #{msg.yes}
                                                         <f:passThroughAttribute
                                                             name="data-triggerjs"
@@ -147,7 +149,7 @@
                                                     <h:outputLink
                                                         styleClass="btn widget-search-facets__boolean-button"
                                                         title="#{msg.no} (#{searchBean.facets.getFacet(field.key,'false').count})"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/">
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(field.key)}#{field.key}:false/#{navigationHelper.subThemeQueryParam}">
                                                         #{msg.no}
                                                         <f:passThroughAttribute
                                                             name="data-triggerjs"
@@ -185,7 +187,7 @@
 
                                         <ul class="widget-search-facets__list">
                                             <!-- ACTIVE FACETS -->
-                                            <c:forEach 
+                                            <c:forEach
                                                 items="#{searchBean.facets.getActiveFacetsForField(field.key)}"
                                                 var="facet">
                                                 <li class="widget-search-facets__list-item active">
@@ -196,7 +198,9 @@
                                                         <div class="widget-search-facets__list-item-link-inner">
                                                             <div class="widget-search-facets__list-item-label">#{facet.translatedLabel}</div>
                                                             <div class="widget-search-facets__list-item-icon">
-                                                                <util:icon icon="x" svgClass="widget__body-icon-svg widget-search-facets__body-icon-svg" />
+                                                                <util:icon
+                                                                    icon="x"
+                                                                    svgClass="widget__body-icon-svg widget-search-facets__body-icon-svg" />
                                                             </div>
                                                         </div>
                                                         <f:passThroughAttribute
@@ -219,7 +223,7 @@
                                                 <li class="widget-search-facets__list-item">
                                                     <h:outputLink
                                                         styleClass="widget-search-facets__list-item-link"
-                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/">
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/#{navigationHelper.subThemeQueryParam}">
                                                         <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>
                                                         <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
                                                         <f:passThroughAttribute
@@ -239,7 +243,9 @@
                                             class="btn btn--clean widget-search-facets__collapse-button -expand"
                                             jsf:action="#{searchBean.facets.expandFacet(field.key)}"
                                             title="#{msg.slideDown}">
-                                            <util:icon icon="chevron-down" svgClass="widget-search-facets__collapse-button" />
+                                            <util:icon
+                                                icon="chevron-down"
+                                                svgClass="widget-search-facets__collapse-button" />
                                             <f:passThroughAttribute
                                                 name="data-collapse-link"
                                                 value="collapse-link-#{status.index}" />
@@ -253,7 +259,9 @@
                                             class="btn btn--clean widget-search-facets__collapse-button -collapse"
                                             jsf:action="#{searchBean.facets.collapseFacet(field.key)}"
                                             title="#{msg.slideUp}">
-                                            <util:icon icon="chevron-up" svgClass="widget-search-facets__collapse-button"/>
+                                            <util:icon
+                                                icon="chevron-up"
+                                                svgClass="widget-search-facets__collapse-button" />
                                             <f:passThroughAttribute
                                                 name="data-collapse-link"
                                                 value="collapse-link-#{status.index}" />

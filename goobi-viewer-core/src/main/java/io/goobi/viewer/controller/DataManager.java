@@ -82,7 +82,11 @@ public final class DataManager {
 
     private Configuration configuration;
 
-    private LanguageHelper languageHelper;
+    // volatile + double-checked locking so concurrent first-time callers cannot each create a
+    // separate LanguageHelper. Each instance owns its own ScheduledExecutorService and
+    // PeriodicReloadingTrigger; an orphaned instance would never be shut down by ContextListener
+    // and Tomcat would report its scheduler thread as a memory leak at undeploy.
+    private volatile LanguageHelper languageHelper; //NOSONAR S3077 — DCL safe publication, see comment above
 
     private SolrSearchIndex searchIndex;
 
@@ -279,13 +283,22 @@ public final class DataManager {
      * @return the language helper instance for ISO language code lookups, initialised lazily on first access
      */
     public LanguageHelper getLanguageHelper() {
-        if (languageHelper == null) {
+        // Proper double-checked locking: re-check inside the synchronized block so two threads
+        // arriving simultaneously do not both construct a new LanguageHelper. The previous code
+        // had the inner check missing, so the second thread would overwrite the first instance
+        // and orphan its ScheduledExecutorService — a slow drip of leaked scheduler threads
+        // visible as "pool-N-thread-1" memory-leak warnings at Tomcat shutdown.
+        LanguageHelper local = languageHelper;
+        if (local == null) {
             synchronized (LOCK) {
-                languageHelper = new LanguageHelper("languages.xml");
+                local = languageHelper;
+                if (local == null) {
+                    local = new LanguageHelper("languages.xml");
+                    languageHelper = local;
+                }
             }
         }
-
-        return languageHelper;
+        return local;
     }
 
     /**

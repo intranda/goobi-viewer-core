@@ -534,6 +534,9 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         io.goobi.viewer.model.calendar.CalendarView cal = Mockito.mock(io.goobi.viewer.model.calendar.CalendarView.class);
         Mockito.when(vm.getTopStructElement()).thenReturn(top);
         Mockito.when(top.isAnchor()).thenReturn(true);
+        // Docstruct must be in the test config's whitelist (Newspaper/Periodical) so we exercise
+        // the year-count branch rather than short-circuiting on the docstruct gate.
+        Mockito.when(top.getDocStructType()).thenReturn("Newspaper");
         Mockito.when(vm.getCalendarView()).thenReturn(cal);
         Mockito.when(cal.getVolumeYears()).thenReturn(java.util.Collections.singletonList("2024"));
         assertFalse(ActiveDocumentBean.shouldDeferTocToCalendar(vm));
@@ -554,9 +557,47 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.when(vm.getTopStructElement()).thenReturn(top);
         Mockito.when(top.isAnchor()).thenReturn(false);
         Mockito.when(top.isGroup()).thenReturn(true);
+        // Docstruct is in the test config whitelist, so the deferral fires for the multi-year case.
+        Mockito.when(top.getDocStructType()).thenReturn("Periodical");
         Mockito.when(vm.getCalendarView()).thenReturn(cal);
         Mockito.when(cal.getVolumeYears()).thenReturn(java.util.Arrays.asList("2022", "2023", "2024"));
         assertTrue(ActiveDocumentBean.shouldDeferTocToCalendar(vm));
+    }
+
+    /**
+     * @see ActiveDocumentBean#shouldDeferTocToCalendar(ViewManager)
+     * @verifies return false when docstruct is not in calendar whitelist
+     */
+    @Test
+    void shouldDeferTocToCalendar_shouldReturnFalseWhenDocstructIsNotInCalendarWhitelist() throws Exception {
+        // Podcast anchor with 951 audio episodes spanning 2020-2022 (multi-year) — the year-count
+        // probe alone would trigger deferral, but the calendar view does not apply to podcasts,
+        // so the docstruct gate must short-circuit and let the normal TOC build run.
+        ViewManager vm = Mockito.mock(ViewManager.class);
+        StructElement top = Mockito.mock(StructElement.class);
+        Mockito.when(vm.getTopStructElement()).thenReturn(top);
+        Mockito.when(top.isAnchor()).thenReturn(true);
+        Mockito.when(top.getDocStructType()).thenReturn("Podcast");
+        assertFalse(ActiveDocumentBean.shouldDeferTocToCalendar(vm));
+        // Year-count probe must not run when the docstruct gate already excludes deferral.
+        Mockito.verify(vm, Mockito.never()).getCalendarView();
+    }
+
+    /**
+     * @see ActiveDocumentBean#shouldDeferTocToCalendar(ViewManager)
+     * @verifies return false when docstruct is null
+     */
+    @Test
+    void shouldDeferTocToCalendar_shouldReturnFalseWhenDocstructIsNull() throws Exception {
+        // Null docstruct must not be treated as "matches everything" against the whitelist —
+        // when no docstruct is available the deferral cannot be justified.
+        ViewManager vm = Mockito.mock(ViewManager.class);
+        StructElement top = Mockito.mock(StructElement.class);
+        Mockito.when(vm.getTopStructElement()).thenReturn(top);
+        Mockito.when(top.isAnchor()).thenReturn(true);
+        Mockito.when(top.getDocStructType()).thenReturn(null);
+        assertFalse(ActiveDocumentBean.shouldDeferTocToCalendar(vm));
+        Mockito.verify(vm, Mockito.never()).getCalendarView();
     }
 
     /**

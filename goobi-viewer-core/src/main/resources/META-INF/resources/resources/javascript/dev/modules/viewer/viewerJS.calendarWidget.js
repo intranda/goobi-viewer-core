@@ -61,11 +61,9 @@ var viewerJS = (function (viewer) {
                 _destroy(state);
             };
 
-            Promise.all([_fetchYearData(state, config.currentYear), _fetchAvailableMonths(state)]).then(
-                function (results) {
-                    _createCalendar(state, results[0]);
-                }
-            );
+            Promise.all([_fetchYearData(state, config.currentYear), _fetchAvailableMonths(state)]).then(function (results) {
+                _createCalendar(state, results[0]);
+            });
 
             return state;
         },
@@ -440,8 +438,7 @@ var viewerJS = (function (viewer) {
                 var targetYear = _findNextAvailableYear(state, lastYear, direction);
                 if (!targetYear) return;
 
-                var month =
-                    direction > 0 ? _findFirstMonthInYear(state, targetYear) : _findLastMonthInYear(state, targetYear);
+                var month = direction > 0 ? _findFirstMonthInYear(state, targetYear) : _findLastMonthInYear(state, targetYear);
                 state._skipInProgress = true;
                 state._pendingYear = targetYear;
                 _fetchYearData(state, String(targetYear)).then(function (newDates) {

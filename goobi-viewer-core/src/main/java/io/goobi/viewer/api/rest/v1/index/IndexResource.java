@@ -78,6 +78,7 @@ import io.goobi.viewer.model.maps.features.LabelCreator;
 import io.goobi.viewer.model.maps.features.MetadataDocument;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -595,6 +596,11 @@ public class IndexResource {
         }
         if (jsonArray == null) {
             jsonArray = new JSONArray();
+        }
+        if (params.isResolveRecordUrl()) {
+            for (int i = 0; i < result.size() && i < jsonArray.length(); i++) {
+                jsonArray.getJSONObject(i).put("url", IdentifierResolver.constructUrl(result.get(i), false));
+            }
         }
         return jsonArray;
     }
