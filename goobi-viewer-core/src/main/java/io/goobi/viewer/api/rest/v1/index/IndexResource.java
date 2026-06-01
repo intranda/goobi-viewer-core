@@ -413,24 +413,32 @@ public class IndexResource {
         }
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
-        // When query is explicitly set to empty string (e.g. ?query=), treat it as "*:*" to avoid
-        // Solr syntax error from building "+() ..." which is invalid syntax.
-        // Always run through cleanUpQuery (strips non-whitelisted local-params) and always append
-        // the access-condition suffix from getAllSuffixes — the previous {!join}-prefix branch
-        // skipped the suffix, which let an attacker bypass access conditions by prefixing the
-        // query with a whitelisted join (GVC-2026-25).
-        String cleanedQuery = SolrTools.cleanUpQuery(
+        // Clean the user query, preserving a whitelisted "{!join ...}" prefix. A leading Solr
+        // local param must stay at the very start of the query string, so the query must NOT be
+        // wrapped in "+(...)" — doing so turns "{!join ...}" into an embedded (illegal) local
+        // param and Solr rejects it with a 400. When query is blank (e.g. ?query=), default to
+        // "*:*" to avoid an empty main query.
+        String mainQuery = SolrTools.cleanUpQuery(
                 StringTools.unescapeCriticalUrlChracters(
                         org.apache.commons.lang3.StringUtils.isBlank(filterQuery) ? "*:*" : filterQuery));
-        String queryEscaped = new StringBuilder().append("+(")
-                .append(cleanedQuery)
-                .append(") +(-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:* *:*)")
-                .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
-                .toString();
+
+        // Exclude polygon docs (otherwise the heatmap saturates) and enforce the access-condition
+        // suffix as a *filter query*. Applying these as a filter rather than concatenating them
+        // into the main query means the constraint holds even when mainQuery is a "{!join ...}",
+        // which closes the GVC-2026-25 bypass: the previous "{!join"-prefix branch skipped
+        // getAllSuffixes entirely, letting an unauthenticated caller read across access conditions.
+        // Any user facetQuery is ANDed in as a further filter clause; getHeatMap() runs
+        // cleanUpQuery over the whole filter string.
+        StringBuilder resultFilter = new StringBuilder()
+                .append("+(*:* -MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)")
+                .append(SearchHelper.getAllSuffixes(servletRequest, true, true));
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(facetQuery)) {
+            resultFilter.append(" +(").append(facetQuery).append(')');
+        }
         try {
             return DataManager.getInstance()
                     .getSearchIndex()
-                    .getHeatMap(solrField, wktRegion, queryEscaped, facetQuery, gridLevel);
+                    .getHeatMap(solrField, wktRegion, mainQuery, resultFilter.toString(), gridLevel);
         } catch (IllegalArgumentException e) {
             // HeatmapFacetMap.setGridLevel() throws IllegalArgumentException for out-of-range values
             throw new IllegalRequestException("Invalid heatmap parameters: " + e.getMessage());
