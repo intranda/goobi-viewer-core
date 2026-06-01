@@ -32,6 +32,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.SecurityManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -62,6 +63,8 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
      * @should return 401 with token_expired when expired bearer token provided
      * @should return 401 with invalid_token when unknown bearer token provided
      * @should return 401 when no bearer token and no session
+     * @should return 401 when bearer token belongs to inactive user
+     * @should return 401 when bearer token belongs to suspended user
      */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -70,13 +73,20 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
 
             tokenOpt.ifPresentOrElse(token -> {
                 if (token.isExpired()) {
-                    //abort: token expired
                     requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
                             .type(MediaType.APPLICATION_JSON)
                             .entity("{\"status\":\"error\",\"message\":\"token_expired\"}")
                             .build());
+                    return;
                 }
-                //token valid: continue
+                User user = token.getUser();
+                if (user != null && (!user.isActive() || user.isSuspended())) {
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                            .type(MediaType.APPLICATION_JSON)
+                            .entity("{\"status\":\"error\",\"message\":\"user_inactive\"}")
+                            .build());
+                    return;
+                }
             }, () -> {
                 //no token
                 if (!isUserLoggedIn(servletRequest)) {
@@ -109,5 +119,17 @@ public class UserLoggedInFilter implements ContainerRequestFilter {
             return DataManager.getInstance().getDao().getUserTokenByTokenHash(hash);
         }
         return Optional.empty();
+    }
+
+    /**
+     * @param request the HTTP request containing a potential Bearer token
+     * @return a valid (non-expired) UserToken, or empty
+     * @throws DAOException if database access fails
+     * @should return empty optional for expired token
+     * @should return empty optional when no bearer header present
+     * @should return token for valid non-expired token
+     */
+    public static Optional<UserToken> getValidUserToken(HttpServletRequest request) throws DAOException {
+        return getUserToken(request).filter(t -> !t.isExpired());
     }
 }

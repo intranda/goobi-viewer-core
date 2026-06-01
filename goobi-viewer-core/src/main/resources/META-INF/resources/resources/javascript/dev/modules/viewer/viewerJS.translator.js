@@ -51,9 +51,7 @@ var viewerJS = (function (viewer) {
         if (viewer.isString(keys)) {
             keys = [keys];
         }
-        keys = keys
-            .filter((key) => key != undefined && key.length > 0)
-            .filter((key) => this.keys && !this.keys.includes(key));
+        keys = keys.filter((key) => key != undefined && key.length > 0).filter((key) => this.keys && !this.keys.includes(key));
         if (keys && keys.length > 0) {
             let keyList = keys.join(',');
             let url = this.restApiUrl + 'localization/translations?keys=' + keyList;
@@ -113,3 +111,9 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+// Mirrors the pattern in viewerJS.datePicker.js.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

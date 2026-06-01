@@ -42,7 +42,6 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,6 +66,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundExcepti
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
+import io.goobi.viewer.api.rest.bindings.CSRFGuarded;
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
@@ -98,6 +98,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -442,27 +443,82 @@ public class CMSMediaResource {
     }
 
     /**
-     * List all uploaded media files.
+     * List all uploaded media files, optionally paginated.
      *
-     * @return List<String> of media file names
-     * @throws PresentationException
+     * <p>The default values keep the endpoint backwards-compatible with existing consumers that
+     * fetched the unbounded list: when no parameters are supplied, the full list is returned.
+     * Clients that opt in by sending {@code first} / {@code count} get a paginated slice.
+     *
+     * <p><b>Note:</b> {@link Files#list(Path)} returns entries in an undefined order, so a slice
+     * is not guaranteed to be stable across calls. The pagination here protects against
+     * unbounded responses, not against ordering changes.
+     *
+     * @param first zero-based index of the first entry to return; must be {@code >= 0}
+     * @param count maximum number of entries to return; must be {@code >= 0}
+     * @return paginated list of CMS media file names
+     * @throws PresentationException when the media folder cannot be read
+     * @should reject negative first
+     * @should reject negative count
      */
     @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(tags = { "cms" }, summary = "List all uploaded CMS media files")
+    @Operation(tags = { "cms" }, summary = "List all uploaded CMS media files",
+            description = "Optional 'first' and 'count' query parameters paginate the response;"
+                    + " omitting both returns the full list. File order is filesystem-dependent.")
     @ApiResponse(responseCode = "200", description = "List of CMS media filenames")
+    @ApiResponse(responseCode = "400", description = "Negative pagination parameter")
     @ApiResponse(responseCode = "401", description = "Not authorized")
     @ApiResponse(responseCode = "500", description = "Error reading the media folder")
     @UserLoggedInBinding
-    public List<String> getAllFiles() throws PresentationException {
+    public List<String> getAllFiles(
+            @Parameter(description = "Zero-based index of the first entry to return.",
+                    schema = @Schema(minimum = "0", defaultValue = "0")) @QueryParam("first") @DefaultValue("0") int first,
+            // "2147483647" == Integer.MAX_VALUE; annotation values must be compile-time
+            // constants. Keep both occurrences in sync.
+            @Parameter(description = "Maximum number of entries to return. Defaults to Integer.MAX_VALUE to preserve"
+                    + " the historic unbounded behavior; clients that paginate should set an explicit count.",
+                    schema = @Schema(minimum = "0", defaultValue = "2147483647")) @QueryParam("count") @DefaultValue("2147483647") int count)
+            throws PresentationException {
+        if (first < 0) {
+            throw new BadRequestException("first must be >= 0 but was " + first);
+        }
+        if (count < 0) {
+            throw new BadRequestException("count must be >= 0 but was " + count);
+        }
         Path cmsMediaFolder = Paths.get(DataManager.getInstance().getConfiguration().getViewerHome(),
                 DataManager.getInstance().getConfiguration().getCmsMediaFolder());
-        try (Stream<Path> files = Files.list(cmsMediaFolder)) {
-            return files.filter(Files::isRegularFile).map(Path::getFileName).map(Path::toString).collect(Collectors.toList());
+        try {
+            return listMediaFilenames(cmsMediaFolder, first, count);
         } catch (IOException e) {
             throw new PresentationException("Failed to read uploaded files: " + e.toString());
+        }
+    }
+
+    /**
+     * Lists regular file names in {@code folder}, applying {@code first}/{@code count} pagination
+     * over the (filesystem-order) entries.
+     *
+     * <p>{@link Files#list(Path)} is lazy; {@code skip}/{@code limit} short-circuit the stream so
+     * large folders do not need to be materialized when a small page is requested.
+     *
+     * @param folder directory to list
+     * @param first zero-based index of the first entry to return
+     * @param count maximum number of entries to return
+     * @return filenames as a list (filesystem order)
+     * @throws IOException if the directory cannot be opened
+     * @should respect first and count parameters
+     * @should return empty list when count is zero
+     */
+    static List<String> listMediaFilenames(Path folder, int first, int count) throws IOException {
+        try (Stream<Path> files = Files.list(folder)) {
+            return files.filter(Files::isRegularFile)
+                    .skip(first)
+                    .limit(count)
+                    .map(Path::getFileName)
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
         }
     }
 
@@ -527,11 +583,16 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    // CSRF protection: multipart/form-data is a CORS "simple request" and bypasses preflight,
+    // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
+    // available when webapi.csrf is enabled. Existing 403 already covers the rejection code.
+    @CSRFGuarded
     @Operation(tags = { "cms" }, summary = "Upload a CMS media file")
     @RequestBody(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA))
     @ApiResponse(responseCode = "200", description = "File uploaded successfully")
     @ApiResponse(responseCode = "401", description = "Not authorized")
-    @ApiResponse(responseCode = "403", description = "User does not have permission to upload media files")
+    @ApiResponse(responseCode = "403",
+            description = "User does not have permission to upload media files, or CSRF protection violated (when webapi.csrf is enabled)")
     @ApiResponse(responseCode = "500", description = "Error saving the uploaded file")
     @UserLoggedInBinding
     public Response
@@ -558,9 +619,9 @@ public class CMSMediaResource {
 
                 Optional<CMSCategory> requiredCategory = getRequiredCategoryForUser(user.get());
 
-                if (!Files.exists(cmsMediaFolder)) {
-                    Files.createDirectory(cmsMediaFolder);
-                }
+                // Idempotent and atomic; replaces previous exists()+createDirectory() pattern
+                // and additionally creates missing intermediate directories.
+                Files.createDirectories(cmsMediaFolder);
 
                 CMSMediaItem item = null;
                 if (Files.exists(mediaFile)) {
@@ -570,7 +631,11 @@ public class CMSMediaResource {
                         logger.error("Found existing media file without mediaItem entry in database. Deleting file");
                     }
                 }
-                Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
+                // Defense-in-depth (CWE-59): use OS-enforced NOFOLLOW open via the helper.
+                // The previous Files.copy(...) call followed symlinks at the target and could
+                // be abused to overwrite files outside the CMS media folder if an attacker had
+                // write access to the configured media folder path.
+                FileTools.copyRejectingSymlinks(uploadedInputStream, mediaFile);
 
                 if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
                     logger.debug("Successfully downloaded file {}", mediaFile);
@@ -588,9 +653,8 @@ public class CMSMediaResource {
                     return Response.status(Status.OK).entity(jsonItem).build();
                 }
                 String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
-                if (Files.exists(mediaFile)) {
-                    Files.delete(mediaFile);
-                }
+                // CWE-367: atomic single-syscall delete replaces previous exists()+delete() TOCTOU.
+                Files.deleteIfExists(mediaFile);
                 return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
             }
         } catch (AccessDeniedException e) {

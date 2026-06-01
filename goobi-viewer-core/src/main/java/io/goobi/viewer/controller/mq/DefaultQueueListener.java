@@ -30,6 +30,8 @@ import org.apache.activemq.RedeliveryPolicy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import org.json.JSONException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.goobi.viewer.controller.DataManager;
@@ -145,7 +147,7 @@ public class DefaultQueueListener {
             if (ticket != null) {
                 handleTicket(sess, message, ticket);
             }
-        } catch (JMSException | JsonProcessingException e) {
+        } catch (JMSException | JsonProcessingException | JSONException e) {
             if (!shouldStop && (conn == null || !conn.isTransportFailed())) {
                 // back off a little bit, maybe we have a problem with the connection or we are shutting down
                 try {
@@ -216,7 +218,7 @@ public class DefaultQueueListener {
                 //error, but don't retry
                 message.acknowledge();
             }
-        } catch (JMSException | NullPointerException | IllegalArgumentException t) {
+        } catch (JMSException | NullPointerException | IllegalArgumentException | JSONException t) {
             // During shutdown the connection/consumer is closed before the listener thread
             // exits, so acknowledge/recover will throw IllegalStateException (a JMSException
             // subclass). Suppress these expected errors to avoid noisy ERROR log entries.

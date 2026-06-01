@@ -86,4 +86,50 @@ class AccessTicketTest extends AbstractTest {
         ticket.setExpirationDate(LocalDateTime.now().plusDays(10));
         Assertions.assertTrue(ticket.isActive());
     }
+
+    /**
+     * @see AccessTicket#activate()
+     * @verifies generate distinct hashes for repeated activations of the same ticket
+     */
+    @Test
+    void activate_shouldGenerateDistinctHashesAcrossActivations() throws Exception {
+        AccessTicket ticket = new AccessTicket();
+        ticket.activate();
+        String firstHash = ticket.getPasswordHash();
+        Assertions.assertNotNull(firstHash);
+        Assertions.assertTrue(firstHash.startsWith("$2a$"));
+
+        ticket.reset();
+        String secondHash = ticket.getPasswordHash();
+        Assertions.assertNotNull(secondHash);
+        // With per-ticket random salt, two activations must produce different hashes,
+        // even if the generated cleartext happened to match.
+        Assertions.assertNotEquals(firstHash, secondHash);
+    }
+
+    /**
+     * @see AccessTicket#activate()
+     * @verifies produce a hash that verifies via checkPassword
+     */
+    @Test
+    void activate_shouldProduceHashVerifiableByCheckPassword() throws Exception {
+        AccessTicket ticket = new AccessTicket();
+        ticket.activate();
+        Assertions.assertTrue(ticket.checkPassword(ticket.getPassword()));
+        Assertions.assertFalse(ticket.checkPassword("definitely-not-the-password"));
+    }
+
+    /**
+     * @see AccessTicket#activate()
+     * @verifies generate a 22-character URL-safe Base64 password (128 bits of entropy)
+     */
+    @Test
+    void activate_shouldGenerate22CharUrlSafePassword() throws Exception {
+        AccessTicket ticket = new AccessTicket();
+        ticket.activate();
+        String password = ticket.getPassword();
+        Assertions.assertNotNull(password);
+        Assertions.assertEquals(22, password.length());
+        Assertions.assertTrue(password.matches("^[A-Za-z0-9_-]+$"), "Password contains non-URL-safe characters: " + password);
+    }
 }

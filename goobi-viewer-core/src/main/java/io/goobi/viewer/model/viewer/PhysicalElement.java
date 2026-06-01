@@ -64,7 +64,6 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -994,14 +993,17 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             wordCoordsFormat = CoordsFormat.ALTO;
             String text = ALTOTools.getFulltext(altoText, altoCharset, false);
             if (StringUtils.isNotEmpty(text)) {
-                // TODO(security): Migrate to HtmlSanitizer once a dedicated cleanFulltextSnippet
-                // profile exists. Sibling case to BrowseElement.getFulltextForHtml — both render
-                // Solr-highlighted full-text where <mark>/<em> tags must survive sanitization,
-                // so the existing rich-text and comment allowlists are unsuitable.
-                String cleanText = StringTools.stripJS(text);
+                // Sanitize the ALTO-produced HTML (which carries NamedEntityEnricher button
+                // markup) through the dedicated allowlist that permits only the <button> tag
+                // and its known attribute set. No <mark> here because Solr-highlight placeholder
+                // substitution (SearchHelper.replaceHighlightingPlaceholders) only runs on the
+                // snippet path (BrowseElement.fulltext), not on page-level fulltext rendering.
+                // Log a warning when the sanitizer had to remove markup, matching the previous
+                // regex-based behavior.
+                String cleanText = HtmlSanitizer.cleanFulltextWithNamedEntities(text);
                 if (cleanText.length() < text.length()) {
                     text = cleanText;
-                    logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, getOrder());
+                    logger.warn("Disallowed markup found and removed from full-text in {}, page {}", pi, getOrder());
                 }
             }
             return text;
@@ -1010,16 +1012,13 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         if (fullText == null) {
             try {
                 fullText = loadFullText();
-                if (StringUtils.isNotEmpty(fullText)) {
-                    // TODO(security): Migrate to HtmlSanitizer once a dedicated cleanFulltextSnippet
-                    // profile exists. Sibling case to BrowseElement.getFulltextForHtml — Solr
-                    // highlighter injects <mark>/<em> tags that must be preserved.
-                    String cleanText = StringTools.stripJS(fullText);
-                    if (cleanText.length() < fullText.length()) {
-                        fullText = cleanText;
-                        logger.warn("JavaScript found and removed from full-text in {}, page {}", pi, getOrder());
-                    }
-                }
+                // No sanitization on this branch: the file comes from the indexer pipeline
+                // (viewer-data/<PI>/fulltext/<page>.txt) and may legitimately contain rich HTML
+                // — themes such as KHI ship structured markup (<div>, <h2>, <p>, <span>, <img>
+                // with xmlns attributes). Trust boundary is operator-controlled, identical to
+                // XHTML templates. The previous StringTools.stripJS call only removed
+                // <script>/<svg> via regex and was bypassable through every other XSS vector;
+                // it was security theater, not protection. See HIGH 5 WONTFIX in the audit memo.
                 fulltextAccessPermission = true;
             } catch (AccessDeniedException e) {
                 fulltextAccessPermission = false;
@@ -1735,6 +1734,17 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      */
     public int getFooterHeight(String pageType) throws ViewerConfigurationException {
         return DataManager.getInstance().getConfiguration().getFooterHeight(new ViewAttributes(this, PageType.getByName(pageType)));
+    }
+
+    /**
+     * get maximum image zoom
+     * 
+     * @param pageType name of the page type for image configuration lookup
+     * @return an integer
+     * @throws ViewerConfigurationException
+     */
+    public int getMaxImageZoom(String pageType) throws ViewerConfigurationException {
+        return DataManager.getInstance().getConfiguration().getMaxZoom(new ViewAttributes(this, PageType.getByName(pageType)));
     }
 
     /**

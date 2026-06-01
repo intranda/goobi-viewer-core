@@ -170,20 +170,19 @@ var viewerJS = (function (viewer) {
             if (!collection || !collection.service) {
                 return undefined;
             }
+
             if (Array.isArray(collection.service)) {
                 let tagService = collection.service
-                    .filter((s) => s['@context'] && s['@context'].endsWith('/taglists/context.json'))
-                    .filter((s) => name === undefined || s.name == name);
-                if (tagService.length > 0) {
+                    .filter((service) => service['@context'].endsWith('/taglists/context.json'))
+                    .filter((service) => service === undefined || service.name == name);
+                if (tagService && tagService.length > 0) {
                     return tagService[0].tags;
                 }
+            } else if (collection.service['@context'].endsWith('/taglists/context.json') && (name === undefined || collection.service.name == name)) {
+                return collection.service.tags;
+            } else {
                 return undefined;
             }
-            const single = collection.service;
-            if (single['@context'] && single['@context'].endsWith('/taglists/context.json') && (name === undefined || single.name == name)) {
-                return single.tags;
-            }
-            return undefined;
         },
 
         /**
@@ -320,3 +319,9 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+// Mirrors the pattern in viewerJS.datePicker.js.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

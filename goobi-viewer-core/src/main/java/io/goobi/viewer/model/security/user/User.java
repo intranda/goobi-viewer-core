@@ -28,7 +28,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1449,14 +1448,12 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         Path destFile = UserAvatarResource.getAvatarFilePath(fileName, getId());
         deleteAvatarFile();
         UserAvatarResource.removeFromImageCache(destFile, ContentServerCacheManager.getInstance());
-        try (InputStream initialStream = uploadedFile.getInputStream()) {
-            if (!Files.isDirectory(destFile.getParent())) {
-                Files.createDirectories(destFile.getParent());
-            }
-            java.nio.file.Files.copy(
-                    uploadedFile.getInputStream(),
-                    destFile,
-                    StandardCopyOption.REPLACE_EXISTING);
+        // Defense-in-depth (CWE-59): write via the symlink-rejecting helper instead of
+        // Files.copy, which followed symlinks at the target and shared the same risk as
+        // UserAvatarResource's REST upload path.
+        try (InputStream uploadStream = uploadedFile.getInputStream()) {
+            Files.createDirectories(destFile.getParent());
+            FileTools.copyRejectingSymlinks(uploadStream, destFile);
             if (!Files.exists(destFile)) {
                 throw new IOException("Uploaded file does not exist");
             } else if (!isValidImageFile(destFile)) {

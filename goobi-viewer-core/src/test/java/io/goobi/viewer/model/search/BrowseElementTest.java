@@ -156,6 +156,26 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see BrowseElement#getFulltextForHtml()
+     * @verifies preserve mark highlight tag and strip event handler attributes
+     */
+    @Test
+    void getFulltextForHtml_shouldPreserveMarkHighlightTagAndStripEventHandlerAttributes() {
+        BrowseElement be = new BrowseElement(null, 1, "label",
+                "trefferzeile mit <mark class=\"search-list--highlight\">Berlin</mark> drin"
+                        + "<script>alert(1)</script>"
+                        + "<mark class=\"x\" onclick=\"alert(2)\">term</mark>",
+                Locale.ENGLISH, null, null);
+        String html = be.getFulltextForHtml();
+        assertTrue(html.contains("<mark class=\"search-list--highlight\">Berlin</mark>"),
+                "highlight mark tag missing: " + html);
+        assertFalse(html.contains("<script"), "script not stripped: " + html);
+        assertFalse(html.contains("alert(1)"), "script body leaked: " + html);
+        assertFalse(html.contains("onclick"),
+                "event handler attribute on mark not stripped (regression for stripJS migration): " + html);
+    }
+
+    /**
      * @verifies return Mein Titel for given input
      */
     @Test

@@ -1263,7 +1263,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (StringUtils.isEmpty(searchString)) {
             return "-";
         }
-        return StringTools.stripJS(searchString);
+        return searchString;
     }
 
     /**
@@ -1287,7 +1287,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("setSearchString: {}", searchString);
         // Reset search result page
         currentPage = 1;
-        this.searchString = StringTools.stripJS(searchString);
+        this.searchString = searchString;
         generateSimpleSearchString(this.searchString);
     }
 

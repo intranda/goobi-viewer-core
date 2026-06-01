@@ -37,11 +37,7 @@ var viewerJS = (function (viewer) {
                 confirmText = confirmText ? confirmText : viewerJS.translator.translate('delete');
                 denyText = denyText ? denyText : viewerJS.translator.translate('cancel');
 
-                const {
-                    icon = 'error',
-                    confirmButtonClass = 'btn btn--danger',
-                    cancelButtonClass = 'btn btn--default',
-                } = opts;
+                const { icon = 'error', confirmButtonClass = 'btn btn--danger', cancelButtonClass = 'btn btn--default' } = opts;
 
                 if (typeof Swal !== 'undefined') {
                     const swalOptions = {
@@ -66,9 +62,7 @@ var viewerJS = (function (viewer) {
                         },
                     };
 
-                    return Swal.fire(swalOptions).then((result) =>
-                        result.isConfirmed ? Promise.resolve() : Promise.reject()
-                    );
+                    return Swal.fire(swalOptions).then((result) => (result.isConfirmed ? Promise.resolve() : Promise.reject()));
                 } else {
                     return window.confirm(message) ? Promise.resolve() : Promise.reject();
                 }
@@ -273,3 +267,8 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}
