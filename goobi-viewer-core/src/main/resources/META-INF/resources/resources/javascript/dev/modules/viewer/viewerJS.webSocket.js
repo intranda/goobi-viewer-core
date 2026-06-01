@@ -33,6 +33,7 @@ var viewerJS = (function (viewer) {
     viewer.WebSocket.PATH_SESSION_SOCKET = '/session.socket';
     viewer.WebSocket.PATH_CAMPAIGN_SOCKET = '/crowdsourcing/campaign.socket';
     viewer.WebSocket.PATH_CONFIG_EDITOR_SOCKET = '/admin/config/edit.socket';
+    viewer.WebSocket.PATH_TRANSLATION_EDITOR_SOCKET = '/admin/translations/edit.socket';
     viewer.WebSocket.PATH_DOWNLOAD_TASK = '/tasks/download/monitor.socket';
     viewer.WebSocket.PATH_SEARCH_AUTOCOMPLETE = '/search/autocomplete.socket';
 

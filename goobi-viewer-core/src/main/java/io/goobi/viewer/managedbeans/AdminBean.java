@@ -25,10 +25,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -58,6 +61,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.administration.MaintenanceMode;
+import io.goobi.viewer.model.administration.configeditor.VimSwapFile;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.authentication.AuthenticationProviderException;
@@ -160,7 +164,7 @@ public class AdminBean implements Serializable {
                     }
                     return DataManager.getInstance().getDao().getUsers(first, pageSize, useSortField, useSortOrder.asBoolean(), filters);
                 } catch (DAOException e) {
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                 }
                 return Collections.emptyList();
             }
@@ -380,7 +384,7 @@ public class AdminBean implements Serializable {
                 try {
                     userBean.logout();
                 } catch (AuthenticationProviderException | IOException e) {
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                 }
                 return "pretty:index";
             }
@@ -1138,7 +1142,7 @@ public class AdminBean implements Serializable {
                 logger.warn("METS document for '{}' contains no mets:file elements for file ID root: {}", pi, fileIdRoot);
             }
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage()); // Stack trace intentionally omitted - expected when METS file is missing
         } catch (IOException | JDOMException e) {
             logger.error(e.getMessage(), e);
         }
@@ -1212,8 +1216,6 @@ public class AdminBean implements Serializable {
         synchronized (TRANSLATION_LOCK) {
             List<TranslationGroup> ret = DataManager.getInstance().getConfiguration().getTranslationGroups();
             logger.trace("groups: {}", ret.size());
-            setTranslationGroupsEditorSession(BeanUtils.getSession().getId());
-            logger.trace("Locked translation for: {}", translationGroupsEditorSession);
             return ret;
         }
     }
@@ -1450,10 +1452,48 @@ public class AdminBean implements Serializable {
     /**
      * lockTranslation.
      */
-    public void lockTranslation() {
-        if (translationGroupsEditorSession == null) {
-            setTranslationGroupsEditorSession(BeanUtils.getSession().getId());
-            logger.trace("Translation locked");
+    public synchronized void lockTranslation() {
+        if (translationGroupsEditorSession != null) {
+            return; // already locked
+        }
+        // Phase 1: Check all messages files for vim locks
+        for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+            Path path = ViewerResourceBundle.getLocalTranslationFile(locale.getLanguage()).toPath();
+            if (Files.exists(path) && VimSwapFile.check(path) == VimSwapFile.Status.LOCKED_BY_VIM) {
+                logger.warn("Translation file locked by vim: {}", path);
+                Messages.error("admin__translations__file_locked_by_vim");
+                return;
+            }
+        }
+        // Phase 2: Set lock and create swap files
+        setTranslationGroupsEditorSession(BeanUtils.getSession().getId());
+        for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+            Path path = ViewerResourceBundle.getLocalTranslationFile(locale.getLanguage()).toPath();
+            if (Files.exists(path)) {
+                try {
+                    VimSwapFile.create(path, null);
+                } catch (IOException e) {
+                    logger.warn("Could not create swap file for {}: {}", path, e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Releases the translation editor lock if the given session ID matches the current editor.
+     * Also deletes vim-compatible swap files for all local messages files.
+     *
+     * @param sessionId the HTTP session ID requesting the unlock
+     */
+    public static synchronized void unlockTranslation(String sessionId) {
+        if (sessionId == null || !sessionId.equals(translationGroupsEditorSession)) {
+            return;
+        }
+        translationGroupsEditorSession = null;
+        logger.trace("Translation lock released for session '{}'", sessionId);
+        for (Locale locale : ViewerResourceBundle.getAllLocales()) {
+            Path path = ViewerResourceBundle.getLocalTranslationFile(locale.getLanguage()).toPath();
+            VimSwapFile.delete(path);
         }
     }
 

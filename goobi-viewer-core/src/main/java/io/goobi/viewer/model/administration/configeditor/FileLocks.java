@@ -86,10 +86,26 @@ public class FileLocks {
     }
 
     /**
+     * Returns all file paths locked by the given session id.
+     *
+     * @param sessionId a {@link java.lang.String} object
+     * @return set of paths locked by the session
+     */
+    public synchronized Set<Path> getLockedPathsForSessionId(String sessionId) {
+        Set<Path> result = new HashSet<>();
+        for (Map.Entry<Path, String> entry : locks.entrySet()) {
+            if (entry.getValue().equals(sessionId)) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
+
+    /**
      *
      * @param sessionId the HTTP session identifier whose locks should be released
      */
-    public void clearLocksForSessionId(String sessionId) {
+    public synchronized void clearLocksForSessionId(String sessionId) {
         Set<Path> toClear = new HashSet<>();
         for (Entry<Path, String> entry : locks.entrySet()) {
             if (entry.getValue().equals(sessionId)) {
@@ -102,5 +118,26 @@ public class FileLocks {
                 logger.debug("Released edit lock for {}", path.toAbsolutePath());
             }
         }
+    }
+
+    /**
+     * Atomically collects and removes all locks for the given session.
+     * Returns the set of paths that were locked (and are now released).
+     *
+     * @param sessionId a {@link java.lang.String} object
+     * @return set of paths that were locked by the session and have now been released
+     */
+    public synchronized Set<Path> getAndClearLocksForSessionId(String sessionId) {
+        Set<Path> result = new HashSet<>();
+        for (Entry<Path, String> entry : locks.entrySet()) {
+            if (entry.getValue().equals(sessionId)) {
+                result.add(entry.getKey());
+            }
+        }
+        for (Path path : result) {
+            locks.remove(path);
+            logger.debug("Released edit lock for {}", path.toAbsolutePath());
+        }
+        return result;
     }
 }
