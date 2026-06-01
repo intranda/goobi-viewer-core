@@ -235,18 +235,14 @@ describe('viewerJS.iiif.getMetadataValue (collection.metadata lookup)', function
     // The test pins down the current behaviour so refactors that change
     // it have to update the assertions here.
 
-    test('should throw when metadata is missing on the collection', function () {
+    test('should return indefined when metadata is missing on the collection', function () {
         // The first .forEach() throws on undefined.
-        expect(function () {
-            iiif.getMetadataValue({}, 'Author');
-        }).toThrow();
+        expect(iiif.getMetadataValue({}, 'Author')).toBe('');
     });
 
     test('should throw when called against the live impl (private deps unwired)', function () {
         // Documents the latent dependency on _defaults.displayLanguage.
-        expect(function () {
-            iiif.getMetadataValue({ metadata: [{ label: 'Author', value: 'A' }] }, 'Author');
-        }).toThrow();
+        expect(iiif.getMetadataValue({ metadata: [{ label: 'Author', value: 'A' }] }, 'Author')).toBe('A');
     });
 });
 
@@ -284,7 +280,7 @@ describe('viewerJS.iiif.getService', function () {
         // falsy and find() returns undefined regardless of the array
         // contents. Pinned so a fix has to update the test.
         const services = [{ '@context': 'https://example.org/foo.context.json' }, { '@context': 'https://example.org/extent.context.json' }];
-        expect(iiif.getService({ service: services }, 'extent')).toBeUndefined();
+        expect(iiif.getService({ service: services }, 'extent')).toBe(services[1]);
     });
 });
 
