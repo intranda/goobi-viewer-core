@@ -34,7 +34,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -66,7 +65,7 @@ public final class SimpleQueryBuilder {
             return emptyResult();
         }
 
-        String display = StringTools.stripJS(normalized).trim();
+        String display = normalized.trim();
         String normalizedQuery = normalizeOperators(normalized);
 
         if ("*".equals(normalizedQuery)) {

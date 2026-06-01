@@ -288,6 +288,10 @@ public class AdminBean implements Serializable {
                 user.setNewPassword(passwordOne);
             }
             if (DataManager.getInstance().getDao().updateUser(user)) {
+                if (StringUtils.isNotEmpty(passwordOne)) {
+                    DataManager.getInstance().getDao().deleteAllUserTokensForUser(user);
+                    logger.info("Revoked all bearer tokens for user {} due to password change", user.getEmail());
+                }
                 Messages.info("user_saveSuccess");
             } else {
                 Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -848,7 +852,7 @@ public class AdminBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-
+     * 
      */
     Map<UserRole, String> getDirtyUserRoles() {
         return dirtyUserRoles;
@@ -1283,8 +1287,8 @@ public class AdminBean implements Serializable {
     /**
      * Getter for the field <code>currentTranslationGroup</code>.
      *
-     * @return the {@link io.goobi.viewer.model.translations.admin.TranslationGroup} currently being
-     *         edited, or null if none selected or session is locked
+     * @return the {@link io.goobi.viewer.model.translations.admin.TranslationGroup} currently being edited, or null if none selected or session is
+     *         locked
      */
     public TranslationGroup getCurrentTranslationGroup() {
         synchronized (TRANSLATION_LOCK) {
@@ -1515,7 +1519,6 @@ public class AdminBean implements Serializable {
         return uploadedAvatarFile;
     }
 
-    
     public MaintenanceMode getMaintenanceMode() {
         if (this.maintenanceMode == null) {
             try {
@@ -1527,7 +1530,6 @@ public class AdminBean implements Serializable {
         return maintenanceMode;
     }
 
-    
     public void setMaintenanceMode(MaintenanceMode maintenanceMode) {
         this.maintenanceMode = maintenanceMode;
     }

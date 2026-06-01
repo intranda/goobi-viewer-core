@@ -23,11 +23,15 @@ package io.goobi.viewer.model.cms.media;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -40,12 +44,14 @@ import de.intranda.api.iiif.presentation.content.ImageContent;
 import de.intranda.api.iiif.presentation.enums.Format;
 import de.intranda.api.serializer.WebAnnotationMetadataValueSerializer;
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Rotation;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import de.unigoettingen.sub.commons.util.PathConverter;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.model.cms.CMSCategory;
 
 /**
@@ -92,7 +98,12 @@ public class MediaItem {
      */
     public MediaItem(CMSMediaItem source, HttpServletRequest servletRequest) {
         this.label = source.getTranslationsForName();
-        this.description = source.getTranslationsForDescription();
+        // Defense-in-depth (CWE-79): description is a plain-text field maintained by CMS
+        // admins via mediaFile.xhtml (<h:inputTextarea>), but is serialized as JSON and
+        // consumed by clients that historically rendered it via .html() (see cmsJS.masonry.js).
+        // Strip any HTML before it leaves the server so future consumers cannot reintroduce
+        // a stored-XSS sink.
+        this.description = sanitizeDescriptionPlainText(source);
         this.altText = source.getTranslationsForAlternativeText();
         this.image = getMediaResource(source);
         this.link = Optional.ofNullable(source.getLinkURI(servletRequest)).map(URI::toString).orElse("#");
@@ -190,6 +201,36 @@ public class MediaItem {
 
     public IMetadataValue getAltText() {
         return altText;
+    }
+
+    /**
+     * Builds a {@link MultiLanguageMetadataValue} for the description metadata of the given source
+     * with each language value run through {@link HtmlSanitizer#cleanCommentPlainText(String)} so
+     * that any HTML markup is stripped before the value leaves the server.
+     *
+     * <p>Mirrors the language-map construction in
+     * {@link CMSMediaItem#getTranslationsForDescription()} but applies plain-text sanitization on
+     * each entry. The description input widget (<code>&lt;h:inputTextarea&gt;</code> in
+     * <code>mediaFile.xhtml</code>) is plain-text by design, so stripping any HTML matches the
+     * editorial intent and prevents stored XSS in JSON consumers.
+     *
+     * @param source CMS media item providing the metadata; may be {@code null}
+     * @return sanitized {@link IMetadataValue} (empty when {@code source} is {@code null} or has no
+     *         description entries)
+     * @should sanitize description values for every language
+     * @should drop language entries with blank description
+     * @should return empty metadata value when source is null
+     */
+    static IMetadataValue sanitizeDescriptionPlainText(CMSMediaItem source) {
+        if (source == null) {
+            return new MultiLanguageMetadataValue(new HashMap<>());
+        }
+        Map<String, String> sanitized = source.getMetadata().stream()
+                .filter(md -> StringUtils.isNotBlank(md.getDescription()))
+                .collect(Collectors.toMap(
+                        CMSMediaItemMetadata::getLanguage,
+                        md -> HtmlSanitizer.cleanCommentPlainText(md.getDescription())));
+        return new MultiLanguageMetadataValue(sanitized);
     }
 
 }

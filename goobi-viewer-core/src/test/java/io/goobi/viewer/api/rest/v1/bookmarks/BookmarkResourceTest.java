@@ -29,12 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.model.bookmark.Bookmark;
-import io.goobi.viewer.model.bookmark.BookmarkList;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -49,7 +47,7 @@ class BookmarkResourceTest extends AbstractRestApiTest {
      * @verifies parse name and pi from json
      */
     @Test
-    void deserializeBookmark_shouldParseNameAndPiFromJson() throws JsonMappingException, JsonProcessingException {
+    void deserializeBookmark_shouldParseNameAndPiFromJson() throws JsonProcessingException {
         String jsonString = "{\"name\": \"Test Bookmark\", \"description\": \"some testing...\", \"pi\": \"PPN743674162\"}";
         ObjectMapper mapper = new ObjectMapper();
         Bookmark bookmark = mapper.readValue(jsonString, Bookmark.class);
@@ -66,13 +64,13 @@ class BookmarkResourceTest extends AbstractRestApiTest {
      */
     @Test
     void addBookmarkList_shouldReturn409WhenNotLoggedIn() {
-        BookmarkList list = new BookmarkList();
-        list.setName("Test List");
+        BookmarkListCreateDto dto = new BookmarkListCreateDto();
+        dto.setName("Test list");
         try (Response response = target(USERS_BOOKMARKS)
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
-                .post(Entity.entity(list, MediaType.APPLICATION_JSON))) {
-            assertEquals(409, response.getStatus(), "POST /bookmarks without login should return 409 Conflict");
+                .post(Entity.entity(dto, MediaType.APPLICATION_JSON))) {
+            assertEquals(409, response.getStatus(), "POsST /bookmarks without login should return 409 Conflict: " + response.getStatusInfo().toString());
         }
     }
 

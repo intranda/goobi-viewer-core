@@ -21,9 +21,7 @@
  */
 package io.goobi.viewer.model.security.tickets;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -66,10 +64,10 @@ public class AccessTicket {
 
     /** Default validity for a ticket in days. */
     public static final int VALIDITY_DAYS = 30;
-    /** Static salt for password hashes. */
-    public static final String SALT = "$2a$10$H580saN37o2P03A5myUCm.";
-    /** Random object for password generation. */
-    protected static final Random RANDOM = new SecureRandom();
+    /** BCrypt cost factor for password hashing. */
+    private static final int BCRYPT_LOG_ROUNDS = 12;
+    /** Number of random bytes drawn for a generated ticket password (128 bits → 22-char URL-safe Base64). */
+    private static final int PASSWORD_RANDOM_BYTES = 16;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -157,8 +155,8 @@ public class AccessTicket {
      */
     public void activate() {
         if (passwordHash == null) {
-            password = StringTools.generateHash("xxx" + RANDOM.nextInt()).substring(0, 12);
-            passwordHash = BCrypt.hashpw(password, SALT);
+            password = StringTools.generateRandomToken(PASSWORD_RANDOM_BYTES);
+            passwordHash = BCrypt.hashpw(password, BCrypt.gensalt(BCRYPT_LOG_ROUNDS));
         }
         expirationDate = LocalDateTime.now().plusDays(VALIDITY_DAYS);
     }

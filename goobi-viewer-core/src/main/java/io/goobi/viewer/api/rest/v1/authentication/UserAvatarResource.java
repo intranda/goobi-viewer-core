@@ -30,7 +30,6 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -70,10 +69,12 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageIn
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ImageResource;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.bindings.CSRFGuarded;
 import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
@@ -103,13 +104,26 @@ public class UserAvatarResource extends ImageResource {
 
     private static final String FILENAME_TEMPLATE = "user_{id}";
 
+    /**
+     * Maximum upload size accepted by this REST endpoint, in bytes. Kept in sync with the {@code maxsize} attribute of the OmniFaces
+     * {@code o:inputFile} component in {@code resources/tags/user/userAvatar.xhtml} (16 MiB), which guards the JSF upload path. Without an equivalent
+     * cap here, the REST endpoint would be an unbounded disk-fill DoS vector for any authenticated user.
+     */
+    private static final long MAX_AVATAR_UPLOAD_BYTES = 16L * 1024L * 1024L;
+
     public UserAvatarResource(
-            @Context ContainerRequestContext context, 
-            @Context HttpServletRequest request, 
-            @Context HttpServletResponse response,
+            @Context
+            ContainerRequestContext context,
+            @Context
+            HttpServletRequest request,
+            @Context
+            HttpServletResponse response,
             @Parameter(description = "User id",
-                    schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("userId") Long userId,
-            @Context ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
+                    schema = @Schema(minimum = "1", maximum = "9223372036854775807"))
+            @PathParam("userId")
+            Long userId,
+            @Context
+            ContentServerCacheManager cacheManager) throws WebApplicationException, ViewerConfigurationException {
         super(context, request, response, "", getMediaFileUrl(userId).toString(), cacheManager);
         AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getDataApiManager().orElse(null);
         if (urls == null) {
@@ -202,6 +216,10 @@ public class UserAvatarResource extends ImageResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    // CSRF protection: multipart/form-data is a CORS "simple request" and bypasses preflight,
+    // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
+    // available when webapi.csrf is enabled.
+    @CSRFGuarded
     @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" })
     // required=true signals schemathesis that an empty body is not a valid test case,
     // preventing false "schema-compliant request rejected" failures for empty POSTs.
@@ -210,13 +228,22 @@ public class UserAvatarResource extends ImageResource {
     // 400 is returned when the {userId} path parameter is not a valid integer, or when
     // the framework rejects a missing/malformed multipart body before the method is invoked.
     @ApiResponse(responseCode = "400", description = "Invalid user ID or missing/malformed multipart body")
+    @ApiResponse(responseCode = "403",
+            description = "CSRF protection: Origin not in allowlist (only sent when webapi.csrf is enabled)")
     @ApiResponse(responseCode = "404", description = "User not found")
     @ApiResponse(responseCode = "406", description = "Invalid upload — missing file stream or no active user session")
     @ApiResponse(responseCode = "409", description = "A file with this name already exists")
+    @ApiResponse(responseCode = "413",
+            description = "Upload exceeds the maximum avatar size (mirrors the JSF maxsize attribute)")
     @ApiResponse(responseCode = "500", description = "Internal server error during file upload")
-    public Response uploadAvatarFile(@DefaultValue("true") @FormDataParam("enabled") boolean enabled,
-            @FormDataParam("filename") String uploadFilename,
-            @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) {
+    public Response uploadAvatarFile(@DefaultValue("true")
+    @FormDataParam("enabled")
+    boolean enabled,
+            @FormDataParam("filename")
+            String uploadFilename,
+            @FormDataParam("file")
+            InputStream uploadedInputStream, @FormDataParam("file")
+            FormDataContentDisposition fileDetail) {
 
         if (uploadedInputStream == null) {
             return Response.status(Status.NOT_ACCEPTABLE).entity("Upload stream is null").build();
@@ -230,11 +257,28 @@ public class UserAvatarResource extends ImageResource {
         Path mediaFile = getAvatarFilePath(uploadFilename, user.get().getId());
         try {
 
-            if (!Files.exists(mediaFolder)) {
-                Files.createDirectories(mediaFolder);
-            }
+            // createDirectories is already idempotent; the previous exists() guard was redundant.
+            Files.createDirectories(mediaFolder);
 
-            Files.copy(uploadedInputStream, mediaFile, StandardCopyOption.REPLACE_EXISTING);
+            try {
+                FileTools.copyRejectingSymlinks(
+                        uploadedInputStream, mediaFile,
+                        MAX_AVATAR_UPLOAD_BYTES);
+            } catch (IOException e) {
+                if (e.getMessage() != null
+                        && e.getMessage()
+                                .startsWith(
+                                        "Upload exceeds maximum"
+                                                + " allowed size")) {
+                    return Response.status(413)
+                            .entity("Avatar upload exceeds"
+                                    + " maximum allowed size of "
+                                    + MAX_AVATAR_UPLOAD_BYTES
+                                    + " bytes.")
+                            .build();
+                }
+                throw e;
+            }
 
             if (Files.exists(mediaFile) && Files.size(mediaFile) > 0) {
                 logger.debug("Successfully downloaded file {}", mediaFile);
@@ -243,9 +287,8 @@ public class UserAvatarResource extends ImageResource {
                 return Response.status(Status.OK).build();
             }
             String message = Messages.translate("admin__media_upload_error", servletRequest.getLocale(), mediaFile.getFileName().toString());
-            if (Files.exists(mediaFile)) {
-                Files.delete(mediaFile);
-            }
+            // CWE-367: atomic single-syscall delete replaces previous exists()+delete() TOCTOU.
+            Files.deleteIfExists(mediaFile);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
         } catch (FileAlreadyExistsException e) {
             String message =
@@ -277,8 +320,7 @@ public class UserAvatarResource extends ImageResource {
      */
     private Optional<User> getUser() {
         try {
-            Optional<User> tokenUser = UserLoggedInFilter.getUserToken(servletRequest)
-                    .filter(token -> !token.isExpired())
+            Optional<User> tokenUser = UserLoggedInFilter.getValidUserToken(servletRequest)
                     .map(token -> token.getUser());
             if (tokenUser.isPresent()) {
                 return tokenUser;

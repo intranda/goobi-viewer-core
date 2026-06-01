@@ -1,10 +1,10 @@
 import { VerovioToolkit } from 'verovio/esm';
 import createVerovioModule from 'verovio/wasm';
-import * as playback from './verovio/playback.js';
-import { NavigationController } from './verovio/navigation.js';
-import { initializeToolbar, updateMidiButtonStates } from './verovio/toolbar.js';
-import { generateMidiBlob, exportMEI, exportMIDI } from './verovio/download.js';
-import * as demo from './verovio/demo.js';
+import * as playback from './playback.js';
+import { NavigationController } from './navigation.js';
+import { initializeToolbar, updateMidiButtonStates } from './toolbar.js';
+import { generateMidiBlob, exportMEI, exportMIDI } from './download.js';
+import * as demo from './demo.js';
 
 // Main Verovio application class
 class VerovioApp {
@@ -150,16 +150,7 @@ class VerovioApp {
             this.filename = filename;
 
             // Try to find any method that might load MEI data
-            const possibleMethods = [
-                'loadData',
-                'load',
-                'loadMEI',
-                'loadMusicXMLString',
-                'loadMusicXML',
-                'loadDocument',
-                'setMEI',
-                'from',
-            ];
+            const possibleMethods = ['loadData', 'load', 'loadMEI', 'loadMusicXMLString', 'loadMusicXML', 'loadDocument', 'setMEI', 'from'];
 
             let loadResult = false;
             let methodUsed = null;

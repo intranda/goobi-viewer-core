@@ -29,6 +29,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.INDEX_STATISTICS;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -86,6 +87,10 @@ class IndexResourceTest extends AbstractRestApiTest {
     @Override
     @AfterEach
     public void tearDown() throws Exception {
+        // Drop the static field-list cache so cached snapshots (e.g. from the
+        // serve-from-cache test) do not survive into unrelated tests in this class
+        // or in other classes that share the JVM.
+        IndexResource.invalidateAllIndexFieldsCacheForTesting();
         super.tearDown();
     }
 
@@ -232,6 +237,75 @@ class IndexResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * An invalid Solr field name on the spatial-search endpoint must be rejected with 400
+     * before reaching Solr (GVC-2026-20).
+     */
+    @Test
+    void getGeoJsonResuls_shouldReturn400WhenInvalidSolrField() {
+        String url = urls.path(INDEX, INDEX_SPATIAL_SEARCH).params("0").build();
+        try (Response response = target(url)
+                .queryParam("region", "[\"-180 -90\" TO \"180 90\"]")
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Invalid Solr field name should return 400, not 500");
+        }
+    }
+
+    /**
+     * A region parameter containing characters outside WKT syntax (e.g. ':' or '*') must be
+     * rejected with 400 to prevent Solr query injection (GVC-2026-20).
+     */
+    @Test
+    void getGeoJsonResuls_shouldReturn400WhenRegionContainsSpecialChars() {
+        String path = urls.path(INDEX, INDEX_SPATIAL_SEARCH).params("WKT_COORDS").build();
+        // "*:*) OR (*:*" — the PoC payload from the GVC-2026-20 advisory.
+        java.net.URI uri = java.net.URI.create(target(path).getUri().toString()
+                + "?region=" + "*%3A*)+OR+(*%3A*");
+        try (Response response = client().target(uri)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Region with Solr-syntax characters must be rejected with 400");
+        }
+    }
+
+    /**
+     * A region parameter starting with a Solr local-param prefix must be rejected with 400
+     * to prevent local-param injection (GVC-2026-20).
+     */
+    @Test
+    void getGeoJsonResuls_shouldReturn400WhenRegionContainsLocalParam() {
+        String path = urls.path(INDEX, INDEX_SPATIAL_SEARCH).params("WKT_COORDS").build();
+        // "{!type=lucene q.op=OR}*:*"
+        java.net.URI uri = java.net.URI.create(target(path).getUri().toString()
+                + "?region=" + "%7B%21type%3Dlucene+q.op%3DOR%7D*%3A*");
+        try (Response response = client().target(uri)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Region with Solr local-param prefix must be rejected with 400");
+        }
+    }
+
+    /**
+     * The default WKT range literal must continue to pass validation after GVC-2026-20.
+     */
+    @Test
+    void getGeoJsonResuls_shouldAcceptDefaultWktRange() {
+        String path = urls.path(INDEX, INDEX_SPATIAL_SEARCH).params("WKT_COORDS").build();
+        String region = "%5B%22-180+-90%22+TO+%22180+90%22%5D";
+        java.net.URI uri = java.net.URI.create(target(path).getUri().toString() + "?region=" + region);
+        try (Response response = client().target(uri)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertFalse(response.getStatus() == 400,
+                    "Default WKT range literal must not be rejected as malformed");
+        }
+    }
+
+    /**
      * @see IndexResource#collectFieldInfo()
      * @verifies create list correctly
      */
@@ -243,5 +317,20 @@ class IndexResourceTest extends AbstractRestApiTest {
         assertEquals(SolrConstants.ACCESSCONDITION, info.getField());
         assertTrue(info.isIndexed());
         assertTrue(info.isStored());
+    }
+
+    /**
+     * @see IndexResource#getAllIndexFields()
+     * @verifies serve repeat requests from cache within ttl
+     */
+    @Test
+    void getAllIndexFields_shouldServeRepeatRequestsFromCacheWithinTtl() throws Exception {
+        // The cache is process-global, so make sure no earlier test populated it.
+        IndexResource.invalidateAllIndexFieldsCacheForTesting();
+        IndexResource resource = new IndexResource();
+        List<SolrFieldInfo> first = resource.getAllIndexFields();
+        List<SolrFieldInfo> second = resource.getAllIndexFields();
+        // Same list reference => served from the cache snapshot, not recomputed.
+        assertSame(first, second, "second call within TTL must return the cached list");
     }
 }

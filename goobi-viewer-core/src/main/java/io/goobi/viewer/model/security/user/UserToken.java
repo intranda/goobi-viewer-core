@@ -34,8 +34,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 /**
- * A user-bound opaque authentication token. The plaintext token is returned once at login and
- * never persisted; only its SHA-256 hash is stored.
+ * A user-bound opaque authentication token. The plaintext token is returned once at login and never persisted; only its SHA-256 hash is stored.
  */
 @Entity
 @Table(name = "user_tokens")
@@ -56,7 +55,7 @@ public class UserToken {
     @Column(name = "date_created", nullable = false)
     private LocalDateTime dateCreated;
 
-    @Column(name = "expiration_date")
+    @Column(name = "expiration_date", nullable = false)
     private LocalDateTime expirationDate;
 
     public UserToken() {
@@ -64,13 +63,13 @@ public class UserToken {
     }
 
     /**
-     * @return true if this token has an expiration date and it is in the past
+     * @return true if this token is expired (fail-closed: null expiration is treated as expired)
      * @should return true when expiration date is in the past
      * @should return false when expiration date is in the future
-     * @should return false when expiration date is null
+     * @should return true when expiration date is null
      */
     public boolean isExpired() {
-        return expirationDate != null && expirationDate.isBefore(LocalDateTime.now());
+        return expirationDate == null || expirationDate.isBefore(LocalDateTime.now());
     }
 
     public Long getId() {

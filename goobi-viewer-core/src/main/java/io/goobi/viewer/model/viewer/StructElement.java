@@ -530,7 +530,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * {@inheritDoc}
      *
-     * @returns the identifier of the record to which this struct element belongs.
+     * @return the identifier of the record to which this struct element belongs.
      * @should return pi if topstruct
      * @should retriveve pi from topstruct if not topstruct
      */

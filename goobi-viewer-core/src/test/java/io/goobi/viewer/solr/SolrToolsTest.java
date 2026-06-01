@@ -471,6 +471,76 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies strip single brace local param
+     */
+    @Test
+    void cleanUpQuery_shouldStripSingleBraceLocalParam() {
+        assertEquals("QUERY", SolrTools.cleanUpQuery("{!parent which=\"ISWORK:true\"}QUERY"));
+    }
+
+    /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies strip double brace local param
+     */
+    @Test
+    void cleanUpQuery_shouldStripDoubleBraceLocalParam() {
+        assertEquals("QUERY", SolrTools.cleanUpQuery("{{!parent which=\"ISWORK:true\"}}QUERY"));
+    }
+
+    /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies strip double wrapped block join injection
+     */
+    @Test
+    void cleanUpQuery_shouldStripBlockJoinInjection() {
+        // Double-wrap of a whitelisted pattern is still an injection — only the exact single-brace
+        // form is allowed through.
+        assertEquals("foo", SolrTools.cleanUpQuery("{{!join from=PI_TOPSTRUCT to=PI}}foo"));
+    }
+
+    /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies keep terms local param
+     */
+    @Test
+    void cleanUpQuery_shouldKeepTermsLocalParam() {
+        String query = "{!terms f=PI_TOPSTRUCT}id1,id2";
+        assertEquals(query, SolrTools.cleanUpQuery(query));
+    }
+
+    /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies strip function query injection
+     */
+    @Test
+    void cleanUpQuery_shouldStripFunctionQueryInjection() {
+        assertEquals("product(YEAR,2)", SolrTools.cleanUpQuery("{!func}product(YEAR,2)"));
+    }
+
+    /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies strip graph local param
+     */
+    @Test
+    void cleanUpQuery_shouldStripGraphLocalParam() {
+        assertEquals("*:*", SolrTools.cleanUpQuery("{!graph from=IDDOC to=IDDOC_PARENT maxDepth=5}*:*"));
+    }
+
+    /**
+     * @see SolrTools#cleanUpQuery(String)
+     * @verifies not synthesise local param braces around bare join token
+     */
+    @Test
+    void cleanUpQuery_shouldNotSynthesiseLocalParamBracesAroundBareJoinToken() {
+        // A previous legacy step re-wrapped a bare "!join from=PI_TOPSTRUCT to=PI" substring with
+        // braces, which turned attacker-supplied plain text into a valid Solr block-join local
+        // param. The input must pass through unchanged.
+        String query = "!join from=PI_TOPSTRUCT to=PI ACCESSCONDITION:restricted";
+        assertEquals(query, SolrTools.cleanUpQuery(query));
+    }
+
+    /**
      * @verifies return true for language-coded field names
      * @see SolrTools#isLanguageCodedField(String)
      */
