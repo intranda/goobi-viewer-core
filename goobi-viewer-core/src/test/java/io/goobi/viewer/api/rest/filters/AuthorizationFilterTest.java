@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 import jakarta.servlet.http.HttpServletRequest;
 
 class AuthorizationFilterTest extends AbstractTest {
@@ -60,6 +62,52 @@ class AuthorizationFilterTest extends AbstractTest {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getHeader("token")).thenReturn(null);
         Mockito.when(request.getParameter("token")).thenReturn(null);
+
+        assertFalse(AuthorizationFilter.isAuthorized(request));
+    }
+
+    /**
+     * @see AuthorizationFilter#isAuthorized(HttpServletRequest)
+     * @verifies return false for empty token in query parameter
+     */
+    @Test
+    void isAuthorized_shouldReturnFalseForEmptyTokenInQueryParameter() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getHeader("token")).thenReturn(null);
+        Mockito.when(request.getParameter("token")).thenReturn("");
+
+        assertFalse(AuthorizationFilter.isAuthorized(request));
+    }
+
+    /**
+     * @see AuthorizationFilter#isAuthorized(HttpServletRequest)
+     * @verifies return false for empty token in query parameter when config token empty
+     */
+    @Test
+    void isAuthorized_shouldReturnFalseForEmptyTokenInQueryParameterWhenConfigEmpty() {
+        Configuration mockConfig = Mockito.mock(Configuration.class);
+        Mockito.when(mockConfig.getWebApiToken()).thenReturn("");
+        DataManager.getInstance().injectConfiguration(mockConfig);
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getHeader("token")).thenReturn(null);
+        Mockito.when(request.getParameter("token")).thenReturn("");
+
+        assertFalse(AuthorizationFilter.isAuthorized(request));
+    }
+
+    /**
+     * @see AuthorizationFilter#isAuthorized(HttpServletRequest)
+     * @verifies return false for any supplied token when config token empty
+     */
+    @Test
+    void isAuthorized_shouldReturnFalseForAnyTokenWhenConfigEmpty() {
+        Configuration mockConfig = Mockito.mock(Configuration.class);
+        Mockito.when(mockConfig.getWebApiToken()).thenReturn("");
+        DataManager.getInstance().injectConfiguration(mockConfig);
+
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getHeader("token")).thenReturn("anything");
 
         assertFalse(AuthorizationFilter.isAuthorized(request));
     }

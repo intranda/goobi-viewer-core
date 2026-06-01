@@ -191,12 +191,22 @@ class StringToolsTest {
     }
 
     /**
-     * @see StringTools#generateHash(String)
-     * @verifies return SHA-256 hex digest for given input string
+     * @see StringTools#generateRandomToken(int)
+     * @verifies produce distinct URL-safe Base64 strings of the expected length
      */
     @Test
-    void generateHash_shouldReturnSHA256HexDigestForGivenInputString() throws Exception {
-        assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", StringTools.generateHash("test"));
+    void generateRandomToken_shouldProduceDistinctUrlSafeBase64StringsOfTheExpectedLength() throws Exception {
+        // 16 bytes → 22-char Base64 (no padding); 24 bytes → 32-char Base64.
+        assertEquals(22, StringTools.generateRandomToken(16).length());
+        assertEquals(32, StringTools.generateRandomToken(24).length());
+
+        java.util.regex.Pattern urlSafe = java.util.regex.Pattern.compile("^[A-Za-z0-9_-]+$");
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (int i = 0; i < 1000; i++) {
+            String token = StringTools.generateRandomToken(16);
+            assertTrue(urlSafe.matcher(token).matches(), "Token contains non-URL-safe characters: " + token);
+            assertTrue(seen.add(token), "Duplicate token in 1000 draws: " + token);
+        }
     }
 
     /**

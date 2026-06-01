@@ -58,7 +58,9 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 import io.goobi.viewer.model.job.mq.DownloadExternalResourceHandler;
+import io.goobi.viewer.model.resources.download.ExternalResourceUrlService;
 import io.goobi.viewer.model.resources.download.ResourceDownload;
+import io.goobi.viewer.model.security.user.User;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
@@ -83,18 +85,45 @@ public class DownloadTaskEndpoint {
     private HttpSession httpSession;
     private Session session;
 
+    private ExternalResourceUrlService urlService = new ExternalResourceUrlService();
+
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
-        this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+        if (!WebSocketTools.requireAllowedOrigin(config, session)) {
+            return;
+        }
+        HttpSession http = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+        User user = WebSocketTools.requireUser(http, session);
+        if (user == null) {
+            return;
+        }
+
+        this.httpSession = http;
         this.session = session;
         this.storageBean = BeanUtils.getPersistentStorageBean();
         this.queueManager = this.storageBean.getMessageBroker();
+    }
+
+    void setSession(Session session) {
+        this.session = session;
+    }
+
+    void setStorageBean(ApplicationBean storageBean) {
+        this.storageBean = storageBean;
+        this.queueManager = storageBean.getMessageBroker();
+    }
+
+    void setUrlService(ExternalResourceUrlService urlService) {
+        this.urlService = urlService;
     }
 
     @OnMessage
     public synchronized void onMessage(String messageString) {
         try {
             SocketMessage message = JsonTools.getAsObject(messageString, SocketMessage.class);
+            if (!validateAndSetUrlTemplate(message)) {
+                return;
+            }
             switch (message.action) {
                 case STARTDOWNLOAD:
                     handleDownloadRequest(message);
@@ -126,6 +155,31 @@ public class DownloadTaskEndpoint {
                 logger.error("Error generating socket message message: {}", e1.toString());
 
             }
+        }
+    }
+
+    /**
+     * Checks that the URL in the message is in the set of admin-configured URLs for the given PI and overwrites the client-provided urlTemplate with
+     * the server-side value.
+     *
+     * @return {@code true} if the URL is permitted and processing should continue
+     * @should send error response for unknown url
+     * @should use server side url template instead of client provided value
+     */
+    private boolean validateAndSetUrlTemplate(SocketMessage message) throws JsonProcessingException {
+        try {
+            Map<String, String> allowedUrls = urlService.getAllowedUrls(message.pi);
+            if (!allowedUrls.containsKey(message.url)) {
+                logger.warn("Rejected download request for non-permitted URL '{}' from PI '{}'", message.url, message.pi);
+                sendError(message, "Requested URL is not permitted for this record");
+                return false;
+            }
+            message.urlTemplate = allowedUrls.get(message.url);
+            return true;
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error("Error validating download URL '{}' for PI '{}': {}", message.url, message.pi, e.getMessage());
+            sendError(message, "Error validating request");
+            return false;
         }
     }
 

@@ -60,6 +60,9 @@ public class AutocompleteEndpoint {
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
+        if (!WebSocketTools.requireAllowedOrigin(config, session)) {
+            return;
+        }
         this.session = session;
         this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         if (searchBean == null) {

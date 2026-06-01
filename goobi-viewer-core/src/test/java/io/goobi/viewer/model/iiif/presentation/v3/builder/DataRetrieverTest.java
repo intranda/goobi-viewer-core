@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -60,11 +59,6 @@ class DataRetrieverTest extends AbstractSolrEnabledTest{
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-       super.tearDown();
     }
 
     /**

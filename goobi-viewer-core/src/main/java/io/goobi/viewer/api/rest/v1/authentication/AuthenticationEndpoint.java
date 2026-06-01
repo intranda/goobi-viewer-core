@@ -517,20 +517,17 @@ public class AuthenticationEndpoint {
                 }
             }
 
-            DecodedJWT jwt = verifyOpenIdToken(idTokenEncoded, provider.getJwksUri(), provider.getIssuer());
+            DecodedJWT jwt = verifyOpenIdToken(idTokenEncoded, provider.getJwksUri(), provider.getIssuer(), provider.getClientId());
             if (jwt == null) {
                 return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Could not verify authentication token.").build();
             }
 
             // now check if the nonce is the same as in the old session
-            String nonce = (String) servletRequest.getSession().getAttribute("openIDNonce");
-            if (!nonce.equals(jwt.getClaim("nonce").asString())) {
-                logger.error("nonce does not match. Not logging user in");
+            String sessionNonce = (String) servletRequest.getSession().getAttribute("openIDNonce");
+            String tokenNonce = jwt.getClaim("nonce").asString();
+            if (sessionNonce == null || tokenNonce == null || !sessionNonce.equals(tokenNonce)) {
+                logger.error("nonce missing or does not match. Not logging user in");
                 return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "Nonce mismatch.").build();
-            }
-            if (!provider.getClientId().equals(jwt.getClaim("aud").asString())) {
-                logger.error("clientId does not match aud. Not logging user in");
-                return Response.status(Response.Status.FORBIDDEN.getStatusCode(), "cliendId mismatch.").build();
             }
 
             redirected = provider.completeLogin(jwt, servletRequest, servletResponse);
@@ -567,9 +564,11 @@ public class AuthenticationEndpoint {
      * @param token encoded JWT ID token to verify
      * @param jwksUri URL of the JWKS endpoint for public key retrieval
      * @param issuer expected issuer claim value
+     * @param clientId expected audience claim value (this relying party's client ID); must be pinned inside the verifier
+     *            per RFC 7519 §4.1.3 so cross-RP token replay is blocked and array-valued aud claims are handled correctly
      * @return {@link DecodedJWT}
      */
-    static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer) {
+    static DecodedJWT verifyOpenIdToken(String token, String jwksUri, String issuer, String clientId) {
         // logger.trace(token);
         // Guard against missing JWKS URI, which can happen if neither jwksUri attribute is configured
         // nor the OpenID discovery endpoint was reachable/returned a jwks_uri value
@@ -622,7 +621,13 @@ public class AuthenticationEndpoint {
         }
 
         try {
-            JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build();
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer(issuer)
+                    .withAudience(clientId)
+                    .withClaimPresence("exp")
+                    .withClaimPresence("iat")
+                    .acceptLeeway(60)
+                    .build();
             return verifier.verify(decodedJwt);
         } catch (JWTVerificationException exception) {
             logger.error(exception);

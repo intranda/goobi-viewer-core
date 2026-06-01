@@ -33,10 +33,10 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +87,8 @@ public final class StringTools {
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     /** Constant <code>DEFAULT_CHARSET="UTF-8"</code>. */
     public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    /** Shared CSPRNG for security token generation. */
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     /** Constant <code>SLASH_REPLACEMENT="U002F"</code>. */
     public static final String SLASH_REPLACEMENT = "U002F";
@@ -654,35 +656,17 @@ public final class StringTools {
     }
 
     /**
-     * Creates an hash of the given String using SHA-256.
+     * Generates a URL-safe random token of the requested byte length, encoded as Base64 without padding.
+     * Suitable for passwords, activation keys, and other security tokens that must come from a CSPRNG.
      *
-     * @param myString input string to hash
-     * @return generated hash
-     * @should return SHA-256 hex digest for given input string
+     * @param byteCount number of random bytes to draw (e.g. 16 for a 128-bit password)
+     * @return URL-safe Base64 string
+     * @should produce distinct URL-safe Base64 strings of the expected length
      */
-    public static String generateHash(String myString) {
-        String answer = "";
-        try {
-            byte[] defaultBytes = myString.getBytes(StandardCharsets.UTF_8.name());
-            MessageDigest algorithm = MessageDigest.getInstance("SHA-256");
-            algorithm.reset();
-            algorithm.update(defaultBytes);
-            byte[] messageDigest = algorithm.digest();
-
-            StringBuilder hexString = new StringBuilder();
-            for (byte element : messageDigest) {
-                String hex = Integer.toHexString(0xFF & element);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            answer = hexString.toString();
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return answer;
+    public static String generateRandomToken(int byteCount) {
+        byte[] bytes = new byte[byteCount];
+        SECURE_RANDOM.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
     /**

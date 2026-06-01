@@ -41,6 +41,7 @@ import org.jdom2.JDOMException;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 
@@ -209,7 +210,11 @@ public class JPAClassLoader extends ClassLoader {
                     final File tempFile = File.createTempFile("persistence", ".xml.tmp", file.getParentFile());
                     try {
                         XmlTools.writeXmlFile(docMerged, tempFile.getAbsolutePath());
-                        Files.move(tempFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                        // Strict-reject: if a plugin deployment relies on symlinked JAR paths, this will
+                        // fail fast and is to be addressed via a config whitelist follow-up rather than
+                        // relaxing the helper.
+                        FileTools.moveRejectingSymlinks(tempFile.toPath(), file.toPath(),
+                                StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
                     } catch (IOException e) {
                         Path tempPath = tempFile.toPath();
                         try {

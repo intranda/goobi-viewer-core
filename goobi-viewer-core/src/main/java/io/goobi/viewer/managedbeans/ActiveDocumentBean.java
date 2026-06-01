@@ -2126,11 +2126,11 @@ public class ActiveDocumentBean implements Serializable {
             return "";
         }
 
-        String url = NetTools.buildClearCacheUrl(clearCacheMode, viewManager.getPi(), navigationHelper.getApplicationUrl(),
-                DataManager.getInstance().getConfiguration().getWebApiToken());
+        String url = NetTools.buildClearCacheUrl(clearCacheMode, viewManager.getPi(), navigationHelper.getApplicationUrl());
+        Map<String, String> headers = Map.of("token", DataManager.getInstance().getConfiguration().getWebApiToken());
         try {
             try {
-                NetTools.getWebContentDELETE(url, null, null, null, null);
+                NetTools.getWebContentDELETE(url, headers, null, null, null);
                 Messages.info("cache_clear__success");
             } catch (IOException e) {
                 logger.error(e.getMessage());

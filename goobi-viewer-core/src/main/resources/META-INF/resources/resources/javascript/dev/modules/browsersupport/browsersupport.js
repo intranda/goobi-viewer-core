@@ -20,7 +20,11 @@ function setupBrowserSupport() {
 }
 
 function getCurrentBrowser() {
-    if ((navigator.userAgent.indexOf('Opera') || navigator.userAgent.indexOf('OPR')) != -1) {
+    // The previous form `(indexOf('Opera') || indexOf('OPR')) != -1`
+    // was always falsy when 'Opera' was not present: indexOf returns
+    // -1 (truthy in JS), the OR short-circuits to -1, and -1 != -1
+    // is false. Opera was therefore never detected. refs #27937
+    if (navigator.userAgent.indexOf('Opera') !== -1 || navigator.userAgent.indexOf('OPR') !== -1) {
         return 'Opera';
     } else if (navigator.userAgent.indexOf('Edg') != -1) {
         return 'Edge';
@@ -39,3 +43,8 @@ function getCurrentBrowser() {
 }
 
 setupBrowserSupport();
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { getCurrentBrowser: getCurrentBrowser, setupBrowserSupport: setupBrowserSupport };
+}

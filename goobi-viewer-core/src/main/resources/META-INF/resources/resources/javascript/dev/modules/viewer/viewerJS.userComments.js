@@ -60,44 +60,22 @@ var viewerJS = (function (viewer) {
                 $(this).parent().removeClass('in');
                 $(this)
                     .parents('.user-comments__comment-content-options')
-                    .find(
-                        '.user-comments__comment-content-options-cancel, .user-comments__comment-content-options-save'
-                    )
+                    .find('.user-comments__comment-content-options-cancel, .user-comments__comment-content-options-save')
                     .addClass('in');
-                $(this)
-                    .parents('.user-comments__comment-content')
-                    .find('.user-comments__comment-content-options-text')
-                    .removeClass('in');
-                $(this)
-                    .parents('.user-comments__comment-content')
-                    .find('.user-comments__comment-content-options-text-edit')
-                    .addClass('in');
-                $(this)
-                    .parents('.user-comments__comment-content')
-                    .find('.user-comments__comment-content-options-text-edit textarea')
-                    .focus();
+                $(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text').removeClass('in');
+                $(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text-edit').addClass('in');
+                $(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text-edit textarea').focus();
             });
 
             // cancel edit
             $('[data-edit="cancel"]').on('click', function () {
                 $(this)
                     .parents('.user-comments__comment-content-options')
-                    .find(
-                        '.user-comments__comment-content-options-cancel, .user-comments__comment-content-options-save'
-                    )
+                    .find('.user-comments__comment-content-options-cancel, .user-comments__comment-content-options-save')
                     .removeClass('in');
-                $(this)
-                    .parents('.user-comments__comment-content-options')
-                    .find('.user-comments__comment-content-options-edit')
-                    .addClass('in');
-                $(this)
-                    .parents('.user-comments__comment-content')
-                    .find('.user-comments__comment-content-options-text')
-                    .addClass('in');
-                $(this)
-                    .parents('.user-comments__comment-content')
-                    .find('.user-comments__comment-content-options-text-edit')
-                    .removeClass('in');
+                $(this).parents('.user-comments__comment-content-options').find('.user-comments__comment-content-options-edit').addClass('in');
+                $(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text').addClass('in');
+                $(this).parents('.user-comments__comment-content').find('.user-comments__comment-content-options-text-edit').removeClass('in');
             });
 
             // show/hide loader on AJAX calls
@@ -115,3 +93,8 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

@@ -93,23 +93,22 @@ var viewerJS = (function (viewer) {
          * @param collection {Object} The iiif-presentation collection object cotaining the
          * metadata.
          * @param label {String} The label property value of the metadata to return.
-         * @returns {String} The count of works in the collection.
+         * @param locale {String} Optional preferred language for label/value lookup.
+         * @returns {String} The matching metadata value, or empty string if not found.
          */
-        getMetadataValue: function (collection, label) {
-            if (_debug) {
-                console.log('---------- _getMetadataValue() ----------');
-                console.log('_getMetadataValue: collection = ', collection);
-                console.log('_getMetadataValue: label = ', label);
-            }
-
+        getMetadataValue: function (collection, label, locale) {
+            // Previously referenced an undefined `_defaults.displayLanguage`
+            // closure and an undeclared `_getValue` helper; every call threw
+            // a ReferenceError. refs #27937
             var value = '';
-
+            if (!collection || !collection.metadata) {
+                return value;
+            }
             collection.metadata.forEach(function (metadata) {
-                if (_getValue(metadata.label, _defaults.displayLanguage) == label) {
-                    value = _getValue(metadata.value, _defaults.displayLanguage);
+                if (viewer.iiif.getValue(metadata.label, locale) == label) {
+                    value = viewer.iiif.getValue(metadata.value, locale);
                 }
             });
-
             return value;
         },
 
@@ -123,16 +122,11 @@ var viewerJS = (function (viewer) {
          */
         getChildCollections: function (collection) {
             if (collection.service && Array.isArray(collection.service)) {
-                let extents = collection.service.filter((service) =>
-                    service['@context'].endsWith('/collection/extent/context.json')
-                );
+                let extents = collection.service.filter((service) => service['@context'].endsWith('/collection/extent/context.json'));
                 if (extents && extents.length > 0) {
                     return extents[0].children;
                 }
-            } else if (
-                collection.service &&
-                collection.service['@context'].endsWith('/collection/extent/context.json')
-            ) {
+            } else if (collection.service && collection.service['@context'].endsWith('/collection/extent/context.json')) {
                 return collection.service.children;
             } else {
                 return 0;
@@ -149,16 +143,11 @@ var viewerJS = (function (viewer) {
          */
         getContainedWorks: function (collection) {
             if (collection.service && Array.isArray(collection.service)) {
-                let extents = collection.service.filter((service) =>
-                    service['@context'].endsWith('/collection/extent/context.json')
-                );
+                let extents = collection.service.filter((service) => service['@context'].endsWith('/collection/extent/context.json'));
                 if (extents && extents.length > 0) {
                     return extents[0].containedWorks;
                 }
-            } else if (
-                collection.service &&
-                collection.service['@context'].endsWith('/collection/extent/context.json')
-            ) {
+            } else if (collection.service && collection.service['@context'].endsWith('/collection/extent/context.json')) {
                 return collection.service.containedWorks;
             } else {
                 return 0;
@@ -167,22 +156,29 @@ var viewerJS = (function (viewer) {
 
         /**
          * @param collection
-         * @returns the list of tags in the tag service with the given anme
+         * @param name optional name filter; when given, only services whose
+         *             .name matches are returned
+         * @returns the list of tags in the tag service with the given name
          */
         getTags: function (collection, name) {
-            console.log('services', collection.service);
-            if (collection.service && Array.isArray(collection.service)) {
+            // The single-service else-if branch referenced an undefined
+            // `service` variable, so it threw ReferenceError instead of
+            // returning the tags. The array-branch's second filter was
+            // checking `service === undefined` which can never be true
+            // after the first filter. Both fixed; left-over console.log
+            // dropped. refs #27937
+            if (!collection || !collection.service) {
+                return undefined;
+            }
+
+            if (Array.isArray(collection.service)) {
                 let tagService = collection.service
                     .filter((service) => service['@context'].endsWith('/taglists/context.json'))
                     .filter((service) => service === undefined || service.name == name);
                 if (tagService && tagService.length > 0) {
                     return tagService[0].tags;
                 }
-            } else if (
-                collection.service &&
-                collection.service['@context'].endsWith('/taglists/context.json') &&
-                (service === undefined || service.name == name)
-            ) {
+            } else if (collection.service['@context'].endsWith('/taglists/context.json') && (name === undefined || collection.service.name == name)) {
                 return collection.service.tags;
             } else {
                 return undefined;
@@ -208,20 +204,6 @@ var viewerJS = (function (viewer) {
                 } else {
                     return collection.related;
                 }
-            }
-        },
-
-        /**
-         * Return true if the given element if of type "sc:Collection" or "Collection"
-         * and has no viewingHint "multi-part" (indication that it is an anchor record)
-         */
-        isCollection: function (element) {
-            var type = element['@type'];
-            var viewingHint = element.viewingHint;
-            if ((type == 'sc:Collection' || type == 'Collection') && viewingHint != 'multi-part') {
-                return true;
-            } else {
-                return false;
             }
         },
 
@@ -279,7 +261,10 @@ var viewerJS = (function (viewer) {
             let service = manifest.service;
             if (service && Array.isArray(service)) {
                 return service.find((s) => {
-                    let context = service['@context'];
+                    // Was `service['@context']` (the array itself), making the
+                    // predicate always falsy and find() always undefined.
+                    // refs #27937
+                    let context = s['@context'];
                     return context && context.endsWith(name + '.context.json');
                 });
             } else {
@@ -288,10 +273,7 @@ var viewerJS = (function (viewer) {
         },
 
         isCollection(element) {
-            return (
-                (element.type == 'Collection' || element['@type'] == 'sc:Collection') &&
-                element.viewingHint != 'multi-part'
-            );
+            return (element.type == 'Collection' || element['@type'] == 'sc:Collection') && element.viewingHint != 'multi-part';
         },
 
         isSingleManifest(element) {
@@ -337,3 +319,9 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+// Mirrors the pattern in viewerJS.datePicker.js.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

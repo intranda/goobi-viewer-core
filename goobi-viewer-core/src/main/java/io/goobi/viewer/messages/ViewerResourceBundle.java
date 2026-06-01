@@ -75,6 +75,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.faces.context.FacesContext;
@@ -792,8 +793,9 @@ public class ViewerResourceBundle extends ResourceBundle {
             }
             try {
                 Files.createFile(path);
-                // BufferedWriter defaults to UTF-8
-                try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+                // Strict-reject: theme override patterns using symlinked message files would fail; if
+                // that turns out to be a real deployment scenario, address via config whitelist follow-up.
+                try (BufferedWriter writer = FileTools.newBufferedWriterRejectingSymlinks(path)) {
                     writer.write("");
                 }
                 logger.info("Created local message file: {}", path.toAbsolutePath());
@@ -948,7 +950,9 @@ public class ViewerResourceBundle extends ResourceBundle {
                 FileHandler fh = new FileHandler(config);
                 fh.setEncoding(StandardCharsets.ISO_8859_1.name());
                 fh.save(tempFile);
-                Files.move(tempFile.toPath(), file.toPath(),
+                // Strict-reject: theme override patterns using symlinked message files would fail; if
+                // that turns out to be a real deployment scenario, address via config whitelist follow-up.
+                FileTools.moveRejectingSymlinks(tempFile.toPath(), file.toPath(),
                         StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             } finally {
                 // If the move succeeded the temp file is gone; otherwise clean up.

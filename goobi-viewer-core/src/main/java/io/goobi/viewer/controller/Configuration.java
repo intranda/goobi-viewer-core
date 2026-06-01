@@ -237,7 +237,7 @@ public class Configuration extends AbstractConfiguration {
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             stopwords = HashSet.newHashSet(0);
         } catch (IOException | IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
@@ -1255,7 +1255,7 @@ public class Configuration extends AbstractConfiguration {
                             .setPattern(pattern)
                             .setTopstructValueFallback(topstructValueFallback));
                 } catch (IllegalArgumentException e) {
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
@@ -4046,7 +4046,14 @@ public class Configuration extends AbstractConfiguration {
         return Collections.emptyMap();
     }
 
+    public boolean isExternalResourceUrlsEnabled() {
+        return getLocalBoolean("externalResource[@enabled]", false);
+    }
+
     public List<String> getExternalResourceUrlTemplates() {
+        if (!isExternalResourceUrlsEnabled()) {
+            return Collections.emptyList();
+        }
         List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
         List<String> templates = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
@@ -4197,6 +4204,17 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean useTiles(ViewAttributes viewAttributes) throws ViewerConfigurationException {
         return getZoomImageViewConfig(viewAttributes).getBoolean("[@tileImage]", false);
+    }
+
+    /**
+     * maxZoom for an image view
+     *
+     * @param viewAttributes view context attributes selecting the zoom config
+     * @return the maximum zoom level, defaults to 5
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public int getMaxZoom(ViewAttributes viewAttributes) throws ViewerConfigurationException {
+        return getZoomImageViewConfig(viewAttributes).getInt("[@maxZoom]", 5);
     }
 
     /**
@@ -5789,6 +5807,25 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns whether the WebSocket handshake Origin guard is active.
+     *
+     * <p>
+     * When {@code false} (default), {@code @ServerEndpoint} classes accept handshakes from any origin (server-side authentication on the endpoint is
+     * still enforced separately). When {@code true}, the handshake is rejected unless the {@code Origin} header matches {@link #getViewerBaseUrl()}
+     * or one of the entries in {@link #getCsrfAdditionalAllowedOrigins()} - the same allowlist used by {@link #isCsrfFilterEnabled()}.
+     *
+     * <p>
+     * Decoupled from the HTTP CSRF switch so that operators can opt into WebSocket origin enforcement (defense-in-depth against CSWSH) without also
+     * enabling the REST CSRF filter, and vice-versa.
+     *
+     * @return {@code true} when the WebSocket origin guard is enabled; {@code false} by default
+     * @should return false by default
+     */
+    public boolean isWebSocketOriginValidationEnabled() {
+        return getLocalBoolean("webapi.websocket.originValidation[@enabled]", false);
+    }
+
+    /**
      * @return true if the IIIF image content location should be disclosed in responses, false otherwise
      */
     public boolean isDiscloseImageContentLocation() {
@@ -6537,6 +6574,25 @@ public class Configuration extends AbstractConfiguration {
         }
         return Duration.of((long) num, unit.toChronoUnit());
 
+    }
+
+    /**
+     * Returns the configured file path for the given log file name. Reads from: &lt;logViewer&gt;&lt;logFiles&gt;&lt;logFile name="viewer"
+     * path="/opt/..."&gt; Returns null if not found.
+     */
+    public String getLogViewerFilePath(String name) {
+        return getLocalConfigurationsAt("logViewer.logFiles.logFile").stream()
+                .filter(c -> name.equalsIgnoreCase(c.getString("[@name]")))
+                .map(c -> c.getString("[@path]"))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Returns the number of initial lines to show in the log viewer. Default: 500
+     */
+    public int getLogViewerInitialLines() {
+        return getLocalInt("logViewer.initialLines", 500);
     }
 
 }
