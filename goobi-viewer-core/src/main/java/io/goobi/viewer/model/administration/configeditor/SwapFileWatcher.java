@@ -41,6 +41,7 @@ import jakarta.inject.Inject;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.omnifaces.cdi.Eager;
 import org.omnifaces.cdi.Push;
 import org.omnifaces.cdi.PushContext;
 
@@ -50,6 +51,7 @@ import io.goobi.viewer.controller.DataManager;
  * Application-scoped CDI bean that monitors directories for vim swap file changes
  * and pushes live lock-status updates via OmniFaces WebSocket push channel {@code adminLockStatus}.
  */
+@Eager
 @ApplicationScoped
 public class SwapFileWatcher {
 

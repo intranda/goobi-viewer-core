@@ -36,8 +36,7 @@
                                 <!-- TITLE -->
                                 <h1 class="admin__title">#{msg.admin__translations}</h1>
                                 <!-- ADD NEW TRANSLATIONS -->
-                                <ui:fragment
-                                    rendered="#{adminBean.newMessageEntryModeAllowed and adminBean.hasAccessPermissingForTranslationFiles}">
+                                <ui:fragment rendered="#{adminBean.newMessageEntryModeAllowed and adminBean.hasAccessPermissingForTranslationFiles}">
                                     <a
                                         href="#{navigationHelper.getPageUrl('adminTranslationsEdit')}/"
                                         class="btn btn--default admin__title-bar-action">
@@ -72,9 +71,7 @@
 
                                                                 <!-- DESCRIPTION -->
                                                                 <ui:fragment rendered="#{group.description ne ''}">
-                                                                    <p class="admin__boxed-entry-description">
-                                                                        #{msg[group.description]}
-                                                                    </p>
+                                                                    <p class="admin__boxed-entry-description">#{msg[group.description]}</p>
                                                                 </ui:fragment>
                                                                 <ui:fragment rendered="#{group.description eq ''}">
                                                                     <p
@@ -85,26 +82,22 @@
                                                                 </ui:fragment>
                                                             </div>
 
-                                                            <div
-                                                                class="col-12 col-lg-3 d-flex justify-content-center justify-content-lg-end">
+                                                            <div class="col-12 col-lg-3 d-flex justify-content-center justify-content-lg-end">
                                                                 <div class="d-flex flex-column align-items-center">
-                                                                    <ui:fragment
-                                                                        rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+                                                                    <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
                                                                         <a
                                                                             class="btn btn--full"
                                                                             href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
                                                                             aria-label="#{msg.edit}: #{msg[group.name]}">
                                                                             #{msg.admin__translations_translate}
                                                                         </a>
-                                                                        <div
-                                                                            class="admin__translations-overview-number">
+                                                                        <div class="admin__translations-overview-number">
                                                                             (#{group.fullyTranslatedEntryCount} #{msg.of}
                                                                         #{group.entryCount})
                                                                         </div>
                                                                     </ui:fragment>
 
-                                                                    <ui:fragment
-                                                                        rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
+                                                                    <ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
                                                                         <a
                                                                             class="btn btn--default"
                                                                             href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
@@ -149,7 +142,7 @@
                     if (!window.viewerJS || !viewerJS.WebSocket) { return; }
                     new viewerJS.WebSocket(
                         window.location.host,
-                        window.currentPath,
+                        '#{request.contextPath}',
                         viewerJS.WebSocket.PATH_TRANSLATION_EDITOR_SOCKET
                     );
                 })();
