@@ -210,6 +210,31 @@ class StringToolsTest {
     }
 
     /**
+     * @see StringTools#constantTimeEquals(String,String)
+     * @verifies return true only for non-null equal strings
+     */
+    @Test
+    void constantTimeEquals_shouldReturnTrueOnlyForNonNullEqualStrings() throws Exception {
+        assertTrue(StringTools.constantTimeEquals("a3f8c2d94b", "a3f8c2d94b"));
+        assertTrue(StringTools.constantTimeEquals("", ""));
+        // Differing values, same length
+        assertFalse(StringTools.constantTimeEquals("a3f8c2d94b", "a3f8c2d94c"));
+        // Differing values, different length
+        assertFalse(StringTools.constantTimeEquals("a3f8", "a3f8c2d94b"));
+    }
+
+    /**
+     * @see StringTools#constantTimeEquals(String,String)
+     * @verifies return false if either argument is null
+     */
+    @Test
+    void constantTimeEquals_shouldReturnFalseIfEitherArgumentIsNull() throws Exception {
+        assertFalse(StringTools.constantTimeEquals(null, "a3f8c2d94b"));
+        assertFalse(StringTools.constantTimeEquals("a3f8c2d94b", null));
+        assertFalse(StringTools.constantTimeEquals(null, null));
+    }
+
+    /**
      * @see StringTools#checkValueEmptyOrInverted(String)
      * @verifies return true if value null or empty
      */

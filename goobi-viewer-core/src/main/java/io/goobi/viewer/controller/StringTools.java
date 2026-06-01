@@ -33,6 +33,7 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -667,6 +668,23 @@ public final class StringTools {
         byte[] bytes = new byte[byteCount];
         SECURE_RANDOM.nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    /**
+     * Compares two strings for equality in constant time, to avoid leaking the length of the common
+     * prefix via timing. Returns {@code false} if either argument is {@code null}.
+     *
+     * @param a first string (e.g. user-supplied secret)
+     * @param b second string (e.g. stored secret)
+     * @return true if both are non-null and byte-equal; false otherwise
+     * @should return true only for non-null equal strings
+     * @should return false if either argument is null
+     */
+    public static boolean constantTimeEquals(String a, String b) {
+        if (a == null || b == null) {
+            return false;
+        }
+        return MessageDigest.isEqual(a.getBytes(StandardCharsets.UTF_8), b.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

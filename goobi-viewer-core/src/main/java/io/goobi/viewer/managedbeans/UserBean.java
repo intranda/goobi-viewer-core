@@ -276,7 +276,7 @@ public class UserBean implements Serializable {
         if (StringUtils.isNotEmpty(email) && StringUtils.isNotEmpty(activationKey)) {
             User u = DataManager.getInstance().getDao().getUserByEmail(email);
             if (u != null && !u.isActive()) {
-                if (activationKey.equals(u.getActivationKey())) {
+                if (StringTools.constantTimeEquals(activationKey, u.getActivationKey())) {
                     // Activate user
                     u.setActivationKey(null);
                     u.setActive(true);
@@ -736,7 +736,7 @@ public class UserBean implements Serializable {
         User u = DataManager.getInstance().getDao().getUserByEmail(email);
         // Only reset password for non-OpenID user accounts, do not reset not yet activated accounts
         if (u != null && u.isActive() && !u.isOpenIdUser()) {
-            if (StringUtils.isNotEmpty(activationKey) && activationKey.equals(u.getActivationKey())) {
+            if (StringUtils.isNotEmpty(activationKey) && StringTools.constantTimeEquals(activationKey, u.getActivationKey())) {
                 byte[] pwBytes = new byte[7];
                 SECURE_RANDOM.nextBytes(pwBytes);
                 String newPassword = HexFormat.of().formatHex(pwBytes);
