@@ -406,28 +406,27 @@ public class IndexResource {
         if (solrField == null || !solrField.matches("[A-Za-z_][A-Za-z0-9_]*")) {
             throw new IllegalRequestException("Not a valid Solr field name: " + solrField);
         }
+        // Validate region against a strict WKT allow-list. wktRegion is passed to
+        // HeatmapFacetMap.setRegionQuery and must not carry Solr-syntax characters.
+        if (wktRegion != null && !WKT_REGION_PATTERN.matcher(wktRegion).matches()) {
+            throw new IllegalRequestException("region parameter contains characters not allowed in WKT syntax");
+        }
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
         // When query is explicitly set to empty string (e.g. ?query=), treat it as "*:*" to avoid
         // Solr syntax error from building "+() ..." which is invalid syntax.
-        String finalQuery = org.apache.commons.lang3.StringUtils.isBlank(filterQuery) ? "*:*" : filterQuery;
-        if (!finalQuery.startsWith("{!join")) {
-            finalQuery =
-                    new StringBuilder().append("+(")
-                            .append(filterQuery)
-                            .append(") +(-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:* *:*)")
-                            .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
-                            .toString();
-        } else {
-            //search query. Ignore all polygon results or the heatmap will have hits everywhere
-            if (finalQuery.endsWith(")")) {
-                finalQuery = finalQuery.substring(0, finalQuery.length() - 1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
-            } else {
-                finalQuery = finalQuery + " -MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*";
-
-            }
-        }
-        String queryEscaped = StringTools.unescapeCriticalUrlChracters(finalQuery);
+        // Always run through cleanUpQuery (strips non-whitelisted local-params) and always append
+        // the access-condition suffix from getAllSuffixes — the previous {!join}-prefix branch
+        // skipped the suffix, which let an attacker bypass access conditions by prefixing the
+        // query with a whitelisted join (GVC-2026-25).
+        String cleanedQuery = SolrTools.cleanUpQuery(
+                StringTools.unescapeCriticalUrlChracters(
+                        org.apache.commons.lang3.StringUtils.isBlank(filterQuery) ? "*:*" : filterQuery));
+        String queryEscaped = new StringBuilder().append("+(")
+                .append(cleanedQuery)
+                .append(") +(-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:* *:*)")
+                .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
+                .toString();
         try {
             return DataManager.getInstance()
                     .getSearchIndex()

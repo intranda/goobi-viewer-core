@@ -306,6 +306,43 @@ class IndexResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * A region parameter containing Solr-syntax characters on the heatmap endpoint must be
+     * rejected with 400 (GVC-2026-25).
+     */
+    @Test
+    void getHeatmap_shouldReturn400WhenInvalidRegion() {
+        String path = urls.path(INDEX, INDEX_SPATIAL_HEATMAP).params("WKT_COORDS").build();
+        java.net.URI uri = java.net.URI.create(target(path).getUri().toString()
+                + "?gridLevel=1&region=" + "*%3A*%29+OR+%28*%3A*");
+        try (Response response = client().target(uri)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "Region with Solr-syntax characters must be rejected with 400");
+        }
+    }
+
+    /**
+     * A {@code {!join}}-prefixed query on the heatmap endpoint must not bypass the
+     * access-condition suffix; the endpoint must return 200 and the join prefix must not
+     * cause a 400 either (GVC-2026-25 — regression check for the bypass branch removal).
+     */
+    @Test
+    void getHeatmap_joinPrefixedQueryShouldNotReturn400() {
+        String joinQuery = "%7B%21join+from%3DPI_TOPSTRUCT+to%3DPI%7D%2B%28ISWORK%3Atrue%29";
+        String path = urls.path(INDEX, INDEX_SPATIAL_HEATMAP).params("WKT_COORDS").build();
+        java.net.URI uri = java.net.URI.create(target(path).getUri().toString()
+                + "?gridLevel=1&query=" + joinQuery);
+        try (Response response = client().target(uri)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertFalse(response.getStatus() == 400,
+                    "A whitelisted {!join} prefix query must not produce HTTP 400 after the access-condition fix");
+        }
+    }
+
+    /**
      * @see IndexResource#collectFieldInfo()
      * @verifies create list correctly
      */
