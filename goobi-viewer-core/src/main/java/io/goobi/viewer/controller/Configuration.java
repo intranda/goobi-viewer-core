@@ -1377,6 +1377,70 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     *
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured to show details; false otherwise; default is false
+     * @should return correct value
+     */
+    public boolean isSidebarWidgetForViewShowDetails(String view, String widget) {
+        if (StringUtils.isEmpty(view) || StringUtils.isEmpty(widget)) {
+            return false;
+        }
+
+        HierarchicalConfiguration<ImmutableNode> viewConfig = getSidebarViewConfiguration(view.toLowerCase());
+        if (viewConfig != null) {
+            for (HierarchicalConfiguration<ImmutableNode> widgetConfig : viewConfig.configurationsAt("displayWidget")) {
+                if (widget.equals(widgetConfig.getString(XML_PATH_ATTRIBUTE_NAME))) {
+                    return widgetConfig.getBoolean("[@showDetails]", false);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return maximum number of related records shown in the content section; default is 3
+     * @should return correct value
+     */
+    public int getSidebarWidgetRelatedGroupsMaxResults() {
+        return getSidebarWidgetIntValue("related-groups", "maxResults", 3);
+    }
+
+    /**
+     * @return solr field used for sorting related records; default is SORT_YEARPUBLISH (newest publication year first)
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsSortField() {
+        return getSidebarWidgetStringValue("related-groups", "sortField", "SORT_YEARPUBLISH");
+    }
+
+    /**
+     * @return sort order for related records (asc or desc); default is desc
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsSortOrder() {
+        return getSidebarWidgetStringValue("related-groups", "sortOrder", "desc");
+    }
+
+    /**
+     * @return solr field used as the card title in the related-groups widget/section; default is MD_TITLE
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsTitleField() {
+        return getSidebarWidgetStringValue("related-groups", "titleField", SolrConstants.TITLE);
+    }
+
+    /**
+     * @return solr field used as the card subtitle in the related-groups widget/section; default is MD_CREATOR
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsSubtitleField() {
+        return getSidebarWidgetStringValue("related-groups", "subtitleField", SolrConstants.PERSON_ONEFIELD);
+    }
+
+    /**
      * isBrowsingMenuEnabled.
      *
      * @should return correct value

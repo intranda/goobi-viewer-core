@@ -36,42 +36,56 @@
     </composite:interface>
 
     <composite:implementation>
-    	<div class="thumbnail-slider">
-    		<div id="thumbnail-slider__#{cc.clientId}-btn-prev" class=" thumbnail-slider__btn-prev"><util:icon icon="caret-left" filled="true"/></div>
-	        <div id="#{cc.clientId}-slider" class="swiper thumbnail-slider__swiper" data-space-between="#{cc.attrs.spaceBetween}">
-
-	            <div class="swiper-wrapper">
-	                <ui:repeat
-	                    var="page"
-	                    value="#{activeDocumentBean.viewManager.allPages}">
-	                    <div class="swiper-slide thumbnail-slider__item #{page.order == cc.attrs.currentPageOrder ? '-activePage' : ''}">
-	                        <ui:fragment rendered="#{page != null}">
-	                            <h:outputLink
-	                                styleClass="thumbnail-slider__link"
-	                                aria-label="#{msg.a11y__open_link_to}: #{page.order} #{page.orderLabel}"
-	                                value="#{cc.attrs.thumbsToFullscreen ? request.contextPath.concat('/fullscreen/').concat(activeDocumentBean.viewManager.pi).concat('/').concat(page.order).concat('/') : activeDocumentBean.getPageUrl(page.order)}#topDocAnchor">
-	                                <span class="thumbnail-slider__image-wrapper">
-	                                    <img
-	                                        data-script="fadeIn"
-	                                        loading="lazy"
-	                                        class="thumbnail-slider__image"
-	                                        alt=""
-	                                        data-viewer-thumbnail="thumbnail"
-	                                        src="#{imageDelivery.thumbs.getThumbnailUrl(page, cc.attrs.imageSize, cc.attrs.imageSize)}"
-	                                        data-viewer-access-denied-url="#{page.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
-	                                </span>
-	                                <ui:fragment rendered="#{cc.attrs.showPageLabel}">
-                                    <div class="thumbnail-slider__link-text">#{page.order}:#{page.orderLabel}</div>
-                                </ui:fragment>
-	                            </h:outputLink>
-	                        </ui:fragment>
-	                    </div>
-	                </ui:repeat>
-	            </div>   
-	        </div>
-			<div id="thumbnail-slider__#{cc.clientId}-btn-next" class="thumbnail-slider__btn-next"><util:icon icon="caret-right" filled="true"/></div>
+        <div class="thumbnail-slider">
+            <div
+                id="thumbnail-slider__#{cc.clientId}-btn-prev"
+                class=" thumbnail-slider__btn-prev">
+                <util:icon
+                    icon="caret-left"
+                    filled="true" />
+            </div>
+            <div
+                id="#{cc.clientId}-slider"
+                class="swiper thumbnail-slider__swiper"
+                data-space-between="#{cc.attrs.spaceBetween}">
+                <div class="swiper-wrapper">
+                    <ui:repeat
+                        var="page"
+                        value="#{activeDocumentBean.viewManager.allPages}">
+                        <div class="swiper-slide thumbnail-slider__item #{page.order == cc.attrs.currentPageOrder ? '-activePage' : ''}">
+                            <ui:fragment rendered="#{page != null}">
+                                <h:outputLink
+                                    styleClass="thumbnail-slider__link"
+                                    aria-label="#{msg.a11y__open_link_to}: #{page.order} #{page.orderLabel}"
+                                    value="#{cc.attrs.thumbsToFullscreen ? request.contextPath.concat('/fullscreen/').concat(activeDocumentBean.viewManager.pi).concat('/').concat(page.order).concat('/') : activeDocumentBean.getPageUrl(page.order)}#topDocAnchor">
+                                    <span class="thumbnail-slider__image-wrapper">
+                                        <img
+                                            data-script="fadeIn"
+                                            loading="lazy"
+                                            class="thumbnail-slider__image"
+                                            alt=""
+                                            data-viewer-thumbnail="thumbnail"
+                                            src="#{imageDelivery.thumbs.getThumbnailUrl(page, cc.attrs.imageSize, cc.attrs.imageSize)}"
+                                            data-viewer-access-denied-url="#{page.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+                                    </span>
+                                    <ui:fragment rendered="#{cc.attrs.showPageLabel}">
+                                        <div class="thumbnail-slider__link-text">#{page.order}:#{page.orderLabel}</div>
+                                    </ui:fragment>
+                                </h:outputLink>
+                            </ui:fragment>
+                        </div>
+                    </ui:repeat>
+                </div>
+            </div>
+            <div
+                id="thumbnail-slider__#{cc.clientId}-btn-next"
+                class="thumbnail-slider__btn-next">
+                <util:icon
+                    icon="caret-right"
+                    filled="true" />
+            </div>
         </div>
- 
+
         <script>
             (function() {
                 const el = document.getElementById('#{cc.clientId}-slider');

@@ -967,6 +967,51 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     *
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured to show details; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewShowDetails(String view, String widget) {
+        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails(view, widget);
+    }
+
+    /**
+     * @return maximum number of related records to display in the content section
+     */
+    public int getSidebarWidgetRelatedGroupsMaxResults() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsMaxResults();
+    }
+
+    /**
+     * @return solr field used for sorting
+     */
+    public String getSidebarWidgetRelatedGroupsSortField() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortField();
+    }
+
+    /**
+     * @return sort order
+     */
+    public String getSidebarWidgetRelatedGroupsSortOrder() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortOrder();
+    }
+
+    /**
+     * @return solr field used as card title
+     */
+    public String getSidebarWidgetRelatedGroupsTitleField() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsTitleField();
+    }
+
+    /**
+     * @return solr field used as card subtitle
+     */
+    public String getSidebarWidgetRelatedGroupsSubtitleField() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSubtitleField();
+    }
+
+    /**
      * isDisplaySidebarBrowsingTerms.
      *
      * @return true if the browsing terms widget should be displayed in the sidebar, false otherwise
