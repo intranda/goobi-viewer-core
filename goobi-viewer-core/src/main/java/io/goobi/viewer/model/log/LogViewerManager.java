@@ -1,5 +1,6 @@
 package io.goobi.viewer.model.log;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
@@ -71,9 +72,19 @@ public class LogViewerManager {
 
     /**
      * Broadcasts parsed log entries to all active WebSocket sessions for the given log file.
-     * All entries from a single flush cycle are sent as one JSON array per session so that
-     * only a single sendText() call is made per session — the WebSocket async remote endpoint
-     * does not allow concurrent sends (TEXT_FULL_WRITING IllegalStateException).
+     * All entries from a single flush cycle are sent as one JSON array per session, and the
+     * synchronous basic remote is used so that consecutive sends to the same session cannot
+     * overlap. The async remote returns before the write completes, which caused
+     * {@link IllegalStateException} (TEXT_FULL_WRITING) when several entries were flushed in
+     * quick succession.
+     *
+     * @param logFile the log file whose sessions should receive the update
+     * @param rawBlock the raw, unparsed log text of one flush cycle
+     * @should send exactly one message per open session and skip closed sessions
+     * @should send multiple entries of one flush as a single JSON array message
+     * @should not send and not throw when raw block is empty or null
+     * @should use synchronous basic remote and never use async remote across consecutive broadcasts
+     * @should keep delivering to remaining sessions when one session send fails
      */
     void broadcastParsed(LogFile logFile, String rawBlock) {
         Set<Session> sessions = activeSessions.get(logFile);
@@ -97,10 +108,25 @@ public class LogViewerManager {
         json.append("]");
         String payload = json.toString();
 
+        // Prune sessions that are already closed before sending.
         sessions.removeIf(session -> !session.isOpen());
         for (Session session : sessions) {
+            // Re-check isOpen() to guard the prune->send race: a session may close on a
+            // container thread between removeIf() above and the send below.
             if (session.isOpen()) {
-                session.getAsyncRemote().sendText(payload);
+                try {
+                    // Use the synchronous basic remote: sendText() blocks until the message is
+                    // fully written, so back-to-back sends to the same session cannot overlap.
+                    // The async remote returned before the write completed, which caused
+                    // IllegalStateException: TEXT_FULL_WRITING when multiple log entries were
+                    // flushed in quick succession (e.g. several entries within one Tailer batch).
+                    session.getBasicRemote().sendText(payload);
+                } catch (IOException e) {
+                    // A broken session must not abort delivery to the remaining sessions; drop it.
+                    logger.debug("Failed to send log update to session {}, removing it: {}",
+                        session.getId(), e.getMessage());
+                    sessions.remove(session);
+                }
             }
         }
     }
