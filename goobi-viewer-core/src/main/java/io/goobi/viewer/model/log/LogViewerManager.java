@@ -85,6 +85,7 @@ public class LogViewerManager {
      * @should not send and not throw when raw block is empty or null
      * @should use synchronous basic remote and never use async remote across consecutive broadcasts
      * @should keep delivering to remaining sessions when one session send fails
+     * @should drop session and keep delivering when send hits a closed session
      */
     void broadcastParsed(LogFile logFile, String rawBlock) {
         Set<Session> sessions = activeSessions.get(logFile);
@@ -121,8 +122,12 @@ public class LogViewerManager {
                     // IllegalStateException: TEXT_FULL_WRITING when multiple log entries were
                     // flushed in quick succession (e.g. several entries within one Tailer batch).
                     session.getBasicRemote().sendText(payload);
-                } catch (IOException e) {
+                } catch (IOException | IllegalStateException e) {
                     // A broken session must not abort delivery to the remaining sessions; drop it.
+                    // IllegalStateException is caught in addition to IOException because the session
+                    // can be closed on a container thread between the isOpen() check above and this
+                    // send (TOCTOU race); Tomcat's basic remote then throws IllegalStateException
+                    // ("session has been closed"), not IOException.
                     logger.debug("Failed to send log update to session {}, removing it: {}",
                         session.getId(), e.getMessage());
                     sessions.remove(session);

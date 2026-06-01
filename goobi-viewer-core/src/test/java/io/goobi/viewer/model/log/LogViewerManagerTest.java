@@ -231,4 +231,40 @@ class LogViewerManagerTest {
         Mockito.verify(failingRemote, Mockito.times(1)).sendText(Mockito.anyString());
         Mockito.verify(healthyRemote, Mockito.times(2)).sendText(Mockito.anyString());
     }
+
+    /**
+     * @see LogViewerManager#broadcastParsed(LogFile, String)
+     * @verifies drop session and keep delivering when send hits a closed session
+     */
+    @Test
+    void broadcastParsed_shouldDropSessionAndKeepDeliveringWhenSendHitsAClosedSession() throws Exception {
+        // TOCTOU race: a session reports isOpen() == true but is closed before/while sending, so
+        // Tomcat's basic remote throws IllegalStateException (not IOException). It must be caught,
+        // the session dropped, and delivery to the remaining sessions must continue.
+        Session racing = Mockito.mock(Session.class);
+        Session healthy = Mockito.mock(Session.class);
+        RemoteEndpoint.Basic racingRemote = Mockito.mock(RemoteEndpoint.Basic.class);
+        RemoteEndpoint.Basic healthyRemote = Mockito.mock(RemoteEndpoint.Basic.class);
+        Mockito.when(racing.isOpen()).thenReturn(true);
+        Mockito.when(healthy.isOpen()).thenReturn(true);
+        Mockito.when(racing.getBasicRemote()).thenReturn(racingRemote);
+        Mockito.when(healthy.getBasicRemote()).thenReturn(healthyRemote);
+        Mockito.doThrow(new IllegalStateException("Message will not be sent because the WebSocket session has been closed"))
+            .when(racingRemote).sendText(Mockito.anyString());
+
+        manager.registerSession(LogFile.VIEWER, racing);
+        manager.registerSession(LogFile.VIEWER, healthy);
+
+        assertDoesNotThrow(() -> manager.broadcastParsed(LogFile.VIEWER,
+            "ERROR 2026-03-26 11:05:08.562 [main] io.goobi.viewer.Foo.bar(Foo.java:1) - line"));
+
+        // The healthy session received its message despite the closed session.
+        Mockito.verify(healthyRemote, Mockito.times(1)).sendText(Mockito.anyString());
+
+        // The closed session was dropped: a second broadcast must not attempt to send to it again.
+        manager.broadcastParsed(LogFile.VIEWER,
+            "WARN  2026-03-26 11:05:09.000 [main] io.goobi.viewer.Bar.baz(Bar.java:2) - line2");
+        Mockito.verify(racingRemote, Mockito.times(1)).sendText(Mockito.anyString());
+        Mockito.verify(healthyRemote, Mockito.times(2)).sendText(Mockito.anyString());
+    }
 }
