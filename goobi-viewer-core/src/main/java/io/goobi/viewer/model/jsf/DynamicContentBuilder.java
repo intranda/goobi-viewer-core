@@ -39,8 +39,6 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.maps.GeoMap;
 import jakarta.el.ELException;
-import jakarta.el.ValueExpression;
-import jakarta.el.VariableMapper;
 import jakarta.faces.FacesException;
 import jakarta.faces.application.Application;
 import jakarta.faces.application.Resource;
@@ -131,7 +129,7 @@ public class DynamicContentBuilder {
                                     attributes.put("slider", slider);
                                 }
                             }
-                            String linkTarget = (String) composite.getAttributes().get("linkTarget");
+                            String linkTarget = (String) content.getAttributes().get("linkTarget");
                             if (StringUtils.isBlank(linkTarget)) {
                                 attributes.put("linkTarget", "_blank");
                             }
@@ -197,11 +195,6 @@ public class DynamicContentBuilder {
             }
         }
 
-        // Each widget build must get an isolated VariableMapper so that EL variables
-        // set during one widget's Facelets processing (e.g. styleClass inside util:icon)
-        // do not bleed into subsequent widgets built on the same shared faceletContext.
-        VariableMapper originalVm = faceletContext.getVariableMapper();
-        faceletContext.setVariableMapper(new IsolatedVariableMapper(originalVm));
         try {
             faceletContext.includeFacelet(implementation, componentResource.getURL());
         } catch (IOException | NullPointerException e) {
@@ -219,7 +212,6 @@ public class DynamicContentBuilder {
             parent.getChildren().remove(composite);
             return null;
         } finally {
-            faceletContext.setVariableMapper(originalVm);
             // Restore the EL component stack to its pre-push state regardless of
             // whether includeFacelet succeeded or was interrupted. On the normal
             // success path this removes exactly the one entry we pushed; on failure
@@ -230,14 +222,11 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * Drains the JSF EL component stack until the component at the top equals
-     * {@code targetTop}. Called from the finally block of
-     * {@link #loadCompositeComponent} to recover from an interrupted
-     * {@link FaceletContext#includeFacelet} call that may have left stale
-     * composite component references on the stack.
+     * Drains the JSF EL component stack until the component at the top equals {@code targetTop}. Called from the finally block of
+     * {@link #loadCompositeComponent} to recover from an interrupted {@link FaceletContext#includeFacelet} call that may have left stale composite
+     * component references on the stack.
      *
-     * @param targetTop the component that should be at the top after draining;
-     *                  {@code null} means the stack should be empty
+     * @param targetTop the component that should be at the top after draining; {@code null} means the stack should be empty
      */
     private void restoreELComponentStack(UIComponent targetTop) {
         UIComponent current;
@@ -349,32 +338,6 @@ public class DynamicContentBuilder {
                 return "cmsSlider.xhtml";
             default:
                 return "";
-        }
-    }
-
-    /**
-     * A VariableMapper that writes to its own local map and reads from the parent
-     * as a fallback. Used to isolate each widget's Facelets build so that EL
-     * variables set in one widget (e.g. styleClass from util:icon) cannot bleed
-     * into subsequent widgets processed on the same shared FaceletContext.
-     */
-    private static final class IsolatedVariableMapper extends VariableMapper {
-        private final VariableMapper parent;
-        private final Map<String, ValueExpression> locals = new HashMap<>();
-
-        IsolatedVariableMapper(VariableMapper parent) {
-            this.parent = parent;
-        }
-
-        @Override
-        public ValueExpression resolveVariable(String variable) {
-            ValueExpression ve = locals.get(variable);
-            return ve != null ? ve : parent.resolveVariable(variable);
-        }
-
-        @Override
-        public ValueExpression setVariable(String variable, ValueExpression expression) {
-            return locals.put(variable, expression);
         }
     }
 }

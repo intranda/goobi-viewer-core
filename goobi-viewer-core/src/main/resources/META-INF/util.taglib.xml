@@ -14,7 +14,6 @@
             <name>styleClass</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
         <attribute>
             <description>Tabler icon name (e.g. "trash", "user").</description>
@@ -27,14 +26,12 @@
             <name>color</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
         <attribute>
             <description>Set to "true" to render the filled variant; otherwise outline.</description>
             <name>filled</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
         <attribute>
             <description>
@@ -44,14 +41,12 @@
             <name>svgClass</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
         <attribute>
             <description>Accessible label announced to assistive technologies.</description>
             <name>ariaLabel</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
     </tag>
     <tag>
@@ -62,28 +57,24 @@
             <name>styleClass</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
         <attribute>
             <description>CSS classes applied to the icon element.</description>
             <name>iconClass</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
         <attribute>
             <description>CSS classes applied to the text element.</description>
             <name>textClass</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
         <attribute>
             <description>Accessible label for the icon (forwarded to util:icon as ariaLabel).</description>
             <name>iconAriaLabel</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
         <attribute>
             <description>Tabler icon name (e.g. "trash", "user").</description>
@@ -96,7 +87,6 @@
             <name>filled</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
         <attribute>
             <description>Text label rendered next to the icon.</description>
@@ -111,14 +101,12 @@
             <name>iconSvgClass</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
         <attribute>
             <description>Text position relative to the icon: 'left' or 'right' (default: 'right').</description>
             <name>textPosition</name>
             <required>false</required>
             <type>java.lang.String</type>
-            <default-value></default-value>
         </attribute>
     </tag>
 </facelet-taglib>
