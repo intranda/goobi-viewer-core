@@ -48,8 +48,13 @@ var viewerJS = (function (viewer) {
          * @param {String} anchor The name of the anchor to scroll to.
          */
         init: function (config) {
-            this.lastKeypress = 0;
-            this.lastkeycode = 0;
+            // The keyup handler reads `lastKeyPress` / `lastKeycode`
+            // (camelCase). Initialising those exact names so a re-init
+            // truly clears the double-press state — was previously
+            // misspelled as `lastKeypress` / `lastkeycode` and never
+            // reset what the handler reads. refs #27937
+            this.lastKeyPress = 0;
+            this.lastKeycode = 0;
             this.config = jQuery.extend(true, {}, _defaults); //copy defaults
             jQuery.extend(true, this.config, config); //merge config
 
