@@ -70,8 +70,12 @@ public final class ALTOTools {
     /** Constant <code>TAG_LABEL_IGNORE_REGEX</code>. */
     public static final String TAG_LABEL_IGNORE_REGEX =
             "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
-    /** Characters that can cause an "Invalid UTF-8 middle byte" error in the parser. */
-    public static final String ALTO_PROBLEMATIC_CHARS = "[ﬅﬆﬃﬄﬂﬁ�]";
+    /**
+     * Characters that can cause an "Invalid UTF-8 middle byte" error in the parser. Encoded as Unicode escapes (instead of the literal
+     * glyphs) so the source file stays pure ASCII; the trailing U+FFFD replacement character in particular made the SonarCloud/ECJ parser
+     * emit an "Invalid character encountered" warning. The escapes compile to exactly the same characters at runtime.
+     */
+    public static final String ALTO_PROBLEMATIC_CHARS = "[\uFB05\uFB06\uFB03\uFB04\uFB02\uFB01\uFFFD]";
     // Pre-compiled patterns to avoid per-call Pattern.compile() in hot paths (called for every ALTO word/tag)
     private static final Pattern TAG_LABEL_IGNORE_COMPILED = Pattern.compile(TAG_LABEL_IGNORE_REGEX);
     private static final Pattern ALTO_PROBLEMATIC_CHARS_COMPILED = Pattern.compile(ALTO_PROBLEMATIC_CHARS);
