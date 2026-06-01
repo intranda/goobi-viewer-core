@@ -112,8 +112,7 @@ var Statistics = (function () {
         var labelDesc = this.config.labelDesc;
 
         $div.bind('jqplotDataHighlight', function (ev, seriesIndex, pointIndex, data) {
-            Statistics.chartLabel =
-                typeNumberList[pointIndex][0] + ' (' + typeNumberList[pointIndex][1] + ' ' + labelDesc + ')';
+            Statistics.chartLabel = typeNumberList[pointIndex][0] + ' (' + typeNumberList[pointIndex][1] + ' ' + labelDesc + ')';
         });
 
         $div.bind('jqplotDataUnhighlight', function (ev) {
@@ -229,10 +228,7 @@ var Statistics = (function () {
     };
 
     Statistics.NumberOfPages.prototype.plot = function (divId) {
-        var labelList = [
-            this.config.titlePages + '::' + this.config.numPages,
-            this.config.titleFullTexts + '::' + this.config.numFullTexts,
-        ];
+        var labelList = [this.config.titlePages + '::' + this.config.numPages, this.config.titleFullTexts + '::' + this.config.numFullTexts];
 
         var graphList = new Array();
 
@@ -413,3 +409,9 @@ var Statistics = (function () {
 
     return Statistics;
 })(jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+// Mirrors the pattern in viewerJS.datePicker.js.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Statistics;
+}

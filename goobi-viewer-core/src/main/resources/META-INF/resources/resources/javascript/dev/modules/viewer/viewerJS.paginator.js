@@ -101,9 +101,7 @@ var viewerJS = (function (viewer) {
             var now = Date.now();
 
             // this is a double key press if the last entered keycode is the same as the current one and the last key press is less than maxDoubleClickDelay ago
-            var doubleKeypress =
-                viewer.paginator.lastKeycode == keyCode &&
-                now - viewer.paginator.lastKeyPress <= viewer.paginator.config.maxDoubleClickDelay;
+            var doubleKeypress = viewer.paginator.lastKeycode == keyCode && now - viewer.paginator.lastKeyPress <= viewer.paginator.config.maxDoubleClickDelay;
             viewer.paginator.lastKeycode = keyCode;
             viewer.paginator.lastKeyPress = now;
 
@@ -187,11 +185,7 @@ var viewerJS = (function (viewer) {
             if (_debug) {
                 console.log('targetPageNumber', targetPageNumber);
             }
-            if (
-                targetPageNumber != this.config.currentItem &&
-                targetPageNumber >= this.config.firstItem &&
-                targetPageNumber <= this.config.lastItem
-            ) {
+            if (targetPageNumber != this.config.currentItem && targetPageNumber >= this.config.firstItem && targetPageNumber <= this.config.lastItem) {
                 let targetUrl = this.config.targetUrlPrefix + targetPageNumber + this.config.targetUrlSuffix;
                 if (_debug) {
                     console.log('navigate to', targetUrl);
@@ -205,3 +199,9 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+// Mirrors the pattern in viewerJS.datePicker.js.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

@@ -123,16 +123,11 @@ var viewerJS = (function (viewer) {
          */
         getChildCollections: function (collection) {
             if (collection.service && Array.isArray(collection.service)) {
-                let extents = collection.service.filter((service) =>
-                    service['@context'].endsWith('/collection/extent/context.json')
-                );
+                let extents = collection.service.filter((service) => service['@context'].endsWith('/collection/extent/context.json'));
                 if (extents && extents.length > 0) {
                     return extents[0].children;
                 }
-            } else if (
-                collection.service &&
-                collection.service['@context'].endsWith('/collection/extent/context.json')
-            ) {
+            } else if (collection.service && collection.service['@context'].endsWith('/collection/extent/context.json')) {
                 return collection.service.children;
             } else {
                 return 0;
@@ -149,16 +144,11 @@ var viewerJS = (function (viewer) {
          */
         getContainedWorks: function (collection) {
             if (collection.service && Array.isArray(collection.service)) {
-                let extents = collection.service.filter((service) =>
-                    service['@context'].endsWith('/collection/extent/context.json')
-                );
+                let extents = collection.service.filter((service) => service['@context'].endsWith('/collection/extent/context.json'));
                 if (extents && extents.length > 0) {
                     return extents[0].containedWorks;
                 }
-            } else if (
-                collection.service &&
-                collection.service['@context'].endsWith('/collection/extent/context.json')
-            ) {
+            } else if (collection.service && collection.service['@context'].endsWith('/collection/extent/context.json')) {
                 return collection.service.containedWorks;
             } else {
                 return 0;
@@ -178,11 +168,7 @@ var viewerJS = (function (viewer) {
                 if (tagService && tagService.length > 0) {
                     return tagService[0].tags;
                 }
-            } else if (
-                collection.service &&
-                collection.service['@context'].endsWith('/taglists/context.json') &&
-                (service === undefined || service.name == name)
-            ) {
+            } else if (collection.service && collection.service['@context'].endsWith('/taglists/context.json') && (service === undefined || service.name == name)) {
                 return collection.service.tags;
             } else {
                 return undefined;
@@ -288,10 +274,7 @@ var viewerJS = (function (viewer) {
         },
 
         isCollection(element) {
-            return (
-                (element.type == 'Collection' || element['@type'] == 'sc:Collection') &&
-                element.viewingHint != 'multi-part'
-            );
+            return (element.type == 'Collection' || element['@type'] == 'sc:Collection') && element.viewingHint != 'multi-part';
         },
 
         isSingleManifest(element) {
@@ -337,3 +320,9 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+// Mirrors the pattern in viewerJS.datePicker.js.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

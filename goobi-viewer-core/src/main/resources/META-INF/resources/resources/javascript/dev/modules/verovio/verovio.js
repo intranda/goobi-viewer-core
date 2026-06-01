@@ -150,16 +150,7 @@ class VerovioApp {
             this.filename = filename;
 
             // Try to find any method that might load MEI data
-            const possibleMethods = [
-                'loadData',
-                'load',
-                'loadMEI',
-                'loadMusicXMLString',
-                'loadMusicXML',
-                'loadDocument',
-                'setMEI',
-                'from',
-            ];
+            const possibleMethods = ['loadData', 'load', 'loadMEI', 'loadMusicXMLString', 'loadMusicXML', 'loadDocument', 'setMEI', 'from'];
 
             let loadResult = false;
             let methodUsed = null;

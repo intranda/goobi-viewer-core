@@ -39,3 +39,8 @@ function getCurrentBrowser() {
 }
 
 setupBrowserSupport();
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { getCurrentBrowser: getCurrentBrowser, setupBrowserSupport: setupBrowserSupport };
+}

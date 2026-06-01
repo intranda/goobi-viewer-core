@@ -205,9 +205,7 @@ var adminJS = (function (admin) {
 
         // ── Phase 1: Extract URLs and strings ───────────────────────
         html = html.replace(/(https?:\/\/[^\s"')\]&]*(?:&amp;[^\s"')\]&]*)*)/g, (url) => {
-            return protect(
-                '<a href="' + url + '" class="logviewer__hl-url" target="_blank" rel="noopener">' + url + '</a>'
-            );
+            return protect('<a href="' + url + '" class="logviewer__hl-url" target="_blank" rel="noopener">' + url + '</a>');
         });
 
         html = html.replace(/(&quot;)((?:[^&]|&(?!quot;))*)(&quot;)/g, (m, open, inner, close) => {
@@ -230,9 +228,7 @@ var adminJS = (function (admin) {
 
         // ── Phase 3: bat-style token patterns ───────────────────────
         html = html.replace(/(\w+)(=)/g, (m, key, eq) => {
-            return protect(
-                '<span class="logviewer__hl-key">' + key + '</span><span class="logviewer__hl-op">' + eq + '</span>'
-            );
+            return protect('<span class="logviewer__hl-key">' + key + '</span><span class="logviewer__hl-op">' + eq + '</span>');
         });
 
         html = html.replace(/\b(\d{4}[-/]\d{2}[-/]\d{2})\b/g, (m) => {
@@ -243,12 +239,9 @@ var adminJS = (function (admin) {
             return protect('<span class="logviewer__hl-num">' + m + '</span>');
         });
 
-        html = html.replace(
-            /\b((?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))\b/g,
-            function (m) {
-                return protect('<span class="logviewer__hl-ip">' + m + '</span>');
-            }
-        );
+        html = html.replace(/\b((?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))\b/g, function (m) {
+            return protect('<span class="logviewer__hl-ip">' + m + '</span>');
+        });
 
         html = html.replace(/\b(fail(?:ure|ed)?|error|exception|fatal|critical)\b/gi, function (m) {
             return protect('<span class="logviewer__hl-exc">' + m + '</span>');
@@ -288,30 +281,15 @@ var adminJS = (function (admin) {
 
         buffer.forEach((l) => {
             if (levelSel !== 'ALL' && l.level && l.level !== levelSel) return;
-            const full = (
-                (l.timestamp || '') +
-                ' ' +
-                (l.level || '') +
-                ' ' +
-                (l.location || '') +
-                ' ' +
-                (l.message || '')
-            ).toLowerCase();
+            const full = ((l.timestamp || '') + ' ' + (l.level || '') + ' ' + (l.location || '') + ' ' + (l.message || '')).toLowerCase();
             if (textSel && full.indexOf(textSel) === -1) return;
 
             const levelLower = (l.level || '').toLowerCase().trim();
-            const lineClass =
-                'logviewer__line' +
-                (levelLower === 'error' ? ' logviewer__line--error' : '') +
-                (levelLower === 'warn' ? ' logviewer__line--warn' : '');
+            const lineClass = 'logviewer__line' + (levelLower === 'error' ? ' logviewer__line--error' : '') + (levelLower === 'warn' ? ' logviewer__line--warn' : '');
 
             // Continuation line (no level) — render message only
             if (!l.level) {
-                html +=
-                    '<div class="logviewer__line logviewer__line--continuation">' +
-                    '<span class="logviewer__line-message">' +
-                    highlightLine(l.message || '') +
-                    '</span></div>';
+                html += '<div class="logviewer__line logviewer__line--continuation">' + '<span class="logviewer__line-message">' + highlightLine(l.message || '') + '</span></div>';
                 return;
             }
 
