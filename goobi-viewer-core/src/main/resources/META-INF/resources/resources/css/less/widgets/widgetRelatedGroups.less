@@ -24,7 +24,7 @@
     &__anchor {
         h2 {
             margin-bottom: 0;
-            a {
+            a { 
                 padding: 0;
                 color: inherit;
                 font-size: inherit;
@@ -40,7 +40,7 @@
 }
 
 /* ==============================================================
-   Related Groups Content Section
+   Related Groups Content Section (below object image)
    style declarations for relatedGroupsSection.xhtml
    ============================================================== */
 .related-groups-section {
@@ -50,19 +50,19 @@
         margin: 0 0 20px 0;
     }
     &__heading-link {
+        word-wrap: anywhere;
         text-decoration: underline;
     }
     &__grid {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
         gap: 20px;
-        align-items: flex-start;
+        align-items: start;
         padding: 20px;
         background: @white;
         border: 1px solid @middlegray;
     }
     &__card {
-        flex: 0 0 140px;
         display: flex;
         flex-direction: column;
         gap: 8px;
@@ -80,8 +80,8 @@
         }
     }
     &__card-image {
-        width: 140px;
-        height: 195px;
+        width: 100%;
+        aspect-ratio: 140 / 195;
         overflow: hidden;
         background-color: @neutralgray;
         border: 1px solid @middlegray;
@@ -96,7 +96,6 @@
         display: flex;
         flex-direction: column;
         gap: 2px;
-        width: 140px;
     }
     &__card-title {
         font-size: @fontMedium;
@@ -114,12 +113,18 @@
         line-height: 1.4;
         color: @gray;
     }
+    &__view-all-wrapper {
+        display: flex;
+        align-items: center;
+    }
     &__view-all {
-        flex: 0 0 140px;
+        width: 100%;
+        padding: 5px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        text-align: center;
         gap: 8px;
         height: 195px;
         border: 1px solid @middlegray;
@@ -148,25 +153,29 @@
     }
 }
 
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    .related-groups-section {
+        &__grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        &__view-all {
+            grid-column: 1 / -1;
+            height: 120px;
+        }
+    }
+}
+
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
     .related-groups-section {
         &__grid {
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
-        &__card,
-        &__card-info {
-            flex-basis: calc(50% - 8px);
-            width: 100%;
-        }
-        &__card-image {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 140 / 195;
-        }
         &__view-all {
-            flex-basis: 100%;
-            height: 120px;
+            grid-column: 1 / -1;
+            height: 100px;
         }
     }
 }

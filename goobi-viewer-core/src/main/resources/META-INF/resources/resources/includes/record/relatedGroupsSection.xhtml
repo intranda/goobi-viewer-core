@@ -16,7 +16,7 @@
             <!-- Heading: "Diese Publikation ist Teil des Gesamtwerks [Anchor Name]" - requires full anchor info -->
             <h:panelGroup rendered="#{anchorReady}">
                 <h2 class="related-groups-section__heading">
-                    #{msg.recordGroupMemberships_partOf}
+                    <span>#{msg.recordGroupMemberships_partOf}</span>
                     <a
                         href="#{navigationHelper.getRecordUrl(activeDocumentBean.viewManager.anchorPi, activeDocumentBean.viewManager.anchorStructElement.docStructType, 1, true, false)}"
                         class="related-groups-section__heading-link">
@@ -64,7 +64,7 @@
                 </ui:repeat>
 
                 <!-- "Zum Gesamtwerk" button - only when full anchor info is available -->
-                <h:panelGroup rendered="#{anchorReady}">
+                <h:panelGroup rendered="#{anchorReady}" styleClass="related-groups-section__view-all-wrapper" layout="block">
                     <a
                         href="#{navigationHelper.getRecordUrl(activeDocumentBean.viewManager.anchorPi, activeDocumentBean.viewManager.anchorStructElement.docStructType, 1, true, false)}"
                         class="related-groups-section__view-all">
