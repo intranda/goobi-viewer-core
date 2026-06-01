@@ -4,20 +4,12 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:c="http://java.sun.com/jsp/jstl/core">
-    <c:set
-        var="variant"
-        value="#{filled == 'true' ? 'filled' : 'outline'}" />
-    <ui:param
-        name="contextPath"
-        value="#{facesContext.externalContext.requestContextPath}" />
-    <ui:param
-        name="iconPath"
-        value="#{contextPath}/resources/icons/#{variant}/#{icon}.svg#icon" />
-    <ui:param
-        name="wrapperClass"
-        value="icon-wrapper#{not empty styleClass ? ' '.concat(styleClass) : ''}" />
+    <c:set var="_iconVariant"      value="${filled == 'true' ? 'filled' : 'outline'}" />
+    <c:set var="_iconPath"         value="${facesContext.externalContext.requestContextPath}/resources/icons/${_iconVariant}/${icon}.svg#icon" />
+    <c:set var="_iconWrapperClass" value="${not empty styleClass ? 'icon-wrapper '.concat(styleClass) : 'icon-wrapper'}" />
+    <c:set var="_iconSvgClass"     value="${not empty svgClass   ? 'icon-svg '.concat(svgClass)       : 'icon-svg'}" />
 
-    <h:panelGroup styleClass="#{wrapperClass}">
+    <h:panelGroup styleClass="#{_iconWrapperClass}">
         <f:passThroughAttribute
             name="aria-hidden"
             value="#{empty ariaLabel ? 'true' : null}" />
@@ -28,10 +20,14 @@
             name="aria-label"
             value="#{not empty ariaLabel ? ariaLabel : null}" />
         <svg
-            class="icon-svg #{svgClass}"
+            class="#{_iconSvgClass}"
             aria-hidden="true"
             focusable="false">
-            <use href="#{iconPath}" />
+            <use href="#{_iconPath}" />
         </svg>
     </h:panelGroup>
+    <c:set var="styleClass" value="" />
+    <c:set var="svgClass"   value="" />
+    <c:set var="filled"     value="" />
+    <c:set var="ariaLabel"  value="" />
 </ui:component>
