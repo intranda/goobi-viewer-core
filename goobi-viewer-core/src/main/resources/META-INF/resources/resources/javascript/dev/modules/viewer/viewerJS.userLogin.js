@@ -38,10 +38,7 @@ var viewerJS = (function (viewer) {
             }
 
             // set comments object to session storage
-            if (
-                sessionStorage.getItem('userComments') == undefined ||
-                sessionStorage.getItem('userComments') === null
-            ) {
+            if (sessionStorage.getItem('userComments') == undefined || sessionStorage.getItem('userComments') === null) {
                 sessionStorage.setItem('userComments', JSON.stringify(_userComments));
             }
 
@@ -72,9 +69,7 @@ var viewerJS = (function (viewer) {
 
             // toggle retrieve account
             $('body').on('click', '[data-open="retrieve-account"]', function () {
-                $(
-                    '#userLoginSelectLoginWrapper, #loginType, #loginTypeCreateAccount, #userLoginOpenId, #userLoginCreateAccount'
-                ).hide();
+                $('#userLoginSelectLoginWrapper, #loginType, #loginTypeCreateAccount, #userLoginOpenId, #userLoginCreateAccount').hide();
                 $('#loginTypeRetrieveAccount').show();
                 $('[id*="userEMailToRetrieve"]').focus();
             });
@@ -85,9 +80,7 @@ var viewerJS = (function (viewer) {
 
             // toggle create account
             $('body').on('click', '[data-open="create-account"]', function () {
-                $(
-                    '#userLoginSelectLoginWrapper, #loginType, #loginTypeRetrieveAccount, #userLoginOpenId, #userLoginCreateAccount'
-                ).hide();
+                $('#userLoginSelectLoginWrapper, #loginType, #loginTypeRetrieveAccount, #userLoginOpenId, #userLoginCreateAccount').hide();
                 $('#loginTypeCreateAccount').show();
                 $('.user-login-modal__create-account-email-input').focus();
                 $('.user-login-modal__header-title').hide();
@@ -110,8 +103,7 @@ var viewerJS = (function (viewer) {
             $('#createAccountAcceptTerms input').change(function () {
                 if ($('#createAccountAcceptTerms input:nth-of-type(2)').is(':checked')) {
                     $('.user-login-modal__create-account-submit').prop('disabled', false);
-                } else if ($('#createAccountAcceptTerms input:nth-of-type(1)').is(':checked'))
-                    $('.user-login-modal__create-account-submit').prop('disabled', true);
+                } else if ($('#createAccountAcceptTerms input:nth-of-type(1)').is(':checked')) $('.user-login-modal__create-account-submit').prop('disabled', true);
             });
         },
     };
@@ -173,3 +165,8 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

@@ -249,9 +249,7 @@ var viewerJS = (function (viewer) {
         get: function (name) {
             let config = this.styles.get(name);
             if (!config) {
-                console.warn(
-                    'Style "' + name + '" is not included in the list of slider styles. Using "base" as fallback'
-                );
+                console.warn('Style "' + name + '" is not included in the list of slider styles. Using "base" as fallback');
                 return this.styles.get('base');
             } else {
                 return config;
@@ -268,3 +266,8 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

@@ -81,21 +81,14 @@ var viewerJS = (function (viewer) {
                 layer.onFeatureClick.subscribe((feature) => {
                     if (!_hasVisibleItems(feature)) {
                         // viewerJS.notifications.confirm("Do you want to show search results for this location?")
-                        let featuresToShow = feature.properties?.entities
-                            ?.filter((e) => e.visible !== false)
-                            .filter((e) => e.title?.length > 0);
+                        let featuresToShow = feature.properties?.entities?.filter((e) => e.visible !== false).filter((e) => e.title?.length > 0);
 
                         if (feature.properties?.link) {
                             $(layer.config.search.loader).show();
                             window.open(feature.properties.link, '_self');
                         } else if (layer.config.search?.searchUrlTemplate && feature.properties?.filterQuery) {
                             $(layer.config.search.loader).show();
-                            window.open(
-                                layer.config.search.searchUrlTemplate +
-                                    '?filterQuery=' +
-                                    feature.properties.filterQuery,
-                                '_self'
-                            );
+                            window.open(layer.config.search.searchUrlTemplate + '?filterQuery=' + feature.properties.filterQuery, '_self');
                         }
                     }
                 });
@@ -105,10 +98,7 @@ var viewerJS = (function (viewer) {
     };
 
     viewer.GeoMapCms.prototype.createFilterQuery = (queryTemplate, feature) => {
-        let query = queryTemplate
-            .replaceAll('{lng}', feature.geometry.coordinates[0])
-            .replaceAll('{lat}', feature.geometry.coordinates[1])
-            .replaceAll('+', '_PLUS_');
+        let query = queryTemplate.replaceAll('{lng}', feature.geometry.coordinates[0]).replaceAll('{lat}', feature.geometry.coordinates[1]).replaceAll('+', '_PLUS_');
         return 'filterQuery=' + encodeURI(query).replaceAll('_PLUS_', '%2B');
     };
 
@@ -116,7 +106,10 @@ var viewerJS = (function (viewer) {
 })(viewerJS || {}, jQuery);
 
 function _hasVisibleItems(feature) {
-    return feature.properties?.entities
-        ?.filter((e) => e.visible !== false)
-        .filter((e) => e.title != undefined && (typeof e.title == 'object' || e.title.length > 0)).length;
+    return feature.properties?.entities?.filter((e) => e.visible !== false).filter((e) => e.title != undefined && (typeof e.title == 'object' || e.title.length > 0)).length;
+}
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
 }

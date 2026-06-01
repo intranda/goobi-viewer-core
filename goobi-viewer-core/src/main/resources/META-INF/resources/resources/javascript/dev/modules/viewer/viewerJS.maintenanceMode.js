@@ -78,3 +78,7 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

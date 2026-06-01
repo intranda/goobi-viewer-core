@@ -72,8 +72,7 @@ var viewerJS = (function (viewer) {
                 } else {
                     // check last edited hash
                     if (this.config.lastEditedHash === this.bannerHash) {
-                        if (_debug)
-                            console.log('last edited hash equals stored value. Banner status = ', this.bannerStatus);
+                        if (_debug) console.log('last edited hash equals stored value. Banner status = ', this.bannerStatus);
                         // check banner status
                         if (this.bannerStatus) {
                             $('#cookieBanner').show();
@@ -163,15 +162,7 @@ var viewerJS = (function (viewer) {
                     this.config.bannerStatus = this.getStoredBannerStatus();
                     this.config.bannerHash = this.getStoredLastEditedHash();
                     this.startPiwikTracking();
-                    if (_debug)
-                        console.log(
-                            'accepted cookie banner ',
-                            acceptCookies,
-                            '. Set banner status to ',
-                            this.config.bannerStatus,
-                            ', hash to ',
-                            this.config.bannerHash
-                        );
+                    if (_debug) console.log('accepted cookie banner ', acceptCookies, '. Set banner status to ', this.config.bannerStatus, ', hash to ', this.config.bannerHash);
                 }.bind(this)
             );
         },
@@ -179,3 +170,7 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}
