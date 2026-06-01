@@ -28,11 +28,14 @@ import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -195,22 +198,60 @@ public class ClientApplicationsResource {
     }
 
     /**
-     * Lists all registered {@link ClientApplication}s.
-     * 
-     * @return All clients from the DB
+     * Lists all registered {@link ClientApplication}s, optionally paginated.
+     *
+     * <p>The default values keep the endpoint backwards-compatible with existing
+     * server-to-server consumers that fetched the unbounded list: when no parameters are
+     * supplied, the full list is returned. Clients that opt in by sending
+     * {@code first} / {@code count} get a paginated slice.
+     *
+     * <p><b>Note:</b> the pagination is currently applied in-memory <i>after</i> the DAO
+     * loads the full result set, so it limits the response payload but does not relieve
+     * the database/heap. A true DoS hardening would require a DAO method with SQL
+     * {@code LIMIT/OFFSET}.
+     *
+     * @param first zero-based index of the first entry to return; must be {@code >= 0}
+     * @param count maximum number of entries to return; must be {@code >= 0}
+     * @return All clients from the DB, optionally paginated
      * @throws DAOException If an error occurs accessing the database
+     * @should respect first and count parameters
+     * @should return 400 when first is negative
+     * @should return 400 when count is negative
+     * @should return empty list when count is zero
      */
     @GET
     @AuthorizationBinding
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get a list of all registered clients", tags = { "clients" },
-            description = "Clients are returned as json objects. Requires an access token in the query paramter or header field 'token'.")
+            description = "Clients are returned as json objects. Requires an access token in the query paramter or header field 'token'."
+                    + " Optional 'first' and 'count' query parameters paginate the response; omitting both returns the full list.")
     @ApiResponse(responseCode = "200", description = "List of all registered client applications")
+    @ApiResponse(responseCode = "400", description = "Negative pagination parameter")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "500", description = "An internal error occurred")
-    public List<ClientApplication> getAllClients() throws DAOException {
-        return dao.getAllClientApplications().stream().filter(clientManager::isNotAllClients).collect(Collectors.toList());
+    public List<ClientApplication> getAllClients(
+            @Parameter(description = "Zero-based index of the first entry to return.",
+                    schema = @Schema(minimum = "0", defaultValue = "0")) @QueryParam("first") @DefaultValue("0") int first,
+            // "2147483647" == Integer.MAX_VALUE; annotation values must be compile-time
+            // constants, so the literal is unavoidable. Keep both occurrences in sync.
+            @Parameter(description = "Maximum number of entries to return. Defaults to Integer.MAX_VALUE to preserve the historic"
+                    + " unbounded behavior; clients that paginate should set an explicit count.",
+                    schema = @Schema(minimum = "0", defaultValue = "2147483647")) @QueryParam("count") @DefaultValue("2147483647") int count)
+            throws DAOException {
+        if (first < 0) {
+            throw new BadRequestException("first must be >= 0 but was " + first);
+        }
+        if (count < 0) {
+            throw new BadRequestException("count must be >= 0 but was " + count);
+        }
+        // isNotAllClients runs before skip/limit because the synthetic "all clients" entry
+        // is not a real DB row and would otherwise shift the page offsets seen by consumers.
+        return dao.getAllClientApplications().stream()
+                .filter(clientManager::isNotAllClients)
+                .skip(first)
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     /**

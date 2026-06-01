@@ -167,7 +167,9 @@
                                                     jsf:action="#{cmsPageEditBean.deletePage(page)}"
                                                     aria-label="#{msg.delete}">
                                                     #{msg.delete}
-                                                    <f:ajax render="@all" />
+                                                    <f:ajax
+                                                        execute="@form"
+                                                        render="@form" />
                                                 </button>
                                             </div>
                                         </div>
@@ -213,57 +215,6 @@
                                     </div>
                                 </div>
                             </ui:repeat>
-
-                            <!-- delete page modal -->
-                            <!-- TODO remove modal and replace confirmation with javascript browser confirm -->
-                            <div
-                                id="deletePageModal"
-                                class="modal fade"
-                                tabindex="-1"
-                                role="dialog">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h3 class="modal-title">#{msg.cms_deletePage_agree}</h3>
-                                            <h:commandLink
-                                                action="#{cmsBean.setSelectedPage(null)}"
-                                                styleClass="close">
-                                                <f:passThroughAttribute
-                                                    name="data-dismiss"
-                                                    value="modal" />
-                                                <span aria-hidden="true">
-                                                    <h:outputText
-                                                        value="&amp;times;"
-                                                        escape="false" />
-                                                </span>
-                                                <span class="sr-only">Close</span>
-                                                <f:ajax render="@none" />
-                                            </h:commandLink>
-                                        </div>
-                                        <div class="modal-body">#{msg.cms_deletePage_confirmation}</div>
-                                        <div class="modal-footer">
-                                            <h:commandLink
-                                                action="#{cmsBean.setSelectedPage(null)}"
-                                                value="#{msg.cancel}"
-                                                styleClass="btn">
-                                                <f:passThroughAttribute
-                                                    name="data-dismiss"
-                                                    value="modal" />
-                                                <f:ajax render="@none" />
-                                            </h:commandLink>
-                                            <h:commandLink
-                                                action="#{cmsBean.deletePage(cmsBean.selectedPage)}"
-                                                value="#{msg.cms_deletePage_agree}"
-                                                styleClass="btn btn--danger">
-                                                <f:passThroughAttribute
-                                                    name="data-dismiss"
-                                                    value="modal" />
-                                                <f:ajax render="@all" />
-                                            </h:commandLink>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="admin__table-tools">
@@ -279,11 +230,6 @@
 
         <script type="text/javascript">
             $(document).ready(function () {
-                var displayDateUpdated = true;
-                if (!displayDateUpdated) {
-                    $('.column_date_updated').hide();
-                }
-
                 var dataTableConfig = {
                     dataTablePaginator: '#dataTablePaginator',
                     txtField1: '#txtMoveTo1',
@@ -293,15 +239,11 @@
                 };
 
                 viewerJS.dataTable.init(dataTableConfig);
-            });
 
-            // Create no entries found message
-            if ($('.admin__table-entry').length == 0) {
-                $('.admin__table-content').append('
-            <br />
-            <p>#{msg.hitsZero}</p>
-            ');
-            }
+                if ($('.admin__table-entry').length === 0) {
+                    $(document.createElement('p')).addClass('admin__table-empty').text('#{msg.hitsZero}').appendTo('.admin__table-content');
+                }
+            });
         </script>
     </ui:define>
 </ui:composition>

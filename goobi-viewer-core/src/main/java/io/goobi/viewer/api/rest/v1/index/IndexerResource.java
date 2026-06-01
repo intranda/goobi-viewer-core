@@ -36,7 +36,9 @@ import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.MessageQueueManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.MessageQueueException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.TaskType;
@@ -102,9 +104,20 @@ public class IndexerResource {
                     logger.trace("Received PI: {}", pi);
                     sb.append(pi).append(" ");
                 }
-                ViewerMessage message = new ViewerMessage(TaskType.REFRESH_ARCHIVE_TREE.name());
-                message.getProperties().put(RefreshArchiveTreeHandler.PARAMETER_IDENTIFIERS, sb.toString().trim());
-                mqm.addToQueue(message);
+                String identifierString = sb.toString().trim();
+                try {
+                    if (RefreshArchiveTreeHandler.hasArchiveAssociatedRecords(identifierString)) {
+                        ViewerMessage message =
+                                new ViewerMessage(TaskType.REFRESH_ARCHIVE_TREE.name());
+                        message.getProperties().put(
+                                RefreshArchiveTreeHandler.PARAMETER_IDENTIFIERS,
+                                identifierString);
+                        mqm.addToQueue(message);
+                    }
+                } catch (PresentationException | IndexUnreachableException e) {
+                    logger.warn("Could not check for archive-associated records: {}",
+                            e.getMessage());
+                }
             }
             AdminBean ab = BeanUtils.getAdminBean();
             if (ab != null) {

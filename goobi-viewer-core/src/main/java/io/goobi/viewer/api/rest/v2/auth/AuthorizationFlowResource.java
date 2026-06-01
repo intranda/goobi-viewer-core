@@ -36,6 +36,7 @@ import java.net.URI;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -97,12 +98,28 @@ public class AuthorizationFlowResource {
 
     private static final String KEY_ORIGIN = "IIIF_origin";
 
+    /**
+     * Strict RFC 6454 origin pattern: scheme://host[:port]. Accepts http/https with a DNS-label host (incl. punycode) or a bracketed IPv6 literal,
+     * plus an optional decimal port. No path, query, fragment, userinfo, whitespace, quotes, or other punctuation allowed — keeps CSP header tokens
+     * unambiguous and prevents breakout from the single-quoted JS string in {@link #getTokenServiceResponseBody}.
+     */
+    private static final Pattern VALID_ORIGIN = Pattern.compile(
+            "^(https?)://"
+                    + "("
+                    + "[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
+                    + "(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*"
+                    + "|"
+                    + "\\[[0-9a-fA-F:]+\\]"
+                    + ")"
+                    + "(?::[0-9]+)?$");
+
     @Context
     private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
 
-    public AuthorizationFlowResource(@Context HttpServletRequest request) {
+    public AuthorizationFlowResource(@Context
+    HttpServletRequest request) {
     }
 
     /**
@@ -132,13 +149,18 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 login service — redirects the user to the viewer login page")
     @ApiResponse(responseCode = "302", description = "Redirect to the login page")
     @ApiResponse(responseCode = "400", description = "Origin parameter missing or could not be stored in session")
-    public Response loginService(@QueryParam("origin") String origin) {
+    public Response loginService(@QueryParam("origin")
+    String origin) {
         logger.debug("loginService");
         servletRequest.getSession(true); // Force session creation
         debugRequest();
         if (StringUtils.isEmpty(origin)) {
             logger.debug("origin missing");
             return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "origin missing").build();
+        }
+        if (!isValidOrigin(origin)) {
+            logger.debug("origin invalid");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "origin invalid").build();
         }
         logger.debug("origin: {}", origin);
         if (!addOriginToSession(origin)) {
@@ -167,12 +189,19 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 token service — issues a bearer token for authenticated users")
     @ApiResponse(responseCode = "200",
             description = "HTML page with postMessage containing either a bearer token or an error object")
-    public Response accessTokenService(@QueryParam("messageId") String messageId, @QueryParam("origin") String origin)
+    public Response accessTokenService(@QueryParam("messageId")
+    String messageId, @QueryParam("origin")
+    String origin)
             throws JsonProcessingException {
         logger.debug("accessTokenService");
         // debugRequest();
         logger.debug("messageId: {}", messageId);
         logger.debug("origin: {}", origin);
+
+        if (StringUtils.isNotEmpty(origin) && !isValidOrigin(origin)) {
+            logger.debug("origin invalid");
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "origin invalid").build();
+        }
 
         if (StringUtils.isNotEmpty(messageId) && StringUtils.isNotEmpty(origin)) {
             // Validate origin
@@ -218,12 +247,76 @@ public class AuthorizationFlowResource {
         sb.append("<html><body><script>window.parent.postMessage(")
                 .append(jsonMsg)
                 .append(",'")
-                .append(origin)
+                .append(escapeForJsString(origin))
                 .append("'")
                 .append(");</script></body></html>");
 
         logger.debug("Token service response body:\n{}", sb);
         return sb.toString();
+    }
+
+    /**
+     * Returns true if the given value matches the strict {@link #VALID_ORIGIN} pattern (scheme://host[:port]).
+     *
+     * @param origin candidate origin value
+     * @return true if non-null and well-formed
+     */
+    static boolean isValidOrigin(String origin) {
+        return origin != null && VALID_ORIGIN.matcher(origin).matches();
+    }
+
+    /**
+     * Escapes characters that could break out of a single-quoted JavaScript string literal or terminate the surrounding {@code <script>} block.
+     * Defense in depth: callers in this class already pass values validated against {@link #VALID_ORIGIN}, but this guards against future callers and
+     * against null input.
+     *
+     * @param s value to escape; may be null
+     * @return escaped value, or empty string if input was null
+     */
+    static String escapeForJsString(String s) {
+        if (s == null) {
+            return "";
+        }
+        StringBuilder out = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '\\':
+                    out.append("\\\\");
+                    break;
+                case '\'':
+                    out.append("\\'");
+                    break;
+                case '"':
+                    out.append("\\\"");
+                    break;
+                case '<':
+                    out.append("\\u003c");
+                    break;
+                case '>':
+                    out.append("\\u003e");
+                    break;
+                case '/':
+                    out.append("\\/");
+                    break;
+                case '\r':
+                    out.append("\\r");
+                    break;
+                case '\n':
+                    out.append("\\n");
+                    break;
+                default:
+                    if (c == 0x2028) {
+                        out.append("\u2028");
+                    } else if (c == 0x2029) {
+                        out.append("\u2029");
+                    } else {
+                        out.append(c);
+                    }
+                    break;
+            }
+        }
+        return out.toString();
     }
 
     /**
@@ -267,7 +360,7 @@ public class AuthorizationFlowResource {
                     MediaType.APPLICATION_JSON, origin);
         }
 
-        logger.debug("Authorization: {}", authHeader);
+        // logger.debug("Authorization: {}", authHeader); // do not log bearer tokens
         if (!authHeader.startsWith("Bearer ")) {
             // Invalid token header value
             logger.debug("Authorization header has bad format.");
@@ -278,7 +371,7 @@ public class AuthorizationFlowResource {
         }
 
         String tokenValue = authHeader.substring(7);
-        logger.trace("Token: {}", tokenValue);
+        // logger.trace("Token: {}", tokenValue); // do not log bearer tokens
         AuthAccessToken2 token = DataManager.getInstance()
                 .getBearerTokenManager()
                 .getTokenMap()
@@ -331,8 +424,13 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service CORS preflight for image/text resources")
     @ApiResponse(responseCode = "200", description = "CORS preflight response for probe endpoint")
     @ApiResponse(responseCode = "403", description = "Origin header missing")
-    public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
-            @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin) {
+    public Response handleProbePreflight(@Parameter(description = "Record identifier")
+    @PathParam("pi")
+    String pi,
+            @Parameter(description = "Content file name")
+            @PathParam("filename")
+            String filename, @HeaderParam("Origin")
+            String origin) {
         return handleProbePreflightCommon(origin, pi + "/" + filename);
     }
 
@@ -350,8 +448,13 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service — checks access permission for an image or text resource")
     @ApiResponse(responseCode = "200", description = "IIIF Auth 2.0 probe result indicating access status (200 granted, 401 denied)")
-    public Response probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
-            @Parameter(description = "Content file name") @PathParam("filename") String filename, @HeaderParam("Origin") String origin)
+    public Response probeResource(@Parameter(description = "Record identifier")
+    @PathParam("pi")
+    String pi,
+            @Parameter(description = "Content file name")
+            @PathParam("filename")
+            String filename, @HeaderParam("Origin")
+            String origin)
             throws JsonProcessingException {
         // Sanitize path parameters before logging to prevent log injection (Sonar S5145)
         logger.debug("probeResource: {}/{}", pi.replaceAll("[\r\n]", "_"), filename.replaceAll("[\r\n]", "_"));
@@ -402,8 +505,13 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service CORS preflight for page PDF resources")
     @ApiResponse(responseCode = "200", description = "CORS preflight response for probe endpoint")
     @ApiResponse(responseCode = "403", description = "Origin header missing")
-    public Response handleProbePreflight(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
-            @Parameter(description = "Page number") @PathParam("order") int order, @HeaderParam("Origin") String origin) {
+    public Response handleProbePreflight(@Parameter(description = "Record identifier")
+    @PathParam("pi")
+    String pi,
+            @Parameter(description = "Page number")
+            @PathParam("order")
+            int order, @HeaderParam("Origin")
+            String origin) {
         return handleProbePreflightCommon(origin, "pdf/" + pi + "/" + order);
     }
 
@@ -421,8 +529,13 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service — checks access permission for a page PDF")
     @ApiResponse(responseCode = "200", description = "IIIF Auth 2.0 probe result indicating access status (200 granted, 401 denied)")
-    public Response probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
-            @Parameter(description = "Page number") @PathParam("order") int order, @HeaderParam("Origin") String origin)
+    public Response probeResource(@Parameter(description = "Record identifier")
+    @PathParam("pi")
+    String pi,
+            @Parameter(description = "Page number")
+            @PathParam("order")
+            int order, @HeaderParam("Origin")
+            String origin)
             throws JsonProcessingException {
         logger.debug("probeResource: pdf/{}/{}", pi, order);
         // debugRequest();
@@ -462,7 +575,10 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service — checks access permission for METS resolver download")
     @ApiResponse(responseCode = "200", description = "IIIF Auth 2.0 probe result indicating access status (200 granted, 401 denied)")
-    public Response probeResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi, @HeaderParam("Origin") String origin)
+    public Response probeResource(@Parameter(description = "Record identifier")
+    @PathParam("pi")
+    String pi, @HeaderParam("Origin")
+    String origin)
             throws JsonProcessingException {
         logger.debug("probeResource: resolver/{}", pi);
         // debugRequest();
@@ -505,9 +621,14 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service CORS preflight for record-level privilege checks")
     @ApiResponse(responseCode = "200", description = "CORS preflight response for probe endpoint")
     @ApiResponse(responseCode = "403", description = "Origin header missing")
-    public Response handleProbePreflightRecordResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
-            @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
-            @HeaderParam("Origin") String origin) {
+    public Response handleProbePreflightRecordResource(@Parameter(description = "Record identifier")
+    @PathParam("pi")
+    String pi,
+            @Parameter(description = "Privilege name")
+            @PathParam("privilege")
+            String privilege,
+            @HeaderParam("Origin")
+            String origin) {
         return handleProbePreflightCommon(origin, pi + "/privilege/" + privilege);
     }
 
@@ -525,9 +646,14 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service — checks a named privilege for a record")
     @ApiResponse(responseCode = "200", description = "IIIF Auth 2.0 probe result indicating access status (200 granted, 401 denied)")
-    public Response probeRecordResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
-            @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
-            @HeaderParam("Origin") String origin)
+    public Response probeRecordResource(@Parameter(description = "Record identifier")
+    @PathParam("pi")
+    String pi,
+            @Parameter(description = "Privilege name")
+            @PathParam("privilege")
+            String privilege,
+            @HeaderParam("Origin")
+            String origin)
             throws JsonProcessingException {
         logger.debug("probeResource: resolver/{}", pi);
         // debugRequest();
@@ -571,10 +697,17 @@ public class AuthorizationFlowResource {
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service CORS preflight for section-level privilege checks")
     @ApiResponse(responseCode = "200", description = "CORS preflight response for probe endpoint")
     @ApiResponse(responseCode = "403", description = "Origin header missing")
-    public Response handleProbePreflightStructureResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
-            @Parameter(description = "structure log id") @PathParam("logid") String logId,
-            @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
-            @HeaderParam("Origin") String origin) {
+    public Response handleProbePreflightStructureResource(@Parameter(description = "Record identifier")
+    @PathParam("pi")
+    String pi,
+            @Parameter(description = "structure log id")
+            @PathParam("logid")
+            String logId,
+            @Parameter(description = "Privilege name")
+            @PathParam("privilege")
+            String privilege,
+            @HeaderParam("Origin")
+            String origin) {
         return handleProbePreflightCommon(origin, pi + "/section/" + logId + "/privilege/" + privilege);
     }
 
@@ -593,10 +726,17 @@ public class AuthorizationFlowResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "auth", "iiif" }, summary = "IIIF Auth 2.0 probe service — checks a named privilege for a structural section of a record")
     @ApiResponse(responseCode = "200", description = "IIIF Auth 2.0 probe result indicating access status (200 granted, 401 denied)")
-    public Response probeRecordStructureResource(@Parameter(description = "Record identifier") @PathParam("pi") String pi,
-            @Parameter(description = "structure log id") @PathParam("logid") String logId,
-            @Parameter(description = "Privilege name") @PathParam("privilege") String privilege,
-            @HeaderParam("Origin") String origin)
+    public Response probeRecordStructureResource(@Parameter(description = "Record identifier")
+    @PathParam("pi")
+    String pi,
+            @Parameter(description = "structure log id")
+            @PathParam("logid")
+            String logId,
+            @Parameter(description = "Privilege name")
+            @PathParam("privilege")
+            String privilege,
+            @HeaderParam("Origin")
+            String origin)
             throws JsonProcessingException {
         logger.debug("probeResource: resolver/{}", pi);
         // debugRequest();

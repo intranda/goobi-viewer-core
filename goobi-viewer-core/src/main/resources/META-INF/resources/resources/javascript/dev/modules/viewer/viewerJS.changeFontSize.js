@@ -179,7 +179,9 @@ var viewerJS = (function (viewer) {
             console.log('_parseFontSize: string = ', string);
         }
 
-        return parseInt(string.replace('px'));
+        // Was replace('px') without a replacement → returned "14undefined";
+        // parseInt happened to recover the leading digits. refs #27937
+        return parseInt(string.replace('px', ''));
     }
 
     /**
@@ -238,3 +240,7 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

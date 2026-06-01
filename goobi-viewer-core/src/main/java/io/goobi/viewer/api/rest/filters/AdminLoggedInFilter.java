@@ -61,6 +61,8 @@ public class AdminLoggedInFilter implements ContainerRequestFilter {
      * @should pass request through when valid admin bearer token provided
      * @should return 401 when bearer token belongs to non-admin user
      * @should return 401 with token_expired when expired admin bearer token provided
+     * @should return 401 when bearer token belongs to inactive user
+     * @should return 401 when bearer token belongs to suspended user
      */
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -69,21 +71,26 @@ public class AdminLoggedInFilter implements ContainerRequestFilter {
 
             tokenOpt.ifPresentOrElse(token -> {
                 if (token.isExpired()) {
-                    //abort: token expired
                     requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
                             .type(MediaType.APPLICATION_JSON)
                             .entity("{\"status\":\"error\",\"message\":\"token_expired\"}")
                             .build());
-                } else {
-                    User user = tokenOpt.get().getUser();
-                    if (user == null || !user.isSuperuser()) {
-                        requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                                .entity("You must be logged in as administrator to access this resource")
-                                .build());
-                        return;
-                    }
+                    return;
                 }
-                //token valid: continue
+                User user = token.getUser();
+                if (user != null && (!user.isActive() || user.isSuspended())) {
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                            .type(MediaType.APPLICATION_JSON)
+                            .entity("{\"status\":\"error\",\"message\":\"user_inactive\"}")
+                            .build());
+                    return;
+                }
+                if (user == null || !user.isSuperuser()) {
+                    requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                            .entity("You must be logged in as administrator to access this resource")
+                            .build());
+                    return;
+                }
             }, () -> {
                 //no token
                 if (!isAdminLoggedIn(req)) {

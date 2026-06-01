@@ -135,7 +135,11 @@
 								<div class="admin__form-help-text in mb-2">#{msg.admin__config_editor__files_help}:</div>
 
 								<h:form id="file-form" enctype="multipart/form-data">
+									<h:commandButton id="refreshFileList" style="display:none">
+										<f:ajax execute="@none" render="fileList" />
+									</h:commandButton>
 
+									<h:panelGroup id="fileList" layout="block">
 									<div class="admin__config-editor-file-selection-inner"
 										id="file-table">
 
@@ -198,6 +202,7 @@
 										</ui:repeat>
 
 									</div>
+									</h:panelGroup>
 
 								</h:form>
 							</div>
@@ -346,6 +351,13 @@
                     </div>
                 </ui:fragment>
 			</div>
+		<o:socket channel="adminLockStatus" onmessage="handleAdminLockStatusChange" />
+		<h:outputScript>
+			function handleAdminLockStatusChange() {
+				var btn = document.getElementById('file-form:refreshFileList');
+				if (btn) { btn.click(); }
+			}
+		</h:outputScript>
 		</f:view>
 	</ui:define>
 

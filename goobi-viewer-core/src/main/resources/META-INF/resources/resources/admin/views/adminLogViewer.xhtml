@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminLogViewer')}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:panelGroup rendered="#{!userBean.admin}">
+            <h:outputText value="#{msg.errAccessDenied}" />
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{userBean.admin}">
+            <div id="adminLogViewer">
+                <div class="admin__title-bar">
+                    <h1 class="admin__title">#{msg.admin__log_viewer}</h1>
+                </div>
+
+                <viewerComponent:adminBreadcrumbs />
+
+                <div class="admin__content-inner-content">
+                    <div class="admin__content-wrapper">
+                        <div class="admin__content-main">
+                            <div
+                                class="admin__boxed-entry logviewer"
+                                data-api-base="#{request.contextPath}/api/v1/logs"
+                                data-ws-base="#{request.contextPath}/admin/logviewer.socket">
+                                <!-- Header: tabs left, filters right -->
+                                <div class="logviewer__header">
+                                    <div class="logviewer__tabs">
+                                        <ui:repeat
+                                            value="#{logViewerBean.availableLogFiles}"
+                                            var="lf">
+                                            <button
+                                                class="logviewer__tab"
+                                                data-logfile="#{lf.name}">
+                                                <span
+                                                    class="logviewer__tab-dot"
+                                                    id="dot-#{lf.name}" />
+                                                #{lf.name}.log
+                                            </button>
+                                        </ui:repeat>
+                                    </div>
+                                    <div class="logviewer__filters">
+                                        <select
+                                            id="levelFilter"
+                                            class="logviewer__filter-select">
+                                            <option
+                                                value="ALL"
+                                                selected="selected">
+                                                ALL
+                                            </option>
+                                            <option value="ERROR">ERROR</option>
+                                            <option value="WARN">WARN</option>
+                                            <option value="INFO">INFO</option>
+                                            <option value="DEBUG">DEBUG</option>
+                                            <option value="TRACE">TRACE</option>
+                                        </select>
+                                        <input
+                                            id="textFilter"
+                                            class="logviewer__filter-input"
+                                            type="text"
+                                            placeholder="#{msg.logviewer__filter_placeholder}" />
+                                    </div>
+                                </div>
+
+                                <!-- Log output + floating scroll button -->
+                                <div class="logviewer__output-wrap">
+                                    <div
+                                        id="logOutput"
+                                        class="logviewer__output" />
+                                    <button
+                                        id="btnScrollBottom"
+                                        class="logviewer__scroll-fab"
+                                        title="#{msg.logviewer__scroll_to_bottom}">
+                                        <util:icon icon="chevrons-down" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar -->
+                        <div class="admin__content-side">
+                            <!-- "Did you know?" block -->
+                            <div class="admin__default-block">
+                                <h2>#{msg.title__did_you_know}</h2>
+
+                                <h3>Tabs</h3>
+                                <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__tabs}</div>
+
+                                <h3>Level-Filter</h3>
+                                <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__level_filter}</div>
+
+                                <h3>#{msg.search}</h3>
+                                <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__text_filter}</div>
+
+                                <h3>Auto-Scroll</h3>
+                                <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__autoscroll}</div>
+
+                                <h3>Live / Polling</h3>
+                                <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__live}</div>
+
+                                <h3>Buffer</h3>
+                                <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__buffer}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+            //<![CDATA[
+                document.addEventListener('DOMContentLoaded', function() {
+                    var root = document.querySelector('.logviewer');
+                    if (root) adminJS.logViewer.init(root);
+                });
+            //]]>
+            </script>
+        </h:panelGroup>
+    </ui:define>
+</ui:composition>

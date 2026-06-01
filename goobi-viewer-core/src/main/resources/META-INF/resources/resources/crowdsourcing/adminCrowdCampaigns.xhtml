@@ -185,11 +185,6 @@
 
             <script type="text/javascript">
                 $(document).ready(function () {
-                    var displayDateUpdated = true;
-                    if (!displayDateUpdated) {
-                        $('.column_date_updated').hide();
-                    }
-
                     var dataTableConfig = {
                         dataTablePaginator: '#dataTablePaginator',
                         txtField1: '#txtMoveTo1',
@@ -199,16 +194,12 @@
                     };
 
                     viewerJS.dataTable.init(dataTableConfig);
+
+                    if ($('.admin__table-entry').length === 0) {
+                        $(document.createElement('p')).addClass('admin__table-empty').text('#{msg.hitsZero}').appendTo('.admin__table-content');
+                    }
                 });
                 riot.mount('progressBar');
-
-                // Create no entries found message
-                if ($('.admin__table-entry').length == 0) {
-                    $('.admin__table-content').append('
-                <br />
-                <p>#{msg.hitsZero}</p>
-                ');
-                }
             </script>
         </h:panelGroup>
 

@@ -203,3 +203,8 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

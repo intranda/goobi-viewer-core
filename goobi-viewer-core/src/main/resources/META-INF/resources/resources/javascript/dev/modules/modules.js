@@ -223,6 +223,7 @@
                 showNavigator: 'imageShowNavigator',
                 allowDownload: 'allowDownload',
                 allowZoom: 'allowZoom',
+                maxZoom: 'maxZoom',
             },
             data: {
                 footerHeight: 'height',
@@ -275,7 +276,7 @@
                                 showTooltip: element.dataset[_config.datasets.data.showTooltip],
                                 highlightClassName: 'focus',
                                 highlightOnHover: true,
-                            }); 
+                            });
                             this.overlayGroups.push(overlays);
                         } catch (e) {
                             console.error('Error parsing coords string ', coordsString, e);
@@ -438,7 +439,6 @@
     }
 
     function createZoomableImageConfig(imageElement) {
-    	console.log("navigator ", _config.datasets.image.showNavigator,imageElement.dataset[_config.datasets.image.showNavigator]);
         return {
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
@@ -447,11 +447,12 @@
             },
             zoom: {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
+                max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
             },
             sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
             navigator: {
                 enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
-    			position: "TOP_RIGHT"
+                position: 'BOTTOM_RIGHT',
             },
         };
     }
