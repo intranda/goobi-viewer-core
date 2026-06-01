@@ -22,7 +22,7 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
-            <description>Inline color for the icon wrapper; forwarded as style=\"color:…\".</description>
+            <description>Inline color for the icon wrapper; forwarded as style="color:…" so currentColor picks it up.</description>
             <name>color</name>
             <required>false</required>
             <type>java.lang.String</type>
@@ -35,7 +35,7 @@
         </attribute>
         <attribute>
             <description>
-                CSS classes applied to the inner &lt; svg &gt; element (e.g., Tabler icon utilities
+                CSS classes applied to the inner &lt;svg&gt; element (e.g., Tabler icon utilities
                 like 'icon', 'icon-pulse').
             </description>
             <name>svgClass</name>
@@ -45,12 +45,6 @@
         <attribute>
             <description>Accessible label announced to assistive technologies.</description>
             <name>ariaLabel</name>
-            <required>false</required>
-            <type>java.lang.String</type>
-        </attribute>
-        <attribute>
-            <description>Inline color for the wrapper; forwarded as style=\"color:…\" so currentColor picks it up.</description>
-            <name>color</name>
             <required>false</required>
             <type>java.lang.String</type>
         </attribute>
@@ -102,7 +96,7 @@
         </attribute>
         <attribute>
             <description>
-                CSS classes applied to the inner &lt; svg &gt; element (forwarded to util:icon as svgClass).
+                CSS classes applied to the inner &lt;svg&gt; element (forwarded to util:icon as svgClass).
             </description>
             <name>iconSvgClass</name>
             <required>false</required>
