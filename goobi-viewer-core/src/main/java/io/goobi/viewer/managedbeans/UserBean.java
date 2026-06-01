@@ -287,7 +287,7 @@ public class UserBean implements Serializable {
                         Messages.error(ViewerResourceBundle.getTranslation("errSave", null));
                     }
                 } else {
-                    logger.debug("Activation key mismatch (expected: '{}' (received: '{}').", u.getActivationKey(), activationKey);
+                    logger.debug("Activation key mismatch for account: {}", u.getEmail());
                     Messages.error(ViewerResourceBundle.getTranslation("user_accountActivationWrongData", null));
                 }
             } else {
