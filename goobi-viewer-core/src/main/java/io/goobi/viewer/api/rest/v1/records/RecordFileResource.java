@@ -329,7 +329,8 @@ public class RecordFileResource {
                     FileTools.listFiles(modelFolder, p -> true).stream()
                             .filter(p -> FileTools.isWithin(p, modelFolder))
                             .forEach(p -> fileList.add(p.toFile()));
-                    Path zipFile = tempFolder.resolve(FileTools.replaceExtension(Path.of(filename), "zip").toString());
+                    // Derive the zip name from the validated path, not the raw request parameter, to keep the output path untainted
+                    Path zipFile = tempFolder.resolve(FileTools.replaceExtension(path.getFileName(), "zip").toString());
                     FileTools.compressZipFile(fileList, zipFile.toFile(), 9);
                     mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, zipFile.getFileName().toString(), zipFile);
                     StreamingOutput so = out -> {
