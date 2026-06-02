@@ -240,6 +240,11 @@ public class RecordFileResource {
         } catch (IllegalArgumentException e) {
             throw new IllegalRequestException("Invalid file name: " + filename);
         }
+        // Defense in depth: ensure the resolved path cannot escape the record's source folder
+        Path baseFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        if (!FileTools.isWithin(path, baseFolder)) {
+            throw new IllegalRequestException("Invalid file name: " + filename);
+        }
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Source file " + filename + " not found");
         }
@@ -288,6 +293,11 @@ public class RecordFileResource {
         } catch (IllegalArgumentException e) {
             throw new IllegalRequestException("Invalid file name: " + filename);
         }
+        // Defense in depth: ensure the resolved path cannot escape the record's media folder
+        Path baseFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getMediaFolder());
+        if (!FileTools.isWithin(path, baseFolder)) {
+            throw new IllegalRequestException("Invalid file name: " + filename);
+        }
         if (!Files.isRegularFile(path)) {
             throw new ContentNotFoundException("Media file " + filename + " not found");
         }
@@ -305,17 +315,20 @@ public class RecordFileResource {
         }
 
         if (FileType.getContentTypeFor(filename).startsWith("model/")) {
-            String baseFilename = FilenameUtils.getBaseName(filename);
+            // Derive the base name from the already-resolved (sanitized) path, not the raw request parameter
+            String baseFilename = FilenameUtils.getBaseName(path.getFileName().toString());
             Path modelFolder = path.getParent().resolve(baseFilename);
-            if (Files.exists(modelFolder)) {
+            // Only proceed if the model folder stays inside the record's media folder
+            if (Files.exists(modelFolder) && FileTools.isWithin(modelFolder, baseFolder)) {
                 Path tempFolder = Path.of(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_3d_" + System.currentTimeMillis());
                 try {
                     Files.createDirectories(tempFolder);
                     List<File> fileList = new ArrayList<>();
                     fileList.add(path.toFile());
-                    FileTools.listFiles(modelFolder, p -> true).forEach(p -> {
-                        fileList.add(p.toFile());
-                    });
+                    // Only zip files that are genuine descendants of the model folder (guards against symlink/traversal escapes)
+                    FileTools.listFiles(modelFolder, p -> true).stream()
+                            .filter(p -> FileTools.isWithin(p, modelFolder))
+                            .forEach(p -> fileList.add(p.toFile()));
                     Path zipFile = tempFolder.resolve(FileTools.replaceExtension(Path.of(filename), "zip").toString());
                     FileTools.compressZipFile(fileList, zipFile.toFile(), 9);
                     mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, zipFile.getFileName().toString(), zipFile);
