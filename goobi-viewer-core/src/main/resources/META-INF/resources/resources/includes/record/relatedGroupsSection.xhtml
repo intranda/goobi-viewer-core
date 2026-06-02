@@ -16,12 +16,7 @@
             <!-- Heading: "Diese Publikation ist Teil des Gesamtwerks [Anchor Name]" - requires full anchor info -->
             <h:panelGroup rendered="#{anchorReady}">
                 <h2 class="related-groups-section__heading">
-                    <span>#{msg.recordGroupMemberships_partOf}</span>
-                    <a
-                        href="#{navigationHelper.getRecordUrl(activeDocumentBean.viewManager.anchorPi, activeDocumentBean.viewManager.anchorStructElement.docStructType, 1, true, false)}"
-                        class="related-groups-section__heading-link">
-                        #{activeDocumentBean.viewManager.anchorStructElement.label}
-                    </a>
+                    <span>#{msg.recordGroupMemberships_partOf} #{activeDocumentBean.viewManager.anchorStructElement.label}</span>
                 </h2>
             </h:panelGroup>
 
@@ -36,7 +31,7 @@
                     var="detail"
                     value="#{activeDocumentBean.groupMembershipDetailsForSection}">
                     <a
-                        href="#{navigationHelper.tocUrl}/#{detail.pi}/1/"
+                        href="#{navigationHelper.imageUrl}/#{detail.pi}/1/"
                         class="related-groups-section__card">
                         <div class="related-groups-section__card-image">
                             <h:panelGroup rendered="#{not empty detail.thumbnailUrl}">
