@@ -164,6 +164,17 @@ class LogLineParserTest {
     }
 
     @Test
+    void parseLocationWithDashStillSplitsMessage() {
+        // The location token itself contains a '-'; the possessive-greedy \S++ must still stop at
+        // the space before the ' - ' message separator rather than swallowing it.
+        String raw = "INFO  2026-03-26 10:00:00.000 [main] io.goobi.viewer.Foo-Bar.baz(Foo.java:1) - hello world";
+        List<LogLine> lines = LogLineParser.parse(raw);
+        assertEquals(1, lines.size());
+        assertEquals("io.goobi.viewer.Foo-Bar.baz(Foo.java:1)", lines.get(0).location());
+        assertEquals("hello world", lines.get(0).message());
+    }
+
+    @Test
     void parseWhitespaceOnlyInput() {
         assertEquals(0, LogLineParser.parse("   ").size());
         assertEquals(0, LogLineParser.parse("\n\n\n").size());

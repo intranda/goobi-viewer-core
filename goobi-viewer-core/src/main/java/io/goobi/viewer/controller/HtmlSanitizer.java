@@ -85,7 +85,7 @@ public final class HtmlSanitizer {
     private static final Pattern CSS_BEHAVIOR = Pattern.compile("behavior\\s*:", Pattern.CASE_INSENSITIVE);
     private static final Pattern CSS_MOZ_BINDING = Pattern.compile("-moz-binding\\s*:", Pattern.CASE_INSENSITIVE);
     private static final Pattern CSS_URL_DANGEROUS =
-            Pattern.compile("url\\s*\\(\\s*[\"']?\\s*(javascript|data)\\s*:", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("url\\s*+\\(\\s*+[\"']?\\s*+(?:javascript|data)\\s*+:", Pattern.CASE_INSENSITIVE);
 
     private HtmlSanitizer() {
         // Utility class

@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 public final class LogLineParser {
 
     static final Pattern LINE_START = Pattern.compile(
-        "^(ERROR|WARN |INFO |DEBUG|TRACE)\\s+(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+\\[(.*?)\\]\\s+(\\S+?)(?:\\s+-\\s+(.*))?$",
+        "^(ERROR|WARN |INFO |DEBUG|TRACE)\\s++(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s++\\[([^\\]]*+)\\]\\s++(\\S++)(?:\\s++-\\s++(.*))?$",
         Pattern.MULTILINE);
 
     private LogLineParser() {
