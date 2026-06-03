@@ -70,6 +70,9 @@ import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.Citation;
+import io.goobi.viewer.model.citation.CitationLink;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
+import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.crowdsourcing.DisplayUserGeneratedContent;
@@ -131,6 +134,10 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     private final List<StructElementStub> structElements = new ArrayList<>();
     @JsonIgnore
     private List<EventElement> events;
+    @JsonIgnore
+    private String defaultCitationLinkUrl = null;
+    @JsonIgnore
+    private boolean defaultCitationLinkUrlResolved = false;
     @JsonIgnore
     private boolean work = false;
     @JsonIgnore
@@ -927,7 +934,60 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return structElements.get(structElements.size() - 1);
     }
 
-    
+    /**
+     * Returns the URL for the configured default citation link (default="true" in config), or null if:
+     * <ul>
+     * <li>no citation link is marked as default</li>
+     * <li>the default link is not at record level</li>
+     * <li>the required Solr field has no value for this record</li>
+     * </ul>
+     * Result is cached after the first call.
+     *
+     * @return resolved citation link URL, or null
+     */
+    public String getDefaultCitationLinkUrl() {
+        if (!defaultCitationLinkUrlResolved) {
+            defaultCitationLinkUrlResolved = true;
+            defaultCitationLinkUrl = resolveDefaultCitationLinkUrl();
+        }
+        return defaultCitationLinkUrl;
+    }
+
+    private String resolveDefaultCitationLinkUrl() {
+        CitationLink defaultLink = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationLinks()
+                .stream()
+                .filter(CitationLink::isDefaultLink)
+                .findFirst()
+                .orElse(null);
+        if (defaultLink == null || !CitationLinkLevel.RECORD.equals(defaultLink.getLevel())) {
+            return null;
+        }
+
+        if (CitationLinkType.INTERNAL.equals(defaultLink.getType())) {
+            NavigationHelper nh = BeanUtils.getNavigationHelper();
+            if (nh == null) {
+                return null;
+            }
+            return nh.getApplicationUrl() + this.url;
+        }
+
+        // URL type — resolve field value from Solr document
+        if (StringUtils.isBlank(defaultLink.getField())) {
+            return null;
+        }
+        StructElementStub element = getBottomStructElement();
+        if (element == null) {
+            return null;
+        }
+        String value = element.getMetadataValue(defaultLink.getField());
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        String pattern = StringUtils.isNotBlank(defaultLink.getPattern()) ? defaultLink.getPattern() : "{value}";
+        return pattern.replace("{value}", value);
+    }
+
+
     public List<EventElement> getEvents() {
         return events;
     }

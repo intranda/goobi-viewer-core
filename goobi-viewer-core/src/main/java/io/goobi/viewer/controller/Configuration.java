@@ -1243,6 +1243,7 @@ public class Configuration extends AbstractConfiguration {
                 return new ArrayList<>();
             }
 
+            boolean defaultSet = false;
             for (HierarchicalConfiguration<ImmutableNode> sub : links) {
                 String type = sub.getString(XML_PATH_ATTRIBUTE_TYPE);
                 String level = sub.getString("[@for]");
@@ -1251,10 +1252,16 @@ public class Configuration extends AbstractConfiguration {
                 String pattern = sub.getString("[@pattern]");
                 String action = sub.getString("[@action]", "clipboard");
                 boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
+                boolean isDefault = sub.getBoolean("[@default]", false);
                 try {
-                    ret.add(new CitationLink(type, level, action, label).setField(field)
+                    CitationLink link = new CitationLink(type, level, action, label).setField(field)
                             .setPattern(pattern)
-                            .setTopstructValueFallback(topstructValueFallback));
+                            .setTopstructValueFallback(topstructValueFallback);
+                    if (isDefault && !defaultSet) {
+                        link.setDefaultLink(true);
+                        defaultSet = true;
+                    }
+                    ret.add(link);
                 } catch (IllegalArgumentException e) {
                     logger.error(e.getMessage(), e);
                 }

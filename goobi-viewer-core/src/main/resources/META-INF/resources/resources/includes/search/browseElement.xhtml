@@ -170,26 +170,56 @@
 
 
 					<!-- COPY LINK TO CLIPBOARD BUTTON -->
-					<button type="button"
-						class="btn btn--icon search-list__hit-options-button
-						search-list__hit-options-button-clipboard"
-						data-copy-value="#{navigationHelper.applicationUrl}#{browseElement.url}"
-						data-toggle="tooltip" data-placement="top"
-						title="#{msg.action__search_hit_copy_link}"
-						aria-label="#{msg.action__search_hit_copy_link}">
-						<util:icon icon="link" />
-					</button>
-
-					<!-- CITATION RECOMMENDATION BUTTON -->
-					<ui:fragment rendered="#{not empty browseElement.citationStringPlain}">
+					<ui:fragment rendered="#{not empty browseElement.defaultCitationLinkUrl}">
 						<button type="button"
-							class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-citation"
-							data-copy-value="#{browseElement.citationStringPlain}"
+							class="btn btn--icon search-list__hit-options-button
+							search-list__hit-options-button-clipboard"
+							data-copy-value="#{browseElement.defaultCitationLinkUrl}"
 							data-toggle="tooltip" data-placement="top"
-							title="#{msg.action__search_hit_copy_cite}"
-							aria-label="#{msg.action__search_hit_copy_cite}">
-							<util:icon icon="quote" />
+							title="#{msg.action__search_hit_copy_link}"
+							aria-label="#{msg.action__search_hit_copy_link}">
+							<util:icon icon="link" />
 						</button>
+					</ui:fragment>
+
+					<!-- CITATION RECOMMENDATION DROPDOWN -->
+					<ui:fragment rendered="#{not empty browseElement.citationStringPlain}">
+						<div class="dropdown search-list__hit-citation-dropdown-wrapper">
+							
+							<button type="button"
+								class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-citation dropdown-toggle"
+								data-toggle="dropdown"
+								data-trigger="bstooltip" data-placement="top"
+								aria-haspopup="true"
+								aria-expanded="false"
+								title="#{msg.action__search_hit_copy_cite}"
+								aria-label="#{msg.action__search_hit_copy_cite}">
+								<util:icon icon="quote" />
+							</button>
+							<div class="dropdown-menu dropdown-menu-right search-list__hit-citation-dropdown">
+								<div class="search-list__hit-citation-dropdown-heading-wrapper">
+									<util:icon icon="quote" styleClass="search-list__hit-citation-dropdown-icon"/>
+									<h6 class="search-list__hit-citation-dropdown-heading">Zitierempfehlung</h6>
+								</div>
+								
+								<div class="search-list__hit-citation-wrapper">
+									<button
+										type="button"
+										role="button"
+										class="search-list__hit-citation-copy-text"
+										data-copy-value="#{browseElement.citationStringPlain}"
+										data-copy-done-msg="#{msg.copyUrlDone}"
+										title="#{msg.citeRecommendation__copy_to_clipboard}"
+										aria-label="#{msg.citeRecommendation__copy_to_clipboard}"
+										onclick="event.stopPropagation()"
+										tabindex="0">
+										#{browseElement.citationStringPlain}
+									</button>
+									<div class="search-list__hit-citation-text-info">#{msg.citeRecommendation__text_info}</div>
+								</div>
+								
+							</div>
+						</div>
 					</ui:fragment>
 
 					<!-- EXPORT FILE FORMAT DROPDOWN/BUTTON -->
