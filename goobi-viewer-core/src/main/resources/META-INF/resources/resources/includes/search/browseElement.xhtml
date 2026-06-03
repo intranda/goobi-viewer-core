@@ -236,7 +236,7 @@
 							<util:icon icon="file-export" />
 						</button>
 						<div class="dropdown-menu dropdown-menu-right search-list__hit-export-dropdown">
-						<h6 class="dropdown-header search-list__hit-export-dropdown-heading">#{msg.search_export__hit_dropdown_heading}</h6>
+						<h6 class="search-list__hit-export-dropdown-heading">#{msg.search_export__hit_dropdown_heading}</h6>
 							<ui:repeat var="exportFormat" value="#{configurationBean.enabledSearchExportFormats}">
 								<a class="dropdown-item search-list__hit-export-dropdown-link"
 									href="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}?query=PI:&quot;#{browseElement.pi}&quot;"
