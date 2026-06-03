@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
@@ -34,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.ProviderNotFoundException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,6 +57,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.cms.legacy.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSPageContentManager;
+import io.goobi.viewer.modules.IModule;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
@@ -200,11 +203,96 @@ public class CMSTemplateManager implements Serializable {
 
     public void reloadContentManager() {
         try {
-            this.contentManager =
-                    new CMSPageContentManager(passedFileSystemPath.orElse(null), coreFolderPath.orElse(null), themeFolderPath.orElse(null));
+            // Module-aware reload (#15809): forward all module-contributed component folders alongside core+theme.
+            // Module folders may resolve to JAR-internal paths; collectModuleComponentFolders takes care of mounting
+            // the JarFileSystem for such URLs.
+            List<Path> moduleFolders = collectModuleComponentFolders();
+            List<Path> all = new ArrayList<>();
+            passedFileSystemPath.ifPresent(all::add);
+            coreFolderPath.ifPresent(all::add);
+            themeFolderPath.ifPresent(all::add);
+            all.addAll(moduleFolders);
+            this.contentManager = new CMSPageContentManager(all.toArray(Path[]::new));
         } catch (IOException e) {
-            logger.error("Error creating CMSPageContentManager from paths {} and {}", coreFolderPath.orElse(null), themeFolderPath.orElse(null), e);
+            logger.error("Error creating CMSPageContentManager", e);
         }
+    }
+
+    /**
+     * Collects CMS-component folders contributed by all loaded modules. Each module returns a {@link URL} that may
+     * point either at a real filesystem directory ({@code file:}) or at a JAR-internal directory
+     * ({@code jar:file:.../module.jar!/path}). The latter requires splitting the URI into the bare JAR location
+     * (used to mount the {@link FileSystems#newFileSystem ZIP filesystem}) and the inner path (resolved via
+     * {@link FileSystem#getPath}). {@link Paths#get(URI)} alone will not work for the {@code jar:} case.
+     *
+     * @return list of folder paths, never null, possibly empty
+     * @should ignore unloaded modules
+     * @should resolve file urls to filesystem paths
+     * @should resolve jar urls to jarfilesystem paths
+     */
+    private List<Path> collectModuleComponentFolders() {
+        List<Path> out = new ArrayList<>();
+        for (IModule module : DataManager.getInstance().getModules()) {
+            if (!module.isLoaded()) {
+                continue;
+            }
+            Optional<URL> urlOpt = module.getCmsComponentFolderUrl();
+            if (urlOpt.isEmpty()) {
+                continue;
+            }
+            try {
+                Path path = resolveModuleFolderUrl(module.getId(), urlOpt.get());
+                if (path != null && Files.isDirectory(path)) {
+                    out.add(path);
+                } else if (path != null) {
+                    logger.warn("Module {} cmsComponentFolderUrl is not a directory: {}", module.getId(), path);
+                }
+            } catch (URISyntaxException | IOException e) {
+                logger.error("Cannot resolve cms component folder for module {}: {}", module.getId(), e.getMessage());
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Splits a possibly-jar URL into a {@link Path} usable by {@link Files#list(Path)}. The scheme decides:
+     * <ul>
+     *   <li>{@code file:} -&gt; {@link Paths#get(URI)} directly.</li>
+     *   <li>{@code jar:} -&gt; split into outer JAR URI (everything before {@code !/}) and inner path; mount the JAR's
+     *       ZIP filesystem if not yet mounted; return {@link FileSystem#getPath} on the inner path.</li>
+     * </ul>
+     *
+     * @param moduleId for diagnostics only
+     * @param url URL to convert
+     * @return Path, or null if the scheme is unsupported
+     * @throws URISyntaxException if the URL cannot be converted to a URI
+     * @throws IOException if mounting the JAR filesystem fails
+     */
+    private Path resolveModuleFolderUrl(String moduleId, URL url) throws URISyntaxException, IOException {
+        URI uri = url.toURI();
+        String scheme = uri.getScheme();
+        if ("file".equals(scheme)) {
+            return Paths.get(uri);
+        }
+        if ("jar".equals(scheme)) {
+            String spec = uri.getRawSchemeSpecificPart();
+            int sep = spec.indexOf("!/");
+            if (sep < 0) {
+                logger.warn("Module {} jar URL has no '!/' separator: {}", moduleId, uri);
+                return null;
+            }
+            URI jarUri = URI.create("jar:" + spec.substring(0, sep));
+            String innerPath = spec.substring(sep + 1); // includes leading '/'
+            FileSystem fs;
+            try {
+                fs = FileSystems.newFileSystem(jarUri, Collections.singletonMap("create", "true"));
+            } catch (FileSystemAlreadyExistsException ignore) {
+                fs = FileSystems.getFileSystem(jarUri);
+            }
+            return fs.getPath(innerPath);
+        }
+        logger.warn("Module {} contributed cmsComponentFolderUrl with unsupported scheme '{}': {}", moduleId, scheme, uri);
+        return null;
     }
 
     /**

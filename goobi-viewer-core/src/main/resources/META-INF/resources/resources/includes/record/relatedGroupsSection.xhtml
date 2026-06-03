@@ -59,7 +59,10 @@
                 </ui:repeat>
 
                 <!-- "Zum Gesamtwerk" button - only when full anchor info is available -->
-                <h:panelGroup rendered="#{anchorReady}" styleClass="related-groups-section__view-all-wrapper" layout="block">
+                <h:panelGroup
+                    rendered="#{anchorReady}"
+                    styleClass="related-groups-section__view-all-wrapper"
+                    layout="block">
                     <a
                         href="#{navigationHelper.getRecordUrl(activeDocumentBean.viewManager.anchorPi, activeDocumentBean.viewManager.anchorStructElement.docStructType, 1, true, false)}"
                         class="related-groups-section__view-all">

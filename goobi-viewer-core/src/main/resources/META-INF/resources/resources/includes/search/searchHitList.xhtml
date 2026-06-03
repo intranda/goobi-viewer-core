@@ -434,13 +434,13 @@
 
     <!-- SHARED PDF DOWNLOAD MODAL (message queue mode, one instance for all search hits) -->
 
-        <viewerComponent:modalDownload
-            modalId="searchHitDownloadModal"
-            pi="#{downloadBean.currentPi}"
-            title=""
-            fileSize="" />
+    <viewerComponent:modalDownload
+        modalId="searchHitDownloadModal"
+        pi="#{downloadBean.currentPi}"
+        title=""
+        fileSize="" />
 
-        <script type="text/javascript">
+    <script type="text/javascript">
             //<![CDATA[
             function _parseDisplaySize(sizeVal) {
                 if (!sizeVal) { return null; }
@@ -489,7 +489,6 @@
             });
             //]]>
         </script>
-
 
     <script type="text/javascript">
         var cmsPageId = '#{cmsPage.id}';

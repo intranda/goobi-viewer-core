@@ -118,11 +118,15 @@
                 data-target="cmsPageUrlPreview"
                 class="admin__small-info mt-2">
                 #{msg.title__preview}:
-                <a class="admin__pretty-url-target"
+                <a
+                    class="admin__pretty-url-target"
                     target="_blank"
                     data-target="prettyUrlLinkTarget"
                     href="#{navigationHelper.applicationUrl}#{cmsPageEditBean.selectedPage.persistentUrl}">
-                    <span>#{navigationHelper.applicationUrl}<span id="prettyUrlTextHolder" /></span>
+                    <span>
+                        #{navigationHelper.applicationUrl}
+                        <span id="prettyUrlTextHolder" />
+                    </span>
                 </a>
             </div>
         </div>

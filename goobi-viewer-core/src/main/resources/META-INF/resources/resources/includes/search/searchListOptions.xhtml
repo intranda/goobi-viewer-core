@@ -89,38 +89,48 @@
                 </div>
             </ui:fragment>
 
-			<!-- EXPORT OPTIONS DROPDOWN -->
-			<div class="dropdown search-list__export-dropdown-wrapper">
-				<button
-					class="btn btn--clean dropdown-toggle search-list__option-button search-list__export-dropdown-toggle"
-					type="button" data-toggle="dropdown" aria-expanded="false"
-					title="#{msg.search_export__list_export_action_tooltip}">
-					<util:icon icon="file-export" svgClass="icon" />
-				</button>
+            <!-- EXPORT OPTIONS DROPDOWN -->
+            <div class="dropdown search-list__export-dropdown-wrapper">
+                <button
+                    class="btn btn--clean dropdown-toggle search-list__option-button search-list__export-dropdown-toggle"
+                    type="button"
+                    data-toggle="dropdown"
+                    aria-expanded="false"
+                    title="#{msg.search_export__list_export_action_tooltip}">
+                    <util:icon
+                        icon="file-export"
+                        svgClass="icon" />
+                </button>
 
-
-				<div class="dropdown-menu search-list__export-dropdown">
-					<!-- SEARCH EXPORT (XSLT formats: RIS, Endnote, BibTeX, …) -->
-					<h6 class="search-list__export-dropdown-heading">#{msg.search_export__list_dropdown_heading}</h6>
-					<ui:repeat value="#{configurationBean.enabledSearchExportFormats}"
-						var="exportFormat">
-						<h:outputLink
-							value="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}"
-							styleClass="dropdown-item search-list__export-dropdown-link"
-							title="#{msg['search_export_'.concat(exportFormat.name)]}">
-							<f:param name="query" value="#{search.searchString}" />
-							<f:param name="activeFacetString"
-								value="#{search.facets.activeFacetString}" />
-							<f:param name="sortString" value="#{search.sortString}" />
-							<!-- 	                        <f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
-							<!-- 	                        <f:passThroughAttribute name="data-placement" value="top" /> -->
-							<f:passThroughAttribute name="aria-label"
-								value="#{msg['search_export_'.concat(exportFormat.name)]}" />
-							<span>#{msg['search_export__'.concat(exportFormat.name)]}</span>
-						</h:outputLink>
-					</ui:repeat>
-				</div>
-			</div>
+                <div class="dropdown-menu search-list__export-dropdown">
+                    <!-- SEARCH EXPORT (XSLT formats: RIS, Endnote, BibTeX, …) -->
+                    <h6 class="search-list__export-dropdown-heading">#{msg.search_export__list_dropdown_heading}</h6>
+                    <ui:repeat
+                        value="#{configurationBean.enabledSearchExportFormats}"
+                        var="exportFormat">
+                        <h:outputLink
+                            value="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}"
+                            styleClass="dropdown-item search-list__export-dropdown-link"
+                            title="#{msg['search_export_'.concat(exportFormat.name)]}">
+                            <f:param
+                                name="query"
+                                value="#{search.searchString}" />
+                            <f:param
+                                name="activeFacetString"
+                                value="#{search.facets.activeFacetString}" />
+                            <f:param
+                                name="sortString"
+                                value="#{search.sortString}" />
+                            <!-- 	                        <f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
+                            <!-- 	                        <f:passThroughAttribute name="data-placement" value="top" /> -->
+                            <f:passThroughAttribute
+                                name="aria-label"
+                                value="#{msg['search_export_'.concat(exportFormat.name)]}" />
+                            <span>#{msg['search_export__'.concat(exportFormat.name)]}</span>
+                        </h:outputLink>
+                    </ui:repeat>
+                </div>
+            </div>
 
             <!-- SEARCHLIST VIEWS -->
             <div class="search-list__views">

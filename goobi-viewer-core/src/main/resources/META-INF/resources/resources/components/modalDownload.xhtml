@@ -13,7 +13,7 @@
     <composite:interface>
         <composite:attribute
             name="modalId"
-            required="false" 
+            required="false"
             default="downloadModal" />
         <composite:attribute
             name="downloadType"
@@ -72,9 +72,11 @@
                                 </ui:fragment>
                             </dl>
 
-							<p class="mt-4 mb-4">
-							    <h:outputText value="#{msg.downloadEMailText}" escape="false" />
-							</p>
+                            <p class="mt-4 mb-4">
+                                <h:outputText
+                                    value="#{msg.downloadEMailText}"
+                                    escape="false" />
+                            </p>
                         </div>
 
                         <!-- FORM -->
@@ -126,7 +128,9 @@
                                         data-reference="downloadAcceptTerms"
                                         class="form-group form-row col-12">
                                         <p class="mb-4">
-                                            <h:outputText value="#{msg.feedbackAcceptingTerms}" escape="false" />
+                                            <h:outputText
+                                                value="#{msg.feedbackAcceptingTerms}"
+                                                escape="false" />
                                         </p>
                                         <label class="col-lg-3 control-label">#{msg.admin__terms_of_use__accept}:</label>
 

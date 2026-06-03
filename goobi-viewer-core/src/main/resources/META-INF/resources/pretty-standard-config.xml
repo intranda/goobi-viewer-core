@@ -83,13 +83,6 @@
 		<action onPostback="false">#{browseBean.openWorkInTargetCollection()}</action>
 	</url-mapping>
 
-	<!-- STATISTICS -->
-	<url-mapping id="statistics">
-		<pattern value="/statistics/" />
-		<view-id value="/statistics.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-
 	<!-- TIMEMATRIX -->
 	<url-mapping id="timematrix">
 		<pattern value="/timematrix/" />

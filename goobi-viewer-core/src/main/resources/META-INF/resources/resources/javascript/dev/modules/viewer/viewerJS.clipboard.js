@@ -77,59 +77,61 @@ var viewerJS = (function (viewer) {
             // COPY BUTTON VAR
             var copyClipboardButton = $(tooltipValueSelector);
 
-            $(copyClipboardButton).off('click.clipboard').on('click.clipboard', function () {
-                var thisCopyButton = $(this);
+            $(copyClipboardButton)
+                .off('click.clipboard')
+                .on('click.clipboard', function () {
+                    var thisCopyButton = $(this);
 
-                // GET VALUE OF DATA ATTRIBUTE COPY VALUE
-                // define dataTarget to get other data attribute value than data-copy-value
-                if (!dataTarget) {
-                    var copyValue = $(this).data('copy-value');
-                    // console.log('datatarget is OFF ' + dataTarget);
-                } else {
-                    var copyValue = $(this).attr(dataTarget);
-                    // console.log('datatarget is ON ' + dataTarget);
-                    // console.log('value of special: ' + copyValue);
-                }
+                    // GET VALUE OF DATA ATTRIBUTE COPY VALUE
+                    // define dataTarget to get other data attribute value than data-copy-value
+                    if (!dataTarget) {
+                        var copyValue = $(this).data('copy-value');
+                        // console.log('datatarget is OFF ' + dataTarget);
+                    } else {
+                        var copyValue = $(this).attr(dataTarget);
+                        // console.log('datatarget is ON ' + dataTarget);
+                        // console.log('value of special: ' + copyValue);
+                    }
 
-                // var copyValue = $(this).data('copy-value');
-                // console.log(copyValue);
+                    // var copyValue = $(this).data('copy-value');
+                    // console.log(copyValue);
 
-                // CREATE TEMPORARY TEXTAREA TO COPY VALUE INTO CLIPBOARD
-                var $temp = $('<textarea />');
-                $('body').append($temp);
-                $temp.val(copyValue).select();
-                document.execCommand('copy');
-                $temp.remove();
+                    // CREATE TEMPORARY TEXTAREA TO COPY VALUE INTO CLIPBOARD
+                    var $temp = $('<textarea />');
+                    $('body').append($temp);
+                    $temp.val(copyValue).select();
+                    document.execCommand('copy');
+                    $temp.remove();
 
-                // CHANGE TOOLTIP TO COPY DONE MESSAGE
-                var copyThisMessage = $(thisCopyButton).data('original-title');
+                    // CHANGE TOOLTIP TO COPY DONE MESSAGE
+                    var copyThisMessage = $(thisCopyButton).data('original-title');
 
-                // IF NO COPY DONE MSG FOUND JUST USE STANDARD TEXT
-                if (!$(this).data('copy-done-msg')) {
-                    // TO DO: TRANSLATE MSG KEY
-                    var copyDoneMessage = 'Copied to clipboard';
-                } else {
-                    var copyDoneMessage = $(thisCopyButton).data('copy-done-msg');
-                }
+                    // IF NO COPY DONE MSG FOUND JUST USE STANDARD TEXT
+                    if (!$(this).data('copy-done-msg')) {
+                        // TO DO: TRANSLATE MSG KEY
+                        var copyDoneMessage = 'Copied to clipboard';
+                    } else {
+                        var copyDoneMessage = $(thisCopyButton).data('copy-done-msg');
+                    }
 
-                $(thisCopyButton).tooltip('hide');
-                $(thisCopyButton).tooltip('dispose');
-                $(thisCopyButton).tooltip({ trigger: 'manual', placement: 'top', title: 'Copy' });
-                $(thisCopyButton).attr('data-original-title', copyDoneMessage);
-                $(thisCopyButton).tooltip('show');
-
-                // KEEP COPIED SUCCESS MSG FOR 2 SECONDS THEN REENABLE NORMAL TOOLTIP
-                setTimeout(function () {
                     $(thisCopyButton).tooltip('hide');
-                    $(thisCopyButton).on('hidden.bs.tooltip', function () {
-                        $(thisCopyButton).tooltip('dispose');
-                        $(thisCopyButton).attr('data-original-title', copyThisMessage);
-                        $(thisCopyButton).tooltip({ trigger: 'hover', placement: 'top', title: copyThisMessage });
-                    });
-                }, 2000);
+                    $(thisCopyButton).tooltip('dispose');
+                    $(thisCopyButton).tooltip({ trigger: 'manual', placement: 'top', title: 'Copy' });
+                    $(thisCopyButton).attr('data-original-title', copyDoneMessage);
+                    $(thisCopyButton).tooltip('show');
 
-                $(this).focus();
-            });
+                    // KEEP COPIED SUCCESS MSG FOR 2 SECONDS THEN REENABLE NORMAL TOOLTIP
+                    setTimeout(function () {
+                        $(thisCopyButton).tooltip('hide');
+                        $(thisCopyButton).on('hidden.bs.tooltip', function () {
+                            $(thisCopyButton).tooltip('dispose');
+                            $(thisCopyButton).attr('data-original-title', copyThisMessage);
+                            $(thisCopyButton).tooltip({ trigger: 'hover', placement: 'top', title: copyThisMessage });
+                        });
+                    }, 2000);
+
+                    $(this).focus();
+                });
         },
     };
 
