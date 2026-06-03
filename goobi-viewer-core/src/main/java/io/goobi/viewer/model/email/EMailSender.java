@@ -185,7 +185,9 @@ public class EMailSender {
 
         // Optional : You can also set your custom headers in the Email if you want
         // msg.addHeader("MyHeaderName", "myHeaderValue");
-        msg.setSubject(subject);
+        // CWE-93 defense-in-depth: strip any CR/LF that could split the Subject header into
+        // attacker-controlled additional headers or a second message body.
+        msg.setSubject(sanitizeHeaderValue(subject));
 
         // Message body
         MimeBodyPart messagePart = new MimeBodyPart();
@@ -263,6 +265,35 @@ public class EMailSender {
      * @throws AddressException
      * @should parse addresses correctly
      */
+    /**
+     * Replaces CR and LF in a MIME header value with spaces to defend against header injection
+     * (CWE-93). JavaMail performs its own header folding but does not guarantee removal of raw
+     * CR/LF on every provider implementation, so the value is sanitized here before it reaches
+     * {@link Message#setSubject(String)}.
+     *
+     * <p>Multi-line subjects are not a supported use case in the Goobi viewer mail flows, so
+     * stripping rather than rejecting keeps backwards compatibility with any caller that
+     * accidentally appends a trailing newline. A warning is logged whenever stripping kicks in,
+     * so legitimate-but-buggy callers can be identified and attacks become observable.
+     *
+     * @param value raw header value; may be {@code null}
+     * @return sanitized value with each CR and LF replaced by a single space, or {@code null}
+     *         when {@code value} was {@code null}
+     * @should return null when input is null
+     * @should leave value without cr or lf unchanged
+     * @should replace carriage return and line feed with space
+     */
+    static String sanitizeHeaderValue(String value) {
+        if (value == null) {
+            return null;
+        }
+        String sanitized = value.replace('\r', ' ').replace('\n', ' ');
+        if (!sanitized.equals(value)) {
+            logger.warn("Stripped CR/LF from mail header value (possible header injection attempt).");
+        }
+        return sanitized;
+    }
+
     static InternetAddress[] prepareRecipients(List<String> recipients) throws AddressException {
         if (recipients == null) {
             return new InternetAddress[0];

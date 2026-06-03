@@ -193,4 +193,43 @@ class BookmarkListTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals(Long.valueOf(2), lists.get(1).getId());
         Assertions.assertEquals(Long.valueOf(1), lists.get(2).getId());
     }
+
+    /**
+     * @see BookmarkList#generateShareKey()
+     * @verifies produce key matching the share-key validation pattern
+     */
+    @Test
+    void generateShareKey_shouldProduceKeyMatchingTheShareKeyValidationPattern() {
+        BookmarkList list = new BookmarkList();
+        list.generateShareKey();
+        Assertions.assertTrue(list.getShareKey().matches("^[A-Za-z0-9_-]+$"),
+                "Key must match the existing share-key validation regex, was: " + list.getShareKey());
+    }
+
+    /**
+     * @see BookmarkList#generateShareKey()
+     * @verifies produce different key on each invocation
+     */
+    @Test
+    void generateShareKey_shouldProduceDifferentKeyOnEachInvocation() {
+        BookmarkList list = new BookmarkList();
+        list.generateShareKey();
+        String first = list.getShareKey();
+        list.generateShareKey();
+        Assertions.assertNotEquals(first, list.getShareKey());
+    }
+
+    /**
+     * @see BookmarkList#generateShareKey()
+     * @verifies produce key with at least 22 characters
+     */
+    @Test
+    void generateShareKey_shouldProduceKeyWithAtLeastTwentyTwoCharacters() {
+        BookmarkList list = new BookmarkList();
+        list.generateShareKey();
+        // Base64URL without padding of 24 bytes is 32 characters; 22 is the minimum
+        // for 128-bit-equivalent entropy and matches the contract in the @should tag.
+        Assertions.assertTrue(list.getShareKey().length() >= 22,
+                "Key must be at least 22 characters, was " + list.getShareKey().length());
+    }
 }

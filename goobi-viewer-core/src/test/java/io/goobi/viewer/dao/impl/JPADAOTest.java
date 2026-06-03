@@ -3706,4 +3706,109 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         List<IpRange> after = cache.getAllIpRanges();
         assertNotSame(before, after);
     }
+
+    // UserToken DAO tests
+
+    /**
+     * @see JPADAO#deleteAllUserTokensForUser(io.goobi.viewer.model.security.user.User)
+     * @verifies delete all tokens for given user
+     */
+    @Test
+    void deleteAllUserTokensForUser_shouldDeleteAllTokensForGivenUser() throws Exception {
+        io.goobi.viewer.model.security.user.User user =
+                DataManager.getInstance().getDao().getUser(1);
+        assertNotNull(user);
+
+        io.goobi.viewer.model.security.user.UserToken token1 = new io.goobi.viewer.model.security.user.UserToken();
+        token1.setUser(user);
+        token1.setTokenHash("deleteall-hash-1-" + System.nanoTime());
+        token1.setExpirationDate(LocalDateTime.now().plusDays(1));
+        assertTrue(DataManager.getInstance().getDao().addUserToken(token1));
+
+        io.goobi.viewer.model.security.user.UserToken token2 = new io.goobi.viewer.model.security.user.UserToken();
+        token2.setUser(user);
+        token2.setTokenHash("deleteall-hash-2-" + System.nanoTime());
+        token2.setExpirationDate(LocalDateTime.now().plusDays(1));
+        assertTrue(DataManager.getInstance().getDao().addUserToken(token2));
+
+        DataManager.getInstance().getDao().deleteAllUserTokensForUser(user);
+
+        List<io.goobi.viewer.model.security.user.UserToken> remaining =
+                DataManager.getInstance().getDao().getActiveUserTokensForUser(user);
+        assertTrue(remaining.isEmpty());
+    }
+
+    /**
+     * @see JPADAO#getActiveUserTokensForUser(io.goobi.viewer.model.security.user.User)
+     * @verifies return active tokens ordered by creation date
+     */
+    @Test
+    void getActiveUserTokensForUser_shouldReturnActiveTokensOrderedByCreationDate() throws Exception {
+        io.goobi.viewer.model.security.user.User user =
+                DataManager.getInstance().getDao().getUser(1);
+        assertNotNull(user);
+
+        // Clean up any existing tokens
+        DataManager.getInstance().getDao().deleteAllUserTokensForUser(user);
+
+        io.goobi.viewer.model.security.user.UserToken older = new io.goobi.viewer.model.security.user.UserToken();
+        older.setUser(user);
+        older.setTokenHash("older-hash-" + System.nanoTime());
+        older.setDateCreated(LocalDateTime.now().minusHours(2));
+        older.setExpirationDate(LocalDateTime.now().plusDays(1));
+        assertTrue(DataManager.getInstance().getDao().addUserToken(older));
+
+        io.goobi.viewer.model.security.user.UserToken newer = new io.goobi.viewer.model.security.user.UserToken();
+        newer.setUser(user);
+        newer.setTokenHash("newer-hash-" + System.nanoTime());
+        newer.setDateCreated(LocalDateTime.now().minusHours(1));
+        newer.setExpirationDate(LocalDateTime.now().plusDays(1));
+        assertTrue(DataManager.getInstance().getDao().addUserToken(newer));
+
+        // Expired token should NOT be returned
+        io.goobi.viewer.model.security.user.UserToken expired = new io.goobi.viewer.model.security.user.UserToken();
+        expired.setUser(user);
+        expired.setTokenHash("expired-hash-" + System.nanoTime());
+        expired.setDateCreated(LocalDateTime.now().minusDays(10));
+        expired.setExpirationDate(LocalDateTime.now().minusDays(1));
+        assertTrue(DataManager.getInstance().getDao().addUserToken(expired));
+
+        List<io.goobi.viewer.model.security.user.UserToken> active =
+                DataManager.getInstance().getDao().getActiveUserTokensForUser(user);
+        assertEquals(2, active.size());
+        assertTrue(active.get(0).getDateCreated().isBefore(active.get(1).getDateCreated()));
+    }
+
+    /**
+     * @see JPADAO#deleteAllExpiredUserTokens()
+     * @verifies delete all expired user tokens
+     */
+    @Test
+    void deleteAllExpiredUserTokens_shouldDeleteAllExpiredUserTokens() throws Exception {
+        io.goobi.viewer.model.security.user.User user =
+                DataManager.getInstance().getDao().getUser(1);
+        assertNotNull(user);
+
+        // Clean up
+        DataManager.getInstance().getDao().deleteAllUserTokensForUser(user);
+
+        io.goobi.viewer.model.security.user.UserToken active = new io.goobi.viewer.model.security.user.UserToken();
+        active.setUser(user);
+        active.setTokenHash("active-purge-" + System.nanoTime());
+        active.setExpirationDate(LocalDateTime.now().plusDays(1));
+        assertTrue(DataManager.getInstance().getDao().addUserToken(active));
+
+        io.goobi.viewer.model.security.user.UserToken expired = new io.goobi.viewer.model.security.user.UserToken();
+        expired.setUser(user);
+        expired.setTokenHash("expired-purge-" + System.nanoTime());
+        expired.setExpirationDate(LocalDateTime.now().minusDays(1));
+        assertTrue(DataManager.getInstance().getDao().addUserToken(expired));
+
+        int deleted = DataManager.getInstance().getDao().deleteAllExpiredUserTokens();
+        assertEquals(1, deleted);
+
+        List<io.goobi.viewer.model.security.user.UserToken> remaining =
+                DataManager.getInstance().getDao().getActiveUserTokensForUser(user);
+        assertEquals(1, remaining.size());
+    }
 }

@@ -93,19 +93,6 @@ class StringToolsTest {
     }
 
     /**
-     * @see StringTools#stripJS(String)
-     * @verifies remove script tags, self-closing scripts, and SVG event handler elements regardless of case
-     */
-    @Test
-    void stripJS_shouldRemoveScriptTagsSelfClosingScriptsAndSVGEventHandlerElementsRegardlessOfCase() throws Exception {
-        assertEquals("foo  bar", StringTools.stripJS("foo <script type=\"javascript\">\nfunction f {\n alert();\n}\n</script> bar"));
-        assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT>\nfunction f {\n alert();\n}\n</ScRiPt> bar"));
-        assertEquals("foo  bar", StringTools.stripJS("foo <SCRIPT src=\"http://dangerousscript.js\"/> bar"));
-        assertEquals("foo  bar", StringTools.stripJS("foo <svG onLoad=alert(\"Hello_XSS_World\")></svG> bar"));
-        assertEquals("foo  bar", StringTools.stripJS("foo <svG onLoad=alert(\"Hello_XSS_World\")/> bar"));
-    }
-
-    /**
      * @see StringTools#stripPatternBreakingChars(String)
      * @verifies replace tabs and line break characters with underscores
      */
@@ -204,12 +191,47 @@ class StringToolsTest {
     }
 
     /**
-     * @see StringTools#generateHash(String)
-     * @verifies return SHA-256 hex digest for given input string
+     * @see StringTools#generateRandomToken(int)
+     * @verifies produce distinct URL-safe Base64 strings of the expected length
      */
     @Test
-    void generateHash_shouldReturnSHA256HexDigestForGivenInputString() throws Exception {
-        assertEquals("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08", StringTools.generateHash("test"));
+    void generateRandomToken_shouldProduceDistinctUrlSafeBase64StringsOfTheExpectedLength() throws Exception {
+        // 16 bytes → 22-char Base64 (no padding); 24 bytes → 32-char Base64.
+        assertEquals(22, StringTools.generateRandomToken(16).length());
+        assertEquals(32, StringTools.generateRandomToken(24).length());
+
+        java.util.regex.Pattern urlSafe = java.util.regex.Pattern.compile("^[A-Za-z0-9_-]+$");
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (int i = 0; i < 1000; i++) {
+            String token = StringTools.generateRandomToken(16);
+            assertTrue(urlSafe.matcher(token).matches(), "Token contains non-URL-safe characters: " + token);
+            assertTrue(seen.add(token), "Duplicate token in 1000 draws: " + token);
+        }
+    }
+
+    /**
+     * @see StringTools#constantTimeEquals(String,String)
+     * @verifies return true only for non-null equal strings
+     */
+    @Test
+    void constantTimeEquals_shouldReturnTrueOnlyForNonNullEqualStrings() throws Exception {
+        assertTrue(StringTools.constantTimeEquals("a3f8c2d94b", "a3f8c2d94b"));
+        assertTrue(StringTools.constantTimeEquals("", ""));
+        // Differing values, same length
+        assertFalse(StringTools.constantTimeEquals("a3f8c2d94b", "a3f8c2d94c"));
+        // Differing values, different length
+        assertFalse(StringTools.constantTimeEquals("a3f8", "a3f8c2d94b"));
+    }
+
+    /**
+     * @see StringTools#constantTimeEquals(String,String)
+     * @verifies return false if either argument is null
+     */
+    @Test
+    void constantTimeEquals_shouldReturnFalseIfEitherArgumentIsNull() throws Exception {
+        assertFalse(StringTools.constantTimeEquals(null, "a3f8c2d94b"));
+        assertFalse(StringTools.constantTimeEquals("a3f8c2d94b", null));
+        assertFalse(StringTools.constantTimeEquals(null, null));
     }
 
     /**

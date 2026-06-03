@@ -45,6 +45,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import io.goobi.viewer.controller.AlphabetIterator;
 import io.goobi.viewer.controller.DataManager;
@@ -161,7 +162,21 @@ public class JPADAO implements IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public JPADAO() throws DAOException {
-        this(null);
+        this((String) null);
+    }
+
+    /**
+     * Creates a new JPADAO instance using an existing EntityManagerFactory. Intended for tests that share a single factory across test classes.
+     *
+     * @param existingFactory pre-built EntityManagerFactory to reuse
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public JPADAO(EntityManagerFactory existingFactory) throws DAOException {
+        logger.trace("JPADAO(EntityManagerFactory)");
+        this.factory = existingFactory;
+        if (!init()) {
+            throw new DAOException("DB connection failed.");
+        }
     }
 
     /**
@@ -185,7 +200,15 @@ public class JPADAO implements IDAO {
         final Thread currentThread = Thread.currentThread();
         final ClassLoader saveClassLoader = currentThread.getContextClassLoader();
         currentThread.setContextClassLoader(new JPAClassLoader(saveClassLoader));
-        factory = Persistence.createEntityManagerFactory(persistenceUnitName);
+        // Allow overriding the persistence.xml DDL generation mode via system property (e.g. -Declipselink.ddl-generation=none
+        // in a dev environment to skip the CREATE/ALTER TABLE attempts against an existing schema). Empty map = unchanged behavior.
+        Map<String, Object> overrides = new HashMap<>();
+        String ddlGeneration = System.getProperty(PersistenceUnitProperties.DDL_GENERATION);
+        if (StringUtils.isNotEmpty(ddlGeneration)) {
+            overrides.put(PersistenceUnitProperties.DDL_GENERATION, ddlGeneration);
+            logger.info("Overriding eclipselink.ddl-generation with '{}' from system property", ddlGeneration);
+        }
+        factory = Persistence.createEntityManagerFactory(persistenceUnitName, overrides);
         currentThread.setContextClassLoader(saveClassLoader);
 
         int attempts = DataManager.getInstance().getConfiguration().getDatabaseConnectionAttempts() - 1;
@@ -669,6 +692,62 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
         } catch (PersistenceException e) {
             handleException(em);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void deleteAllUserTokensForUser(io.goobi.viewer.model.security.user.User user) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.createQuery("DELETE FROM UserToken t WHERE t.user = :user")
+                    .setParameter("user", user)
+                    .executeUpdate();
+            commitTransaction(em);
+        } catch (PersistenceException e) {
+            handleException(em);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public java.util.List<io.goobi.viewer.model.security.user.UserToken> getActiveUserTokensForUser(
+            io.goobi.viewer.model.security.user.User user) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT t FROM UserToken t WHERE t.user = :user AND t.expirationDate >= :now ORDER BY t.dateCreated ASC",
+                    io.goobi.viewer.model.security.user.UserToken.class)
+                    .setParameter("user", user)
+                    .setParameter("now", java.time.LocalDateTime.now())
+                    .getResultList();
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int deleteAllExpiredUserTokens() throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            int count = em.createQuery("DELETE FROM UserToken t WHERE t.expirationDate < :now")
+                    .setParameter("now", java.time.LocalDateTime.now())
+                    .executeUpdate();
+            commitTransaction(em);
+            return count;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return 0;
         } finally {
             close(em);
         }
@@ -1880,17 +1959,15 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public AccessTicket getTicketByPasswordHash(String passwordHash) throws DAOException {
+    public List<AccessTicket> getActiveTicketsByPi(String pi) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<AccessTicket> cq = cb.createQuery(AccessTicket.class);
             Root<AccessTicket> root = cq.from(AccessTicket.class);
-            cq.select(root).where(cb.equal(root.get("passwordHash"), passwordHash));
-            return em.createQuery(cq).getSingleResult();
-        } catch (NoResultException e) {
-            return null;
+            cq.select(root).where(cb.equal(root.get("pi"), pi));
+            return em.createQuery(cq).getResultList();
         } finally {
             close(em);
         }
@@ -6566,7 +6643,8 @@ public class JPADAO implements IDAO {
                         where = mainTableKey + ".userGroup.owner IN (SELECT g.owner FROM UserGroup g WHERE g.owner.id=:" + keyValueParam + ")";
                         break;
                     case "a.name":
-                        where = mainTableKey + ".id IN (SELECT t.owner.id FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.value) LIKE :"
+                        where = mainTableKey
+                                + ".id IN (SELECT t.owner.id FROM CampaignTranslation t WHERE t.tag='title' AND UPPER(t.translationValue) LIKE :"
                                 + keyValueParam + ")";
                         break;
                     default:

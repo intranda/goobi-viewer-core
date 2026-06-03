@@ -33,6 +33,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.model.security.user.UserToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,7 +62,8 @@ public class UserEndpoint {
     /**
      * Returns the client IP address and, if a user is logged in, the current user's information.
      *
-     * <p>When no user is authenticated, the {@code user} field is omitted from the response.
+     * <p>
+     * When no user is authenticated, the {@code user} field is omitted from the response.
      *
      * @return a {@link jakarta.ws.rs.core.Response} object containing a {@link CurrentUserResponse}
      */
@@ -82,9 +84,8 @@ public class UserEndpoint {
 
         User user = null;
         try {
-            user = UserLoggedInFilter.getUserToken(servletRequest)
-                    .filter(token -> !token.isExpired())
-                    .map(token -> token.getUser())
+            user = UserLoggedInFilter.getValidUserToken(servletRequest)
+                    .map(UserToken::getUser)
                     .orElse(null);
         } catch (DAOException e) {
             logger.warn("Error getting user from authorization token", e);

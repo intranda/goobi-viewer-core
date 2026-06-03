@@ -22,6 +22,7 @@
 package io.goobi.viewer.controller;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,18 +31,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.CopyOption;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
@@ -782,5 +789,196 @@ public final class FileTools {
         }
 
         return sanitizedFileName;
+    }
+
+    /**
+     * Convenience overload without size limit. Delegates to {@link #copyRejectingSymlinks(InputStream, Path, long)} with {@code maxBytes = -1}
+     * (unlimited).
+     *
+     * @param source input stream of bytes to write; not closed by this method
+     * @param targetFile target file path to write to
+     * @throws IOException if {@code targetFile} or its parent is a symbolic link, if the target is a directory, or if the write fails
+     * @should reject symbolic link at target path
+     * @should reject symbolic link to nonexistent target
+     * @should reject symbolic link at parent directory
+     * @should write bytes when target is regular file
+     * @should write zero byte file when source is empty
+     * @should copy large payload completely across multiple buffer reads
+     * @should overwrite existing regular file at target
+     * @should fail when target is an existing directory
+     * @should not close the source input stream
+     */
+    public static void copyRejectingSymlinks(
+            final InputStream source, final Path targetFile)
+            throws IOException {
+        copyRejectingSymlinks(source, targetFile, -1);
+    }
+
+    /**
+     * Copies bytes from the given input stream to the given target file (replacing it if it exists), but refuses to follow symbolic links at the
+     * target path or its immediate parent directory. If {@code maxBytes} is positive the copy is aborted as soon as the byte count exceeds the limit,
+     * the partial file is deleted, and an {@link IOException} is thrown.
+     *
+     * <p>
+     * Defense-in-depth against symlink-based file overwrite attacks (CWE-59 / OWASP A05) and unbounded uploads (DoS via disk exhaustion). The target
+     * file is opened via {@link FileChannel#open(Path, java.nio.file.OpenOption...)} with {@link LinkOption#NOFOLLOW_LINKS}, so the operating system
+     * rejects the open if the leaf path element is a symbolic link (Linux: {@code O_NOFOLLOW}). The parent directory is checked separately via
+     * {@link Files#isSymbolicLink(Path)} because {@code NOFOLLOW_LINKS} only constrains the last path element.
+     *
+     * <p>
+     * The input stream is not closed by this method, matching the semantics of {@link Files#copy(InputStream, Path, java.nio.file.CopyOption...)};
+     * the caller is responsible for closing it.
+     *
+     * @param source input stream of bytes to write; not closed by this method
+     * @param targetFile target file path to write to
+     * @param maxBytes maximum number of bytes allowed; {@code <= 0} means unlimited
+     * @throws IOException if {@code targetFile} or its parent is a symbolic link, if the target is a directory, if the input exceeds
+     *             {@code maxBytes}, or if the write itself fails
+     * @should write small file completely with size limit
+     * @should throw IOException when input exceeds maxBytes
+     * @should delete partial file on size limit abort
+     * @should reject symbolic link at target path with size limit
+     * @should copy without limit when maxBytes is negative
+     */
+    public static void copyRejectingSymlinks(final InputStream source, final Path targetFile, final long maxBytes) throws IOException {
+        rejectIfParentIsSymlink(targetFile, "write");
+        try (FileChannel ch = FileChannel.open(targetFile,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                LinkOption.NOFOLLOW_LINKS);
+                OutputStream out = Channels.newOutputStream(ch)) {
+            if (maxBytes <= 0) {
+                source.transferTo(out);
+            } else {
+                byte[] buffer = new byte[8192];
+                long total = 0;
+                int read;
+                while ((read = source.read(buffer)) >= 0) {
+                    total += read;
+                    if (total > maxBytes) {
+                        throw new IOException(
+                                "Upload exceeds maximum allowed size of " + maxBytes + " bytes");
+                    }
+                    out.write(buffer, 0, read);
+                }
+            }
+        } catch (IOException e) {
+            if (maxBytes > 0) {
+                Files.deleteIfExists(targetFile);
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Opens an {@link InputStream} on the given regular file, refusing to follow symbolic links at the target path or its immediate parent directory.
+     * Defence-in-depth against symlink-based file exfiltration (CWE-59).
+     *
+     * <p>
+     * The file is opened via {@link FileChannel#open(Path, java.nio.file.OpenOption...)} with {@link LinkOption#NOFOLLOW_LINKS}, which on Linux maps
+     * to the {@code O_NOFOLLOW} open flag. The parent directory is checked separately because {@code NOFOLLOW_LINKS} only constrains the leaf path
+     * element.
+     *
+     * <p>
+     * Caller is responsible for closing the returned stream. Closing it also closes the underlying {@link FileChannel} (see
+     * {@link Channels#newInputStream(java.nio.channels.ReadableByteChannel)}).
+     *
+     * @param sourceFile regular file to read
+     * @return a fresh {@code InputStream} backed by a NOFOLLOW-opened {@link FileChannel}
+     * @throws IOException if {@code sourceFile} or its parent is a symbolic link, if the file is missing, or if open fails
+     * @should reject symbolic link at source path
+     * @should reject symbolic link at parent directory
+     * @should read bytes when source is regular file
+     * @should propagate NoSuchFileException when source is missing
+     */
+    public static InputStream openRejectingSymlinks(final Path sourceFile) throws IOException {
+        rejectIfParentIsSymlink(sourceFile, "read");
+        FileChannel ch = FileChannel.open(sourceFile, StandardOpenOption.READ, LinkOption.NOFOLLOW_LINKS);
+        return Channels.newInputStream(ch);
+    }
+
+    /**
+     * Moves a file, refusing to follow symbolic links at the source, target, or either parent. Defence-in-depth against symlink-based file overwrite
+     * (CWE-59).
+     *
+     * <p>
+     * Both endpoints are pre-checked with {@link Files#isSymbolicLink}; {@link Files#move} does not accept {@link LinkOption#NOFOLLOW_LINKS} as a
+     * {@link CopyOption} (only {@code REPLACE_EXISTING}, {@code ATOMIC_MOVE}, {@code COPY_ATTRIBUTES}), so the pre-check is the practical mitigation.
+     * A residual TOCTOU race between the pre-check and the move itself is acknowledged — see audit memo FS-SYMLINK-READ.
+     *
+     * <p>
+     * Hard links at the source are intentionally not detected (out of scope).
+     *
+     * @param source existing source path
+     * @param target target path
+     * @param options copy options forwarded to {@link Files#move}
+     * @return the path returned by {@link Files#move}
+     * @throws IOException if source, target, or either parent is a symbolic link
+     * @should reject symbolic link at source
+     * @should reject symbolic link at target
+     * @should reject symbolic link at source parent
+     * @should reject symbolic link at target parent
+     * @should move regular file when neither side is symlinked
+     * @should support atomic move for regular files
+     */
+    public static Path moveRejectingSymlinks(final Path source, final Path target, final CopyOption... options) throws IOException {
+        if (Files.isSymbolicLink(source)) {
+            throw new IOException("Refusing to move symlinked source: " + source);
+        }
+        rejectIfParentIsSymlink(source, "move from");
+        if (Files.isSymbolicLink(target)) {
+            throw new IOException("Refusing to overwrite symlinked target: " + target);
+        }
+        rejectIfParentIsSymlink(target, "move to");
+        return Files.move(source, target, options);
+    }
+
+    /**
+     * Opens a {@link BufferedWriter} on the given path with UTF-8 encoding, refusing to follow symbolic links at the target path or its parent.
+     * Truncates an existing file; creates one if it does not exist. Defence-in-depth against symlink-based file overwrite (CWE-59).
+     *
+     * <p>
+     * The file is opened via {@link FileChannel#open(Path, java.nio.file.OpenOption...)} with {@code WRITE}, {@code CREATE},
+     * {@code TRUNCATE_EXISTING} and {@link LinkOption#NOFOLLOW_LINKS}. Parent symlinks are rejected separately.
+     *
+     * <p>
+     * Caller is responsible for closing the returned writer. Closing it also closes the underlying {@link FileChannel}.
+     *
+     * @param targetFile target file path
+     * @return a {@code BufferedWriter} wrapping a NOFOLLOW-opened {@link FileChannel} with UTF-8 encoding
+     * @throws IOException if {@code targetFile} or its parent is a symbolic link, or open fails
+     * @should reject symbolic link at target path
+     * @should reject symbolic link at parent directory
+     * @should write bytes when target is regular file
+     * @should truncate existing regular file
+     */
+    public static BufferedWriter newBufferedWriterRejectingSymlinks(final Path targetFile) throws IOException {
+        rejectIfParentIsSymlink(targetFile, "write");
+        if (Files.isSymbolicLink(targetFile)) {
+            throw new IOException("Refusing to write through symlinked target: " + targetFile);
+        }
+        FileChannel ch = FileChannel.open(targetFile,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                LinkOption.NOFOLLOW_LINKS);
+        return new BufferedWriter(new OutputStreamWriter(Channels.newOutputStream(ch), StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Throws {@link IOException} if the immediate parent directory of {@code path} is a symbolic link. The four {@code *RejectingSymlinks} helpers
+     * use this as a uniform pre-check; {@link LinkOption#NOFOLLOW_LINKS} on the leaf does not constrain the parent path element.
+     *
+     * @param path path whose parent is to be checked
+     * @param operation short verb describing the IO operation (e.g. {@code "write"}, {@code "read"}, {@code "move from"}, {@code "move to"})
+     * @throws IOException if the parent of {@code path} is a symbolic link
+     */
+    static void rejectIfParentIsSymlink(final Path path, final String operation) throws IOException {
+        Path parent = path.getParent();
+        if (parent != null && Files.isSymbolicLink(parent)) {
+            throw new IOException(
+                    "Refusing to " + operation + " through symlinked parent directory: " + parent);
+        }
     }
 }

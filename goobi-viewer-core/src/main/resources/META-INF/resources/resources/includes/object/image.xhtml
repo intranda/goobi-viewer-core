@@ -11,6 +11,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <!-- IMAGE CONTAINER -->
+
     <div
         id="imageContainer"
         class="view-object__image #{!activeDocumentBean.viewManager.currentPage.accessPermissionImage ? '-setBorderTop' : ''} #{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3 ? '-thumbnailPreviewGallery' : ''}">
@@ -20,9 +21,10 @@
             rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}"
             data-image="zoomable"
             data-image-view-mode="#{activeDocumentBean.viewManager.pageNavigation.name().toLowerCase()}"
-            data-image-show-navigator="#{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager.currentPage.mimeType)}"
+            data-image-show-navigator="#{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager)}"
             data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"
-            data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
+            data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}"
+            data-max-zoom="#{activeDocumentBean.viewManager.currentPage.getMaxImageZoom(navigationHelper.currentPageType)}">
             <div
                 id="mainImageData"
                 class="d-none">
@@ -81,8 +83,7 @@
         </div>
 
         <!-- SHOW SCROLLING SIDEBAR IMAGE THUMBNAIL PREVIEW FOR INFINITE SCROLLING -->
-        <ui:fragment
-            rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3}">
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.showImageThumbnailGallery(navigationHelper.currentPageType) and activeDocumentBean.viewManager.imagesCount ge 3}">
             <viewerComponent:sidebarScrollPreview
                 range="300"
                 imageSize="200"

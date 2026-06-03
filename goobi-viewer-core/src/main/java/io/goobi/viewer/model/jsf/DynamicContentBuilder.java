@@ -129,7 +129,7 @@ public class DynamicContentBuilder {
                                     attributes.put("slider", slider);
                                 }
                             }
-                            String linkTarget = (String) composite.getAttributes().get("linkTarget");
+                            String linkTarget = (String) content.getAttributes().get("linkTarget");
                             if (StringUtils.isBlank(linkTarget)) {
                                 attributes.put("linkTarget", "_blank");
                             }
@@ -222,14 +222,11 @@ public class DynamicContentBuilder {
     }
 
     /**
-     * Drains the JSF EL component stack until the component at the top equals
-     * {@code targetTop}. Called from the finally block of
-     * {@link #loadCompositeComponent} to recover from an interrupted
-     * {@link FaceletContext#includeFacelet} call that may have left stale
-     * composite component references on the stack.
+     * Drains the JSF EL component stack until the component at the top equals {@code targetTop}. Called from the finally block of
+     * {@link #loadCompositeComponent} to recover from an interrupted {@link FaceletContext#includeFacelet} call that may have left stale composite
+     * component references on the stack.
      *
-     * @param targetTop the component that should be at the top after draining;
-     *                  {@code null} means the stack should be empty
+     * @param targetTop the component that should be at the top after draining; {@code null} means the stack should be empty
      */
     private void restoreELComponentStack(UIComponent targetTop) {
         UIComponent current;

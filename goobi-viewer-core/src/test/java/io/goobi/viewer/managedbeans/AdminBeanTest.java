@@ -21,12 +21,15 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +43,37 @@ import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.security.user.UserRole;
 
 class AdminBeanTest extends AbstractDatabaseEnabledTest {
+
+    @AfterEach
+    void resetTranslationLock() {
+        AdminBean.setTranslationGroupsEditorSession(null);
+    }
+
+    /**
+     * @see AdminBean#getConfiguredTranslationGroups()
+     * @verifies not overwrite existing translation lock
+     */
+    @Test
+    void getConfiguredTranslationGroups_shouldNotOverwriteExistingTranslationLock() {
+        AdminBean.setTranslationGroupsEditorSession("session-A");
+
+        new AdminBean().getConfiguredTranslationGroups();
+
+        assertEquals("session-A", AdminBean.getTranslationGroupsEditorSession());
+    }
+
+    /**
+     * @see AdminBean#getConfiguredTranslationGroups()
+     * @verifies not set translation lock when none exists
+     */
+    @Test
+    void getConfiguredTranslationGroups_shouldNotSetTranslationLockWhenNoneExists() {
+        AdminBean.setTranslationGroupsEditorSession(null);
+
+        new AdminBean().getConfiguredTranslationGroups();
+
+        assertNull(AdminBean.getTranslationGroupsEditorSession());
+    }
 
     /**
      * @verifies return all users except given
@@ -195,5 +229,36 @@ class AdminBeanTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, loadedGroup.getMemberships().size());
         assertTrue(loadedGroup.getMemberships().contains(ur1));
         assertTrue(loadedGroup.getMemberships().contains(ur2));
+    }
+
+    /**
+     * @see AdminBean#unlockTranslation(String)
+     * @verifies only unlock if sessionId matches current editor session
+     */
+    @Test
+    void unlockTranslation_shouldOnlyUnlockForMatchingSession() {
+        AdminBean.setTranslationGroupsEditorSession("session-owner");
+
+        // Wrong session – should do nothing
+        AdminBean.unlockTranslation("session-other");
+        assertEquals("session-owner", AdminBean.getTranslationGroupsEditorSession());
+
+        // Correct session – should release
+        AdminBean.unlockTranslation("session-owner");
+        assertNull(AdminBean.getTranslationGroupsEditorSession());
+    }
+
+    /**
+     * @see AdminBean#unlockTranslation(String)
+     * @verifies handle null session gracefully
+     */
+    @Test
+    void unlockTranslation_shouldHandleNullSessionGracefully() {
+        AdminBean.setTranslationGroupsEditorSession("session-owner");
+        assertDoesNotThrow(() -> AdminBean.unlockTranslation(null));
+        // Lock should remain (null doesn't match)
+        assertEquals("session-owner", AdminBean.getTranslationGroupsEditorSession());
+        // Cleanup
+        AdminBean.setTranslationGroupsEditorSession(null);
     }
 }

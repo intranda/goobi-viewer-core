@@ -70,11 +70,7 @@ var viewerJS = (function () {
 
         //init websocket
         if (viewer.useWebSocket) {
-            viewer.webSocket = new viewerJS.WebSocket(
-                window.location.host,
-                currentPath,
-                viewerJS.WebSocket.PATH_SESSION_SOCKET
-            );
+            viewer.webSocket = new viewerJS.WebSocket(window.location.host, currentPath, viewerJS.WebSocket.PATH_SESSION_SOCKET);
         }
 
         // init Bootstrap features
@@ -477,9 +473,7 @@ var viewerJS = (function () {
     // Helper fn: returns true if OS is iOS
     viewer.iOS = function () {
         return (
-            ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(
-                navigator.platform
-            ) ||
+            ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
             // iPad on iOS 13 detection
             (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
         );
@@ -633,7 +627,12 @@ var viewerJS = (function () {
 // $.fn.modal.Constructor.prototype._enforceFocus = function() {};
 
 //reset global bootstrap boundary of tooltips to window
-if ($.fn.tooltip.Constructor) {
+if ($.fn.tooltip && $.fn.tooltip.Constructor) {
     $.fn.tooltip.Constructor.Default.boundary = 'window';
     $.fn.dropdown.Constructor.Default.boundary = 'window';
+}
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
 }

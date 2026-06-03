@@ -32,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.AdminBean;
+import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
+import io.goobi.viewer.model.security.user.User;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
@@ -56,11 +58,17 @@ public class UserEndpoint {
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
         // logger.trace("onOpen: {}", session.getId()); //NOSONAR Debug
-        this.httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        if (httpSession != null) {
-            // logger.trace("HTTP session ID: {}", httpSession.getId()); //NOSONAR Debug
-            cancelClearTimer(httpSession.getId());
+        if (!WebSocketTools.requireAllowedOrigin(config, session)) {
+            return;
         }
+        HttpSession http = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+        User user = WebSocketTools.requireUser(http, session);
+        if (user == null) {
+            return;
+        }
+        this.httpSession = http;
+        // logger.trace("HTTP session ID: {}", httpSession.getId()); //NOSONAR Debug
+        cancelClearTimer(httpSession.getId());
     }
 
     @OnMessage
@@ -126,10 +134,9 @@ public class UserEndpoint {
                     sessionClearTimers.remove(sessionId);
 
                     // Remove translation editing lock
-                    if (sessionId.equals(AdminBean.getTranslationGroupsEditorSession())) {
-                        AdminBean.setTranslationGroupsEditorSession(null);
-                        logger.trace("Removed translation editing lock for session '{}'.", sessionId);
-                    }
+                    AdminBean.unlockTranslation(sessionId);
+                    // Remove config file editor locks
+                    AdminConfigEditorBean.clearLocksForSessionId(sessionId);
                 }
             }
         };

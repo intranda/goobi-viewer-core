@@ -159,7 +159,9 @@ public class AnnotationResource {
     public AnnotationPage getAnnotationCollectionPage(
             // Page numbers are 1-based; document minimum in schema so clients and schemathesis know 0 is invalid
             @Parameter(description = "Page number (1-based)",
-                    schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("page") Integer page)
+                    schema = @Schema(minimum = "1", maximum = "2147483647"))
+            @PathParam("page")
+            Integer page)
             throws ContentLibException, DAOException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotationPage(page);
@@ -192,11 +194,19 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "404", description = "No page, ALTO file, or element found for the given identifier")
     public IAnnotation getAltoAnnotation(
             @Parameter(description = "Persistent identifier of the record",
-                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
+                    schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$"))
+            @PathParam("pi")
+            String pi,
             @Parameter(description = "Page order number (1-based)",
-                    schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo,
-            @Parameter(description = "ID of the ALTO element") @PathParam("elementId") String elementId,
-            @Parameter(description = "Annotation format: 'oa' for OpenAnnotation, default is WebAnnotation") @QueryParam("format") String format)
+                    schema = @Schema(minimum = "1", maximum = "2147483647"))
+            @PathParam("pageNo")
+            Integer pageNo,
+            @Parameter(description = "ID of the ALTO element")
+            @PathParam("elementId")
+            String elementId,
+            @Parameter(description = "Annotation format: 'oa' for OpenAnnotation, default is WebAnnotation")
+            @QueryParam("format")
+            String format)
             throws ContentLibException, PresentationException, IndexUnreachableException {
         // Reject invalid PIs before they reach the Solr query to prevent syntax errors (HTTP 500).
         if (!PIValidator.validatePi(pi)) {
@@ -268,7 +278,9 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "404", description = "No annotation found for the given id")
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation",
-            schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("id") Long id)
+            schema = @Schema(minimum = "1", maximum = "9223372036854775807"))
+    @PathParam("id")
+    Long id)
             throws DAOException, ContentLibException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
@@ -293,7 +305,9 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "404", description = "No comment annotation found for the given id")
     public IAnnotation getComment(@Parameter(description = "Identifier of the annotation",
-            schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("id") Long id)
+            schema = @Schema(minimum = "1", maximum = "9223372036854775807"))
+    @PathParam("id")
+    Long id)
             throws DAOException, ContentLibException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getCommentWebAnnotation(id).orElseThrow(() -> new ContentNotFoundException("Not annotation with id = " + id + "found"));
@@ -357,7 +371,9 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
     @ApiResponse(responseCode = "405", description = "May not delete the annotation because it was created by another user")
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation",
-            schema = @Schema(minimum = "1", maximum = "9223372036854775807")) @PathParam("id") Long id)
+            schema = @Schema(minimum = "1", maximum = "9223372036854775807"))
+    @PathParam("id")
+    Long id)
             throws DAOException, ContentLibException {
         AnnotationConverter converter = new AnnotationConverter(urls);
         CrowdsourcingAnnotation pAnno = DataManager.getInstance().getDao().getAnnotation(id);
@@ -426,8 +442,7 @@ public class AnnotationResource {
      */
     public User getUser() {
         try {
-            User user = UserLoggedInFilter.getUserToken(servletRequest)
-                    .filter(token -> !token.isExpired())
+            User user = UserLoggedInFilter.getValidUserToken(servletRequest)
                     .map(token -> token.getUser())
                     .orElse(null);
             if (user != null) {

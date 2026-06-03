@@ -47,6 +47,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
@@ -927,22 +928,19 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * Returns a relevant full-text fragment for displaying in the search hit box, stripped of any contained JavaScript.
+     * Returns a relevant full-text fragment for displaying in the search hit box, sanitized to
+     * the snippet profile (only {@code <mark class="…">} survives, all other tags and attributes
+     * are stripped).
      *
-     * @return Full-text fragment sans any line breaks or JavaScript
+     * @return Full-text fragment sans any line breaks; only Solr-highlight markup is preserved
      * @should remove any line breaks
      * @should remove any JS
+     * @should preserve mark highlight tag and strip event handler attributes
      */
     public String getFulltextForHtml() {
         if (fulltextForHtml == null) {
             if (fulltext != null) {
-                // TODO(security): Migrate to HtmlSanitizer once a dedicated cleanFulltextSnippet
-                // profile exists. The current StringTools.stripJS only removes <script>/<svg>
-                // blocks and is bypassable by event-handler attributes and javascript: URIs.
-                // The Solr highlighter injects <mark> / <em> tags that must be preserved, so
-                // the existing rich-text and comment allowlists are unsuitable here. Tracked
-                // alongside HIGH 5 (CMS XSS) in the security audit memo.
-                fulltextForHtml = StringTools.stripJS(fulltext).replace("\n", " ");
+                fulltextForHtml = HtmlSanitizer.cleanFulltextSnippet(fulltext).replace("\n", " ");
             } else {
                 fulltextForHtml = "";
             }

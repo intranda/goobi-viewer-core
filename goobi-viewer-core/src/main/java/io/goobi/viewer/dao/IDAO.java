@@ -253,6 +253,35 @@ public interface IDAO {
      */
     public void deleteExpiredUserTokensForUser(io.goobi.viewer.model.security.user.User user) throws DAOException;
 
+    /**
+     * Deletes all tokens for the given user (active and expired).
+     *
+     * @param user
+     * @throws DAOException
+     * @should delete all tokens for given user
+     */
+    public void deleteAllUserTokensForUser(io.goobi.viewer.model.security.user.User user) throws DAOException;
+
+    /**
+     * Returns all active (non-expired) tokens for the given user, ordered by creation date ascending.
+     *
+     * @param user
+     * @return list of active tokens, oldest first
+     * @throws DAOException
+     * @should return active tokens ordered by creation date
+     */
+    public java.util.List<io.goobi.viewer.model.security.user.UserToken> getActiveUserTokensForUser(
+            io.goobi.viewer.model.security.user.User user) throws DAOException;
+
+    /**
+     * Deletes all expired tokens across all users.
+     *
+     * @return number of deleted tokens
+     * @throws DAOException
+     * @should delete all expired user tokens
+     */
+    public int deleteAllExpiredUserTokens() throws DAOException;
+
     // UserGroup
 
     /**
@@ -604,9 +633,8 @@ public interface IDAO {
     public List<LicenseType> getRecordLicenseTypes() throws DAOException;
 
     /**
-     * Returns all {@link LicenseType}s with their lazy collections eagerly initialised so the returned
-     * entities are safe to use after the underlying {@link jakarta.persistence.EntityManager} is closed.
-     * Intended for consumers that cache the result across transactions (e.g. LicenseTypeCache).
+     * Returns all {@link LicenseType}s with their lazy collections eagerly initialised so the returned entities are safe to use after the underlying
+     * {@link jakarta.persistence.EntityManager} is closed. Intended for consumers that cache the result across transactions (e.g. LicenseTypeCache).
      *
      * @return list of fully hydrated license types; never null
      * @throws DAOException if the query fails
@@ -786,12 +814,17 @@ public interface IDAO {
     public AccessTicket getTicket(Long id) throws DAOException;
 
     /**
-     * 
-     * @param passwordHash password hash of the access ticket
-     * @return {@link AccessTicket} with the given passwordHash
+     * Returns all access tickets for the given record identifier.
+     * <p>
+     * Used by the password verification flow: callers iterate the result and verify the submitted password
+     * against each ticket's stored hash via {@link AccessTicket#checkPassword(String)}. The number of tickets
+     * per record is operationally bounded.
+     *
+     * @param pi record identifier
+     * @return list of {@link AccessTicket}s with the given pi (never null)
      * @throws DAOException
      */
-    public AccessTicket getTicketByPasswordHash(String passwordHash) throws DAOException;
+    public List<AccessTicket> getActiveTicketsByPi(String pi) throws DAOException;
 
     /**
      * getActiveTicketCount.
@@ -861,9 +894,8 @@ public interface IDAO {
     public List<IpRange> getAllIpRanges() throws DAOException;
 
     /**
-     * Returns all {@link IpRange}s with their lazy collections eagerly initialised so the returned
-     * entities are safe to use after the underlying {@link jakarta.persistence.EntityManager} is closed.
-     * Intended for consumers that cache the result across transactions (e.g. IpRangeCache).
+     * Returns all {@link IpRange}s with their lazy collections eagerly initialised so the returned entities are safe to use after the underlying
+     * {@link jakarta.persistence.EntityManager} is closed. Intended for consumers that cache the result across transactions (e.g. IpRangeCache).
      *
      * @return list of fully hydrated IP ranges; never null
      * @throws DAOException if the query fails

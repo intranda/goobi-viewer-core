@@ -875,7 +875,7 @@ public class NavigationHelper implements Serializable {
         if (request != null) {
             URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
             if (url != null) {
-                return getApplicationUrl() + StringTools.stripJS(url.toURL().substring(1));
+                return getApplicationUrl() + url.toURL().substring(1);
             }
         }
         return null;
@@ -1981,7 +1981,7 @@ public class NavigationHelper implements Serializable {
         Path file = FileTools.replaceExtension(themePath, suffix);
         if (Files.exists(file)) {
             Path resourcePath = FileTools.replaceExtension(Path.of(path), suffix);
-            return Optional.ofNullable(this.fileResourceManager.getThemeResourceURI(resourcePath.toString()).toString());
+            return Optional.ofNullable(this.fileResourceManager.getThemeResourceURI(resourcePath.toString().replace('\\', '/')).toString());
         }
         return Optional.empty();
     }

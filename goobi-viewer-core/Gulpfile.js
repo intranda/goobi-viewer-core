@@ -390,7 +390,7 @@ function taskFooter(generated, copied, errors, started) {
 
 const verovio = () => {
     return rollup({
-        input: `${paths.jsModulesRoot}verovio.js`,
+        input: `${paths.jsModulesRoot}verovio/verovio.js`,
         plugins: [
             nodeResolve({
                 browser: true,

@@ -32,7 +32,6 @@ import java.nio.file.Paths;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.jdom2.JDOMException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,15 +73,6 @@ class SearchResultConverterTest extends AbstractSolrEnabledTest {
         restUrl = DataManager.getInstance().getConfiguration().getRestApiUrl();
         converter = new SearchResultConverter(urls, pi, pageNo);
 
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Override
-    @AfterEach
-    public void tearDown() throws Exception {
-        super.tearDown();
     }
 
     /**
