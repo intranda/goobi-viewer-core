@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>io.goobi.viewer</groupId>
 		<artifactId>viewer</artifactId>
-		<version>${revision}</version>
+		<version>${revision}${changelist}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>viewer-connector</artifactId>

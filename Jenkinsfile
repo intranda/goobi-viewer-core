@@ -18,6 +18,7 @@ pipeline {
     GHCR_IMAGE_BASE      = 'ghcr.io/intranda/goobi-viewer'
     DOCKERHUB_IMAGE_BASE = 'intranda/goobi-viewer'
     NEXUS_IMAGE_BASE     = 'nexus.intranda.com:4443/goobi-viewer'
+    NEXUS_BASE           = 'intranda-nexus::https://nexus.intranda.com/repository'
   }
 
   parameters {
@@ -37,10 +38,14 @@ pipeline {
         script {
           if (env.TAG_NAME) {
             env.BUILD_VERSION = env.TAG_NAME.replaceAll('^v', '')
+            env.BUILD_TYPE_NAME = "RELEASE"
+            env.BUILD_TYPE = ""
           } else {
             env.BUILD_VERSION = 'dev-SNAPSHOT'
+            env.BUILD_TYPE_NAME = "SNAPSHOT"
+            env.BUILD_TYPE = "-SNAPSHOT"
           }
-          echo "BUILD_VERSION=${env.BUILD_VERSION}"
+          echo "BUILD_VERSION=${env.BUILD_VERSION} TYPE=${env.BUILD_TYPE_NAME}"
         }
       }
     }
@@ -60,7 +65,7 @@ pipeline {
         }
       }
       steps {
-        sh "mvn -f pom.xml clean install -U -Drevision=\$BUILD_VERSION -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true --no-transfer-progress"
+        sh "mvn -f pom.xml clean install -U -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true --no-transfer-progress"
         // Stashes are used by the parallel checkstyle/dependency-check stages
         // that run in their own workspaces. test/sonar/deploy/docker reuse the
         // pipeline workspace and don't need to unstash.
@@ -100,7 +105,7 @@ pipeline {
             }
           }
           steps {
-            sh "mvn -f pom.xml test -Drevision=\$BUILD_VERSION -DskipTests=false -Dmaven.main.skip=true -Dcheckstyle.skip=true -DskipDependencyCheck=true --no-transfer-progress"
+            sh "mvn -f pom.xml test -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -DskipTests=false -Dmaven.main.skip=true -Dcheckstyle.skip=true -DskipDependencyCheck=true --no-transfer-progress"
             junit '**/target/surefire-reports/*.xml'
             step([
                     $class           : 'JacocoPublisher',
@@ -109,7 +114,7 @@ pipeline {
                     sourcePattern    : '**/src/main/java',
                     exclusionPattern : '**/*Test.class'
             ])
-            sh "mvn -f pom.xml org.jacoco:jacoco-maven-plugin:report -Drevision=\$BUILD_VERSION -Dmaven.main.skip=true --no-transfer-progress"
+            sh "mvn -f pom.xml org.jacoco:jacoco-maven-plugin:report -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dmaven.main.skip=true --no-transfer-progress"
           }
         }
 
@@ -130,7 +135,7 @@ pipeline {
             sh 'git submodule update --init --recursive'
             unstash 'm2-goobi-viewer'
             sh 'mkdir -p /var/maven/.m2/repository/io/goobi/viewer && cp -r m2-goobi-viewer/. /var/maven/.m2/repository/io/goobi/viewer/ || true'
-            sh "mvn -f pom.xml checkstyle:checkstyle -Drevision=\$BUILD_VERSION -Dcheckstyle.skip=false --no-transfer-progress"
+            sh "mvn -f pom.xml checkstyle:checkstyle -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dcheckstyle.skip=false --no-transfer-progress"
             recordIssues(
                     enabledForFailure: true, aggregatingResults: false,
                     tools: [checkStyle(pattern: '**/target/checkstyle-result.xml', reportEncoding: 'UTF-8')]
@@ -153,7 +158,7 @@ pipeline {
             unstash 'm2-goobi-viewer'
             sh 'mkdir -p /var/maven/.m2/repository/io/goobi/viewer && cp -r m2-goobi-viewer/. /var/maven/.m2/repository/io/goobi/viewer/ || true'
             unstash 'build-output'
-            sh "mvn -f pom.xml verify -Drevision=\$BUILD_VERSION -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=false --no-transfer-progress"
+            sh "mvn -f pom.xml verify -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=false --no-transfer-progress"
             dependencyCheckPublisher pattern: '**/target/dependency-check-report.xml'
           }
         }
@@ -184,7 +189,8 @@ pipeline {
       }
       steps {
         withCredentials([string(credentialsId: 'jenkins-sonarcloud', variable: 'TOKEN')]) {
-          sh "mvn -f pom.xml sonar:sonar -Drevision=\$BUILD_VERSION -Dsonar.token=\$TOKEN -Dmaven.main.skip=true --no-transfer-progress"
+          sh "mvn -f goobi-viewer-core/pom.xml sonar:sonar -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dsonar.token=\$TOKEN -Dmaven.main.skip=true --no-transfer-progress"
+          sh "mvn -f goobi-viewer-connector/pom.xml  sonar:sonar -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dsonar.token=\$TOKEN -Dmaven.main.skip=true --no-transfer-progress"
         }
       }
     }
@@ -221,7 +227,12 @@ pipeline {
             '''
           }
         }
-        sh "mvn -f pom.xml deploy -Drevision=\$BUILD_VERSION -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U --no-transfer-progress"
+        sh '''#!/bin/bash -xe
+          ALT_REPO="-DaltDeploymentRepository=${NEXUS_BASE}/${NEXUS_PUBLIC_REPO}-releases -DaltSnapshotDeploymentRepository=${NEXUS_BASE}/${NEXUS_PUBLIC_REPO}-snapshots"
+          mvn -f goobi-viewer-config/pom.xml deploy -Drevision=$BUILD_VERSION -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
+          mvn -f goobi-viewer-core/pom.xml deploy -Drevision=$BUILD_VERSION -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
+          mvn -f goobi-viewer-connector/pom.xml deploy -Drevision=$BUILD_VERSION -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
+        '''
       }
     }
 
@@ -283,7 +294,7 @@ pipeline {
 
             CACHE="--cache-from type=registry,ref=$NEXUS_IMAGE_BASE:buildcache --cache-to type=registry,ref=$NEXUS_IMAGE_BASE:buildcache,mode=max"
 
-            docker buildx build --build-arg build=false \
+            docker buildx build --pull --build-arg build=false \
               --platform $PLATFORMS \
               $CACHE \
               $TAGS \

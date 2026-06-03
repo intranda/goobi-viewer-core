@@ -26,5 +26,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Compile Goobi viewer Core
-        run: mvn -f goobi-viewer-core/pom.xml clean package -U -B
+        run: mvn -f pom.xml clean package -U -B
 
