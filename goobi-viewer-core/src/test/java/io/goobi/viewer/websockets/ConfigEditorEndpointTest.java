@@ -1,12 +1,16 @@
 package io.goobi.viewer.websockets;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Collections;
 import java.util.Map;
-import org.junit.jupiter.api.*;
+
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+
 import io.goobi.viewer.AbstractTest;
-import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.UserBean;
 import io.goobi.viewer.model.security.user.User;
 import jakarta.servlet.http.HttpSession;
@@ -14,13 +18,7 @@ import jakarta.websocket.CloseReason;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.Session;
 
-class TranslationEditorEndpointTest extends AbstractTest {
-
-    @BeforeEach
-    @AfterEach
-    void resetLock() {
-        AdminBean.setTranslationGroupsEditorSession(null);
-    }
+class ConfigEditorEndpointTest extends AbstractTest {
 
     /**
      * Builds an EndpointConfig whose HTTP session carries a UserBean returning the given user.
@@ -36,48 +34,15 @@ class TranslationEditorEndpointTest extends AbstractTest {
     }
 
     @Test
-    void onClose_shouldCallUnlockTranslationForStoredSession() {
-        AdminBean.setTranslationGroupsEditorSession("session-123");
-
-        User superuser = new User();
-        superuser.setSuperuser(true);
-
-        HttpSession httpSession = Mockito.mock(HttpSession.class);
-        Mockito.when(httpSession.getId()).thenReturn("session-123");
-        EndpointConfig config = configForSession(httpSession, superuser);
-
-        Session wsSession = Mockito.mock(Session.class);
-
-        TranslationEditorEndpoint endpoint = new TranslationEditorEndpoint();
-        endpoint.onOpen(wsSession, config);
-        endpoint.onClose(wsSession);
-
-        assertNull(AdminBean.getTranslationGroupsEditorSession(),
-                "onClose should release translation lock");
-    }
-
-    @Test
-    void onClose_shouldNotFailWhenNoSessionPresent() {
-        EndpointConfig config = Mockito.mock(EndpointConfig.class);
-        Mockito.when(config.getUserProperties()).thenReturn(Map.of());
-
-        Session wsSession = Mockito.mock(Session.class);
-
-        TranslationEditorEndpoint endpoint = new TranslationEditorEndpoint();
-        endpoint.onOpen(wsSession, config);
-        assertDoesNotThrow(() -> endpoint.onClose(wsSession));
-    }
-
-    @Test
     void onOpen_noUser_socketClosedWithViolatedPolicy() throws Exception {
         HttpSession httpSession = Mockito.mock(HttpSession.class);
-        Mockito.when(httpSession.getAttributeNames()).thenReturn(java.util.Collections.emptyEnumeration());
+        Mockito.when(httpSession.getAttributeNames()).thenReturn(Collections.emptyEnumeration());
         EndpointConfig config = Mockito.mock(EndpointConfig.class);
         Mockito.when(config.getUserProperties()).thenReturn(Map.of(HttpSession.class.getName(), httpSession));
 
         Session wsSession = Mockito.mock(Session.class);
 
-        new TranslationEditorEndpoint().onOpen(wsSession, config);
+        new ConfigEditorEndpoint().onOpen(wsSession, config);
 
         ArgumentCaptor<CloseReason> reason = ArgumentCaptor.forClass(CloseReason.class);
         Mockito.verify(wsSession).close(reason.capture());
@@ -94,7 +59,7 @@ class TranslationEditorEndpointTest extends AbstractTest {
 
         Session wsSession = Mockito.mock(Session.class);
 
-        new TranslationEditorEndpoint().onOpen(wsSession, config);
+        new ConfigEditorEndpoint().onOpen(wsSession, config);
 
         ArgumentCaptor<CloseReason> reason = ArgumentCaptor.forClass(CloseReason.class);
         Mockito.verify(wsSession).close(reason.capture());
@@ -102,23 +67,24 @@ class TranslationEditorEndpointTest extends AbstractTest {
     }
 
     @Test
-    void onOpen_nonSuperuser_doesNotReleaseLock() {
-        AdminBean.setTranslationGroupsEditorSession("session-123");
-
-        User user = new User();
-        user.setSuperuser(false);
+    void onOpen_superuser_socketNotClosed() throws Exception {
+        User superuser = new User();
+        superuser.setSuperuser(true);
 
         HttpSession httpSession = Mockito.mock(HttpSession.class);
-        Mockito.when(httpSession.getId()).thenReturn("session-123");
-        EndpointConfig config = configForSession(httpSession, user);
+        Mockito.when(httpSession.getId()).thenReturn("admin-session");
+        EndpointConfig config = configForSession(httpSession, superuser);
 
         Session wsSession = Mockito.mock(Session.class);
 
-        TranslationEditorEndpoint endpoint = new TranslationEditorEndpoint();
+        ConfigEditorEndpoint endpoint = new ConfigEditorEndpoint();
         endpoint.onOpen(wsSession, config);
-        endpoint.onClose(wsSession);
 
-        assertEquals("session-123", AdminBean.getTranslationGroupsEditorSession(),
-                "rejected connection must not release another session's lock");
+        Mockito.verify(wsSession, Mockito.never()).close(Mockito.any());
+        // The accepted connection should process messages and close without error.
+        assertDoesNotThrow(() -> {
+            endpoint.onMessage("{\"fileToLock\":\"/opt/digiverso/viewer/config/config_viewer.xml\"}");
+            endpoint.onClose(wsSession);
+        });
     }
 }

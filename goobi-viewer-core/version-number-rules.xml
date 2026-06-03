@@ -73,6 +73,12 @@
                 <ignoreVersion>20030203.000550</ignoreVersion>
             </ignoreVersions>
         </rule>
-
+        <rule groupId="com.fasterxml.jackson" artifactId="jackson-*">
+            <ignoreVersions>
+		<!-- Release broken, see https://github.com/FasterXML/jackson/discussions/367 -->
+                <!-- We use a regex here because jackson-annotations is 2.22 and all other libs are 2.22.0-->
+                <ignoreVersion type="regex">2.22.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
     </rules>
 </ruleset>

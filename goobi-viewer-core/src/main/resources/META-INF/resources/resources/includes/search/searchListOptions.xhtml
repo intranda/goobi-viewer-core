@@ -89,58 +89,47 @@
                 </div>
             </ui:fragment>
 
-            <!-- SEARCH EXPORT (RIS) -->
-            <ui:fragment rendered="#{configurationBean.searchRisExportEnabled}">
-                <div class="search-list__ris-export">
-                    <h:form
-                        id="risExportSearchForm"
-                        prependId="false">
-                        <h:commandLink
-                            id="risDownloadButton"
-                            styleClass="btn btn--icon search-list__option-button ris-export-trigger"
-                            action="#{searchBean.exportSearchAsRisAction}"
-                            title="#{msg.searchExportRIS}">
-                            <util:icon
-                                icon="file-text"
-                                svgClass="icon" />
-                            <f:passThroughAttribute
-                                name="data-toggle"
-                                value="tooltip" />
-                            <f:passThroughAttribute
-                                name="data-placement"
-                                value="top" />
-                            <f:passThroughAttribute
-                                name="aria-label"
-                                value="#{msg.searchExportRIS}" />
-                        </h:commandLink>
-
-                        <span class="ris-export-loader">
-                            #{msg.searchExportRisLoading}
-                            <img
-                                src="#{request.contextPath}/resources/images/ajax_preloader.gif"
-                                alt="RIS Export Loader" />
-                        </span>
-                    </h:form>
-                </div>
-            </ui:fragment>
-
-            <div class="search-list__toggle-thumbs">
+            <!-- EXPORT OPTIONS DROPDOWN -->
+            <div class="dropdown search-list__export-dropdown-wrapper">
                 <button
+                    class="btn btn--clean dropdown-toggle search-list__option-button search-list__export-dropdown-toggle"
                     type="button"
-                    class="btn btn--icon search-list__option-button"
-                    data-title-inactive="#{msg.action__show_subhits_thumbnails}"
-                    data-title-active="#{msg.action__hide_subhits_thumbnails}"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    data-trigger="hover"
-                    data-action="toggle-thumbs"
-                    aria-label="#{msg.action__show_subhits_thumbnails}"
-                    role="switch"
-                    aria-checked="false">
+                    data-toggle="dropdown"
+                    aria-expanded="false"
+                    title="#{msg.search_export__list_export_action_tooltip}">
                     <util:icon
-                        icon="photo"
+                        icon="file-export"
                         svgClass="icon" />
                 </button>
+
+                <div class="dropdown-menu search-list__export-dropdown">
+                    <!-- SEARCH EXPORT (XSLT formats: RIS, Endnote, BibTeX, …) -->
+                    <h6 class="search-list__export-dropdown-heading">#{msg.search_export__list_dropdown_heading}</h6>
+                    <ui:repeat
+                        value="#{configurationBean.enabledSearchExportFormats}"
+                        var="exportFormat">
+                        <h:outputLink
+                            value="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}"
+                            styleClass="dropdown-item search-list__export-dropdown-link"
+                            title="#{msg['search_export_'.concat(exportFormat.name)]}">
+                            <f:param
+                                name="query"
+                                value="#{search.searchString}" />
+                            <f:param
+                                name="activeFacetString"
+                                value="#{search.facets.activeFacetString}" />
+                            <f:param
+                                name="sortString"
+                                value="#{search.sortString}" />
+                            <!-- 	                        <f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
+                            <!-- 	                        <f:passThroughAttribute name="data-placement" value="top" /> -->
+                            <f:passThroughAttribute
+                                name="aria-label"
+                                value="#{msg['search_export_'.concat(exportFormat.name)]}" />
+                            <span>#{msg['search_export__'.concat(exportFormat.name)]}</span>
+                        </h:outputLink>
+                    </ui:repeat>
+                </div>
             </div>
 
             <!-- SEARCHLIST VIEWS -->

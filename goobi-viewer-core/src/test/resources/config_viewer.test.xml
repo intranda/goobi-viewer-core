@@ -1058,6 +1058,7 @@
                 <displayWidget name="views" />
                 <displayWidget name="copyright" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="search-in-current-item" />
+                <displayWidget name="related-groups" showDetails="true" />
             </view>
             <view name="toc">
                 <displayWidget name="views" />
@@ -1185,7 +1186,15 @@
                 <!-- max length of level before it gets collapsed -->
                 <collapseLengthThreshold lowestLevelToTest="333">141</collapseLengthThreshold>
             </widget>
-            
+
+            <widget name="related-groups">
+                <maxResults>5</maxResults>
+                <sortField>MD_YEARPUBLISH</sortField>
+                <sortOrder>asc</sortOrder>
+                <titleField>LABEL</titleField>
+                <subtitleField>MD_AUTHOR</subtitleField>
+            </widget>
+
             <!-- OTHER WIDGETS -->
             
             <!-- browsing-terms: Term browsing widget. -->

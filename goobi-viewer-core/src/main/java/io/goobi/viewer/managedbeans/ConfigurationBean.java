@@ -39,6 +39,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
@@ -868,6 +869,21 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * Returns all enabled XSLT-based search export formats configured in {@code config_viewer.xml} under {@code search/export/format}. Disabled
+     * formats are excluded so the list can be iterated directly in templates.
+     *
+     * @return list of enabled {@link ExportFormat}s; never null
+     */
+    public List<ExportFormat> getEnabledSearchExportFormats() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getSearchExportFormats()
+                .stream()
+                .filter(ExportFormat::isEnabled)
+                .toList();
+    }
+
+    /**
      * isSitelinksEnabled.
      *
      * @return true if Wikidata Sitelinks integration is enabled, false otherwise
@@ -964,6 +980,51 @@ public class ConfigurationBean implements Serializable {
     public boolean isSidebarWidgetForViewCollapsedByDefault(String view, String widget) {
         return isSidebarWidgetForViewCollapsible(view, widget)
                 && DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault(view, widget);
+    }
+
+    /**
+     *
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured to show details; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewShowDetails(String view, String widget) {
+        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails(view, widget);
+    }
+
+    /**
+     * @return maximum number of related records to display in the content section
+     */
+    public int getSidebarWidgetRelatedGroupsMaxResults() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsMaxResults();
+    }
+
+    /**
+     * @return solr field used for sorting
+     */
+    public String getSidebarWidgetRelatedGroupsSortField() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortField();
+    }
+
+    /**
+     * @return sort order
+     */
+    public String getSidebarWidgetRelatedGroupsSortOrder() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortOrder();
+    }
+
+    /**
+     * @return solr field used as card title
+     */
+    public String getSidebarWidgetRelatedGroupsTitleField() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsTitleField();
+    }
+
+    /**
+     * @return solr field used as card subtitle
+     */
+    public String getSidebarWidgetRelatedGroupsSubtitleField() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSubtitleField();
     }
 
     /**

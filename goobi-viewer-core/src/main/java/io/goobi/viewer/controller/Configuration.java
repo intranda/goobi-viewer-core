@@ -80,6 +80,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -1242,6 +1243,7 @@ public class Configuration extends AbstractConfiguration {
                 return new ArrayList<>();
             }
 
+            boolean defaultSet = false;
             for (HierarchicalConfiguration<ImmutableNode> sub : links) {
                 String type = sub.getString(XML_PATH_ATTRIBUTE_TYPE);
                 String level = sub.getString("[@for]");
@@ -1250,10 +1252,16 @@ public class Configuration extends AbstractConfiguration {
                 String pattern = sub.getString("[@pattern]");
                 String action = sub.getString("[@action]", "clipboard");
                 boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
+                boolean isDefault = sub.getBoolean("[@default]", false);
                 try {
-                    ret.add(new CitationLink(type, level, action, label).setField(field)
+                    CitationLink link = new CitationLink(type, level, action, label).setField(field)
                             .setPattern(pattern)
-                            .setTopstructValueFallback(topstructValueFallback));
+                            .setTopstructValueFallback(topstructValueFallback);
+                    if (isDefault && !defaultSet) {
+                        link.setDefaultLink(true);
+                        defaultSet = true;
+                    }
+                    ret.add(link);
                 } catch (IllegalArgumentException e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -1374,6 +1382,70 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return false;
+    }
+
+    /**
+     *
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured to show details; false otherwise; default is false
+     * @should return correct value
+     */
+    public boolean isSidebarWidgetForViewShowDetails(String view, String widget) {
+        if (StringUtils.isEmpty(view) || StringUtils.isEmpty(widget)) {
+            return false;
+        }
+
+        HierarchicalConfiguration<ImmutableNode> viewConfig = getSidebarViewConfiguration(view.toLowerCase());
+        if (viewConfig != null) {
+            for (HierarchicalConfiguration<ImmutableNode> widgetConfig : viewConfig.configurationsAt("displayWidget")) {
+                if (widget.equals(widgetConfig.getString(XML_PATH_ATTRIBUTE_NAME))) {
+                    return widgetConfig.getBoolean("[@showDetails]", false);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return maximum number of related records shown in the content section; default is 3
+     * @should return correct value
+     */
+    public int getSidebarWidgetRelatedGroupsMaxResults() {
+        return getSidebarWidgetIntValue("related-groups", "maxResults", 3);
+    }
+
+    /**
+     * @return solr field used for sorting related records; default is SORT_YEARPUBLISH (newest publication year first)
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsSortField() {
+        return getSidebarWidgetStringValue("related-groups", "sortField", "SORT_YEARPUBLISH");
+    }
+
+    /**
+     * @return sort order for related records (asc or desc); default is desc
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsSortOrder() {
+        return getSidebarWidgetStringValue("related-groups", "sortOrder", "desc");
+    }
+
+    /**
+     * @return solr field used as the card title in the related-groups widget/section; default is MD_TITLE
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsTitleField() {
+        return getSidebarWidgetStringValue("related-groups", "titleField", SolrConstants.TITLE);
+    }
+
+    /**
+     * @return solr field used as the card subtitle in the related-groups widget/section; default is MD_CREATOR
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsSubtitleField() {
+        return getSidebarWidgetStringValue("related-groups", "subtitleField", SolrConstants.PERSON_ONEFIELD);
     }
 
     /**
@@ -5299,6 +5371,44 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isSearchRisExportEnabled() {
         return getLocalBoolean("search.export.ris[@enabled]", false);
+    }
+
+    /**
+     * Returns all XSLT-based export format definitions configured under {@code <search><export><format>} in {@code config_viewer.xml}.
+     *
+     * @return list of configured export formats (may be empty, never null)
+     * @should return all configured formats
+     */
+    public List<ExportFormat> getSearchExportFormats() {
+        List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt("search.export.format");
+        List<ExportFormat> ret = new ArrayList<>(nodes.size());
+        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
+            String name = node.getString(XML_PATH_ATTRIBUTE_NAME, "");
+            if (StringUtils.isNotBlank(name)) {
+                boolean enabled = node.getBoolean("[@enabled]", false);
+                String xslt = node.getString("[@xslt]", "");
+                String contentType = node.getString("[@contentType]", "text/plain");
+                String fileExtension = node.getString("[@fileExtension]", "txt");
+                ret.add(new ExportFormat(name, enabled, xslt, contentType, fileExtension));
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Returns the enabled XSLT-based export format with the given name, or {@link Optional#empty()} if no such format is configured or it is
+     * disabled.
+     *
+     * @param name the format name (e.g. "bibtex", "endnote", "ris")
+     * @return an Optional containing the matching enabled format, or empty
+     */
+    public Optional<ExportFormat> getSearchExportFormat(String name) {
+        if (name == null) {
+            return Optional.empty();
+        }
+        return getSearchExportFormats().stream()
+                .filter(f -> name.equals(f.getName()) && f.isEnabled())
+                .findFirst();
     }
 
     /**

@@ -124,7 +124,7 @@
 		<citationstyles.version>26.2</citationstyles.version>
 		<citeproc-java.version>3.5.0</citeproc-java.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
-		<commons-configuration2.version>2.14.0</commons-configuration2.version>
+		<commons-configuration2.version>2.15.1</commons-configuration2.version>
 		<commons-io.version>2.22.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
 		<commons-lang3.version>3.20.0</commons-lang3.version>
@@ -138,7 +138,7 @@
 		<httpcore.version>4.4.16</httpcore.version>
 		<httpmime.version>4.5.14</httpmime.version>
 		<icu.version>78.3</icu.version>
-		<jackson.version>2.21.3</jackson.version>
+		<jackson.version>2.21.4</jackson.version>
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
 		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
@@ -153,17 +153,17 @@
 		<jakarta.ws.rs-api.version>3.1.0</jakarta.ws.rs-api.version>
 		<jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
 		<java-jwt.version>4.5.2</java-jwt.version>
-		<jwks-rsa.version>0.23.1</jwks-rsa.version>
+		<jwks-rsa.version>0.24.1</jwks-rsa.version>
 		<jaxen.version>2.0.1</jaxen.version>
 		<jaxb-runtime.version>4.0.7</jaxb-runtime.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<jersey.version>3.1.11</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<!-- https://github.com/stleary/JSON-java -->
-		<json.version>20251224</json.version>
+		<json.version>20260522</json.version>
 		<jsoup.version>1.22.2</jsoup.version>
-		<junit.version>6.0.3</junit.version>
-		<log4j.version>2.25.4</log4j.version>
+		<junit.version>6.1.0</junit.version>
+		<log4j.version>2.26.0</log4j.version>
 		<netty.version>4.1.132.Final</netty.version>
 		<mariadb-java-client.version>3.5.8</mariadb-java-client.version>
 		<mockito.version>5.23.0</mockito.version>
@@ -594,6 +594,17 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet-core</artifactId>
+			<version>${jersey.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>jakarta.ws.rs</groupId>
+					<artifactId>jakarta.ws.rs-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
 			<version>${jersey.version}</version>
 			<exclusions>
 				<exclusion>
@@ -1405,7 +1416,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>13.4.1</version>
+						<version>13.5.0</version>
 					</dependency>
 				</dependencies>
 				<executions>

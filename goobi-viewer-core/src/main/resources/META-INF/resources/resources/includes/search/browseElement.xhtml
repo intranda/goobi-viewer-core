@@ -19,34 +19,36 @@
     <div class="search-list__hit-inner-structure">
         <!-- ALL CONTENT/VALUES WRAPPER -->
         <div class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-            <!-- TITLE -->
-            <div
-                class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'} #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-                <!-- Display search hit number -->
-                <h3>
-                    <a
-                        class="search-list__hit-title-link"
-                        href="#{navigationHelper.applicationUrl}#{browseElement.url}"
-                        title="#{msg[browseElement.label]}">
-                        <h:panelGroup
-                            styleClass="search-list__hit-number-wrapper"
-                            rendered="#{configurationBean.displaySearchHitNumbers}">
-                            <span
-                                title="#{hit.hitNumber}"
-                                class="search-list__hit-number">
-                                #{hit.hitNumber}
-                            </span>
-                        </h:panelGroup>
-                        <h:outputText
-                            value="#{msg[browseElement.labelShort]}"
-                            escape="false" />
-                    </a>
-                </h3>
+            <!-- TOP WRAPPER -->
+            <div class="search-list__hit-top-wrapper">
+                <!-- TITLE -->
+                <div
+                    class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'} #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+                    <!-- Display search hit number -->
+                    <h3>
+                        <a
+                            class="search-list__hit-title-link"
+                            href="#{navigationHelper.applicationUrl}#{browseElement.url}"
+                            title="#{msg[browseElement.label]}">
+                            <h:panelGroup
+                                styleClass="search-list__hit-number-wrapper"
+                                rendered="#{configurationBean.displaySearchHitNumbers}">
+                                <span
+                                    title="#{hit.hitNumber}"
+                                    class="search-list__hit-number">
+                                    #{hit.hitNumber}
+                                </span>
+                            </h:panelGroup>
+                            <h:outputText
+                                value="#{msg[browseElement.labelShort]}"
+                                escape="false" />
+                        </a>
+                    </h3>
+                </div>
             </div>
 
             <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
-            <h:panelGroup
-                rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
+            <h:panelGroup rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
                 <div class="search-list__hit-docstruct">
                     <ul>
                         <ui:repeat
@@ -83,42 +85,210 @@
                     value="#{browseElement}" />
             </ui:include>
         </div>
-        <div class="search-list__thumb-wrapper">
+
+        <div class="search-list__hit-thumb-wrapper">
             <!-- THUMBNAIL -->
             <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
                 <ui:param
                     name="browseElement"
                     value="#{browseElement}" />
             </ui:include>
-            <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
-            <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
-                <div class="search-list__thumb-bookmark-wrapper">
+
+            <div class="search-list__hit-options-wrapper #{browseElement.showThumbnail ? '' : '-noThumbnail'}">
+                <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
+                <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
+                    <!-- 	                <div class="search-list__thumb-bookmark-wrapper"> -->
                     <button
                         type="button"
-                        class="btn btn--icon search-list__thumb-bookmark bookmark-toggle__button"
-                        data-bookmark-list-type="add"
+                        class="btn btn--icon search-list__thumb-bookmark
+							search-list__hit-options-button bookmark-toggle__button
+							search-list__hit-options-button-bookmark"
                         data-pi="#{browseElement.pi}"
                         aria-label="#{msg.bookmarkList_addToBookmarkList}"
                         role="switch"
-                        aria-checked="false">
-                        <span
-                            class="bookmark-toggle"
-                            data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-                            data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
-                            data-toggle="tooltip">
+                        aria-checked="false"
+                        data-target="bookmarkToggle"
+                        data-bookmark-list-type="add"
+                        data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+                        data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+                        title="#{msg.bookmarkList_addToBookmarkList}"
+                        data-toggle="tooltip">
+                        <span class="bookmark-toggle">
                             <util:icon
                                 icon="bookmark"
-                                svgClass="icon icon-lg"
                                 styleClass="bookmark-toggle__icon bookmark-toggle__icon--outline" />
                             <util:icon
                                 icon="bookmark"
                                 filled="true"
-                                svgClass="icon icon-lg"
                                 styleClass="bookmark-toggle__icon bookmark-toggle__icon--filled" />
                         </span>
                     </button>
+                    <!-- 	                </div> -->
+                </ui:fragment>
+
+                <!-- DOWNLOAD PDF BUTTON -->
+                <ui:fragment rendered="#{browseElement.downloadPdfAllowed}">
+                    <!-- Direct download — pre-rendered PDFs exist: show small + full links -->
+                    <ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue and browseElement.hasPrerenderedPagePdfs}">
+                        <a
+                            href="#{browseElement.pdfDownloadLinkSmall}"
+                            class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
+                            aria-label="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_small})"
+                            target="_blank"
+                            rel="nofollow noopener">
+                            <util:icon icon="download" />
+                        </a>
+                        <a
+                            href="#{browseElement.pdfDownloadLinkFull}"
+                            class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            title="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
+                            aria-label="#{msg.label__pdf_download_record} (#{msg.label__pdf_download_full})"
+                            target="_blank"
+                            rel="nofollow noopener">
+                            <util:icon icon="download" />
+                        </a>
+                    </ui:fragment>
+
+                    <!-- Direct download — no pre-rendered PDFs: single link -->
+                    <ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue and !browseElement.hasPrerenderedPagePdfs}">
+                        <a
+                            href="#{browseElement.pdfDownloadLink}"
+                            class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            title="#{msg.action__search_hit_download_pdf}"
+                            aria-label="#{msg.action__search_hit_download_pdf}"
+                            target="_blank"
+                            rel="nofollow noopener">
+                            <util:icon icon="download" />
+                        </a>
+                    </ui:fragment>
+
+                    <!-- Message queue mode — opens shared modal -->
+                    <ui:fragment rendered="#{configurationBean.generatePdfInMessageQueue}">
+                        <button
+                            type="button"
+                            class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-download"
+                            data-toggle="modal"
+                            data-target="#searchHitDownloadModal"
+                            data-pi="#{browseElement.pi}"
+                            data-title="#{msg[browseElement.labelShort]}"
+                            data-trigger="bstooltip"
+                            data-placement="top"
+                            title="#{msg.action__search_hit_download_pdf}"
+                            aria-label="#{msg.action__search_hit_download_pdf}">
+                            <util:icon icon="download" />
+                        </button>
+                    </ui:fragment>
+                </ui:fragment>
+
+                <!-- COPY LINK TO CLIPBOARD BUTTON -->
+                <ui:fragment rendered="#{not empty browseElement.defaultCitationLinkUrl}">
+                    <button
+                        type="button"
+                        class="btn btn--icon search-list__hit-options-button
+							search-list__hit-options-button-clipboard"
+                        data-copy-value="#{browseElement.defaultCitationLinkUrl}"
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        title="#{msg.action__search_hit_copy_link}"
+                        aria-label="#{msg.action__search_hit_copy_link}">
+                        <util:icon icon="link" />
+                    </button>
+                </ui:fragment>
+
+                <!-- CITATION RECOMMENDATION DROPDOWN -->
+                <ui:fragment rendered="#{not empty browseElement.citationStringPlain}">
+                    <div class="dropdown search-list__hit-citation-dropdown-wrapper">
+                        <button
+                            type="button"
+                            class="btn btn--icon search-list__hit-options-button search-list__hit-options-button-citation dropdown-toggle"
+                            data-toggle="dropdown"
+                            data-trigger="bstooltip"
+                            data-placement="top"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                            title="#{msg.action__search_hit_copy_cite}"
+                            aria-label="#{msg.action__search_hit_copy_cite}">
+                            <util:icon icon="quote" />
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right search-list__hit-citation-dropdown">
+                            <div class="search-list__hit-citation-dropdown-heading-wrapper">
+                                <util:icon
+                                    icon="quote"
+                                    styleClass="search-list__hit-citation-dropdown-icon" />
+                                <h6 class="search-list__hit-citation-dropdown-heading">Zitierempfehlung</h6>
+                            </div>
+
+                            <div class="search-list__hit-citation-wrapper">
+                                <button
+                                    type="button"
+                                    role="button"
+                                    class="search-list__hit-citation-copy-text"
+                                    data-copy-value="#{browseElement.citationStringPlain}"
+                                    data-copy-done-msg="#{msg.copyUrlDone}"
+                                    title="#{msg.citeRecommendation__copy_to_clipboard}"
+                                    aria-label="#{msg.citeRecommendation__copy_to_clipboard}"
+                                    onclick="event.stopPropagation()"
+                                    tabindex="0">
+                                    #{browseElement.citationStringPlain}
+                                </button>
+                                <div class="search-list__hit-citation-text-info">#{msg.citeRecommendation__text_info}</div>
+                            </div>
+                        </div>
+                    </div>
+                </ui:fragment>
+
+                <!-- EXPORT FILE FORMAT DROPDOWN/BUTTON -->
+                <div class="dropdown search-list__hit-export-dropdown-wrapper">
+                    <button
+                        type="button"
+                        class="btn btn--icon search-list__hit-options-button
+							search-list__hit-export-dropdown-toggle dropdown-toggle"
+                        data-toggle="dropdown"
+                        data-trigger="bstooltip"
+                        data-placement="top"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        title="#{msg.action__search_hit_export}"
+                        aria-label="#{msg.action__search_hit_export}">
+                        <util:icon icon="file-export" />
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right search-list__hit-export-dropdown">
+                        <h6 class="search-list__hit-export-dropdown-heading">#{msg.search_export__hit_dropdown_heading}</h6>
+                        <ui:repeat
+                            var="exportFormat"
+                            value="#{configurationBean.enabledSearchExportFormats}">
+                            <a
+                                class="dropdown-item search-list__hit-export-dropdown-link"
+                                href="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}?query=PI:&quot;#{browseElement.pi}&quot;"
+                                target="_blank">
+                                #{msg['search_export__'.concat(exportFormat.name)]}
+                            </a>
+                        </ui:repeat>
+                    </div>
                 </div>
-            </ui:fragment>
+
+                <!-- TOGGLE BS TOOLTIPS ON BUTTONS/LINKS "MANUALLY" BY JS -->
+                <script>
+                    $('[data-trigger="bstooltip"]').each(function() {
+							if (!$(this).data('bs.tooltip')) {
+								$(this).tooltip({
+									placement: 'top',
+									trigger: 'hover'
+								});
+							}
+						});
+                </script>
+
+                <!-- COPY TO CLIPBOARD INIT FOR THIS ELEMENT -->
+                <script>viewerJS.clipboard.init(null, null, '#{msg.copied_to_clipboard}');</script>
+            </div>
         </div>
     </div>
 </ui:composition>

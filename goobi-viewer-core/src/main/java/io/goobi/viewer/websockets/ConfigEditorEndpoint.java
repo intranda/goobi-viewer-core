@@ -32,7 +32,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
+import io.goobi.viewer.model.security.user.User;
 import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.CloseReason;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -61,7 +63,15 @@ public class ConfigEditorEndpoint {
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        this.httpSessionId = Optional.ofNullable(httpSession).map(HttpSession::getId);
+        User user = WebSocketTools.requireUser(httpSession, session);
+        if (user == null) {
+            return; // requireUser already closed the socket
+        }
+        if (!user.isSuperuser()) {
+            WebSocketTools.closeSession(session, CloseReason.CloseCodes.VIOLATED_POLICY, "Admin access required");
+            return;
+        }
+        this.httpSessionId = Optional.of(httpSession.getId());
     }
 
     /**
