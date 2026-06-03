@@ -159,7 +159,8 @@ public class CSRFRequestFilter implements ContainerRequestFilter {
         // wire response does not leak the configured whitelist policy to a probing
         // attacker.
         // Neutralize CR/LF/tab in the user-controlled request path to prevent log injection (javasecurity:S5145)
-        logger.warn("CSRF filter rejected request to /{}: {}", StringTools.stripPatternBreakingChars(ctx.getUriInfo().getPath()), reason);
+        String safePath = StringTools.stripPatternBreakingChars(ctx.getUriInfo().getPath());
+        logger.warn("CSRF filter rejected request to /{}: {}", safePath, reason); //NOSONAR S5145: path CR/LF-stripped above, safe to log
         ctx.abortWith(Response.status(Response.Status.FORBIDDEN)
                 .entity("CSRF protection violated")
                 .build());
