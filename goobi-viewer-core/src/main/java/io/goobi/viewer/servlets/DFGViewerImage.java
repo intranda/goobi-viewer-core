@@ -90,7 +90,11 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
 
         String pathInfo = request.getPathInfo();
         if (StringUtils.isBlank(pathInfo)) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing image path");
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing image path");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
 
@@ -98,7 +102,11 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
         Path path = Paths.get(pathInfo).normalize();
 
         if (path.getNameCount() != 4) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid image path format");
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid image path format");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             return;
         }
 

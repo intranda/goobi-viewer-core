@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.api.rest.bindings.CSRFGuarded;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 
 /**
  * JAX-RS request filter that enforces an Origin/Referer whitelist on simple-request REST
@@ -157,7 +158,8 @@ public class CSRFRequestFilter implements ContainerRequestFilter {
         // Log the specific reason for forensic analysis; return a generic body so the
         // wire response does not leak the configured whitelist policy to a probing
         // attacker.
-        logger.warn("CSRF filter rejected request to /{}: {}", ctx.getUriInfo().getPath(), reason);
+        // Neutralize CR/LF/tab in the user-controlled request path to prevent log injection (javasecurity:S5145)
+        logger.warn("CSRF filter rejected request to /{}: {}", StringTools.stripPatternBreakingChars(ctx.getUriInfo().getPath()), reason);
         ctx.abortWith(Response.status(Response.Status.FORBIDDEN)
                 .entity("CSRF protection violated")
                 .build());
