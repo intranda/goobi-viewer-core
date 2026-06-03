@@ -285,7 +285,7 @@ public class CMSTemplateManager implements Serializable {
             String innerPath = spec.substring(sep + 1); // includes leading '/'
             FileSystem fs;
             try {
-                fs = FileSystems.newFileSystem(jarUri, Collections.singletonMap("create", "true"));
+                fs = FileSystems.newFileSystem(jarUri, Collections.singletonMap("create", "true")); //NOSONAR S2095: FS kept open for returned Path
             } catch (FileSystemAlreadyExistsException ignore) {
                 fs = FileSystems.getFileSystem(jarUri);
             }

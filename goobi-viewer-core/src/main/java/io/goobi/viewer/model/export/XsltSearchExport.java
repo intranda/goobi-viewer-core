@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -82,6 +83,10 @@ public final class XsltSearchExport {
         Source xsltSource = resolveStylesheet(xsltFileName);
 
         TransformerFactory factory = TransformerFactory.newInstance();
+        // Prevent XXE: disable external DTD and stylesheet access (java:S2755).
+        // Export stylesheets in <configFolder>/xsl are self-contained (no external import/include/document()).
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
         Transformer transformer = factory.newTransformer(xsltSource);
 
         StringWriter writer = new StringWriter();
