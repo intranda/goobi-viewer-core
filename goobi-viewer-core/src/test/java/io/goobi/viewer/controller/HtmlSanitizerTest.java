@@ -491,6 +491,18 @@ class HtmlSanitizerTest {
     }
 
     /**
+     * @see HtmlSanitizer#sanitizeCssValue(String)
+     * @verifies strip whitespace obfuscated javascript url in css
+     */
+    @Test
+    void sanitizeCssValue_shouldStripWhitespaceObfuscatedJavascriptUrlInCss() {
+        // Whitespace + quote obfuscation inside url(...) must still be neutralized after the
+        // possessive-quantifier rewrite of CSS_URL_DANGEROUS (regression guard for ReDoS fix).
+        String result = HtmlSanitizer.sanitizeCssValue("background: url(  '  javascript:alert(1))");
+        assertFalse(result.toLowerCase().contains("javascript:"), result);
+    }
+
+    /**
      * @see HtmlSanitizer#isCleanRichText(String)
      * @verifies return true for null input
      */

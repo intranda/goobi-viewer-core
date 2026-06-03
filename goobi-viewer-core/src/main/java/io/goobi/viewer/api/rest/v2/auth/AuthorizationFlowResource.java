@@ -107,7 +107,9 @@ public class AuthorizationFlowResource {
             "^(https?)://"
                     + "("
                     + "[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
-                    + "(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*"
+                    // Bounded repetition (not unlimited '*') so an over-long attacker-supplied Origin cannot overflow the
+                    // regex engine's stack. RFC 1035 caps a hostname at 127 labels, so 126 additional labels is ample.
+                    + "(?:\\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?){0,126}"
                     + "|"
                     + "\\[[0-9a-fA-F:]+\\]"
                     + ")"

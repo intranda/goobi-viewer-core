@@ -73,8 +73,12 @@ public class RssResolver extends HttpServlet {
         if (request.getParameterMap().get("q") != null) {
             String rawQ = request.getParameterMap().get("q")[0];
             if (!isPrintableAscii(rawQ)) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                        "Query must contain only printable ASCII characters");
+                try {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                            "Query must contain only printable ASCII characters");
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
                 return;
             }
             query = "(" + rawQ + ")";
@@ -106,8 +110,12 @@ public class RssResolver extends HttpServlet {
         if (request.getParameterMap().get(PARAM_FILTERQUERY) != null && request.getParameterMap().get(PARAM_FILTERQUERY).length > 0) {
             filterQuery = request.getParameterMap().get(PARAM_FILTERQUERY)[0];
             if (!isPrintableAscii(filterQuery)) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                        "filterQuery must contain only printable ASCII characters");
+                try {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                            "filterQuery must contain only printable ASCII characters");
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
                 return;
             }
         }

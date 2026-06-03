@@ -123,7 +123,7 @@ public class IndexResource {
     private record CachedFieldInfo(List<SolrFieldInfo> value, long expiresAtMillis) {
     }
 
-    private static volatile CachedFieldInfo cachedFieldInfo;
+    private static volatile CachedFieldInfo cachedFieldInfo; //NOSONAR S3077: DCL; CachedFieldInfo record is immutable and safely published
 
     /**
      * TTL for the {@link #cachedFieldInfo} snapshot. Hard-coded because Solr field schemas

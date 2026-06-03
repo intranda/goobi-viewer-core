@@ -225,7 +225,7 @@ public class ActiveDocumentBean implements Serializable {
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
 
     // volatile for double-checked locking in getGroupMembershipDetails()
-    private volatile List<GroupMemberDetail> groupMembershipDetails;
+    private volatile List<GroupMemberDetail> groupMembershipDetails; //NOSONAR S3077: DCL; list is built then published, never mutated after
     // PI tracked alongside the cache so reset()-between-check-and-publish races can be detected
     private volatile String groupMembershipDetailsPi;
 

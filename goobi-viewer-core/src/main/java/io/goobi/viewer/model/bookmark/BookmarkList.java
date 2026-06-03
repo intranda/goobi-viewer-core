@@ -91,6 +91,9 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
 
     private static final Logger logger = LogManager.getLogger(BookmarkList.class);
 
+    /** Shared, thread-safe source of randomness for share-key generation; reused to avoid costly re-seeding per call. */
+    private static final SecureRandom SHARE_KEY_RANDOM = new SecureRandom();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bookshelf_id")
@@ -505,7 +508,7 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
      */
     public void generateShareKey() {
         byte[] bytes = new byte[24];
-        new SecureRandom().nextBytes(bytes);
+        SHARE_KEY_RANDOM.nextBytes(bytes);
         setShareKey(Base64.getUrlEncoder().withoutPadding().encodeToString(bytes));
     }
 

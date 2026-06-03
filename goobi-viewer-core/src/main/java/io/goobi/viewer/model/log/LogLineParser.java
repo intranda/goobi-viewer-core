@@ -8,17 +8,15 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Parses raw log4j2 output into structured LogLine objects.
- * Supports both formats:
- *   New: %-5level %d{...} [%thread] %location - %msg
- *   Old: %-5level %d{...} [%thread] %location  (message on next line)
- * Stacktrace/continuation lines are appended to the preceding entry's message.
+ * Parses raw log4j2 output into structured LogLine objects. Supports both formats: New: %-5level %d{...} [%thread] %location - %msg Old: %-5level
+ * %d{...} [%thread] %location (message on next line) Stacktrace/continuation lines are appended to the preceding entry's message.
  */
 public final class LogLineParser {
 
     static final Pattern LINE_START = Pattern.compile(
-        "^(ERROR|WARN |INFO |DEBUG|TRACE)\\s+(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s+\\[(.*?)\\]\\s+(\\S+?)(?:\\s+-\\s+(.*))?$",
-        Pattern.MULTILINE);
+            "^(ERROR|WARN |INFO |DEBUG|TRACE)\\s++(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3})\\s++\\[([^\\]]*+)\\]\\s++"
+                    + "(\\S++)(?:\\s++-\\s++(.*))?$",
+            Pattern.MULTILINE);
 
     private LogLineParser() {
     }
@@ -38,8 +36,8 @@ public final class LogLineParser {
             if (m.matches()) {
                 if (currentLevel != null) {
                     result.add(new LogLine(
-                        currentTimestamp, currentLevel.strip(),
-                        currentThread, currentLocation, currentMessage.toString().strip()));
+                            currentTimestamp, currentLevel.strip(),
+                            currentThread, currentLocation, currentMessage.toString().strip()));
                 }
                 currentLevel = m.group(1);
                 currentTimestamp = m.group(2);
@@ -56,15 +54,14 @@ public final class LogLineParser {
         }
         if (currentLevel != null) {
             result.add(new LogLine(
-                currentTimestamp, currentLevel.strip(),
-                currentThread, currentLocation, currentMessage.toString().strip()));
+                    currentTimestamp, currentLevel.strip(),
+                    currentThread, currentLocation, currentMessage.toString().strip()));
         }
         return result;
     }
 
     /**
-     * Returns true if the given line matches a log entry header.
-     * Used by the stateful tailer to detect entry boundaries.
+     * Returns true if the given line matches a log entry header. Used by the stateful tailer to detect entry boundaries.
      */
     public static boolean isHeaderLine(String line) {
         return line != null && LINE_START.matcher(line).matches();
