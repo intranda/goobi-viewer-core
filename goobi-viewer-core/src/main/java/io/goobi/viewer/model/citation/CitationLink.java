@@ -132,6 +132,7 @@ public class CitationLink {
     private String value;
     private String pattern;
     private boolean topstructValueFallback = false;
+    private boolean defaultLink = false;
 
     /**
      *
@@ -257,6 +258,19 @@ public class CitationLink {
      */
     public CitationLink setTopstructValueFallback(boolean topstructValueFallback) {
         this.topstructValueFallback = topstructValueFallback;
+        return this;
+    }
+
+    public boolean isDefaultLink() {
+        return defaultLink;
+    }
+
+    /**
+     * @param defaultLink true if this is the default citation link used for the copy-link action
+     * @return this
+     */
+    public CitationLink setDefaultLink(boolean defaultLink) {
+        this.defaultLink = defaultLink;
         return this;
     }
 

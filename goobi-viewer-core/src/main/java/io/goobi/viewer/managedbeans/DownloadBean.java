@@ -89,6 +89,7 @@ public class DownloadBean implements Serializable {
     private ViewerMessage message;
 
     private String email = BeanUtils.getUserBean().getEmail();
+    private String currentPi;
 
     /**
      * reset.
@@ -323,6 +324,14 @@ public class DownloadBean implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCurrentPi() {
+        return currentPi;
+    }
+
+    public void setCurrentPi(String currentPi) {
+        this.currentPi = currentPi;
     }
 
     /**

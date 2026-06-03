@@ -39,6 +39,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
@@ -865,6 +866,21 @@ public class ConfigurationBean implements Serializable {
      */
     public boolean isSearchRisExportEnabled() {
         return DataManager.getInstance().getConfiguration().isSearchRisExportEnabled();
+    }
+
+    /**
+     * Returns all enabled XSLT-based search export formats configured in {@code config_viewer.xml} under {@code search/export/format}. Disabled
+     * formats are excluded so the list can be iterated directly in templates.
+     *
+     * @return list of enabled {@link ExportFormat}s; never null
+     */
+    public List<ExportFormat> getEnabledSearchExportFormats() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getSearchExportFormats()
+                .stream()
+                .filter(ExportFormat::isEnabled)
+                .toList();
     }
 
     /**

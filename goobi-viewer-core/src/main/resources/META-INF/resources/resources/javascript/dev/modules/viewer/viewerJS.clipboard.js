@@ -77,7 +77,7 @@ var viewerJS = (function (viewer) {
             // COPY BUTTON VAR
             var copyClipboardButton = $(tooltipValueSelector);
 
-            $(copyClipboardButton).click(function () {
+            $(copyClipboardButton).off('click.clipboard').on('click.clipboard', function () {
                 var thisCopyButton = $(this);
 
                 // GET VALUE OF DATA ATTRIBUTE COPY VALUE
