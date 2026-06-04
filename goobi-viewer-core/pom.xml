@@ -1231,6 +1231,7 @@
 					<!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 					<knownExploitedEnabled>false</knownExploitedEnabled>
+					<nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
 					<skipProvidedScope>true</skipProvidedScope>
 					<skipTestScope>true</skipTestScope>
 					<format>ALL</format>

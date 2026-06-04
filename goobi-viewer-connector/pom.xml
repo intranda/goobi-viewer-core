@@ -281,6 +281,7 @@
 					<skipProvidedScope>true</skipProvidedScope>
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 					<knownExploitedEnabled>false</knownExploitedEnabled>
+					<nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
 					<format>ALL</format>
 					<skipTestScope>true</skipTestScope>
 					<skip>${skipDependencyCheck}</skip>
