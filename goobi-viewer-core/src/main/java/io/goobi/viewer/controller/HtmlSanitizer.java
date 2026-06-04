@@ -99,7 +99,8 @@ public final class HtmlSanitizer {
      * @should remove svg onload attribute
      * @should remove javascript URI from anchor href
      * @should remove javascript URI with leading whitespace
-     * @should remove iframe tags
+     * @should preserve iframe with https src
+     * @should remove iframe with javascript src
      * @should remove details ontoggle attribute
      * @should remove formaction bypass on button inside form
      * @should remove base href javascript URI
@@ -293,8 +294,11 @@ public final class HtmlSanitizer {
             }
         };
         return safelist
-                .addTags("figure", "figcaption")
+                .addTags("figure", "figcaption", "iframe")
                 .addAttributes("a", "target", "rel")
+                .addAttributes("iframe", "src", "frameborder", "width", "height",
+                        "allowfullscreen", "mozallowfullscreen", "webkitallowfullscreen", "title")
+                .addProtocols("iframe", "src", "https")
                 .addAttributes(":all", "class", "id", "role")
                 .preserveRelativeLinks(true);
     }
