@@ -242,12 +242,9 @@ pipeline {
     stage('docker') {
       when {
         beforeAgent true
-        allOf {
+        anyOf {
           expression { return params.BUILD_DOCKER_IMAGE }
-          anyOf {
-            branch 'develop'
-            tag 'v*'
-          }
+          tag 'v*'
         }
       }
       steps {
@@ -276,6 +273,8 @@ pipeline {
             docker buildx create --name multiarch-builder --use || docker buildx use multiarch-builder
             docker buildx inspect --bootstrap
 
+            SHORT_SHA=$(git rev-parse --short=7 HEAD)
+
             if [ -n "$TAG_NAME" ]; then
               TAGS="-t $GHCR_IMAGE_BASE:$TAG_NAME -t $DOCKERHUB_IMAGE_BASE:$TAG_NAME -t $NEXUS_IMAGE_BASE:$TAG_NAME"
               # If this tag is the highest v* tag in the upstream repo, also publish as :latest
@@ -288,7 +287,8 @@ pipeline {
               fi
               PLATFORMS="linux/amd64,linux/arm64/v8"
             else
-              TAGS="-t $NEXUS_IMAGE_BASE:dev"
+              # Rolling :dev tag plus an immutable :dev-<short-sha> tag for the commit
+              TAGS="-t $NEXUS_IMAGE_BASE:dev -t $NEXUS_IMAGE_BASE:dev-$SHORT_SHA"
               PLATFORMS="linux/amd64,linux/arm64/v8"
             fi
 
