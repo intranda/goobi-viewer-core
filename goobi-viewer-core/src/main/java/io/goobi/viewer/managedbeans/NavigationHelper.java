@@ -348,6 +348,9 @@ public class NavigationHelper implements Serializable {
      * <p>
      * Specific error types (e.g. recordNotFound, download) are passed through directly so that their own message keys are used as the page title.
      *
+     * This currently does nothing, because setting the current page for resources interferes with the settings for the main html page. So if a html
+     * page is loaded and a resource within that page fails to load, this the failed load would reset the currentPage attribute for the html page
+     *
      * @param errorType the error type string set by the exception handler; may be null
      * @should map null and generic error types to error
      * @should pass through specific error types unchanged
@@ -355,11 +358,11 @@ public class NavigationHelper implements Serializable {
      * @should pass through specific error types
      */
     public void setCurrentPageForError(String errorType) {
-        if (errorType == null || "general".equals(errorType) || "general_no_url".equals(errorType)) {
-            setCurrentPage("error");
-        } else {
-            setCurrentPage(errorType);
-        }
+        //        if (errorType == null || "general".equals(errorType) || "general_no_url".equals(errorType)) {
+        //            setCurrentPage("error");
+        //        } else {
+        //            setCurrentPage(errorType);
+        //        }
     }
 
     /**

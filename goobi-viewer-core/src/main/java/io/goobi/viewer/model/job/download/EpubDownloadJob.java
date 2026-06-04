@@ -141,4 +141,9 @@ public class EpubDownloadJob extends DownloadJob {
     public String getMimeType() {
         return "application/epub+zip";
     }
+
+    @Override
+    public String getDownloadFilename() {
+        return getFilename();
+    }
 }

@@ -40,18 +40,18 @@ import org.apache.logging.log4j.Logger;
 import org.goobi.presentation.contentServlet.controller.GetMetsPdfAction;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
-import de.unigoettingen.sub.commons.util.PathConverter;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.Dataset;
 
 /**
- * Download job that generates a PDF file for a digitized record or one of its structural divisions via the content server.
- * Supports optional log ID scoping, configuration variants, and pre-existing PDF source files.
+ * Download job that generates a PDF file for a digitized record or one of its structural divisions via the content server. Supports optional log ID
+ * scoping, configuration variants, and pre-existing PDF source files.
  */
 public class PdfDownloadJob extends DownloadJob {
 
@@ -170,6 +170,17 @@ public class PdfDownloadJob extends DownloadJob {
             sb.append("_").append(this.configVariant);
         } else {
             sb.append("_default");
+        }
+        sb.append(".pdf");
+
+        return sb.toString();
+    }
+
+    @Override
+    public String getDownloadFilename() {
+        StringBuilder sb = new StringBuilder(getPi());
+        if (StringUtils.isNotBlank(logId)) {
+            sb.append("_").append(logId);
         }
         sb.append(".pdf");
 
