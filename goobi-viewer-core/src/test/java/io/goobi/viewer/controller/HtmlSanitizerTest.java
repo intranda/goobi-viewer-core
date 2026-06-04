@@ -102,12 +102,29 @@ class HtmlSanitizerTest {
 
     /**
      * @see HtmlSanitizer#cleanRichText(String)
-     * @verifies remove iframe tags
+     * @verifies preserve iframe with https src
      */
     @Test
-    void cleanRichText_shouldRemoveIframeTags() {
-        String result = HtmlSanitizer.cleanRichText("<iframe src=\"https://evil\"></iframe>");
-        assertFalse(result.toLowerCase().contains("<iframe"));
+    void cleanRichText_shouldPreserveIframeWithHttpsSrc() {
+        String result = HtmlSanitizer.cleanRichText(
+                "<iframe src=\"https://docs.google.com/presentation/d/e/abc/embed\""
+                        + " width=\"640\" height=\"480\" allowfullscreen=\"allowfullscreen\""
+                        + " frameborder=\"0\" title=\"Presentation\"></iframe>");
+        assertTrue(result.toLowerCase().contains("<iframe"), "iframe tag must survive: " + result);
+        assertTrue(result.contains("https://docs.google.com"), "https src must survive: " + result);
+        assertTrue(result.contains("width=\"640\""), "width must survive: " + result);
+        assertTrue(result.contains("allowfullscreen"), "allowfullscreen must survive: " + result);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanRichText(String)
+     * @verifies remove iframe with javascript src
+     */
+    @Test
+    void cleanRichText_shouldRemoveIframeWithJavascriptSrc() {
+        String result = HtmlSanitizer.cleanRichText("<iframe src=\"javascript:alert(1)\"></iframe>");
+        assertFalse(result.toLowerCase().contains("javascript:"),
+                "javascript: src must be stripped from iframe: " + result);
     }
 
     /**
