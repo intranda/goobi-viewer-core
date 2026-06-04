@@ -54,7 +54,7 @@
 
 		<!-- Shared dependency versions (later of the previous drifts preferred) -->
 		<checkstyle.version>13.4.1</checkstyle.version>
-		<commons-configuration2.version>2.14.0</commons-configuration2.version>
+		<commons-configuration2.version>2.15.1</commons-configuration2.version>
 		<commons-io.version>2.22.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
 		<commons-lang3.version>3.20.0</commons-lang3.version>
@@ -66,14 +66,14 @@
 		<jackson.version>2.21.3</jackson.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<!-- https://github.com/stleary/JSON-java -->
-		<json.version>20251224</json.version>
-		<junit.version>6.0.3</junit.version>
-		<log4j.version>2.25.4</log4j.version>
+		<json.version>20260522</json.version>
+		<junit.version>6.1.0</junit.version>
+		<log4j.version>2.26.0</log4j.version>
 		<netty.version>4.1.132.Final</netty.version>
 		<solr.version>9.10.1</solr.version>
 
 		<!-- Shared plugin versions -->
-		<maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
+		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
 		<maven-dependency-plugin.version>3.10.0</maven-dependency-plugin.version>
 		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
 		<maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>

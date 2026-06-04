@@ -168,6 +168,45 @@ class OaiServletTest extends AbstractTest {
     }
 
     /**
+     * @see OaiServlet#isSolrUrlMismatch(String, String)
+     * @verifies return false when either url is null
+     */
+    @Test
+    void isSolrUrlMismatch_shouldReturnFalseWhenEitherUrlIsNull() {
+        Assertions.assertFalse(OaiServlet.isSolrUrlMismatch(null, "http://localhost:8983/solr"));
+        Assertions.assertFalse(OaiServlet.isSolrUrlMismatch("http://localhost:8983/solr", null));
+        Assertions.assertFalse(OaiServlet.isSolrUrlMismatch(null, null));
+    }
+
+    /**
+     * @see OaiServlet#isSolrUrlMismatch(String, String)
+     * @verifies return false when urls are equal
+     */
+    @Test
+    void isSolrUrlMismatch_shouldReturnFalseWhenUrlsAreEqual() {
+        Assertions.assertFalse(OaiServlet.isSolrUrlMismatch("http://localhost:8983/solr", "http://localhost:8983/solr"));
+    }
+
+    /**
+     * @see OaiServlet#isSolrUrlMismatch(String, String)
+     * @verifies return false when urls differ only by trailing slash
+     */
+    @Test
+    void isSolrUrlMismatch_shouldReturnFalseWhenUrlsDifferOnlyByTrailingSlash() {
+        Assertions.assertFalse(OaiServlet.isSolrUrlMismatch("http://localhost:8983/solr/", "http://localhost:8983/solr"));
+        Assertions.assertFalse(OaiServlet.isSolrUrlMismatch("http://localhost:8983/solr", "http://localhost:8983/solr/"));
+    }
+
+    /**
+     * @see OaiServlet#isSolrUrlMismatch(String, String)
+     * @verifies return true when urls differ
+     */
+    @Test
+    void isSolrUrlMismatch_shouldReturnTrueWhenUrlsDiffer() {
+        Assertions.assertTrue(OaiServlet.isSolrUrlMismatch("http://localhost:8983/solr", "http://other-host:8983/solr"));
+    }
+
+    /**
      * Local stand-in for org.apache.catalina.connector.ClientAbortException so the simple-class-name
      * heuristic in isClientAbort can be exercised without depending on Tomcat at test time.
      */

@@ -1551,7 +1551,7 @@
             the regular TOC build, even if they have multi-year date metadata. Leave empty to preserve legacy behavior (defer for any multi-year anchor/group). -->
         <calendarDocStructTypes>
             <docstruct>Newspaper</docstruct>
-            <docstruct>newspaper</docstruct>
+            <docstruct>Periodical</docstruct>
         </calendarDocStructTypes>
 
         <!-- useTreeView: if true, the toc is displayed as an interactive tree view. Default is false. -->
@@ -1767,7 +1767,7 @@
             
             <widget name="citation">
                 <citationLinks enabled="true">
-                    <!-- links: Citation link configurations. -->
+                    <!-- links: Citation link configurations. Add default="true" to show a copy citation link button for search hits -->
                     <links>
                         <link type="URL" for="record" label="URN" field="URN" pattern="https://nbn-resolving.org/{value}" />
                         <link type="URL" for="record" label="Handle" field="MD_PI_HANDLE" pattern="https://hdl.handle.net/{value}" />

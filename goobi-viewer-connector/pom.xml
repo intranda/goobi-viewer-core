@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>io.goobi.viewer</groupId>
 		<artifactId>viewer</artifactId>
-		<version>${revision}${changelist}</version>
+		<version>${revision}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>viewer-connector</artifactId>
@@ -124,7 +124,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.10.0</version>
+				<version>3.11.0</version>
 				<executions>
 					<execution>
 						<id>analyze</id>
@@ -160,7 +160,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.5</version>
+				<version>3.5.6</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<excludes>
@@ -325,7 +325,7 @@
 					<dependency>
 						<groupId>com.puppycrawl.tools</groupId>
 						<artifactId>checkstyle</artifactId>
-						<version>13.4.1</version>
+						<version>13.5.0</version>
 					</dependency>
 				</dependencies>
 				<executions>

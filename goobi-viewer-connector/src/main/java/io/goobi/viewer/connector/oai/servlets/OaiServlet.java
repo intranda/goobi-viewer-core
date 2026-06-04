@@ -67,6 +67,15 @@ public class OaiServlet extends HttpServlet {
             logger.debug("REQUEST URL: {}{}", request.getRequestURL(), queryString);
         }
 
+        // Delegate the actual comparison to a pure, unit-testable helper so the singleton-backed URL
+        // lookups stay in doGet but the mismatch logic itself can be covered without servlet mocking.
+        String connectorSolrUrl = DataManager.getInstance().getConfiguration().getIndexUrl();
+        String coreSolrUrl = io.goobi.viewer.controller.DataManager.getInstance().getConfiguration().getSolrUrl();
+        if (isSolrUrlMismatch(connectorSolrUrl, coreSolrUrl)) {
+            logger.warn("Solr URL mismatch: connector is configured with '{}' but viewer-core is configured with '{}'.",
+                    connectorSolrUrl, coreSolrUrl);
+        }
+
         String filterQuerySuffix = "";
         filterQuerySuffix = SolrSearchTools.getAllSuffixes(request);
         // logger.trace("filterQuerySuffix: {}",filterQuerySuffix);
@@ -317,13 +326,10 @@ public class OaiServlet extends HttpServlet {
     }
 
     /**
-     * Resolves the originating client IP for logging purposes. Prefers the first entry of the
-     * X-Forwarded-For header (proxy chain order: client, proxy-1, proxy-2, ...), trimmed of
-     * surrounding whitespace, and falls back to the servlet container's remote address when the
-     * header is absent.
+     * Resolves the originating client IP for logging purposes. Prefers the first entry of the X-Forwarded-For header (proxy chain order: client,
+     * proxy-1, proxy-2, ...), trimmed of surrounding whitespace, and falls back to the servlet container's remote address when the header is absent.
      *
-     * Extracted from the doGet catch block so the parsing can be unit-tested without mocking
-     * HttpServletRequest.
+     * Extracted from the doGet catch block so the parsing can be unit-tested without mocking HttpServletRequest.
      *
      * @param forwardedFor raw value of the X-Forwarded-For header (may be null)
      * @param remoteAddr fallback remote address (servlet container value)
@@ -342,6 +348,25 @@ public class OaiServlet extends HttpServlet {
             return forwardedFor.substring(0, comma).trim();
         }
         return forwardedFor;
+    }
+
+    /**
+     * Returns true if the connector and viewer-core Solr URLs are both configured but point to different endpoints. A single trailing slash on either
+     * URL is ignored for the comparison so "http://host/solr" and "http://host/solr/" are treated as equal.
+     *
+     * Extracted from doGet so the mismatch logic can be unit-tested without mocking the configuration singletons.
+     *
+     * @param connectorSolrUrl Solr URL configured for the connector (may be null)
+     * @param coreSolrUrl Solr URL configured for viewer-core (may be null)
+     * @return true if both URLs are non-null and differ after stripping trailing slashes
+     * @should return false when either url is null
+     * @should return false when urls are equal
+     * @should return false when urls differ only by trailing slash
+     * @should return true when urls differ
+     */
+    static boolean isSolrUrlMismatch(String connectorSolrUrl, String coreSolrUrl) {
+        return connectorSolrUrl != null && coreSolrUrl != null
+                && !StringUtils.stripEnd(connectorSolrUrl, "/").equals(StringUtils.stripEnd(coreSolrUrl, "/"));
     }
 
     /**
