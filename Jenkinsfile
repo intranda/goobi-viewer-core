@@ -41,7 +41,7 @@ pipeline {
             env.BUILD_TYPE_NAME = "RELEASE"
             env.BUILD_TYPE = ""
           } else {
-            env.BUILD_VERSION = 'dev-SNAPSHOT'
+            env.BUILD_VERSION = 'dev'
             env.BUILD_TYPE_NAME = "SNAPSHOT"
             env.BUILD_TYPE = "-SNAPSHOT"
           }
@@ -65,7 +65,7 @@ pipeline {
         }
       }
       steps {
-        sh "mvn -f pom.xml clean install -U -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true --no-transfer-progress"
+        sh "mvn -f pom.xml clean install -U -Dchangelist=\$BUILD_TYPE -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true --no-transfer-progress"
         // Stashes are used by the parallel checkstyle/dependency-check stages
         // that run in their own workspaces. test/sonar/deploy/docker reuse the
         // pipeline workspace and don't need to unstash.
@@ -105,7 +105,7 @@ pipeline {
             }
           }
           steps {
-            sh "mvn -f pom.xml test -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -DskipTests=false -Dmaven.main.skip=true -Dcheckstyle.skip=true -DskipDependencyCheck=true --no-transfer-progress"
+            sh "mvn -f pom.xml test -Dchangelist=\$BUILD_TYPE -DskipTests=false -Dmaven.main.skip=true -Dcheckstyle.skip=true -DskipDependencyCheck=true --no-transfer-progress"
             junit '**/target/surefire-reports/*.xml'
             step([
                     $class           : 'JacocoPublisher',
@@ -114,7 +114,7 @@ pipeline {
                     sourcePattern    : '**/src/main/java',
                     exclusionPattern : '**/*Test.class'
             ])
-            sh "mvn -f pom.xml org.jacoco:jacoco-maven-plugin:report -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dmaven.main.skip=true --no-transfer-progress"
+            sh "mvn -f pom.xml org.jacoco:jacoco-maven-plugin:report -Dchangelist=\$BUILD_TYPE -Dmaven.main.skip=true --no-transfer-progress"
           }
         }
 
@@ -135,7 +135,7 @@ pipeline {
             sh 'git submodule update --init --recursive'
             unstash 'm2-goobi-viewer'
             sh 'mkdir -p /var/maven/.m2/repository/io/goobi/viewer && cp -r m2-goobi-viewer/. /var/maven/.m2/repository/io/goobi/viewer/ || true'
-            sh "mvn -f pom.xml checkstyle:checkstyle -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dcheckstyle.skip=false --no-transfer-progress"
+            sh "mvn -f pom.xml checkstyle:checkstyle -Dchangelist=\$BUILD_TYPE -Dcheckstyle.skip=false --no-transfer-progress"
             recordIssues(
                     enabledForFailure: true, aggregatingResults: false,
                     tools: [checkStyle(pattern: '**/target/checkstyle-result.xml', reportEncoding: 'UTF-8')]
@@ -158,7 +158,7 @@ pipeline {
             unstash 'm2-goobi-viewer'
             sh 'mkdir -p /var/maven/.m2/repository/io/goobi/viewer && cp -r m2-goobi-viewer/. /var/maven/.m2/repository/io/goobi/viewer/ || true'
             unstash 'build-output'
-            sh "mvn -f pom.xml verify -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=false --no-transfer-progress"
+            sh "mvn -f pom.xml verify -Dchangelist=\$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=false --no-transfer-progress"
             dependencyCheckPublisher pattern: '**/target/dependency-check-report.xml'
           }
         }
@@ -189,8 +189,8 @@ pipeline {
       }
       steps {
         withCredentials([string(credentialsId: 'jenkins-sonarcloud', variable: 'TOKEN')]) {
-          sh "mvn -f goobi-viewer-core/pom.xml sonar:sonar -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dsonar.token=\$TOKEN -Dmaven.main.skip=true --no-transfer-progress"
-          sh "mvn -f goobi-viewer-connector/pom.xml  sonar:sonar -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dsonar.token=\$TOKEN -Dmaven.main.skip=true --no-transfer-progress"
+          sh "mvn -f goobi-viewer-core/pom.xml sonar:sonar -Dchangelist=\$BUILD_TYPE -Dsonar.token=\$TOKEN -Dmaven.main.skip=true --no-transfer-progress"
+          sh "mvn -f goobi-viewer-connector/pom.xml  sonar:sonar -Dchangelist=\$BUILD_TYPE -Dsonar.token=\$TOKEN -Dmaven.main.skip=true --no-transfer-progress"
         }
       }
     }
@@ -229,9 +229,9 @@ pipeline {
         }
         sh '''#!/bin/bash -xe
           ALT_REPO="-DaltDeploymentRepository=${NEXUS_BASE}/${NEXUS_PUBLIC_REPO}-releases -DaltSnapshotDeploymentRepository=${NEXUS_BASE}/${NEXUS_PUBLIC_REPO}-snapshots"
-          mvn -f goobi-viewer-config/pom.xml deploy -Drevision=$BUILD_VERSION -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
-          mvn -f goobi-viewer-core/pom.xml deploy -Drevision=$BUILD_VERSION -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
-          mvn -f goobi-viewer-connector/pom.xml deploy -Drevision=$BUILD_VERSION -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
+          mvn -f goobi-viewer-config/pom.xml deploy -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
+          mvn -f goobi-viewer-core/pom.xml deploy -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
+          mvn -f goobi-viewer-connector/pom.xml deploy -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
         '''
       }
     }
@@ -309,6 +309,16 @@ pipeline {
   post {
     always {
       sh 'rm -rf $HOME/.m2/repository/io/goobi/viewer/* || true'
+    }
+    success {
+      // Keep the main built targets (config/core/connector jars + theme-reference
+      // war) as Jenkins build artifacts. The attached test/javadoc jars are still
+      // deployed to Nexus by the deploy stage, but not archived here.
+      archiveArtifacts(
+              artifacts: '**/target/*.jar, **/target/*.war',
+              excludes: '**/target/*-tests.jar, **/target/*-javadoc.jar, **/target/*-sources.jar',
+              fingerprint: true
+      )
     }
     changed {
       emailext(
