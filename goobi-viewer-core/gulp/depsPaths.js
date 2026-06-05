@@ -311,43 +311,16 @@ const depsPathsJS = [
         flatten: true,
         dest: `${jsLibsDir}chartjs/chartjs-adapter-luxon`,
     },
+	
+	{
+	    // replayWeb.page
+	    expand: true,
+	    cwd: nodeModules,
+	    src: ['replaywebpage/sw.js', 'replaywebpage/ui.js'],
+	    flatten: true,
+	    dest: `${jsLibsDir}replaywebpage/`,
+	},
 
-    /*
-  { // ThreeJS
-    expand: true,
-    cwd: nodeModules,
-    cwd: 'node_modules/three/build/',
-    src: ['three.min.js*'],
-    dest: `${jsLibsDir}three/`
-  },
-  { // draco (ThreeJS)
-    expand:true,
-    cwd: 'node_modules/three/examples/jsm/controls/',
-    src: ['OrbitControls.js'],
-    dest: `${jsLibsDir}three/controls/`
-  },
-  { // draco (ThreeJS)
-    expand:true,
-    cwd: 'node_modules/three/examples/js/libs/draco/gltf/',
-    src: ['*'],
-    dest: `${jsLibsDir}three/dependencies/draco/`
-  },
-  { // laoders (ThreeJS)
-    expand:true,
-    cwd: 'node_modules/three/examples/js/loaders/',
-    src: [
-      'DRACOLoader.js', 
-      'FBXLoader.js', 
-      'GLTFLoader.js',
-      'MTLLoader.js', 
-      'OBJLoader.js',
-      'PLYLoader.js',
-      'STLLoader.js',
-      'TDSLoader.js'
-    ],
-    dest: `${jsLibsDir}three/loaders/`
-  },
-  */
 
     {
         // TINYMCE
