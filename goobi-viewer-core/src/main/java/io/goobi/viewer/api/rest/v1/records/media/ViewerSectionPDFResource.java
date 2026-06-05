@@ -33,7 +33,9 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.faces.validators.PIValidator;
 import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -84,7 +86,9 @@ public class ViewerSectionPDFResource extends MetsPdfResource {
         // value; illegal URI characters would cause a ContentLibException (HTTP 500).
         super(context, request, response, "pdf", requireValidPi(pi) + ".xml", cacheManager);
         this.divId = divId;
-        this.filename = pi + "_" + divId + ".pdf";
+        String custom = StringTools.formatPdfDownloadFilename(
+                DataManager.getInstance().getConfiguration().getDownloadFilenamePattern(), pi, divId);
+        this.filename = custom != null ? custom : pi + "_" + divId + ".pdf";
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_LOGID, divId);
     }

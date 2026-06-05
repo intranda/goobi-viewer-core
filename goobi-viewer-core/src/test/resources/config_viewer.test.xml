@@ -218,6 +218,12 @@
 		<downloadFolder>/opt/digiverso/viewer/download_test_pdf</downloadFolder>
 
 		<docHierarchyPdfEnabled>true</docHierarchyPdfEnabled>
+
+		<!-- downloadFilenamePattern: Template for generated download file names.
+		     Placeholders {PI} and {LOGID} (case-sensitive) are replaced with the record
+		     identifier and structure element id. If {LOGID} resolves to empty, leftover
+		     separators are collapsed. If omitted/empty, default naming is used. -->
+		<downloadFilenamePattern>prefix_{PI}_{LOGID}.pdf</downloadFilenamePattern>
 	</pdf>
 
 	<epub>

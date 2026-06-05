@@ -524,4 +524,36 @@ class StringToolsTest {
     void parseIntRange_shouldThrowIllegalArgumentExceptionForInvalidInput() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> StringTools.parseIntRange("abc"));
     }
+
+    /**
+     * @see StringTools#formatPdfDownloadFilename(String,String,String)
+     * @verifies return null if pattern blank
+     */
+    @Test
+    void formatPdfDownloadFilename_shouldReturnNullIfPatternBlank() {
+        Assertions.assertNull(StringTools.formatPdfDownloadFilename(null, "PPN123", "LOG_0003"));
+        Assertions.assertNull(StringTools.formatPdfDownloadFilename("  ", "PPN123", "LOG_0003"));
+    }
+
+    /**
+     * @see StringTools#formatPdfDownloadFilename(String,String,String)
+     * @verifies replace placeholders with values
+     */
+    @Test
+    void formatPdfDownloadFilename_shouldReplacePlaceholdersWithValues() {
+        assertEquals("prefix_PPN123_LOG_0003.pdf",
+                StringTools.formatPdfDownloadFilename("prefix_{PI}_{LOGID}.pdf", "PPN123", "LOG_0003"));
+    }
+
+    /**
+     * @see StringTools#formatPdfDownloadFilename(String,String,String)
+     * @verifies collapse separators when logid blank
+     */
+    @Test
+    void formatPdfDownloadFilename_shouldCollapseSeparatorsWhenLogidBlank() {
+        assertEquals("prefix_PPN123.pdf",
+                StringTools.formatPdfDownloadFilename("prefix_{PI}_{LOGID}.pdf", "PPN123", null));
+        assertEquals("prefix_PPN123.pdf",
+                StringTools.formatPdfDownloadFilename("prefix_{PI}_{LOGID}.pdf", "PPN123", ""));
+    }
 }

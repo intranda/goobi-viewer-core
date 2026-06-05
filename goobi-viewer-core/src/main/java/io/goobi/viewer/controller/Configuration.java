@@ -2548,6 +2548,16 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * getDownloadFilenamePattern.
+     *
+     * @should return correct value
+     * @return Configured download filename pattern; empty string if none configured
+     */
+    public String getDownloadFilenamePattern() {
+        return getLocalString("pdf.downloadFilenamePattern", "");
+    }
+
+    /**
      * getVocabulariesFolder.
      *
      * @return the configured folder name for vocabulary files

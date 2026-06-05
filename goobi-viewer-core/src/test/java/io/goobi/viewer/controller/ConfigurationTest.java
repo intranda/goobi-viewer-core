@@ -501,6 +501,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getDownloadFilenamePattern()
+     * @verifies return correct value
+     */
+    @Test
+    void getDownloadFilenamePattern_shouldReturnCorrectValue() {
+        assertEquals("prefix_{PI}_{LOGID}.pdf", DataManager.getInstance().getConfiguration().getDownloadFilenamePattern());
+    }
+
+    /**
      * @verifies return correct value
      * @see Configuration#getVocabulariesFolder()
      */

@@ -834,6 +834,37 @@ public final class StringTools {
     }
 
     /**
+     * Builds a PDF download filename from a configurable pattern. The case-sensitive placeholders {@code {PI}} and {@code {LOGID}} are replaced with
+     * the given record identifier and structure element id. When {@code logId} is blank the {@code {LOGID}} placeholder resolves to an empty string
+     * and any separators ({@code _} or {@code -}) left dangling around it are collapsed (e.g. {@code prefix_{PI}_{LOGID}.pdf} becomes
+     * {@code prefix_PI.pdf}).
+     *
+     * @param pattern filename pattern, e.g. {@code prefix_{PI}_{LOGID}.pdf}; if blank, no filename is produced
+     * @param pi record identifier substituted for {@code {PI}}; may be {@code null}
+     * @param logId structure element id substituted for {@code {LOGID}}; may be {@code null}
+     * @return the formatted filename, or {@code null} if {@code pattern} is blank (caller should fall back to its default naming)
+     * @should return null if pattern blank
+     * @should replace placeholders with values
+     * @should collapse separators when logid blank
+     */
+    public static String formatPdfDownloadFilename(String pattern, String pi, String logId) {
+        if (StringUtils.isBlank(pattern)) {
+            return null;
+        }
+
+        String filename = pattern
+                .replace("{PI}", StringUtils.trimToEmpty(pi))
+                .replace("{LOGID}", StringUtils.trimToEmpty(logId));
+
+        // Collapse separators left behind by an empty placeholder (case: blank logId)
+        filename = filename.replaceAll("[_-]{2,}", "_"); // duplicate separators -> single
+        filename = filename.replaceAll("[_-]+\\.", ".");  // trailing separator before extension
+        filename = filename.replaceAll("^[_-]+", "");      // leading separator
+
+        return filename;
+    }
+
+    /**
      * Sanitizes a filename so that it contains only printable ASCII characters (U+0020–U+007E). Unicode letters with diacritics are first decomposed
      * via NFD normalization and their combining marks stripped, preserving the base Latin letter (e.g. {@code ü} → {@code u}). All remaining
      * non-ASCII characters (such as the En-Dash U+2013) are replaced with a hyphen, and consecutive hyphens are collapsed into one.

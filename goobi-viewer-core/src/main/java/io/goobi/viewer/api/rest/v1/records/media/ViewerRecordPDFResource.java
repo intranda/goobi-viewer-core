@@ -41,6 +41,7 @@ import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.faces.validators.PIValidator;
@@ -88,7 +89,9 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
         // super-constructor call to be the first statement.
         super(context, request, response, "pdf", requireValidPi(pi) + ".xml", cacheManager);
         this.pi = pi;
-        this.filename = pi + ".pdf";
+        String custom = StringTools.formatPdfDownloadFilename(
+                DataManager.getInstance().getConfiguration().getDownloadFilenamePattern(), pi, null);
+        this.filename = custom != null ? custom : pi + ".pdf";
         request.setAttribute("pi", pi);
     }
 

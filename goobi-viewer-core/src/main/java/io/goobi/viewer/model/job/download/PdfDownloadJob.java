@@ -45,6 +45,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfig
 import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.Dataset;
@@ -178,6 +179,12 @@ public class PdfDownloadJob extends DownloadJob {
 
     @Override
     public String getDownloadFilename() {
+        String custom = StringTools.formatPdfDownloadFilename(
+                DataManager.getInstance().getConfiguration().getDownloadFilenamePattern(), getPi(), logId);
+        if (custom != null) {
+            return custom;
+        }
+
         StringBuilder sb = new StringBuilder(getPi());
         if (StringUtils.isNotBlank(logId)) {
             sb.append("_").append(logId);
