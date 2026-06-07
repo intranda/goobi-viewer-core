@@ -23,6 +23,7 @@ package io.goobi.viewer.model.search;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -194,6 +195,18 @@ public interface SearchInterface {
      * @return if a search has been triggered by the user and not yet been reset
      */
     public boolean isExplicitSearchPerformed();
+
+    public boolean isQuickFiltersEnabled();
+
+    public List<QuickFilterField> getQuickFilterFields();
+
+    public String getQuickFilterDateFrom();
+    public void setQuickFilterDateFrom(String quickFilterDateFrom);
+    public String getQuickFilterDateTo();
+    public void setQuickFilterDateTo(String quickFilterDateTo);
+    public Map<String, String> getQuickFilterValues();
+
+    public Map<String, Boolean> getQuickFilterCheckboxValues();
 
     /**
      * Get total number of hits of the last search.

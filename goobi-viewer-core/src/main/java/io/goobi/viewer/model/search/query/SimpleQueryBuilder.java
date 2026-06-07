@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,7 @@ public final class SimpleQueryBuilder {
     private SearchFilter searchFilter;
     private boolean fuzzySearchEnabled;
     private Map<String, Set<String>> searchTerms;
+    private Set<String> quickFilterFields = Collections.emptySet();
 
     private SimpleQueryBuilder() {
     }
@@ -140,12 +142,50 @@ public final class SimpleQueryBuilder {
 
     private void appendPhrase(StringBuilder sb, String phrase, int proximity) {
 
-        if (isAllFields()) {
+        if (hasQuickFilterFields()) {
+            appendMultiFieldPhrase(sb, phrase, proximity);
+        } else if (isAllFields()) {
             appendAllFieldPhrase(sb, phrase, proximity);
         } else {
             appendFilteredPhrase(sb, phrase, proximity);
         }
         sb.append(SolrConstants.SOLR_QUERY_AND);
+    }
+
+    private void appendMultiFieldPhrase(StringBuilder sb, String phrase, int proximity) {
+        boolean first = true;
+        for (String field : quickFilterFields) {
+            if (!first) {
+                sb.append(SolrConstants.SOLR_QUERY_OR);
+            }
+            first = false;
+            int dist = (SolrConstants.DEFAULT.equals(field) || SolrConstants.FULLTEXT.equals(field)) ? proximity : 0;
+            switch (field) {
+                case SolrConstants.DEFAULT:
+                    appendPhraseField(sb, SolrConstants.SUPERDEFAULT, phrase, dist);
+                    sb.append(SolrConstants.SOLR_QUERY_OR);
+                    appendPhraseField(sb, SolrConstants.DEFAULT, phrase, dist);
+                    break;
+                case SolrConstants.FULLTEXT:
+                    appendPhraseField(sb, SolrConstants.SUPERFULLTEXT, phrase, dist);
+                    sb.append(SolrConstants.SOLR_QUERY_OR);
+                    appendPhraseField(sb, SolrConstants.FULLTEXT, phrase, dist);
+                    break;
+                case SolrConstants.UGCTERMS:
+                    appendPhraseField(sb, SolrConstants.SUPERUGCTERMS, phrase, 0);
+                    sb.append(SolrConstants.SOLR_QUERY_OR);
+                    appendPhraseField(sb, SolrConstants.UGCTERMS, phrase, 0);
+                    break;
+                case SolrConstants.SEARCHTERMS_ARCHIVE:
+                    appendPhraseField(sb, SolrConstants.SUPERSEARCHTERMS_ARCHIVE, phrase, 0);
+                    sb.append(SolrConstants.SOLR_QUERY_OR);
+                    appendPhraseField(sb, SolrConstants.SEARCHTERMS_ARCHIVE, phrase, 0);
+                    break;
+                default:
+                    appendPhraseField(sb, field, phrase, 0);
+                    break;
+            }
+        }
     }
 
     private List<String> prepareTerms(String query) {
@@ -208,7 +248,9 @@ public final class SimpleQueryBuilder {
     private String buildOuterQuery(String innerQuery) {
         StringBuilder sbOuter = new StringBuilder();
 
-        if (isAllFields()) {
+        if (hasQuickFilterFields()) {
+            appendMultiFieldOuterQuery(sbOuter, innerQuery);
+        } else if (isAllFields()) {
             sbOuter.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery);
             sbOuter.append(") ").append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery);
             sbOuter.append(") ").append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery);
@@ -223,6 +265,41 @@ public final class SimpleQueryBuilder {
             appendFilteredOuterQuery(sbOuter, innerQuery);
         }
         return sbOuter.toString();
+    }
+
+    private void appendMultiFieldOuterQuery(StringBuilder sb, String innerQuery) {
+        boolean first = true;
+        for (String field : quickFilterFields) {
+            if (!first) {
+                sb.append(' ');
+            }
+            first = false;
+            appendFieldWithSuper(sb, field, innerQuery);
+        }
+    }
+
+    private static void appendFieldWithSuper(StringBuilder sb, String field, String innerQuery) {
+        switch (field) {
+            case SolrConstants.DEFAULT:
+                sb.append(SolrConstants.SUPERDEFAULT).append(":(").append(innerQuery).append(')');
+                sb.append(' ').append(SolrConstants.DEFAULT).append(":(").append(innerQuery).append(')');
+                break;
+            case SolrConstants.FULLTEXT:
+                sb.append(SolrConstants.SUPERFULLTEXT).append(":(").append(innerQuery).append(')');
+                sb.append(' ').append(SolrConstants.FULLTEXT).append(":(").append(innerQuery).append(')');
+                break;
+            case SolrConstants.UGCTERMS:
+                sb.append(SolrConstants.SUPERUGCTERMS).append(":(").append(innerQuery).append(')');
+                sb.append(' ').append(SolrConstants.UGCTERMS).append(":(").append(innerQuery).append(')');
+                break;
+            case SolrConstants.SEARCHTERMS_ARCHIVE:
+                sb.append(SolrConstants.SUPERSEARCHTERMS_ARCHIVE).append(":(").append(innerQuery).append(')');
+                sb.append(' ').append(SolrConstants.SEARCHTERMS_ARCHIVE).append(":(").append(innerQuery).append(')');
+                break;
+            default:
+                sb.append(field).append(":(").append(innerQuery).append(')');
+                break;
+        }
     }
 
     private static String normalizeInput(String input) {
@@ -240,6 +317,10 @@ public final class SimpleQueryBuilder {
         return input.replace(SolrConstants.SOLR_QUERY_OR, " || ")
                 .replace(SolrConstants.SOLR_QUERY_AND, " && ")
                 .toLowerCase();
+    }
+
+    private boolean hasQuickFilterFields() {
+        return quickFilterFields != null && !quickFilterFields.isEmpty();
     }
 
     private boolean isAllFields() {
@@ -429,6 +510,11 @@ public final class SimpleQueryBuilder {
 
         public Builder withSearchTerms(Map<String, Set<String>> searchTerms) {
             instance.searchTerms = searchTerms;
+            return this;
+        }
+
+        public Builder withQuickFilterFields(Set<String> fields) {
+            instance.quickFilterFields = fields != null ? fields : Collections.emptySet();
             return this;
         }
 

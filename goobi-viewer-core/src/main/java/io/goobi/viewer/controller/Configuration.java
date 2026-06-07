@@ -96,6 +96,7 @@ import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.QuickFilterField;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchResultGroup;
@@ -5152,6 +5153,39 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return SearchHelper.SEARCH_FILTER_ALL;
+    }
+
+    public boolean isQuickFiltersEnabled() {
+        return getLocalBoolean("search.quickFilters[@enabled]", false);
+    }
+
+    public List<QuickFilterField> getQuickFilterFields() {
+        List<QuickFilterField> result = new ArrayList<>();
+        List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("search.quickFilters.filter");
+        if (elements == null) {
+            return result;
+        }
+        for (HierarchicalConfiguration<ImmutableNode> element : elements) {
+            String typeStr = element.getString("[@type]", "");
+            String label = element.getString("[@label]", "");
+            String solrField = element.getString("[@solrField]", "");
+            QuickFilterField.Type type = QuickFilterField.Type.fromString(typeStr);
+            if (type == null) {
+                continue;
+            }
+            QuickFilterField field = new QuickFilterField(type, label, solrField);
+            if (type == QuickFilterField.Type.CHECKBOX_GROUP) {
+                List<HierarchicalConfiguration<ImmutableNode>> valueElements = element.configurationsAt("value");
+                for (HierarchicalConfiguration<ImmutableNode> valueElement : valueElements) {
+                    String valueLabel = valueElement.getString("[@label]", "");
+                    String valueSolrField = valueElement.getString("[@solrField]", "");
+                    boolean defaultSelected = valueElement.getBoolean("[@default]", false);
+                    field.addValue(valueLabel, valueSolrField, defaultSelected);
+                }
+            }
+            result.add(field);
+        }
+        return result;
     }
 
     /**

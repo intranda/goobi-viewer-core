@@ -1,0 +1,202 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util">
+    <div
+        id="quickFiltersPanel"
+        class="search-quick-filters"
+        data-quickfilter-panel="true">
+        <div class="search-quick-filters__fields-area">
+            <div class="search-quick-filters__row">
+                <ui:repeat
+                    value="#{search.quickFilterFields}"
+                    var="field"
+                    varStatus="status">
+                    <ui:fragment rendered="#{status.index lt 3}">
+                        <ui:fragment rendered="#{field.type eq 'DATE_RANGE'}">
+                            <div
+                                class="search-quick-filters__field -date"
+                                data-quickfilter-field="true">
+                                <div class="search-quick-filters__field-label">#{msg['search__quick_filter__date_from']}</div>
+                                <div class="search-quick-filters__date-field">
+                                    <util:icon icon="calendar" />
+                                    <h:inputText
+                                        value="#{search.quickFilterDateFrom}"
+                                        styleClass="search-quick-filters__field-input"
+                                        pt:placeholder="yyyy"
+                                        pt:maxlength="4"
+                                        pt:inputmode="numeric"
+                                        pt:pattern="[0-9]*"
+                                        pt:aria-label="#{msg['search__quick_filter__date_from']}"
+                                        pt:data-quickfilter-date="from" />
+                                </div>
+                            </div>
+                            <div
+                                class="search-quick-filters__field -date"
+                                data-quickfilter-field="true">
+                                <div class="search-quick-filters__field-label">#{msg['search__quick_filter__date_to']}</div>
+                                <div class="search-quick-filters__date-field">
+                                    <util:icon icon="calendar" />
+                                    <h:inputText
+                                        value="#{search.quickFilterDateTo}"
+                                        styleClass="search-quick-filters__field-input"
+                                        pt:placeholder="yyyy"
+                                        pt:maxlength="4"
+                                        pt:inputmode="numeric"
+                                        pt:pattern="[0-9]*"
+                                        pt:aria-label="#{msg['search__quick_filter__date_to']}"
+                                        pt:data-quickfilter-date="to" />
+                                </div>
+                            </div>
+                        </ui:fragment>
+
+                        <ui:fragment rendered="#{field.type eq 'FACET_DROPDOWN'}">
+                            <div
+                                class="search-quick-filters__field"
+                                data-quickfilter-field="true">
+                                <div class="search-quick-filters__field-label">#{msg[field.label]}</div>
+                                <div class="search-quick-filters__field-controls">
+                                    <button
+                                        type="button"
+                                        class="search-quick-filters__field-value"
+                                        data-quickfilter-dropdown="#{field.solrField}"
+                                        aria-haspopup="listbox"
+                                        aria-expanded="false">
+                                        <span
+                                            class="search-quick-filters__field-text"
+                                            data-quickfilter-default-text="#{msg['search__quick_filter__all']}">
+                                            #{msg['search__quick_filter__all']}
+                                        </span>
+                                        <util:icon icon="chevron-down" />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="search-quick-filters__field-clear"
+                                        data-quickfilter-clear="#{field.solrField}"
+                                        aria-label="#{msg['search__quick_filter__reset']}"
+                                        style="display:none;">
+                                        <util:icon icon="x" />
+                                    </button>
+                                </div>
+                                <h:inputHidden
+                                    value="#{search.quickFilterValues[field.solrField]}"
+                                    pt:data-quickfilter-hidden="#{field.solrField}" />
+                                <ui:include src="/resources/includes/search/searchQuickFilterDropdown.xhtml">
+                                    <ui:param
+                                        name="filterField"
+                                        value="#{field}" />
+                                </ui:include>
+                            </div>
+                        </ui:fragment>
+                    </ui:fragment>
+                </ui:repeat>
+            </div>
+
+            <div class="search-quick-filters__row">
+                <ui:repeat
+                    value="#{search.quickFilterFields}"
+                    var="field"
+                    varStatus="status">
+                    <ui:fragment rendered="#{status.index ge 3 and field.type ne 'CHECKBOX_GROUP'}">
+                        <div
+                            class="search-quick-filters__field"
+                            data-quickfilter-field="true">
+                            <div class="search-quick-filters__field-label">#{msg[field.label]}</div>
+                            <div class="search-quick-filters__field-controls">
+                                <button
+                                    type="button"
+                                    class="search-quick-filters__field-value"
+                                    data-quickfilter-dropdown="#{field.solrField}"
+                                    aria-haspopup="listbox"
+                                    aria-expanded="false">
+                                    <span
+                                        class="search-quick-filters__field-text"
+                                        data-quickfilter-default-text="#{msg['search__quick_filter__all']}">
+                                        #{msg['search__quick_filter__all']}
+                                    </span>
+                                    <util:icon icon="chevron-down" />
+                                </button>
+                                <button
+                                    type="button"
+                                    class="search-quick-filters__field-clear"
+                                    data-quickfilter-clear="#{field.solrField}"
+                                    aria-label="#{msg['search__quick_filter__reset']}"
+                                    style="display:none;">
+                                    <util:icon icon="x" />
+                                </button>
+                            </div>
+                            <h:inputHidden
+                                value="#{search.quickFilterValues[field.solrField]}"
+                                pt:data-quickfilter-hidden="#{field.solrField}" />
+                            <ui:include src="/resources/includes/search/searchQuickFilterDropdown.xhtml">
+                                <ui:param
+                                    name="filterField"
+                                    value="#{field}" />
+                            </ui:include>
+                        </div>
+                    </ui:fragment>
+                </ui:repeat>
+            </div>
+        </div>
+
+        <div class="search-quick-filters__bottom-row">
+            <ui:repeat
+                value="#{search.quickFilterFields}"
+                var="field">
+                <ui:fragment rendered="#{field.type eq 'CHECKBOX_GROUP'}">
+                    <div class="search-quick-filters__checkbox-group">
+                        <span class="search-quick-filters__field-label">#{msg[field.label]}</span>
+                        <ui:repeat
+                            value="#{field.values}"
+                            var="cbValue">
+                            <label class="search-quick-filters__checkbox">
+                                <h:selectBooleanCheckbox
+                                    value="#{search.quickFilterCheckboxValues[cbValue.solrField]}"
+                                    pt:data-quickfilter-checkbox="#{cbValue.solrField}" />
+                                <span>#{msg[cbValue.label]}</span>
+                            </label>
+                        </ui:repeat>
+                    </div>
+                </ui:fragment>
+            </ui:repeat>
+
+            <!-- Reset link hidden; redundant with the status bar reset outside the panel -->
+            <div
+                class="search-quick-filters__actions"
+                data-quickfilter-actions="true"
+                style="display:none !important;">
+                <a
+                    href="#"
+                    class="search-quick-filters__action-link -reset"
+                    data-quickfilter-reset="true">
+                    <util:icon icon="x" />
+                    #{msg['search__quick_filter__reset']}
+                </a>
+            </div>
+        </div>
+
+        <div
+            class="search-quick-filters__status-bar -inner"
+            data-quickfilter-status="true"
+            data-quickfilter-status-label-singular="#{msg['search__quick_filter__active_filter_singular']}"
+            data-quickfilter-status-label-plural="#{msg['search__quick_filter__active_filter_plural']}"
+            style="display:none;">
+            <div
+                class="search-quick-filters__status-info"
+                data-quickfilter-status-tooltip="true"
+                tabindex="0">
+                <util:icon icon="adjustments-horizontal" />
+                <span data-quickfilter-status-text="true" />
+            </div>
+            <a
+                href="#"
+                class="search-quick-filters__status-reset"
+                data-quickfilter-status-reset="true">
+                <util:icon icon="x" />
+                #{msg['search__quick_filter__reset']}
+            </a>
+        </div>
+    </div>
+</ui:composition>
