@@ -165,6 +165,11 @@ public class LoginFilter implements Filter {
                         || localUri.contains("bookmarks/send/") || localUri.contains("bookmarks/search/session")) {
                     return false;
                 }
+                // Never restrict JSF resource requests — their URLs may contain path segments like
+                // "crowdsourcing" that would otherwise match the /crowd guard below.
+                if (localUri.contains("jakarta.faces.resource") || localUri.contains("javax.faces.resource")) {
+                    return false;
+                }
                 // Regular URLs
                 if ((localUri.contains("/crowd") && !(localUri.contains("about")) || localUri.contains("/admin")
                         || localUri.contains("/userBackend"))) {
