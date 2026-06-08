@@ -160,6 +160,13 @@
                         </ui:fragment>
                     </h:panelGroup>
 
+                    <!-- VIEW AUDIO -->
+                    <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.webArchive}">
+                        <ui:insert name="viewWebarchive">
+                            <ui:include src="/resources/includes/object/webarchive.xhtml" />
+                        </ui:insert>
+                    </h:panelGroup>
+
                     <!-- TODO -->
                     <!-- VIEW TEXT -->
                     <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.sandboxedHtml}">

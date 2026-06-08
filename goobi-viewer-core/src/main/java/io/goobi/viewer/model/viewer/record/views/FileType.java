@@ -164,6 +164,9 @@ public enum FileType {
         if (suffix.matches("(?i)epub")) {
             return "application/epub+zip";
         }
+        if (suffix.matches("(?i)(warc|wacz)")) {
+            return "application/warc";
+        }
 
         String urlContentType = FILENAME_MAP.getContentTypeFor(filename);
         if (StringUtils.isNotBlank(urlContentType)) {

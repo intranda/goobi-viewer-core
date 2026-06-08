@@ -271,8 +271,11 @@ public final class AccessConditionUtils {
             case "glb":
             case "pdf":
             case "epub":
+            case "warc":
+            case "wacz":
                 sbQuery.append(" +").append(useFileField).append(":\"").append(simpleFileName).append('"');
                 break;
+
             default:
                 // Escape whitespaces etc. for wildcard searches
                 sbQuery.append(" +").append(useFileField).append(':').append(ClientUtils.escapeQueryChars(simpleFileName)).append(".*");
@@ -779,14 +782,14 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Checks whether the current user has the given access permissions for every LOGID of the record with the
-     * given identifier, evaluating multiple privileges in a single Solr roundtrip.
+     * Checks whether the current user has the given access permissions for every LOGID of the record with the given identifier, evaluating multiple
+     * privileges in a single Solr roundtrip.
      *
-     * <p>The Solr index is queried <strong>once</strong> for all DOCSTRCT documents of the given identifier;
-     * the returned access conditions are then evaluated in-memory for each requested privilege. Per-privilege
-     * results are stored in the session cache using the same key scheme as
-     * {@link #checkAccessPermissionByIdentiferForAllLogids(String, String, HttpServletRequest)}, so subsequent
-     * calls (single or batched) for any of the privileges hit the cache.
+     * <p>
+     * The Solr index is queried <strong>once</strong> for all DOCSTRCT documents of the given identifier; the returned access conditions are then
+     * evaluated in-memory for each requested privilege. Per-privilege results are stored in the session cache using the same key scheme as
+     * {@link #checkAccessPermissionByIdentiferForAllLogids(String, String, HttpServletRequest)}, so subsequent calls (single or batched) for any of
+     * the privileges hit the cache.
      *
      * @param identifier persistent identifier of the record
      * @param privilegeNames set of access privilege names to verify; an empty or null set returns an empty map
@@ -825,16 +828,16 @@ public final class AccessConditionUtils {
     /**
      * Checks access permissions for a set of identifiers and a set of privileges in one Solr roundtrip.
      *
-     * <p>Issues a single Solr query (or a chunked sequence for large identifier sets) using the
-     * <code>terms</code> query parser to fetch access conditions for all docstructs of all given identifiers,
-     * then evaluates each requested privilege in-memory per identifier. Per-identifier per-privilege results
-     * are stored in the session cache under the same key scheme as the legacy single-PI methods.
+     * <p>
+     * Issues a single Solr query (or a chunked sequence for large identifier sets) using the <code>terms</code> query parser to fetch access
+     * conditions for all docstructs of all given identifiers, then evaluates each requested privilege in-memory per identifier. Per-identifier
+     * per-privilege results are stored in the session cache under the same key scheme as the legacy single-PI methods.
      *
-     * <p><strong>Moving-Wall semantics:</strong> the inner <code>checkAccessPermission</code> receives a
-     * per-identifier query string of the form <code>+PI_TOPSTRUCT:"&lt;id&gt;" +DOCTYPE:DOCSTRCT</code>,
-     * reconstructed inside the doc loop, so that <code>LicenseType.isRestrictionsExpired</code> sees the
-     * same cache key as the legacy single-PI methods would have produced. The cross-PI <code>terms</code>
-     * string is used only for the outer Solr fetch.
+     * <p>
+     * <strong>Moving-Wall semantics:</strong> the inner <code>checkAccessPermission</code> receives a per-identifier query string of the form
+     * <code>+PI_TOPSTRUCT:"&lt;id&gt;" +DOCTYPE:DOCSTRCT</code>, reconstructed inside the doc loop, so that
+     * <code>LicenseType.isRestrictionsExpired</code> sees the same cache key as the legacy single-PI methods would have produced. The cross-PI
+     * <code>terms</code> string is used only for the outer Solr fetch.
      *
      * @param identifiers persistent identifiers of records; null or empty returns an empty map
      * @param privilegeNames access privilege names to verify; null or empty returns an empty map
@@ -947,8 +950,10 @@ public final class AccessConditionUtils {
                     String remoteAddress = NetTools.getIpAddress(request);
                     Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
                     for (String privilege : uncachedForThisPi) {
-                        ret.get(pi).get(privilege).put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions,
-                                privilege, user, remoteAddress, client, perIdentifierQuery));
+                        ret.get(pi)
+                                .get(privilege)
+                                .put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions,
+                                        privilege, user, remoteAddress, client, perIdentifierQuery));
                     }
                 }
             } catch (PresentationException e) {
@@ -968,23 +973,26 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Builds the Solr fetch query using the terms query parser for a chunk of identifiers.
-     * Comma-separated values; PI_TOPSTRUCT values do not contain commas, so no escaping needed.
-     * Caller must guarantee a non-empty {@code identifiers} collection — an empty terms list would yield
-     * a syntactically invalid Solr query.
+     * Builds the Solr fetch query using the terms query parser for a chunk of identifiers. Comma-separated values; PI_TOPSTRUCT values do not contain
+     * commas, so no escaping needed. Caller must guarantee a non-empty {@code identifiers} collection — an empty terms list would yield a
+     * syntactically invalid Solr query.
      */
     private static String buildTermsPermissionQuery(Collection<String> identifiers) {
         return new StringBuilder()
-                .append("+{!terms f=").append(SolrConstants.PI_TOPSTRUCT).append('}')
+                .append("+{!terms f=")
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append('}')
                 .append(String.join(",", identifiers))
-                .append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name())
+                .append(" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.DOCSTRCT.name())
                 .toString();
     }
 
     /**
-     * Builds the legacy per-identifier query string used as the cache key for LicenseType.isRestrictionsExpired
-     * and as the basis for moving-wall hit-count checks. Format must match the legacy single-PI methods byte-for-byte.
-     * Package-private so tests can verify the format directly.
+     * Builds the legacy per-identifier query string used as the cache key for LicenseType.isRestrictionsExpired and as the basis for moving-wall
+     * hit-count checks. Format must match the legacy single-PI methods byte-for-byte. Package-private so tests can verify the format directly.
      */
     static String buildSinglePiPermissionQuery(String identifier) {
         return new StringBuilder().append('+')
