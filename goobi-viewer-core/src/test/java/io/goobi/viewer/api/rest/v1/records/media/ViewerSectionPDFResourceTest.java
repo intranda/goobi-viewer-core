@@ -96,8 +96,11 @@ class ViewerSectionPDFResourceTest extends AbstractRestApiTest {
             assertNotNull(response.getEntity(), "Should return user object as JSON");
             byte[] entity = response.readEntity(byte[].class);
             String contentDisposition = response.getHeaderString("Content-Disposition");
-            assertEquals("attachment; filename=\"" + StringTools.formatPdfDownloadFilename(
-                    DataManager.getInstance().getConfiguration().getDownloadFilenamePattern(), PI, LOGID) + ".pdf" + "\"", contentDisposition);
+
+            String custom = StringTools.formatPdfDownloadFilename(
+                    DataManager.getInstance().getConfiguration().getDownloadFilenamePattern(), PI, LOGID);
+            String fileName = custom != null ? custom : (PI + "_" + LOGID) + ".pdf";
+            assertEquals("attachment; filename=\"" + fileName + "\"", contentDisposition);
             assertTrue(entity.length >= 5 * 5 * 8 * 3); //entity is at least as long as the image data
         }
     }
