@@ -9,6 +9,7 @@
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:util="http://goobi.io/util"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <ui:param
         name="search"
@@ -19,6 +20,15 @@
     <ui:param
         name="renderOnSearchTypeChange"
         value="#{renderOnSearchTypeChange != null ? renderOnSearchTypeChange : ''}" />
+    <ui:param
+        name="searchPlaceholder"
+        value="#{cmsPlaceholder != null and cmsPlaceholder != '' ? cmsPlaceholder : msg.search}" />
+    <ui:param
+        name="quickFiltersInitOpen"
+        value="#{quickFiltersInitOpen != null ? quickFiltersInitOpen : false}" />
+    <ui:param
+        name="quickFiltersEnabled"
+        value="#{quickFiltersEnabled != null ? quickFiltersEnabled : false}" />
 
     <!-- SEARCH STANDARD -->
     <div class="search-standard">
@@ -26,11 +36,12 @@
 
         <h:form
             id="searchForm"
-            prependId="true">
+            prependId="true"
+            styleClass="search-standard__form#{quickFiltersEnabled ? ' -with-filters' : ''}">
             <!-- SEARCH STANDARD INPUT -->
-            <div class="search-standard__input-slim">
+            <div class="search-standard__input-slim#{quickFiltersEnabled ? ' -with-filters' : ''}">
                 <!-- ONLY RENDER DROPDOWN IF THERE IS AN OPTION TO CHOOSE -->
-                <ui:fragment rendered="#{fn:length(search.searchFilters) gt 1}">
+                <ui:fragment rendered="#{fn:length(search.searchFilters) gt 1 and !quickFiltersEnabled}">
                     <div class="search-standard__filter-select">
                         <h:inputHidden
                             id="hiddenSearchFilterString"
@@ -70,7 +81,25 @@
                     <viewerComponent:autocomplete
                         value="#{search.searchString}"
                         items="#{search.autocomplete}"
-                        placeholder="#{msg.search}" />
+                        placeholder="#{searchPlaceholder}" />
+                    <ui:fragment rendered="#{quickFiltersEnabled}">
+                        <button
+                            type="button"
+                            class="search-standard__filter-toggle"
+                            data-quickfilter-toggle="true"
+                            aria-expanded="false"
+                            aria-controls="quickFiltersPanel"
+                            aria-label="#{msg['search__quick_filter__toggle']}">
+                            <span class="search-standard__filter-toggle-icon -open">
+                                <util:icon icon="adjustments-horizontal" />
+                            </span>
+                            <span
+                                class="search-standard__filter-toggle-icon -close"
+                                style="display:none;">
+                                <util:icon icon="adjustments-off" />
+                            </span>
+                        </button>
+                    </ui:fragment>
                 </div>
                 <h:commandButton
                     id="submitSearch"
@@ -83,8 +112,53 @@
                         value="0" />
                 </h:commandButton>
             </div>
+            <ui:fragment rendered="#{quickFiltersEnabled}">
+                <ui:include src="/resources/includes/search/searchQuickFilters.xhtml" />
+            </ui:fragment>
         </h:form>
+        <ui:fragment rendered="#{quickFiltersEnabled}">
+            <div
+                class="search-quick-filters__status-bar -outer"
+                data-quickfilter-status="true"
+                data-quickfilter-status-label-singular="#{msg['search__quick_filter__active_filter_singular']}"
+                data-quickfilter-status-label-plural="#{msg['search__quick_filter__active_filter_plural']}"
+                style="display:none;">
+                <div
+                    class="search-quick-filters__status-info"
+                    data-quickfilter-status-tooltip="true"
+                    tabindex="0">
+                    <util:icon icon="adjustments-horizontal" />
+                    <span data-quickfilter-status-text="true" />
+                </div>
+                <a
+                    href="#"
+                    class="search-quick-filters__status-reset"
+                    data-quickfilter-status-reset="true">
+                    <util:icon icon="x" />
+                    #{msg['search__quick_filter__reset']}
+                </a>
+            </div>
+        </ui:fragment>
     </div>
+
+    <ui:fragment rendered="#{quickFiltersEnabled}">
+        <h:outputScript>
+            $(document).ready(function() {
+                if (viewerJS.searchQuickfilters) {
+                    viewerJS.searchQuickfilters.init();
+                }
+            });
+        </h:outputScript>
+        <c:if test="#{quickFiltersInitOpen}">
+            <h:outputScript>
+                $(document).ready(function() {
+                    if (viewerJS.searchQuickfilters) {
+                        viewerJS.searchQuickfilters.open();
+                    }
+                });
+            </h:outputScript>
+        </c:if>
+    </ui:fragment>
 
     <!-- SEARCH HELP MODAL -->
     <div

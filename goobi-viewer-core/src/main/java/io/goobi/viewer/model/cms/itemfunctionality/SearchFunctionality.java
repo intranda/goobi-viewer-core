@@ -28,6 +28,7 @@ import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,6 +44,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.model.search.QuickFilterField;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.search.FilterQueryParser;
@@ -501,6 +503,49 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return getSearchBean().isSearchInFacetFieldFlag(fieldName);
     }
 
+    @Override
+    public boolean isQuickFiltersEnabled() {
+        return getSearchBean().isQuickFiltersEnabled();
+    }
+
+    @Override
+    public List<QuickFilterField> getQuickFilterFields() {
+        return getSearchBean().getQuickFilterFields();
+    }
+
+    @Override
+    public String getQuickFilterDateFrom() {
+        return getSearchBean().getQuickFilterDateFrom();
+    }
+
+    @Override
+    public void setQuickFilterDateFrom(String quickFilterDateFrom) {
+        getSearchBean().setQuickFilterDateFrom(quickFilterDateFrom);
+    }
+
+    @Override
+    public String getQuickFilterDateTo() {
+        return getSearchBean().getQuickFilterDateTo();
+    }
+
+    @Override
+    public void setQuickFilterDateTo(String quickFilterDateTo) {
+        getSearchBean().setQuickFilterDateTo(quickFilterDateTo);
+    }
+
+    @Override
+    public Map<String, String> getQuickFilterValues() {
+        return getSearchBean().getQuickFilterValues();
+    }
+
+    @Override
+    public Map<String, Boolean> getQuickFilterCheckboxValues() {
+        return getSearchBean().getQuickFilterCheckboxValues();
+    }
+
+    /* (non-Javadoc)
+     * @see io.goobi.viewer.model.search.SearchInterface#getFacets()
+     */
     /** {@inheritDoc} */
     @Override
     public SearchFacets getFacets() {

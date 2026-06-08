@@ -1,0 +1,34 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util">
+    <div
+        class="search-quick-filters__dropdown"
+        data-quickfilter-dropdown-panel="#{filterField.solrField}">
+        <div class="search-quick-filters__dropdown-header">
+            <span
+                class="search-quick-filters__dropdown-header-text"
+                data-quickfilter-dropdown-header-text="#{filterField.solrField}">
+                #{msg['search__quick_filter__all']}
+            </span>
+            <button
+                type="button"
+                class="search-quick-filters__dropdown-header-close"
+                data-quickfilter-dropdown-close="#{filterField.solrField}"
+                aria-label="#{msg.close}">
+                <util:icon icon="chevron-up" />
+            </button>
+        </div>
+        <div class="search-quick-filters__dropdown-search">
+            <util:icon icon="search" />
+            <input
+                type="text"
+                aria-label="#{msg[filterField.label]}"
+                data-quickfilter-dropdown-search="#{filterField.solrField}"
+                placeholder="" />
+        </div>
+        <div
+            class="search-quick-filters__dropdown-list"
+            data-quickfilter-dropdown-list="#{filterField.solrField}" />
+    </div>
+</ui:composition>

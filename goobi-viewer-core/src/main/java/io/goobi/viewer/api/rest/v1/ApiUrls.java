@@ -188,6 +188,9 @@ public class ApiUrls extends AbstractApiUrlManager {
 
     public static final String OPENSEARCH = "/opensearch";
 
+    public static final String QUICKFILTERS = "/quickfilters";
+    public static final String QUICKFILTERS_FACETS = "/facets";
+
     public static final String SEARCH = "/search";
     public static final String SEARCH_HIT_CHILDREN = "/hit/{id}/{numChildren}";
     public static final String SEARCH_HIT_CHILDREN_GROUP = "/hit/{id}/{numChildren}/{resultGroup}";
