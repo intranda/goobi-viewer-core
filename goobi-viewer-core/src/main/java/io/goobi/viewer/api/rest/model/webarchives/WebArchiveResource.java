@@ -35,10 +35,16 @@ public class WebArchiveResource {
 
     private final String url;
 
-    public WebArchiveResource(String filename, String url) {
+    private final String hash;
+
+    private final Long size;
+
+    public WebArchiveResource(String filename, String url, String hash, Long size) {
         super();
         this.filename = filename;
         this.url = url;
+        this.hash = hash;
+        this.size = size;
     }
 
     @JsonProperty("name")
@@ -49,6 +55,16 @@ public class WebArchiveResource {
     @JsonProperty("path")
     public String getUrl() {
         return url;
+    }
+
+    @JsonProperty("hash")
+    public String getHash() {
+        return hash;
+    }
+
+    @JsonProperty("size")
+    public Long getSize() {
+        return size;
     }
 
 }

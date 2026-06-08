@@ -123,6 +123,7 @@ import io.goobi.viewer.model.citation.CitationList;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.job.download.DownloadOption;
+import io.goobi.viewer.model.media.webarchives.WebArchiveReader;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
@@ -222,6 +223,7 @@ public class ViewManager implements Serializable {
     private boolean recordAccessTicketRequired = false;
     private List<StructElementStub> docHierarchy = null;
     private String mimeType = null;
+    private String webArchiveSeedUrl = null;
     private Boolean filesOnly = null;
     private String opacUrl = null;
     private String contextObject = null;
@@ -2938,6 +2940,17 @@ public class ViewManager implements Serializable {
 
     public MimeType getMediaType() {
         return new MimeType(getMimeType());
+    }
+
+    /**
+     * Returns the seed URL (first page with seed=true) from the first web archive (WACZ) file of this record, or an empty string if none is found.
+     * Result is cached after first call.
+     */
+    public String getWebArchiveSeedUrl() {
+        if (webArchiveSeedUrl == null) {
+            webArchiveSeedUrl = WebArchiveReader.getSeedUrl(pi);
+        }
+        return webArchiveSeedUrl;
     }
 
     public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {

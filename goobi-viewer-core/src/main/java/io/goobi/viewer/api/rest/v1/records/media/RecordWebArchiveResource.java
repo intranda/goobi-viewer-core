@@ -21,8 +21,15 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.HexFormat;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +40,7 @@ import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.webarchives.ReplayJson;
 import io.goobi.viewer.api.rest.model.webarchives.WebArchiveResource;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -57,6 +65,10 @@ import jakarta.ws.rs.core.Response.Status;
 public class RecordWebArchiveResource {
 
     private static final Logger logger = LogManager.getLogger(RecordWebArchiveResource.class);
+
+    /** Cache: absolute path → (lastModifiedMillis, sha256hex) to avoid rehashing large files on every request. */
+    private static final ConcurrentHashMap<String, long[]> hashTimestampCache = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, String> hashValueCache = new ConcurrentHashMap<>();
 
     private final String pi;
 
@@ -94,7 +106,20 @@ public class RecordWebArchiveResource {
 
             List<WebArchiveResource> resources = docs.stream().map(doc -> {
                 String filename = doc.getFieldValue(SolrConstants.FILENAME).toString();
-                return new WebArchiveResource(filename, getWebArchiveUrl(this.pi, filename));
+                String url = getWebArchiveUrl(this.pi, filename);
+                String hash = null;
+                Long size = null;
+                try {
+                    java.nio.file.Path filePath = DataFileTools.getDataFilePath(this.pi,
+                            DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
+                    if (Files.isRegularFile(filePath)) {
+                        size = Files.size(filePath);
+                        hash = getCachedSha256(filePath);
+                    }
+                } catch (Exception e) {
+                    logger.warn("Could not compute hash/size for web archive {}: {}", filename, e.getMessage());
+                }
+                return new WebArchiveResource(filename, url, hash, size);
             }).toList();
 
             ReplayJson json = new ReplayJson(this.pi, topStruct.getLabel(), resources);
@@ -108,6 +133,31 @@ public class RecordWebArchiveResource {
 
     private String getWebArchiveUrl(String identifier, String filename) {
         return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_MEDIA).params(identifier, filename).build();
+    }
+
+    private static String getCachedSha256(java.nio.file.Path filePath) throws IOException, NoSuchAlgorithmException {
+        String key = filePath.toAbsolutePath().toString();
+        long lastModified = Files.getLastModifiedTime(filePath).toMillis();
+        long[] cached = hashTimestampCache.get(key);
+        if (cached != null && cached[0] == lastModified) {
+            return hashValueCache.get(key);
+        }
+        String hash = computeSha256(filePath);
+        hashTimestampCache.put(key, new long[] { lastModified });
+        hashValueCache.put(key, hash);
+        return hash;
+    }
+
+    private static String computeSha256(java.nio.file.Path filePath) throws IOException, NoSuchAlgorithmException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        try (InputStream is = Files.newInputStream(filePath)) {
+            byte[] buffer = new byte[65536];
+            int n;
+            while ((n = is.read(buffer)) != -1) {
+                digest.update(buffer, 0, n);
+            }
+        }
+        return HexFormat.of().formatHex(digest.digest());
     }
 
 }

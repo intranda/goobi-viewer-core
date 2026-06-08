@@ -120,8 +120,8 @@ function resolveDirs() {
     try {
         const entries = fs.readdirSync(gitViewerDir);
         themeRepoDir =
-            entries.find((e) => e === `goobi-viewer-theme-${mainTheme}`) ||
-            entries.find((e) => e.startsWith('goobi-viewer-theme-') && e.includes(mainTheme)) ||
+            entries.find((e) => e === `theme-${mainTheme}`) ||
+            entries.find((e) => e.startsWith('theme-') && e.includes(mainTheme)) ||
             null;
     } catch {
         // gitViewerDir does not exist or is not readable — fall back to convention
