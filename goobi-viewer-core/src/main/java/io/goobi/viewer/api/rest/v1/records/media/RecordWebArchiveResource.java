@@ -396,6 +396,7 @@ public class RecordWebArchiveResource {
             }
         }
         return HexFormat.of().formatHex(digest.digest());
+
     }
 
 }
