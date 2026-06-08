@@ -198,10 +198,16 @@
             color: #acacac;
         }
     }
+	&-media-selection {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		margin-bottom: 5px; 
+	}
 }
 
 .admin .admin__content-item {
-    &-text {
+    &-text { 
         display: grid;
         grid-template-columns: 140px 1fr auto;
         align-items: center;
@@ -212,6 +218,8 @@
 .admin__cms-create-page-inner {
     padding: 25px;
 }
+
+
 
 // CHANGES TO EXISTING STYLES CREATE PAGE
 .cms-create-page {
