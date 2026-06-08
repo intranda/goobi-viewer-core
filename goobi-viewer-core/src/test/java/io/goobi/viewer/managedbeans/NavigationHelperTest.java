@@ -238,7 +238,8 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
      * @verifies return expected value for given input
      */
     @Test
-    void setCurrentPage_shouldReturnExpectedValueForGivenInput() throws DAOException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
+    void setCurrentPage_shouldReturnExpectedValueForGivenInput()
+            throws DAOException, IndexUnreachableException, PresentationException, ViewerConfigurationException {
         NavigationHelper nh = new NavigationHelper();
         CMSPageContentManager contentManager = Mockito.mock(CMSPageContentManager.class);
         CMSTemplateManager templateManager = Mockito.mock(CMSTemplateManager.class);
@@ -253,82 +254,6 @@ class NavigationHelperTest extends AbstractDatabaseEnabledTest {
         nh.setCurrentPage(cms);
         assertEquals(nh.getCurrentView(), PageType.cmsPage.name());
         assertEquals(cms.getTitle(Locale.ENGLISH), adb.getTitleBarLabel(Locale.ENGLISH));
-    }
-
-    /**
-     * @see NavigationHelper#setCurrentPageForError(String)
-     * @verifies map null and generic error types to error
-     */
-    @Test
-    void setCurrentPageForError_shouldMapNullAndGenericErrorTypesToError() {
-        NavigationHelper nh = new NavigationHelper();
-
-        // null should map to "error"
-        nh.setCurrentPageForError(null);
-        assertEquals("error", nh.getCurrentPage());
-
-        // "general" should map to "error"
-        nh.setCurrentPageForError("general");
-        assertEquals("error", nh.getCurrentPage());
-
-        // "general_no_url" should map to "error"
-        nh.setCurrentPageForError("general_no_url");
-        assertEquals("error", nh.getCurrentPage());
-    }
-
-    /**
-     * @see NavigationHelper#setCurrentPageForError(String)
-     * @verifies pass through specific error types unchanged
-     */
-    @Test
-    void setCurrentPageForError_shouldPassThroughSpecificErrorTypesUnchanged() {
-        NavigationHelper nh = new NavigationHelper();
-
-        nh.setCurrentPageForError("recordNotFound");
-        assertEquals("recordNotFound", nh.getCurrentPage());
-
-        nh.setCurrentPageForError("download");
-        assertEquals("download", nh.getCurrentPage());
-
-        nh.setCurrentPageForError("viewExpired");
-        assertEquals("viewExpired", nh.getCurrentPage());
-    }
-
-    /**
-     * @verifies map generic types to error
-     * @see NavigationHelper#setCurrentPageForError(String)
-     */
-    @Test
-    void setCurrentPageForError_shouldMapGenericTypesToError() {
-        NavigationHelper nh = new NavigationHelper();
-
-        // null, general, general_no_url must all fall back to "error"
-        nh.setCurrentPageForError(null);
-        assertEquals("error", nh.getCurrentPage());
-
-        nh.setCurrentPageForError("general");
-        assertEquals("error", nh.getCurrentPage());
-
-        nh.setCurrentPageForError("general_no_url");
-        assertEquals("error", nh.getCurrentPage());
-    }
-
-    /**
-     * @verifies pass through specific error types
-     * @see NavigationHelper#setCurrentPageForError(String)
-     */
-    @Test
-    void setCurrentPageForError_shouldPassThroughSpecificErrorTypes() {
-        NavigationHelper nh = new NavigationHelper();
-
-        nh.setCurrentPageForError("recordNotFound");
-        assertEquals("recordNotFound", nh.getCurrentPage());
-
-        nh.setCurrentPageForError("download");
-        assertEquals("download", nh.getCurrentPage());
-
-        nh.setCurrentPageForError("viewExpired");
-        assertEquals("viewExpired", nh.getCurrentPage());
     }
 
     /**

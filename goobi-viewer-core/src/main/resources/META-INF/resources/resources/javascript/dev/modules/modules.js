@@ -617,7 +617,7 @@
                 rect = rect.translate(imageBounds.getTopLeft().times(-1)); //substract the image position
                 areaString = this.getAreaString(rect);
             }
-            let imageUrl = tileSource['@id'];
+            let imageUrl = viewerJS.iiif.getId(tileSource);
             imageUrl = imageUrl + '/' + areaString + '/max/' + this.image.viewer.getRotation() + '/default.jpg';
             return imageUrl;
         }

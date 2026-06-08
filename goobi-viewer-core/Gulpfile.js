@@ -129,12 +129,15 @@ function resolveDirs() {
 
     // Also scan cfg.tomcat_dir for a deployed theme folder whose name may differ
     // from mainTheme (e.g. "goobi-viewer-theme-hub-evifa" instead of "goobi-viewer-theme-evifa").
+    // Also handles multi-module builds where the webapp is deployed as "theme-<name>" (no "goobi-viewer-" prefix).
     let tomcatThemeDir = null;
     try {
         const entries = fs.readdirSync(cfg.tomcat_dir);
         tomcatThemeDir =
             entries.find((e) => e === `goobi-viewer-theme-${mainTheme}`) ||
+            entries.find((e) => e === `theme-${mainTheme}`) ||
             entries.find((e) => e.startsWith('goobi-viewer-theme-') && e.includes(mainTheme)) ||
+            entries.find((e) => e.startsWith('theme-') && e.includes(mainTheme)) ||
             null;
     } catch {
         // tomcat_dir does not exist or is not readable
@@ -144,11 +147,17 @@ function resolveDirs() {
     let deployDir;
 
     if (special && special.length) {
-        deployDir = path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
+        deployDir =
+            [
+                path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`),
+                path.join(cfg.tomcat_dir, `theme-${special}`),
+            ].find((c) => fs.existsSync(c)) || path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
     } else {
         const candidates = [
-            // tomcat webapps: exact config name
+            // tomcat webapps: exact config name (legacy prefix)
             path.join(cfg.tomcat_dir, `goobi-viewer-theme-${mainTheme}`),
+            // tomcat webapps: short prefix used in multi-module builds
+            path.join(cfg.tomcat_dir, `theme-${mainTheme}`),
             // tomcat webapps: discovered folder name (handles repo name ≠ config name)
             ...(tomcatThemeDir ? [path.join(cfg.tomcat_dir, tomcatThemeDir)] : []),
             // tomcat webapps: git repo dir name
