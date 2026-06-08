@@ -94,6 +94,8 @@ public class EpicurFormat extends Format {
             useNumRows = records.size();
         }
         int pagecount = 0;
+        // Number of OAI records actually emitted in this batch (document records + page records); used to advance the virtual cursor.
+        int virtualHitCount = 0;
         for (SolrDocument doc : records) {
             long dateUpdated = SolrSearchTools.getLatestValidDateUpdated(doc, RequestHandler.getUntilTimestamp(handler.getUntil()));
             Long dateDeleted = (Long) doc.getFieldValue(SolrConstants.DATEDELETED);
@@ -107,6 +109,7 @@ public class EpicurFormat extends Format {
                 metadata.addContent(generateEpicurElement((String) doc.getFieldValue(SolrConstants.URN),
                         (Long) doc.getFieldValue(SolrConstants.DATECREATED), dateUpdated, dateDeleted, topstruct));
                 xmlListRecords.addContent(eleRecord);
+                virtualHitCount++;
             }
 
             if (dateDeleted == null) {
@@ -134,6 +137,7 @@ public class EpicurFormat extends Format {
                                 (Long) doc.getFieldValue(SolrConstants.DATEDELETED)));
                         xmlListRecords.addContent(pagerecord);
                         pagecount++;
+                        virtualHitCount++;
                     }
                     logger.trace("Found {} page records for {}", qrInner.getResults().size(), doc.getFieldValue(SolrConstants.PI_TOPSTRUCT));
                 }
@@ -152,15 +156,19 @@ public class EpicurFormat extends Format {
                                 generateEpicurPageElement(imgUrn, (Long) doc.getFieldValue(SolrConstants.DATECREATED), dateUpdated, dateDeleted));
                         xmlListRecords.addContent(pagerecord);
                         pagecount++;
+                        virtualHitCount++;
                     }
                 }
             }
         }
         logger.debug("Found {} page records total", pagecount);
 
-        // Create resumption token
+        // Create resumption token. The raw cursor advances by Solr documents, while the virtual cursor and completeListSize count emitted
+        // records (document records + page records), so the reported size matches the number of <record> elements returned by the harvest.
         if (records.getNumFound() > firstRawRow + useNumRows) {
-            Element resumption = createResumptionTokenAndElement(records.getNumFound(), firstRawRow + useNumRows, firstRawRow, handler);
+            long totalVirtualHits = getCompleteListSize(Utils.filterDatestampFromRequest(handler), filterQuerySuffix);
+            Element resumption = createResumptionTokenAndElement(totalVirtualHits, records.getNumFound(), firstVirtualRow + virtualHitCount,
+                    firstRawRow + useNumRows, firstVirtualRow, handler);
             xmlListRecords.addContent(resumption);
         }
 
@@ -445,14 +453,45 @@ public class EpicurFormat extends Format {
     @Override
     public long getTotalHits(Map<String, String> params, String versionDiscriminatorField, String filterQuerySuffix)
             throws IOException, SolrServerException {
-        // Hit count may differ for epicur
-        String additionalQuery = SolrSearchTools.getUrnPrefixBlacklistSuffix(DataManager.getInstance().getConfiguration().getUrnPrefixBlacklist());
+        // For ListRecords epicur emits one OAI record per record URN plus one per page URN, so the virtual hit count (number of emitted
+        // records) differs from the raw Solr document count. This must match the completeListSize written into the resumption token.
         if (!Verb.LISTIDENTIFIERS.getTitle().equals(params.get("verb"))) {
-            additionalQuery +=
-                    SolrSearchTools.getAdditionalDocstructsQuerySuffix(DataManager.getInstance().getConfiguration().getAdditionalDocstructTypes());
+            return getCompleteListSize(params, filterQuerySuffix);
         }
-        // Query Solr index for the total hits number
+        // ListIdentifiers emits one header per record, so the virtual hit count equals the raw document count.
+        String additionalQuery = SolrSearchTools.getUrnPrefixBlacklistSuffix(DataManager.getInstance().getConfiguration().getUrnPrefixBlacklist());
         return solr.getTotalHitNumber(params, true, additionalQuery, null, filterQuerySuffix);
+    }
+
+    /**
+     * Returns the number of OAI records emitted for an epicur ListRecords harvest: one record per record-level URN, plus one record per page URN
+     * (live pages via DOCTYPE:PAGE documents, deleted pages via the multivalued IMAGEURN_OAI field). This virtual hit count is reported as
+     * completeListSize and stored in the resumption token.
+     *
+     * @param params a {@link java.util.Map} object.
+     * @param filterQuerySuffix Filter query suffix for the client's session
+     * @return total number of emitted OAI records across the whole harvest set
+     * @throws IOException
+     * @throws SolrServerException
+     */
+    long getCompleteListSize(Map<String, String> params, String filterQuerySuffix) throws IOException, SolrServerException {
+        String urnPrefixBlacklistSuffix =
+                SolrSearchTools.getUrnPrefixBlacklistSuffix(DataManager.getInstance().getConfiguration().getUrnPrefixBlacklist());
+        String additionalQuery = urnPrefixBlacklistSuffix
+                + SolrSearchTools.getAdditionalDocstructsQuerySuffix(DataManager.getInstance().getConfiguration().getAdditionalDocstructTypes());
+
+        // One query for the record-level URN count (document records) and the deleted page URN count (IMAGEURN_OAI values).
+        QueryResponse qr = solr.search(params.get("from"), params.get("until"), params.get("set"), params.get("metadataPrefix"), 0, 0, true,
+                additionalQuery, filterQuerySuffix, null, Arrays.asList(SolrConstants.URN, SolrConstants.IMAGEURN_OAI));
+        long docRecords = SolrSearchTools.getFieldCount(qr, SolrConstants.URN);
+        long deletedPageRecords = SolrSearchTools.getFieldCount(qr, SolrConstants.IMAGEURN_OAI);
+
+        // One query (Solr join) for the live page URN count across all matching records.
+        long livePageRecords = solr.getPageTotalHitNumber(params, additionalQuery, urnPrefixBlacklistSuffix, filterQuerySuffix);
+
+        logger.debug("completeListSize: {} doc records + {} deleted page records + {} live page records", docRecords, deletedPageRecords,
+                livePageRecords);
+        return docRecords + deletedPageRecords + livePageRecords;
     }
 
 }
