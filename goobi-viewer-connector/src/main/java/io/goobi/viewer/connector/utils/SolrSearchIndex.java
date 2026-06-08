@@ -510,6 +510,44 @@ public class SolrSearchIndex implements Closeable {
     }
 
     /**
+     * Returns the total number of page documents (DOCTYPE:PAGE with an IMAGEURN) that belong to the records matching the given OAI query. Epicur
+     * emits one OAI record per page URN, so this count is needed to determine the virtual hit number (completeListSize) for ListRecords.
+     *
+     * @param params a {@link java.util.Map} object.
+     * @param additionalQuery Additional query applied to the record-level sub-query (URN prefix blacklist + additional docstruct types).
+     * @param urnPrefixBlacklistSuffix URN prefix blacklist suffix applied to the page-level query.
+     * @param filterQuerySuffix Filter query suffix for the client's session (applied to the record-level sub-query, matching getListRecords).
+     * @return number of matching page documents
+     * @throws IOException
+     * @throws SolrServerException
+     */
+    public long getPageTotalHitNumber(Map<String, String> params, String additionalQuery, String urnPrefixBlacklistSuffix,
+            String filterQuerySuffix) throws IOException, SolrServerException {
+        // Sub-query selecting the same record-level documents as getListRecords (works/anchors/deleted docs with a URN or page URNs).
+        StringBuilder sbRecordQuery = new StringBuilder(SolrSearchTools.buildQueryString(params.get(PARAM_FROM), params.get(PARAM_UNTIL),
+                params.get(PARAM_SET), params.get(PARAM_METADATA_PREFIX), true, additionalQuery));
+        sbRecordQuery.append(" +(").append(SolrConstants.URN).append(":* ").append(SolrConstants.IMAGEURN_OAI).append(":*)");
+        if (StringUtils.isNotEmpty(filterQuerySuffix)) {
+            sbRecordQuery.append(filterQuerySuffix);
+        }
+
+        // Page-level query, joined to the record-level sub-query via PI_TOPSTRUCT. The sub-query is passed as a parameter to avoid escaping.
+        StringBuilder sbQuery = new StringBuilder("+").append(SolrConstants.DOCTYPE).append(":PAGE +").append(SolrConstants.IMAGEURN).append(":*");
+        if (StringUtils.isNotEmpty(urnPrefixBlacklistSuffix)) {
+            sbQuery.append(urnPrefixBlacklistSuffix);
+        }
+        logger.debug("OAI page count query: {}, sub-query: {}", sbQuery, sbRecordQuery);
+        SolrQuery solrQuery = new SolrQuery(sbQuery.toString());
+        solrQuery.addFilterQuery("{!join from=" + SolrConstants.PI_TOPSTRUCT + " to=" + SolrConstants.PI_TOPSTRUCT + " v=$recq}");
+        solrQuery.set("recq", sbRecordQuery.toString());
+        solrQuery.setStart(0);
+        solrQuery.setRows(0);
+        long num = querySolr(solrQuery, RETRY_ATTEMPTS).getResults().getNumFound();
+        logger.debug("Total page hits: {}", num);
+        return num;
+    }
+
+    /**
      * <p>
      * getEarliestRecordDatestamp.
      * </p>
