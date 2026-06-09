@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:fn="http://www.w3.org/2005/xpath-functions"
+	xmlns:cs="http://www.goobi.org/contentServer" xmlns:goobi="http://www.goobi.org/logfile">
+	<fo:layout-master-set>
+		<fo:simple-page-master master-name="A4-portrait"
+			page-width="21cm" page-height="29.7cm" margin-left="1cm" margin-top="1cm"
+			margin-right="1cm" margin-bottom="0cm">
+			<fo:region-body />
+			<fo:region-before extent="3cm" region-name="Header" />
+			<!-- <fo:region-after extent="3cm" region-name="Footer" /> -->
+		</fo:simple-page-master>
+	</fo:layout-master-set>
+	<fo:page-sequence master-reference="A4-portrait">
+		<fo:static-content flow-name="Header">
+			<fo:block>
+				<fo:table>
+					<fo:table-column column-number="1" column-width="70%" />
+					<fo:table-column column-number="2" column-width="30%" />
+					<fo:table-body>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block text-align="left" margin-top="0.3cm">
+									Goobi viewer - digitale Bibliothek
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block text-align="right"
+									margin-top="-0.5cm">
+									<fo:external-graphic content-width="3cm"
+										src="/opt/digiverso/viewer/config/PdfTitlePage/resources/goobi_logo.png" />
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</fo:table-body>
+				</fo:table>
+			</fo:block>
+			<fo:block border-top-width="2pt" border-top-style="solid"
+				border-top-color="black" margin-top="10pt" margin-bottom="10pt" />
+		</fo:static-content>
+		<!-- <fo:static-content flow-name="Footer"> <fo:block background-color="#436b9a"> 
+			<fo:table> <fo:table-column column-number="1" column-width="50%" /> <fo:table-column 
+			column-number="2" column-width="50%" /> <fo:table-body> <fo:table-row> <fo:table-cell> 
+			<fo:block text-align="left" margin-top="3px" margin-left="10px"> <fo:external-graphic 
+			content-height="2cm" src="/opt/digiverso/git/intrandaContentServer/intrandaContentServer/WebContent/images/watermark/intranda_gray_bright.png" 
+			/> </fo:block> </fo:table-cell> <fo:table-cell> <fo:block margin-top="3px" 
+			margin-right="8px" text-align="right"> <fo:external-graphic content-height="2cm" 
+			src="/opt/digiverso/git/intrandaContentServer/intrandaContentServer/WebContent/images/watermark/book.png" 
+			/> </fo:block> </fo:table-cell> </fo:table-row> </fo:table-body> </fo:table> 
+			</fo:block> </fo:static-content> -->
+		<fo:flow flow-name="xsl-region-body" font-family="opensans, unicode">
+
+			<fo:table font-size="12pt" margin-top="3cm" line-height="14pt" border-collapse="separate" border-separation="0.5em">
+				<fo:table-column column-width="30%" font-weight="bold"/>
+				<fo:table-column column-width="70%" />
+				<fo:table-body>
+
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Persistenter Identifier:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="TOP">mods:mods/mods:recordInfo/mods:recordIdentifier
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Titel:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="TOP">mods:mods/mods:titleInfo/mods:title
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Künstler/Illustrator:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<cs:block repeat="true">
+									<fo:block >
+										<cs:meta from="TOP">mods:mods/mods:name[@type='personal'][mods:role/mods:roleTerm='ill']/mods:displayForm
+										</cs:meta>
+									</fo:block>
+								</cs:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Autor:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<cs:block repeat="true">
+									<fo:block >
+										<cs:meta from="TOP">mods:mods/mods:name[@type='personal'][mods:role/mods:roleTerm='aut']/mods:displayForm
+										</cs:meta>
+									</fo:block>
+								</cs:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Ort:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="TOP">mods:mods/mods:originInfo/mods:place
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Inhalt/Darstellung:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="TOP">mods:mods/mods:abstract[@type='illustrationtype']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Technik:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="TOP">mods:mods/mods:abstract[@type='Technic']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Maße:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="TOP">mods:mods/mods:physicalDescription/mods:extent
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Datierung:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="TOP">mods:mods/mods:originInfo/mods:dateCreated
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Funktion (Zeichnungstyp):
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="TOP">mods:mods/mods:abstract[@type='purpose']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Beschriftungen:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="TOP">mods:mods/mods:subject/mods:topic
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Maßstab:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="TOP">mods:mods/mods:subject/mods:cartographics/mods:scale
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Stempel:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="TOP">mods:mods/mods:note[@type='stamp']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Provenienz:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="TOP">mods:mods/mods:note[@type='ownership']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Besitzende Institution:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="TOP">mods:mods/mods:name[@type='corporate'][mods:role/mods:roleTerm='own']/mods:namePart
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Signatur:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="TOP">mods:mods/mods:location/mods:shelfLocator
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									alte Signatur:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="TOP">mods:mods/mods:location/mods:physicalLocation[@type='former']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Bemerkung:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="TOP">mods:mods/mods:note[@type='comment']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Strukturtyp:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="TOP">@TYPE
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+						<fo:table-row >
+							<fo:table-cell>
+								<fo:block margin-top="1em" font-weight="bold">
+									Lizenz:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block  margin-top="1em">
+									<fo:basic-link color="blue" text-decoration="underline" external-destination="https://creativecommons.org/licenses/by-sa/4.0/">
+									https://creativecommons.org/licenses/by-sa/4.0/
+									</fo:basic-link>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+						<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									PURL:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:link color="blue" text-decoration="underline">
+										<cs:ref>
+											htps://viewer.goobi.io/image/<cs:meta from="TOP">mods:mods/mods:recordInfo/mods:recordIdentifier
+											</cs:meta>/1/
+										</cs:ref>
+										htps://viewer.goobi.io/image/<cs:meta from="TOP">mods:mods/mods:recordInfo/mods:recordIdentifier
+										</cs:meta>/1/
+									</cs:link>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+				</fo:table-body>
+			</fo:table>
+<cs:block renderIfExists="DIV">
+<fo:table font-size="12pt" margin-top="3em" line-height="14pt" border-collapse="separate" border-separation="0.5em">
+				<fo:table-column column-width="30%" font-weight="bold"/>
+				<fo:table-column column-width="70%" />
+				<fo:table-body>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Abschnitt:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<cs:block repeat="true">
+									<fo:block >
+										<cs:meta from="DIV">mods:mods/mods:titleInfo/mods:title
+										<cs:alt from="DIV">@TYPE</cs:alt>
+										</cs:meta>
+									</fo:block>
+								</cs:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Künstler/Illustrator:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<cs:block repeat="true">
+									<fo:block >
+										<cs:meta from="DIV">mods:mods/mods:name[@type='personal'][mods:role/mods:roleTerm='ill']/mods:displayForm
+										</cs:meta>
+									</fo:block>
+								</cs:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Autor:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<cs:block repeat="true">
+									<fo:block >
+										<cs:meta from="DIV">mods:mods/mods:name[@type='personal'][mods:role/mods:roleTerm='aut']/mods:displayForm
+										</cs:meta>
+									</fo:block>
+								</cs:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Ort:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="DIV">mods:mods/mods:originInfo/mods:place
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Inhalt/Darstellung:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="DIV">mods:mods/mods:abstract[@type='illustrationtype']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Technik:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="DIV">mods:mods/mods:abstract[@type='Technic']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Maße:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="DIV">mods:mods/mods:physicalDescription/mods:extent
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Datierung:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="DIV">mods:mods/mods:originInfo/mods:dateCreated
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Funktion (Zeichnungstyp):
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="DIV">mods:mods/mods:abstract[@type='purpose']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Beschriftungen:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="DIV">mods:mods/mods:subject/mods:topic
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Maßstab:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="DIV">mods:mods/mods:subject/mods:cartographics/mods:scale
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Stempel:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="DIV">mods:mods/mods:note[@type='stamp']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Provenienz:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="DIV">mods:mods/mods:note[@type='ownership']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Besitzende Institution:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="DIV">mods:mods/mods:name[@type='corporate'][mods:role/mods:roleTerm='own']/mods:namePart
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Signatur:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="DIV">mods:mods/mods:location/mods:shelfLocator
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									alte Signatur:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="DIV">mods:mods/mods:location/mods:physicalLocation[@type='former']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Bemerkung:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block>
+									<cs:meta from="DIV">mods:mods/mods:note[@type='comment']
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+					<cs:block>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									Strukturtyp:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:meta from="DIV">@TYPE
+									</cs:meta>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+					</cs:block>
+						<fo:table-row >
+							<fo:table-cell>
+								<fo:block margin-top="1em" font-weight="bold">
+									Lizenz:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block  margin-top="1em">
+									<fo:basic-link color="blue" text-decoration="underline" external-destination="https://creativecommons.org/licenses/by-sa/4.0/">
+									https://creativecommons.org/licenses/by-sa/4.0/
+									</fo:basic-link>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+						<fo:table-row>
+							<fo:table-cell>
+								<fo:block font-weight="bold">
+									PURL:
+								</fo:block>
+							</fo:table-cell>
+							<fo:table-cell>
+								<fo:block >
+									<cs:link color="blue" text-decoration="underline">
+										<cs:ref>
+											htps://viewer.goobi.io/image/<cs:meta from="TOP">mods:mods/mods:recordInfo/mods:recordIdentifier
+											</cs:meta>/<cs:meta from="DIV_START_PAGE">@ORDER</cs:meta>/<cs:meta from="DIV">@ID</cs:meta>/
+										</cs:ref>
+										htps://viewer.goobi.io/image/<cs:meta from="TOP">mods:mods/mods:recordInfo/mods:recordIdentifier
+										</cs:meta>/<cs:meta from="DIV_START_PAGE">@ORDER</cs:meta>/<cs:meta from="DIV">@ID</cs:meta>/
+									</cs:link>
+								</fo:block>
+							</fo:table-cell>
+						</fo:table-row>
+				</fo:table-body>
+			</fo:table>
+			</cs:block>
+		</fo:flow>
+	</fo:page-sequence>
+</fo:root>

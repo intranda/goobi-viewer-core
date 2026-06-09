@@ -39,18 +39,190 @@
     }
 }
 
-/* BREAKPOINT FOR LARGE DESKTOPS */
-@media screen and (max-width: @largeBreakpoint) {
-}
+/* ==============================================================
+   Related Groups Content Section (below object image)
+   style declarations for relatedGroupsSection.xhtml
+   ============================================================== */
+.related-groups-section {
+    margin-top: 30px;
 
-/* BREAKPOINT FOR DESKTOPS */
-@media screen and (max-width: @mediumBreakpoint) {
+    &__heading {
+        margin: 0 0 20px 0;
+    }
+    &__heading-link {
+        word-wrap: anywhere;
+        text-decoration: underline;
+    }
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        align-items: start;
+        padding: 20px;
+        background: @white;
+        border: 1px solid @middlegray;
+    }
+    &__card {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        text-decoration: none;
+        color: inherit;
+
+        &:hover,
+        &:focus {
+            text-decoration: none;
+            color: inherit;
+
+            .related-groups-section__card-title {
+                text-decoration: underline;
+            }
+        }
+    }
+    &__card-image {
+        width: 100%;
+        aspect-ratio: 140 / 195;
+        overflow: hidden;
+        background-color: @neutralgray;
+        border: 1px solid @middlegray;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+    &__card-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    &__card-title {
+        font-size: @fontMedium;
+        font-weight: 600;
+        line-height: 1.4;
+        color: @black;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    &__card-year,
+    &__card-creator {
+        font-size: @fontSmall;
+        line-height: 1.4;
+        color: @gray;
+    }
+    &__view-all-wrapper {
+        display: flex;
+        align-items: center;
+    }
+    &__view-all {
+        width: 100%;
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 8px;
+        height: 195px;
+        border: 1px solid @middlegray;
+        background: transparent;
+        text-decoration: none;
+        transition: background-color 0.15s ease;
+
+        &:hover,
+        &:focus {
+            background-color: @neutralgray;
+            text-decoration: none;
+        }
+    }
+    &__view-all-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        font-size: 2rem;
+        line-height: 1;
+    }
+    &__view-all-label {
+        font-size: @fontMedium;
+        font-weight: 600;
+    }
 }
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+    .related-groups-section {
+        &__grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        &__view-all {
+            grid-column: 1 / -1;
+            height: 120px;
+        }
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
+    .related-groups-section {
+        &__grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        &__view-all {
+            grid-column: 1 / -1;
+            height: 100px;
+        }
+    }
+}
+
+/* DARK MODE OVERRIDES (OS preference + manual toggle).
+   Uses the theme's CSS custom properties (defined in .mx-theme-dark);
+   hex fallbacks ensure sane defaults in themes that don't set them. */
+.mx-related-groups-dark() {
+    .related-groups-section {
+        color: var(--fg-content-box, #e3e4e7);
+
+        &__grid {
+            background: var(--bg-content-box, #253044);
+            border-color: var(--bg-active, #3b4557);
+        }
+        &__heading,
+        &__card-title {
+            color: var(--fg-content-box, #e3e4e7);
+        }
+        &__heading-link {
+            color: var(--lk-content-box, #e3e4e7);
+        }
+        &__card-image {
+            border-color: var(--bg-active, #3b4557);
+        }
+        &__view-all {
+            border-color: var(--bg-active, #3b4557);
+
+            &:hover,
+            &:focus {
+                background-color: var(--bg-hover, #5b6473);
+            }
+        }
+        &__card-creator,
+        &__card-year {
+            color: var(--fg-content-box, #e3e4e7);
+            opacity: 0.7;
+        }
+        &__card-image {
+            background-color: var(--bg-active, #3b4557);
+        }
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .mx-related-groups-dark();
+}
+.color-theme-dark {
+    .mx-related-groups-dark();
 }

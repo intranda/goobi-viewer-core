@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mets:mets OBJID="" xsi:schemaLocation="http://www.loc.gov/standards/premis/ http://www.loc.gov/standards/premis/v2/premis-v2-0.xsd http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd http://www.loc.gov/standards/mix/ http://www.loc.gov/standards/mix/mix.xsd" xmlns:mets="http://www.loc.gov/METS/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <mets:metsHdr CREATEDATE="2019-12-31T13:32:10Z">
+      <mets:agent OTHERTYPE="SOFTWARE" ROLE="CREATOR" TYPE="OTHER">
+         <mets:name>Goobi - ugh-3.0-ugh-2.0.0-29-g3b6efe1 - 21−December−2016</mets:name>
+         <mets:note>Goobi</mets:note>
+      </mets:agent>
+   </mets:metsHdr>
+   <mets:dmdSec ID="DMDLOG_0000">
+      <mets:mdWrap MDTYPE="MODS">
+         <mets:xmlData>
+            <mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+               <mods:classification authority="ivdcc">dcauthoritydata#viaf</mods:classification>
+               
+               <mods:recordInfo>
+                  <mods:recordIdentifier source="gbv-ppn">PPN517154005</mods:recordIdentifier>
+               </mods:recordInfo>
+               <mods:identifier type="PPNanalog">PPN517154005</mods:identifier>
+               <mods:titleInfo>
+                  <mods:title>Universität und Technische Hochschule</mods:title>
+               </mods:titleInfo>
+               <mods:name type="personal" valueURI="http://viaf.org/processed/DNB%7C11856286X?httpAccept=text/xml">
+                  <mods:role>
+                     <mods:roleTerm authority="marcrelator" type="code">aut</mods:roleTerm>
+                  </mods:role>
+                  <mods:namePart type="family">Klein</mods:namePart>
+                  <mods:namePart type="given">Felix</mods:namePart>
+		  <mods:displayForm>Klein, Felix</mods:displayForm>
+		  <mods:nameIdentifier type="viaf-cluster">http://viaf.org/viaf/24603438</mods:nameIdentifier>
+		  <mods:nameIdentifier type="viaf">http://viaf.org/processed/DNB%7C11856286X?httpAccept=text/xml</mods:nameIdentifier>
+               </mods:name>
+               <mods:physicalDescription>
+                  <mods:extent>13 S.</mods:extent>
+               </mods:physicalDescription>
+            </mods:mods>
+         </mets:xmlData>
+      </mets:mdWrap>
+   </mets:dmdSec>
+   <mets:dmdSec ID="DMDLOG_0001">
+      <mets:mdWrap MDTYPE="MODS">
+         <mets:xmlData>
+            <mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+               <mods:titleInfo>
+                  <mods:title>Hochgeehrte Anwesende!</mods:title>
+               </mods:titleInfo>
+            </mods:mods>
+         </mets:xmlData>
+      </mets:mdWrap>
+   </mets:dmdSec>
+   <mets:amdSec ID="AMD">
+      <mets:rightsMD ID="RIGHTS">
+         <mets:mdWrap MDTYPE="OTHER" MIMETYPE="text/xml" OTHERMDTYPE="DVRIGHTS">
+            <mets:xmlData>
+               <dv:rights xmlns:dv="http://dfg-viewer.de/">
+                  <dv:owner>Digitalisierungszentrum der Niedersächsischen Staats- und Universitätsbibliothek Göttingen</dv:owner>
+                  <dv:ownerLogo>http://gdz.sub.uni-goettingen.de/logo_gdz_dfgv.png</dv:ownerLogo>
+                  <dv:ownerSiteURL>http://gdz.sub.uni-goettingen.de</dv:ownerSiteURL>
+                  <dv:ownerContact/>
+               </dv:rights>
+            </mets:xmlData>
+         </mets:mdWrap>
+      </mets:rightsMD>
+      <mets:digiprovMD ID="DIGIPROV">
+         <mets:mdWrap MDTYPE="OTHER" MIMETYPE="text/xml" OTHERMDTYPE="DVLINKS">
+            <mets:xmlData>
+               <dv:links xmlns:dv="http://dfg-viewer.de/">
+                  <dv:reference>http://opac.sub.uni-goettingen.de/DB=1/PPN?PPN=517154005</dv:reference>
+                  <dv:presentation>http://resolver.sub.uni-goettingen.de/purl?PPN517154005</dv:presentation>
+               </dv:links>
+            </mets:xmlData>
+         </mets:mdWrap>
+      </mets:digiprovMD>
+   </mets:amdSec>
+   <mets:fileSec>
+      <mets:fileGrp USE="DEFAULT">
+         <mets:file ID="FILE_0001_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000001.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0002_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000002.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0003_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000003.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0004_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000004.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0005_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000005.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0006_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000006.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0007_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000007.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0008_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000008.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0009_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000009.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0010_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000010.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0011_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000011.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0012_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000012.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0013_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000013.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0014_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000014.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0015_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000015.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0016_DEFAULT" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/800/0/00000016.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+      </mets:fileGrp>
+      <mets:fileGrp USE="MIN">
+         <mets:file ID="FILE_0001_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000001.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0002_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000002.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0003_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000003.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0004_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000004.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0005_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000005.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0006_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000006.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0007_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000007.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0008_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000008.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0009_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000009.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0010_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000010.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0011_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000011.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0012_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000012.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0013_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000013.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0014_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000014.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0015_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000015.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0016_MIN" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/500/0/00000016.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+      </mets:fileGrp>
+      <mets:fileGrp USE="THUMBS">
+         <mets:file ID="FILE_0001_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000001.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0002_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000002.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0003_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000003.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0004_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000004.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0005_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000005.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0006_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000006.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0007_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000007.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0008_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000008.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0009_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000009.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0010_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000010.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0011_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000011.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0012_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000012.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0013_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000013.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0014_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000014.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0015_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000015.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0016_THUMBS" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/150/0/00000016.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+      </mets:fileGrp>
+      <mets:fileGrp USE="PRESENTATION">
+         <mets:file ID="FILE_0001_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000001.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0002_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000002.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0003_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000003.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0004_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000004.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0005_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000005.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0006_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000006.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0007_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000007.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0008_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000008.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0009_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000009.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0010_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000010.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0011_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000011.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0012_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000012.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0013_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000013.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0014_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000014.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0015_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000015.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0016_PRESENTATION" MIMETYPE="image/tiff">
+            <mets:FLocat LOCTYPE="URL" xlink:href="file:///opt/digiverso/viewer/media/PPN517154005/00000016.tif" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+      </mets:fileGrp>
+      <mets:fileGrp USE="MAX">
+         <mets:file ID="FILE_0001_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000001.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0002_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000002.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0003_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000003.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0004_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000004.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0005_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000005.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0006_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000006.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0007_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000007.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0008_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000008.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0009_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000009.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0010_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000010.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0011_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000011.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0012_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000012.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0013_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000013.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0014_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000014.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0015_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000015.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+         <mets:file ID="FILE_0016_MAX" MIMETYPE="image/jpeg">
+            <mets:FLocat LOCTYPE="URL" xlink:href="http://gdz-srv1.sub.uni-goettingen.de/content/PPN517154005/1000/0/00000016.jpg" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+         </mets:file>
+      </mets:fileGrp>
+   </mets:fileSec>
+   <mets:structMap TYPE="LOGICAL">
+      <mets:div ADMID="AMD" DMDID="DMDLOG_0000" ID="LOG_0000" LABEL="Universität und Technische Hochschule" TYPE="monograph">
+         <mets:div ID="LOG_0001" TYPE="TitlePage"/>
+         <mets:div ID="LOG_0002" TYPE="TitlePage"/>
+         <mets:div DMDID="DMDLOG_0001" ID="LOG_0003" LABEL="Hochgeehrte Anwesende!" TYPE="Chapter"/>
+      </mets:div>
+   </mets:structMap>
+   <mets:structMap TYPE="PHYSICAL">
+      <mets:div ID="PHYS_0000" TYPE="physSequence">
+         <mets:div ID="PHYS_0001" ORDER="1" ORDERLABEL=" - " TYPE="page">
+            <mets:fptr FILEID="FILE_0001_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0001_MIN"/>
+            <mets:fptr FILEID="FILE_0001_THUMBS"/>
+            <mets:fptr FILEID="FILE_0001_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0001_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0002" ORDER="2" ORDERLABEL=" - " TYPE="page">
+            <mets:fptr FILEID="FILE_0002_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0002_MIN"/>
+            <mets:fptr FILEID="FILE_0002_THUMBS"/>
+            <mets:fptr FILEID="FILE_0002_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0002_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0003" ORDER="3" ORDERLABEL="1" TYPE="page">
+            <mets:fptr FILEID="FILE_0003_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0003_MIN"/>
+            <mets:fptr FILEID="FILE_0003_THUMBS"/>
+            <mets:fptr FILEID="FILE_0003_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0003_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0004" ORDER="4" ORDERLABEL="2" TYPE="page">
+            <mets:fptr FILEID="FILE_0004_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0004_MIN"/>
+            <mets:fptr FILEID="FILE_0004_THUMBS"/>
+            <mets:fptr FILEID="FILE_0004_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0004_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0005" ORDER="5" ORDERLABEL="3" TYPE="page">
+            <mets:fptr FILEID="FILE_0005_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0005_MIN"/>
+            <mets:fptr FILEID="FILE_0005_THUMBS"/>
+            <mets:fptr FILEID="FILE_0005_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0005_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0006" ORDER="6" ORDERLABEL="4" TYPE="page">
+            <mets:fptr FILEID="FILE_0006_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0006_MIN"/>
+            <mets:fptr FILEID="FILE_0006_THUMBS"/>
+            <mets:fptr FILEID="FILE_0006_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0006_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0007" ORDER="7" ORDERLABEL="5" TYPE="page">
+            <mets:fptr FILEID="FILE_0007_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0007_MIN"/>
+            <mets:fptr FILEID="FILE_0007_THUMBS"/>
+            <mets:fptr FILEID="FILE_0007_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0007_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0008" ORDER="8" ORDERLABEL="6" TYPE="page">
+            <mets:fptr FILEID="FILE_0008_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0008_MIN"/>
+            <mets:fptr FILEID="FILE_0008_THUMBS"/>
+            <mets:fptr FILEID="FILE_0008_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0008_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0009" ORDER="9" ORDERLABEL="7" TYPE="page">
+            <mets:fptr FILEID="FILE_0009_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0009_MIN"/>
+            <mets:fptr FILEID="FILE_0009_THUMBS"/>
+            <mets:fptr FILEID="FILE_0009_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0009_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0010" ORDER="10" ORDERLABEL="8" TYPE="page">
+            <mets:fptr FILEID="FILE_0010_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0010_MIN"/>
+            <mets:fptr FILEID="FILE_0010_THUMBS"/>
+            <mets:fptr FILEID="FILE_0010_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0010_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0011" ORDER="11" ORDERLABEL="9" TYPE="page">
+            <mets:fptr FILEID="FILE_0011_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0011_MIN"/>
+            <mets:fptr FILEID="FILE_0011_THUMBS"/>
+            <mets:fptr FILEID="FILE_0011_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0011_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0012" ORDER="12" ORDERLABEL="10" TYPE="page">
+            <mets:fptr FILEID="FILE_0012_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0012_MIN"/>
+            <mets:fptr FILEID="FILE_0012_THUMBS"/>
+            <mets:fptr FILEID="FILE_0012_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0012_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0013" ORDER="13" ORDERLABEL="11" TYPE="page">
+            <mets:fptr FILEID="FILE_0013_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0013_MIN"/>
+            <mets:fptr FILEID="FILE_0013_THUMBS"/>
+            <mets:fptr FILEID="FILE_0013_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0013_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0014" ORDER="14" ORDERLABEL="12" TYPE="page">
+            <mets:fptr FILEID="FILE_0014_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0014_MIN"/>
+            <mets:fptr FILEID="FILE_0014_THUMBS"/>
+            <mets:fptr FILEID="FILE_0014_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0014_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0015" ORDER="15" ORDERLABEL="13" TYPE="page">
+            <mets:fptr FILEID="FILE_0015_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0015_MIN"/>
+            <mets:fptr FILEID="FILE_0015_THUMBS"/>
+            <mets:fptr FILEID="FILE_0015_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0015_MAX"/>
+         </mets:div>
+         <mets:div ID="PHYS_0016" ORDER="16" ORDERLABEL="14" TYPE="page">
+            <mets:fptr FILEID="FILE_0016_DEFAULT"/>
+            <mets:fptr FILEID="FILE_0016_MIN"/>
+            <mets:fptr FILEID="FILE_0016_THUMBS"/>
+            <mets:fptr FILEID="FILE_0016_PRESENTATION"/>
+            <mets:fptr FILEID="FILE_0016_MAX"/>
+         </mets:div>
+      </mets:div>
+   </mets:structMap>
+   <mets:structLink>
+      <mets:smLink xlink:to="PHYS_0001" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0002" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0003" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0004" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0005" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0006" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0007" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0008" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0009" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0010" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0011" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0012" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0013" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0014" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0015" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0016" xlink:from="LOG_0000" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0001" xlink:from="LOG_0001" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0003" xlink:from="LOG_0002" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0005" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0006" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0007" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0008" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0009" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0010" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0011" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0012" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0013" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0014" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+      <mets:smLink xlink:to="PHYS_0015" xlink:from="LOG_0003" xmlns:xlink="http://www.w3.org/1999/xlink"/>
+   </mets:structLink>
+</mets:mets>

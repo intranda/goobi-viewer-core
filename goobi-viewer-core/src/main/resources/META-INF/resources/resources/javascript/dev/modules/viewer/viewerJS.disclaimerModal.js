@@ -57,12 +57,8 @@ var viewerJS = (function (viewer) {
                     let lastAcceptedDate = new Date(this.settings.lastAccepted);
                     if (_debug) console.log('disclaimer last edited ', lastEditedDate);
                     if (_debug) console.log('disclaimer last accepted ', lastAcceptedDate);
-                    if (_debug)
-                        console.log('disclaimer valid for session ', this.settings.sessionId, this.config.sessionId);
-                    if (
-                        this.config.storage.toLowerCase() === 'session' &&
-                        this.config.sessionId !== this.settings.sessionId
-                    ) {
+                    if (_debug) console.log('disclaimer valid for session ', this.settings.sessionId, this.config.sessionId);
+                    if (this.config.storage.toLowerCase() === 'session' && this.config.sessionId !== this.settings.sessionId) {
                         //disclaimer valid for session and stored session id differs from current session
                         this.showDisclaimer();
                     } else if (this.settings.lastAccepted < this.config.lastEdited) {
@@ -72,8 +68,7 @@ var viewerJS = (function (viewer) {
                         //check if daysToLive days have passed since last edited
                         let timeoutDate = new Date(this.settings.lastAccepted);
                         timeoutDate.setDate(timeoutDate.getDate() + this.config.daysToLive);
-                        if (_debug)
-                            console.log('disclaimer timeout date', timeoutDate, timeoutDate.getTime(), Date.now());
+                        if (_debug) console.log('disclaimer timeout date', timeoutDate, timeoutDate.getTime(), Date.now());
                         if (timeoutDate.getTime() < Date.now()) {
                             //now is later than the timeout day of the disclaimer --> need to accept again
                             this.showDisclaimer();
@@ -97,10 +92,7 @@ var viewerJS = (function (viewer) {
                 buttonsStyling: false,
             }).then(() => {
                 // console.log("accepted disclaimer");
-                this.setStoredSettings(
-                    { lastAccepted: Date.now(), sessionId: this.config.sessionId },
-                    this.config.storage
-                );
+                this.setStoredSettings({ lastAccepted: Date.now(), sessionId: this.config.sessionId }, this.config.storage);
             });
         },
         getStoredSettings(location) {
@@ -134,3 +126,7 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

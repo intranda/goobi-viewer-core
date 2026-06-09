@@ -81,10 +81,7 @@ var viewerJS = (function (viewer) {
         // reset filter on body click
         $('body').on('click', (event) => {
             if ($('.widget-search-facets__filter-input').hasClass('in')) {
-                if (
-                    event.target.id == 'searchListFacetsWrapper' ||
-                    $(event.target).closest('#searchListFacetsWrapper').length
-                ) {
+                if (event.target.id == 'searchListFacetsWrapper' || $(event.target).closest('#searchListFacetsWrapper').length) {
                     return;
                 } else {
                     this.resetFilters();
@@ -167,3 +164,8 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

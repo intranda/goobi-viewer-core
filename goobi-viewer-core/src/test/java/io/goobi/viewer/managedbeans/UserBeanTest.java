@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
@@ -38,6 +39,9 @@ import io.goobi.viewer.model.security.authentication.AuthenticationProviderExcep
 import io.goobi.viewer.model.security.authentication.IAuthenticationProvider;
 import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.user.User;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * @author Florian Alpers
@@ -190,5 +194,101 @@ class UserBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertNull(bean.getUser());
         //        Assertions.assertTrue(bean.getUser().isActive());
         //        Assertions.assertTrue(bean.getUser().isSuspended());
+    }
+
+    /**
+     * @see UserBean#completeLogin(IAuthenticationProvider,
+     *          LoginResult)
+     * @verifies rotate session id after successful login
+     */
+    @Test
+    void completeLogin_shouldRotateSessionIdAfterSuccessfulLogin()
+            throws Exception {
+        HttpSession mockSession =
+                Mockito.mock(HttpSession.class);
+        Mockito.when(mockSession.getId()).thenReturn("old-id");
+        HttpServletRequest mockRequest =
+                Mockito.mock(HttpServletRequest.class);
+        Mockito.when(mockRequest.getSession(false))
+                .thenReturn(mockSession);
+        Mockito.when(mockRequest.changeSessionId())
+                .thenReturn("new-id");
+        HttpServletResponse mockResponse =
+                Mockito.mock(HttpServletResponse.class);
+
+        User user = DataManager.getInstance().getDao()
+                .getUserByEmail(userActive_email);
+        Assertions.assertNotNull(user);
+
+        LoginResult result = new LoginResult(
+                mockRequest, mockResponse,
+                Optional.of(user), false);
+
+        IAuthenticationProvider provider =
+                bean.getAuthenticationProvider();
+        bean.setAuthenticationProvider(new IAuthenticationProvider() {
+
+            @Override
+            public void logout()
+                    throws AuthenticationProviderException {
+            }
+
+            @Override
+            public CompletableFuture<LoginResult> login(
+                    String loginName, String password)
+                    throws AuthenticationProviderException {
+                return CompletableFuture.completedFuture(result);
+            }
+
+            @Override
+            public String getType() {
+                return "test";
+            }
+
+            @Override
+            public String getName() {
+                return "test";
+            }
+
+            @Override
+            public boolean allowsPasswordChange() {
+                return false;
+            }
+
+            @Override
+            public boolean allowsNicknameChange() {
+                return false;
+            }
+
+            @Override
+            public boolean allowsEmailChange() {
+                return false;
+            }
+
+            @Override
+            public List<String> getAddUserToGroups() {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public void setAddUserToGroups(
+                    List<String> addUserToGroups) {
+            }
+
+            @Override
+            public String getRedirectUrl() {
+                return null;
+            }
+
+            @Override
+            public void setRedirectUrl(String redirectUrl) {
+            }
+        });
+
+        bean.setEmail(userActive_email);
+        bean.setPassword(userActive_pwHash);
+        bean.login();
+
+        Mockito.verify(mockRequest).changeSessionId();
     }
 }

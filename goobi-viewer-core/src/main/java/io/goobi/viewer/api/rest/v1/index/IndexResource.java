@@ -39,7 +39,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
@@ -78,16 +80,14 @@ import io.goobi.viewer.model.maps.features.LabelCreator;
 import io.goobi.viewer.model.maps.features.MetadataDocument;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.model.viewer.StringPair;
+import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -115,8 +115,45 @@ public class IndexResource {
 
     private static final Logger logger = LogManager.getLogger(IndexResource.class);
 
+    /**
+     * Snapshot of the computed Solr field list together with its expiry timestamp.
+     * Held in a volatile static reference because the JAX-RS resource is instantiated
+     * per request — the cache must live across requests.
+     */
+    private record CachedFieldInfo(List<SolrFieldInfo> value, long expiresAtMillis) {
+    }
+
+    private static volatile CachedFieldInfo cachedFieldInfo; //NOSONAR S3077: DCL; CachedFieldInfo record is immutable and safely published
+
+    /**
+     * TTL for the {@link #cachedFieldInfo} snapshot. Hard-coded because Solr field schemas
+     * change rarely (only with redeployments) and the endpoint is otherwise a cheap DoS
+     * vector for unauthenticated callers. Five minutes balances staleness after a schema
+     * update against repeated full-field recomputation.
+     */
+    private static final long INDEX_FIELDS_CACHE_TTL_MILLIS = TimeUnit.MINUTES.toMillis(5);
+
+    /**
+     * Test-only hook to drop the cached snapshot so unit tests start from a clean state.
+     * Visible to tests in the same package via package-private access.
+     */
+    static void invalidateAllIndexFieldsCacheForTesting() {
+        cachedFieldInfo = null;
+    }
+
     //limits of hits per clickable marker. This does not affect the number of total hits found by the heatmap
     private static final int MAX_RECORD_HITS = 50_000;
+
+    /**
+     * Allow-list pattern for the {@code region} query parameter of the spatial search/heatmap endpoints.
+     * Accepts only the characters needed by WKT range literals (e.g. {@code ["-180 -90" TO "180 90"]})
+     * and WKT shape literals ({@code POINT(...)}, {@code POLYGON(...)}, {@code MULTIPOLYGON(...)}).
+     * The letter set is the union of letters appearing in {@code POLYGON}, {@code POINT},
+     * {@code MULTIPOLYGON} and {@code TO}; this excludes characters Solr query syntax needs for
+     * local-param ({@code {}!}), boolean ({@code OR}, {@code AND} — the letters {@code R}, {@code A},
+     * {@code D} are not in the allow-list), wildcard ({@code *}) or field-name injection ({@code :}).
+     */
+    private static final Pattern WKT_REGION_PATTERN = Pattern.compile("^[\\s\\[\\]\",.\\-+0-9()PONLYGITMU]*$");
 
     @Context
     private HttpServletRequest servletRequest;
@@ -287,18 +324,39 @@ public class IndexResource {
      *
      * @return List<SolrFieldInfo>
      * @throws IOException
+     * @should serve repeat requests from cache within ttl
      */
     @GET
     @Path(INDEX_FIELDS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Retrieves a JSON list of all existing Solr fields.", tags = { "index" })
+    @Operation(summary = "Retrieves a JSON list of all existing Solr fields.",
+            description = "The response is cached server-side for 5 minutes; updates to the Solr"
+                    + " schema may take up to that long to become visible here.",
+            tags = { "index" })
     @ApiResponse(responseCode = "200", description = "JSON array of Solr field metadata")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public List<SolrFieldInfo> getAllIndexFields() throws IOException {
         logger.trace("getAllIndexFields");
-
         try {
-            return collectFieldInfo();
+            long now = System.currentTimeMillis();
+            CachedFieldInfo snapshot = cachedFieldInfo;
+            if (snapshot != null && snapshot.expiresAtMillis() > now) {
+                return snapshot.value();
+            }
+            // Single-flight recompute: synchronizing on the class lock makes concurrent
+            // expiry-storm requests share a single Solr+i18n round-trip instead of fanning
+            // out. Trade-off: callers wait while the cold-cache compute (a few hundred ms
+            // for typical schemas) runs. Acceptable for an endpoint with a 5-minute cache.
+            synchronized (IndexResource.class) {
+                // Re-check inside the lock — another thread may have populated the cache.
+                snapshot = cachedFieldInfo;
+                if (snapshot != null && snapshot.expiresAtMillis() > now) {
+                    return snapshot.value();
+                }
+                List<SolrFieldInfo> fresh = collectFieldInfo();
+                cachedFieldInfo = new CachedFieldInfo(fresh, now + INDEX_FIELDS_CACHE_TTL_MILLIS);
+                return fresh;
+            }
         } catch (IndexUnreachableException e) {
             logger.error(e.getMessage());
             throw new InternalServerErrorException(e.getMessage());
@@ -348,32 +406,39 @@ public class IndexResource {
         if (solrField == null || !solrField.matches("[A-Za-z_][A-Za-z0-9_]*")) {
             throw new IllegalRequestException("Not a valid Solr field name: " + solrField);
         }
+        // Validate region against a strict WKT allow-list. wktRegion is passed to
+        // HeatmapFacetMap.setRegionQuery and must not carry Solr-syntax characters.
+        if (wktRegion != null && !WKT_REGION_PATTERN.matcher(wktRegion).matches()) {
+            throw new IllegalRequestException("region parameter contains characters not allowed in WKT syntax");
+        }
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
-        // When query is explicitly set to empty string (e.g. ?query=), treat it as "*:*" to avoid
-        // Solr syntax error from building "+() ..." which is invalid syntax.
-        String finalQuery = org.apache.commons.lang3.StringUtils.isBlank(filterQuery) ? "*:*" : filterQuery;
-        if (!finalQuery.startsWith("{!join")) {
-            finalQuery =
-                    new StringBuilder().append("+(")
-                            .append(filterQuery)
-                            .append(") +(-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:* *:*)")
-                            .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
-                            .toString();
-        } else {
-            //search query. Ignore all polygon results or the heatmap will have hits everywhere
-            if (finalQuery.endsWith(")")) {
-                finalQuery = finalQuery.substring(0, finalQuery.length() - 1) + "-MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)";
-            } else {
-                finalQuery = finalQuery + " -MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*";
+        // Clean the user query, preserving a whitelisted "{!join ...}" prefix. A leading Solr
+        // local param must stay at the very start of the query string, so the query must NOT be
+        // wrapped in "+(...)" — doing so turns "{!join ...}" into an embedded (illegal) local
+        // param and Solr rejects it with a 400. When query is blank (e.g. ?query=), default to
+        // "*:*" to avoid an empty main query.
+        String mainQuery = SolrTools.cleanUpQuery(
+                StringTools.unescapeCriticalUrlChracters(
+                        org.apache.commons.lang3.StringUtils.isBlank(filterQuery) ? "*:*" : filterQuery));
 
-            }
+        // Exclude polygon docs (otherwise the heatmap saturates) and enforce the access-condition
+        // suffix as a *filter query*. Applying these as a filter rather than concatenating them
+        // into the main query means the constraint holds even when mainQuery is a "{!join ...}",
+        // which closes the GVC-2026-25 bypass: the previous "{!join"-prefix branch skipped
+        // getAllSuffixes entirely, letting an unauthenticated caller read across access conditions.
+        // Any user facetQuery is ANDed in as a further filter clause; getHeatMap() runs
+        // cleanUpQuery over the whole filter string.
+        StringBuilder resultFilter = new StringBuilder()
+                .append("+(*:* -MD_GEOJSON_POLYGON:* -MD_GPS_POLYGON:*)")
+                .append(SearchHelper.getAllSuffixes(servletRequest, true, true));
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(facetQuery)) {
+            resultFilter.append(" +(").append(facetQuery).append(')');
         }
-        String queryEscaped = StringTools.unescapeCriticalUrlChracters(finalQuery);
         try {
             return DataManager.getInstance()
                     .getSearchIndex()
-                    .getHeatMap(solrField, wktRegion, queryEscaped, facetQuery, gridLevel);
+                    .getHeatMap(solrField, wktRegion, mainQuery, resultFilter.toString(), gridLevel);
         } catch (IllegalArgumentException e) {
             // HeatmapFacetMap.setGridLevel() throws IllegalArgumentException for out-of-range values
             throw new IllegalRequestException("Invalid heatmap parameters: " + e.getMessage());
@@ -415,9 +480,25 @@ public class IndexResource {
             @Parameter(description = "The scope of documents to search in. "
                     + "One of 'RECORDS', 'DOCSTRUCTS' and 'METADATA'") @QueryParam("scope") String searchScope)
             throws IndexUnreachableException, PresentationException, IllegalRequestException, ContentNotFoundException {
+        // Validate solrField before sending to Solr: an invalid name (e.g. "0") causes an
+        // unhandled exception deep in the Solr client that surfaces as HTTP 500.
+        // Solr field names must start with a letter or underscore and contain only
+        // letters, digits, and underscores.
+        if (solrField == null || !solrField.matches("[A-Za-z_][A-Za-z0-9_]*")) {
+            throw new IllegalRequestException("Not a valid Solr field name: " + solrField);
+        }
+        // Validate region against a strict WKT allow-list. The value is later concatenated
+        // into the Solr query string by raw String.replace, so any Solr-syntax character
+        // ('{', '}', '*', ':', etc.) reaching the composition would enable query injection.
+        if (wktRegion != null && !WKT_REGION_PATTERN.matcher(wktRegion).matches()) {
+            throw new IllegalRequestException("region parameter contains characters not allowed in WKT syntax");
+        }
         servletResponse.addHeader("Cache-Control", "max-age=300");
 
-        String finalQuery = StringTools.unescapeCriticalUrlChracters(filterQuery);
+        // Run filterQuery through cleanUpQuery to strip non-whitelisted Solr local-params
+        // ({!type=...}, {!parent ...} etc.) that would otherwise bypass the access-condition
+        // suffix appended after this fragment.
+        String finalQuery = SolrTools.cleanUpQuery(StringTools.unescapeCriticalUrlChracters(filterQuery));
         List<String> facetQueries = new ArrayList<>();
 
         if (StringUtils.isNotBlank(facetQuery)) {

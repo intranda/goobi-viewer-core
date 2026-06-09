@@ -85,9 +85,7 @@
                         <f:validator
                             validatorId="emailValidator"
                             for="email" />
-                        <f:ajax
-                            render="emailGroup"
-                            onevent="confirmEmailChange" />
+                        <f:ajax render="emailGroup" />
                     </h:inputText>
                     <span class="admin__form-help-text">#{msg.admin__user_email__help}</span>
                 </div>
@@ -100,19 +98,27 @@
                         <util:icon icon="help" />
                     </button>
                 </div>
-                <script>
-                    function confirmEmailChange(e) {
-                        if(#{confirmEmailChange}) {
-                        	if(e.status == 'begin') {
-                    		    let value = e.source.value;
-                    		    let originalValue = e.source.defaultValue
-                    		    viewerJS.notifications.confirm("#{msg.user__change_email__confirm}")
-                    		    .catch(() => $("[data-confirm='email']").val(originalValue))
-                    	    }
-                        }
-                    }
-                </script>
             </h:panelGroup>
+            <script>
+                function confirmEmailChangeOnSave(event, button) {
+                    if (button._emailConfirmed) {
+                        button._emailConfirmed = false;
+                        return true;
+                    }
+                    if (!#{confirmEmailChange}) return true;
+                    var emailField = document.getElementById('email');
+                    if (!emailField || emailField.value === emailField.defaultValue) return true;
+                    viewerJS.notifications.confirm("#{msg.user__change_email__confirm}", "#{msg.ok}", undefined, undefined, {icon: 'question'})
+                        .then(function() {
+                            button._emailConfirmed = true;
+                            button.click();
+                        })
+                        .catch(function() {
+                            emailField.value = emailField.defaultValue;
+                        });
+                    return false;
+                }
+            </script>
 
             <!-- USER FIRST NAME -->
             <div class="form-group form-row">

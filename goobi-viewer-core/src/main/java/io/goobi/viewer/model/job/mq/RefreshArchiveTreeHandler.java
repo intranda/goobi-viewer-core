@@ -111,6 +111,17 @@ public class RefreshArchiveTreeHandler implements MessageHandler<MessageStatus> 
         logger.debug("{} archive(s) unloaded due to associated records having been (re)indexed.", count);
     }
 
+    public static boolean hasArchiveAssociatedRecords(String identifiers)
+            throws PresentationException, IndexUnreachableException {
+        if (StringUtils.isBlank(identifiers)) {
+            return false;
+        }
+        String query = "+" + SolrConstants.EAD_NODE_ID + ":* +"
+                + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name()
+                + " +" + SolrConstants.PI_TOPSTRUCT + ":(" + identifiers + ")";
+        return DataManager.getInstance().getSearchIndex().getHitCount(query) > 0;
+    }
+
     @Override
     public String getMessageHandlerName() {
         return TaskType.REFRESH_ARCHIVE_TREE.name();

@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeAll;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.impl.H2JdbcDatabaseTester;
 import io.goobi.viewer.dao.impl.JPADAO;
+import io.goobi.viewer.dao.impl.TestEntityManagerFactoryHolder;
 
 /**
  * JUnit test classes that extend this class can use the embedded H2 DBMS server setup with a fixed database and the embedded Solr server setup with a
@@ -49,7 +50,7 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
     @BeforeAll
     public static void setUpClass() throws Exception {
         AbstractSolrEnabledTest.setUpClass();
-        DataManager.getInstance().injectDao(new JPADAO("intranda_viewer_test"));
+        DataManager.getInstance().injectDao(new JPADAO(TestEntityManagerFactoryHolder.get()));
         databaseTester = new H2JdbcDatabaseTester();
         try (FileInputStream fis = new FileInputStream("src/test/resources/test_db_dataset.xml")) {
             databaseTester.setDataSet(new FlatXmlDataSetBuilder().setColumnSensing(true).build(fis));
@@ -65,21 +66,15 @@ public abstract class AbstractDatabaseAndSolrEnabledTest extends AbstractSolrEna
         databaseTester.onSetup();
     }
 
-    @Override
     @AfterEach
     public void tearDown() throws Exception {
-        super.tearDown();
         databaseTester.onTearDown();
         ((JPADAO) DataManager.getInstance().getDao()).clear();
-
-        // FlatXmlDataSet
-        // .write(databaseTester.getConnection().createDataSet(), new FileOutputStream("resources/" + System.currentTimeMillis() + ".xml"));
     }
 
     @AfterAll
     public static void tearDownClass() throws Exception {
-        if (DataManager.getInstance().getDao() != null) {
-            DataManager.getInstance().getDao().shutdown();
-        }
+        // Do not shut down the shared EntityManagerFactory — it is reused across test classes
+        AbstractSolrEnabledTest.tearDownClass();
     }
 }

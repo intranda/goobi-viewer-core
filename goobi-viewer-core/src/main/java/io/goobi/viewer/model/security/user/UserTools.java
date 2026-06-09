@@ -70,6 +70,8 @@ public final class UserTools {
         deleteBookmarkListsForUser(user);
         // Delete searches
         deleteSearchesForUser(user);
+        // Delete authentication tokens
+        DataManager.getInstance().getDao().deleteAllUserTokensForUser(user);
 
         return DataManager.getInstance().getDao().deleteUser(user);
     }

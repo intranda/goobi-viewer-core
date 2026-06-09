@@ -348,6 +348,9 @@ public class NavigationHelper implements Serializable {
      * <p>
      * Specific error types (e.g. recordNotFound, download) are passed through directly so that their own message keys are used as the page title.
      *
+     * This currently does nothing, because setting the current page for resources interferes with the settings for the main html page. So if a html
+     * page is loaded and a resource within that page fails to load, this the failed load would reset the currentPage attribute for the html page
+     *
      * @param errorType the error type string set by the exception handler; may be null
      * @should map null and generic error types to error
      * @should pass through specific error types unchanged
@@ -355,11 +358,11 @@ public class NavigationHelper implements Serializable {
      * @should pass through specific error types
      */
     public void setCurrentPageForError(String errorType) {
-        if (errorType == null || "general".equals(errorType) || "general_no_url".equals(errorType)) {
-            setCurrentPage("error");
-        } else {
-            setCurrentPage(errorType);
-        }
+        //        if (errorType == null || "general".equals(errorType) || "general_no_url".equals(errorType)) {
+        //            setCurrentPage("error");
+        //        } else {
+        //            setCurrentPage(errorType);
+        //        }
     }
 
     /**
@@ -483,15 +486,6 @@ public class NavigationHelper implements Serializable {
         setCurrentPage(TAGS_PAGE, true, true);
         breadcrumbBean.updateBreadcrumbs(
                 new LabeledLink("tagclouds", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/tags/", BreadcrumbBean.WEIGHT_TAG_CLOUD));
-    }
-
-    /**
-     * setCurrentPageStatistics.
-     */
-    public void setCurrentPageStatistics() {
-        setCurrentPage("statistics", true, true);
-        breadcrumbBean.updateBreadcrumbs(new LabeledLink("statistics", BeanUtils.getServletPathWithHostAsUrlFromJsfContext() + "/statistics/",
-                BreadcrumbBean.WEIGHT_TAG_MAIN_MENU));
     }
 
     /**
@@ -884,7 +878,7 @@ public class NavigationHelper implements Serializable {
         if (request != null) {
             URL url = PrettyContext.getCurrentInstance(request).getRequestURL();
             if (url != null) {
-                return getApplicationUrl() + StringTools.stripJS(url.toURL().substring(1));
+                return getApplicationUrl() + url.toURL().substring(1);
             }
         }
         return null;
@@ -1990,7 +1984,7 @@ public class NavigationHelper implements Serializable {
         Path file = FileTools.replaceExtension(themePath, suffix);
         if (Files.exists(file)) {
             Path resourcePath = FileTools.replaceExtension(Path.of(path), suffix);
-            return Optional.ofNullable(this.fileResourceManager.getThemeResourceURI(resourcePath.toString()).toString());
+            return Optional.ofNullable(this.fileResourceManager.getThemeResourceURI(resourcePath.toString().replace('\\', '/')).toString());
         }
         return Optional.empty();
     }

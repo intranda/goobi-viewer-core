@@ -22,8 +22,10 @@
 package io.goobi.viewer.model.bookmark;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,7 +59,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.RestApiManager;
-import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -89,6 +90,9 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     private static final long serialVersionUID = -3040539541804852903L;
 
     private static final Logger logger = LogManager.getLogger(BookmarkList.class);
+
+    /** Shared, thread-safe source of randomness for share-key generation; reused to avoid costly re-seeding per call. */
+    private static final SecureRandom SHARE_KEY_RANDOM = new SecureRandom();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -496,10 +500,16 @@ public class BookmarkList implements Serializable, Comparable<BookmarkList> {
     }
 
     /**
-     * Generates a persistent share key for public sharing via link.
+     * Generates a cryptographically strong, URL-safe share key for sharing the list via link.
+     *
+     * @should produce key matching the share-key validation pattern
+     * @should produce different key on each invocation
+     * @should produce key with at least 22 characters
      */
     public void generateShareKey() {
-        setShareKey(StringTools.generateHash(String.valueOf(System.currentTimeMillis())));
+        byte[] bytes = new byte[24];
+        SHARE_KEY_RANDOM.nextBytes(bytes);
+        setShareKey(Base64.getUrlEncoder().withoutPadding().encodeToString(bytes));
     }
 
     /**

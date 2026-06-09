@@ -31,8 +31,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.model.ViewAttributes;
@@ -41,6 +39,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
@@ -49,8 +48,8 @@ import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.translations.language.Language;
-import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -113,70 +112,70 @@ public class ConfigurationBean implements Serializable {
      * useTiles.
      *
      * @param pageType name of the page type to look up settings for
-     * @param mimeType MIME type of the image being displayed
+     * @param viewManager provides context (work/MIME type) for resolving conditional image view settings
      * @return true if tiles should be used for the given page type and MIME type, false otherwise
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public boolean useTiles(String pageType, String mimeType) throws ViewerConfigurationException {
+    public boolean useTiles(String pageType, ViewManager viewManager) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .useTiles(getImageViewAttributes(PageType.getByName(pageType), getImageType(mimeType).getFormat().getMimeType()));
+                .useTiles(getImageViewAttributes(viewManager, PageType.getByName(pageType)));
     }
 
     /**
      * Returns whether a navigator element should be shown in the OpenSeadragon viewer.
      * 
      * @param pageType get settings for this pageType
-     * @param mimeType get settings for this image type
+     * @param viewManager provides context (work/MIME type) for resolving conditional image view settings
      * @return true if navigator should be shown
      * @throws ViewerConfigurationException
      */
-    public boolean showImageNavigator(String pageType, String mimeType) throws ViewerConfigurationException {
+    public boolean showImageNavigator(String pageType, ViewManager viewManager) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .showImageNavigator(getImageViewAttributes(PageType.getByName(pageType), mimeType));
+                .showImageNavigator(getImageViewAttributes(viewManager, PageType.getByName(pageType)));
     }
 
     /**
      * getFooterHeight.
      *
      * @param pageType name of the page type to look up settings for
-     * @param mimeType MIME type of the image being displayed
+     * @param viewManager provides context (work/MIME type) for resolving conditional image view settings
      * @return a int.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public int getFooterHeight(String pageType, String mimeType) throws ViewerConfigurationException {
+    public int getFooterHeight(String pageType, ViewManager viewManager) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getFooterHeight(getImageViewAttributes(PageType.getByName(pageType), mimeType));
+                .getFooterHeight(getImageViewAttributes(viewManager, PageType.getByName(pageType)));
     }
 
     /**
      * getImageSizes.
      *
      * @param pageType name of the page type to look up settings for
-     * @param mimeType MIME type of the image being displayed
+     * @param viewManager provides context (work/MIME type) for resolving conditional image view settings
      * @return a list of configured zoom scale values for the given page type and MIME type
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public List<String> getImageSizes(String pageType, String mimeType) throws ViewerConfigurationException {
+    public List<String> getImageSizes(String pageType, ViewManager viewManager) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getImageViewZoomScales(getImageViewAttributes(PageType.getByName(pageType), mimeType));
+                .getImageViewZoomScales(getImageViewAttributes(viewManager, PageType.getByName(pageType)));
     }
 
     /**
      * getTileSizes.
      *
      * @param pageType name of the page type to look up settings for
-     * @param mimeType MIME type of the image being displayed
+     * @param viewManager provides context (work/MIME type) for resolving conditional image view settings
      * @return a map of tile sizes (resolution) to lists of scale factors for the given page type and MIME type
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
-    public Map<Integer, List<Integer>> getTileSizes(String pageType, String mimeType) throws ViewerConfigurationException {
+    public Map<Integer, List<Integer>> getTileSizes(String pageType, ViewManager viewManager) throws ViewerConfigurationException {
         return DataManager.getInstance()
                 .getConfiguration()
-                .getTileSizes(getImageViewAttributes(PageType.getByName(pageType), mimeType));
+                .getTileSizes(getImageViewAttributes(viewManager, PageType.getByName(pageType)));
     }
 
     /**
@@ -196,7 +195,8 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTilesFullscreen() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().useTiles(getImageViewAttributes(PageType.viewFullscreen, null));
+        return DataManager.getInstance().getConfiguration()
+                .useTiles(getImageViewAttributes(BeanUtils.getActiveDocumentBean().getViewManager(), PageType.viewFullscreen));
     }
 
     /**
@@ -206,7 +206,8 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public boolean useTilesCrowd() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().useTiles(getImageViewAttributes(PageType.editContent, null));
+        return DataManager.getInstance().getConfiguration()
+                .useTiles(getImageViewAttributes(BeanUtils.getActiveDocumentBean().getViewManager(), PageType.editContent));
     }
 
     /**
@@ -226,7 +227,8 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFooterHeightFullscreen() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getFooterHeight(getImageViewAttributes(PageType.viewFullscreen, null));
+        return DataManager.getInstance().getConfiguration()
+                .getFooterHeight(getImageViewAttributes(BeanUtils.getActiveDocumentBean().getViewManager(), PageType.viewFullscreen));
     }
 
     /**
@@ -236,7 +238,8 @@ public class ConfigurationBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     public int getFooterHeightCrowd() throws ViewerConfigurationException {
-        return DataManager.getInstance().getConfiguration().getFooterHeight(getImageViewAttributes(PageType.editContent, null));
+        return DataManager.getInstance().getConfiguration()
+                .getFooterHeight(getImageViewAttributes(BeanUtils.getActiveDocumentBean().getViewManager(), PageType.editContent));
     }
 
     /**
@@ -866,6 +869,21 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     * Returns all enabled XSLT-based search export formats configured in {@code config_viewer.xml} under {@code search/export/format}. Disabled
+     * formats are excluded so the list can be iterated directly in templates.
+     *
+     * @return list of enabled {@link ExportFormat}s; never null
+     */
+    public List<ExportFormat> getEnabledSearchExportFormats() {
+        return DataManager.getInstance()
+                .getConfiguration()
+                .getSearchExportFormats()
+                .stream()
+                .filter(ExportFormat::isEnabled)
+                .toList();
+    }
+
+    /**
      * isSitelinksEnabled.
      *
      * @return true if Wikidata Sitelinks integration is enabled, false otherwise
@@ -934,12 +952,6 @@ public class ConfigurationBean implements Serializable {
         }
     }
 
-    private static ImageType getImageType(String mimeType) {
-        ImageType imageType = new ImageType(false);
-        imageType.setFormat(ImageFileFormat.getImageFileFormatFromMimeType(mimeType));
-        return imageType;
-    }
-
     /**
      * 
      * @param view Record view name
@@ -971,6 +983,51 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
+     *
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured to show details; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewShowDetails(String view, String widget) {
+        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails(view, widget);
+    }
+
+    /**
+     * @return maximum number of related records to display in the content section
+     */
+    public int getSidebarWidgetRelatedGroupsMaxResults() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsMaxResults();
+    }
+
+    /**
+     * @return solr field used for sorting
+     */
+    public String getSidebarWidgetRelatedGroupsSortField() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortField();
+    }
+
+    /**
+     * @return sort order
+     */
+    public String getSidebarWidgetRelatedGroupsSortOrder() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortOrder();
+    }
+
+    /**
+     * @return solr field used as card title
+     */
+    public String getSidebarWidgetRelatedGroupsTitleField() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsTitleField();
+    }
+
+    /**
+     * @return solr field used as card subtitle
+     */
+    public String getSidebarWidgetRelatedGroupsSubtitleField() {
+        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSubtitleField();
+    }
+
+    /**
      * isDisplaySidebarBrowsingTerms.
      *
      * @return true if the browsing terms widget should be displayed in the sidebar, false otherwise
@@ -983,7 +1040,8 @@ public class ConfigurationBean implements Serializable {
     /**
      * isDisplaySidebarRssFeed.
      *
-     * <p>s
+     * <p>
+     * s
      *
      * @return true if the RSS feed widget should be displayed in the sidebar, false otherwise
      * @should return correct value
@@ -1432,7 +1490,7 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getGeomapDisableClusteringAtZoom();
     }
 
-    private ViewAttributes getImageViewAttributes(PageType pageType, String mimeType) {
-        return new ViewAttributes(new MimeType(mimeType), null, null, null, pageType);
+    private ViewAttributes getImageViewAttributes(ViewManager viewManager, PageType pageType) {
+        return new ViewAttributes(viewManager, pageType);
     }
 }

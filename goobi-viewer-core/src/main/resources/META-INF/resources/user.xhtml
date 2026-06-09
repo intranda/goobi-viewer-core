@@ -66,6 +66,7 @@
                             id="saveNewUserCreationButton"
                             styleClass="btn btn--success"
                             value="#{msg.save}"
+                            onclick="return typeof confirmEmailChangeOnSave==='function' ? confirmEmailChangeOnSave(event,this) : true;"
                             action="#{adminBean.saveUserAction(userBean.user.copy, true, '')}" />
                     </div>
                 </h:form>

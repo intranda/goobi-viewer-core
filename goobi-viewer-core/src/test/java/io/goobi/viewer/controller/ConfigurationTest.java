@@ -501,6 +501,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getDownloadFilenamePattern()
+     * @verifies return correct value
+     */
+    @Test
+    void getDownloadFilenamePattern_shouldReturnCorrectValue() {
+        assertEquals("prefix_{PI}_{LOGID}.pdf", DataManager.getInstance().getConfiguration().getDownloadFilenamePattern());
+    }
+
+    /**
      * @verifies return correct value
      * @see Configuration#getVocabulariesFolder()
      */
@@ -642,24 +651,6 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getDatabaseConnectionAttempts_shouldReturnCorrectValue() {
         assertEquals(3, DataManager.getInstance().getConfiguration().getDatabaseConnectionAttempts());
-    }
-
-    /**
-     * @see Configuration#getMaxAggregateAltoSize()
-     * @verifies return correct value
-     */
-    @Test
-    void getMaxAggregateAltoSize_shouldReturnCorrectValue() {
-        assertEquals(1024, DataManager.getInstance().getConfiguration().getMaxAggregateAltoSize());
-    }
-
-    /**
-     * @see Configuration#getMaxAggregateFulltextSize()
-     * @verifies return correct value
-     */
-    @Test
-    void getMaxAggregateFulltextSize_shouldReturnCorrectValue() {
-        assertEquals(1024, DataManager.getInstance().getConfiguration().getMaxAggregateFulltextSize());
     }
 
     /**
@@ -1914,10 +1905,11 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSidebarWidgetsForView_shouldReturnCorrectValues() {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("object");
-        assertEquals(3, result.size());
+        assertEquals(4, result.size());
         assertEquals("views", result.get(0));
         assertEquals("copyright", result.get(1));
         assertEquals("search-in-current-item", result.get(2));
+        assertEquals("related-groups", result.get(3));
     }
 
     /**
@@ -1949,6 +1941,62 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isSidebarWidgetForViewCollapsedByDefault_shouldReturnCorrectValue() {
         assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewCollapsedByDefault("object", "copyright"));
+    }
+
+    /**
+     * @see Configuration#isSidebarWidgetForViewShowDetails(String,String)
+     * @verifies return correct value
+     */
+    @Test
+    void isSidebarWidgetForViewShowDetails_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "related-groups"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "copyright"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "nonexistent"));
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsMaxResults()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsMaxResults_shouldReturnCorrectValue() {
+        assertEquals(5, DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsMaxResults());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsSortField()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsSortField_shouldReturnCorrectValue() {
+        assertEquals("MD_YEARPUBLISH", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortField());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsSortOrder()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsSortOrder_shouldReturnCorrectValue() {
+        assertEquals("asc", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortOrder());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsTitleField()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsTitleField_shouldReturnCorrectValue() {
+        assertEquals("LABEL", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsTitleField());
+    }
+
+    /**
+     * @see Configuration#getSidebarWidgetRelatedGroupsSubtitleField()
+     * @verifies return correct value
+     */
+    @Test
+    void getSidebarWidgetRelatedGroupsSubtitleField_shouldReturnCorrectValue() {
+        assertEquals("MD_AUTHOR", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSubtitleField());
     }
 
     /**
@@ -2676,19 +2724,6 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#getCalendarDocStructTypes()
-     * @verifies return all configured values
-     */
-    @Test
-    void getCalendarDocStructTypes_shouldReturnAllConfiguredValues() {
-        List<String> list = DataManager.getInstance().getConfiguration().getCalendarDocStructTypes();
-        assertNotNull(list);
-        assertEquals(2, list.size());
-        assertTrue(list.contains("Newspaper"));
-        assertTrue(list.contains("Periodical"));
-    }
-
-    /**
      * @see Configuration#isTocListSiblingRecords()
      * @verifies return correctValue
      */
@@ -3207,6 +3242,33 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isAddCORSHeader_shouldReturnCorrectValue() {
         assertTrue(DataManager.getInstance().getConfiguration().isAddCORSHeader());
+    }
+
+    /**
+     * @see Configuration#isCsrfFilterEnabled()
+     * @verifies return false by default
+     */
+    @Test
+    void isCsrfFilterEnabled_shouldReturnFalseByDefault() {
+        assertFalse(DataManager.getInstance().getConfiguration().isCsrfFilterEnabled());
+    }
+
+    /**
+     * @see Configuration#getCsrfAdditionalAllowedOrigins()
+     * @verifies return empty list when not configured
+     */
+    @Test
+    void getCsrfAdditionalAllowedOrigins_shouldReturnEmptyListWhenNotConfigured() {
+        assertTrue(DataManager.getInstance().getConfiguration().getCsrfAdditionalAllowedOrigins().isEmpty());
+    }
+
+    /**
+     * @see Configuration#isWebSocketOriginValidationEnabled()
+     * @verifies return false by default
+     */
+    @Test
+    void isWebSocketOriginValidationEnabled_shouldReturnFalseByDefault() {
+        assertFalse(DataManager.getInstance().getConfiguration().isWebSocketOriginValidationEnabled());
     }
 
     /**
@@ -4113,11 +4175,10 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getTokenExpirationDays()
-     * @verifies return default value of 30 when not configured
+     * @verifies return default value of 7 when not configured
      */
-
     @Test
-    void getTokenExpirationDays_shouldReturnDefaultValueOf30WhenNotConfigured() {
-        assertEquals(30, DataManager.getInstance().getConfiguration().getTokenExpirationDays());
+    void getTokenExpirationDays_shouldReturnDefaultValueOf7WhenNotConfigured() {
+        assertEquals(7, DataManager.getInstance().getConfiguration().getTokenExpirationDays());
     }
 }

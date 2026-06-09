@@ -2,3 +2,13 @@
 .DS_Store
 /.settings.worktrees/
 .worktrees/
+/.classpath
+/.idea
+docs/
+
+/.settings
+.flattened-pom.xml
+*/.flattened-pom.xml
+
+*/target/
+*/node_modules/

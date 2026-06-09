@@ -231,9 +231,6 @@ public class RecordFileResource {
             @Parameter(description = "Source file name",
                     schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
-        if (!filename.equals(StringTools.stripJS(filename))) {
-            throw new ServiceNotAllowedException("Script detected in input");
-        }
         // DataFileTools.getDataFilePath calls FileTools.sanitizeFileName which throws
         // IllegalArgumentException for filenames with illegal characters (e.g. control chars).
         // Wrap it as IllegalRequestException so ContentExceptionMapper returns HTTP 400.
@@ -241,6 +238,11 @@ public class RecordFileResource {
         try {
             path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder(), null, filename);
         } catch (IllegalArgumentException e) {
+            throw new IllegalRequestException("Invalid file name: " + filename);
+        }
+        // Defense in depth: ensure the resolved path cannot escape the record's source folder
+        Path baseFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getOrigContentFolder());
+        if (!FileTools.isWithin(path, baseFolder)) {
             throw new IllegalRequestException("Invalid file name: " + filename);
         }
         if (!Files.isRegularFile(path)) {
@@ -260,7 +262,7 @@ public class RecordFileResource {
         }
 
         StreamingOutput so = out -> {
-            try (InputStream in = Files.newInputStream(path)) {
+            try (InputStream in = FileTools.openRejectingSymlinks(path)) {
                 IOUtils.copy(in, out);
             }
         };
@@ -282,10 +284,6 @@ public class RecordFileResource {
             @Parameter(description = "Media file name",
                     schema = @Schema(pattern = "^[A-Za-z0-9_.-]+$")) @PathParam("filename") String filename)
             throws ContentLibException, PresentationException, IndexUnreachableException, DAOException {
-        if (!filename.equals(StringTools.stripJS(filename))) {
-            throw new ServiceNotAllowedException("Script detected in input");
-        }
-
         // DataFileTools.getDataFilePath calls FileTools.sanitizeFileName which throws
         // IllegalArgumentException for filenames with illegal characters (e.g. control chars).
         // Wrap it as IllegalRequestException so ContentExceptionMapper returns HTTP 400.
@@ -293,6 +291,11 @@ public class RecordFileResource {
         try {
             path = DataFileTools.getDataFilePath(pi, DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
         } catch (IllegalArgumentException e) {
+            throw new IllegalRequestException("Invalid file name: " + filename);
+        }
+        // Defense in depth: ensure the resolved path cannot escape the record's media folder
+        Path baseFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getMediaFolder());
+        if (!FileTools.isWithin(path, baseFolder)) {
             throw new IllegalRequestException("Invalid file name: " + filename);
         }
         if (!Files.isRegularFile(path)) {
@@ -312,22 +315,26 @@ public class RecordFileResource {
         }
 
         if (FileType.getContentTypeFor(filename).startsWith("model/")) {
-            String baseFilename = FilenameUtils.getBaseName(filename);
+            // Derive the base name from the already-resolved (sanitized) path, not the raw request parameter
+            String baseFilename = FilenameUtils.getBaseName(path.getFileName().toString());
             Path modelFolder = path.getParent().resolve(baseFilename);
-            if (Files.exists(modelFolder)) {
+            // Only proceed if the model folder stays inside the record's media folder
+            if (Files.exists(modelFolder) && FileTools.isWithin(modelFolder, baseFolder)) {
                 Path tempFolder = Path.of(DataManager.getInstance().getConfiguration().getTempFolder(), pi + "_3d_" + System.currentTimeMillis());
                 try {
                     Files.createDirectories(tempFolder);
                     List<File> fileList = new ArrayList<>();
                     fileList.add(path.toFile());
-                    FileTools.listFiles(modelFolder, p -> true).forEach(p -> {
-                        fileList.add(p.toFile());
-                    });
-                    Path zipFile = tempFolder.resolve(FileTools.replaceExtension(Path.of(filename), "zip").toString());
+                    // Only zip files that are genuine descendants of the model folder (guards against symlink/traversal escapes)
+                    FileTools.listFiles(modelFolder, p -> true).stream()
+                            .filter(p -> FileTools.isWithin(p, modelFolder))
+                            .forEach(p -> fileList.add(p.toFile()));
+                    // Derive the zip name from the validated path, not the raw request parameter, to keep the output path untainted
+                    Path zipFile = tempFolder.resolve(FileTools.replaceExtension(path.getFileName(), "zip").toString());
                     FileTools.compressZipFile(fileList, zipFile.toFile(), 9);
                     mimeType = new MediaResourceHelper(config).setContentHeaders(servletResponse, zipFile.getFileName().toString(), zipFile);
                     StreamingOutput so = out -> {
-                        try (InputStream in = Files.newInputStream(zipFile)) {
+                        try (InputStream in = FileTools.openRejectingSymlinks(zipFile)) {
                             IOUtils.copy(in, out);
                         } finally {
                             FileUtils.deleteQuietly(tempFolder.toFile());
@@ -341,7 +348,7 @@ public class RecordFileResource {
             }
         }
         StreamingOutput so = out -> {
-            try (InputStream in = Files.newInputStream(path)) {
+            try (InputStream in = FileTools.openRejectingSymlinks(path)) {
                 IOUtils.copy(in, out);
             }
         };
@@ -382,7 +389,7 @@ public class RecordFileResource {
         final Language language =
                 DataManager.getInstance()
                         .getLanguageHelper()
-                        .getLanguage(lang == null ? BeanUtils.getLocale().getLanguage() : StringTools.stripJS(lang));
+                        .getLanguage(lang == null ? BeanUtils.getLocale().getLanguage() : lang);
         Path cmdiPath = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getCmdiFolder());
         Path filePath = getDocumentLanguageVersion(cmdiPath, language);
         if (filePath != null && Files.isRegularFile(filePath)) {
@@ -428,7 +435,7 @@ public class RecordFileResource {
                 logger.error("Failed to probe file content type");
             }
             StreamingOutput so = out -> {
-                try (InputStream in = Files.newInputStream(resourceFile)) {
+                try (InputStream in = FileTools.openRejectingSymlinks(resourceFile)) {
                     IOUtils.copy(in, out);
                 }
             };
@@ -476,12 +483,21 @@ public class RecordFileResource {
         }
 
         java.nio.file.Path ret;
+        // Strict-reject: if a deployment mounts TEI folders via symlinks (e.g. NFS), this will
+        // fail and is to be addressed via config whitelist follow-up.
+        if (Files.isSymbolicLink(folder)) {
+            throw new IOException("Refusing to list symlinked directory: " + folder);
+        }
         // This will return the file with the requested language or alternatively the first file in the TEI folder
         try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
             ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCode() + ".xml")).findFirst().orElse(null);
         }
         // Fallback to ISO-2
         if (ret == null) {
+            // Strict-reject: see above.
+            if (Files.isSymbolicLink(folder)) {
+                throw new IOException("Refusing to list symlinked directory: " + folder);
+            }
             try (Stream<java.nio.file.Path> teiFiles = Files.list(folder)) {
                 ret = teiFiles.filter(path -> path.getFileName().toString().endsWith("_" + language.getIsoCodeOld() + ".xml"))
                         .findFirst()

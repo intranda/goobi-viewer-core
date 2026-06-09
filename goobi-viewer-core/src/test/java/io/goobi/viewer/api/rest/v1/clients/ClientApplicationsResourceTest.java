@@ -118,6 +118,100 @@ class ClientApplicationsResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * @see ClientApplicationsResource#getAllClients(int, int)
+     * @verifies respect first and count parameters
+     */
+    @Test
+    void getAllClients_shouldRespectFirstAndCountParameters() {
+        try (Response response = target(CLIENTS)
+                .queryParam("first", "0")
+                .queryParam("count", "1")
+                .request()
+                .header("token", "test")
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            String entity = response.readEntity(String.class);
+            assertEquals(200, response.getStatus(), "Should return status 200; answer; " + entity);
+            JSONArray clients = new JSONArray(entity);
+            assertEquals(1, clients.length(), "count=1 must return one entry");
+        }
+        try (Response response = target(CLIENTS)
+                .queryParam("first", "1")
+                .queryParam("count", "1")
+                .request()
+                .header("token", "test")
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            String entity = response.readEntity(String.class);
+            assertEquals(200, response.getStatus(), "Should return status 200; answer; " + entity);
+            JSONArray clients = new JSONArray(entity);
+            assertEquals(1, clients.length(), "first=1,count=1 must return the second entry");
+        }
+        try (Response response = target(CLIENTS)
+                .queryParam("first", "10")
+                .request()
+                .header("token", "test")
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            String entity = response.readEntity(String.class);
+            assertEquals(200, response.getStatus(), "Should return status 200; answer; " + entity);
+            JSONArray clients = new JSONArray(entity);
+            assertEquals(0, clients.length(), "first beyond size must return empty array");
+        }
+    }
+
+    /**
+     * @see ClientApplicationsResource#getAllClients(int, int)
+     * @verifies return 400 when first is negative
+     */
+    @Test
+    void getAllClients_shouldReturn400WhenFirstIsNegative() {
+        try (Response response = target(CLIENTS)
+                .queryParam("first", "-1")
+                .request()
+                .header("token", "test")
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "negative first must be rejected with 400");
+        }
+    }
+
+    /**
+     * @see ClientApplicationsResource#getAllClients(int, int)
+     * @verifies return 400 when count is negative
+     */
+    @Test
+    void getAllClients_shouldReturn400WhenCountIsNegative() {
+        try (Response response = target(CLIENTS)
+                .queryParam("count", "-1")
+                .request()
+                .header("token", "test")
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(400, response.getStatus(), "negative count must be rejected with 400");
+        }
+    }
+
+    /**
+     * @see ClientApplicationsResource#getAllClients(int, int)
+     * @verifies return empty list when count is zero
+     */
+    @Test
+    void getAllClients_shouldReturnEmptyListWhenCountIsZero() {
+        try (Response response = target(CLIENTS)
+                .queryParam("count", "0")
+                .request()
+                .header("token", "test")
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            String entity = response.readEntity(String.class);
+            assertEquals(200, response.getStatus(), "count=0 must be accepted; answer: " + entity);
+            JSONArray clients = new JSONArray(entity);
+            assertEquals(0, clients.length(), "count=0 must return empty array");
+        }
+    }
+
+    /**
      * @verifies update client access status and subnet mask via PUT
      */
     @Test

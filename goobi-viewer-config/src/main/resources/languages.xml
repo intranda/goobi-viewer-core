@@ -1,0 +1,3535 @@
+<languages>
+	<language>
+		<iso_639-2>aar</iso_639-2>
+		<iso_639-1>aa</iso_639-1>
+		<eng>Afar</eng>
+		<fre>afar</fre>
+		<ger>Danakil-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>abk</iso_639-2>
+		<iso_639-1>ab</iso_639-1>
+		<eng>Abkhazian</eng>
+		<fre>abkhaze</fre>
+		<ger>Abchasisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ace</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Achinese</eng>
+		<fre>aceh</fre>
+		<ger>Aceh-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ach</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Acoli</eng>
+		<fre>acoli</fre>
+		<ger>Acholi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ada</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Adangme</eng>
+		<fre>adangme</fre>
+		<ger>Adangme-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ady</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Adyghe; Adygei</eng>
+		<fre>adyghé</fre>
+		<ger>Adygisch</ger>
+	</language>
+	<language>
+		<iso_639-2>afa</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Afro-Asiatic languages</eng>
+		<fre>afro-asiatiques, langues</fre>
+		<ger>Hamitosemitische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>afh</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Afrihili</eng>
+		<fre>afrihili</fre>
+		<ger>Afrihili</ger>
+	</language>
+	<language>
+		<iso_639-2>afr</iso_639-2>
+		<iso_639-1>af</iso_639-1>
+		<eng>Afrikaans</eng>
+		<fre>afrikaans</fre>
+		<ger>Afrikaans</ger>
+	</language>
+	<language>
+		<iso_639-2>ain</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Ainu</eng>
+		<fre>aïnou</fre>
+		<ger>Ainu-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>aka</iso_639-2>
+		<iso_639-1>ak</iso_639-1>
+		<eng>Akan</eng>
+		<fre>akan</fre>
+		<ger>Akan-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>akk</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Akkadian</eng>
+		<fre>akkadien</fre>
+		<ger>Akkadisch</ger>
+	</language>
+	<language>
+		<iso_639-2>alb</iso_639-2>
+		<iso_639-1>sq</iso_639-1>
+		<eng>Albanian</eng>
+		<fre>albanais</fre>
+		<ger>Albanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ale</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Aleut</eng>
+		<fre>aléoute</fre>
+		<ger>Aleutisch</ger>
+	</language>
+	<language>
+		<iso_639-2>alg</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Algonquian languages</eng>
+		<fre>algonquines, langues</fre>
+		<ger>Algonkin-Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>alt</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Southern Altai</eng>
+		<fre>altai du Sud</fre>
+		<ger>Altaisch</ger>
+	</language>
+	<language>
+		<iso_639-2>amh</iso_639-2>
+		<iso_639-1>am</iso_639-1>
+		<eng>Amharic</eng>
+		<fre>amharique</fre>
+		<ger>Amharisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ang</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>English, Old (ca.450-1100)</eng>
+		<fre>anglo-saxon (ca.450-1100)</fre>
+		<ger>Altenglisch</ger>
+	</language>
+	<language>
+		<iso_639-2>anp</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Angika</eng>
+		<fre>angika</fre>
+		<ger>Anga-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>apa</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Apache languages</eng>
+		<fre>apaches, langues</fre>
+		<ger>Apachen-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>ara</iso_639-2>
+		<iso_639-1>ar</iso_639-1>
+		<eng>Arabic</eng>
+		<fre>arabe</fre>
+		<ger>Arabisch</ger>
+	</language>
+	<language>
+		<iso_639-2>arc</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Official Aramaic (700-300 BCE); Imperial Aramaic (700-300 BCE)
+		</eng>
+		<fre>araméen d'empire (700-300 BCE)</fre>
+		<ger>Aramäisch</ger>
+	</language>
+	<language>
+		<iso_639-2>arg</iso_639-2>
+		<iso_639-1>an</iso_639-1>
+		<eng>Aragonese</eng>
+		<fre>aragonais</fre>
+		<ger>Aragonesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>arm</iso_639-2>
+		<iso_639-1>hy</iso_639-1>
+		<eng>Armenian</eng>
+		<fre>arménien</fre>
+		<ger>Armenisch</ger>
+	</language>
+	<language>
+		<iso_639-2>arn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mapudungun; Mapuche</eng>
+		<fre>mapudungun; mapuche; mapuce</fre>
+		<ger>Arauka-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>arp</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Arapaho</eng>
+		<fre>arapaho</fre>
+		<ger>Arapaho-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>art</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Artificial languages</eng>
+		<fre>artificielles, langues</fre>
+		<ger>Kunstsprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>arw</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Arawak</eng>
+		<fre>arawak</fre>
+		<ger>Arawak-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>asm</iso_639-2>
+		<iso_639-1>as</iso_639-1>
+		<eng>Assamese</eng>
+		<fre>assamais</fre>
+		<ger>Assamesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ast</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Asturian; Bable; Leonese; Asturleonese</eng>
+		<fre>asturien; bable; léonais; asturoléonais</fre>
+		<ger>Asturisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ath</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Athapascan languages</eng>
+		<fre>athapascanes, langues</fre>
+		<ger>Athapaskische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>aus</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Australian languages</eng>
+		<fre>australiennes, langues</fre>
+		<ger>Australische Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>ava</iso_639-2>
+		<iso_639-1>av</iso_639-1>
+		<eng>Avaric</eng>
+		<fre>avar</fre>
+		<ger>Awarisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ave</iso_639-2>
+		<iso_639-1>ae</iso_639-1>
+		<eng>Avestan</eng>
+		<fre>avestique</fre>
+		<ger>Avestisch</ger>
+	</language>
+	<language>
+		<iso_639-2>awa</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Awadhi</eng>
+		<fre>awadhi</fre>
+		<ger>Awadhi</ger>
+	</language>
+	<language>
+		<iso_639-2>aym</iso_639-2>
+		<iso_639-1>ay</iso_639-1>
+		<eng>Aymara</eng>
+		<fre>aymara</fre>
+		<ger>Aymará-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>aze</iso_639-2>
+		<iso_639-1>az</iso_639-1>
+		<eng>Azerbaijani</eng>
+		<fre>azéri</fre>
+		<ger>Aserbeidschanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>bad</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Banda languages</eng>
+		<fre>banda, langues</fre>
+		<ger>Banda-Sprachen (Ubangi-Sprachen)</ger>
+	</language>
+	<language>
+		<iso_639-2>bai</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Bamileke languages</eng>
+		<fre>bamiléké, langues</fre>
+		<ger>Bamileke-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>bak</iso_639-2>
+		<iso_639-1>ba</iso_639-1>
+		<eng>Bashkir</eng>
+		<fre>bachkir</fre>
+		<ger>Baschkirisch</ger>
+	</language>
+	<language>
+		<iso_639-2>bal</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Baluchi</eng>
+		<fre>baloutchi</fre>
+		<ger>Belutschisch</ger>
+	</language>
+	<language>
+		<iso_639-2>bam</iso_639-2>
+		<iso_639-1>bm</iso_639-1>
+		<eng>Bambara</eng>
+		<fre>bambara</fre>
+		<ger>Bambara-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ban</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Balinese</eng>
+		<fre>balinais</fre>
+		<ger>Balinesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>baq</iso_639-2>
+		<iso_639-1>eu</iso_639-1>
+		<eng>Basque</eng>
+		<fre>basque</fre>
+		<ger>Baskisch</ger>
+	</language>
+	<language>
+		<iso_639-2>bas</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Basa</eng>
+		<fre>basa</fre>
+		<ger>Basaa-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>bat</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Baltic languages</eng>
+		<fre>baltes, langues</fre>
+		<ger>Baltische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>bej</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Beja; Bedawiyet</eng>
+		<fre>bedja</fre>
+		<ger>Bedauye</ger>
+	</language>
+	<language>
+		<iso_639-2>bel</iso_639-2>
+		<iso_639-1>be</iso_639-1>
+		<eng>Belarusian</eng>
+		<fre>biélorusse</fre>
+		<ger>Weißrussisch</ger>
+	</language>
+	<language>
+		<iso_639-2>bem</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Bemba</eng>
+		<fre>bemba</fre>
+		<ger>Bemba-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ben</iso_639-2>
+		<iso_639-1>bn</iso_639-1>
+		<eng>Bengali</eng>
+		<fre>bengali</fre>
+		<ger>Bengali</ger>
+	</language>
+	<language>
+		<iso_639-2>ber</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Berber languages</eng>
+		<fre>berbères, langues</fre>
+		<ger>Berbersprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>bho</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Bhojpuri</eng>
+		<fre>bhojpuri</fre>
+		<ger>Bhojpuri</ger>
+	</language>
+	<language>
+		<iso_639-2>bih</iso_639-2>
+		<iso_639-1>bh</iso_639-1>
+		<eng>Bihari languages</eng>
+		<fre>langues biharis</fre>
+		<ger>Bihari (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>bik</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Bikol</eng>
+		<fre>bikol</fre>
+		<ger>Bikol-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>bin</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Bini; Edo</eng>
+		<fre>bini; edo</fre>
+		<ger>Edo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>bis</iso_639-2>
+		<iso_639-1>bi</iso_639-1>
+		<eng>Bislama</eng>
+		<fre>bichlamar</fre>
+		<ger>Beach-la-mar</ger>
+	</language>
+	<language>
+		<iso_639-2>bla</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Siksika</eng>
+		<fre>blackfoot</fre>
+		<ger>Blackfoot-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>bnt</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Bantu languages</eng>
+		<fre>bantou, langues</fre>
+		<ger>Bantusprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>tib</iso_639-2>
+		<iso_639-1>bo</iso_639-1>
+		<eng>Tibetan</eng>
+		<fre>tibétain</fre>
+		<ger>Tibetisch</ger>
+	</language>
+	<language>
+		<iso_639-2>bos</iso_639-2>
+		<iso_639-1>bs</iso_639-1>
+		<eng>Bosnian</eng>
+		<fre>bosniaque</fre>
+		<ger>Bosnisch</ger>
+	</language>
+	<language>
+		<iso_639-2>bra</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Braj</eng>
+		<fre>braj</fre>
+		<ger>Braj-Bhakha</ger>
+	</language>
+	<language>
+		<iso_639-2>bre</iso_639-2>
+		<iso_639-1>br</iso_639-1>
+		<eng>Breton</eng>
+		<fre>breton</fre>
+		<ger>Bretonisch</ger>
+	</language>
+	<language>
+		<iso_639-2>btk</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Batak languages</eng>
+		<fre>batak, langues</fre>
+		<ger>Batak-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>bua</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Buriat</eng>
+		<fre>bouriate</fre>
+		<ger>Burjatisch</ger>
+	</language>
+	<language>
+		<iso_639-2>bug</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Buginese</eng>
+		<fre>bugi</fre>
+		<ger>Bugi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>bul</iso_639-2>
+		<iso_639-1>bg</iso_639-1>
+		<eng>Bulgarian</eng>
+		<fre>bulgare</fre>
+		<ger>Bulgarisch</ger>
+	</language>
+	<language>
+		<iso_639-2>bur</iso_639-2>
+		<iso_639-1>my</iso_639-1>
+		<eng>Burmese</eng>
+		<fre>birman</fre>
+		<ger>Birmanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>byn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Blin; Bilin</eng>
+		<fre>blin; bilen</fre>
+		<ger>Bilin-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>cad</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Caddo</eng>
+		<fre>caddo</fre>
+		<ger>Caddo-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>cai</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Central American Indian languages</eng>
+		<fre>amérindiennes de l'Amérique centrale, langues</fre>
+		<ger>Indianersprachen, Zentralamerika (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>car</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Galibi Carib</eng>
+		<fre>karib; galibi; carib</fre>
+		<ger>Karibische Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>cat</iso_639-2>
+		<iso_639-1>ca</iso_639-1>
+		<eng>Catalan; Valencian</eng>
+		<fre>catalan; valencien</fre>
+		<ger>Katalanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>cau</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Caucasian languages</eng>
+		<fre>caucasiennes, langues</fre>
+		<ger>Kaukasische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>ceb</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Cebuano</eng>
+		<fre>cebuano</fre>
+		<ger>Cebuano</ger>
+	</language>
+	<language>
+		<iso_639-2>cel</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Celtic languages</eng>
+		<fre>celtiques, langues; celtes, langues</fre>
+		<ger>Keltische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>cze</iso_639-2>
+		<iso_639-1>cs</iso_639-1>
+		<eng>Czech</eng>
+		<fre>tchèque</fre>
+		<ger>Tschechisch</ger>
+	</language>
+	<language>
+		<iso_639-2>cha</iso_639-2>
+		<iso_639-1>ch</iso_639-1>
+		<eng>Chamorro</eng>
+		<fre>chamorro</fre>
+		<ger>Chamorro-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>chb</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Chibcha</eng>
+		<fre>chibcha</fre>
+		<ger>Chibcha-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>che</iso_639-2>
+		<iso_639-1>ce</iso_639-1>
+		<eng>Chechen</eng>
+		<fre>tchétchène</fre>
+		<ger>Tschetschenisch</ger>
+	</language>
+	<language>
+		<iso_639-2>chg</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Chagatai</eng>
+		<fre>djaghataï</fre>
+		<ger>Tschagataisch</ger>
+	</language>
+	<language>
+		<iso_639-2>chi</iso_639-2>
+		<iso_639-1>zh</iso_639-1>
+		<eng>Chinese</eng>
+		<fre>chinois</fre>
+		<ger>Chinesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>chk</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Chuukese</eng>
+		<fre>chuuk</fre>
+		<ger>Trukesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>chm</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mari</eng>
+		<fre>mari</fre>
+		<ger>Tscheremissisch</ger>
+	</language>
+	<language>
+		<iso_639-2>chn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Chinook jargon</eng>
+		<fre>chinook, jargon</fre>
+		<ger>Chinook-Jargon</ger>
+	</language>
+	<language>
+		<iso_639-2>cho</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Choctaw</eng>
+		<fre>choctaw</fre>
+		<ger>Choctaw-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>chp</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Chipewyan; Dene Suline</eng>
+		<fre>chipewyan</fre>
+		<ger>Chipewyan-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>chr</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Cherokee</eng>
+		<fre>cherokee</fre>
+		<ger>Cherokee-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>chu</iso_639-2>
+		<iso_639-1>cu</iso_639-1>
+		<eng>Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old
+			Church Slavonic</eng>
+		<fre>slavon d'église; vieux slave; slavon liturgique; vieux bulgare
+		</fre>
+		<ger>Kirchenslawisch</ger>
+	</language>
+	<language>
+		<iso_639-2>chv</iso_639-2>
+		<iso_639-1>cv</iso_639-1>
+		<eng>Chuvash</eng>
+		<fre>tchouvache</fre>
+		<ger>Tschuwaschisch</ger>
+	</language>
+	<language>
+		<iso_639-2>chy</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Cheyenne</eng>
+		<fre>cheyenne</fre>
+		<ger>Cheyenne-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>cmc</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Chamic languages</eng>
+		<fre>chames, langues</fre>
+		<ger>Cham-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>cop</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Coptic</eng>
+		<fre>copte</fre>
+		<ger>Koptisch</ger>
+	</language>
+	<language>
+		<iso_639-2>cor</iso_639-2>
+		<iso_639-1>kw</iso_639-1>
+		<eng>Cornish</eng>
+		<fre>cornique</fre>
+		<ger>Kornisch</ger>
+	</language>
+	<language>
+		<iso_639-2>cos</iso_639-2>
+		<iso_639-1>co</iso_639-1>
+		<eng>Corsican</eng>
+		<fre>corse</fre>
+		<ger>Korsisch</ger>
+	</language>
+	<language>
+		<iso_639-2>cpe</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Creoles and pidgins, English based</eng>
+		<fre>créoles et pidgins basés sur l'anglais</fre>
+		<ger>Kreolisch-Englisch (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>cpf</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Creoles and pidgins, French-based</eng>
+		<fre>créoles et pidgins basés sur le français</fre>
+		<ger>Kreolisch-Französisch (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>cpp</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Creoles and pidgins, Portuguese-based</eng>
+		<fre>créoles et pidgins basés sur le portugais</fre>
+		<ger>Kreolisch-Portugiesisch (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>cre</iso_639-2>
+		<iso_639-1>cr</iso_639-1>
+		<eng>Cree</eng>
+		<fre>cree</fre>
+		<ger>Cree-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>crh</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Crimean Tatar; Crimean Turkish</eng>
+		<fre>tatar de Crimé</fre>
+		<ger>Krimtatarisch</ger>
+	</language>
+	<language>
+		<iso_639-2>crp</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Creoles and pidgins</eng>
+		<fre>créoles et pidgins</fre>
+		<ger>Kreolische Sprachen; Pidginsprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>csb</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kashubian</eng>
+		<fre>kachoube</fre>
+		<ger>Kaschubisch</ger>
+	</language>
+	<language>
+		<iso_639-2>cus</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Cushitic languages</eng>
+		<fre>couchitiques, langues</fre>
+		<ger>Kuschitische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>wel</iso_639-2>
+		<iso_639-1>cy</iso_639-1>
+		<eng>Welsh</eng>
+		<fre>gallois</fre>
+		<ger>Kymrisch</ger>
+	</language>
+	<language>
+		<iso_639-2>cze</iso_639-2>
+		<iso_639-1>cs</iso_639-1>
+		<eng>Czech</eng>
+		<fre>tchèque</fre>
+		<ger>Tschechisch</ger>
+	</language>
+	<language>
+		<iso_639-2>dak</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Dakota</eng>
+		<fre>dakota</fre>
+		<ger>Dakota-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>dan</iso_639-2>
+		<iso_639-1>da</iso_639-1>
+		<eng>Danish</eng>
+		<fre>danois</fre>
+		<ger>Dänisch</ger>
+	</language>
+	<language>
+		<iso_639-2>dar</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Dargwa</eng>
+		<fre>dargwa</fre>
+		<ger>Darginisch</ger>
+	</language>
+	<language>
+		<iso_639-2>day</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Land Dayak languages</eng>
+		<fre>dayak, langues</fre>
+		<ger>Dajakisch</ger>
+	</language>
+	<language>
+		<iso_639-2>del</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Delaware</eng>
+		<fre>delaware</fre>
+		<ger>Delaware-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>den</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Slave (Athapascan)</eng>
+		<fre>esclave (athapascan)</fre>
+		<ger>Slave-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ger</iso_639-2>
+		<iso_639-1>de</iso_639-1>
+		<eng>German</eng>
+		<fre>allemand</fre>
+		<ger>Deutsch</ger>
+	</language>
+	<language>
+		<iso_639-2>dgr</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Dogrib</eng>
+		<fre>dogrib</fre>
+		<ger>Dogrib-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>din</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Dinka</eng>
+		<fre>dinka</fre>
+		<ger>Dinka-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>div</iso_639-2>
+		<iso_639-1>dv</iso_639-1>
+		<eng>Divehi; Dhivehi; Maldivian</eng>
+		<fre>maldivien</fre>
+		<ger>Maledivisch</ger>
+	</language>
+	<language>
+		<iso_639-2>doi</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Dogri</eng>
+		<fre>dogri</fre>
+		<ger>Dogri</ger>
+	</language>
+	<language>
+		<iso_639-2>dra</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Dravidian languages</eng>
+		<fre>dravidiennes, langues</fre>
+		<ger>Drawidische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>dsb</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Lower Sorbian</eng>
+		<fre>bas-sorabe</fre>
+		<ger>Niedersorbisch</ger>
+	</language>
+	<language>
+		<iso_639-2>dua</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Duala</eng>
+		<fre>douala</fre>
+		<ger>Duala-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>dum</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Dutch, Middle (ca.1050-1350)</eng>
+		<fre>néerlandais moyen (ca. 1050-1350)</fre>
+		<ger>Mittelniederländisch</ger>
+	</language>
+	<language>
+		<iso_639-2>dut</iso_639-2>
+		<iso_639-1>nl</iso_639-1>
+		<eng>Dutch; Flemish</eng>
+		<fre>néerlandais; flamand</fre>
+		<ger>Niederländisch</ger>
+	</language>
+	<language>
+		<iso_639-2>dyu</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Dyula</eng>
+		<fre>dioula</fre>
+		<ger>Dyula-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>dzo</iso_639-2>
+		<iso_639-1>dz</iso_639-1>
+		<eng>Dzongkha</eng>
+		<fre>dzongkha</fre>
+		<ger>Dzongkha</ger>
+	</language>
+	<language>
+		<iso_639-2>efi</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Efik</eng>
+		<fre>efik</fre>
+		<ger>Efik</ger>
+	</language>
+	<language>
+		<iso_639-2>egy</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Egyptian (Ancient)</eng>
+		<fre>égyptien</fre>
+		<ger>Ägyptisch</ger>
+	</language>
+	<language>
+		<iso_639-2>eka</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Ekajuk</eng>
+		<fre>ekajuk</fre>
+		<ger>Ekajuk</ger>
+	</language>
+	<language>
+		<iso_639-2>gre</iso_639-2>
+		<iso_639-1>el</iso_639-1>
+		<eng>Greek, Modern (1453-)</eng>
+		<fre>grec moderne (après 1453)</fre>
+		<ger>Neugriechisch</ger>
+	</language>
+	<language>
+		<iso_639-2>elx</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Elamite</eng>
+		<fre>élamite</fre>
+		<ger>Elamisch</ger>
+	</language>
+	<language>
+		<iso_639-2>eng</iso_639-2>
+		<iso_639-1>en</iso_639-1>
+		<eng>English</eng>
+		<fre>anglais</fre>
+		<ger>Englisch</ger>
+	</language>
+	<language>
+		<iso_639-2>enm</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>English, Middle (1100-1500)</eng>
+		<fre>anglais moyen (1100-1500)</fre>
+		<ger>Mittelenglisch</ger>
+	</language>
+	<language>
+		<iso_639-2>epo</iso_639-2>
+		<iso_639-1>eo</iso_639-1>
+		<eng>Esperanto</eng>
+		<fre>espéranto</fre>
+		<ger>Esperanto</ger>
+	</language>
+	<language>
+		<iso_639-2>est</iso_639-2>
+		<iso_639-1>et</iso_639-1>
+		<eng>Estonian</eng>
+		<fre>estonien</fre>
+		<ger>Estnisch</ger>
+	</language>
+	<language>
+		<iso_639-2>baq</iso_639-2>
+		<iso_639-1>eu</iso_639-1>
+		<eng>Basque</eng>
+		<fre>basque</fre>
+		<ger>Baskisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ewe</iso_639-2>
+		<iso_639-1>ee</iso_639-1>
+		<eng>Ewe</eng>
+		<fre>éwé</fre>
+		<ger>Ewe-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ewo</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Ewondo</eng>
+		<fre>éwondo</fre>
+		<ger>Ewondo</ger>
+	</language>
+	<language>
+		<iso_639-2>fan</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Fang</eng>
+		<fre>fang</fre>
+		<ger>Pangwe-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>fao</iso_639-2>
+		<iso_639-1>fo</iso_639-1>
+		<eng>Faroese</eng>
+		<fre>féroïen</fre>
+		<ger>Färöisch</ger>
+	</language>
+	<language>
+		<iso_639-2>per</iso_639-2>
+		<iso_639-1>fa</iso_639-1>
+		<eng>Persian</eng>
+		<fre>persan</fre>
+		<ger>Persisch</ger>
+	</language>
+	<language>
+		<iso_639-2>fat</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Fanti</eng>
+		<fre>fanti</fre>
+		<ger>Fante-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>fij</iso_639-2>
+		<iso_639-1>fj</iso_639-1>
+		<eng>Fijian</eng>
+		<fre>fidjien</fre>
+		<ger>Fidschi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>fil</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Filipino; Pilipino</eng>
+		<fre>filipino; pilipino</fre>
+		<ger>Pilipino</ger>
+	</language>
+	<language>
+		<iso_639-2>fin</iso_639-2>
+		<iso_639-1>fi</iso_639-1>
+		<eng>Finnish</eng>
+		<fre>finnois</fre>
+		<ger>Finnisch</ger>
+	</language>
+	<language>
+		<iso_639-2>fiu</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Finno-Ugrian languages</eng>
+		<fre>finno-ougriennes, langues</fre>
+		<ger>Finnougrische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>fon</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Fon</eng>
+		<fre>fon</fre>
+		<ger>Fon-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>fre</iso_639-2>
+        <iso_639-2T>fra</iso_639-2T>
+		<iso_639-1>fr</iso_639-1>
+		<eng>French</eng>
+		<fre>français</fre>
+		<ger>Französisch</ger>
+	</language>
+	<language>
+		<iso_639-2>frm</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>French, Middle (ca.1400-1600)</eng>
+		<fre>français moyen (1400-1600)</fre>
+		<ger>Mittelfranzösisch</ger>
+	</language>
+	<language>
+		<iso_639-2>fro</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>French, Old (842-ca.1400)</eng>
+		<fre>français ancien (842-ca.1400)</fre>
+		<ger>Altfranzösisch</ger>
+	</language>
+	<language>
+		<iso_639-2>frr</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Northern Frisian</eng>
+		<fre>frison septentrional</fre>
+		<ger>Nordfriesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>frs</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Eastern Frisian</eng>
+		<fre>frison oriental</fre>
+		<ger>Ostfriesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>fry</iso_639-2>
+		<iso_639-1>fy</iso_639-1>
+		<eng>Western Frisian</eng>
+		<fre>frison occidental</fre>
+		<ger>Friesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ful</iso_639-2>
+		<iso_639-1>ff</iso_639-1>
+		<eng>Fulah</eng>
+		<fre>peul</fre>
+		<ger>Ful</ger>
+	</language>
+	<language>
+		<iso_639-2>fur</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Friulian</eng>
+		<fre>frioulan</fre>
+		<ger>Friulisch</ger>
+	</language>
+	<language>
+		<iso_639-2>gaa</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Ga</eng>
+		<fre>ga</fre>
+		<ger>Ga-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>gay</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Gayo</eng>
+		<fre>gayo</fre>
+		<ger>Gayo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>gba</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Gbaya</eng>
+		<fre>gbaya</fre>
+		<ger>Gbaya-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>gem</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Germanic languages</eng>
+		<fre>germaniques, langues</fre>
+		<ger>Germanische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>geo</iso_639-2>
+		<iso_639-1>ka</iso_639-1>
+		<eng>Georgian</eng>
+		<fre>géorgien</fre>
+		<ger>Georgisch</ger>
+	</language>
+	<language>
+		<iso_639-2>gez</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Geez</eng>
+		<fre>guèze</fre>
+		<ger>Altäthiopisch</ger>
+	</language>
+	<language>
+		<iso_639-2>gil</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Gilbertese</eng>
+		<fre>kiribati</fre>
+		<ger>Gilbertesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>gla</iso_639-2>
+		<iso_639-1>gd</iso_639-1>
+		<eng>Gaelic; Scottish Gaelic</eng>
+		<fre>gaélique; gaélique écossais</fre>
+		<ger>Gälisch-Schottisch</ger>
+	</language>
+	<language>
+		<iso_639-2>gle</iso_639-2>
+		<iso_639-1>ga</iso_639-1>
+		<eng>Irish</eng>
+		<fre>irlandais</fre>
+		<ger>Irisch</ger>
+	</language>
+	<language>
+		<iso_639-2>glg</iso_639-2>
+		<iso_639-1>gl</iso_639-1>
+		<eng>Galician</eng>
+		<fre>galicien</fre>
+		<ger>Galicisch</ger>
+	</language>
+	<language>
+		<iso_639-2>glv</iso_639-2>
+		<iso_639-1>gv</iso_639-1>
+		<eng>Manx</eng>
+		<fre>manx; mannois</fre>
+		<ger>Manx</ger>
+	</language>
+	<language>
+		<iso_639-2>gmh</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>German, Middle High (ca.1050-1500)</eng>
+		<fre>allemand, moyen haut (ca. 1050-1500)</fre>
+		<ger>Mittelhochdeutsch</ger>
+	</language>
+	<language>
+		<iso_639-2>goh</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>German, Old High (ca.750-1050)</eng>
+		<fre>allemand, vieux haut (ca. 750-1050)</fre>
+		<ger>Althochdeutsch</ger>
+	</language>
+	<language>
+		<iso_639-2>gon</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Gondi</eng>
+		<fre>gond</fre>
+		<ger>Gondi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>gor</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Gorontalo</eng>
+		<fre>gorontalo</fre>
+		<ger>Gorontalesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>got</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Gothic</eng>
+		<fre>gothique</fre>
+		<ger>Gotisch</ger>
+	</language>
+	<language>
+		<iso_639-2>grb</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Grebo</eng>
+		<fre>grebo</fre>
+		<ger>Grebo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>grc</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Greek, Ancient (to 1453)</eng>
+		<fre>grec ancien (jusqu'à 1453)</fre>
+		<ger>Griechisch</ger>
+	</language>
+	<language>
+		<iso_639-2>gre</iso_639-2>
+		<iso_639-1>el</iso_639-1>
+		<eng>Greek, Modern (1453-)</eng>
+		<fre>grec moderne (après 1453)</fre>
+		<ger>Neugriechisch</ger>
+	</language>
+	<language>
+		<iso_639-2>grn</iso_639-2>
+		<iso_639-1>gn</iso_639-1>
+		<eng>Guarani</eng>
+		<fre>guarani</fre>
+		<ger>Guaraní-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>gsw</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Swiss German; Alemannic; Alsatian</eng>
+		<fre>suisse alémanique; alémanique; alsacien</fre>
+		<ger>Schweizerdeutsch</ger>
+	</language>
+	<language>
+		<iso_639-2>guj</iso_639-2>
+		<iso_639-1>gu</iso_639-1>
+		<eng>Gujarati</eng>
+		<fre>goudjrati</fre>
+		<ger>Gujarati-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>gwi</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Gwich'in</eng>
+		<fre>gwich'in</fre>
+		<ger>Kutchin-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>hai</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Haida</eng>
+		<fre>haida</fre>
+		<ger>Haida-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>hat</iso_639-2>
+		<iso_639-1>ht</iso_639-1>
+		<eng>Haitian; Haitian Creole</eng>
+		<fre>haïtien; créole haïtien</fre>
+		<ger>Haïtien (Haiti-Kreolisch)</ger>
+	</language>
+	<language>
+		<iso_639-2>hau</iso_639-2>
+		<iso_639-1>ha</iso_639-1>
+		<eng>Hausa</eng>
+		<fre>haoussa</fre>
+		<ger>Haussa-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>haw</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Hawaiian</eng>
+		<fre>hawaïen</fre>
+		<ger>Hawaiisch</ger>
+	</language>
+	<language>
+		<iso_639-2>heb</iso_639-2>
+		<iso_639-1>he</iso_639-1>
+		<eng>Hebrew</eng>
+		<fre>hébreu</fre>
+		<ger>Hebräisch</ger>
+	</language>
+	<language>
+		<iso_639-2>her</iso_639-2>
+		<iso_639-1>hz</iso_639-1>
+		<eng>Herero</eng>
+		<fre>herero</fre>
+		<ger>Herero-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>hil</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Hiligaynon</eng>
+		<fre>hiligaynon</fre>
+		<ger>Hiligaynon-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>him</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Himachali languages; Western Pahari languages</eng>
+		<fre>langues himachalis; langues paharis occidentales</fre>
+		<ger>Himachali</ger>
+	</language>
+	<language>
+		<iso_639-2>hin</iso_639-2>
+		<iso_639-1>hi</iso_639-1>
+		<eng>Hindi</eng>
+		<fre>hindi</fre>
+		<ger>Hindi</ger>
+	</language>
+	<language>
+		<iso_639-2>hit</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Hittite</eng>
+		<fre>hittite</fre>
+		<ger>Hethitisch</ger>
+	</language>
+	<language>
+		<iso_639-2>hmn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Hmong; Mong</eng>
+		<fre>hmong</fre>
+		<ger>Miao-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>hmo</iso_639-2>
+		<iso_639-1>ho</iso_639-1>
+		<eng>Hiri Motu</eng>
+		<fre>hiri motu</fre>
+		<ger>Hiri-Motu</ger>
+	</language>
+	<language>
+		<iso_639-2>hrv</iso_639-2>
+		<iso_639-1>hr</iso_639-1>
+		<eng>Croatian</eng>
+		<fre>croate</fre>
+		<ger>Kroatisch </ger>
+	</language>
+	<language>
+		<iso_639-2>hsb</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Upper Sorbian</eng>
+		<fre>haut-sorabe</fre>
+		<ger>Obersorbisch</ger>
+	</language>
+	<language>
+		<iso_639-2>hun</iso_639-2>
+		<iso_639-1>hu</iso_639-1>
+		<eng>Hungarian</eng>
+		<fre>hongrois</fre>
+		<ger>Ungarisch</ger>
+	</language>
+	<language>
+		<iso_639-2>hup</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Hupa</eng>
+		<fre>hupa</fre>
+		<ger>Hupa-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>arm</iso_639-2>
+		<iso_639-1>hy</iso_639-1>
+		<eng>Armenian</eng>
+		<fre>arménien</fre>
+		<ger>Armenisch</ger>
+	</language>
+	<language>
+		<iso_639-2>iba</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Iban</eng>
+		<fre>iban</fre>
+		<ger>Iban-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ibo</iso_639-2>
+		<iso_639-1>ig</iso_639-1>
+		<eng>Igbo</eng>
+		<fre>igbo</fre>
+		<ger>Ibo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ice</iso_639-2>
+		<iso_639-1>is</iso_639-1>
+		<eng>Icelandic</eng>
+		<fre>islandais</fre>
+		<ger>Isländisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ido</iso_639-2>
+		<iso_639-1>io</iso_639-1>
+		<eng>Ido</eng>
+		<fre>ido</fre>
+		<ger>Ido</ger>
+	</language>
+	<language>
+		<iso_639-2>iii</iso_639-2>
+		<iso_639-1>ii</iso_639-1>
+		<eng>Sichuan Yi; Nuosu</eng>
+		<fre>yi de Sichuan</fre>
+		<ger>Lalo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ijo</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Ijo languages</eng>
+		<fre>ijo, langues</fre>
+		<ger>Ijo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>iku</iso_639-2>
+		<iso_639-1>iu</iso_639-1>
+		<eng>Inuktitut</eng>
+		<fre>inuktitut</fre>
+		<ger>Inuktitut</ger>
+	</language>
+	<language>
+		<iso_639-2>ile</iso_639-2>
+		<iso_639-1>ie</iso_639-1>
+		<eng>Interlingue; Occidental</eng>
+		<fre>interlingue</fre>
+		<ger>Interlingue</ger>
+	</language>
+	<language>
+		<iso_639-2>ilo</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Iloko</eng>
+		<fre>ilocano</fre>
+		<ger>Ilokano-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ina</iso_639-2>
+		<iso_639-1>ia</iso_639-1>
+		<eng>Interlingua (International Auxiliary Language Association)</eng>
+		<fre>interlingua (langue auxiliaire internationale)</fre>
+		<ger>Interlingua</ger>
+	</language>
+	<language>
+		<iso_639-2>inc</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Indic languages</eng>
+		<fre>indo-aryennes, langues</fre>
+		<ger>Indoarische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>ind</iso_639-2>
+		<iso_639-1>id</iso_639-1>
+		<eng>Indonesian</eng>
+		<fre>indonésien</fre>
+		<ger>Bahasa Indonesia</ger>
+	</language>
+	<language>
+		<iso_639-2>ine</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Indo-European languages</eng>
+		<fre>indo-européennes, langues</fre>
+		<ger>Indogermanische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>inh</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Ingush</eng>
+		<fre>ingouche</fre>
+		<ger>Inguschisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ipk</iso_639-2>
+		<iso_639-1>ik</iso_639-1>
+		<eng>Inupiaq</eng>
+		<fre>inupiaq</fre>
+		<ger>Inupik</ger>
+	</language>
+	<language>
+		<iso_639-2>ira</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Iranian languages</eng>
+		<fre>iraniennes, langues</fre>
+		<ger>Iranische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>iro</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Iroquoian languages</eng>
+		<fre>iroquoises, langues</fre>
+		<ger>Irokesische Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>ice</iso_639-2>
+		<iso_639-1>is</iso_639-1>
+		<eng>Icelandic</eng>
+		<fre>islandais</fre>
+		<ger>Isländisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ita</iso_639-2>
+		<iso_639-1>it</iso_639-1>
+		<eng>Italian</eng>
+		<fre>italien</fre>
+		<ger>Italienisch</ger>
+	</language>
+	<language>
+		<iso_639-2>jav</iso_639-2>
+		<iso_639-1>jv</iso_639-1>
+		<eng>Javanese</eng>
+		<fre>javanais</fre>
+		<ger>Javanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>jbo</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Lojban</eng>
+		<fre>lojban</fre>
+		<ger>Lojban</ger>
+	</language>
+	<language>
+		<iso_639-2>jpn</iso_639-2>
+		<iso_639-1>ja</iso_639-1>
+		<eng>Japanese</eng>
+		<fre>japonais</fre>
+		<ger>Japanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>jpr</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Judeo-Persian</eng>
+		<fre>judéo-persan</fre>
+		<ger>Jüdisch-Persisch</ger>
+	</language>
+	<language>
+		<iso_639-2>jrb</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Judeo-Arabic</eng>
+		<fre>judéo-arabe</fre>
+		<ger>Jüdisch-Arabisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kaa</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kara-Kalpak</eng>
+		<fre>karakalpak</fre>
+		<ger>Karakalpakisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kab</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kabyle</eng>
+		<fre>kabyle</fre>
+		<ger>Kabylisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kac</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kachin; Jingpho</eng>
+		<fre>kachin; jingpho</fre>
+		<ger>Kachin-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>kal</iso_639-2>
+		<iso_639-1>kl</iso_639-1>
+		<eng>Kalaallisut; Greenlandic</eng>
+		<fre>groenlandais</fre>
+		<ger>Grönländisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kam</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kamba</eng>
+		<fre>kamba</fre>
+		<ger>Kamba-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>kan</iso_639-2>
+		<iso_639-1>kn</iso_639-1>
+		<eng>Kannada</eng>
+		<fre>kannada</fre>
+		<ger>Kannada</ger>
+	</language>
+	<language>
+		<iso_639-2>kar</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Karen languages</eng>
+		<fre>karen, langues</fre>
+		<ger>Karenisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kas</iso_639-2>
+		<iso_639-1>ks</iso_639-1>
+		<eng>Kashmiri</eng>
+		<fre>kashmiri</fre>
+		<ger>Kaschmiri</ger>
+	</language>
+	<language>
+		<iso_639-2>geo</iso_639-2>
+		<iso_639-1>ka</iso_639-1>
+		<eng>Georgian</eng>
+		<fre>géorgien</fre>
+		<ger>Georgisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kau</iso_639-2>
+		<iso_639-1>kr</iso_639-1>
+		<eng>Kanuri</eng>
+		<fre>kanouri</fre>
+		<ger>Kanuri-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>kaw</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kawi</eng>
+		<fre>kawi</fre>
+		<ger>Kawi</ger>
+	</language>
+	<language>
+		<iso_639-2>kaz</iso_639-2>
+		<iso_639-1>kk</iso_639-1>
+		<eng>Kazakh</eng>
+		<fre>kazakh</fre>
+		<ger>Kasachisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kbd</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kabardian</eng>
+		<fre>kabardien</fre>
+		<ger>Kabardinisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kha</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Khasi</eng>
+		<fre>khasi</fre>
+		<ger>Khasi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>khi</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Khoisan languages</eng>
+		<fre>khoïsan, langues</fre>
+		<ger>Khoisan-Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>khm</iso_639-2>
+		<iso_639-1>km</iso_639-1>
+		<eng>Central Khmer</eng>
+		<fre>khmer central</fre>
+		<ger>Kambodschanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kho</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Khotanese; Sakan</eng>
+		<fre>khotanais; sakan</fre>
+		<ger>Sakisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kik</iso_639-2>
+		<iso_639-1>ki</iso_639-1>
+		<eng>Kikuyu; Gikuyu</eng>
+		<fre>kikuyu</fre>
+		<ger>Kikuyu-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>kin</iso_639-2>
+		<iso_639-1>rw</iso_639-1>
+		<eng>Kinyarwanda</eng>
+		<fre>rwanda</fre>
+		<ger>Rwanda-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>kir</iso_639-2>
+		<iso_639-1>ky</iso_639-1>
+		<eng>Kirghiz; Kyrgyz</eng>
+		<fre>kirghiz</fre>
+		<ger>Kirgisisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kmb</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kimbundu</eng>
+		<fre>kimbundu</fre>
+		<ger>Kimbundu-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>kok</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Konkani</eng>
+		<fre>konkani</fre>
+		<ger>Konkani</ger>
+	</language>
+	<language>
+		<iso_639-2>kom</iso_639-2>
+		<iso_639-1>kv</iso_639-1>
+		<eng>Komi</eng>
+		<fre>kom</fre>
+		<ger>Komi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>kon</iso_639-2>
+		<iso_639-1>kg</iso_639-1>
+		<eng>Kongo</eng>
+		<fre>kongo</fre>
+		<ger>Kongo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>kor</iso_639-2>
+		<iso_639-1>ko</iso_639-1>
+		<eng>Korean</eng>
+		<fre>coréen</fre>
+		<ger>Koreanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kos</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kosraean</eng>
+		<fre>kosrae</fre>
+		<ger>Kosraeanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kpe</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kpelle</eng>
+		<fre>kpellé</fre>
+		<ger>Kpelle-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>krc</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Karachay-Balkar</eng>
+		<fre>karatchai balkar</fre>
+		<ger>Karatschaiisch-Balkarisch</ger>
+	</language>
+	<language>
+		<iso_639-2>krl</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Karelian</eng>
+		<fre>carélien</fre>
+		<ger>Karelisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kro</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kru languages</eng>
+		<fre>krou, langues</fre>
+		<ger>Kru-Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>kru</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kurukh</eng>
+		<fre>kurukh</fre>
+		<ger>Oraon-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>kua</iso_639-2>
+		<iso_639-1>kj</iso_639-1>
+		<eng>Kuanyama; Kwanyama</eng>
+		<fre>kuanyama; kwanyama</fre>
+		<ger>Kwanyama-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>kum</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kumyk</eng>
+		<fre>koumyk</fre>
+		<ger>Kumükisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kur</iso_639-2>
+		<iso_639-1>ku</iso_639-1>
+		<eng>Kurdish</eng>
+		<fre>kurde</fre>
+		<ger>Kurdisch</ger>
+	</language>
+	<language>
+		<iso_639-2>kut</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kutenai</eng>
+		<fre>kutenai</fre>
+		<ger>Kutenai-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>lad</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Ladino</eng>
+		<fre>judéo-espagnol</fre>
+		<ger>Judenspanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>lah</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Lahnda</eng>
+		<fre>lahnda</fre>
+		<ger>Lahnda</ger>
+	</language>
+	<language>
+		<iso_639-2>lam</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Lamba</eng>
+		<fre>lamba</fre>
+		<ger>Lamba-Sprache (Bantusprache)</ger>
+	</language>
+	<language>
+		<iso_639-2>lao</iso_639-2>
+		<iso_639-1>lo</iso_639-1>
+		<eng>Lao</eng>
+		<fre>lao</fre>
+		<ger>Laotisch</ger>
+	</language>
+	<language>
+		<iso_639-2>lat</iso_639-2>
+		<iso_639-1>la</iso_639-1>
+		<eng>Latin</eng>
+		<fre>latin</fre>
+		<ger>Latein</ger>
+	</language>
+	<language>
+		<iso_639-2>lav</iso_639-2>
+		<iso_639-1>lv</iso_639-1>
+		<eng>Latvian</eng>
+		<fre>letton</fre>
+		<ger>Lettisch</ger>
+	</language>
+	<language>
+		<iso_639-2>lez</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Lezghian</eng>
+		<fre>lezghien</fre>
+		<ger>Lesgisch</ger>
+	</language>
+	<language>
+		<iso_639-2>lim</iso_639-2>
+		<iso_639-1>li</iso_639-1>
+		<eng>Limburgan; Limburger; Limburgish</eng>
+		<fre>limbourgeois</fre>
+		<ger>Limburgisch</ger>
+	</language>
+	<language>
+		<iso_639-2>lin</iso_639-2>
+		<iso_639-1>ln</iso_639-1>
+		<eng>Lingala</eng>
+		<fre>lingala</fre>
+		<ger>Lingala</ger>
+	</language>
+	<language>
+		<iso_639-2>lit</iso_639-2>
+		<iso_639-1>lt</iso_639-1>
+		<eng>Lithuanian</eng>
+		<fre>lituanien</fre>
+		<ger>Litauisch</ger>
+	</language>
+	<language>
+		<iso_639-2>lol</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mongo</eng>
+		<fre>mongo</fre>
+		<ger>Mongo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>loz</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Lozi</eng>
+		<fre>lozi</fre>
+		<ger>Rotse-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ltz</iso_639-2>
+		<iso_639-1>lb</iso_639-1>
+		<eng>Luxembourgish; Letzeburgesch</eng>
+		<fre>luxembourgeois</fre>
+		<ger>Luxemburgisch</ger>
+	</language>
+	<language>
+		<iso_639-2>lua</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Luba-Lulua</eng>
+		<fre>luba-lulua</fre>
+		<ger>Lulua-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>lub</iso_639-2>
+		<iso_639-1>lu</iso_639-1>
+		<eng>Luba-Katanga</eng>
+		<fre>luba-katanga</fre>
+		<ger>Luba-Katanga-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>lug</iso_639-2>
+		<iso_639-1>lg</iso_639-1>
+		<eng>Ganda</eng>
+		<fre>ganda</fre>
+		<ger>Ganda-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>lui</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Luiseno</eng>
+		<fre>luiseno</fre>
+		<ger>Luiseño-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>lun</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Lunda</eng>
+		<fre>lunda</fre>
+		<ger>Lunda-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>luo</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Luo (Kenya and Tanzania)</eng>
+		<fre>luo (Kenya et Tanzanie)</fre>
+		<ger>Luo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>lus</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Lushai</eng>
+		<fre>lushai</fre>
+		<ger>Lushai-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>mac</iso_639-2>
+		<iso_639-1>mk</iso_639-1>
+		<eng>Macedonian</eng>
+		<fre>macédonien</fre>
+		<ger>Makedonisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mad</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Madurese</eng>
+		<fre>madourais</fre>
+		<ger>Maduresisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mag</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Magahi</eng>
+		<fre>magahi</fre>
+		<ger>Khotta</ger>
+	</language>
+	<language>
+		<iso_639-2>mah</iso_639-2>
+		<iso_639-1>mh</iso_639-1>
+		<eng>Marshallese</eng>
+		<fre>marshall</fre>
+		<ger>Marschallesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mai</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Maithili</eng>
+		<fre>maithili</fre>
+		<ger>Maithili</ger>
+	</language>
+	<language>
+		<iso_639-2>mak</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Makasar</eng>
+		<fre>makassar</fre>
+		<ger>Makassarisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mal</iso_639-2>
+		<iso_639-1>ml</iso_639-1>
+		<eng>Malayalam</eng>
+		<fre>malayalam</fre>
+		<ger>Malayalam</ger>
+	</language>
+	<language>
+		<iso_639-2>man</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mandingo</eng>
+		<fre>mandingue</fre>
+		<ger>Malinke-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>mao</iso_639-2>
+		<iso_639-1>mi</iso_639-1>
+		<eng>Maori</eng>
+		<fre>maori</fre>
+		<ger>Maori-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>map</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Austronesian languages</eng>
+		<fre>austronésiennes, langues</fre>
+		<ger>Austronesische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>mar</iso_639-2>
+		<iso_639-1>mr</iso_639-1>
+		<eng>Marathi</eng>
+		<fre>marathe</fre>
+		<ger>Marathi</ger>
+	</language>
+	<language>
+		<iso_639-2>mas</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Masai</eng>
+		<fre>massaï</fre>
+		<ger>Massai-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>may</iso_639-2>
+		<iso_639-1>ms</iso_639-1>
+		<eng>Malay</eng>
+		<fre>malais</fre>
+		<ger>Malaiisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mdf</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Moksha</eng>
+		<fre>moksa</fre>
+		<ger>Mokscha-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>mdr</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mandar</eng>
+		<fre>mandar</fre>
+		<ger>Mandaresisch</ger>
+	</language>
+	<language>
+		<iso_639-2>men</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mende</eng>
+		<fre>mendé</fre>
+		<ger>Mende-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>mga</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Irish, Middle (900-1200)</eng>
+		<fre>irlandais moyen (900-1200)</fre>
+		<ger>Mittelirisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mic</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mi'kmaq; Micmac</eng>
+		<fre>mi'kmaq; micmac</fre>
+		<ger>Micmac-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>min</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Minangkabau</eng>
+		<fre>minangkabau</fre>
+		<ger>Minangkabau-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>mis</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Uncoded languages</eng>
+		<fre>langues non codées</fre>
+		<ger>Einzelne andere Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>mac</iso_639-2>
+		<iso_639-1>mk</iso_639-1>
+		<eng>Macedonian</eng>
+		<fre>macédonien</fre>
+		<ger>Makedonisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mkh</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mon-Khmer languages</eng>
+		<fre>môn-khmer, langues</fre>
+		<ger>Mon-Khmer-Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>mlg</iso_639-2>
+		<iso_639-1>mg</iso_639-1>
+		<eng>Malagasy</eng>
+		<fre>malgache</fre>
+		<ger>Malagassi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>mlt</iso_639-2>
+		<iso_639-1>mt</iso_639-1>
+		<eng>Maltese</eng>
+		<fre>maltais</fre>
+		<ger>Maltesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mnc</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Manchu</eng>
+		<fre>mandchou</fre>
+		<ger>Mandschurisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mni</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Manipuri</eng>
+		<fre>manipuri</fre>
+		<ger>Meithei-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>mno</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Manobo languages</eng>
+		<fre>manobo, langues</fre>
+		<ger>Manobo-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>moh</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mohawk</eng>
+		<fre>mohawk</fre>
+		<ger>Mohawk-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>mon</iso_639-2>
+		<iso_639-1>mn</iso_639-1>
+		<eng>Mongolian</eng>
+		<fre>mongol</fre>
+		<ger>Mongolisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mos</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mossi</eng>
+		<fre>moré</fre>
+		<ger>Mossi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>mao</iso_639-2>
+		<iso_639-1>mi</iso_639-1>
+		<eng>Maori</eng>
+		<fre>maori</fre>
+		<ger>Maori-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>may</iso_639-2>
+		<iso_639-1>ms</iso_639-1>
+		<eng>Malay</eng>
+		<fre>malais</fre>
+		<ger>Malaiisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mul</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Multiple languages</eng>
+		<fre>multilingue</fre>
+		<ger>Mehrere Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>mun</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Munda languages</eng>
+		<fre>mounda, langues</fre>
+		<ger>Mundasprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>mus</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Creek</eng>
+		<fre>muskogee</fre>
+		<ger>Muskogisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mwl</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mirandese</eng>
+		<fre>mirandais</fre>
+		<ger>Mirandesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>mwr</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Marwari</eng>
+		<fre>marvari</fre>
+		<ger>Marwari</ger>
+	</language>
+	<language>
+		<iso_639-2>bur</iso_639-2>
+		<iso_639-1>my</iso_639-1>
+		<eng>Burmese</eng>
+		<fre>birman</fre>
+		<ger>Birmanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>myn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Mayan languages</eng>
+		<fre>maya, langues</fre>
+		<ger>Maya-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>myv</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Erzya</eng>
+		<fre>erza</fre>
+		<ger>Erza-Mordwinisch</ger>
+	</language>
+	<language>
+		<iso_639-2>nah</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Nahuatl languages</eng>
+		<fre>nahuatl, langues</fre>
+		<ger>Nahuatl</ger>
+	</language>
+	<language>
+		<iso_639-2>nai</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>North American Indian languages</eng>
+		<fre>nord-amérindiennes, langues</fre>
+		<ger>Indianersprachen, Nordamerika (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>nap</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Neapolitan</eng>
+		<fre>napolitain</fre>
+		<ger>Neapel / Mundart</ger>
+	</language>
+	<language>
+		<iso_639-2>nau</iso_639-2>
+		<iso_639-1>na</iso_639-1>
+		<eng>Nauru</eng>
+		<fre>nauruan</fre>
+		<ger>Nauruanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>nav</iso_639-2>
+		<iso_639-1>nv</iso_639-1>
+		<eng>Navajo; Navaho</eng>
+		<fre>navaho</fre>
+		<ger>Navajo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>nbl</iso_639-2>
+		<iso_639-1>nr</iso_639-1>
+		<eng>Ndebele, South; South Ndebele</eng>
+		<fre>ndébélé du Sud</fre>
+		<ger>Ndebele-Sprache (Transvaal)</ger>
+	</language>
+	<language>
+		<iso_639-2>nde</iso_639-2>
+		<iso_639-1>nd</iso_639-1>
+		<eng>Ndebele, North; North Ndebele</eng>
+		<fre>ndébélé du Nord</fre>
+		<ger>Ndebele-Sprache (Simbabwe)</ger>
+	</language>
+	<language>
+		<iso_639-2>ndo</iso_639-2>
+		<iso_639-1>ng</iso_639-1>
+		<eng>Ndonga</eng>
+		<fre>ndonga</fre>
+		<ger>Ndonga</ger>
+	</language>
+	<language>
+		<iso_639-2>nds</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Low German; Low Saxon; German, Low; Saxon, Low</eng>
+		<fre>bas allemand; bas saxon; allemand, bas; saxon, bas</fre>
+		<ger>Niederdeutsch</ger>
+	</language>
+	<language>
+		<iso_639-2>nep</iso_639-2>
+		<iso_639-1>ne</iso_639-1>
+		<eng>Nepali</eng>
+		<fre>népalais</fre>
+		<ger>Nepali</ger>
+	</language>
+	<language>
+		<iso_639-2>new</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Nepal Bhasa; Newari</eng>
+		<fre>nepal bhasa; newari</fre>
+		<ger>Newari</ger>
+	</language>
+	<language>
+		<iso_639-2>nia</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Nias</eng>
+		<fre>nias</fre>
+		<ger>Nias-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>nic</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Niger-Kordofanian languages</eng>
+		<fre>nigéro-kordofaniennes, langues</fre>
+		<ger>Nigerkordofanische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>niu</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Niuean</eng>
+		<fre>niué</fre>
+		<ger>Niue-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>dut</iso_639-2>
+		<iso_639-1>nl</iso_639-1>
+		<eng>Dutch; Flemish</eng>
+		<fre>néerlandais; flamand</fre>
+		<ger>Niederländisch</ger>
+	</language>
+	<language>
+		<iso_639-2>nno</iso_639-2>
+		<iso_639-1>nn</iso_639-1>
+		<eng>Norwegian Nynorsk; Nynorsk, Norwegian</eng>
+		<fre>norvégien nynorsk; nynorsk, norvégien</fre>
+		<ger>Nynorsk</ger>
+	</language>
+	<language>
+		<iso_639-2>nob</iso_639-2>
+		<iso_639-1>nb</iso_639-1>
+		<eng>Bokmål, Norwegian; Norwegian Bokmål</eng>
+		<fre>norvégien bokmål</fre>
+		<ger>Bokmål</ger>
+	</language>
+	<language>
+		<iso_639-2>nog</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Nogai</eng>
+		<fre>nogaï; nogay</fre>
+		<ger>Nogaisch</ger>
+	</language>
+	<language>
+		<iso_639-2>non</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Norse, Old</eng>
+		<fre>norrois, vieux</fre>
+		<ger>Altnorwegisch</ger>
+	</language>
+	<language>
+		<iso_639-2>nor</iso_639-2>
+		<iso_639-1>no</iso_639-1>
+		<eng>Norwegian</eng>
+		<fre>norvégien</fre>
+		<ger>Norwegisch</ger>
+	</language>
+	<language>
+		<iso_639-2>nqo</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>N'Ko</eng>
+		<fre>n'ko</fre>
+		<ger>N'Ko</ger>
+	</language>
+	<language>
+		<iso_639-2>nso</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Pedi; Sepedi; Northern Sotho</eng>
+		<fre>pedi; sepedi; sotho du Nord</fre>
+		<ger>Pedi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>nub</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Nubian languages</eng>
+		<fre>nubiennes, langues</fre>
+		<ger>Nubische Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>nwc</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Classical Newari; Old Newari; Classical Nepal Bhasa</eng>
+		<fre>newari classique</fre>
+		<ger>Alt-Newari</ger>
+	</language>
+	<language>
+		<iso_639-2>nya</iso_639-2>
+		<iso_639-1>ny</iso_639-1>
+		<eng>Chichewa; Chewa; Nyanja</eng>
+		<fre>chichewa; chewa; nyanja</fre>
+		<ger>Nyanja-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>nym</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Nyamwezi</eng>
+		<fre>nyamwezi</fre>
+		<ger>Nyamwezi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>nyn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Nyankole</eng>
+		<fre>nyankolé</fre>
+		<ger>Nkole-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>nyo</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Nyoro</eng>
+		<fre>nyoro</fre>
+		<ger>Nyoro-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>nzi</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Nzima</eng>
+		<fre>nzema</fre>
+		<ger>Nzima-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>oci</iso_639-2>
+		<iso_639-1>oc</iso_639-1>
+		<eng>Occitan (post 1500)</eng>
+		<fre>occitan (après 1500)</fre>
+		<ger>Okzitanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>oji</iso_639-2>
+		<iso_639-1>oj</iso_639-1>
+		<eng>Ojibwa</eng>
+		<fre>ojibwa</fre>
+		<ger>Ojibwa-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ori</iso_639-2>
+		<iso_639-1>or</iso_639-1>
+		<eng>Oriya</eng>
+		<fre>oriya</fre>
+		<ger>Oriya-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>orm</iso_639-2>
+		<iso_639-1>om</iso_639-1>
+		<eng>Oromo</eng>
+		<fre>galla</fre>
+		<ger>Galla-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>osa</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Osage</eng>
+		<fre>osage</fre>
+		<ger>Osage-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>oss</iso_639-2>
+		<iso_639-1>os</iso_639-1>
+		<eng>Ossetian; Ossetic</eng>
+		<fre>ossète</fre>
+		<ger>Ossetisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ota</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Turkish, Ottoman (1500-1928)</eng>
+		<fre>turc ottoman (1500-1928)</fre>
+		<ger>Osmanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>oto</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Otomian languages</eng>
+		<fre>otomi, langues</fre>
+		<ger>Otomangue-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>paa</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Papuan languages</eng>
+		<fre>papoues, langues</fre>
+		<ger>Papuasprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>pag</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Pangasinan</eng>
+		<fre>pangasinan</fre>
+		<ger>Pangasinan-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>pal</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Pahlavi</eng>
+		<fre>pahlavi</fre>
+		<ger>Mittelpersisch</ger>
+	</language>
+	<language>
+		<iso_639-2>pam</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Pampanga; Kapampangan</eng>
+		<fre>pampangan</fre>
+		<ger>Pampanggan-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>pan</iso_639-2>
+		<iso_639-1>pa</iso_639-1>
+		<eng>Panjabi; Punjabi</eng>
+		<fre>pendjabi</fre>
+		<ger>Pandschabi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>pap</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Papiamento</eng>
+		<fre>papiamento</fre>
+		<ger>Papiamento</ger>
+	</language>
+	<language>
+		<iso_639-2>pau</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Palauan</eng>
+		<fre>palau</fre>
+		<ger>Palau-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>peo</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Persian, Old (ca.600-400 B.C.)</eng>
+		<fre>perse, vieux (ca. 600-400 av. J.-C.)</fre>
+		<ger>Altpersisch</ger>
+	</language>
+	<language>
+		<iso_639-2>per</iso_639-2>
+		<iso_639-1>fa</iso_639-1>
+		<eng>Persian</eng>
+		<fre>persan</fre>
+		<ger>Persisch</ger>
+	</language>
+	<language>
+		<iso_639-2>phi</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Philippine languages</eng>
+		<fre>philippines, langues</fre>
+		<ger>Philippinisch-Austronesisch (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>phn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Phoenician</eng>
+		<fre>phénicien</fre>
+		<ger>Phönikisch</ger>
+	</language>
+	<language>
+		<iso_639-2>pli</iso_639-2>
+		<iso_639-1>pi</iso_639-1>
+		<eng>Pali</eng>
+		<fre>pali</fre>
+		<ger>Pali</ger>
+	</language>
+	<language>
+		<iso_639-2>pol</iso_639-2>
+		<iso_639-1>pl</iso_639-1>
+		<eng>Polish</eng>
+		<fre>polonais</fre>
+		<ger>Polnisch</ger>
+	</language>
+	<language>
+		<iso_639-2>pon</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Pohnpeian</eng>
+		<fre>pohnpei</fre>
+		<ger>Ponapeanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>por</iso_639-2>
+		<iso_639-1>pt</iso_639-1>
+		<eng>Portuguese</eng>
+		<fre>portugais</fre>
+		<ger>Portugiesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>pra</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Prakrit languages</eng>
+		<fre>prâkrit, langues</fre>
+		<ger>Prakrit</ger>
+	</language>
+	<language>
+		<iso_639-2>pro</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Provençal, Old (to 1500);Occitan, Old (to 1500)</eng>
+		<fre>provençal ancien (jusqu'à 1500); occitan ancien (jusqu'à 1500)
+		</fre>
+		<ger>Altokzitanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>pus</iso_639-2>
+		<iso_639-1>ps</iso_639-1>
+		<eng>Pushto; Pashto</eng>
+		<fre>pachto</fre>
+		<ger>Paschtu</ger>
+	</language>
+	<language>
+		<iso_639-2>qaa-qtz</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Reserved for local use</eng>
+		<fre>réservée à l'usage local</fre>
+		<ger>Reserviert für lokale Verwendung</ger>
+	</language>
+	<language>
+		<iso_639-2>que</iso_639-2>
+		<iso_639-1>qu</iso_639-1>
+		<eng>Quechua</eng>
+		<fre>quechua</fre>
+		<ger>Quechua-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>raj</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Rajasthani</eng>
+		<fre>rajasthani</fre>
+		<ger>Rajasthani</ger>
+	</language>
+	<language>
+		<iso_639-2>rap</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Rapanui</eng>
+		<fre>rapanui</fre>
+		<ger>Osterinsel-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>rar</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Rarotongan; Cook Islands Maori</eng>
+		<fre>rarotonga; maori des îles Cook</fre>
+		<ger>Rarotonganisch</ger>
+	</language>
+	<language>
+		<iso_639-2>roa</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Romance languages</eng>
+		<fre>romanes, langues</fre>
+		<ger>Romanische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>roh</iso_639-2>
+		<iso_639-1>rm</iso_639-1>
+		<eng>Romansh</eng>
+		<fre>romanche</fre>
+		<ger>Rätoromanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>rom</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Romany</eng>
+		<fre>tsigane</fre>
+		<ger>Romani (Sprache)</ger>
+	</language>
+	<language>
+		<iso_639-2>rum</iso_639-2>
+		<iso_639-1>ro</iso_639-1>
+		<eng>Romanian; Moldavian; Moldovan</eng>
+		<fre>roumain; moldave</fre>
+		<ger>Rumänisch</ger>
+	</language>
+	<language>
+		<iso_639-2>rum</iso_639-2>
+		<iso_639-1>ro</iso_639-1>
+		<eng>Romanian; Moldavian; Moldovan</eng>
+		<fre>roumain; moldave</fre>
+		<ger>Rumänisch</ger>
+	</language>
+	<language>
+		<iso_639-2>run</iso_639-2>
+		<iso_639-1>rn</iso_639-1>
+		<eng>Rundi</eng>
+		<fre>rundi</fre>
+		<ger>Rundi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>rup</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Aromanian; Arumanian; Macedo-Romanian</eng>
+		<fre>aroumain; macédo-roumain</fre>
+		<ger>Aromunisch</ger>
+	</language>
+	<language>
+		<iso_639-2>rus</iso_639-2>
+		<iso_639-1>ru</iso_639-1>
+		<eng>Russian</eng>
+		<fre>russe</fre>
+		<ger>Russisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sad</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sandawe</eng>
+		<fre>sandawe</fre>
+		<ger>Sandawe-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>sag</iso_639-2>
+		<iso_639-1>sg</iso_639-1>
+		<eng>Sango</eng>
+		<fre>sango</fre>
+		<ger>Sango-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>sah</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Yakut</eng>
+		<fre>iakoute</fre>
+		<ger>Jakutisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sai</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>South American Indian languages</eng>
+		<fre>sud-amérindiennes, langues</fre>
+		<ger>Indianersprachen, Südamerika (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>sal</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Salishan languages</eng>
+		<fre>salishennes, langues</fre>
+		<ger>Salish-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>sam</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Samaritan Aramaic</eng>
+		<fre>samaritain</fre>
+		<ger>Samaritanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>san</iso_639-2>
+		<iso_639-1>sa</iso_639-1>
+		<eng>Sanskrit</eng>
+		<fre>sanskrit</fre>
+		<ger>Sanskrit</ger>
+	</language>
+	<language>
+		<iso_639-2>sas</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sasak</eng>
+		<fre>sasak</fre>
+		<ger>Sasak</ger>
+	</language>
+	<language>
+		<iso_639-2>sat</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Santali</eng>
+		<fre>santal</fre>
+		<ger>Santali</ger>
+	</language>
+	<language>
+		<iso_639-2>scn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sicilian</eng>
+		<fre>sicilien</fre>
+		<ger>Sizilianisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sco</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Scots</eng>
+		<fre>écossais</fre>
+		<ger>Schottisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sel</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Selkup</eng>
+		<fre>selkoupe</fre>
+		<ger>Selkupisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sem</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Semitic languages</eng>
+		<fre>sémitiques, langues</fre>
+		<ger>Semitische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>sga</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Irish, Old (to 900)</eng>
+		<fre>irlandais ancien (jusqu'à 900)</fre>
+		<ger>Altirisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sgn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sign Languages</eng>
+		<fre>langues des signes</fre>
+		<ger>Zeichensprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>shn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Shan</eng>
+		<fre>chan</fre>
+		<ger>Schan-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>sid</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sidamo</eng>
+		<fre>sidamo</fre>
+		<ger>Sidamo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>sin</iso_639-2>
+		<iso_639-1>si</iso_639-1>
+		<eng>Sinhala; Sinhalese</eng>
+		<fre>singhalais</fre>
+		<ger>Singhalesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sio</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Siouan languages</eng>
+		<fre>sioux, langues</fre>
+		<ger>Sioux-Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>sit</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sino-Tibetan languages</eng>
+		<fre>sino-tibétaines, langues</fre>
+		<ger>Sinotibetische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>sla</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Slavic languages</eng>
+		<fre>slaves, langues</fre>
+		<ger>Slawische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>slo</iso_639-2>
+		<iso_639-1>sk</iso_639-1>
+		<eng>Slovak</eng>
+		<fre>slovaque</fre>
+		<ger>Slowakisch</ger>
+	</language>
+	<language>
+		<iso_639-2>slo</iso_639-2>
+		<iso_639-1>sk</iso_639-1>
+		<eng>Slovak</eng>
+		<fre>slovaque</fre>
+		<ger>Slowakisch</ger>
+	</language>
+	<language>
+		<iso_639-2>slv</iso_639-2>
+		<iso_639-1>sl</iso_639-1>
+		<eng>Slovenian</eng>
+		<fre>slovène</fre>
+		<ger>Slowenisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sma</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Southern Sami</eng>
+		<fre>sami du Sud</fre>
+		<ger>Südsaamisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sme</iso_639-2>
+		<iso_639-1>se</iso_639-1>
+		<eng>Northern Sami</eng>
+		<fre>sami du Nord</fre>
+		<ger>Nordsaamisch</ger>
+	</language>
+	<language>
+		<iso_639-2>smi</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sami languages</eng>
+		<fre>sames, langues</fre>
+		<ger>Saamisch</ger>
+	</language>
+	<language>
+		<iso_639-2>smj</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Lule Sami</eng>
+		<fre>sami de Lule</fre>
+		<ger>Lulesaamisch</ger>
+	</language>
+	<language>
+		<iso_639-2>smn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Inari Sami</eng>
+		<fre>sami d'Inari</fre>
+		<ger>Inarisaamisch</ger>
+	</language>
+	<language>
+		<iso_639-2>smo</iso_639-2>
+		<iso_639-1>sm</iso_639-1>
+		<eng>Samoan</eng>
+		<fre>samoan</fre>
+		<ger>Samoanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sms</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Skolt Sami</eng>
+		<fre>sami skolt</fre>
+		<ger>Skoltsaamisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sna</iso_639-2>
+		<iso_639-1>sn</iso_639-1>
+		<eng>Shona</eng>
+		<fre>shona</fre>
+		<ger>Schona-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>snd</iso_639-2>
+		<iso_639-1>sd</iso_639-1>
+		<eng>Sindhi</eng>
+		<fre>sindhi</fre>
+		<ger>Sindhi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>snk</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Soninke</eng>
+		<fre>soninké</fre>
+		<ger>Soninke-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>sog</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sogdian</eng>
+		<fre>sogdien</fre>
+		<ger>Sogdisch</ger>
+	</language>
+	<language>
+		<iso_639-2>som</iso_639-2>
+		<iso_639-1>so</iso_639-1>
+		<eng>Somali</eng>
+		<fre>somali</fre>
+		<ger>Somali</ger>
+	</language>
+	<language>
+		<iso_639-2>son</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Songhai languages</eng>
+		<fre>songhai, langues</fre>
+		<ger>Songhai-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>sot</iso_639-2>
+		<iso_639-1>st</iso_639-1>
+		<eng>Sotho, Southern</eng>
+		<fre>sotho du Sud</fre>
+		<ger>Süd-Sotho-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>spa</iso_639-2>
+		<iso_639-1>es</iso_639-1>
+		<eng>Spanish; Castilian</eng>
+		<fre>espagnol; castillan</fre>
+		<ger>Spanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>alb</iso_639-2>
+		<iso_639-1>sq</iso_639-1>
+		<eng>Albanian</eng>
+		<fre>albanais</fre>
+		<ger>Albanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>srd</iso_639-2>
+		<iso_639-1>sc</iso_639-1>
+		<eng>Sardinian</eng>
+		<fre>sarde</fre>
+		<ger>Sardisch</ger>
+	</language>
+	<language>
+		<iso_639-2>srn</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sranan Tongo</eng>
+		<fre>sranan tongo</fre>
+		<ger>Sranantongo</ger>
+	</language>
+	<language>
+		<iso_639-2>srp</iso_639-2>
+		<iso_639-1>sr</iso_639-1>
+		<eng>Serbian</eng>
+		<fre>serbe</fre>
+		<ger>Serbisch </ger>
+	</language>
+	<language>
+		<iso_639-2>srr</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Serer</eng>
+		<fre>sérère</fre>
+		<ger>Serer-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ssa</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Nilo-Saharan languages</eng>
+		<fre>nilo-sahariennes, langues</fre>
+		<ger>Nilosaharanische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>ssw</iso_639-2>
+		<iso_639-1>ss</iso_639-1>
+		<eng>Swati</eng>
+		<fre>swati</fre>
+		<ger>Swasi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>suk</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sukuma</eng>
+		<fre>sukuma</fre>
+		<ger>Sukuma-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>sun</iso_639-2>
+		<iso_639-1>su</iso_639-1>
+		<eng>Sundanese</eng>
+		<fre>soundanais</fre>
+		<ger>Sundanesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>sus</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Susu</eng>
+		<fre>soussou</fre>
+		<ger>Susu</ger>
+	</language>
+	<language>
+		<iso_639-2>sux</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sumerian</eng>
+		<fre>sumérien</fre>
+		<ger>Sumerisch</ger>
+	</language>
+	<language>
+		<iso_639-2>swa</iso_639-2>
+		<iso_639-1>sw</iso_639-1>
+		<eng>Swahili</eng>
+		<fre>swahili</fre>
+		<ger>Swahili</ger>
+	</language>
+	<language>
+		<iso_639-2>swe</iso_639-2>
+		<iso_639-1>sv</iso_639-1>
+		<eng>Swedish</eng>
+		<fre>suédois</fre>
+		<ger>Schwedisch</ger>
+	</language>
+	<language>
+		<iso_639-2>syc</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Classical Syriac</eng>
+		<fre>syriaque classique</fre>
+		<ger>Syrisch</ger>
+	</language>
+	<language>
+		<iso_639-2>syr</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Syriac</eng>
+		<fre>syriaque</fre>
+		<ger>Neuostaramäisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tah</iso_639-2>
+		<iso_639-1>ty</iso_639-1>
+		<eng>Tahitian</eng>
+		<fre>tahitien</fre>
+		<ger>Tahitisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tai</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tai languages</eng>
+		<fre>tai, langues</fre>
+		<ger>Thaisprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>tam</iso_639-2>
+		<iso_639-1>ta</iso_639-1>
+		<eng>Tamil</eng>
+		<fre>tamoul</fre>
+		<ger>Tamil</ger>
+	</language>
+	<language>
+		<iso_639-2>tat</iso_639-2>
+		<iso_639-1>tt</iso_639-1>
+		<eng>Tatar</eng>
+		<fre>tatar</fre>
+		<ger>Tatarisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tel</iso_639-2>
+		<iso_639-1>te</iso_639-1>
+		<eng>Telugu</eng>
+		<fre>télougou</fre>
+		<ger>Telugu-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tem</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Timne</eng>
+		<fre>temne</fre>
+		<ger>Temne-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ter</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tereno</eng>
+		<fre>tereno</fre>
+		<ger>Tereno-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tet</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tetum</eng>
+		<fre>tetum</fre>
+		<ger>Tetum-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tgk</iso_639-2>
+		<iso_639-1>tg</iso_639-1>
+		<eng>Tajik</eng>
+		<fre>tadjik</fre>
+		<ger>Tadschikisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tgl</iso_639-2>
+		<iso_639-1>tl</iso_639-1>
+		<eng>Tagalog</eng>
+		<fre>tagalog</fre>
+		<ger>Tagalog</ger>
+	</language>
+	<language>
+		<iso_639-2>tha</iso_639-2>
+		<iso_639-1>th</iso_639-1>
+		<eng>Thai</eng>
+		<fre>thaï</fre>
+		<ger>Thailändisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tib</iso_639-2>
+		<iso_639-1>bo</iso_639-1>
+		<eng>Tibetan</eng>
+		<fre>tibétain</fre>
+		<ger>Tibetisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tig</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tigre</eng>
+		<fre>tigré</fre>
+		<ger>Tigre-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tir</iso_639-2>
+		<iso_639-1>ti</iso_639-1>
+		<eng>Tigrinya</eng>
+		<fre>tigrigna</fre>
+		<ger>Tigrinja-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tiv</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tiv</eng>
+		<fre>tiv</fre>
+		<ger>Tiv-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tkl</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tokelau</eng>
+		<fre>tokelau</fre>
+		<ger>Tokelauanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tlh</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Klingon; tlhIngan-Hol</eng>
+		<fre>klingon</fre>
+		<ger>Klingonisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tli</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tlingit</eng>
+		<fre>tlingit</fre>
+		<ger>Tlingit-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tmh</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tamashek</eng>
+		<fre>tamacheq</fre>
+		<ger>Tamašeq</ger>
+	</language>
+	<language>
+		<iso_639-2>tog</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tonga (Nyasa)</eng>
+		<fre>tonga (Nyasa)</fre>
+		<ger>Tonga (Bantusprache, Sambia)</ger>
+	</language>
+	<language>
+		<iso_639-2>ton</iso_639-2>
+		<iso_639-1>to</iso_639-1>
+		<eng>Tonga (Tonga Islands)</eng>
+		<fre>tongan (Îles Tonga)</fre>
+		<ger>Tongaisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tpi</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tok Pisin</eng>
+		<fre>tok pisin</fre>
+		<ger>Neumelanesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tsi</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tsimshian</eng>
+		<fre>tsimshian</fre>
+		<ger>Tsimshian-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tsn</iso_639-2>
+		<iso_639-1>tn</iso_639-1>
+		<eng>Tswana</eng>
+		<fre>tswana</fre>
+		<ger>Tswana-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tso</iso_639-2>
+		<iso_639-1>ts</iso_639-1>
+		<eng>Tsonga</eng>
+		<fre>tsonga</fre>
+		<ger>Tsonga-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tuk</iso_639-2>
+		<iso_639-1>tk</iso_639-1>
+		<eng>Turkmen</eng>
+		<fre>turkmène</fre>
+		<ger>Turkmenisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tum</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tumbuka</eng>
+		<fre>tumbuka</fre>
+		<ger>Tumbuka-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tup</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tupi languages</eng>
+		<fre>tupi, langues</fre>
+		<ger>Tupi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tur</iso_639-2>
+		<iso_639-1>tr</iso_639-1>
+		<eng>Turkish</eng>
+		<fre>turc</fre>
+		<ger>Türkisch</ger>
+	</language>
+	<language>
+		<iso_639-2>tut</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Altaic languages</eng>
+		<fre>altaïques, langues</fre>
+		<ger>Altaische Sprachen (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>tvl</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tuvalu</eng>
+		<fre>tuvalu</fre>
+		<ger>Elliceanisch</ger>
+	</language>
+	<language>
+		<iso_639-2>twi</iso_639-2>
+		<iso_639-1>tw</iso_639-1>
+		<eng>Twi</eng>
+		<fre>twi</fre>
+		<ger>Twi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>tyv</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Tuvinian</eng>
+		<fre>touva</fre>
+		<ger>Tuwinisch</ger>
+	</language>
+	<language>
+		<iso_639-2>udm</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Udmurt</eng>
+		<fre>oudmourte</fre>
+		<ger>Udmurtisch</ger>
+	</language>
+	<language>
+		<iso_639-2>uga</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Ugaritic</eng>
+		<fre>ougaritique</fre>
+		<ger>Ugaritisch</ger>
+	</language>
+	<language>
+		<iso_639-2>uig</iso_639-2>
+		<iso_639-1>ug</iso_639-1>
+		<eng>Uighur; Uyghur</eng>
+		<fre>ouïgour</fre>
+		<ger>Uigurisch</ger>
+	</language>
+	<language>
+		<iso_639-2>ukr</iso_639-2>
+		<iso_639-1>uk</iso_639-1>
+		<eng>Ukrainian</eng>
+		<fre>ukrainien</fre>
+		<ger>Ukrainisch</ger>
+	</language>
+	<language>
+		<iso_639-2>umb</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Umbundu</eng>
+		<fre>umbundu</fre>
+		<ger>Mbundu-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>und</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Undetermined</eng>
+		<fre>indéterminée</fre>
+		<ger>Nicht zu entscheiden</ger>
+	</language>
+	<language>
+		<iso_639-2>urd</iso_639-2>
+		<iso_639-1>ur</iso_639-1>
+		<eng>Urdu</eng>
+		<fre>ourdou</fre>
+		<ger>Urdu</ger>
+	</language>
+	<language>
+		<iso_639-2>uzb</iso_639-2>
+		<iso_639-1>uz</iso_639-1>
+		<eng>Uzbek</eng>
+		<fre>ouszbek</fre>
+		<ger>Usbekisch</ger>
+	</language>
+	<language>
+		<iso_639-2>vai</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Vai</eng>
+		<fre>vaï</fre>
+		<ger>Vai-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ven</iso_639-2>
+		<iso_639-1>ve</iso_639-1>
+		<eng>Venda</eng>
+		<fre>venda</fre>
+		<ger>Venda-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>vie</iso_639-2>
+		<iso_639-1>vi</iso_639-1>
+		<eng>Vietnamese</eng>
+		<fre>vietnamien</fre>
+		<ger>Vietnamesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>vol</iso_639-2>
+		<iso_639-1>vo</iso_639-1>
+		<eng>Volapük</eng>
+		<fre>volapük</fre>
+		<ger>Volapük</ger>
+	</language>
+	<language>
+		<iso_639-2>vot</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Votic</eng>
+		<fre>vote</fre>
+		<ger>Wotisch</ger>
+	</language>
+	<language>
+		<iso_639-2>wak</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Wakashan languages</eng>
+		<fre>wakashanes, langues</fre>
+		<ger>Wakash-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>wal</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Wolaitta; Wolaytta</eng>
+		<fre>wolaitta; wolaytta</fre>
+		<ger>Walamo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>war</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Waray</eng>
+		<fre>waray</fre>
+		<ger>Waray</ger>
+	</language>
+	<language>
+		<iso_639-2>was</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Washo</eng>
+		<fre>washo</fre>
+		<ger>Washo-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>wel</iso_639-2>
+		<iso_639-1>cy</iso_639-1>
+		<eng>Welsh</eng>
+		<fre>gallois</fre>
+		<ger>Kymrisch</ger>
+	</language>
+	<language>
+		<iso_639-2>wen</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Sorbian languages</eng>
+		<fre>sorabes, langues</fre>
+		<ger>Sorbisch (Andere)</ger>
+	</language>
+	<language>
+		<iso_639-2>wln</iso_639-2>
+		<iso_639-1>wa</iso_639-1>
+		<eng>Walloon</eng>
+		<fre>wallon</fre>
+		<ger>Wallonisch</ger>
+	</language>
+	<language>
+		<iso_639-2>wol</iso_639-2>
+		<iso_639-1>wo</iso_639-1>
+		<eng>Wolof</eng>
+		<fre>wolof</fre>
+		<ger>Wolof-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>xal</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Kalmyk; Oirat</eng>
+		<fre>kalmouk; oïrat</fre>
+		<ger>Kalmückisch</ger>
+	</language>
+	<language>
+		<iso_639-2>xho</iso_639-2>
+		<iso_639-1>xh</iso_639-1>
+		<eng>Xhosa</eng>
+		<fre>xhosa</fre>
+		<ger>Xhosa-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>yao</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Yao</eng>
+		<fre>yao</fre>
+		<ger>Yao-Sprache (Bantusprache)</ger>
+	</language>
+	<language>
+		<iso_639-2>yap</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Yapese</eng>
+		<fre>yapois</fre>
+		<ger>Yapesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>yid</iso_639-2>
+		<iso_639-1>yi</iso_639-1>
+		<eng>Yiddish</eng>
+		<fre>yiddish</fre>
+		<ger>Jiddisch</ger>
+	</language>
+	<language>
+		<iso_639-2>yor</iso_639-2>
+		<iso_639-1>yo</iso_639-1>
+		<eng>Yoruba</eng>
+		<fre>yoruba</fre>
+		<ger>Yoruba-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>ypk</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Yupik languages</eng>
+		<fre>yupik, langues</fre>
+		<ger>Ypik-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>zap</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Zapotec</eng>
+		<fre>zapotèque</fre>
+		<ger>Zapotekisch</ger>
+	</language>
+	<language>
+		<iso_639-2>zbl</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Blissymbols; Blissymbolics; Bliss</eng>
+		<fre>symboles Bliss; Bliss</fre>
+		<ger>Bliss-Symbol</ger>
+	</language>
+	<language>
+		<iso_639-2>zen</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Zenaga</eng>
+		<fre>zenaga</fre>
+		<ger>Zenaga</ger>
+	</language>
+	<language>
+		<iso_639-2>zgh</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Standard Moroccan Tamazight</eng>
+		<fre>amazighe standard marocain</fre>
+		<ger></ger>
+	</language>
+	<language>
+		<iso_639-2>zha</iso_639-2>
+		<iso_639-1>za</iso_639-1>
+		<eng>Zhuang; Chuang</eng>
+		<fre>zhuang; chuang</fre>
+		<ger>Zhuang</ger>
+	</language>
+	<language>
+		<iso_639-2>chi</iso_639-2>
+		<iso_639-1>zh</iso_639-1>
+		<eng>Chinese</eng>
+		<fre>chinois</fre>
+		<ger>Chinesisch</ger>
+	</language>
+	<language>
+		<iso_639-2>znd</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Zande languages</eng>
+		<fre>zandé, langues</fre>
+		<ger>Zande-Sprachen</ger>
+	</language>
+	<language>
+		<iso_639-2>zul</iso_639-2>
+		<iso_639-1>zu</iso_639-1>
+		<eng>Zulu</eng>
+		<fre>zoulou</fre>
+		<ger>Zulu-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>zun</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Zuni</eng>
+		<fre>zuni</fre>
+		<ger>Zuñi-Sprache</ger>
+	</language>
+	<language>
+		<iso_639-2>zxx</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>No linguistic content; Not applicable</eng>
+		<fre>pas de contenu linguistique; non applicable</fre>
+		<ger>Kein linguistischer Inhalt</ger>
+	</language>
+	<language>
+		<iso_639-2>zza</iso_639-2>
+		<iso_639-1> </iso_639-1>
+		<eng>Zaza; Dimili; Dimli; Kirdki; Kirmanjki; Zazaki</eng>
+		<fre>zaza; dimili; dimli; kirdki; kirmanjki; zazaki</fre>
+		<ger>Zazaki</ger>
+	</language>
+</languages>

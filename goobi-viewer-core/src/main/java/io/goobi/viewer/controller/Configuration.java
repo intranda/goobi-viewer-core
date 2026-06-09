@@ -80,6 +80,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -95,6 +96,7 @@ import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.QuickFilterField;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchResultGroup;
@@ -237,7 +239,7 @@ public class Configuration extends AbstractConfiguration {
         try {
             stopwords = loadStopwords(getStopwordsFilePath());
         } catch (FileNotFoundException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
             stopwords = HashSet.newHashSet(0);
         } catch (IOException | IllegalArgumentException e) {
             logger.error(e.getMessage(), e);
@@ -1242,6 +1244,7 @@ public class Configuration extends AbstractConfiguration {
                 return new ArrayList<>();
             }
 
+            boolean defaultSet = false;
             for (HierarchicalConfiguration<ImmutableNode> sub : links) {
                 String type = sub.getString(XML_PATH_ATTRIBUTE_TYPE);
                 String level = sub.getString("[@for]");
@@ -1250,12 +1253,18 @@ public class Configuration extends AbstractConfiguration {
                 String pattern = sub.getString("[@pattern]");
                 String action = sub.getString("[@action]", "clipboard");
                 boolean topstructValueFallback = sub.getBoolean("[@topstructValueFallback]", false);
+                boolean isDefault = sub.getBoolean("[@default]", false);
                 try {
-                    ret.add(new CitationLink(type, level, action, label).setField(field)
+                    CitationLink link = new CitationLink(type, level, action, label).setField(field)
                             .setPattern(pattern)
-                            .setTopstructValueFallback(topstructValueFallback));
+                            .setTopstructValueFallback(topstructValueFallback);
+                    if (isDefault && !defaultSet) {
+                        link.setDefaultLink(true);
+                        defaultSet = true;
+                    }
+                    ret.add(link);
                 } catch (IllegalArgumentException e) {
-                    logger.error(e.getMessage());
+                    logger.error(e.getMessage(), e);
                 }
             }
         }
@@ -1374,6 +1383,70 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return false;
+    }
+
+    /**
+     *
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured to show details; false otherwise; default is false
+     * @should return correct value
+     */
+    public boolean isSidebarWidgetForViewShowDetails(String view, String widget) {
+        if (StringUtils.isEmpty(view) || StringUtils.isEmpty(widget)) {
+            return false;
+        }
+
+        HierarchicalConfiguration<ImmutableNode> viewConfig = getSidebarViewConfiguration(view.toLowerCase());
+        if (viewConfig != null) {
+            for (HierarchicalConfiguration<ImmutableNode> widgetConfig : viewConfig.configurationsAt("displayWidget")) {
+                if (widget.equals(widgetConfig.getString(XML_PATH_ATTRIBUTE_NAME))) {
+                    return widgetConfig.getBoolean("[@showDetails]", false);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return maximum number of related records shown in the content section; default is 3
+     * @should return correct value
+     */
+    public int getSidebarWidgetRelatedGroupsMaxResults() {
+        return getSidebarWidgetIntValue("related-groups", "maxResults", 3);
+    }
+
+    /**
+     * @return solr field used for sorting related records; default is SORT_YEARPUBLISH (newest publication year first)
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsSortField() {
+        return getSidebarWidgetStringValue("related-groups", "sortField", "SORT_YEARPUBLISH");
+    }
+
+    /**
+     * @return sort order for related records (asc or desc); default is desc
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsSortOrder() {
+        return getSidebarWidgetStringValue("related-groups", "sortOrder", "desc");
+    }
+
+    /**
+     * @return solr field used as the card title in the related-groups widget/section; default is MD_TITLE
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsTitleField() {
+        return getSidebarWidgetStringValue("related-groups", "titleField", SolrConstants.TITLE);
+    }
+
+    /**
+     * @return solr field used as the card subtitle in the related-groups widget/section; default is MD_CREATOR
+     * @should return correct value
+     */
+    public String getSidebarWidgetRelatedGroupsSubtitleField() {
+        return getSidebarWidgetStringValue("related-groups", "subtitleField", SolrConstants.PERSON_ONEFIELD);
     }
 
     /**
@@ -2476,6 +2549,16 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * getDownloadFilenamePattern.
+     *
+     * @should return correct value
+     * @return Configured download filename pattern; empty string if none configured
+     */
+    public String getDownloadFilenamePattern() {
+        return getLocalString("pdf.downloadFilenamePattern", "");
+    }
+
+    /**
      * getVocabulariesFolder.
      *
      * @return the configured folder name for vocabulary files
@@ -2678,11 +2761,11 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return number of days until a UserToken expires; 0 or negative means no expiry
-     * @should return default value of 30 when not configured
+     * @return configured token expiration in days; must be positive, default 7
+     * @should return default value of 7 when not configured
      */
     public int getTokenExpirationDays() {
-        return getLocalInt("user.authentication.tokenExpirationDays", 30);
+        return getLocalInt("user.authentication.tokenExpirationDays", 7);
     }
 
     /**
@@ -4046,7 +4129,14 @@ public class Configuration extends AbstractConfiguration {
         return Collections.emptyMap();
     }
 
+    public boolean isExternalResourceUrlsEnabled() {
+        return getLocalBoolean("externalResource[@enabled]", false);
+    }
+
     public List<String> getExternalResourceUrlTemplates() {
+        if (!isExternalResourceUrlsEnabled()) {
+            return Collections.emptyList();
+        }
         List<HierarchicalConfiguration<ImmutableNode>> configs = getAllConfigurationsAt("externalResource.urls.template");
         List<String> templates = new ArrayList<>();
         for (HierarchicalConfiguration<ImmutableNode> templateConfig : configs) {
@@ -4200,10 +4290,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Whether the viewer pre-decodes the source image of the currently selected page into the ContentServer's source image cache while the HTML is
-     * rendering, so the OpenSeadragon tile burst that follows finds the decoded master already cached. Only useful when the ContentServer's
-     * {@code sourceImageCache useCache="true"} is set; otherwise the call is a no-op. Defaults to {@code true} since the cost (one async decode per
-     * page view) is small compared to the typical 800 ms tile-burst stall on cold first-views. ======= maxZoom for an image view
+     * maxZoom for an image view
      *
      * @param viewAttributes view context attributes selecting the zoom config
      * @return the maximum zoom level, defaults to 5
@@ -4217,7 +4304,7 @@ public class Configuration extends AbstractConfiguration {
      * Whether the viewer pre-decodes the source image of the currently selected page into the ContentServer's source image cache while the HTML is
      * rendering, so the OpenSeadragon tile burst that follows finds the decoded master already cached. Only useful when the ContentServer's
      * {@code sourceImageCache useCache="true"} is set; otherwise the call is a no-op. Defaults to {@code true} since the cost (one async decode per
-     * page view) is small compared to the typical 800 ms tile-burst stall on cold first-views. >>>>>>> a3870b3 allow configuring max image zoom
+     * page view) is small compared to the typical 800 ms tile-burst stall on cold first-views.
      *
      * @return true if pre-warming the source image cache on page selection is enabled
      */
@@ -5068,6 +5155,39 @@ public class Configuration extends AbstractConfiguration {
         return SearchHelper.SEARCH_FILTER_ALL;
     }
 
+    public boolean isQuickFiltersEnabled() {
+        return getLocalBoolean("search.quickFilters[@enabled]", false);
+    }
+
+    public List<QuickFilterField> getQuickFilterFields() {
+        List<QuickFilterField> result = new ArrayList<>();
+        List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("search.quickFilters.filter");
+        if (elements == null) {
+            return result;
+        }
+        for (HierarchicalConfiguration<ImmutableNode> element : elements) {
+            String typeStr = element.getString("[@type]", "");
+            String label = element.getString("[@label]", "");
+            String solrField = element.getString("[@solrField]", "");
+            QuickFilterField.Type type = QuickFilterField.Type.fromString(typeStr);
+            if (type == null) {
+                continue;
+            }
+            QuickFilterField field = new QuickFilterField(type, label, solrField);
+            if (type == QuickFilterField.Type.CHECKBOX_GROUP) {
+                List<HierarchicalConfiguration<ImmutableNode>> valueElements = element.configurationsAt("value");
+                for (HierarchicalConfiguration<ImmutableNode> valueElement : valueElements) {
+                    String valueLabel = valueElement.getString("[@label]", "");
+                    String valueSolrField = valueElement.getString("[@solrField]", "");
+                    boolean defaultSelected = valueElement.getBoolean("[@default]", false);
+                    field.addValue(valueLabel, valueSolrField, defaultSelected);
+                }
+            }
+            result.add(field);
+        }
+        return result;
+    }
+
     /**
      * getWebApiFields.
      *
@@ -5295,6 +5415,44 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isSearchRisExportEnabled() {
         return getLocalBoolean("search.export.ris[@enabled]", false);
+    }
+
+    /**
+     * Returns all XSLT-based export format definitions configured under {@code <search><export><format>} in {@code config_viewer.xml}.
+     *
+     * @return list of configured export formats (may be empty, never null)
+     * @should return all configured formats
+     */
+    public List<ExportFormat> getSearchExportFormats() {
+        List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt("search.export.format");
+        List<ExportFormat> ret = new ArrayList<>(nodes.size());
+        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
+            String name = node.getString(XML_PATH_ATTRIBUTE_NAME, "");
+            if (StringUtils.isNotBlank(name)) {
+                boolean enabled = node.getBoolean("[@enabled]", false);
+                String xslt = node.getString("[@xslt]", "");
+                String contentType = node.getString("[@contentType]", "text/plain");
+                String fileExtension = node.getString("[@fileExtension]", "txt");
+                ret.add(new ExportFormat(name, enabled, xslt, contentType, fileExtension));
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Returns the enabled XSLT-based export format with the given name, or {@link Optional#empty()} if no such format is configured or it is
+     * disabled.
+     *
+     * @param name the format name (e.g. "bibtex", "endnote", "ris")
+     * @return an Optional containing the matching enabled format, or empty
+     */
+    public Optional<ExportFormat> getSearchExportFormat(String name) {
+        if (name == null) {
+            return Optional.empty();
+        }
+        return getSearchExportFormats().stream()
+                .filter(f -> name.equals(f.getName()) && f.isEnabled())
+                .findFirst();
     }
 
     /**
@@ -5770,6 +5928,55 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getCORSHeaderValue() {
         return getLocalString("webapi.cors", "*");
+    }
+
+    /**
+     * Returns whether the CSRF Origin/Referer guard filter is active.
+     *
+     * <p>
+     * When {@code false} (default), the {@code @CSRFGuarded}-annotated endpoints accept any cross-site request - preserves pre-existing behavior for
+     * upgrades. When {@code true}, the filter rejects requests whose Origin/Referer does not match {@link #getViewerBaseUrl()} or one of the entries
+     * in {@link #getCsrfAdditionalAllowedOrigins()}.
+     *
+     * @return {@code true} when the filter is enabled; {@code false} by default
+     * @should return false by default
+     */
+    public boolean isCsrfFilterEnabled() {
+        return getLocalBoolean("webapi.csrf[@enabled]", false);
+    }
+
+    /**
+     * Returns the additional Origins (scheme + host + optional port) that are accepted by the CSRF Origin filter on top of the self-origin
+     * {@link #getViewerBaseUrl()}.
+     *
+     * <p>
+     * Use this for external theme frontends that live on a different host than the viewer application. Each entry is matched verbatim after
+     * normalization (scheme://host[:port], no path, no trailing slash).
+     *
+     * @return list of allowed Origins; empty when not configured
+     * @should return empty list when not configured
+     */
+    public List<String> getCsrfAdditionalAllowedOrigins() {
+        return getLocalList("webapi.csrf.additionalAllowedOrigin");
+    }
+
+    /**
+     * Returns whether the WebSocket handshake Origin guard is active.
+     *
+     * <p>
+     * When {@code false} (default), {@code @ServerEndpoint} classes accept handshakes from any origin (server-side authentication on the endpoint is
+     * still enforced separately). When {@code true}, the handshake is rejected unless the {@code Origin} header matches {@link #getViewerBaseUrl()}
+     * or one of the entries in {@link #getCsrfAdditionalAllowedOrigins()} - the same allowlist used by {@link #isCsrfFilterEnabled()}.
+     *
+     * <p>
+     * Decoupled from the HTTP CSRF switch so that operators can opt into WebSocket origin enforcement (defense-in-depth against CSWSH) without also
+     * enabling the REST CSRF filter, and vice-versa.
+     *
+     * @return {@code true} when the WebSocket origin guard is enabled; {@code false} by default
+     * @should return false by default
+     */
+    public boolean isWebSocketOriginValidationEnabled() {
+        return getLocalBoolean("webapi.websocket.originValidation[@enabled]", false);
     }
 
     /**
@@ -6398,6 +6605,15 @@ public class Configuration extends AbstractConfiguration {
         return getLocalList("user.authenticationProviders.redirectWhitelist.host");
     }
 
+    /**
+     * @should return false by default
+     * @should return true if configured
+     * @return whether outbound HTTP calls are allowed to reach loopback addresses
+     */
+    public boolean isOutboundHttpAllowLoopback() {
+        return getLocalBoolean("outboundHttp.allowLoopback", false);
+    }
+
     // active mq configuration //
 
     public boolean isStartInternalMessageBroker() {
@@ -6513,4 +6729,24 @@ public class Configuration extends AbstractConfiguration {
         return Duration.of((long) num, unit.toChronoUnit());
 
     }
+
+    /**
+     * Returns the configured file path for the given log file name. Reads from: &lt;logViewer&gt;&lt;logFiles&gt;&lt;logFile name="viewer"
+     * path="/opt/..."&gt; Returns null if not found.
+     */
+    public String getLogViewerFilePath(String name) {
+        return getLocalConfigurationsAt("logViewer.logFiles.logFile").stream()
+                .filter(c -> name.equalsIgnoreCase(c.getString("[@name]")))
+                .map(c -> c.getString("[@path]"))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Returns the number of initial lines to show in the log viewer. Default: 500
+     */
+    public int getLogViewerInitialLines() {
+        return getLocalInt("logViewer.initialLines", 500);
+    }
+
 }

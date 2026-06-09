@@ -1,0 +1,12 @@
+--- context.xml	2025-02-27 15:01:06.865323378 +0100
++++ context.xml.new	2025-02-27 15:00:14.283876846 +0100
+@@ -32,2 +32,9 @@
+     <!-- Set mode for the JSESSONID cookie. Google authentication needs "lax" -->
+     <CookieProcessor sameSiteCookies="${TOMCAT_SAMESITECOOKIES}" />
++
++    <Resources>
++        <PreResources
++            className="org.apache.catalina.webresources.DirResourceSet"
++            base="/opt/digiverso/viewer/themes/${THEME_DIR}/WebContent/resources/themes"
++            webAppMount="/resources/themes" />
++    </Resources>

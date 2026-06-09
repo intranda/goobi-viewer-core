@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<watermarks>
+  <watermark id="default" width="500" height="50" color="000000">
+      <image id="1" x="5" y="5" origin="right" url="file:///opt/digiverso/viewer/config/watermark/goobi_logo.png"/>
+      <text  id="2" x="20" y="30" origin="left" fontname="Arial" fontsize="12" fontcolor="CCCCCC" >Goobi viewer</text>
+  </watermark>
+
+  <watermark id="example_deactivated" width="0" height="50" color="CCCCCC">
+      <text id="1" x="0" y="0" fontname="Arial" fontsize="10" fontcolor="CCCCCC" origin="center">THIS TEXT IS NOT VISIBLE</text>
+  </watermark>
+</watermarks>

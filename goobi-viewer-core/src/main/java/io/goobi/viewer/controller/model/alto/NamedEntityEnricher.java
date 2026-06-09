@@ -42,8 +42,6 @@ import io.goobi.viewer.controller.PrettyUrlTools;
  */
 public class NamedEntityEnricher implements TextEnricher {
 
-    private static final int MAX_ENRICHMENTS = 1;
-
     private static final String CONTENT_TEMPLATE =
             "<button class=\"view-fulltext__entity-action-button\" type=\"button\" data-entity-id=\"{tagRef}\" data-entity-type=\"{tagType}\""
                     + " data-entity-authority-data-uri=\"{tagRestUri}\" data-entity-authority-data-search=\"{tagSearchUri}\">{tagLabel}</button>";
@@ -51,42 +49,47 @@ public class NamedEntityEnricher implements TextEnricher {
 
     private final String restUri = DataManager.getInstance().getConfiguration().getRestApiUrl();
 
-    private int numEnrichments = 0;
-
+    /**
+     * Wraps every word that references a named-entity tag in an interactive HTML button.
+     * Previously bounded to one enrichment per page-render by a dead {@code MAX_ENRICHMENTS}
+     * limit (silently produced only a single button regardless of how many entities the
+     * page contained); the limit has been removed so all referencing words are enriched.
+     *
+     * @param content the textual content of the word being enriched
+     * @param element the ALTO line element whose word content is being processed
+     * @return the enriched HTML button markup if the element is referenced by at least one
+     *         named-entity tag, otherwise the unchanged {@code content} string
+     * @should enrich every word that references a named entity tag
+     */
     @Override
     public String enrich(String content, LineElement element) {
-
-        if (numEnrichments < MAX_ENRICHMENTS) {
-
-            Page page = element.getPage();
-            AltoTags tags = page.getDocument().getTags();
-            List<Tag> referencingTags = tags.getTagsAsList().stream().filter(tag -> tag.getReferences().contains(element)).toList();
-            if (!referencingTags.isEmpty()) {
-                StringBuilder sb = new StringBuilder();
-                for (Tag tag : referencingTags) {
-                    String tagRef = Optional.ofNullable(tag.getId()).orElse("");
-                    String tagType = Optional.ofNullable(tag.getType()).map(String::toLowerCase).orElse("");
-                    String tagLabel = StringUtils.isNotBlank(tag.getLabel()) ? tag.getLabel() : content;
-                    String tagUri = Optional.ofNullable(tag.getUri()).orElse("");
-
-                    String tagRestUri = TAG_RESTURI_TEMPATE.replace("{restUri}", this.restUri).replace("{tagUri}", tagUri);
-                    String searchString = "%s:%%22%s%%22".formatted(NormDataImporter.FIELD_IDENTIFIER,
-                            tagUri.replaceAll("^https?:\\/\\/d-nb.info\\/gnd\\/([\\d-]+)\\/?$", "$1"));
-                    String tagSearchUri = getSearchPageUrl(searchString);
-
-                    String enriched = CONTENT_TEMPLATE.replace("{tagRef}", tagRef)
-                            .replace("{tagType}", tagType)
-                            .replace("{tagRestUri}", tagRestUri)
-                            .replace("{tagSearchUri}", tagSearchUri)
-                            .replace("{tagLabel}", tagLabel);
-
-                    sb.append(enriched);
-                }
-                numEnrichments++;
-                return sb.toString();
-            }
+        Page page = element.getPage();
+        AltoTags tags = page.getDocument().getTags();
+        List<Tag> referencingTags = tags.getTagsAsList().stream().filter(tag -> tag.getReferences().contains(element)).toList();
+        if (referencingTags.isEmpty()) {
+            return content;
         }
-        return content;
+        StringBuilder sb = new StringBuilder();
+        for (Tag tag : referencingTags) {
+            String tagRef = Optional.ofNullable(tag.getId()).orElse("");
+            String tagType = Optional.ofNullable(tag.getType()).map(String::toLowerCase).orElse("");
+            String tagLabel = StringUtils.isNotBlank(tag.getLabel()) ? tag.getLabel() : content;
+            String tagUri = Optional.ofNullable(tag.getUri()).orElse("");
+
+            String tagRestUri = TAG_RESTURI_TEMPATE.replace("{restUri}", this.restUri).replace("{tagUri}", tagUri);
+            String searchString = "%s:%%22%s%%22".formatted(NormDataImporter.FIELD_IDENTIFIER,
+                    tagUri.replaceAll("^https?:\\/\\/d-nb.info\\/gnd\\/([\\d-]+)\\/?$", "$1"));
+            String tagSearchUri = getSearchPageUrl(searchString);
+
+            String enriched = CONTENT_TEMPLATE.replace("{tagRef}", tagRef)
+                    .replace("{tagType}", tagType)
+                    .replace("{tagRestUri}", tagRestUri)
+                    .replace("{tagSearchUri}", tagSearchUri)
+                    .replace("{tagLabel}", tagLabel);
+
+            sb.append(enriched);
+        }
+        return sb.toString();
     }
 
     String getSearchPageUrl(String searchString) {

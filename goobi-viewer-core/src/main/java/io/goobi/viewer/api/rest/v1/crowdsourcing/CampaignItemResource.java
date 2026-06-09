@@ -31,6 +31,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.annotation.AnnotationConverter;
 import io.goobi.viewer.model.annotation.CrowdsourcingAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
@@ -62,6 +64,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.StatisticMode;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignItem;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CampaignRecordPageStatistic;
 import io.goobi.viewer.model.crowdsourcing.campaigns.CrowdsourcingStatus;
+import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 import io.goobi.viewer.model.log.LogMessage;
 import io.goobi.viewer.model.security.user.User;
@@ -78,8 +81,10 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * REST resource for accessing crowdsourcing campaign items and submitting annotations.
@@ -218,6 +223,7 @@ public class CampaignItemResource {
      * @param persistentIdentifier persistent identifier of the target record
      * @param page page order number within the record
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should ignore creatorURI from body
      */
     @PUT
     @Path("/{pi}/{page}")
@@ -250,11 +256,13 @@ public class CampaignItemResource {
             return;
         }
 
-        User user = null;
-        Long userId = User.getId(item.getCreatorURI());
-        if (userId != null) {
-            user = DataManager.getInstance().getDao().getUser(userId);
-        }
+        // Resolve the user that "owns" the status update strictly from the authenticated session,
+        // never from the request body. The body-supplied creatorURI used to drive this lookup,
+        // which let any campaign collaborator attribute updates to arbitrary other users.
+        // The campaign-level @CrowdsourcingCampaignBinding has already validated that the caller
+        // is allowed for this campaign — so the caller IS the rightful user. Same accessor as
+        // the filter (CrowdsourcingCampaignFilter) to stay consistent.
+        User user = BeanUtils.getUserBean() != null ? BeanUtils.getUserBean().getUser() : null;
 
         switch (campaign.getStatisticMode()) {
             case RECORD:
@@ -385,6 +393,9 @@ public class CampaignItemResource {
      * @param pi persistent identifier of the annotated record
      * @throws java.net.URISyntaxException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should reject annotation id that belongs to a different campaign
+     * @should reject annotation id that does not exist
+     * @should update annotation that belongs to the same campaign and target
      */
     @PUT
     @Path("/{pi}/annotations")
@@ -415,6 +426,47 @@ public class CampaignItemResource {
                     dao.getAnnotationsForCampaignAndTarget(campaign, StringTools.stripPatternBreakingChars(pi), pageOrder);
             List<CrowdsourcingAnnotation> newAnnotations =
                     page.annotations.stream().map(anno -> createPersistentAnnotation(herePi, pageOrder, anno)).collect(Collectors.toList());
+
+            // Validate ownership for every body-supplied annotation id. Without this guard a
+            // campaign collaborator could overwrite or delete annotations belonging to a
+            // different campaign by sneaking their database ids into the request body
+            // (cross-campaign manipulation, REST-6 / 2026-05-11 audit follow-up).
+            //
+            // DAOException from getAnnotation/getGenerator is allowed to propagate via the
+            // existing `throws DAOException` on this method; we deliberately do not catch
+            // or swallow — a permission check that errors out must NOT silently accept the
+            // update.
+            for (CrowdsourcingAnnotation anno : newAnnotations) {
+                if (anno.getId() == null) {
+                    continue;
+                }
+                CrowdsourcingAnnotation existing = dao.getAnnotation(anno.getId());
+                if (existing == null) {
+                    // Body claims an id that does not (yet) exist. Reject — em.merge() in
+                    // updateAnnotation would otherwise be willing to create a row WITH the
+                    // body-supplied id, giving a campaign collaborator id-injection.
+                    throw new WebApplicationException(
+                            "Annotation " + anno.getId() + " does not exist",
+                            Response.Status.FORBIDDEN);
+                }
+                // The body's anno was built by createPersistentAnnotation(herePi, pageOrder, ...),
+                // so anno.getTargetPI() == herePi and anno.getTargetPageOrder() == pageOrder.
+                // The check below is therefore "existing must point at the URL pi+page".
+                if (!Objects.equals(existing.getTargetPI(), anno.getTargetPI())
+                        || !Objects.equals(existing.getTargetPageOrder(), anno.getTargetPageOrder())) {
+                    throw new WebApplicationException(
+                            "Annotation " + anno.getId() + " is not on the requested record/page",
+                            Response.Status.FORBIDDEN);
+                }
+                Question generator = existing.getGenerator();
+                if (generator == null || generator.getOwner() == null
+                        || !Objects.equals(campaignId, generator.getOwner().getId())) {
+                    // Objects.equals also guards against a null campaignId (degenerate path-param).
+                    throw new WebApplicationException(
+                            "Annotation " + anno.getId() + " does not belong to this campaign",
+                            Response.Status.FORBIDDEN);
+                }
+            }
 
             //delete existing annotations not contained in response
             for (CrowdsourcingAnnotation anno : existingAnnotations) {

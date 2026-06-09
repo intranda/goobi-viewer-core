@@ -1,0 +1,3 @@
+[submodule "goobi-viewer-theme-reference"]
+	path = goobi-viewer-theme-reference
+	url = ../goobi-viewer-theme-reference

@@ -53,12 +53,18 @@ public class GeoJsonReader implements ICoordinateReader {
         if (json.has("coordinates")) {
             return FeatureConverter.toGeometry(value);
         } else if (json.has("geometry")) {
+            if (json.isNull("geometry")) {
+                return null;
+            }
             return read(json.getJSONObject("geometry").toString());
         } else if (json.has("features")) {
             List<Geometry> geoEntries = new ArrayList<>();
             for (Object entry : json.getJSONArray("features")) {
                 if (entry instanceof JSONObject) {
-                    geoEntries.add(read(entry.toString()));
+                    Geometry geo = read(entry.toString());
+                    if (geo != null) {
+                        geoEntries.add(geo);
+                    }
                 }
             }
             if (geoEntries.size() == 1) {

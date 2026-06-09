@@ -57,7 +57,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
+
 import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
@@ -97,6 +99,7 @@ import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.search.SearchInterface;
+import io.goobi.viewer.model.search.QuickFilterField;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
@@ -239,6 +242,11 @@ public class SearchBean implements SearchInterface, Serializable {
      * widget_searchResultNavigation widget
      */
     private Optional<ViewerPath> lastUsedSearchPage = Optional.empty();
+
+    private String quickFilterDateFrom;
+    private String quickFilterDateTo;
+    private Map<String, String> quickFilterValues = new HashMap<>();
+    private Map<String, Boolean> quickFilterCheckboxValues = new HashMap<>();
 
     /**
      * Empty constructor.
@@ -537,6 +545,10 @@ public class SearchBean implements SearchInterface, Serializable {
         resetSearchResults();
         resetSearchParameters(true, true);
         proximitySearchDistance = 0;
+        quickFilterDateFrom = null;
+        quickFilterDateTo = null;
+        quickFilterValues.clear();
+        quickFilterCheckboxValues.clear();
     }
 
     /**
@@ -1013,6 +1025,10 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         sbFilterQuery.append(navigationHelper.getSubThemeDiscriminatorQuerySuffix());
 
+        if (activeSearchType == SearchHelper.SEARCH_TYPE_REGULAR && isQuickFiltersEnabled()) {
+            appendQuickFilterQueries(sbFilterQuery);
+        }
+
         newSearch.setCustomFilterQuery(sbFilterQuery.toString().trim());
         // logger.trace("Custom filter query: {}", sbFilterQuery.toString().trim());
 
@@ -1043,7 +1059,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     ? SearchHelper.generateAdvancedExpandQuery(advancedSearchQueryGroup, fuzzySearchEnabled)
                     : SearchHelper.generateExpandQuery(
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedSearchQueryGroup,
-                                    additionalExpandQueryfields),
+                                    additionalExpandQueryfields, getSelectedQuickFilterSearchFields()),
                             searchTerms, proximitySearchDistance);
             if (StringUtils.isEmpty(expandQuery) && activeSearchType == SearchHelper.SEARCH_TYPE_TERMS) {
                 expandQuery = searchStringInternal;
@@ -1064,6 +1080,63 @@ public class SearchBean implements SearchInterface, Serializable {
         if (currentPage > getLastPage()) {
             setCurrentPage(getLastPage());
         }
+    }
+
+    private void appendQuickFilterQueries(StringBuilder sbFilterQuery) {
+        for (QuickFilterField field : getQuickFilterFields()) {
+            switch (field.getType()) {
+                case DATE_RANGE:
+                    String from = isValidYear(quickFilterDateFrom) ? quickFilterDateFrom : "*";
+                    String to = isValidYear(quickFilterDateTo) ? quickFilterDateTo : "*";
+                    if (!"*".equals(from) && !"*".equals(to)) {
+                        try {
+                            if (Integer.parseInt(to) < Integer.parseInt(from)) {
+                                logger.warn("Quick filter date range invalid: from={} to={}", from, to);
+                                break;
+                            }
+                        } catch (NumberFormatException e) {
+                            break;
+                        }
+                    }
+                    if (!"*".equals(from) || !"*".equals(to)) {
+                        sbFilterQuery.append(" +(").append(field.getSolrField())
+                                .append(":[").append(from).append(" TO ").append(to).append("])");
+                    }
+                    break;
+                case FACET_DROPDOWN:
+                    String val = quickFilterValues.get(field.getSolrField());
+                    if (StringUtils.isNotBlank(val)) {
+                        sbFilterQuery.append(" +(").append(field.getSolrField())
+                                .append(":\"").append(ClientUtils.escapeQueryChars(val)).append("\")");
+                    }
+                    break;
+                case CHECKBOX_GROUP:
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private static boolean isValidYear(String value) {
+        return StringUtils.isNotBlank(value) && value.matches("\\d{4}");
+    }
+
+    Set<String> getSelectedQuickFilterSearchFields() {
+        if (!isQuickFiltersEnabled()) {
+            return Collections.emptySet();
+        }
+        Set<String> fields = new HashSet<>();
+        for (QuickFilterField field : getQuickFilterFields()) {
+            if (field.getType() == QuickFilterField.Type.CHECKBOX_GROUP) {
+                for (QuickFilterField.CheckboxValue cv : field.getValues()) {
+                    if (Boolean.TRUE.equals(getQuickFilterCheckboxValues().get(cv.getSolrField()))) {
+                        fields.add(cv.getSolrField());
+                    }
+                }
+            }
+        }
+        return fields;
     }
 
     /**
@@ -1263,7 +1336,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (StringUtils.isEmpty(searchString)) {
             return "-";
         }
-        return StringTools.stripJS(searchString);
+        return searchString;
     }
 
     /**
@@ -1287,7 +1360,7 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("setSearchString: {}", searchString);
         // Reset search result page
         currentPage = 1;
-        this.searchString = StringTools.stripJS(searchString);
+        this.searchString = searchString;
         generateSimpleSearchString(this.searchString);
     }
 
@@ -1299,6 +1372,7 @@ public class SearchBean implements SearchInterface, Serializable {
                 .withSearchFilter(currentSearchFilter)
                 .withFuzzySearchEnabled(fuzzySearchEnabled)
                 .withSearchTerms(searchTerms)
+                .withQuickFilterFields(getSelectedQuickFilterSearchFields())
                 .build();
 
         QueryResult result = builder.build(inSearchString);
@@ -3380,4 +3454,69 @@ public class SearchBean implements SearchInterface, Serializable {
     public HttpServletRequest getHttpRequest() {
         return this.request;
     }
+
+    @Override
+    public List<QuickFilterField> getQuickFilterFields() {
+        return DataManager.getInstance().getConfiguration().getQuickFilterFields();
+    }
+
+    @Override
+    public boolean isQuickFiltersEnabled() {
+        return DataManager.getInstance().getConfiguration().isQuickFiltersEnabled();
+    }
+
+    @Override
+    public String getQuickFilterDateFrom() {
+        return quickFilterDateFrom;
+    }
+
+    @Override
+    public void setQuickFilterDateFrom(String quickFilterDateFrom) {
+        this.quickFilterDateFrom = quickFilterDateFrom;
+    }
+
+    @Override
+    public String getQuickFilterDateTo() {
+        return quickFilterDateTo;
+    }
+
+    @Override
+    public void setQuickFilterDateTo(String quickFilterDateTo) {
+        this.quickFilterDateTo = quickFilterDateTo;
+    }
+
+    @Override
+    public Map<String, String> getQuickFilterValues() {
+        if (quickFilterValues.isEmpty()) {
+            for (QuickFilterField field : getQuickFilterFields()) {
+                if (field.getSolrField() != null && !field.getSolrField().isEmpty()) {
+                    quickFilterValues.put(field.getSolrField(), "");
+                }
+            }
+        }
+        return quickFilterValues;
+    }
+
+    public void setQuickFilterValues(Map<String, String> quickFilterValues) {
+        this.quickFilterValues = quickFilterValues;
+    }
+
+    @Override
+    public Map<String, Boolean> getQuickFilterCheckboxValues() {
+        if (quickFilterCheckboxValues.isEmpty()) {
+            for (QuickFilterField field : getQuickFilterFields()) {
+                if (field.getType() == QuickFilterField.Type.CHECKBOX_GROUP) {
+                    for (QuickFilterField.CheckboxValue cv : field.getValues()) {
+                        quickFilterCheckboxValues.put(cv.getSolrField(), cv.isDefaultSelected());
+                    }
+                }
+            }
+        }
+        return quickFilterCheckboxValues;
+    }
+
+    public void setQuickFilterCheckboxValues(Map<String, Boolean> quickFilterCheckboxValues) {
+        this.quickFilterCheckboxValues = quickFilterCheckboxValues;
+    }
+
 }

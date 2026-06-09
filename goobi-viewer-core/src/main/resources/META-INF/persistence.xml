@@ -60,6 +60,7 @@
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSStatisticsFilterContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchFacetsContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>
@@ -205,6 +206,7 @@
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSPageListContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSRecordListContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSRSSContent</class>
+        <class>io.goobi.viewer.model.cms.pages.content.types.CMSStatisticsFilterContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSSearchFacetsContent</class>
         <class>io.goobi.viewer.model.cms.pages.content.types.CMSShortTextContent</class>

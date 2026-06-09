@@ -83,13 +83,6 @@
 		<action onPostback="false">#{browseBean.openWorkInTargetCollection()}</action>
 	</url-mapping>
 
-	<!-- STATISTICS -->
-	<url-mapping id="statistics">
-		<pattern value="/statistics/" />
-		<view-id value="/statistics.xhtml" />
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-	</url-mapping>
-
 	<!-- TIMEMATRIX -->
 	<url-mapping id="timematrix">
 		<pattern value="/timematrix/" />
@@ -1007,9 +1000,13 @@
         <pattern value="/admin/legal/disclaimer/" />
         <view-id value="/resources/admin/views/adminDisclaimer.xhtml" />
     </url-mapping>
-     <url-mapping id="adminDeveloper">
+    <url-mapping id="adminDeveloper">
         <pattern value="/admin/developer/" />
         <view-id value="/resources/admin/views/adminDeveloper.xhtml" />
+    </url-mapping>
+    <url-mapping id="adminLogViewer">
+        <pattern value="/admin/logviewer/" />
+        <view-id value="/resources/admin/views/adminLogViewer.xhtml" />
     </url-mapping>
     
 

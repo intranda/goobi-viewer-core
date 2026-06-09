@@ -69,11 +69,46 @@ public class DFGViewerImage extends HttpServlet implements Serializable {
         super();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Handles GET requests by redirecting to the corresponding IIIF image API URL.
+     * <p>
+     * The path info must have exactly four segments: {@code /{pi}/{width}/{rotation}/{filename}}.
+     *
+     * @param request the HTTP request
+     * @param response the HTTP response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     * @should forward to image api url
+     * @should forward to image api url non ascii characters
+     * @should forward to image api url max width
+     * @should return 400 when path info is blank
+     * @should return 400 when path has wrong segment count
+     * @should normalize traversal segments before processing
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        Path path = Paths.get(request.getPathInfo());
+        String pathInfo = request.getPathInfo();
+        if (StringUtils.isBlank(pathInfo)) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing image path");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+            return;
+        }
+
+        // Normalize to resolve any '..' or '.' segments before extracting path components
+        Path path = Paths.get(pathInfo).normalize();
+
+        if (path.getNameCount() != 4) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid image path format");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+            return;
+        }
 
         String pi = path.getName(0).toString();
         String id = FilenameUtils.getBaseName(path.getName(3).toString());

@@ -95,6 +95,7 @@ public enum PageType {
     adminClients("admin/clients", "admin__clients", adminDashboard),
     adminClientsEdit("admin/clients/edit", "admin__clients__edit__title", adminClients),
     adminConfigEditor("admin/config", "admin__config_editor__title", adminDashboard),
+    adminLogViewer("admin/logviewer", "admin__log_viewer", adminDashboard),
     adminMessageQueue("admin/tasks", "admin__tasks__title", adminDashboard),
     adminDeveloper("admin/developer", "admin__developer__title", adminDashboard),
 
@@ -144,7 +145,7 @@ public enum PageType {
     adminCrowdsourcingCampaigns("admin/crowdsourcing/campaigns", "admin__crowdsourcing_campaigns", adminDashboard),
     adminCrowdsourcingCampaignsNew("admin/crowdsourcing/campaigns/new", "admin__crowdsourcing_campaign_new", adminCrowdsourcingCampaigns),
     adminCrowdsourcingCampaignsEdit("admin/crowdsourcing/campaigns/edit", "admin__crowdsourcing_campaign_edit", adminCrowdsourcingCampaigns),
-    adminUserActivity("admin/user/activity/"),
+    adminUserActivity("admin/user/activity/", "admin__user_activity", adminDashboard),
     annotations("annotations"),
     editContent("crowd/editContent"),
     editOcr("crowd/editOcr"),

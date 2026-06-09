@@ -22,14 +22,17 @@
 package io.goobi.viewer.api.rest.filters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -39,6 +42,7 @@ import io.goobi.viewer.controller.SecurityManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Response;
 
 class UserLoggedInFilterTest extends AbstractRestApiTest {
@@ -132,5 +136,108 @@ class UserLoggedInFilterTest extends AbstractRestApiTest {
         try (Response response = target(PROTECTED_URL_PATH).request().get()) {
             assertEquals(401, response.getStatus());
         }
+    }
+
+    /**
+     * @see UserLoggedInFilter#filter(jakarta.ws.rs.container.ContainerRequestContext)
+     * @verifies return 401 when bearer token belongs to inactive user
+     */
+    @Test
+    void filter_shouldReturn401WhenBearerTokenBelongsToInactiveUser() throws Exception {
+        testUser.setActive(false);
+        DataManager.getInstance().getDao().updateUser(testUser);
+
+        String plaintext = "inactive-user-token-" + System.nanoTime();
+        UserToken token = new UserToken();
+        token.setUser(testUser);
+        token.setTokenHash(SecurityManager.hashToken(plaintext));
+        token.setExpirationDate(LocalDateTime.now().plusDays(1));
+        DataManager.getInstance().getDao().addUserToken(token);
+
+        try (Response response = target(PROTECTED_URL_PATH).request()
+                .header("Authorization", "Bearer " + plaintext)
+                .get()) {
+            assertEquals(401, response.getStatus());
+            String body = response.readEntity(String.class);
+            assertTrue(body.contains("user_inactive"));
+        }
+    }
+
+    /**
+     * @see UserLoggedInFilter#filter(jakarta.ws.rs.container.ContainerRequestContext)
+     * @verifies return 401 when bearer token belongs to suspended user
+     */
+    @Test
+    void filter_shouldReturn401WhenBearerTokenBelongsToSuspendedUser() throws Exception {
+        testUser.setSuspended(true);
+        DataManager.getInstance().getDao().updateUser(testUser);
+
+        String plaintext = "suspended-user-token-" + System.nanoTime();
+        UserToken token = new UserToken();
+        token.setUser(testUser);
+        token.setTokenHash(SecurityManager.hashToken(plaintext));
+        token.setExpirationDate(LocalDateTime.now().plusDays(1));
+        DataManager.getInstance().getDao().addUserToken(token);
+
+        try (Response response = target(PROTECTED_URL_PATH).request()
+                .header("Authorization", "Bearer " + plaintext)
+                .get()) {
+            assertEquals(401, response.getStatus());
+            String body = response.readEntity(String.class);
+            assertTrue(body.contains("user_inactive"));
+        }
+    }
+
+    /**
+     * @see UserLoggedInFilter#getValidUserToken(HttpServletRequest)
+     * @verifies return empty optional for expired token
+     */
+    @Test
+    void getValidUserToken_shouldReturnEmptyForExpiredToken() throws Exception {
+        String plaintext = "expired-valid-token-" + System.nanoTime();
+        UserToken token = new UserToken();
+        token.setUser(testUser);
+        token.setTokenHash(SecurityManager.hashToken(plaintext));
+        token.setExpirationDate(LocalDateTime.now().minusSeconds(1));
+        DataManager.getInstance().getDao().addUserToken(token);
+
+        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + plaintext);
+
+        Optional<UserToken> result = UserLoggedInFilter.getValidUserToken(mockRequest);
+        assertFalse(result.isPresent());
+    }
+
+    /**
+     * @see UserLoggedInFilter#getValidUserToken(HttpServletRequest)
+     * @verifies return token for valid non-expired token
+     */
+    @Test
+    void getValidUserToken_shouldReturnTokenForValidNonExpiredToken() throws Exception {
+        String plaintext = "valid-token-check-" + System.nanoTime();
+        UserToken token = new UserToken();
+        token.setUser(testUser);
+        token.setTokenHash(SecurityManager.hashToken(plaintext));
+        token.setExpirationDate(LocalDateTime.now().plusDays(1));
+        DataManager.getInstance().getDao().addUserToken(token);
+
+        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(mockRequest.getHeader("Authorization")).thenReturn("Bearer " + plaintext);
+
+        Optional<UserToken> result = UserLoggedInFilter.getValidUserToken(mockRequest);
+        assertTrue(result.isPresent());
+    }
+
+    /**
+     * @see UserLoggedInFilter#getValidUserToken(HttpServletRequest)
+     * @verifies return empty optional when no bearer header present
+     */
+    @Test
+    void getValidUserToken_shouldReturnEmptyWhenNoBearerHeader() throws Exception {
+        HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(mockRequest.getHeader("Authorization")).thenReturn(null);
+
+        Optional<UserToken> result = UserLoggedInFilter.getValidUserToken(mockRequest);
+        assertFalse(result.isPresent());
     }
 }

@@ -34,21 +34,7 @@ var viewerJS = (function (viewer) {
         dataCount: null,
         dataEncoding: null,
         feedBox: null,
-        monthNames: [
-            '',
-            'Januar',
-            'Februar',
-            'März',
-            'April',
-            'Mai',
-            'Juni',
-            'Juli',
-            'August',
-            'September',
-            'Oktober',
-            'November',
-            'Dezember',
-        ],
+        monthNames: ['', 'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
     };
 
     viewer.dateSortedFeed = {
@@ -223,3 +209,7 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

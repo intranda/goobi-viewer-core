@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<!-- viewerConfigFolder: contains local configuration files, i.e. this file with local modifications that override the global one -->
+	<viewerConfigFolder>/opt/digiverso/viewer/config/</viewerConfigFolder>
+
+
+	<!-- identifyTags: Defines static values that are shown when calling ?verb=Identify -->
+	<identifyTags>
+		<!-- Name of the repository -->
+		<repositoryName>OAI Frontend</repositoryName>
+
+		<!-- URL of the repository.
+			 @useInRequestElement: Use value configured in
+			baseURL for the <request> element in the OAI dataset. Otherwise the URL will
+			be extracted from the servlet request. Default is false. -->
+		<!-- MAKE SURE THIS URL IS NOT 'localhost' WHEN IN PRODUCTION! -->
+		<baseURL useInRequestElement="true">http://localhost:8080/viewer/oai</baseURL>
+
+		<!-- OAI version -->
+		<protocolVersion> 2.0</protocolVersion>
+
+		<!-- Email address of a contact resposible for the interface -->
+		<adminEmail>support@intranda.com</adminEmail>
+
+		<!-- How the interface deals with deleted records. Allowed values are:
+			no: the repository does not maintain information about deletions. A repository
+			that indicates this level of support must not reveal a deleted status in
+			any response.
+			persistent: the repository maintains information about deletions
+			with no time limit. A repository that indicates this level of support must
+			persistently keep track of the full history of deletions and consistently
+			reveal the status of a deleted record over time.
+			transient: the repository does not guarantee that a list of deletions is maintained persistently or
+			consistently. A repository that indicates this level of support may reveal
+			a deleted status for records. -->
+		<deletedRecord>transient</deletedRecord>
+
+		<!-- Defines times. Valid are Datestamps and UTCdatetime -->
+		<granularity>YYYY-MM-DDThh:mm:ssZ</granularity>
+
+		<!-- an extensible mechanism for communities to describe their repositories. For example, the description container could be used to include collection-level metadata in the
+			response to the Identify request. Implementation Guidelines are available to give directions with this respect. Each description container must be accompanied by the URL of an
+			XML schema describing the structure of the description container -->
+		<description>OAI-PMh interface.</description>
+	</identifyTags>
+
+
+	<!-- List of XML namespaces that are used in the OAI answer -->
+	<oai-identifier>
+		<namespace>http://www.openarchives.org/OAI/2.0/</namespace>
+		<repositoryIdentifier></repositoryIdentifier>
+	</oai-identifier>
+
+
+	<solr>
+		<!-- Hits per page -->
+		<hitsPerToken>100</hitsPerToken>
+
+		<!-- URL to Solr index -->
+		<solrUrl>http://localhost:8983/solr/collection1</solrUrl>
+	</solr>
+
+
+	<!-- oaiFolder: Folder with messages.properties files, etc. -->
+	<oaiFolder>/opt/digiverso/viewer/config/</oaiFolder>
+
+	<!-- Directory containing resumptionToken -->
+	<resumptionTokenFolder>/opt/digiverso/viewer/oai/token/</resumptionTokenFolder>
+
+	<!-- urnResolverUrl: URL to the viewer's URN resolver -->
+	<!-- MAKE SURE THIS URL IS NOT 'localhost' WHEN IN PRODUCTION! -->
+	<urnResolverUrl>http://localhost:8080/viewer/resolver?urn=</urnResolverUrl>
+
+	<!-- MAKE SURE THIS URL IS NOT 'localhost' WHEN IN PRODUCTION! -->
+	<piResolverUrl>http://localhost:8080/viewer/piresolver?id=</piResolverUrl>
+
+	<!-- documentResolverUrl: URL to the METS/LIDO resolver.
+		 This URL is called locally and can be 'localhost' as long as the viewer is on the same machine -->
+	<documentResolverUrl>http://localhost:8080/viewer/sourcefile?id=</documentResolverUrl>
+
+	<!-- harvestUrl: URL for havesting overview page and crowdsourcing updates -->
+	<harvestUrl>http://localhost:8080/viewer/harvest</harvestUrl>
+
+	<!-- restApiUrl: Goobi viewer REST API for full-text/ALTO/TEI/CMDI and TOC retrieval -->
+	<restApiUrl>http://localhost:8080/viewer/api/v1/</restApiUrl>
+
+
+	<oai_dc>
+		<enabled>true</enabled>
+		<hitsPerToken>100</hitsPerToken>
+		<fields>
+			<template name="_DEFAULT">
+				<metadata label="title" value="{0}">
+					<param type="field" key="MD_TITLE" />
+				</metadata>
+				<metadata label="title" value="{0}">
+					<param type="field" key="MD_TITLE_LANG_EN" />
+				</metadata>
+				<metadata label="creator" value="{0}">
+					<param type="field" key="MD_CREATOR" />
+				</metadata>
+				<metadata label="subject" value="{0}">
+					<param type="translatedfield" key="DC" />
+				</metadata>
+				<metadata label="publisher" value="{0}">
+					<param type="field" key="MD_PUBLISHER" dontUseTopstructValue="false" />
+				</metadata>
+				<metadata label="date" value="{0}">
+					<param type="field" key="MD_YEARPUBLISH" dontUseTopstructValue="false" />
+				</metadata>
+				<metadata label="type" value="{0}">
+					<param type="translatedfield" key="DOCSTRCT" />
+				</metadata>
+				<metadata label="type" value="text" />
+				<metadata label="language" value="{0}" dontUseTopstructValue="false" defaultValue="und">
+					<param type="field" key="MD_LANGUAGE" />
+				</metadata>
+				<metadata label="format" value="image/jpeg" />
+				<metadata label="format" value="application/pdf" />
+				<metadata label="identifier" value="#AUTO#" />
+				<metadata label="source" value="#AUTO#" />
+				<metadata label="rights" value="#AUTO#" />
+				<!--
+				<metadata label="url" value="http://localhost:8080/viewer/image/{0}/{1}/">
+					<param type="field" key="PI_TOPSTRUCT" />
+					<param type="field" key="THUMBPAGENO" />
+				</metadata>
+				-->
+				<metadata label="fulltext" value="#AUTO#" />
+				<metadata label="description" value="#TOC#" />
+			</template>
+			<template name="PeriodicalVolume">
+				<metadata label="title" value="{0}{1}">
+					<param type="field" key="MD_TITLE" />
+					<param type="field" key="CURRENTNO" prefix="_SPACE_(" suffix=")" />
+				</metadata>
+				<metadata label="creator" value="{0}">
+					<param type="field" key="MD_CREATOR" />
+				</metadata>
+				<metadata label="subject" value="{0}">
+					<param type="translatedfield" key="DC" />
+				</metadata>
+				<metadata label="publisher" value="{0}">
+					<param type="field" key="MD_PUBLISHER" dontUseTopstructValue="false" />
+				</metadata>
+				<metadata label="date" value="{0}">
+					<param type="field" key="MD_YEARPUBLISH" dontUseTopstructValue="false" />
+				</metadata>
+				<metadata label="type" value="{0}">
+					<param type="translatedfield" key="DOCSTRCT" />
+				</metadata>
+				<metadata label="type" value="text" />
+				<metadata label="language" value="{0}" dontUseTopstructValue="false" defaultValue="und">
+					<param type="field" key="MD_LANGUAGE" />
+				</metadata>
+				<metadata label="format" value="image/jpeg" />
+				<metadata label="format" value="application/pdf" />
+				<metadata label="identifier" value="#AUTO#" />
+				<metadata label="source" value="#AUTO#" />
+				<metadata label="rights" value="#AUTO#" />
+				<metadata label="fulltext" value="#AUTO#" />
+				<metadata label="description" value="#TOC#" />
+			</template>
+		</fields>
+		<setSpec>
+			<field>DC</field>
+		</setSpec>
+
+		<accessConditions>
+			<mapping accessCondition="Public Domain Mark 1.0">info:eu-repo/semantics/openAccess</mapping>
+		</accessConditions>
+	</oai_dc>
+
+
+	<europeana>
+		<enabled>false</enabled>
+		<hitsPerToken>100</hitsPerToken>
+
+		<!-- types: Mapping of docstruct types to pre-defined values for europeana:type  (@name: dostruct type; @type: ESE type) -->
+		<types>
+			<docstruct name="video" type="VIDEO" />
+			<docstruct name="audio" type="SOUND" />
+			<docstruct name="image" type="IMAGE" />
+			<docstruct name="picture" type="IMAGE" />
+			<docstruct name="painting" type="IMAGE" />
+			<docstruct name="museum_object" type="3D" />
+		</types>
+
+		<!-- providerField: Solr field that contains the value for europeana:provider -->
+		<providerField>MD_ACCESSCONDITIONCOPYRIGHT</providerField>
+
+		<!-- dataProviderField: Solr field that contains the value for europeana:dataProvider -->
+		<dataProviderField>MD_ACCESSCONDITIONCOPYRIGHT</dataProviderField>
+
+		<!-- defaultProvider: static default value for europeana:provider and europeana:dataProvider, in case any of the configured Solr fields provide no value -->
+		<defaultProvider>Institution XYZ</defaultProvider>
+
+		<!-- rightsField: Solr field that contains the value for europeana:rights (value must be a URI) -->
+		<rightsField>TODO</rightsField>
+
+		<!-- defaultRightsUrl: static default value for europeana:rights, in case  the configured Solr field provides no value -->
+		<defaultRightsUrl>http://www.example.com/rights</defaultRightsUrl>
+
+		<setSpec>
+			<field>DC</field>
+		</setSpec>
+	</europeana>
+
+	<mets>
+		<enabled>true</enabled>
+		<hitsPerToken>10</hitsPerToken>
+		<setSpec>
+			<field>DC</field>
+		</setSpec>
+	</mets>
+
+
+	<lido>
+		<enabled>false</enabled>
+		<hitsPerToken>10</hitsPerToken>
+		<setSpec>
+			<field>DC</field>
+		</setSpec>
+	</lido>
+
+
+	<marcxml>
+		<enabled>true</enabled>
+		<hitsPerToken>10</hitsPerToken>
+
+		<!-- Path to MARC to MODS XSLT; Local XSLT files must be inside <oaiFolder> -->
+		<marcStylesheet>/opt/digiverso/viewer/oai/MODS2MARC21slim.xsl</marcStylesheet>
+
+		<setSpec>
+			<field>DC</field>
+		</setSpec>
+	</marcxml>
+
+
+	<epicur>
+		<enabled>true</enabled>
+		<hitsPerToken>100</hitsPerToken>
+
+		<!-- additionalDocstructs: Docstructs whose URNs shall also be returned via Xepicur in addition to topstructs -->
+		<additionalDocstructTypes>
+			<!-- <docstruct>Article</docstruct> -->
+		</additionalDocstructTypes>
+		<blacklist>
+			<!-- <urnPrefix></urnPrefix> -->
+		</blacklist>
+		<setSpec>
+			<field>DOCSTRCT</field>
+		</setSpec>
+	</epicur>
+
+
+	<iv_overviewpage>
+		<enabled>false</enabled>
+		<hitsPerToken>100</hitsPerToken>
+	</iv_overviewpage>
+
+
+	<iv_crowdsourcing>
+		<enabled>false</enabled>
+		<hitsPerToken>100</hitsPerToken>
+	</iv_crowdsourcing>
+
+
+	<tei>
+		<enabled>false</enabled>
+		<hitsPerToken>10</hitsPerToken>
+		<versionDiscriminatorField>LANGUAGE</versionDiscriminatorField>
+	</tei>
+
+
+	<cmdi>
+		<enabled>false</enabled>
+		<hitsPerToken>10</hitsPerToken>
+		<versionDiscriminatorField>LANGUAGE</versionDiscriminatorField>
+	</cmdi>
+
+
+	<sets>
+			<!-- The following example adds a set for each digital collection -->
+			<!-- <allValuesSet translate="true">DC</allValuesSet> -->
+
+			<!-- setSpec="open_access" (required for DINI conformity) -->
+			<set setName="Open Access" setSpec="open_access" setQuery="+ACCESSCONDITION:OPENACCESS +(ISWORK:true ISANCHOR:true)" />
+
+			<!-- ##### ATTENTION ##### -->
+			<!--  Some fields like "DC" or "DOCSTRCT" are written into all solr docs of a given record. This means
+				  filtering only for them is not enough. If you want to list only records and anchor records
+				  you have to add this, too:  +(ISWORK:true ISANCHOR:true) -->
+
+			<!-- The folling example adds a set for all records from the digital collection "foo" -->
+			<!-- <set setName="Digital collection foo" setSpec="foo" setQuery="+DC:foo +(ISWORK:true ISANCHOR:true)" /> -->
+
+			<!-- The following example adds a set with all monographs -->
+			<set setName="Monographs" setSpec="monographs" setQuery="+DOCSTRCT:monograph +(ISWORK:true ISANCHOR:true)" />
+
+
+			<!-- The following example lists only one record with a given persistent identifier -->
+			<!-- <set setName="Single identifier" setSpec="id" setQuery="PI:AC1234567" /> -->
+	</sets>
+
+
+	<!-- defaultLocale: Locale to be used for value translations. Default is 'en'. -->
+	<defaultLocale>en</defaultLocale>
+</config>

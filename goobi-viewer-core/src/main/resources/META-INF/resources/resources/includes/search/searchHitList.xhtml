@@ -432,6 +432,64 @@
             data-dismiss="modal" />
     </div>
 
+    <!-- SHARED PDF DOWNLOAD MODAL (message queue mode, one instance for all search hits) -->
+
+    <viewerComponent:modalDownload
+        modalId="searchHitDownloadModal"
+        pi="#{downloadBean.currentPi}"
+        title=""
+        fileSize="" />
+
+    <script type="text/javascript">
+            //<![CDATA[
+            function _parseDisplaySize(sizeVal) {
+                if (!sizeVal) { return null; }
+                if (typeof sizeVal === 'number') {
+                    if (sizeVal <= 0) { return null; }
+                    var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+                    var i = 0;
+                    var s = sizeVal;
+                    while (s >= 1024 && i < units.length - 1) { s /= 1024; i++; }
+                    return s.toFixed(2) + ' ' + units[i];
+                }
+                var numeric = parseFloat(String(sizeVal).replace(',', '.'));
+                return (!isNaN(numeric) && numeric > 0) ? sizeVal : null;
+            }
+
+            $('#searchHitDownloadModal').on('show.bs.modal', function(e) {
+                var $btn = $(e.relatedTarget);
+                var title = $('<div>').html($btn.data('title')).text();
+                var pi = $btn.data('pi');
+                var $modal = $(this);
+                $modal.find('.modal-title').text(title);
+                $modal.find('dd.col-sm-9').first().text(title);
+                $modal.find('input[type="hidden"][id$="__pi"]').val(pi);
+
+                // Remove any file size row from a previous modal open
+                $modal.find('[data-filesize-row]').remove();
+
+                // Fetch file size from REST API and inject into the dl if available
+                var infoUrl = '#{request.contextPath}/api/v1/records/' + encodeURIComponent(pi) + '/pdf/info.json';
+                fetch(infoUrl)
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(info) {
+                        var displaySize = _parseDisplaySize(info && info.size);
+                        if (displaySize) {
+                            $modal.find('dl.row').append(
+                                '<dt class="col-sm-3" data-filesize-row="1">#{msg.downloadInfoFileSize}:</dt>' +
+                                '<dd class="col-sm-9" data-filesize-row="1">~ ' + $('<span>').text(displaySize).html() + '</dd>'
+                            );
+                        }
+                    })
+                    .catch(function(err) {
+                        console.error('[searchHitDownload] fetch error:', err);
+                    });
+            });
+            //]]>
+        </script>
+
     <script type="text/javascript">
         var cmsPageId = '#{cmsPage.id}';
 

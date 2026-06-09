@@ -122,7 +122,7 @@ import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationList;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
-import io.goobi.viewer.model.files.external.ExternalFilesDownloader;
+import io.goobi.viewer.model.resources.download.ExternalResourceUrlService;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.Metadata;
@@ -241,7 +241,7 @@ public class ViewManager implements Serializable {
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
     private Map<CitationLinkLevel, CitationList> citationLinks = new HashMap<>();
-    private Map<String, String> externalResourceUrls = null;
+    private ExternalResourceUrlService externalResourceUrlService = null;
     private List<PhysicalResource> downloadResources = null;
     private String meiUrl = null;
 
@@ -4246,10 +4246,10 @@ public class ViewManager implements Serializable {
     }
 
     public Map<String, String> getExternalResourceUrls() throws IndexUnreachableException {
-        if (this.externalResourceUrls == null) {
-            this.externalResourceUrls = loadExternalResourceUrls();
+        if (externalResourceUrlService == null) {
+            externalResourceUrlService = new ExternalResourceUrlService();
         }
-        return this.externalResourceUrls;
+        return externalResourceUrlService.getExistingUrls(new VariableReplacer(this));
     }
 
     public String getExternalResourceUrlsAsJson() {
@@ -4259,16 +4259,6 @@ public class ViewManager implements Serializable {
             logger.error("Cannot map external resource urls map to json", e);
             return "{}";
         }
-    }
-
-    private Map<String, String> loadExternalResourceUrls() throws IndexUnreachableException {
-        List<String> urlTemplates =
-                DataManager.getInstance().getConfiguration().getExternalResourceUrlTemplates();
-        VariableReplacer vr = new VariableReplacer(this);
-        return urlTemplates.stream()
-                .flatMap(templ -> vr.replace(templ).stream().map(url -> new StringPair(url, templ)))
-                .filter(pair -> ExternalFilesDownloader.resourceExists(pair.getOne(), pair.getTwo()))
-                .collect(Collectors.toMap(StringPair::getOne, StringPair::getTwo));
     }
 
     public StructElement getAnchorStructElement() {

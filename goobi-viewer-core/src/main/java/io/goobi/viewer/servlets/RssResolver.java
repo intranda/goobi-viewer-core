@@ -24,7 +24,8 @@ package io.goobi.viewer.servlets;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -70,7 +71,17 @@ public class RssResolver extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String query = null;
         if (request.getParameterMap().get("q") != null) {
-            query = "(" + request.getParameterMap().get("q")[0] + ")";
+            String rawQ = request.getParameterMap().get("q")[0];
+            if (!isPrintableAscii(rawQ)) {
+                try {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                            "Query must contain only printable ASCII characters");
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
+                return;
+            }
+            query = "(" + rawQ + ")";
         }
         String language = "de";
         if (request.getParameterMap().get("lang") != null && request.getParameterMap().get("lang").length > 0) {
@@ -98,6 +109,15 @@ public class RssResolver extends HttpServlet {
         String filterQuery = "";
         if (request.getParameterMap().get(PARAM_FILTERQUERY) != null && request.getParameterMap().get(PARAM_FILTERQUERY).length > 0) {
             filterQuery = request.getParameterMap().get(PARAM_FILTERQUERY)[0];
+            if (!isPrintableAscii(filterQuery)) {
+                try {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                            "filterQuery must contain only printable ASCII characters");
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
+                return;
+            }
         }
         // logger.trace("RSS request filter query: {}", filterQuery); //NOSONAR Debug
 
@@ -137,11 +157,20 @@ public class RssResolver extends HttpServlet {
 
             // logger.trace("RSS query: {}", query); //NOSONAR Debug
             if (StringUtils.isNotEmpty(query)) {
+                // Pass the access-condition suffix as a separate filter query rather than concatenating it
+                // onto the main query body, so boolean operators inside ?q= cannot make it optional.
+                List<String> filterQueries = new ArrayList<>(2);
+                String accessSuffix = SearchHelper.getAllSuffixes(request, true, true);
+                if (StringUtils.isNotBlank(accessSuffix)) {
+                    filterQueries.add(accessSuffix);
+                }
+                if (StringUtils.isNotBlank(filterQuery)) {
+                    filterQueries.add(filterQuery);
+                }
                 SyndFeedOutput output = new SyndFeedOutput();
                 output.output(
                         RSSFeed.createRss(ServletUtils.getServletPathWithHostAsUrlFromRequest(request),
-                                query + SearchHelper.getAllSuffixes(request, true, true),
-                                Collections.singletonList(filterQuery), language, maxHits, null, true),
+                                query, filterQueries, language, maxHits, null, true),
                         new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8.name()));
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Insufficient parameters");
@@ -191,5 +220,18 @@ public class RssResolver extends HttpServlet {
             logger.error(e.getMessage());
         }
 
+    }
+
+    private static boolean isPrintableAscii(String s) {
+        if (s == null) {
+            return true;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c < 0x20 || c > 0x7E) {
+                return false;
+            }
+        }
+        return true;
     }
 }

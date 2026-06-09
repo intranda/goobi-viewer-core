@@ -116,6 +116,8 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.model.viewer.record.relatedgroups.GroupMemberDetail;
+import io.goobi.viewer.model.viewer.record.relatedgroups.RelatedGroupsResolver;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
@@ -222,6 +224,11 @@ public class ActiveDocumentBean implements Serializable {
     /* Next docstruct URL cache. TODO Implement differently once other views beside full-screen are used. */
     private Map<String, String> nextDocstructUrlCache = new HashMap<>();
 
+    // volatile for double-checked locking in getGroupMembershipDetails()
+    private volatile List<GroupMemberDetail> groupMembershipDetails; //NOSONAR S3077: DCL; list is built then published, never mutated after
+    // PI tracked alongside the cache so reset()-between-check-and-publish races can be detected
+    private volatile String groupMembershipDetailsPi;
+
     @Inject
     @Push
     private PushContext tocUpdateChannel;
@@ -315,6 +322,8 @@ public class ActiveDocumentBean implements Serializable {
             recordDataset = null;
             pdfSizes = null;
             cachedFullPdfSize = null;
+            groupMembershipDetails = null;
+            groupMembershipDetailsPi = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -2126,11 +2135,11 @@ public class ActiveDocumentBean implements Serializable {
             return "";
         }
 
-        String url = NetTools.buildClearCacheUrl(clearCacheMode, viewManager.getPi(), navigationHelper.getApplicationUrl(),
-                DataManager.getInstance().getConfiguration().getWebApiToken());
+        String url = NetTools.buildClearCacheUrl(clearCacheMode, viewManager.getPi(), navigationHelper.getApplicationUrl());
+        Map<String, String> headers = Map.of("token", DataManager.getInstance().getConfiguration().getWebApiToken());
         try {
             try {
-                NetTools.getWebContentDELETE(url, null, null, null, null);
+                NetTools.getWebContentDELETE(url, headers, null, null, null);
                 Messages.info("cache_clear__success");
             } catch (IOException e) {
                 logger.error(e.getMessage());
@@ -2438,6 +2447,82 @@ public class ActiveDocumentBean implements Serializable {
         sbQuery.append(')');
 
         return sbQuery.toString();
+    }
+
+    /**
+     * Returns detailed information about related records for the related-groups widget/section.
+     *
+     * <p>Delegates the actual Solr query and card construction to {@link RelatedGroupsResolver}.
+     * Adds session-scope caching with a double-checked-locking pattern (analogous to
+     * {@link #getRecordDataset()}): the cached value is only published when the PI at query
+     * time still matches the current PI, so a concurrent {@link #reset()} cannot leave stale
+     * data behind. Errors from the resolver are caught here so the view never sees them.
+     *
+     * @return List of GroupMemberDetail objects; empty if no related records, no record loaded, or on error
+     * @should return empty list if viewManager is null
+     * @should return group memberships and anchor details
+     * @should return sibling volumes for anchor children
+     */
+    public List<GroupMemberDetail> getGroupMembershipDetails() {
+        ViewManager vm = this.viewManager;
+        if (vm == null) {
+            return Collections.emptyList();
+        }
+        String currentPi;
+        try {
+            currentPi = vm.getPi();
+        } catch (IndexUnreachableException e) {
+            logger.warn("Could not read current PI for related-groups cache lookup: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+
+        // --- Fast path: volatile read, no lock ---
+        List<GroupMemberDetail> cached = this.groupMembershipDetails;
+        if (cached != null && currentPi != null && currentPi.equals(this.groupMembershipDetailsPi)) {
+            return cached;
+        }
+
+        // --- Load outside the monitor ---
+        List<GroupMemberDetail> fresh;
+        try {
+            fresh = new RelatedGroupsResolver(imageDelivery).resolve(vm);
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Could not load related-groups details for {}: {}", currentPi, e.getMessage());
+            fresh = Collections.emptyList();
+        } catch (NullPointerException | IllegalArgumentException | IllegalStateException e) {
+            logger.warn("Unexpected error while loading related-groups details for {}: {}", currentPi, e.toString());
+            fresh = Collections.emptyList();
+        }
+
+        // --- Publish only if PI hasn't changed in the meantime ---
+        synchronized (this) {
+            ViewManager vmNow = this.viewManager;
+            String nowPi = null;
+            if (vmNow != null) {
+                try {
+                    nowPi = vmNow.getPi();
+                } catch (IndexUnreachableException e) {
+                    logger.warn("Could not read current PI when publishing related-groups cache: {}", e.getMessage());
+                }
+            }
+            if (nowPi != null && nowPi.equals(currentPi)) {
+                this.groupMembershipDetails = fresh;
+                this.groupMembershipDetailsPi = currentPi;
+            }
+        }
+        return fresh;
+    }
+
+    /**
+     * @return Related-groups details capped at the configured section maxResults (for the content section template).
+     */
+    public List<GroupMemberDetail> getGroupMembershipDetailsForSection() {
+        int max = DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsMaxResults();
+        List<GroupMemberDetail> all = getGroupMembershipDetails();
+        if (max <= 0 || all.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return all.size() <= max ? all : all.subList(0, max);
     }
 
     /**

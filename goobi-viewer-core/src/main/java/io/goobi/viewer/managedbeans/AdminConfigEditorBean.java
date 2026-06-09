@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
@@ -71,11 +72,28 @@ import io.goobi.viewer.model.administration.configeditor.BackupRecord;
 import io.goobi.viewer.model.administration.configeditor.FileLocks;
 import io.goobi.viewer.model.administration.configeditor.FileRecord;
 import io.goobi.viewer.model.administration.configeditor.FilesListing;
+import io.goobi.viewer.model.administration.configeditor.VimSwapFile;
 import io.goobi.viewer.model.files.upload.FileUploader;
 import io.goobi.viewer.model.xml.XMLError;
 
 /**
  * JSF backing bean for the admin configuration editor, allowing administrators to view and modify the viewer config file.
+ *
+ * <p>
+ * <b>Symlink note:</b> the configuration directory ({@code /opt/digiverso/viewer/config/}) legitimately contains symbolic
+ * links to files that live outside the viewer's own filesystem tree:
+ * </p>
+ * <ul>
+ *   <li>{@code config_indexer.xml} &rarr; {@code /opt/digiverso/indexer/config_indexer.xml}</li>
+ *   <li>{@code robots.txt} &rarr; {@code /var/www/robots.txt}</li>
+ * </ul>
+ * <p>
+ * These symlinks are intentional and must keep working. Any future migration of this bean's {@link java.nio.file.Files}
+ * calls to symlink-rejecting helpers (see {@code FileTools.copyRejectingSymlinks} / {@code openRejectingSymlinks} /
+ * {@code moveRejectingSymlinks} / {@code newBufferedWriterRejectingSymlinks}) must therefore introduce a path-allowlist
+ * for these two files (or the entire config directory) — applying strict-reject here unconditionally would break the
+ * config editor's read/write of the indexer config and the robots file.
+ * </p>
  */
 @Named
 @SessionScoped
@@ -365,6 +383,15 @@ public class AdminConfigEditorBean implements Serializable {
             // get an exclusive lock if the file is editable, otherwise a shared lock
             if (editable) {
                 String sessionId = BeanUtils.getSession().getId();
+                // vim-Lock-Check
+                VimSwapFile.Status vimStatus = VimSwapFile.check(filePath);
+                if (vimStatus == VimSwapFile.Status.LOCKED_BY_VIM) {
+                    Messages.error("admin__config_editor__file_locked_by_vim");
+                    return;
+                }
+                if (vimStatus == VimSwapFile.Status.STALE_VIM) {
+                    logger.warn("Stale vim swap file found for {}, ignoring", filePath);
+                }
                 // File already locked by someone else
                 if (fileLocks.isFileLockedByOthers(filePath, sessionId)) {
                     Messages.error("admin__config_editor__file_locked_msg");
@@ -372,6 +399,11 @@ public class AdminConfigEditorBean implements Serializable {
                 }
                 fileLocks.lockFile(filePath, sessionId);
                 logger.trace("{} locked for session ID {}", filePath.toAbsolutePath(), sessionId);
+                try {
+                    VimSwapFile.create(filePath, null);
+                } catch (IOException e) {
+                    logger.warn("Could not create swap file for {}: {}", filePath, e.getMessage(), e);
+                }
                 // outputLock also locks reading this file in Windows, so read it prior to creating the lock
                 fileContent = Files.readString(filePath);
             } else { // READ_ONLY
@@ -413,6 +445,17 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
+     * Locks the given file for the given session id in the static (global) fileLocks object.
+     *
+     * @param file path of the config file to lock
+     * @param sessionId HTTP session ID acquiring the lock
+     * @return true if the lock was acquired; false if held by another session
+     */
+    public static boolean lockFile(Path file, String sessionId) {
+        return file != null && fileLocks.lockFile(file, sessionId);
+    }
+
+    /**
      * Unlocks the given file for the given session id in the static (global) fileLocks object.
      *
      * @param file path of the config file to unlock
@@ -420,8 +463,8 @@ public class AdminConfigEditorBean implements Serializable {
      */
     public static void unlockFile(Path file, String sessionId) {
         logger.trace("Unlocking file {} for session {}", file, sessionId);
-        if (file != null) {
-            fileLocks.unlockFile(file, sessionId);
+        if (file != null && fileLocks.unlockFile(file, sessionId)) {
+            VimSwapFile.delete(file);
         }
     }
 
@@ -617,7 +660,7 @@ public class AdminConfigEditorBean implements Serializable {
                         Files.delete(backupFiles[--length].toPath());
                         logger.trace("Rotated away backup: {}", backupFiles[length].toPath().getFileName());
                     } catch (IOException e) {
-                        logger.error(e.getMessage());
+                        logger.error(e.getMessage(), e);
                     }
                 }
                 backupFiles = backupFolder.listFiles();
@@ -653,7 +696,7 @@ public class AdminConfigEditorBean implements Serializable {
             try {
                 return Files.getLastModifiedTime(b.toPath()).compareTo(Files.getLastModifiedTime(a.toPath()));
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                logger.error(e.getMessage(), e);
                 return 0;
             }
         }); // last modified comes on top
@@ -731,7 +774,7 @@ public class AdminConfigEditorBean implements Serializable {
             }
         } catch (IOException e) {
             if (GetAction.isClientAbort(e)) {
-                logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage());
+                logger.trace("Download of '{}' aborted: {}", fileName, e.getMessage()); // Stack trace intentionally omitted - client abort
                 return "";
             }
             throw e;
@@ -746,7 +789,10 @@ public class AdminConfigEditorBean implements Serializable {
      * @param sessionId HTTP session ID whose locks are to be released
      */
     public static void clearLocksForSessionId(String sessionId) {
-        fileLocks.clearLocksForSessionId(sessionId);
+        Set<Path> pathsToUnlock = fileLocks.getAndClearLocksForSessionId(sessionId);
+        for (Path p : pathsToUnlock) {
+            VimSwapFile.delete(p);
+        }
     }
 
     /**

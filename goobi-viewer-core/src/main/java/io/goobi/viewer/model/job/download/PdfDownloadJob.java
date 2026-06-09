@@ -43,14 +43,16 @@ import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
+import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.viewer.Dataset;
 
 /**
- * Download job that generates a PDF file for a digitized record or one of its structural divisions via the content server.
- * Supports optional log ID scoping, configuration variants, and pre-existing PDF source files.
+ * Download job that generates a PDF file for a digitized record or one of its structural divisions via the content server. Supports optional log ID
+ * scoping, configuration variants, and pre-existing PDF source files.
  */
 public class PdfDownloadJob extends DownloadJob {
 
@@ -175,6 +177,23 @@ public class PdfDownloadJob extends DownloadJob {
         return sb.toString();
     }
 
+    @Override
+    public String getDownloadFilename() {
+        String custom = StringTools.formatPdfDownloadFilename(
+                DataManager.getInstance().getConfiguration().getDownloadFilenamePattern(), getPi(), logId);
+        if (custom != null) {
+            return custom;
+        }
+
+        StringBuilder sb = new StringBuilder(getPi());
+        if (StringUtils.isNotBlank(logId)) {
+            sb.append("_").append(logId);
+        }
+        sb.append(".pdf");
+
+        return sb.toString();
+    }
+
     private static MetsPdfRequest createPdfRequest(Dataset work, Optional<String> divId, boolean usePdfSource, String configVariant)
             throws URISyntaxException {
 
@@ -187,9 +206,7 @@ public class PdfDownloadJob extends DownloadJob {
         }
 
         Map<String, String> params = new HashMap<>();
-        params.put("metsFile", work.getMetadataFilePath().toString());
         params.put("imageSource", work.getMediaFolderPath().getParent().toUri().toString());
-        divId.ifPresent(id -> params.put("divID", id));
 
         if (usePdfFiles && Files.exists(pdfFolder)) {
             params.put("pdfSource", pdfFolder.getParent().toUri().toString());
@@ -202,7 +219,7 @@ public class PdfDownloadJob extends DownloadJob {
         }
         params.put("metsFileGroup", "PRESENTATION");
         params.put("goobiMetsFile", "false");
-        MetsPdfRequest request = new MetsPdfRequest(params);
+        MetsPdfRequest request = new MetsPdfRequest(PathConverter.toURI(work.getMetadataFilePath()), divId.orElse(null), usePdfFiles, params);
         return request;
     }
 

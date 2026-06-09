@@ -97,6 +97,11 @@
 		<download>https://viewer.goobi.io/download/</download>
 	</urls>
 
+	<outboundHttp>
+		<!-- Allow loopback addresses (127.x.x.x) in test environments for mock servers -->
+		<allowLoopback>true</allowLoopback>
+	</outboundHttp>
+
 	<user>
 		<!-- registration/@enabled: If false, widgets for user registration / password retrieval are hidden. Default is true. -->
 		<registration enabled="false" />
@@ -213,6 +218,12 @@
 		<downloadFolder>/opt/digiverso/viewer/download_test_pdf</downloadFolder>
 
 		<docHierarchyPdfEnabled>true</docHierarchyPdfEnabled>
+
+		<!-- downloadFilenamePattern: Template for generated download file names.
+		     Placeholders {PI} and {LOGID} (case-sensitive) are replaced with the record
+		     identifier and structure element id. If {LOGID} resolves to empty, leftover
+		     separators are collapsed. If omitted/empty, default naming is used. -->
+		<downloadFilenamePattern>prefix_{PI}_{LOGID}.pdf</downloadFilenamePattern>
 	</pdf>
 
 	<epub>
@@ -1053,6 +1064,7 @@
                 <displayWidget name="views" />
                 <displayWidget name="copyright" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="search-in-current-item" />
+                <displayWidget name="related-groups" showDetails="true" />
             </view>
             <view name="toc">
                 <displayWidget name="views" />
@@ -1180,7 +1192,15 @@
                 <!-- max length of level before it gets collapsed -->
                 <collapseLengthThreshold lowestLevelToTest="333">141</collapseLengthThreshold>
             </widget>
-            
+
+            <widget name="related-groups">
+                <maxResults>5</maxResults>
+                <sortField>MD_YEARPUBLISH</sortField>
+                <sortOrder>asc</sortOrder>
+                <titleField>LABEL</titleField>
+                <subtitleField>MD_AUTHOR</subtitleField>
+            </widget>
+
             <!-- OTHER WIDGETS -->
             
             <!-- browsing-terms: Term browsing widget. -->
@@ -1559,7 +1579,7 @@
         </scripts>
     </developer>
 
-	<externalResource>
+	<externalResource enabled="true">
 	    <urls>
 	        <template>
 	            <url>http://d-nb.info/{MD_DOWNLOAD_IDENTIFIER}/34</url>

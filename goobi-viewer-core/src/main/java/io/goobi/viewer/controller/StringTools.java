@@ -34,9 +34,10 @@ import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +88,8 @@ public final class StringTools {
     public static final String DEFAULT_ENCODING = StandardCharsets.UTF_8.name();
     /** Constant <code>DEFAULT_CHARSET="UTF-8"</code>. */
     public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
+    /** Shared CSPRNG for security token generation. */
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     /** Constant <code>SLASH_REPLACEMENT="U002F"</code>. */
     public static final String SLASH_REPLACEMENT = "U002F";
@@ -313,31 +316,6 @@ public final class StringTools {
                 .replace("\r", replacement)
                 .replace("<br>", replacement)
                 .replaceAll("<br\\s*/>", replacement);
-    }
-
-    /**
-     * Regex-based removal of {@code <script>} and {@code <svg>} blocks. Bypassable by any
-     * other XSS vector (event-handler attributes, {@code javascript:} URIs, alternative tags
-     * like {@code <iframe>} or {@code <details ontoggle>}). Retained only for non-XSS-sink
-     * call sites (URL hygiene, REST-input detection, filename helpers).
-     *
-     * @param s String to strip of JavaScript blocks
-     * @return String sans any script-tag blocks
-     * @should remove script tags, self-closing scripts, and SVG event handler elements regardless of case
-     * @deprecated For HTML rendering sinks use {@link HtmlSanitizer#cleanRichText(String)} or
-     *             {@link HtmlSanitizer#cleanComment(String)} instead. This method only catches
-     *             {@code <script>}/{@code <svg>} and is unsuitable as XSS protection.
-     */
-    @Deprecated
-    public static String stripJS(String s) {
-        if (StringUtils.isBlank(s)) {
-            return s;
-        }
-
-        return s.replaceAll("(?i)<script[\\s\\S]*<\\/script>", "")
-                .replaceAll("(?i)<script[\\s\\S]*\\/?>", "")
-                .replaceAll("(?i)<svg[\\s\\w()\"=]*\\/?>", "")
-                .replaceAll("(?i)<\\/svg>", "");
     }
 
     /**
@@ -679,35 +657,34 @@ public final class StringTools {
     }
 
     /**
-     * Creates an hash of the given String using SHA-256.
+     * Generates a URL-safe random token of the requested byte length, encoded as Base64 without padding.
+     * Suitable for passwords, activation keys, and other security tokens that must come from a CSPRNG.
      *
-     * @param myString input string to hash
-     * @return generated hash
-     * @should return SHA-256 hex digest for given input string
+     * @param byteCount number of random bytes to draw (e.g. 16 for a 128-bit password)
+     * @return URL-safe Base64 string
+     * @should produce distinct URL-safe Base64 strings of the expected length
      */
-    public static String generateHash(String myString) {
-        String answer = "";
-        try {
-            byte[] defaultBytes = myString.getBytes(StandardCharsets.UTF_8.name());
-            MessageDigest algorithm = MessageDigest.getInstance("SHA-256");
-            algorithm.reset();
-            algorithm.update(defaultBytes);
-            byte[] messageDigest = algorithm.digest();
+    public static String generateRandomToken(int byteCount) {
+        byte[] bytes = new byte[byteCount];
+        SECURE_RANDOM.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
 
-            StringBuilder hexString = new StringBuilder();
-            for (byte element : messageDigest) {
-                String hex = Integer.toHexString(0xFF & element);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            answer = hexString.toString();
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            logger.error(e.getMessage(), e);
+    /**
+     * Compares two strings for equality in constant time, to avoid leaking the length of the common
+     * prefix via timing. Returns {@code false} if either argument is {@code null}.
+     *
+     * @param a first string (e.g. user-supplied secret)
+     * @param b second string (e.g. stored secret)
+     * @return true if both are non-null and byte-equal; false otherwise
+     * @should return true only for non-null equal strings
+     * @should return false if either argument is null
+     */
+    public static boolean constantTimeEquals(String a, String b) {
+        if (a == null || b == null) {
+            return false;
         }
-
-        return answer;
+        return MessageDigest.isEqual(a.getBytes(StandardCharsets.UTF_8), b.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -851,10 +828,40 @@ public final class StringTools {
      * @return a cleaned up string which can be savely used
      */
     public static String cleanUserGeneratedData(String data) {
-        String cleaned = stripJS(data);
-        cleaned = stripPatternBreakingChars(cleaned);
+        String cleaned = stripPatternBreakingChars(data);
         cleaned = Paths.get(cleaned).getFileName().toString();
         return cleaned;
+    }
+
+    /**
+     * Builds a PDF download filename from a configurable pattern. The case-sensitive placeholders {@code {PI}} and {@code {LOGID}} are replaced with
+     * the given record identifier and structure element id. When {@code logId} is blank the {@code {LOGID}} placeholder resolves to an empty string
+     * and any separators ({@code _} or {@code -}) left dangling around it are collapsed (e.g. {@code prefix_{PI}_{LOGID}.pdf} becomes
+     * {@code prefix_PI.pdf}).
+     *
+     * @param pattern filename pattern, e.g. {@code prefix_{PI}_{LOGID}.pdf}; if blank, no filename is produced
+     * @param pi record identifier substituted for {@code {PI}}; may be {@code null}
+     * @param logId structure element id substituted for {@code {LOGID}}; may be {@code null}
+     * @return the formatted filename, or {@code null} if {@code pattern} is blank (caller should fall back to its default naming)
+     * @should return null if pattern blank
+     * @should replace placeholders with values
+     * @should collapse separators when logid blank
+     */
+    public static String formatPdfDownloadFilename(String pattern, String pi, String logId) {
+        if (StringUtils.isBlank(pattern)) {
+            return null;
+        }
+
+        String filename = pattern
+                .replace("{PI}", StringUtils.trimToEmpty(pi))
+                .replace("{LOGID}", StringUtils.trimToEmpty(logId));
+
+        // Collapse separators left behind by an empty placeholder (case: blank logId)
+        filename = filename.replaceAll("[_-]{2,}", "_"); // duplicate separators -> single
+        filename = filename.replaceAll("[_-]+\\.", ".");  // trailing separator before extension
+        filename = filename.replaceAll("^[_-]+", "");      // leading separator
+
+        return filename;
     }
 
     /**

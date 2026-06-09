@@ -56,8 +56,8 @@ import io.goobi.viewer.model.viewer.Dataset;
 import jakarta.mail.MessagingException;
 
 /**
- * Abstract base class for asynchronous download jobs that generate files (e.g. PDF or EPUB) for digitized records.
- * Manages job state, file locking, expiry, and user notification via e-mail.
+ * Abstract base class for asynchronous download jobs that generate files (e.g. PDF or EPUB) for digitized records. Manages job state, file locking,
+ * expiry, and user notification via e-mail.
  */
 public abstract class DownloadJob {
 
@@ -226,5 +226,7 @@ public abstract class DownloadJob {
     }
 
     public abstract String getMimeType();
+
+    public abstract String getDownloadFilename();
 
 }

@@ -47,6 +47,7 @@ import io.goobi.viewer.model.toc.TOC;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.model.viewer.record.relatedgroups.GroupMemberDetail;
 
 class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -888,5 +889,91 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         String canonicalHref = result.substring(start, end);
         // Page 3 canonical must end with the page number
         assertTrue(canonicalHref.endsWith("/3/"), "Canonical URL for page 3 must end with /3/, got: " + canonicalHref);
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGroupMembershipDetails()
+     * @verifies return empty list if viewManager is null
+     */
+    @Test
+    void getGroupMembershipDetails_shouldReturnEmptyListIfViewManagerIsNull() throws Exception {
+        assertNull(adb.getViewManager());
+        assertTrue(adb.getGroupMembershipDetails().isEmpty());
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGroupMembershipDetails()
+     * @verifies return group memberships and anchor details
+     */
+    @Test
+    void getGroupMembershipDetails_shouldReturnGroupMembershipsAndAnchorDetails() throws Exception {
+        adb.setPersistentIdentifier("AC16139576");
+        adb.setImageToShow("1");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+
+        java.util.List<GroupMemberDetail> details = adb.getGroupMembershipDetails();
+        Assertions.assertNotNull(details);
+        Assertions.assertFalse(details.isEmpty(), "Expected at least one related group member");
+
+        java.util.Set<String> pis = new java.util.HashSet<>();
+        for (GroupMemberDetail d : details) {
+            pis.add(d.getPi());
+        }
+        assertTrue(pis.contains("AC01131752"), "Expected series record (GROUPID_SERIES target) in results");
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGroupMembershipDetails()
+     * @verifies return sibling volumes for anchor children
+     */
+    @Test
+    void getGroupMembershipDetails_shouldReturnSiblingVolumesForAnchorChildren() throws Exception {
+        adb.setPersistentIdentifier("168714434_1874");
+        adb.setImageToShow("1");
+        adb.update();
+        assertTrue(adb.isRecordLoaded());
+        assertTrue(adb.getViewManager().getTopStructElement().isAnchorChild());
+
+        java.util.List<GroupMemberDetail> details = adb.getGroupMembershipDetails();
+        Assertions.assertNotNull(details);
+        Assertions.assertFalse(details.isEmpty(), "Expected at least one sibling volume");
+        for (GroupMemberDetail d : details) {
+            Assertions.assertNotEquals("168714434_1874", d.getPi(),
+                    "Current record must be excluded from its own sibling list");
+            Assertions.assertNotEquals("168714434", d.getPi(),
+                    "Anchor record itself must not be returned as a sibling card");
+        }
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGroupMembershipDetails()
+     * @verifies invalidate cached details when record changes
+     */
+    @Test
+    void getGroupMembershipDetails_shouldInvalidateCacheOnRecordChange() throws Exception {
+        adb.setPersistentIdentifier("AC16139576");
+        adb.setImageToShow("1");
+        adb.update();
+        java.util.List<GroupMemberDetail> first = adb.getGroupMembershipDetails();
+        Assertions.assertNotNull(first);
+
+        adb.reset();
+        adb.setPersistentIdentifier("168714434_1874");
+        adb.setImageToShow("1");
+        adb.update();
+
+        java.util.List<GroupMemberDetail> second = adb.getGroupMembershipDetails();
+        Assertions.assertNotNull(second);
+        Assertions.assertNotSame(first, second, "Cache must not be reused across different records");
+    }
+
+    /**
+     * @see ActiveDocumentBean#getGroupMembershipDetails()
+     * @verifies never throw when called before update
+     */
+    @Test
+    void getGroupMembershipDetails_shouldNeverThrow() {
+        Assertions.assertDoesNotThrow(() -> adb.getGroupMembershipDetails());
     }
 }

@@ -1,0 +1,56 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <composite:interface>
+        <composite:attribute
+            name="component"
+            required="true" />
+    </composite:interface>
+
+    <composite:implementation>
+        <h:outputScript
+            name="resources/javascript/libs/chartjs/chart.umd.js"
+            target="head" />
+        <h:outputScript
+            name="resources/javascript/libs/chartjs/luxon/luxon.js"
+            target="head" />
+        <h:outputScript
+            name="resources/javascript/libs/chartjs/chartjs-adapter-luxon/chartjs-adapter-luxon.umd.min.js"
+            target="head" />
+        <ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
+            <h:panelGroup
+                layout="block"
+                styleClass="content-component content-component__statistics-chart -width-100 statistics-chart statistics-chart--top-collections #{cc.attrs.hideOnScreenSizes} #{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} #{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''} #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}"
+                style="max-width: 800px;"
+                id="chart-top-collections">
+                <ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
+                    <div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
+                </ui:fragment>
+                <h2>#{msg.cms_component__chart_top_collections__label}</h2>
+                <h:panelGroup
+                    layout="block"
+                    styleClass="statistics-chart__canvas-wrap">
+                    <canvas id="canvas-top-collections#{cc.clientId}" />
+                </h:panelGroup>
+            </h:panelGroup>
+
+            <script type="text/javascript">
+                (function() {
+                    const filter = '#{cc.attrs.component.getContent("filter").filterQuery}';
+                    const url = new URL('#{request.contextPath}/api/v1/statistics/index/top-collections', window.location.origin);
+                    url.searchParams.set('lang', '#{navigationHelper.localeString}');
+                    if (filter) {
+                        url.searchParams.set('filter', filter);
+                    }
+                    viewerJS.statistics.charts.renderTopCollections(
+                        'canvas-top-collections#{cc.clientId}',
+                        url.toString(),
+                        '#{request.contextPath}/browse/'
+                    );
+                })();
+            </script>
+        </ui:fragment>
+    </composite:implementation>
+</ui:composition>

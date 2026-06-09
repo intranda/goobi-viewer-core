@@ -1,0 +1,143 @@
+// Styles for the Chart.js + DOM-list CMS components introduced in #15809.
+// Used by chartPublicationTypes / chartImportTrend / chartImportSummary (core) and
+// chartMostEditedRecords / chartAlmostCompletedRecords / chartMostActiveUsers (crowdsourcing module).
+
+// Visual frame shared by all statistics CMS components — matches the look of htmltext content
+// boxes so chart components blend in with surrounding text content on a CMS page.
+.content-component__statistics-chart,
+.content-component__statistics-list {
+    padding: 10px;
+    border: var(--border);
+    background-color: var(--bg-content-box);
+}
+
+.statistics-chart {
+    margin: 1rem 0;
+    // Chart.js renders inside an 800x400 default canvas; cap the wrapper at the same width
+    // so the chart and its surrounding box (heading, etc.) don't stretch past it.
+    max-width: 800px;
+    // Stack the heading and the canvas wrapper vertically; the wrapper takes the remaining
+    // height via flex:1 so the canvas can never overflow the framed box.
+    display: flex;
+    flex-direction: column;
+
+    canvas {
+        max-width: 100%;
+        height: auto !important; // override Chart.js inline height when the parent has a fixed aspect ratio
+    }
+
+    h2 {
+        margin-bottom: 0.5rem;
+    }
+
+    // Holds the canvas. Chart.js with maintainAspectRatio:false sizes the canvas to its parent,
+    // so this wrapper is what defines the available area below the heading.
+    &__canvas-wrap {
+        flex: 1 1 auto;
+        min-height: 0; // required so the wrapper can actually shrink inside the flex parent
+        position: relative; // Chart.js needs a positioned ancestor for correct resizing
+        width: 100%;
+    }
+}
+
+.statistics-chart--publication-types,
+.statistics-chart--import-trend,
+.statistics-chart--import-summary,
+.statistics-chart--most-edited,
+.statistics-chart--publication-centuries,
+.statistics-chart--languages,
+.statistics-chart--top-collections {
+    // Reasonable default ratio so the canvas doesn't collapse to 0 height.
+    aspect-ratio: 16 / 9;
+    min-height: 400px;
+}
+
+// Mobile fix: on narrow viewports the desktop rule above would force a minimum width of
+// ~711px (min-height 400px × 16/9), causing horizontal page overflow on phones (375–430px
+// viewports). Drop the fixed minimum and move the aspect-ratio onto the inner canvas wrapper
+// so the chart height follows the available container width instead of dictating it.
+@media (max-width: 768px) {
+    .statistics-chart--publication-types,
+    .statistics-chart--import-trend,
+    .statistics-chart--import-summary,
+    .statistics-chart--most-edited,
+    .statistics-chart--publication-centuries,
+    .statistics-chart--languages,
+    .statistics-chart--top-collections {
+        aspect-ratio: auto;
+        min-height: 0;
+    }
+
+    .statistics-chart {
+        max-width: 100%;
+    }
+
+    .statistics-chart__canvas-wrap {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+
+    .statistics-chart canvas {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+.statistics-list {
+    margin: 1rem 0;
+    // Match the chart components so list-style components (almost-completed, most-active-users)
+    // don't visually break out of the page rhythm next to the charts.
+    max-width: 800px;
+
+    // Subtitle right above the list explains what the bare numbers mean (e.g. that the score is
+    // a count of saved contributions, not edits-over-time). Injected by renderMostActiveUsers.
+    &__subtitle {
+        font-size: 0.85rem;
+        color: var(--text-muted, #666);
+        margin-bottom: 0.5rem;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color, #ddd);
+    }
+
+    .progress {
+        background: var(--progress-bg, #eee);
+        height: 0.5rem;
+        border-radius: 0.25rem;
+        overflow: hidden;
+        margin-top: 0.25rem;
+
+        .bar {
+            background: var(--progress-bar, #4a90d9);
+            height: 100%;
+            color: #fff;
+            font-size: 0.7rem;
+            line-height: 0.5rem;
+            padding-left: 0.25rem;
+        }
+    }
+
+    .completion-percent {
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+
+    .rank {
+        display: inline-block;
+        min-width: 2rem;
+        font-weight: bold;
+    }
+
+    .score {
+        float: right;
+    }
+}

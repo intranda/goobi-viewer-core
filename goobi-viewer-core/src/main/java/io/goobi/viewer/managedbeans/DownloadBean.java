@@ -54,7 +54,6 @@ import io.goobi.viewer.exceptions.MessageQueueException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.EpubDownloadJob;
@@ -89,6 +88,7 @@ public class DownloadBean implements Serializable {
     private ViewerMessage message;
 
     private String email = BeanUtils.getUserBean().getEmail();
+    private String currentPi;
 
     /**
      * reset.
@@ -161,9 +161,9 @@ public class DownloadBean implements Serializable {
     private static final Pattern FILE_URI_PATH_PATTERN = Pattern.compile("file:///\\S+/([^/\\s]+)");
 
     /**
-     * Matches an absolute Unix filesystem path (at least two segments) ending in a filename — capture group 1 is the
-     * filename. The negative lookbehind anchors the match to a path boundary (start of string or whitespace) so we
-     * don't accidentally consume parts of arbitrary identifiers that happen to contain slashes (e.g. {@code I/O}).
+     * Matches an absolute Unix filesystem path (at least two segments) ending in a filename — capture group 1 is the filename. The negative
+     * lookbehind anchors the match to a path boundary (start of string or whitespace) so we don't accidentally consume parts of arbitrary identifiers
+     * that happen to contain slashes (e.g. {@code I/O}).
      */
     // Avoid (?:...)*-style group repetition (Sonar S5998: stack overflow risk on long inputs, since Java's regex
     // engine recurses per group iteration). Greedy \S+ followed by /([^/\s]+) backtracks once to the last slash and
@@ -174,8 +174,8 @@ public class DownloadBean implements Serializable {
 
     /**
      * Matches the contentlib's most common PDF generation failure, e.g.
-     * <code>"Failed to write page 8 to pdf: neither X.tif nor Y.pdf could be resolved"</code>. Run after path
-     * stripping so the captured groups are bare filenames rather than file:/// URIs.
+     * <code>"Failed to write page 8 to pdf: neither X.tif nor Y.pdf could be resolved"</code>. Run after path stripping so the captured groups are
+     * bare filenames rather than file:/// URIs.
      */
     private static final Pattern IMAGE_NOT_FOUND_PATTERN =
             Pattern.compile("Failed to write page \\d+ to pdf: neither (\\S+\\.tif) nor (\\S+\\.pdf) could be resolved",
@@ -184,13 +184,16 @@ public class DownloadBean implements Serializable {
     /**
      * Sanitises a worker-stored PDF generation error message for display in the UI.
      *
-     * <p>Two-tier transform: (1) strips absolute filesystem paths and {@code "file:///"} URIs to
-     * filenames so the server-side directory layout is not leaked to end users; (2) when the
-     * contentlib's most common "image not found" failure pattern matches, rewrites the text into a
-     * user-friendly form including the record PI.</p>
+     * <p>
+     * Two-tier transform: (1) strips absolute filesystem paths and {@code "file:///"} URIs to filenames so the server-side directory layout is not
+     * leaked to end users; (2) when the contentlib's most common "image not found" failure pattern matches, rewrites the text into a user-friendly
+     * form including the record PI.
+     * </p>
      *
-     * <p>The original (un-sanitised) message remains intact in the worker log — this helper only
-     * affects the user-facing copy passed to {@link DownloadException}.</p>
+     * <p>
+     * The original (un-sanitised) message remains intact in the worker log — this helper only affects the user-facing copy passed to
+     * {@link DownloadException}.
+     * </p>
      *
      * @param raw worker-stored message text (may be null/blank)
      * @param pi record PI to include in the rewritten form (may be null/blank)
@@ -274,7 +277,7 @@ public class DownloadBean implements Serializable {
         ec.setResponseContentType(job.getMimeType());
         ec.setResponseHeader("Content-Length", String.valueOf(Files.size(file)));
         ec.setResponseHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
-                NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + file.getFileName().toString() + "\"");
+                NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + job.getDownloadFilename() + "\"");
         OutputStream os = ec.getResponseOutputStream();
         try (FileInputStream fis = new FileInputStream(file.toFile())) {
             byte[] buffer = new byte[1024];
@@ -323,6 +326,14 @@ public class DownloadBean implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCurrentPi() {
+        return currentPi;
+    }
+
+    public void setCurrentPi(String currentPi) {
+        this.currentPi = currentPi;
     }
 
     /**

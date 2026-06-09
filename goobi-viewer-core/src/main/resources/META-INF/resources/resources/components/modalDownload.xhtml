@@ -21,7 +21,8 @@
             default="pdf" />
         <composite:attribute
             name="fileSize"
-            required="true" />
+            required="false"
+            default="" />
         <composite:attribute
             name="logId"
             required="false"
@@ -29,6 +30,10 @@
         <composite:attribute
             name="title"
             required="true" />
+        <composite:attribute
+            name="pi"
+            required="false"
+            default="#{activeDocumentBean.persistentIdentifier}" />
     </composite:interface>
 
     <composite:implementation>
@@ -67,9 +72,11 @@
                                 </ui:fragment>
                             </dl>
 
-							<p class="mt-4 mb-4">
-							    <h:outputText value="#{msg.downloadEMailText}" escape="false" />
-							</p>
+                            <p class="mt-4 mb-4">
+                                <h:outputText
+                                    value="#{msg.downloadEMailText}"
+                                    escape="false" />
+                            </p>
                         </div>
 
                         <!-- FORM -->
@@ -78,6 +85,9 @@
                             id="#{cc.attrs.modalId}__download-modal__emailFormRequest"
                             styleClass="form-horizontal"
                             prependId="false">
+                            <h:inputHidden
+                                id="#{cc.attrs.modalId}__pi"
+                                value="#{downloadBean.currentPi}" />
                             <!-- E-MAIL -->
                             <div class="form-group form-row">
                                 <label
@@ -118,7 +128,9 @@
                                         data-reference="downloadAcceptTerms"
                                         class="form-group form-row col-12">
                                         <p class="mb-4">
-                                            <h:outputText value="#{msg.feedbackAcceptingTerms}" escape="false" />
+                                            <h:outputText
+                                                value="#{msg.feedbackAcceptingTerms}"
+                                                escape="false" />
                                         </p>
                                         <label class="col-lg-3 control-label">#{msg.admin__terms_of_use__accept}:</label>
 
@@ -162,7 +174,7 @@
                                     </button>
 
                                     <h:commandButton
-                                        action="#{downloadBean.createDownloadJob(cc.attrs.downloadType, activeDocumentBean.persistentIdentifier, cc.attrs.logId, true, '')}"
+                                        action="#{downloadBean.createDownloadJob(cc.attrs.downloadType, cc.attrs.pi, cc.attrs.logId, true, '')}"
                                         styleClass="btn btn--full"
                                         value="#{msg.submit}"
                                         pt:data-target="buttonLoaderClickEvent"
@@ -178,11 +190,16 @@
                                     return this[0] ? this[0].checkValidity() : true;
                                 };
 
-                                $('[data-target="buttonLoaderClickEvent"]').on('click', function (e) {
+                                $('##{cc.attrs.modalId} [data-target="buttonLoaderClickEvent"]').on('click', function (e) {
                                     if ($('[data-target="emailValidatorCheck"]').isValid()) {
                                         $('[data-target="buttonLoader"]').fadeIn('fast');
-                                        $('[data-target="buttonLoaderClickEvent').css('opacity', '0.5');
+                                        $(this).css('opacity', '0.5');
                                     }
+                                });
+
+                                $('##{cc.attrs.modalId}').on('hidden.bs.modal', function () {
+                                    $('[data-target="buttonLoader"]').fadeOut('fast');
+                                    $('[data-target="buttonLoaderClickEvent"]').css('opacity', '1');
                                 });
                             </script>
 

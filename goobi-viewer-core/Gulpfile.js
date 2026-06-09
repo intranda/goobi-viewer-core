@@ -129,12 +129,15 @@ function resolveDirs() {
 
     // Also scan cfg.tomcat_dir for a deployed theme folder whose name may differ
     // from mainTheme (e.g. "goobi-viewer-theme-hub-evifa" instead of "goobi-viewer-theme-evifa").
+    // Also handles multi-module builds where the webapp is deployed as "theme-<name>" (no "goobi-viewer-" prefix).
     let tomcatThemeDir = null;
     try {
         const entries = fs.readdirSync(cfg.tomcat_dir);
         tomcatThemeDir =
             entries.find((e) => e === `goobi-viewer-theme-${mainTheme}`) ||
+            entries.find((e) => e === `theme-${mainTheme}`) ||
             entries.find((e) => e.startsWith('goobi-viewer-theme-') && e.includes(mainTheme)) ||
+            entries.find((e) => e.startsWith('theme-') && e.includes(mainTheme)) ||
             null;
     } catch {
         // tomcat_dir does not exist or is not readable
@@ -144,11 +147,17 @@ function resolveDirs() {
     let deployDir;
 
     if (special && special.length) {
-        deployDir = path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
+        deployDir =
+            [
+                path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`),
+                path.join(cfg.tomcat_dir, `theme-${special}`),
+            ].find((c) => fs.existsSync(c)) || path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
     } else {
         const candidates = [
-            // tomcat webapps: exact config name
+            // tomcat webapps: exact config name (legacy prefix)
             path.join(cfg.tomcat_dir, `goobi-viewer-theme-${mainTheme}`),
+            // tomcat webapps: short prefix used in multi-module builds
+            path.join(cfg.tomcat_dir, `theme-${mainTheme}`),
             // tomcat webapps: discovered folder name (handles repo name ≠ config name)
             ...(tomcatThemeDir ? [path.join(cfg.tomcat_dir, tomcatThemeDir)] : []),
             // tomcat webapps: git repo dir name
@@ -390,7 +399,7 @@ function taskFooter(generated, copied, errors, started) {
 
 const verovio = () => {
     return rollup({
-        input: `${paths.jsModulesRoot}verovio.js`,
+        input: `${paths.jsModulesRoot}verovio/verovio.js`,
         plugins: [
             nodeResolve({
                 browser: true,
@@ -583,6 +592,9 @@ function bundleViewerJS(changedFilePath = null) {
                 joinPosix(paths.jsModulesRoot, 'crowdsourcing', 'Crowdsourcing.js'),
                 joinPosix(paths.jsModulesRoot, 'crowdsourcing', 'Crowdsourcing.Annotation.js'),
                 joinPosix(paths.jsModulesRoot, 'crowdsourcing', 'Crowdsourcing.*.js'),
+                // #15809 chart renderers — must come AFTER viewerJS.js so the IIFE in indexCharts can attach
+                // its render functions to the namespace established by `var viewerJS = function(){...}()`.
+                joinPosix(paths.jsModulesRoot, 'statistics', 'charts', '*.js'),
             ],
             { allowEmpty: true }
         )
@@ -599,39 +611,6 @@ function bundleViewerJS(changedFilePath = null) {
                 started,
                 changed: changedFilePath,
                 src: joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'),
-                projOut: [outProj],
-                deployOut: deployOutputs,
-            });
-        });
-}
-
-/**
- * Bundles statistics module into `statistics.min.js`.
- *
- * @param {?string=} changedFilePath Optional path that triggered rebuild (for logging).
- * @returns {NodeJS.ReadWriteStream} Gulp pipeline.
- */
-function bundleStatisticsJS(changedFilePath = null) {
-    requireDeploymentDir();
-    const started = process.hrtime.bigint();
-    const outProj = path.resolve(paths.jsDistRoot, 'statistics.min.js');
-    const outDeploy = path.join(DEPLOYMENT_DIR, 'resources/javascript/dist/statistics.min.js');
-
-    return gulp
-        .src(joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'), { allowEmpty: true })
-        .pipe(guard())
-        .pipe(concat('statistics.min.js'))
-        .pipe(terser())
-        .pipe(header(banner))
-        .pipe(gulp.dest(paths.jsDistRoot))
-        .pipe(safeDest('resources/javascript/dist'))
-        .on('finish', () => {
-            const deployOutputs = fs.existsSync(outDeploy) ? [outDeploy] : [];
-            logTask({
-                name: 'js_statistics',
-                started,
-                changed: changedFilePath,
-                src: joinPosix(paths.jsModulesRoot, 'statistics', 'statistics.js'),
                 projOut: [outProj],
                 deployOut: deployOutputs,
             });
@@ -948,7 +927,8 @@ function watchMode() {
         bundleViewerJS(p);
     });
 
-    gulp.watch(joinPosix(paths.jsModulesRoot, 'statistics', '**', '*.js')).on('change', (p) => bundleStatisticsJS(p));
+    // #15809: indexCharts.js is bundled into viewer.min.js, so a change rebuilds the viewer bundle.
+    gulp.watch(joinPosix(paths.jsModulesRoot, 'statistics', 'charts', '*.js')).on('change', (p) => bundleViewerJS(p));
     gulp.watch(joinPosix(paths.jsModulesRoot, 'browsersupport', '**', '*.js')).on('change', (p) =>
         bundleBrowserSupportJS(p)
     );
@@ -1052,7 +1032,7 @@ function printTargets(cb) {
    ║ Task composition & exports                                           ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
-const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleStatisticsJS, bundleBrowserSupportJS, verovio);
+const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleBrowserSupportJS, verovio);
 const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags));
 
 exports.build = buildAll;

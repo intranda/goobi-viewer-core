@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  * Everything that is not definied explicitly is recorded as ERROR in the catalina.out (<Root .../>)
+  * The ThresholdFilter at the top of the file needs to be TRACE. The level at Logger value, too. Adjust 
+    the desired log level via the ThresholdFilter in the RollingFile appender.
+-->
+
+
+
+<Configuration name="Goobi viewer Connector">
+
+  <Properties>
+    <Property name="baseDir">/opt/digiverso/logs</Property>
+    <Property name="logLevel">$${env:LOGGERLEVEL:-ERROR}</Property>
+  </Properties>
+
+  <ThresholdFilter level="TRACE" />
+
+  <Appenders>
+    <Console name="stdout">
+      <PatternLayout pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %location%n        %msg%n" />
+      <ThresholdFilter level="${logLevel}" />
+    </Console>
+
+    <RollingFile name="oai" fileName="${baseDir}/oai.log" filePattern="${baseDir}/oai.log.%d{yyyy-MM-dd}.gz">
+      <PatternLayout pattern="%-5level %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %location%n        %msg%n" />
+      <ThresholdFilter level="DEBUG" />
+      <CronTriggeringPolicy schedule="0 0 0 * * ?" />
+      <DefaultRolloverStrategy>
+        <Delete basePath="${baseDir}">
+          <IfFileName glob="oai.log.*.gz" />
+          <IfLastModified age="14d" />
+        </Delete>
+      </DefaultRolloverStrategy>
+    </RollingFile>
+
+  </Appenders>
+
+  <Loggers>
+    <Logger name="io.goobi.viewer.connector" level="TRACE" additivity="true" >
+      <AppenderRef ref="oai" />
+    </Logger>
+
+    <Root level="ERROR">
+      <AppenderRef ref="stdout" />
+    </Root>
+  </Loggers>
+</Configuration>
