@@ -117,7 +117,7 @@
                     if (!elements.length || !searchBaseUrl) return;
                     const idx = elements[0].index;
                     const query = data[idx].query;
-                    window.location.href = searchBaseUrl + '-/-/-/' + encodeURIComponent('DOCSTRCT:' + query) + '/-/';
+                    window.location.href = searchBaseUrl + '-/-/1/RELEVANCE/' + encodeURIComponent('DOCSTRCT_TOP:' + query) + '/';
                 },
             },
         });
