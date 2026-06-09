@@ -32,6 +32,28 @@
                             <div class="crowdsourcing-campaigns-overview__campaign__text__description">
                                 #{campaign.getDescription(navigationHelper.localeString, true)}
                             </div>
+                        <div class="crowdsourcing-campaigns-overview__campaign__statistics">
+                            <ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount > 0}">
+                                <ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml" />
+                            </ui:fragment>
+                            <!-- Future campaign: days left counter -->
+                            <ui:fragment rendered="#{!campaign.hasStarted or (campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0)}">
+                                <span class="crowdsourcing-campaigns-overview__campaign__statistics__message">
+                                    <h:outputFormat
+                                        rendered="#{!campaign.hasStarted}"
+                                        value="#{msg.label__crowdsourcing_campaign_days_before_start}"
+                                        escape="false">
+                                        <f:param value="#{campaign.daysBeforeStart}" />
+                                    </h:outputFormat>
+                                    <!-- Current campaign: motivational message-->
+                                    <h:outputText
+                                        rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0}"
+                                        value="#{msg.label__crowdsourcing_campaign_contribute}" />
+                                </span>
+                            </ui:fragment>
+                        </div>
+                            
+                            
                         </div>
                         <div class="crowdsourcing-campaigns-overview__campaign__actions">
                             <!-- Current campaigns only -->
@@ -56,24 +78,7 @@
                                 </h:outputLink>
                             </ui:fragment>
                         </div>
-                        <div class="crowdsourcing-campaigns-overview__campaign__statistics">
-                            <ui:fragment rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount > 0}">
-                                <ui:include src="/resources/crowdsourcing/includes/campaignStatistics.xhtml" />
-                            </ui:fragment>
-                            <!-- Future campaign: days left counter -->
-                            <span class="crowdsourcing-campaigns-overview__campaign__statistics__message">
-                                <h:outputFormat
-                                    rendered="#{!campaign.hasStarted}"
-                                    value="#{msg.label__crowdsourcing_campaign_days_before_start}"
-                                    escape="false">
-                                    <f:param value="#{campaign.daysBeforeStart}" />
-                                </h:outputFormat>
-                                <!-- Current campaign: motivational message-->
-                                <h:outputText
-                                    rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0}"
-                                    value="#{msg.label__crowdsourcing_campaign_contribute}" />
-                            </span>
-                        </div>
+
                     </div>
                 </ui:fragment>
             </ui:repeat>

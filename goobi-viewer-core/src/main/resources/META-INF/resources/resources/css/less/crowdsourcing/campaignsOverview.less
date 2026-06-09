@@ -2,7 +2,6 @@
    Crowdsourcing 
    global style declarations for crowdsourcing_layout.xhtml
    ==============================================================*/
-/* ADMIN LAYOUT */
 .crowdsourcing-campaigns-overview {
     display: flex;
     flex-direction: column;
@@ -39,28 +38,26 @@
             width: 50%;
             flex-direction: column;
         }
+		
+
 
         &__actions {
             width: 25%;
             display: flex;
+			gap: 8px;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             margin-left: auto;
-
+			margin-top: 5px;
             a {
-                margin: 10px 15px;
                 width: 100%;
             }
         }
 
-        &__statistics {
+        &__statistics { 
+			margin-top: 10px;
             width: 100%;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid @middlegray;
-
+			flex-direction: column;
             &__message {
                 padding: 10px;
                 font-size: 1.8em;
@@ -68,6 +65,11 @@
         }
 
         .campaign-statistics {
+			&__item { 
+				display: flex;
+				gap: 5px;
+				flex-wrap: wrap; 
+			}
             &__text {
                 dl {
                     grid-template-columns: 50% 50%;
@@ -85,10 +87,19 @@
                 progressBar {
                 }
                 .goobi-progress-bar-wrapper {
+                    background: #e9ecef;
                     .goobi-progress-bar {
                         display: flex;
                         flex-direction: row-reverse;
+						height: 20px;
                         &__bar {
+							height: 20px;
+                            &.finished {
+                                background-color: #28a745;
+                            }
+                            &.review {
+                                background-color: #ffc107;
+                            }
                         }
                     }
                 }
@@ -96,7 +107,7 @@
         }
     }
 }
-
+ 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
     .crowdsourcing-campaigns-overview__campaign__image {
