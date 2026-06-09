@@ -31,10 +31,17 @@
     &__input-label {
     }
     &__input-autocomplete {
+        position: relative;
+        display: flex;
+        align-items: center;
+
         .ui-autocomplete {
             position: relative;
             display: block;
             height: 100%;
+            flex: 1;
+            min-width: 0;
+
             .ui-autocomplete-input {
                 background: white;
                 width: 100%;
@@ -44,6 +51,7 @@
                 background-image: none;
                 border-radius: 0;
                 padding: 0.5rem 1rem;
+                padding-right: 40px;
             }
         }
     }

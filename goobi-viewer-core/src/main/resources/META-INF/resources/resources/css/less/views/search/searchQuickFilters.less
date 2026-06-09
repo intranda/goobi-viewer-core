@@ -58,6 +58,8 @@
 
 /* SUBMIT BUTTON */
 .search-standard__input-slim.-with-filters {
+    border: 1px solid @quick-filter-border;
+
     input.search-standard__submit-button.btn {
         font-size: 0;
         color: transparent;
@@ -154,6 +156,8 @@
 /* BLOCK */
 .search-quick-filters {
     display: none;
+    border: 1px solid @quick-filter-border;
+    border-top: none;
     border-radius: 0 0 @quick-filter-radius @quick-filter-radius;
     overflow: visible;
     margin-top: 0;
@@ -386,6 +390,7 @@
         right: 12px;
         z-index: 1000;
         background: @quick-filter-dropdown-bg;
+        border: 1px solid @quick-filter-border;
         border-radius: @quick-filter-radius;
         box-shadow: @quick-filter-dropdown-shadow;
         overflow: hidden;
