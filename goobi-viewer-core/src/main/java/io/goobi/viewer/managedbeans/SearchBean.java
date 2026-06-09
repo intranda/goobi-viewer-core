@@ -422,6 +422,33 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Reverse of {@link #registerQuickFilterDropdownsAsActiveFacets()}: copies the current active facet values back
+     * into {@link #quickFilterValues} for every FACET_DROPDOWN quick filter field. This keeps the quickfilter dropdown
+     * UI in sync when an active facet is removed elsewhere (e.g. via the sidebar facet widget). Fields without a
+     * matching active facet are cleared. Date range and checkbox group filters are not touched, as they do not flow
+     * through the active facet system.
+     */
+    private void mirrorActiveFacetsToQuickFilterDropdowns() {
+        if (!isQuickFiltersEnabled()) {
+            return;
+        }
+        for (QuickFilterField field : getQuickFilterFields()) {
+            if (field.getType() != QuickFilterField.Type.FACET_DROPDOWN) {
+                continue;
+            }
+            String solrField = field.getSolrField();
+            String value = "";
+            for (IFacetItem facetItem : facets.getActiveFacets()) {
+                if (solrField.equals(facetItem.getField())) {
+                    value = facetItem.getValue();
+                    break;
+                }
+            }
+            quickFilterValues.put(solrField, value);
+        }
+    }
+
+    /**
      * Action method for search buttons (simple search) with an option to reset search parameters.
      *
      * @param resetParameters true to reset sort, filter and page before searching
@@ -1044,6 +1071,7 @@ public class SearchBean implements SearchInterface, Serializable {
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         logger.debug("executeSearch; searchString: {}", searchStringInternal);
         mirrorAdvancedSearchCurrentHierarchicalFacets();
+        mirrorActiveFacetsToQuickFilterDropdowns();
 
         if (this.navigationHelper != null && this.navigationHelper.isCmsPage()) {
             this.advancedSearchOrigin = new AdvancedSearchOrigin(this.navigationHelper.getCurrentCMSPage());
