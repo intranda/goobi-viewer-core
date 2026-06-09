@@ -334,17 +334,47 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * Determines whether the given fileRecord is locked by a different user session.
+     * Determines whether the given fileRecord is locked, either by a different user session holding the
+     * in-memory edit lock or by an external vim process holding a swap-file lock on the file.
      *
      * @param fileRecord file record whose lock status is to be checked
-     * @return true if file path locked by other session id; false otherwise
+     * @return true if locked by another session or by an external vim process; false otherwise
      */
     public boolean isFileLocked(FileRecord fileRecord) {
         if (fileRecord == null) {
             return false;
         }
 
-        return fileLocks.isFileLockedByOthers(fileRecord.getFile(), BeanUtils.getSession().getId());
+        // Delegate to the session-id-parameterized variant so the lock logic stays unit-testable without a FacesContext
+        return isFileLocked(fileRecord.getFile(), BeanUtils.getSession().getId());
+    }
+
+    /**
+     * Determines whether the given file is locked, either by another HTTP session (in-memory edit lock) or by an
+     * external vim process holding a swap-file lock. Both cases are surfaced with the identical lock icon in the
+     * sidebar; no visual distinction is made. This variant takes the session id as a parameter so the lock logic
+     * can be unit-tested without a FacesContext.
+     *
+     * @param file file whose lock status is to be checked
+     * @param sessionId current HTTP session id to compare against the in-memory lock holder
+     * @return true if locked by another session or by an external vim process; false otherwise
+     * @should return true if file locked by other session id
+     * @should return true if file locked by external vim
+     * @should return false if file locked by own session id
+     * @should return false if file not locked
+     */
+    static boolean isFileLocked(Path file, String sessionId) {
+        if (file == null) {
+            return false;
+        }
+
+        // Web-UI edit lock held by a different session
+        if (fileLocks.isFileLockedByOthers(file, sessionId)) {
+            return true;
+        }
+
+        // External vim process holding a swap-file lock; stale or web-UI-owned swap files do not count as locked
+        return VimSwapFile.check(file) == VimSwapFile.Status.LOCKED_BY_VIM;
     }
 
     /**
