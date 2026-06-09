@@ -359,10 +359,47 @@ public class SearchBean implements SearchInterface, Serializable {
 
     /**
      * Copies current FACET_DROPDOWN selections from {@link #quickFilterValues} into the active facets so the
-     * sidebar facet widget shows them as active filters (in addition to the quickfilter dropdown UI).
+     * sidebar facet widget shows them as active filters (in addition to the quickfilter dropdown UI). Existing
+     * active facets for the same fields are replaced; unrelated active facets (e.g. sidebar selections) are preserved.
      */
     private void registerQuickFilterDropdownsAsActiveFacets() {
-        StringBuilder qfFacets = new StringBuilder();
+        Set<String> dropdownFields = new HashSet<>();
+        for (QuickFilterField field : getQuickFilterFields()) {
+            if (field.getType() == QuickFilterField.Type.FACET_DROPDOWN) {
+                dropdownFields.add(field.getSolrField());
+            }
+        }
+        if (dropdownFields.isEmpty()) {
+            return;
+        }
+
+        StringBuilder combined = new StringBuilder();
+
+        // Preserve existing active facets that are NOT controlled by the quickfilter dropdowns.
+        String current = facets.getActiveFacetString();
+        if (StringUtils.isNotEmpty(current) && !"-".equals(current)) {
+            String decoded = current;
+            try {
+                decoded = URLDecoder.decode(URLDecoder.decode(current, URL_ENCODING), URL_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                logger.warn("Could not decode active facet string: {}", e.getMessage());
+            }
+            for (String entry : decoded.split(";;")) {
+                if (StringUtils.isBlank(entry) || !entry.contains(":")) {
+                    continue;
+                }
+                String entryField = entry.substring(0, entry.indexOf(':'));
+                if (dropdownFields.contains(entryField)) {
+                    continue;
+                }
+                if (combined.length() > 0) {
+                    combined.append(";;");
+                }
+                combined.append(entry);
+            }
+        }
+
+        // Append current dropdown selections.
         for (QuickFilterField field : getQuickFilterFields()) {
             if (field.getType() != QuickFilterField.Type.FACET_DROPDOWN) {
                 continue;
@@ -371,19 +408,17 @@ public class SearchBean implements SearchInterface, Serializable {
             if (StringUtils.isBlank(val)) {
                 continue;
             }
-            if (qfFacets.length() > 0) {
-                qfFacets.append(";;");
+            if (combined.length() > 0) {
+                combined.append(";;");
             }
-            qfFacets.append(field.getSolrField()).append(':').append(val);
+            combined.append(field.getSolrField()).append(':').append(val);
         }
-        if (qfFacets.length() == 0) {
-            return;
+
+        if (combined.length() > 0) {
+            facets.setActiveFacetString(combined.toString());
+        } else {
+            facets.resetActiveFacetString();
         }
-        String current = facets.getActiveFacetString();
-        String combined = (StringUtils.isNotEmpty(current) && !"-".equals(current))
-                ? current + ";;" + qfFacets.toString()
-                : qfFacets.toString();
-        facets.setActiveFacetString(combined);
     }
 
     /**
