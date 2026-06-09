@@ -86,7 +86,7 @@ public class QuickFilterResource {
             Locale locale = StringUtils.isNotBlank(lang) ? Locale.forLanguageTag(lang) : BeanUtils.getLocale();
 
             String facetField = SearchHelper.facetifyField(field);
-            String query = "+(ISWORK:true OR ISANCHOR:true)";
+            String query = "+(ISWORK:true OR ISANCHOR:true)" + SearchHelper.getAllSuffixes();
             QueryResponse resp = DataManager.getInstance()
                     .getSearchIndex()
                     .searchFacetsAndStatistics(query, null, Collections.singletonList(facetField), 1, null, null, false);

@@ -2,67 +2,14 @@
    Search Quick Filters
    ==============================================================*/
 
-/* THEME TOKEN DEFAULTS (light + dark; themes may override) */
-:root {
-    --quick-filter-bg: #fff;
-    --quick-filter-fields-bg: #f2f3f4;
-    --quick-filter-label-color: #6f6f6f;
-    --quick-filter-text-color: #212529;
-    --quick-filter-dropdown-bg: #fff;
-    --quick-filter-dropdown-hover-bg: #f2f3f4;
-    --quick-filter-toggle-bg: #f2f3f4;
-
-    --quick-filter-field-separator: #ccc;
-    --quick-filter-border: #ccc;
-    --quick-filter-dropdown-shadow: 0px 5px 14px 2px rgba(0, 0, 0, 0.09);
-    --quick-filter-input-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.06);
-    --quick-filter-invalid-color: #c0392b;
-    --quick-filter-status-color: var(--ci-color1, #015999);
-    --quick-filter-control-hover-bg: #eee;
-
-    --quick-filter-accent-color: var(--ci-color1, #015999);
-    --quick-filter-submit-bg: var(--ci-color1, #015999);
-    --quick-filter-checkbox-active: var(--ci-color1, #015999);
-
-    --quick-filter-radius: 6px;
-    --quick-filter-radius-sm: 4px;
-}
-
-.mx-quick-filter-dark-vars() {
-    --quick-filter-bg: var(--bg-content-box, #253044);
-    --quick-filter-fields-bg: var(--bg-active, #3b4557);
-    --quick-filter-label-color: var(--fg-controls, #d8d9dd);
-    --quick-filter-text-color: var(--fg-content-box, #e3e4e7);
-    --quick-filter-dropdown-bg: var(--bg-content-box, #253044);
-    --quick-filter-dropdown-hover-bg: var(--bg-active, #3b4557);
-    --quick-filter-toggle-bg: var(--bg-active, #3b4557);
-
-    --quick-filter-field-separator: rgba(255, 255, 255, 0.12);
-    --quick-filter-border: rgba(255, 255, 255, 0.12);
-    --quick-filter-dropdown-shadow: 0px 5px 14px 2px rgba(0, 0, 0, 0.25);
-    --quick-filter-input-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.2);
-    --quick-filter-invalid-color: #e74c3c;
-    --quick-filter-status-color: #49a5ff;
-    --quick-filter-control-hover-bg: var(--bg-hover, #5b6473);
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        .mx-quick-filter-dark-vars();
-    }
-}
-
-.color-theme-dark {
-    .mx-quick-filter-dark-vars();
-}
-
-/* SUBMIT BUTTON */
+/* INPUT WRAPPER */
 .search-standard__input-slim.-with-filters {
     border: 1px solid @quick-filter-border;
 
-    input.search-standard__submit-button.btn {
-        font-size: 0;
-        color: transparent;
+    .search-standard__submit-button.btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 60px;
         min-width: 60px;
         flex-shrink: 0;
@@ -70,11 +17,13 @@
         border: none;
         border-radius: 0 @quick-filter-radius @quick-filter-radius 0;
         background-color: @quick-filter-submit-bg;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: center;
-        background-size: 24px;
+        color: @quick-filter-submit-icon-color;
         cursor: pointer;
+
+        .icon-svg {
+            width: 24px;
+            height: 24px;
+        }
     }
 
     .search-standard__input-autocomplete .ui-autocomplete .ui-autocomplete-input {
@@ -95,7 +44,7 @@
             box-shadow: none;
         }
 
-        input.search-standard__submit-button.btn {
+        .search-standard__submit-button.btn {
             border-radius: 0 @quick-filter-radius 0 0;
         }
     }
@@ -118,7 +67,7 @@
     width: 26px;
     height: 26px;
     padding: 0;
-    background: @quick-filter-toggle-bg-light;
+    background: @quick-filter-toggle-bg;
     border: none;
     border-radius: @quick-filter-radius-sm;
     cursor: pointer;
@@ -153,7 +102,6 @@
 }
 
 /* PANEL */
-/* BLOCK */
 .search-quick-filters {
     display: none;
     border: 1px solid @quick-filter-border;
@@ -716,7 +664,7 @@
 }
 
 /* TOOLTIP */
-.tooltip.tooltip--quickfilter {
+.tooltip.quickfilter-tooltip {
     .tooltip-inner {
         max-width: 320px;
         padding: 8px 12px;
@@ -726,7 +674,7 @@
     }
 }
 
-.tooltip--quickfilter__list {
+.quickfilter-tooltip__list {
     margin: 0;
     padding: 0;
     list-style: none;

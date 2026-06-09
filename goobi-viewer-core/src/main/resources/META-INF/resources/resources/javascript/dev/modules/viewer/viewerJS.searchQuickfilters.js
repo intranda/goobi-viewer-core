@@ -602,7 +602,7 @@ var viewerJS = (function (viewer) {
         });
 
         if (lines.length === 0) return '';
-        return '<ul class="tooltip--quickfilter__list"><li>' + lines.map(_escapeHtml).join('</li><li>') + '</li></ul>';
+        return '<ul class="quickfilter-tooltip__list"><li>' + lines.map(_escapeHtml).join('</li><li>') + '</li></ul>';
     }
 
     function _escapeHtml(str) {
@@ -629,7 +629,7 @@ var viewerJS = (function (viewer) {
                 trigger: 'hover focus',
                 placement: 'top',
                 delay: { show: 300, hide: 100 },
-                template: '<div class="tooltip tooltip--quickfilter" role="tooltip">' + '<div class="arrow"></div>' + '<div class="tooltip-inner"></div>' + '</div>',
+                template: '<div class="tooltip quickfilter-tooltip" role="tooltip">' + '<div class="arrow"></div>' + '<div class="tooltip-inner"></div>' + '</div>',
                 title: ' ',
             });
         });

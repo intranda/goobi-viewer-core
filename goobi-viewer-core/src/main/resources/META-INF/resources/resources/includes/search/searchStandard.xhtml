@@ -101,16 +101,20 @@
                         </button>
                     </ui:fragment>
                 </div>
-                <h:commandButton
-                    id="submitSearch"
+                <button
+                    jsf:id="submitSearch"
                     type="submit"
-                    styleClass="btn btn--full search-standard__submit-button"
-                    action="#{search.searchSimple}"
-                    value="#{msg.search}">
+                    class="btn btn--full search-standard__submit-button"
+                    jsf:action="#{search.searchSimpleWithOrigin(quickFiltersEnabled)}"
+                    aria-label="#{msg.search}">
+                    <ui:fragment rendered="#{quickFiltersEnabled}">
+                        <util:icon icon="search" />
+                    </ui:fragment>
+                    <ui:fragment rendered="#{!quickFiltersEnabled}">#{msg.search}</ui:fragment>
                     <f:setPropertyActionListener
                         target="#{search.activeSearchType}"
                         value="0" />
-                </h:commandButton>
+                </button>
             </div>
             <ui:fragment rendered="#{quickFiltersEnabled}">
                 <ui:include src="/resources/includes/search/searchQuickFilters.xhtml" />

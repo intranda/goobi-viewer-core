@@ -43,6 +43,8 @@ public interface SearchInterface {
      */
     public String searchSimple();
 
+    public String searchSimpleWithOrigin(boolean origin);
+
     /**
      * Perform an advanced Search.
      *
@@ -197,6 +199,9 @@ public interface SearchInterface {
     public boolean isExplicitSearchPerformed();
 
     public boolean isQuickFiltersEnabled();
+
+    public boolean isQuickFiltersOrigin();
+    public void setQuickFiltersOrigin(boolean quickFiltersOrigin);
 
     public List<QuickFilterField> getQuickFilterFields();
 

@@ -139,6 +139,17 @@ public class SearchFunctionality implements Functionality, SearchInterface {
         return "";
     }
 
+    @Override
+    public String searchSimpleWithOrigin(boolean origin) {
+        if (getSearchBean() == null) {
+            logger.error(ERROR_SEARCHBEAN_NULL);
+            return "";
+        }
+        getSearchBean().searchSimpleWithOrigin(origin);
+        redirectToSearchUrl(true);
+        return "";
+    }
+
     /** {@inheritDoc} */
     @Override
     public String searchAdvanced() {
@@ -506,6 +517,16 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     @Override
     public boolean isQuickFiltersEnabled() {
         return getSearchBean().isQuickFiltersEnabled();
+    }
+
+    @Override
+    public boolean isQuickFiltersOrigin() {
+        return getSearchBean().isQuickFiltersOrigin();
+    }
+
+    @Override
+    public void setQuickFiltersOrigin(boolean quickFiltersOrigin) {
+        getSearchBean().setQuickFiltersOrigin(quickFiltersOrigin);
     }
 
     @Override

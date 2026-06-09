@@ -57,7 +57,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.FacetField.Count;
-import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
 import org.apache.solr.common.SolrDocument;
@@ -247,6 +246,7 @@ public class SearchBean implements SearchInterface, Serializable {
     private String quickFilterDateTo;
     private Map<String, String> quickFilterValues = new HashMap<>();
     private Map<String, Boolean> quickFilterCheckboxValues = new HashMap<>();
+    private boolean quickFiltersOrigin = false;
 
     /**
      * Empty constructor.
@@ -345,6 +345,45 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public String searchSimple() {
         return searchSimple(true, false);
+    }
+
+    @Override
+    public String searchSimpleWithOrigin(boolean origin) {
+        if (origin) {
+            registerQuickFilterDropdownsAsActiveFacets();
+        }
+        String result = searchSimple();
+        this.quickFiltersOrigin = origin;
+        return result;
+    }
+
+    /**
+     * Copies current FACET_DROPDOWN selections from {@link #quickFilterValues} into the active facets so the
+     * sidebar facet widget shows them as active filters (in addition to the quickfilter dropdown UI).
+     */
+    private void registerQuickFilterDropdownsAsActiveFacets() {
+        StringBuilder qfFacets = new StringBuilder();
+        for (QuickFilterField field : getQuickFilterFields()) {
+            if (field.getType() != QuickFilterField.Type.FACET_DROPDOWN) {
+                continue;
+            }
+            String val = quickFilterValues.get(field.getSolrField());
+            if (StringUtils.isBlank(val)) {
+                continue;
+            }
+            if (qfFacets.length() > 0) {
+                qfFacets.append(";;");
+            }
+            qfFacets.append(field.getSolrField()).append(':').append(val);
+        }
+        if (qfFacets.length() == 0) {
+            return;
+        }
+        String current = facets.getActiveFacetString();
+        String combined = (StringUtils.isNotEmpty(current) && !"-".equals(current))
+                ? current + ";;" + qfFacets.toString()
+                : qfFacets.toString();
+        facets.setActiveFacetString(combined);
     }
 
     /**
@@ -488,6 +527,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public String searchDirect() {
         logger.trace("searchDirect");
         resetSearchResults();
+        quickFiltersOrigin = false;
         //facets.resetCurrentFacetString();
         return StringConstants.PRETTY_NEWSEARCH5;
     }
@@ -618,6 +658,7 @@ public class SearchBean implements SearchInterface, Serializable {
     public void resetSearchParameters(boolean resetAllSearchTypes, boolean resetCurrentPage) {
         logger.trace("resetSearchParameters; resetAllSearchTypes: {}", resetAllSearchTypes);
         this.advancedSearchOrigin = null;
+        this.quickFiltersOrigin = false;
         CalendarBean calendarBean = BeanUtils.getCalendarBean();
         if (resetAllSearchTypes) {
             resetSimpleSearchParameters();
@@ -1104,11 +1145,8 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                     break;
                 case FACET_DROPDOWN:
-                    String val = quickFilterValues.get(field.getSolrField());
-                    if (StringUtils.isNotBlank(val)) {
-                        sbFilterQuery.append(" +(").append(field.getSolrField())
-                                .append(":\"").append(ClientUtils.escapeQueryChars(val)).append("\")");
-                    }
+                    // Dropdown selections are registered as active facets in searchSimpleWithOrigin(),
+                    // which makes them appear in the sidebar facet widget alongside the dropdown UI.
                     break;
                 case CHECKBOX_GROUP:
                     break;
@@ -3463,6 +3501,16 @@ public class SearchBean implements SearchInterface, Serializable {
     @Override
     public boolean isQuickFiltersEnabled() {
         return DataManager.getInstance().getConfiguration().isQuickFiltersEnabled();
+    }
+
+    @Override
+    public boolean isQuickFiltersOrigin() {
+        return quickFiltersOrigin;
+    }
+
+    @Override
+    public void setQuickFiltersOrigin(boolean quickFiltersOrigin) {
+        this.quickFiltersOrigin = quickFiltersOrigin;
     }
 
     @Override
