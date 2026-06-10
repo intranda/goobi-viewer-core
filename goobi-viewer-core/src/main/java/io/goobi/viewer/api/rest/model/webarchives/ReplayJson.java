@@ -25,13 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Response model for replaywebpage json")
-@JsonInclude(Include.NON_NULL)
 public class ReplayJson {
 
     private final String id;
@@ -109,6 +105,7 @@ public class ReplayJson {
 
     public void addTag(String tag) {
         this.tags.add(tag);
+
     }
 
 }
