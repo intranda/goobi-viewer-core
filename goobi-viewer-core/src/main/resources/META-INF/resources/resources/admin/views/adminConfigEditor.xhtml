@@ -114,6 +114,10 @@
 										</div>
 
 									</div>
+									<!-- Hidden lock-lost banner; revealed by adminJS.configEditor when the server reports the edit lock as lost -->
+									<div id="configEditorLockLost" class="admin__config-editor-lock-lost" style="display:none">
+										<h:outputText value="#{msg.admin__config_editor__lock_lost}" />
+									</div>
 									<!-- CHECK THIS + ADAPT STYLING -->
 									<div id="currentConfigFileType"
 										style="position: absolute; visibility: hidden">
@@ -166,14 +170,13 @@
 												<div
 													class="admin__config-editor-file-selection-single-entry-button-wrapper">
 
+														<!-- POST command that passes the clicked record explicitly. A POST is not prefetched by the
+														     browser (a GET link would be, and would mutate the shared session selection); passing the
+														     record avoids the stale getRowData(). editFile redirects (PRG) to the selected file. -->
 														<button onclick="viewerJS.showLoader();"
-															jsf:action="#{adminConfigEditorBean.editFile(record.writable)}"
+															jsf:action="#{adminConfigEditorBean.editFile(record)}"
 															class="admin__config-editor-file-selection-single-entry-button">
 															<span class="admin__config-editor-file-selection-single-entry-button-text">#{record.fileName}</span>
-																
-															<f:ajax execute="@this"
-																render="editor-form file-form backup-form configEditorActualFile"
-																immediate="true" />
 														</button>
 														<div class="admin__config-editor-file-selection-single-entry-actions-wrapper">
 															<div class="admin__config-editor-file-selection-single-entry-action-upload">

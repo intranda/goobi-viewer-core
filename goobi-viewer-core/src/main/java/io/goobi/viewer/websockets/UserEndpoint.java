@@ -32,7 +32,6 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.AdminBean;
-import io.goobi.viewer.managedbeans.AdminConfigEditorBean;
 import io.goobi.viewer.model.security.user.User;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.EndpointConfig;
@@ -135,8 +134,6 @@ public class UserEndpoint {
 
                     // Remove translation editing lock
                     AdminBean.unlockTranslation(sessionId);
-                    // Remove config file editor locks
-                    AdminConfigEditorBean.clearLocksForSessionId(sessionId);
                 }
             }
         };

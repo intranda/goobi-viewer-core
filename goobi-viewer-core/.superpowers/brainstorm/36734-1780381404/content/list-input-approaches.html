@@ -1,0 +1,113 @@
+<h2>IP-Bereich: Liste statt einzelner IP/Netzmaske</h2>
+<p class="subtitle">Drei Wege, mehrere IP-Adressen bzw. -Bereiche zu erfassen. Klicke die Variante an, die dir am besten gefällt.</p>
+
+<style>
+    .ipfield { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; }
+    .chip { display:inline-flex; align-items:center; gap:6px; background:#e8eef6; color:#1f2d3d;
+            border:1px solid #c7d4e3; border-radius:14px; padding:3px 10px; margin:3px 4px 3px 0; font-size:13px; }
+    .chip .x { color:#7a8aa0; font-weight:bold; cursor:pointer; }
+    .chip.bad { background:#fbe9e9; border-color:#e7b4b4; color:#a33; }
+    .ipbox { background:#fff; border:1px solid #c7d4e3; border-radius:6px; padding:8px 10px; }
+    .row { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+    .row .del { color:#b04a4a; cursor:pointer; font-weight:bold; padding:0 6px; }
+    .typesel { background:#fff; border:1px solid #c7d4e3; border-radius:6px; padding:7px 8px; }
+    .grow { flex:1; }
+    .hint { color:#8a97a8; font-size:12px; margin-top:6px; }
+    .badge { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#5a6b80; }
+    .addbtn { background:#eef3f8; border:1px dashed #b9c8da; border-radius:6px; padding:7px 12px;
+              color:#3a5573; cursor:pointer; font-size:13px; }
+</style>
+
+<div class="options">
+    <div
+        class="option"
+        data-choice="textarea"
+        onclick="toggleSelect(this)">
+        <div class="letter">A</div>
+        <div class="content">
+            <h3>Mehrzeiliges Textfeld — eine Zeile pro Eintrag</h3>
+            <p>Power-User-freundlich, minimaler Umbau. Jede Zeile ist eine IP, ein CIDR-Bereich oder ein Von–Bis-Bereich. Ungültige Zeilen werden markiert.</p>
+            <div
+                class="ipbox ipfield"
+                style="white-space:pre; line-height:1.7;">
+                192.168.10.0/24 127.0.0.1 10.0.0.5 - 10.0.0.50
+                <span style="background:#fbe9e9; color:#a33;">2001:db8::/32 &lt;-- ungültig</span>
+            </div>
+            <div class="hint">Validierung pro Zeile beim Speichern bzw. on-blur.</div>
+        </div>
+    </div>
+
+    <div
+        class="option"
+        data-choice="chips"
+        onclick="toggleSelect(this)">
+        <div class="letter">B</div>
+        <div class="content">
+            <h3>Tag-/Chip-Eingabe</h3>
+            <p>Tippen + Enter erzeugt einen Chip. Jeder Eintrag einzeln entfernbar, ungültige Chips rot. Modern und visuell aufgeräumt.</p>
+            <div class="ipbox">
+                <span class="chip ipfield">
+                    192.168.10.0/24
+                    <span class="x">×</span>
+                </span>
+                <span class="chip ipfield">
+                    127.0.0.1
+                    <span class="x">×</span>
+                </span>
+                <span class="chip ipfield">
+                    10.0.0.5–10.0.0.50
+                    <span class="x">×</span>
+                </span>
+                <span class="chip bad ipfield">
+                    2001:db8::/32
+                    <span class="x">×</span>
+                </span>
+                <span
+                    class="chip ipfield"
+                    style="background:#fff; border-style:dashed; color:#8a97a8;">
+                    IP eingeben…
+                </span>
+            </div>
+            <div class="hint">Enter / Komma trennt Einträge. Einfügen einer ganzen Liste wird automatisch aufgesplittet.</div>
+        </div>
+    </div>
+
+    <div
+        class="option"
+        data-choice="rows"
+        onclick="toggleSelect(this)">
+        <div class="letter">C</div>
+        <div class="content">
+            <h3>Strukturierte Zeilen mit Typ-Auswahl</h3>
+            <p>Pro Eintrag eine Zeile mit Typ-Dropdown (Einzel-IP / CIDR / Von–Bis). Am explizitesten und am einfachsten korrekt auszufüllen — etwas mehr Klicks.</p>
+            <div class="ipbox">
+                <div class="row">
+                    <span class="typesel">CIDR ▾</span>
+                    <input
+                        class="ipfield grow ipbox"
+                        value="192.168.10.0/24"
+                        style="padding:7px 10px;" />
+                    <span class="del">🗑</span>
+                </div>
+                <div class="row">
+                    <span class="typesel">Einzel-IP ▾</span>
+                    <input
+                        class="ipfield grow ipbox"
+                        value="127.0.0.1"
+                        style="padding:7px 10px;" />
+                    <span class="del">🗑</span>
+                </div>
+                <div class="row">
+                    <span class="typesel">Von–Bis ▾</span>
+                    <input
+                        class="ipfield grow ipbox"
+                        value="10.0.0.5 → 10.0.0.50"
+                        style="padding:7px 10px;" />
+                    <span class="del">🗑</span>
+                </div>
+                <span class="addbtn">+ Eintrag hinzufügen</span>
+            </div>
+            <div class="hint">Typ steuert das Eingabeformat; Validierung direkt pro Zeile.</div>
+        </div>
+    </div>
+</div>

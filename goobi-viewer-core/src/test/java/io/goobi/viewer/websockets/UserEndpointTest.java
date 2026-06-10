@@ -22,7 +22,6 @@
 package io.goobi.viewer.websockets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -80,10 +79,10 @@ class UserEndpointTest extends AbstractTest {
 
     /**
      * @see UserEndpoint#delayedRemoveLocksForSessionId(String, long)
-     * @verifies release config file editor locks after grace period
+     * @verifies not release config file editor locks after grace period
      */
     @Test
-    void delayedRemoveLocksForSessionId_shouldReleaseConfigFileEditorLocks() throws Exception {
+    void delayedRemoveLocksForSessionId_shouldNotReleaseConfigFileEditorLocks() throws Exception {
         FileLocks fileLocks = getFileLocks();
         fileLocks.lockFile(CONFIG_FILE, SESSION_ID);
         assertTrue(fileLocks.isFileLockedByOthers(CONFIG_FILE, "other-session"),
@@ -92,8 +91,10 @@ class UserEndpointTest extends AbstractTest {
         invokeDelayedRemoveLocksForSessionId(SESSION_ID, 1L);
         Thread.sleep(100);
 
-        assertFalse(fileLocks.isFileLockedByOthers(CONFIG_FILE, "other-session"),
-                "Config file lock should be released after grace period");
+        // Config editor locks are governed by the edit.socket heartbeat and the TTL reaper, not by the
+        // session-socket grace timer; the timer must therefore leave the config lock untouched.
+        assertTrue(fileLocks.isFileLockedByOthers(CONFIG_FILE, "other-session"),
+                "Config file lock must NOT be released by the session-socket grace timer");
     }
 
     private static FileLocks getFileLocks() throws Exception {

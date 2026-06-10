@@ -1,0 +1,107 @@
+<h2>Variante A — finales Layout des Felds</h2>
+<p class="subtitle">„IP/Netzmaske" wird zu „IP-Adressen / -Bereiche" — ein mehrzeiliges Feld, eine Zeile pro Eintrag.</p>
+
+<style>
+    .mono { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; }
+    .formrow { display:grid; grid-template-columns:160px 1fr; gap:16px; align-items:start; margin-bottom:22px; }
+    .formlabel { text-align:left; color:#1f2d3d; font-weight:600; padding-top:8px; }
+    .req { color:#b04a4a; font-weight:normal; font-size:12px; }
+    .ta { width:100%; box-sizing:border-box; border:1px solid #c7d4e3; border-radius:6px;
+          padding:10px 12px; line-height:1.8; background:#fff; min-height:130px; white-space:pre; }
+    .ta.bad { border-color:#dca0a0; }
+    .badline { background:#fbe9e9; color:#a33; display:inline-block; width:100%; }
+    .help { color:#6b7888; font-size:12.5px; margin-top:8px; line-height:1.6; }
+    .help code { background:#eef3f8; border:1px solid #dce6f0; border-radius:4px; padding:1px 6px; }
+    .err { color:#a33; font-size:13px; margin-top:8px; }
+    .panel { background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:24px 26px; max-width:760px; }
+    .panel h4 { margin:0 0 18px; color:#33475b; }
+</style>
+
+<div class="panel">
+    <h4>Allgemein</h4>
+
+    <div class="formrow">
+        <div class="formlabel">
+            Name
+            <span class="req">(Pflicht)</span>
+        </div>
+        <div>
+            <input
+                class="ta"
+                style="min-height:0; white-space:normal;"
+                value="Reading room" />
+        </div>
+    </div>
+
+    <div class="formrow">
+        <div class="formlabel">
+            IP-Adressen /
+            <br />
+            -Bereiche
+            <span class="req">(Pflicht)</span>
+        </div>
+        <div>
+            <div
+                class="ta mono"
+                contenteditable="false">
+                192.168.10.0/24 127.0.0.1 10.0.0.5 - 10.0.0.50 2001:db8::/48
+            </div>
+            <div class="help">
+                Eine Eingabe pro Zeile. Erlaubt sind:
+                <br />
+                • einzelne IP-Adresse —
+                <code>127.0.0.1</code>
+                oder
+                <code>2001:db8::1</code>
+                <br />
+                • CIDR-Bereich —
+                <code>192.168.10.0/24</code>
+                <br />
+                • Von–Bis-Bereich —
+                <code>10.0.0.5 - 10.0.0.50</code>
+                <br />
+                IPv4 und IPv6 werden unterstützt. Leerzeilen werden ignoriert.
+            </div>
+        </div>
+    </div>
+
+    <div class="formrow">
+        <div class="formlabel">Beschreibung</div>
+        <div>
+            <textarea
+                class="ta"
+                style="min-height:60px; white-space:normal;">
+Everyone's very personal reading room</textarea
+            >
+        </div>
+    </div>
+</div>
+
+<p
+    class="subtitle"
+    style="margin-top:26px;">
+    So sieht es bei einem Tippfehler aus (Validierung pro Zeile, on-blur + beim Speichern):
+</p>
+
+<div
+    class="panel"
+    style="margin-top:10px;">
+    <div class="formrow">
+        <div class="formlabel">
+            IP-Adressen /
+            <br />
+            -Bereiche
+            <span class="req">(Pflicht)</span>
+        </div>
+        <div>
+            <div
+                class="ta mono bad"
+                contenteditable="false">
+                192.168.10.0/24
+                <span class="badline">192.168.10.999 &lt;- ungültige IP</span>
+                10.0.0.5 - 10.0.0.50
+            </div>
+            <div class="err">⚠ Zeile 2: „192.168.10.999" ist keine gültige IP-Adresse, kein CIDR-Bereich und kein Von–Bis-Bereich.</div>
+        </div>
+    </div>
+</div>

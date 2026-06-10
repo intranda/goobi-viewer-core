@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -49,6 +50,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.DataModel;
 import jakarta.faces.model.ListDataModel;
 import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.logging.log4j.LogManager;
@@ -427,14 +429,9 @@ public class AdminConfigEditorBean implements Serializable {
                     Messages.error("admin__config_editor__file_locked_msg");
                     return;
                 }
-                fileLocks.lockFile(filePath, sessionId);
+                // bean lockFile also creates the owner-tagged swap file
+                lockFile(filePath, sessionId);
                 logger.trace("{} locked for session ID {}", filePath.toAbsolutePath(), sessionId);
-                try {
-                    VimSwapFile.create(filePath, null);
-                } catch (IOException e) {
-                    logger.warn("Could not create swap file for {}: {}", filePath, e.getMessage(), e);
-                }
-                // outputLock also locks reading this file in Windows, so read it prior to creating the lock
                 fileContent = Files.readString(filePath);
             } else { // READ_ONLY
                 inputLock = inputChannel.tryLock(0, Long.MAX_VALUE, true);
@@ -466,6 +463,10 @@ public class AdminConfigEditorBean implements Serializable {
             return "";
         }
 
+        // Explicitly release the lock on close: an intentional action, so there is no false-release risk and the
+        // file becomes available to others immediately. unlockFile is owner-checked, so this only releases our lock.
+        unlockFile(currentFileRecord.getFile(), BeanUtils.getSession().getId());
+
         fileInEditionNumber = -1;
         currentFileRecord = null;
 
@@ -475,37 +476,82 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
-     * Locks the given file for the given session id in the static (global) fileLocks object.
+     * Locks the given file for the given session id and creates its owner-tagged vim swap file.
      *
      * @param file path of the config file to lock
      * @param sessionId HTTP session ID acquiring the lock
      * @return true if the lock was acquired; false if held by another session
+     * @should create owner-tagged swap file on lock
      */
     public static boolean lockFile(Path file, String sessionId) {
-        return file != null && fileLocks.lockFile(file, sessionId);
+        // Couple the vim swap file to the lease so re-acquire (reconnect) recreates it and the SwapFileWatcher pushes
+        if (file != null && fileLocks.lockFile(file, sessionId)) {
+            try {
+                VimSwapFile.create(file, null, sessionId);
+            } catch (IOException e) {
+                logger.warn("Could not create swap file for {}: {}", file, e.getMessage());
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Unlocks the given file for the given session id in the static (global) fileLocks object.
+     * Unlocks the given file for the given session id and deletes its owner-tagged swap file.
      *
      * @param file path of the config file to unlock
      * @param sessionId HTTP session ID that holds the lock to release
+     * @should delete only own swap file
      */
     public static void unlockFile(Path file, String sessionId) {
         logger.trace("Unlocking file {} for session {}", file, sessionId);
         if (file != null && fileLocks.unlockFile(file, sessionId)) {
-            VimSwapFile.delete(file);
+            VimSwapFile.delete(file, sessionId);
         }
     }
 
     /**
-     * editFile.
+     * Renews the lease for the given file and session id (heartbeat) in the static (global) fileLocks object.
      *
-     * @param writable true to open the file for editing; false for read-only view
+     * @param file path of the config file whose lease should be renewed
+     * @param sessionId HTTP session ID that must hold the lease
+     * @return true if the lease was renewed; false otherwise
+     * @should renew lock held by same session
+     * @should return false for foreign or absent lock
+     */
+    public static boolean renewLock(Path file, String sessionId) {
+        return file != null && fileLocks.renewLock(file, sessionId);
+    }
+
+    /**
+     * Removes all expired leases and deletes each one's owner-tagged vim swap file. Deleting the swap file lets the
+     * existing {@link io.goobi.viewer.model.administration.configeditor.SwapFileWatcher} push a lock-status refresh
+     * to clients. Invoked periodically by
+     * {@link io.goobi.viewer.model.administration.configeditor.FileLockReaper}.
+     *
+     * @should not throw when no locks present
+     */
+    public static void removeExpiredLocks() {
+        for (Map.Entry<Path, String> e : fileLocks.removeExpiredLocks().entrySet()) {
+            // Re-check under the lock: if the same session re-acquired the lease between the reap and now, its swap
+            // file is fresh and must not be deleted. Owner-tagged delete additionally protects against other sessions.
+            if (!fileLocks.isLocked(e.getKey())) {
+                VimSwapFile.delete(e.getKey(), e.getValue());
+            }
+        }
+    }
+
+    /**
+     * Selects the given file record for editing and navigates to its edit view. The record is passed explicitly
+     * (instead of resolving it via the DataModel's row index) so the correct, clicked file is selected even inside
+     * the {@code ui:repeat}; this is a POST command (not a prefetchable GET link), avoiding speculative requests
+     * that would mutate the shared session selection.
+     *
+     * @param record the file record that was clicked
      * @return the navigation outcome redirecting to the config editor file view
      */
-    public String editFile(boolean writable) {
-        selectFileAndShowBackups(writable);
+    public String editFile(FileRecord record) {
+        selectFileAndShowBackups(record);
         return "pretty:adminConfigEditorFilename";
     }
 
@@ -747,20 +793,35 @@ public class AdminConfigEditorBean implements Serializable {
      * @param writable true to open the file for editing; false for read-only view
      */
     public void selectFileAndShowBackups(boolean writable) {
+        // Resolves the record via the DataModel row index; used by callers that set the index explicitly beforehand
+        // (setCurrentFileName) or where it is already positioned (upload, showBackups).
+        selectFile(filesListing.getFileRecordsModel().getRowData(), writable);
+    }
 
-        currentFileRecord = filesListing.getFileRecordsModel().getRowData();
-        fullCurrentConfigFileType = ".".concat(currentFileRecord.getFileType());
+    /**
+     * Selects the given file record explicitly (not via the DataModel row index), so the clicked file inside the
+     * {@code ui:repeat} is selected reliably. Editability follows the record's own writable flag.
+     *
+     * @param record the file record to select
+     */
+    public void selectFileAndShowBackups(FileRecord record) {
+        selectFile(record, record.isWritable());
+    }
 
-        fileInEditionNumber = currentFileRecord.getNumber();
+    private void selectFile(FileRecord record, boolean writable) {
+        currentFileRecord = record;
+        fullCurrentConfigFileType = ".".concat(record.getFileType());
+
+        fileInEditionNumber = record.getNumber();
         editable = writable;
 
-        logger.info("fileInEditionNumber: {}; fileName: {}", fileInEditionNumber, currentFileRecord.getFileName());
-        refreshBackups(new File(backupsPath + currentFileRecord.getFileName().replaceFirst("[.][^.]+$", "")));
+        logger.info("fileInEditionNumber: {}; fileName: {}", fileInEditionNumber, record.getFileName());
+        refreshBackups(new File(backupsPath + record.getFileName().replaceFirst("[.][^.]+$", "")));
 
         try {
             openFile();
         } catch (IOException e) {
-            logger.trace("IOException caught in the method showBackups(boolean)", e);
+            logger.trace("IOException caught in the method selectFile(FileRecord, boolean)", e);
         }
     }
 
@@ -821,7 +882,7 @@ public class AdminConfigEditorBean implements Serializable {
     public static void clearLocksForSessionId(String sessionId) {
         Set<Path> pathsToUnlock = fileLocks.getAndClearLocksForSessionId(sessionId);
         for (Path p : pathsToUnlock) {
-            VimSwapFile.delete(p);
+            VimSwapFile.delete(p, sessionId);
         }
     }
 
@@ -839,13 +900,50 @@ public class AdminConfigEditorBean implements Serializable {
     }
 
     /**
+     * @return true if the current request is a speculative browser load (prefetch/prerender), which must not be
+     *         allowed to mutate the session-scoped file selection
+     */
+    private static boolean isSpeculativeRequest() {
+        HttpServletRequest request = BeanUtils.getRequest();
+        if (request == null) {
+            return false;
+        }
+        // Chromium prefetch/prerender; prerender sends "prefetch;prerender", so a substring match covers both
+        String secPurpose = request.getHeader("Sec-Purpose");
+        if (secPurpose != null && secPurpose.toLowerCase().contains("prefetch")) {
+            return true;
+        }
+        // Older/non-Chromium prefetch hints
+        return "prefetch".equalsIgnoreCase(request.getHeader("Purpose"))
+                || "prefetch".equalsIgnoreCase(request.getHeader("X-Moz"))
+                || "preload".equalsIgnoreCase(request.getHeader("X-Moz"));
+    }
+
+    /**
      * Getter for the URL pattern.
      *
      * @param fileName decoded URL-encoded filename to select from the file list
      * @throws java.io.FileNotFoundException
+     * @should not change selection on postback
      */
     public void setCurrentFileName(String fileName) throws FileNotFoundException {
         logger.trace("setCurrentFileName: {}", fileName);
+
+        // URL-driven selection is only meaningful on the initial GET navigation. PrettyFaces injects the path
+        // parameter on every request to the edit URL, including ajax postbacks (e.g. the WebSocket-triggered
+        // fileList refresh), which would revert a selection change that is concurrently in flight. Path parameter
+        // injection has no onPostback switch (unlike <action>), so the postback guard lives here in the setter.
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null && facesContext.isPostback()) {
+            return;
+        }
+
+        // The edit URL is a stateful GET (it mutates the session-scoped selection). Browsers load such URLs
+        // speculatively in the background (Chrome prefetch/prerender, history-/omnibox-driven), which would
+        // corrupt the displayed file. Skip the selection for speculative requests; only real navigations select.
+        if (isSpeculativeRequest()) {
+            return;
+        }
 
         if ("-".equals(fileName)) {
             closeCurrentFileAction();

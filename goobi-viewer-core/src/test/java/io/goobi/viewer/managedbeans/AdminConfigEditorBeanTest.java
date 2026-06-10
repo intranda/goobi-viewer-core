@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.*;
+import jakarta.faces.context.FacesContext;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.model.administration.configeditor.VimSwapFile;
 
@@ -35,11 +37,63 @@ class AdminConfigEditorBeanTest extends AbstractTest {
     @Test
     void unlockFile_shouldDeleteSwpFile() throws IOException {
         AdminConfigEditorBean.lockFile(testFile, "session-a");
-        VimSwapFile.create(testFile, "testhost");
 
         AdminConfigEditorBean.unlockFile(testFile, "session-a");
         assertFalse(Files.exists(VimSwapFile.getSwapFilePath(testFile)),
                 "unlockFile should delete the Web-UI swap file");
+    }
+
+    /**
+     * @see AdminConfigEditorBean#lockFile(Path, String)
+     * @verifies create owner-tagged swap file on lock
+     */
+    @Test
+    void lockFile_shouldCreateOwnerTaggedSwapFileOnLock() {
+        assertTrue(AdminConfigEditorBean.lockFile(testFile, "session-a"));
+        assertTrue(Files.exists(VimSwapFile.getSwapFilePath(testFile)));
+    }
+
+    /**
+     * @see AdminConfigEditorBean#renewLock(Path, String)
+     * @verifies renew lock held by same session
+     */
+    @Test
+    void renewLock_shouldRenewLockHeldBySameSession() {
+        AdminConfigEditorBean.lockFile(testFile, "session-a");
+        assertTrue(AdminConfigEditorBean.renewLock(testFile, "session-a"));
+    }
+
+    /**
+     * @see AdminConfigEditorBean#renewLock(Path, String)
+     * @verifies return false for foreign or absent lock
+     */
+    @Test
+    void renewLock_shouldReturnFalseForForeignOrAbsentLock() {
+        AdminConfigEditorBean.lockFile(testFile, "session-a");
+        assertFalse(AdminConfigEditorBean.renewLock(testFile, "session-b"));
+        assertFalse(AdminConfigEditorBean.renewLock(tempDir.resolve("never-locked.xml"), "session-a"));
+    }
+
+    /**
+     * @see AdminConfigEditorBean#removeExpiredLocks()
+     * @verifies not throw when no locks present
+     */
+    @Test
+    void removeExpiredLocks_shouldNotThrowWhenNoLocksPresent() {
+        assertDoesNotThrow(AdminConfigEditorBean::removeExpiredLocks);
+    }
+
+    /**
+     * @see AdminConfigEditorBean#unlockFile(Path, String)
+     * @verifies delete only own swap file
+     */
+    @Test
+    void unlockFile_shouldDeleteOnlyOwnSwapFile() {
+        AdminConfigEditorBean.lockFile(testFile, "session-a");
+        AdminConfigEditorBean.unlockFile(testFile, "session-b"); // not the owner
+        assertTrue(Files.exists(VimSwapFile.getSwapFilePath(testFile)));
+        AdminConfigEditorBean.unlockFile(testFile, "session-a"); // owner
+        assertFalse(Files.exists(VimSwapFile.getSwapFilePath(testFile)));
     }
 
     @Test
@@ -87,6 +141,25 @@ class AdminConfigEditorBeanTest extends AbstractTest {
     @Test
     void isFileLocked_shouldReturnFalseIfFileNotLocked() {
         assertFalse(AdminConfigEditorBean.isFileLocked(testFile, "session-a"));
+    }
+
+    /**
+     * @see AdminConfigEditorBean#setCurrentFileName(String)
+     * @verifies not change selection on postback
+     */
+    @Test
+    void setCurrentFileName_shouldNotChangeSelectionOnPostback() throws Exception {
+        FacesContext facesContext = ContextMocker.mockFacesContext();
+        try {
+            Mockito.when(facesContext.isPostback()).thenReturn(true);
+            AdminConfigEditorBean bean = new AdminConfigEditorBean();
+            // Without the postback guard this would attempt a selection and throw FileNotFoundException
+            // (no such record in the file listing); with the guard the call is a no-op.
+            bean.setCurrentFileName("no-such-file.xml");
+            assertEquals("-", bean.getCurrentFileName());
+        } finally {
+            facesContext.release();
+        }
     }
 
     /**

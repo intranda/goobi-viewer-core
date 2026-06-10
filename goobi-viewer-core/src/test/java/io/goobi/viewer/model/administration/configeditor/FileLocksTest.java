@@ -22,6 +22,8 @@
 package io.goobi.viewer.model.administration.configeditor;
 
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -64,5 +66,89 @@ class FileLocksTest {
         FileLocks fileLocks = new FileLocks();
         Path file = Path.of("/tmp/test-config.xml");
         Assertions.assertFalse(fileLocks.isFileLockedByOthers(file, "session-A"));
+    }
+
+    /** @see FileLocks#renewLock(Path, String) @verifies extend expiry for own lock */
+    @Test
+    void renewLock_shouldExtendExpiryForOwnLock() {
+        AtomicLong now = new AtomicLong(0L);
+        FileLocks fileLocks = new FileLocks(now::get);
+        Path file = Path.of("/tmp/test-config.xml");
+        fileLocks.lockFile(file, "session-A");
+        now.set(FileLocks.LOCK_TTL_MILLIS - 1);
+        Assertions.assertTrue(fileLocks.renewLock(file, "session-A"));
+        now.set(FileLocks.LOCK_TTL_MILLIS + 1);
+        Assertions.assertTrue(fileLocks.isFileLockedByOthers(file, "session-B"),
+                "renewed lock must still block other sessions past the original TTL");
+    }
+
+    /** @see FileLocks#renewLock(Path, String) @verifies return false for other session */
+    @Test
+    void renewLock_shouldReturnFalseForOtherSession() {
+        FileLocks fileLocks = new FileLocks(() -> 0L);
+        Path file = Path.of("/tmp/test-config.xml");
+        fileLocks.lockFile(file, "session-A");
+        Assertions.assertFalse(fileLocks.renewLock(file, "session-B"));
+    }
+
+    /** @see FileLocks#renewLock(Path, String) @verifies return false when not locked */
+    @Test
+    void renewLock_shouldReturnFalseWhenNotLocked() {
+        FileLocks fileLocks = new FileLocks(() -> 0L);
+        Assertions.assertFalse(fileLocks.renewLock(Path.of("/tmp/test-config.xml"), "session-A"));
+    }
+
+    /** @see FileLocks#isFileLockedByOthers(Path, String) @verifies return false when lock expired */
+    @Test
+    void isFileLockedByOthers_shouldReturnFalseWhenLockExpired() {
+        AtomicLong now = new AtomicLong(0L);
+        FileLocks fileLocks = new FileLocks(now::get);
+        Path file = Path.of("/tmp/test-config.xml");
+        fileLocks.lockFile(file, "session-A");
+        now.set(FileLocks.LOCK_TTL_MILLIS);
+        Assertions.assertFalse(fileLocks.isFileLockedByOthers(file, "session-B"));
+    }
+
+    /** @see FileLocks#removeExpiredLocks() @verifies remove and return only expired locks with their session ids */
+    @Test
+    void removeExpiredLocks_shouldRemoveAndReturnOnlyExpiredLocks() {
+        AtomicLong now = new AtomicLong(0L);
+        FileLocks fileLocks = new FileLocks(now::get);
+        Path oldFile = Path.of("/tmp/old.xml");
+        fileLocks.lockFile(oldFile, "session-A");
+        now.set(FileLocks.LOCK_TTL_MILLIS - 10);
+        Path freshFile = Path.of("/tmp/fresh.xml");
+        fileLocks.lockFile(freshFile, "session-B");
+        now.set(FileLocks.LOCK_TTL_MILLIS);
+        Map<Path, String> removed = fileLocks.removeExpiredLocks();
+        Assertions.assertEquals(Map.of(oldFile, "session-A"), removed);
+        Assertions.assertTrue(fileLocks.renewLock(freshFile, "session-B"), "fresh lock must survive the reap");
+    }
+
+    /** @see FileLocks#isLocked(Path) @verifies return true for non-expired lock */
+    @Test
+    void isLocked_shouldReturnTrueForNonExpiredLock() {
+        FileLocks fileLocks = new FileLocks(() -> 0L);
+        Path file = Path.of("/tmp/test-config.xml");
+        fileLocks.lockFile(file, "session-A");
+        Assertions.assertTrue(fileLocks.isLocked(file));
+    }
+
+    /** @see FileLocks#isLocked(Path) @verifies return false when lock expired */
+    @Test
+    void isLocked_shouldReturnFalseWhenLockExpired() {
+        AtomicLong now = new AtomicLong(0L);
+        FileLocks fileLocks = new FileLocks(now::get);
+        Path file = Path.of("/tmp/test-config.xml");
+        fileLocks.lockFile(file, "session-A");
+        now.set(FileLocks.LOCK_TTL_MILLIS);
+        Assertions.assertFalse(fileLocks.isLocked(file));
+    }
+
+    /** @see FileLocks#isLocked(Path) @verifies return false when not locked */
+    @Test
+    void isLocked_shouldReturnFalseWhenNotLocked() {
+        FileLocks fileLocks = new FileLocks(() -> 0L);
+        Assertions.assertFalse(fileLocks.isLocked(Path.of("/tmp/test-config.xml")));
     }
 }

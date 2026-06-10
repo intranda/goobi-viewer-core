@@ -22,26 +22,50 @@
 package io.goobi.viewer.model.administration.configeditor;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.LongSupplier;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
- * Manages per-session exclusive edit locks for configuration files in the config editor, preventing
- * concurrent modifications by different HTTP sessions.
+ * Manages per-session exclusive edit leases for configuration files. Each lease carries an expiry; it must be
+ * renewed (heartbeat) before it expires, otherwise it is treated as orphaned and reaped. Prevents concurrent
+ * modification by different HTTP sessions.
  */
 public class FileLocks {
 
     private static final Logger logger = LogManager.getLogger(FileLocks.class);
 
-    private final Map<Path, String> locks = new ConcurrentHashMap<>();
+    /** Lease duration in milliseconds after which an un-renewed lock is considered orphaned. */
+    static final long LOCK_TTL_MILLIS = 60_000L;
+
+    /** A single edit lease: the holding session and the epoch-millis time at which it expires. */
+    private record LockEntry(String sessionId, long expiresAtMillis) {
+    }
+
+    private final Map<Path, LockEntry> locks = new ConcurrentHashMap<>();
+
+    /** Time source in epoch millis; injectable so expiry can be tested deterministically. */
+    private final LongSupplier clock;
+
+    /** Production constructor using the system clock. */
+    public FileLocks() {
+        this(System::currentTimeMillis);
+    }
+
+    /** Test constructor with an injectable clock. */
+    FileLocks(LongSupplier clock) {
+        this.clock = clock;
+    }
 
     /**
+     * Acquires or refreshes the lease for the given session if the file is free or already held by this session.
      *
      * @param file the file path to lock
      * @param sessionId the HTTP session identifier acquiring the lock
@@ -49,15 +73,34 @@ public class FileLocks {
      */
     public synchronized boolean lockFile(Path file, String sessionId) {
         if (!isFileLockedByOthers(file, sessionId)) {
-            locks.put(file, sessionId);
+            locks.put(file, new LockEntry(sessionId, clock.getAsLong() + LOCK_TTL_MILLIS));
             logger.trace("File locked by {}: {}", sessionId, file.toAbsolutePath());
             return true;
         }
-
         return false;
     }
 
     /**
+     * Extends the lease expiry, but only if the lease is currently held by the given session (heartbeat).
+     *
+     * @param file the file path whose lease should be renewed
+     * @param sessionId the HTTP session identifier that must hold the lease
+     * @return true if the lease was renewed; false if held by another session or not present
+     * @should extend expiry for own lock
+     * @should return false for other session
+     * @should return false when not locked
+     */
+    public synchronized boolean renewLock(Path file, String sessionId) {
+        LockEntry entry = locks.get(file);
+        if (entry != null && entry.sessionId().equals(sessionId)) {
+            locks.put(file, new LockEntry(sessionId, clock.getAsLong() + LOCK_TTL_MILLIS));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Releases the lease for the given file if it is not held by another session.
      *
      * @param file the file path to unlock
      * @param sessionId the HTTP session identifier releasing the lock
@@ -68,21 +111,55 @@ public class FileLocks {
             logger.trace("File lock released: {}", file.toAbsolutePath());
             return true;
         }
-
         return false;
     }
 
     /**
-     * 
      * @param file path to the file to check
      * @param sessionId current HTTP session ID to compare against the lock holder
-     * @return true if file locked by different session; false otherwise
+     * @return true if a non-expired lease is held by a different session; false otherwise
      * @should return true if file locked by different session id
      * @should return false if file locked by own session id
      * @should return false if file not locked
+     * @should return false when lock expired
      */
     public synchronized boolean isFileLockedByOthers(Path file, String sessionId) {
-        return locks.containsKey(file) && !locks.get(file).equals(sessionId);
+        LockEntry entry = locks.get(file);
+        return entry != null && !entry.sessionId().equals(sessionId) && clock.getAsLong() < entry.expiresAtMillis();
+    }
+
+    /**
+     * @param file path to the file to check
+     * @return true if any (non-expired) lease currently exists for the file. Used by the reaper to re-check, after
+     *         removing expired leases, whether a fresh lease was re-acquired before deleting the swap file.
+     * @should return true for non-expired lock
+     * @should return false when lock expired
+     * @should return false when not locked
+     */
+    public synchronized boolean isLocked(Path file) {
+        LockEntry entry = locks.get(file);
+        return entry != null && clock.getAsLong() < entry.expiresAtMillis();
+    }
+
+    /**
+     * Removes all leases whose expiry time has passed.
+     *
+     * @return map of expired paths to the session id that held them (so callers can clean up owner-tagged artefacts)
+     * @should remove and return only expired locks with their session ids
+     */
+    public synchronized Map<Path, String> removeExpiredLocks() {
+        long now = clock.getAsLong();
+        Map<Path, String> expired = new HashMap<>();
+        for (Entry<Path, LockEntry> e : locks.entrySet()) {
+            if (now >= e.getValue().expiresAtMillis()) {
+                expired.put(e.getKey(), e.getValue().sessionId());
+            }
+        }
+        for (Path p : expired.keySet()) {
+            locks.remove(p);
+            logger.debug("Removed expired edit lock for {}", p.toAbsolutePath());
+        }
+        return expired;
     }
 
     /**
@@ -93,8 +170,8 @@ public class FileLocks {
      */
     public synchronized Set<Path> getLockedPathsForSessionId(String sessionId) {
         Set<Path> result = new HashSet<>();
-        for (Map.Entry<Path, String> entry : locks.entrySet()) {
-            if (entry.getValue().equals(sessionId)) {
+        for (Entry<Path, LockEntry> entry : locks.entrySet()) {
+            if (entry.getValue().sessionId().equals(sessionId)) {
                 result.add(entry.getKey());
             }
         }
@@ -102,38 +179,23 @@ public class FileLocks {
     }
 
     /**
-     *
      * @param sessionId the HTTP session identifier whose locks should be released
      */
     public synchronized void clearLocksForSessionId(String sessionId) {
-        Set<Path> toClear = new HashSet<>();
-        for (Entry<Path, String> entry : locks.entrySet()) {
-            if (entry.getValue().equals(sessionId)) {
-                toClear.add(entry.getKey());
-            }
-        }
-        if (!toClear.isEmpty()) {
-            for (Path path : toClear) {
-                locks.remove(path);
-                logger.debug("Released edit lock for {}", path.toAbsolutePath());
-            }
+        for (Path path : getLockedPathsForSessionId(sessionId)) {
+            locks.remove(path);
+            logger.debug("Released edit lock for {}", path.toAbsolutePath());
         }
     }
 
     /**
      * Atomically collects and removes all locks for the given session.
-     * Returns the set of paths that were locked (and are now released).
      *
      * @param sessionId a {@link java.lang.String} object
      * @return set of paths that were locked by the session and have now been released
      */
     public synchronized Set<Path> getAndClearLocksForSessionId(String sessionId) {
-        Set<Path> result = new HashSet<>();
-        for (Entry<Path, String> entry : locks.entrySet()) {
-            if (entry.getValue().equals(sessionId)) {
-                result.add(entry.getKey());
-            }
-        }
+        Set<Path> result = getLockedPathsForSessionId(sessionId);
         for (Path path : result) {
             locks.remove(path);
             logger.debug("Released edit lock for {}", path.toAbsolutePath());

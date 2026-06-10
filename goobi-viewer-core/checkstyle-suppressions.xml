@@ -11,4 +11,8 @@
 	     so a wide RuntimeException guard around the submit call is intentional. -->
 	<suppress checks="IllegalCatch"
 		  files="PrewarmRequestFilter.java"/>
+	<!-- Scheduler boundary: an uncaught exception from a scheduleWithFixedDelay task silently cancels
+	     all future runs, so the wide RuntimeException guard around the reap call is intentional. -->
+	<suppress checks="IllegalCatch"
+		  files="FileLockReaper.java"/>
 </suppressions>

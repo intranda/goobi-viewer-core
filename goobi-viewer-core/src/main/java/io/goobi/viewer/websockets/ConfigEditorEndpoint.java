@@ -22,6 +22,7 @@
 package io.goobi.viewer.websockets;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -51,8 +52,8 @@ public class ConfigEditorEndpoint {
 
     private static final Logger logger = LogManager.getLogger(ConfigEditorEndpoint.class);
 
-    private Optional<Path> lockedFilePath = Optional.empty();
-    private Optional<String> httpSessionId = Optional.empty();
+    private volatile Optional<Path> lockedFilePath = Optional.empty();
+    private volatile Optional<String> httpSessionId = Optional.empty();
 
     /**
      * Store id of http session.
@@ -75,31 +76,76 @@ public class ConfigEditorEndpoint {
     }
 
     /**
-     * Accept messages containing a file path which is locked by the curren page and needs to be unlocked upon leaving the page.
-     * 
-     * @param message a json object string in the form "{'fileToLock' : '/path/to/config/file'}"
+     * Handles three JSON message kinds:
+     * <ul>
+     *   <li>{@code {"fileToLock":"/path"}} — on (re)connect: remember the path and (re-)acquire the lock so a
+     *       dropped-and-restored socket restores it.</li>
+     *   <li>{@code {"heartbeat":true}} — renew the lease (no re-acquire); reports {@code lost} if the lease is gone.</li>
+     *   <li>{@code {"release":true}} — on real page unload: release the lock immediately (owner-checked).</li>
+     * </ul>
+     * In both cases the client is told whether it still holds the lock via {@code {"lockStatus":"held"|"lost"}}.
+     *
+     * @param message a json object string
+     * @param session the websocket session, used to reply
      */
     @OnMessage
-    public void onMessage(String message) {
+    public void onMessage(String message, Session session) {
         try {
             JSONObject json = new JSONObject(message);
-            String pathString = json.getString("fileToLock");
-            Path path = Paths.get(pathString);
+            String sessionId = httpSessionId.orElse(null);
+            if (json.has("release")) {
+                // Explicit release sent by the client on real page unload (navigation/close), NOT on idle/reconnect.
+                // Frees the lock immediately instead of waiting for the TTL. Owner-checked, so it only releases
+                // this session's own lock — other tabs/sessions are unaffected.
+                Path path = lockedFilePath.orElse(null);
+                if (path != null && sessionId != null) {
+                    AdminConfigEditorBean.unlockFile(path, sessionId);
+                }
+                return;
+            }
+            if (json.has("heartbeat")) {
+                // Heartbeat only RENEWS an existing own lease. It must not re-acquire (lockFile): otherwise a lock
+                // that was intentionally released (navigation/close) would be silently re-taken by a still-open
+                // socket. A lost lease is reported as "lost"; re-acquire happens only on (re)connect via fileToLock.
+                Path path = lockedFilePath.orElse(null);
+                if (path != null && sessionId != null) {
+                    replyLockStatus(session, AdminConfigEditorBean.renewLock(path, sessionId));
+                }
+                return;
+            }
+            Path path = Paths.get(json.getString("fileToLock"));
             this.lockedFilePath = Optional.of(path);
+            if (sessionId != null) {
+                // (re-)acquire on (re)connect
+                replyLockStatus(session, AdminConfigEditorBean.lockFile(path, sessionId));
+            }
         } catch (JSONException | NullPointerException e) {
             logger.error("Error interpreting message {}", message);
         }
     }
 
+    /** Sends the current lock ownership to the client. */
+    private static void replyLockStatus(Session session, boolean held) {
+        try {
+            // getBasicRemote (synchronous) serialises sends per session and preserves order; getAsyncRemote would
+            // throw IllegalStateException on overlapping writes and could deliver held/lost out of order.
+            session.getBasicRemote().sendText("{\"lockStatus\":\"" + (held ? "held" : "lost") + "\"}");
+        } catch (IOException e) {
+            logger.trace("Could not send lock status to client: {}", e.getMessage());
+        }
+    }
+
     /**
-     * Called when leaving a adminConfigEditor page. Unlocks the file set by {@link #onMessage(String)} for the session set by
-     * {@link #onOpen(Session, EndpointConfig)} using {@link AdminConfigEditorBean#unlockFile(Path, String)}
-     * 
+     * Called when the websocket closes. Intentionally does NOT release the lock: an idle- or proxy-closed socket must
+     * not be treated as the user leaving. The lease expires via TTL (reaped by
+     * {@link io.goobi.viewer.model.administration.configeditor.FileLockReaper}) once heartbeats stop; an explicit
+     * close releases it through {@code AdminConfigEditorBean.closeCurrentFileAction()}.
+     *
      * @param session WebSocket session being closed
      */
     @OnClose
     public void onClose(Session session) {
-        lockedFilePath.ifPresent(path -> httpSessionId.ifPresent(sessionId -> AdminConfigEditorBean.unlockFile(path, sessionId)));
+        // No unlock here by design — see method Javadoc.
     }
 
     @OnError

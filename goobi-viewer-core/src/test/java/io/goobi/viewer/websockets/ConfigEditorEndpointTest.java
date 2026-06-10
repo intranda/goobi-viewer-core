@@ -83,7 +83,8 @@ class ConfigEditorEndpointTest extends AbstractTest {
         Mockito.verify(wsSession, Mockito.never()).close(Mockito.any());
         // The accepted connection should process messages and close without error.
         assertDoesNotThrow(() -> {
-            endpoint.onMessage("{\"fileToLock\":\"/opt/digiverso/viewer/config/config_viewer.xml\"}");
+            // onMessage now takes the Session to reply lock status over; pass the same mock used above
+            endpoint.onMessage("{\"fileToLock\":\"/opt/digiverso/viewer/config/config_viewer.xml\"}", wsSession);
             endpoint.onClose(wsSession);
         });
     }

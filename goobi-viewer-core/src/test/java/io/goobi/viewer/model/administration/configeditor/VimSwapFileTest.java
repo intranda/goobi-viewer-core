@@ -110,4 +110,28 @@ class VimSwapFileTest extends AbstractTest {
     void delete_shouldNotThrowForNonExistentSwp() {
         assertDoesNotThrow(() -> VimSwapFile.delete(testFile));
     }
+
+    /** @see VimSwapFile#delete(Path, String) @verifies delete swap file owned by the given session */
+    @Test
+    void delete_shouldDeleteSwapFileOwnedByTheGivenSession() throws IOException {
+        VimSwapFile.create(testFile, "testhost", "session-A");
+        VimSwapFile.delete(testFile, "session-A");
+        assertFalse(Files.exists(VimSwapFile.getSwapFilePath(testFile)));
+    }
+
+    /** @see VimSwapFile#delete(Path, String) @verifies not delete swap file owned by another session */
+    @Test
+    void delete_shouldNotDeleteSwapFileOwnedByAnotherSession() throws IOException {
+        VimSwapFile.create(testFile, "testhost", "session-A");
+        VimSwapFile.delete(testFile, "session-B");
+        assertTrue(Files.exists(VimSwapFile.getSwapFilePath(testFile)),
+                "a .swp owned by another web-UI session must not be deleted");
+    }
+
+    /** @see VimSwapFile#check(Path) @verifies still report web-UI lock for owner-tagged swap file */
+    @Test
+    void check_shouldStillReportWebuiLockForOwnerTaggedSwapFile() throws IOException {
+        VimSwapFile.create(testFile, "testhost", "session-A");
+        assertEquals(VimSwapFile.Status.LOCKED_BY_WEBUI, VimSwapFile.check(testFile));
+    }
 }

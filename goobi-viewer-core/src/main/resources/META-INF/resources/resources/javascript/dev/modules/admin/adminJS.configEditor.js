@@ -54,22 +54,103 @@ var adminJS = ( function( admin ) {
 			this.initTooltipHelpers();
         },
         initWebsocket: function() {
-        	this.socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CONFIG_EDITOR_SOCKET);
-			this.socket.onOpen.subscribe(() => {
-				let messageObject = {
-					fileToLock: this.config.currentFilePath
-				}
-				let message = JSON.stringify(messageObject);
-				if(_debug)console.log("sending message", message);
-				this.socket.sendMessage(message);
-			});
+            // Only writable, actually-open files take an edit lock; reading must not lock the file for others.
+            if (!this.config.currentFilePath || this.isReadOnly()) {
+                return;
+            }
+            this._wantConnection = true;
+            this._reconnectDelay = 1000;
+            this._reconnectScheduled = false;
+            this._connectWebsocket();
+            // Teardown on real page hide (not beforeunload, which can be cancelled by the dirty dialog).
+            // Register once even if init() somehow runs twice, so listeners do not accumulate.
+            if (!this._pagehideRegistered) {
+                window.addEventListener('pagehide', () => this._releaseAndTeardown());
+                this._pagehideRegistered = true;
+            }
+        },
+        _connectWebsocket: function() {
+            this._reconnectScheduled = false;
+            this._disconnectSocket(); // drop any previous instance so only one socket is ever live
+            const socket = new viewerJS.WebSocket(window.location.host, window.currentPath, viewerJS.WebSocket.PATH_CONFIG_EDITOR_SOCKET);
+            socket._closedByUs = false; // distinguishes intentional close (teardown/reconnect) from a real drop
+            this.socket = socket;
+            socket.onOpen.subscribe(() => {
+                socket.sendMessage(JSON.stringify({ fileToLock: this.config.currentFilePath }));
+                this._startHeartbeat();
+                // Treat the connection as healthy only after it has held for STABLE_MS, then reset the backoff.
+                this._stableTimer = setTimeout(() => { this._reconnectDelay = 1000; }, 5000);
+            });
+            socket.onMessage.subscribe((evt) => this._onLockStatus(evt));
+            socket.onClose.subscribe((evt) => {
+                // Ignore closes we triggered ourselves (teardown / reconnect-swap); otherwise the old instance's
+                // late native close event would schedule a second, competing reconnect chain.
+                if (socket._closedByUs) {
+                    return;
+                }
+                this._stopHeartbeat();
+                if (this._stableTimer) { clearTimeout(this._stableTimer); this._stableTimer = null; }
+                const policyClose = evt && (evt.code === 1008);
+                if (this._wantConnection && !policyClose && !this._reconnectScheduled) {
+                    this._reconnectScheduled = true;
+                    setTimeout(() => this._connectWebsocket(), this._reconnectDelay);
+                    this._reconnectDelay = Math.min(this._reconnectDelay * 2, 10000);
+                }
+            });
+            socket.onError.subscribe(() => {}); // errors surface as a close; nothing extra to do
+        },
+        _disconnectSocket: function() {
+            this._stopHeartbeat();
+            if (this._stableTimer) { clearTimeout(this._stableTimer); this._stableTimer = null; }
+            if (this.socket) {
+                this.socket._closedByUs = true; // suppress the reconnect that the resulting onClose would otherwise schedule
+                try { this.socket.close(); } catch (e) { /* already closed */ }
+                this.socket = undefined;
+            }
+        },
+        _startHeartbeat: function() {
+            this._stopHeartbeat();
+            this._heartbeatTimer = setInterval(() => {
+                if (this.socket && this.socket.isOpen()) {
+                    this.socket.sendMessage(JSON.stringify({ heartbeat: true }));
+                }
+            }, 20000);
+        },
+        _stopHeartbeat: function() {
+            if (this._heartbeatTimer) { clearInterval(this._heartbeatTimer); this._heartbeatTimer = null; }
+        },
+        _onLockStatus: function(evt) {
+            var data;
+            try { data = JSON.parse(evt.data); } catch (e) { return; }
+            if (data && data.lockStatus === 'lost') {
+                // Lock was lost while the page stayed open: make the editor read-only and warn, so edits are not lost silently.
+                this._wantConnection = false;
+                this._disconnectSocket();
+                if (this.cmEditor) { this.cmEditor.setOption('readOnly', true); }
+                var banner = document.getElementById('configEditorLockLost');
+                if (banner) { banner.style.display = 'block'; }
+            }
+        },
+        teardownWebsocket: function() {
+            // Stop reconnecting and close; the server lease then expires via TTL.
+            this._wantConnection = false;
+            this._disconnectSocket();
+        },
+        _releaseAndTeardown: function() {
+            // Real page unload (navigation/close): proactively release the lock so a file switch frees the old file
+            // immediately instead of waiting for the TTL. Best-effort send before close; TTL is the fallback if the
+            // frame does not make it out (e.g. a hard tab crash). Only sent here, never on idle/reconnect teardown.
+            if (this.socket && this.socket.isOpen() && this.config.currentFilePath) {
+                try { this.socket.sendMessage(JSON.stringify({ release: true })); } catch (e) { /* unload best-effort */ }
+            }
+            this.teardownWebsocket();
         },
         initOnBeforeUnload: function() {
-	        window.addEventListener('beforeunload',(event) => {
-	        	if(this.dirty) {
-	        		event.returnValue = false;
-	        	} 
-	        });
+            window.addEventListener('beforeunload', (event) => {
+                if (this.dirty) {
+                    event.returnValue = false;
+                }
+            });
         },
         isReadOnly: function() {
         	return this.config.currentFileIsReadable && !this.config.currentFileIsWritable;
