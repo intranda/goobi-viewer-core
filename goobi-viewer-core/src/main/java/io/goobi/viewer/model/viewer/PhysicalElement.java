@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -1123,7 +1124,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
 
         if (altoText != null) {
-            return ALTOTools.getWordCoords(altoText, altoCharset, searchTerms, proximitySearchDistance, rotation);
+            Dimension imageSize = (width > 0 && height > 0) ? new Dimension(width, height) : null;
+            return ALTOTools.getWordCoords(altoText, altoCharset, searchTerms, proximitySearchDistance, rotation, imageSize);
         }
         wordCoordsFormat = CoordsFormat.NONE;
 

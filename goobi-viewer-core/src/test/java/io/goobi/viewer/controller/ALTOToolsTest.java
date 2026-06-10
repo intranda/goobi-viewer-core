@@ -304,4 +304,21 @@ class ALTOToolsTest extends AbstractTest {
         List<String> hits2 = ALTOTools.getWordCoords(altoString, "utf-8", words, 0, 0);
         assertEquals(0, hits2.size());
     }
+
+    /**
+     * @verifies scale coords when actual image size differs from ALTO page size
+     */
+    @Test
+    void getWordCoords_shouldScaleCoordsToActualImageSize() throws IOException {
+        File testFile = new File("src/test/resources/data/sample_alto.xml");
+        // ALTO page size: WIDTH=2172 HEIGHT=2960
+        String altoString = FileUtils.readFileToString(testFile, StringTools.DEFAULT_ENCODING);
+        // Actual image is half the ALTO page size → all coords should be halved
+        Dimension imageSize = new Dimension(1086, 1480);
+        List<String> coords = ALTOTools.getWordCoords(altoString, StringTools.DEFAULT_ENCODING,
+                Collections.singleton("hinauf"), 0, 0, imageSize);
+        Assertions.assertFalse(coords.isEmpty());
+        // Original: 1133,2549,1263,2584 → scaled ×0.5: 566,1274,631,1292
+        Assertions.assertEquals("566,1274,631,1292", coords.get(0));
+    }
 }
