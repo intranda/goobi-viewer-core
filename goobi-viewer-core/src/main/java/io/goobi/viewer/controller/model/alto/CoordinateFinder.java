@@ -67,7 +67,7 @@ public class CoordinateFinder {
         return getWordCoordinates(searchTerms, proximitySearchDistance, rotation, getAllWords(), getPageSize());
     }
 
-    Dimension getPageSize() {
+    public Dimension getPageSize() {
         Dimension pageSize = new Dimension(0, 0);
         try {
             Page page = document.getFirstPage();

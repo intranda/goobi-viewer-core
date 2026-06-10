@@ -71,9 +71,9 @@ public final class ALTOTools {
     public static final String TAG_LABEL_IGNORE_REGEX =
             "(^[^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+)|([^a-zA-ZÄäÁáÀàÂâÖöÓóÒòÔôÜüÚúÙùÛûëÉéÈèÊêßñ]+$)";
     /**
-     * Characters that can cause an "Invalid UTF-8 middle byte" error in the parser. Encoded as Unicode escapes (instead of the literal
-     * glyphs) so the source file stays pure ASCII; the trailing U+FFFD replacement character in particular made the SonarCloud/ECJ parser
-     * emit an "Invalid character encountered" warning. The escapes compile to exactly the same characters at runtime.
+     * Characters that can cause an "Invalid UTF-8 middle byte" error in the parser. Encoded as Unicode escapes (instead of the literal glyphs) so the
+     * source file stays pure ASCII; the trailing U+FFFD replacement character in particular made the SonarCloud/ECJ parser emit an "Invalid character
+     * encountered" warning. The escapes compile to exactly the same characters at runtime.
      */
     public static final String ALTO_PROBLEMATIC_CHARS = "[\uFB05\uFB06\uFB03\uFB04\uFB02\uFB01\uFFFD]";
     // Pre-compiled patterns to avoid per-call Pattern.compile() in hot paths (called for every ALTO word/tag)
@@ -298,13 +298,67 @@ public final class ALTOTools {
     }
 
     public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int proximitySearchDistance, int rotation) {
+        return getWordCoords(altoString, charset, searchTerms, proximitySearchDistance, rotation, null);
+    }
+
+    /**
+     * Returns word coordinates scaled to the given actual image size.
+     *
+     * @param altoString ALTO XML document as a string
+     * @param charset character encoding of the ALTO document
+     * @param searchTerms set of terms whose coordinates to locate
+     * @param proximitySearchDistance maximum word distance for proximity search
+     * @param rotation image rotation in degrees
+     * @param imageSize actual image dimensions; if non-null and different from the ALTO page dimensions, coordinates are scaled proportionally
+     * @return a list of coordinate strings scaled to the actual image size
+     * @should scale coords when actual image size differs from ALTO page size
+     */
+    public static List<String> getWordCoords(String altoString, String charset, Set<String> searchTerms, int proximitySearchDistance, int rotation,
+            Dimension imageSize) {
         try {
-            return new CoordinateFinder(altoString, charset).getWordCoords(searchTerms, proximitySearchDistance, rotation);
-            //            return new WordCoordinateService(altoString, charset).getWordCoords(searchTerms, proximitySearchDistance, rotation);
+            CoordinateFinder finder = new CoordinateFinder(altoString, charset);
+            List<String> coords = finder.getWordCoords(searchTerms, proximitySearchDistance, rotation);
+            if (imageSize != null && !coords.isEmpty()) {
+                Dimension pageSize = finder.getPageSize();
+                if (pageSize.width > 0 && pageSize.height > 0
+                        && (pageSize.width != imageSize.width || pageSize.height != imageSize.height)) {
+                    coords = scaleCoords(coords, pageSize, imageSize);
+                }
+            }
+            return coords;
         } catch (IOException | JDOMException e) {
             logger.error("Could not parse alto: {}", e.toString());
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * Scales a list of coordinate strings from one page size to another.
+     *
+     * @param coords list of coordinate strings in "x1,y1,x2,y2" format
+     * @param fromSize source page dimensions (ALTO page size)
+     * @param toSize target image dimensions
+     * @return list of scaled coordinate strings
+     */
+    static List<String> scaleCoords(List<String> coords, Dimension fromSize, Dimension toSize) {
+        double scaleX = (double) toSize.width / fromSize.width;
+        double scaleY = (double) toSize.height / fromSize.height;
+        List<String> scaled = new ArrayList<>(coords.size());
+        for (String coord : coords) {
+            try {
+                Rectangle rect = getRectangle(coord);
+                // Scale all four corners independently to avoid accumulated rounding errors
+                int x1 = (int) (rect.x * scaleX);
+                int y1 = (int) (rect.y * scaleY);
+                int x2 = (int) ((rect.x + rect.width) * scaleX);
+                int y2 = (int) ((rect.y + rect.height) * scaleY);
+                scaled.add(getString(new Rectangle(x1, y1, x2 - x1, y2 - y1)));
+            } catch (NumberFormatException e) {
+                logger.error("Cannot scale coords {}: {}", coord, e.getMessage());
+                scaled.add(coord);
+            }
+        }
+        return scaled;
     }
 
     /**
