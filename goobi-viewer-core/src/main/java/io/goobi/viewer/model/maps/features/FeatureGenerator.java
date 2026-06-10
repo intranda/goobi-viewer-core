@@ -55,8 +55,8 @@ import jakarta.ws.rs.core.UriBuilder;
 import mil.nga.sf.geojson.Geometry;
 
 /**
- * Converts {@link MetadataDocument} objects retrieved from Solr into GeoJSON
- * {@link io.goobi.viewer.model.maps.GeoMapFeature} instances for rendering on geo maps.
+ * Converts {@link MetadataDocument} objects retrieved from Solr into GeoJSON {@link io.goobi.viewer.model.maps.GeoMapFeature} instances for rendering
+ * on geo maps.
  */
 public class FeatureGenerator {
 
@@ -191,6 +191,9 @@ public class FeatureGenerator {
                     new GeoMapFeatureItem(entityTitle, link != null ? link.toString() : "",
                             getValueMap(this.additionalFields, metadata, topDocument)));
             feature.setFilterQuery(filterQuery);
+            if (metadata.containsField(SolrConstants.LOGID)) {
+                feature.setDocumentId(metadata.getFirstValue(SolrConstants.LOGID));
+            }
             return feature;
         }).filter(Objects::nonNull).toList();
     }
