@@ -837,41 +837,35 @@ public class ThumbnailHandler {
     }
 
     /**
+     * Returns the value of the solr field {@link SolrConstants#THUMBNAIL} if present. Otherwise a placeholder file path depending on the mimetype of
+     * the document is returned If no replacement is known for the mimetype, the given thumbnailUrl is returned
+     * 
      *
      * @param doc struct element whose docstrct image path to resolve
      * @param thumbnailUrl fallback thumbnail URL if no specific path is determined
      * @return {@link String}
      */
     public String getDocStructImagePath(StructElement doc, final String thumbnailUrl) {
-        String ret = thumbnailUrl;
-        String mimeType = getMimeType(doc).orElse("unknown");
 
+        String ret = getFieldValue(doc, SolrConstants.THUMBNAIL);
+        String mimeType = getMimeType(doc).orElse("unknown");
         MimeType mediaType = new MimeType(mimeType);
 
-        if (mediaType.isImage()) {
-            ret = getFieldValue(doc, SolrConstants.THUMBNAIL);
-        } else if (mediaType.isVideo() || mediaType.isSandboxedHtml()) {
-            ret = getFieldValue(doc, SolrConstants.THUMBNAIL);
-            if (StringUtils.isEmpty(ret) || !isImageMimeType(ret)) {
+        if (StringUtils.isEmpty(ret) || !isImageMimeType(ret)) {
+            if (mediaType.isVideo() || mediaType.isSandboxedHtml()) {
                 ret = getThumbnailPath(VIDEO_THUMB).toString();
-            }
-        } else if (mediaType.isAudio()) {
-            ret = getFieldValue(doc, SolrConstants.THUMBNAIL);
-            if (StringUtils.isEmpty(ret) || !isImageMimeType(ret)) {
+            } else if (mediaType.isAudio()) {
                 ret = getThumbnailPath(AUDIO_THUMB).toString();
-            }
-        } else if (mediaType.isPdf()) {
-            if (doc.isHasImages()) {
-                ret = getFieldValue(doc, SolrConstants.THUMBNAIL);
-            } else {
+            } else if (mediaType.isPdf()) {
                 ret = getThumbnailPath(PDF_THUMB).toString();
+            } else if (mediaType.isEpub()) {
+                ret = getThumbnailPath(EPUB_THUMB).toString();
+            } else if (mediaType.isMEI() || StringUtils.isNotBlank(doc.getMetadataValue(SolrConstants.FILENAME_MEI))) {
+                ret = getThumbnailPath(MEI_THUMB).toString();
+            } else if (logger.isWarnEnabled()) {
+                ret = thumbnailUrl;
+                logger.warn("Mime type of '{}' (file: {}) not supported: {}", doc.getPi(), getFilename(doc).orElse("unknown"), mimeType);
             }
-        } else if (mediaType.isEpub()) {
-            ret = getThumbnailPath(EPUB_THUMB).toString();
-        } else if (mediaType.isMEI() || StringUtils.isNotBlank(doc.getMetadataValue(SolrConstants.FILENAME_MEI))) {
-            ret = getThumbnailPath(MEI_THUMB).toString();
-        } else if (logger.isWarnEnabled()) {
-            logger.warn("Mime type of '{}' (file: {}) not supported: {}", doc.getPi(), getFilename(doc).orElse("unknown"), mimeType);
         }
 
         return ret;

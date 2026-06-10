@@ -23,16 +23,16 @@
 			  z-index: 1001;
     	}
     </style>
-    TEST
+
     <div
         id="webarchiveContainer"
         class="view-object__webarchive"
         data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
         <replay-web-page
-            embed="replay-with-info"
-            replayBase="#{request.contextPath}/resources/javascript/libs/replaywebpage/dist/"
-            source="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/webarchives.json"
-            url="#{activeDocumentBean.viewManager.webArchiveSeedUrl}" />
+            embed="full"
+            url="#{activeDocumentBean.viewManager.webArchiveSeedUrl}"
+            replayBase="#{request.contextPath}/resources/javascript/libs/replaywebpage/"
+            source="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/webarchives.json" />
 
         <!-- ACCESS DENIED DESCRIPTION TEXT -->
         <h:panelGroup

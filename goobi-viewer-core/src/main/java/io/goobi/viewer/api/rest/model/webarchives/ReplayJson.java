@@ -23,13 +23,9 @@ package io.goobi.viewer.api.rest.model.webarchives;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Response model for replaywebpage json")
-@JsonInclude(Include.NON_NULL)
 public class ReplayJson {
 
     private final String id;
@@ -55,6 +51,10 @@ public class ReplayJson {
 
     public List<WebArchiveResource> getResources() {
         return resources;
+    }
+
+    public String getDownloadUrl() {
+        return null;
     }
 
 }
