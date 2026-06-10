@@ -206,6 +206,10 @@ public class ViewManager implements Serializable {
     /** Table of contents object. Volatile so that the post-lock write in ActiveDocumentBean.update() is immediately visible to all threads. */
     private volatile TOC toc; //NOSONAR S3077: set once post-lock, safe publication
 
+    /**
+     * @deprecated image rotation is done solely in browser frontend
+     */
+    @Deprecated(since = "26.06")
     private int rotate = 0;
     private int zoomSlider;
     private int currentImageOrder = -1;
@@ -1053,7 +1057,9 @@ public class ViewManager implements Serializable {
      * @return a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated directly use {@link PhysicalElement#getImageWidth() instead
      */
+    @Deprecated(since = "26.06")
     public int getCurrentWidth() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage != null) {
@@ -1071,7 +1077,9 @@ public class ViewManager implements Serializable {
      * @return a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated directly use {@link PhysicalElement#getImageHeight() instead
      */
+    @Deprecated(since = "26.06")
     public int getCurrentHeight() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage != null) {
@@ -1159,7 +1167,9 @@ public class ViewManager implements Serializable {
      *
      * @should decrement rotation by 90 degrees and wrap from 0 to 270
      * @return null (JSF navigation outcome; rotation is applied as a side effect)
+     * @deprecated image rotation is done solely in browser frontend
      */
+    @Deprecated(since = "26.06")
     public String rotateLeft() {
         rotate -= 90;
         if (rotate < 0) {
@@ -1178,7 +1188,9 @@ public class ViewManager implements Serializable {
      *
      * @should increment rotation by 90 degrees and wrap from 270 to 0
      * @return null (JSF navigation outcome; rotation is applied as a side effect)
+     * @deprecated image rotation is done solely in browser frontend
      */
+    @Deprecated(since = "26.06")
     public String rotateRight() {
         rotate += 90;
         if (rotate == 360) {
@@ -1194,7 +1206,9 @@ public class ViewManager implements Serializable {
      *
      * @should reset rotation
      * @return null (JSF navigation outcome; rotation is reset to 0 as a side effect)
+     * @deprecated image rotation is done solely in browser frontend
      */
+    @Deprecated(since = "26.06")
     public String resetImage() {
         this.rotate = 0;
         logger.trace("resetImage: {}", rotate);
@@ -3008,7 +3022,9 @@ public class ViewManager implements Serializable {
      * getCurrentRotate.
      *
      * @return a int.
+     * @deprecated image rotation is done solely in browser frontend
      */
+    @Deprecated(since = "26.06")
     public int getCurrentRotate() {
         return rotate;
     }
