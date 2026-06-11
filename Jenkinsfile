@@ -175,6 +175,7 @@ pipeline {
         anyOf {
           tag 'v*'
           branch 'release*'
+          branch 'sonar*'
           expression { return params.RUN_SONAR_ANALYSIS == 'true' }
         }
       }
