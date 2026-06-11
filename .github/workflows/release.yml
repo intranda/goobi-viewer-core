@@ -31,7 +31,6 @@ jobs:
         run: mvn -f pom.xml clean package -U -B
       - name: Create config.tar.gz
         run: |
-          cd goobi-viewer-config/install config
           cd goobi-viewer-config/install && tar -czf ../../config.tar.gz *
       - name: Create a Github release
         uses: actions/create-release@v1

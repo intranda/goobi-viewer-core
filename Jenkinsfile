@@ -22,7 +22,7 @@ pipeline {
   }
 
   parameters {
-    string(name: 'RUN_SONAR_ANALYSIS', defaultValue: 'false', description: 'Manually trigger sonar analysis (v* tags and release* branches always do it)')
+    booleanParam(name: 'RUN_SONAR_ANALYSIS', defaultValue: false, description: 'Manually trigger sonar analysis (v* tags and release* branches always do it)')
     booleanParam(name: 'BUILD_DOCKER_IMAGE', defaultValue: false, description: 'Build & push the Docker image (applies only on develop and v* tags)')
   }
 
@@ -189,6 +189,8 @@ pipeline {
         }
       }
       steps {
+        unstash 'm2-goobi-viewer'
+        sh 'mkdir -p /var/maven/.m2/repository/io/goobi/viewer && cp -r m2-goobi-viewer/. /var/maven/.m2/repository/io/goobi/viewer/ || true'
         withCredentials([string(credentialsId: 'jenkins-sonarcloud', variable: 'TOKEN')]) {
           sh "mvn -f goobi-viewer-core/pom.xml sonar:sonar -Dchangelist=\$BUILD_TYPE -Dsonar.token=\$TOKEN -Dmaven.main.skip=true --no-transfer-progress"
           sh "mvn -f goobi-viewer-connector/pom.xml  sonar:sonar -Dchangelist=\$BUILD_TYPE -Dsonar.token=\$TOKEN -Dmaven.main.skip=true --no-transfer-progress"
