@@ -23,11 +23,11 @@ package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1044,7 +1044,9 @@ public class CalendarBean implements Serializable {
     protected static void addEmptyDays(CalendarItemWeek currentWeek, LocalDate date) {
 
         LocalDate previousMonday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        long daysToAdd = Duration.between(previousMonday.atStartOfDay(), date.atStartOfDay()).toDays();
+        // Count whole calendar days via ChronoUnit; Duration.toDays() measures elapsed time, which is the
+        // wrong semantics for a day count and is flagged by S8700. Numerically equivalent here.
+        long daysToAdd = ChronoUnit.DAYS.between(previousMonday, date);
         LongStream.range(0, daysToAdd).forEach(i -> currentWeek.addDay(new CalendarItemDay("", 0, 0)));
 
     }

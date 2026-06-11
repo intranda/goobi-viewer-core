@@ -21,7 +21,6 @@
  */
 package io.goobi.viewer.model.statistics.usage;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -266,9 +265,10 @@ public class StatisticsSummary {
     }
 
     public boolean isOlderThan(long num, TemporalUnit unit, Temporal currentTime) {
-        Duration maxAge = Duration.of(num, unit);
-        Duration sinceCreation = Duration.between(getCreationTime(), currentTime);
-        return sinceCreation.compareTo(maxAge) > 0;
+        // Compare against an explicit expiry (creationTime + maxAge) instead of measuring a Duration
+        // between zone-less temporals, which S8700 flags as DST-unsafe; result is equivalent.
+        LocalDateTime expiry = getCreationTime().plus(num, unit);
+        return LocalDateTime.from(currentTime).isAfter(expiry);
     }
 
     public LocalDateTime getCreationTime() {

@@ -52,8 +52,8 @@ public class ConfigEditorEndpoint {
 
     private static final Logger logger = LogManager.getLogger(ConfigEditorEndpoint.class);
 
-    private volatile Optional<Path> lockedFilePath = Optional.empty();
-    private volatile Optional<String> httpSessionId = Optional.empty();
+    private volatile Optional<Path> lockedFilePath = Optional.empty(); // NOSONAR immutable Optional; volatile publishes reference only
+    private volatile Optional<String> httpSessionId = Optional.empty(); // NOSONAR immutable Optional; volatile publishes reference only
 
     /**
      * Store id of http session.

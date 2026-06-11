@@ -25,10 +25,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.security.SecureRandom;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -567,8 +567,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
             return -1;
         }
 
-        LocalDateTime now = LocalDate.now().atStartOfDay();
-        return Math.max(0L, Duration.between(now, dateStart).toDays());
+        // Count whole calendar days via ChronoUnit; Duration.toDays() measures elapsed time, which is the
+        // wrong semantics for a day count and is flagged by S8700. Numerically equivalent here.
+        return Math.max(0L, ChronoUnit.DAYS.between(LocalDate.now(), dateStart.toLocalDate()));
     }
 
     /**
@@ -584,8 +585,9 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
             return -1;
         }
 
-        LocalDateTime now = LocalDate.now().atStartOfDay();
-        return Math.max(0L, Duration.between(now, dateEnd).toDays());
+        // Count whole calendar days via ChronoUnit; Duration.toDays() measures elapsed time, which is the
+        // wrong semantics for a day count and is flagged by S8700. Numerically equivalent here.
+        return Math.max(0L, ChronoUnit.DAYS.between(LocalDate.now(), dateEnd.toLocalDate()));
     }
 
     /**
