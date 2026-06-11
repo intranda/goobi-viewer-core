@@ -58,9 +58,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
-
 import org.apache.solr.common.SolrDocument;
 
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.tasks.Task;
 import io.goobi.viewer.api.rest.model.tasks.TaskParameter;
@@ -91,6 +91,7 @@ import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.FacetItem;
 import io.goobi.viewer.model.search.FilterQueryParser;
 import io.goobi.viewer.model.search.IFacetItem;
+import io.goobi.viewer.model.search.QuickFilterField;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -98,7 +99,6 @@ import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchHit;
 import io.goobi.viewer.model.search.SearchInterface;
-import io.goobi.viewer.model.search.QuickFilterField;
 import io.goobi.viewer.model.search.SearchQueryGroup;
 import io.goobi.viewer.model.search.SearchQueryItem;
 import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
@@ -114,6 +114,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
+import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.servlets.utils.ServletUtils;
 import io.goobi.viewer.solr.SolrConstants;
 import jakarta.annotation.PostConstruct;
@@ -358,9 +359,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Copies current FACET_DROPDOWN selections from {@link #quickFilterValues} into the active facets so the
-     * sidebar facet widget shows them as active filters (in addition to the quickfilter dropdown UI). Existing
-     * active facets for the same fields are replaced; unrelated active facets (e.g. sidebar selections) are preserved.
+     * Copies current FACET_DROPDOWN selections from {@link #quickFilterValues} into the active facets so the sidebar facet widget shows them as
+     * active filters (in addition to the quickfilter dropdown UI). Existing active facets for the same fields are replaced; unrelated active facets
+     * (e.g. sidebar selections) are preserved.
      */
     private void registerQuickFilterDropdownsAsActiveFacets() {
         Set<String> dropdownFields = new HashSet<>();
@@ -422,11 +423,10 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Reverse of {@link #registerQuickFilterDropdownsAsActiveFacets()}: copies the current active facet values back
-     * into {@link #quickFilterValues} for every FACET_DROPDOWN quick filter field. This keeps the quickfilter dropdown
-     * UI in sync when an active facet is removed elsewhere (e.g. via the sidebar facet widget). Fields without a
-     * matching active facet are cleared. Date range and checkbox group filters are not touched, as they do not flow
-     * through the active facet system.
+     * Reverse of {@link #registerQuickFilterDropdownsAsActiveFacets()}: copies the current active facet values back into {@link #quickFilterValues}
+     * for every FACET_DROPDOWN quick filter field. This keeps the quickfilter dropdown UI in sync when an active facet is removed elsewhere (e.g. via
+     * the sidebar facet widget). Fields without a matching active facet are cleared. Date range and checkbox group filters are not touched, as they
+     * do not flow through the active facet system.
      */
     private void mirrorActiveFacetsToQuickFilterDropdowns() {
         if (!isQuickFiltersEnabled()) {
@@ -1203,8 +1203,13 @@ public class SearchBean implements SearchInterface, Serializable {
                         }
                     }
                     if (!"*".equals(from) || !"*".equals(to)) {
-                        sbFilterQuery.append(" +(").append(field.getSolrField())
-                                .append(":[").append(from).append(" TO ").append(to).append("])");
+                        sbFilterQuery.append(" +(")
+                                .append(field.getSolrField())
+                                .append(":[")
+                                .append(from)
+                                .append(" TO ")
+                                .append(to)
+                                .append("])");
                     }
                     break;
                 case FACET_DROPDOWN:
@@ -2283,6 +2288,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws IllegalRequestException
      */
     public List<StringPair> getAdvancedSearchSelectItems(String field, String language, boolean hierarchical)
             throws PresentationException, IndexUnreachableException, DAOException {
@@ -2295,7 +2301,14 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         // Check for pre-generated items
-        String key = new StringBuilder(getActiveResultGroupName()).append('_').append(language).append('_').append(field).toString();
+        String subThemeSuffix = navigationHelper != null ? navigationHelper.getSubThemeDiscriminatorQuerySuffix() : "";
+        String key = new StringBuilder(getActiveResultGroupName()).append('_')
+                .append(language)
+                .append('_')
+                .append(field)
+                .append('_')
+                .append(subThemeSuffix)
+                .toString();
         List<StringPair> ret = advancedSearchSelectItems.get(key);
         if (ret != null) {
             return ret;
@@ -2335,32 +2348,40 @@ public class SearchBean implements SearchInterface, Serializable {
                 }
             }
         } else if (hierarchical) {
-            BrowseBean browseBean = BeanUtils.getBrowseBean();
-            if (browseBean == null) {
-                browseBean = new BrowseBean();
-            }
             // Make sure displayDepth is at configured to the desired depth for this field (or -1 for complete depth)
-            int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(field);
-            List<BrowseDcElement> elementList = browseBean.getList(field, displayDepth);
-            StringBuilder sbItemLabel = new StringBuilder();
-            for (BrowseDcElement dc : elementList) {
-                // Skip reversed values that MD_* and MD2_* fields will return
-                if (StringUtils.isEmpty(dc.getName()) || dc.getName().charAt(0) == 1) {
-                    continue;
+            try {
+                int displayDepth = DataManager.getInstance().getConfiguration().getCollectionDisplayDepthForSearch(field);
+                String filterQuery = subThemeSuffix.isEmpty() ? null : subThemeSuffix;
+                var collectionData = SearchHelper.findAllCollectionsFromField(field, null, filterQuery, true, true,
+                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(field));
+                CollectionView collectionView = new CollectionView(field, () -> collectionData);
+                collectionView.populateCollectionList();
+                collectionView.expandAll(displayDepth, false);
+                collectionView.calculateVisibleDcElements(false);
+                List<BrowseDcElement> elementList = new ArrayList<>(collectionView.getVisibleDcElements());
+                StringBuilder sbItemLabel = new StringBuilder();
+                for (BrowseDcElement dc : elementList) {
+                    // Skip reversed values that MD_* and MD2_* fields will return
+                    if (StringUtils.isEmpty(dc.getName()) || dc.getName().charAt(0) == 1) {
+                        continue;
+                    }
+                    for (int i = 0; i < dc.getLevel(); ++i) {
+                        sbItemLabel.append("- ");
+                    }
+                    sbItemLabel.append(ViewerResourceBundle.getTranslation(dc.getName(), locale));
+                    ret.add(new StringPair(dc.getName(), sbItemLabel.toString()));
+                    sbItemLabel.setLength(0);
                 }
-                for (int i = 0; i < dc.getLevel(); ++i) {
-                    sbItemLabel.append("- ");
-                }
-                sbItemLabel.append(ViewerResourceBundle.getTranslation(dc.getName(), locale));
-                ret.add(new StringPair(dc.getName(), sbItemLabel.toString()));
-                sbItemLabel.setLength(0);
+                advancedSearchSelectItems.put(key, ret);
+            } catch (IllegalRequestException e) {
+                throw new PresentationException(e.toString(), e);
             }
-            advancedSearchSelectItems.put(key, ret);
         } else {
             String suffix = SearchHelper.getAllSuffixes();
             if (activeResultGroup != null) {
                 suffix = suffix + " +(" + activeResultGroup.getQuery() + ")";
             }
+            suffix += subThemeSuffix;
             String query = field + ":[* TO *]" + suffix;
             List<String> values = SearchHelper.getFacetValues(query, field, 1);
             for (String value : values) {

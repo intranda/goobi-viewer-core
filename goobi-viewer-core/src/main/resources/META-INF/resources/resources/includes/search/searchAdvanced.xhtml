@@ -401,13 +401,11 @@
                                                             itemLabel="#{msg.select}"
                                                             itemValue=""
                                                             noSelectionOption="true" />
-                                                        <c:forEach
+                                                        <f:selectItems
+                                                            value="#{queryItem.getSelectItems(navigationHelper.localeString)}"
                                                             var="item"
-                                                            items="#{queryItem.getSelectItems(navigationHelper.localeString)}">
-                                                            <f:selectItem
-                                                                itemValue="#{item.one}"
-                                                                itemLabel="#{item.two}" />
-                                                        </c:forEach>
+                                                            itemValue="#{item.one}"
+                                                            itemLabel="#{item.two}" />
                                                         <f:passThroughAttribute
                                                             name="aria-label"
                                                             value="#{msg.cms_collections_err_noselection}" />
