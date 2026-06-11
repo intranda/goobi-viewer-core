@@ -252,7 +252,6 @@
 		<view-id value="/searchTermsList.xhtml" />
 		<query-param name="subtheme" onPostback="false" >#{subtheme}</query-param>
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{browseBean.setCurrentStringFilter('-')}</action>
         <action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
@@ -264,7 +263,6 @@
 		<view-id value="/searchTermsList.xhtml" />
 		<query-param name="subtheme" onPostback="false" >#{subtheme}</query-param>
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
-		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
@@ -275,7 +273,6 @@
         <view-id value="/searchTermsList.xhtml" />
         <query-param name="subtheme" onPostback="false" >#{subtheme}</query-param>
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
         <action onPostback="false">#{browseBean.searchTermsAction}</action>

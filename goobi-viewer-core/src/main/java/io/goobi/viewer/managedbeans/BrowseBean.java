@@ -384,6 +384,7 @@ public class BrowseBean implements Serializable {
                     || DataManager.getInstance().getConfiguration().getSearchResultGroups().isEmpty())
                             ? Collections.singletonList(SearchResultGroup.createDefaultGroup())
                             : DataManager.getInstance().getConfiguration().getSearchResultGroups());
+            useFilterQuery = useFilterQuery + " " + this.navigationHelper.getSubThemeDiscriminatorQuerySuffix();
             // logger.trace("useFilterQuery: {}", useFilterQuery); //NOSONAR Debug
 
             // Populate the list of available starting characters with ones that actually exist in the complete terms list
@@ -693,7 +694,7 @@ public class BrowseBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-
+     * 
      */
     Map<String, List<String>> getAvailableStringFiltersMap() {
         return availableStringFilters;

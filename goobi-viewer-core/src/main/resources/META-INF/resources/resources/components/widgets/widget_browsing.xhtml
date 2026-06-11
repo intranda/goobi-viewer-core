@@ -30,7 +30,7 @@
                                     var="item">
                                     <h:panelGroup rendered="#{browseBean.browsingMenuField == item}">
                                         <li class="#{navigationHelper.currentPage == 'searchTermList' ? 'active' : ''}">
-                                            <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">
+                                            <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/#{navigationHelper.subThemeQueryParam}">
                                                 <h:outputText value="#{msg[item]}" />
                                                 <h:outputText
                                                     rendered="#{browseBean.browsingMenuField != item}"
@@ -40,7 +40,7 @@
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{browseBean.browsingMenuField != item}">
                                         <li>
-                                            <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">
+                                            <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/#{navigationHelper.subThemeQueryParam}">
                                                 <h:outputText value="#{msg[item]}" />
                                             </h:outputLink>
                                         </li>
@@ -78,7 +78,7 @@
                                         var="item">
                                         <h:panelGroup rendered="#{browseBean.browsingMenuField == item}">
                                             <li class="active">
-                                                <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">
+                                                <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/#{navigationHelper.subThemeQueryParam}">
                                                     <h:outputText value="#{msg[item]}" />
                                                     <h:outputText
                                                         rendered="#{browseBean.browsingMenuField != item}"
@@ -88,7 +88,7 @@
                                         </h:panelGroup>
                                         <h:panelGroup rendered="#{browseBean.browsingMenuField != item}">
                                             <li>
-                                                <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/">
+                                                <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/#{navigationHelper.subThemeQueryParam}">
                                                     <h:outputText value="#{msg[item]}" />
                                                 </h:outputLink>
                                             </li>
