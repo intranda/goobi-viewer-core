@@ -339,10 +339,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * isHasParent.
      *
-     * @return true if this struct element has a parent element (i.e. IDDOC_PARENT is set in the Solr document), false otherwise
+     * @return true if this struct element has a parent element, false otherwise
      */
     public boolean isHasParent() {
-        return getMetadataValue(SolrConstants.IDDOC_PARENT) != null;
+        // A volume's parent is its anchor (linked via the stable PI_PARENT); a sub-docstruct's parent is another
+        // docstruct within the same record (linked via IDDOC_PARENT).
+        return getMetadataValue(SolrConstants.IDDOC_PARENT) != null || getMetadataValue(SolrConstants.PI_PARENT) != null;
     }
 
     @Override
@@ -375,12 +377,27 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         //        logger.trace("getParent"); //NOSONAR Debug
         StructElement parent = null;
         try {
+            // A volume's parent is its anchor, resolved via the stable PI_PARENT (the anchor's IDDOC may have changed
+            // since this volume was indexed, so IDDOC_PARENT cannot be relied on for the cross-record link).
+            String parentPi = getMetadataValue(SolrConstants.PI_PARENT);
+            if (parentPi != null) {
+                SolrDocument anchorDoc = DataManager.getInstance()
+                        .getSearchIndex()
+                        .getFirstDoc(new StringBuilder(SolrConstants.PI).append(":\"").append(parentPi).append('"').toString(), null);
+                if (anchorDoc != null) {
+                    parent = new StructElement(anchorDoc);
+                }
+                return parent;
+            }
+            // Intra-record hierarchy: the parent docstruct within the same record, linked via the (stable) IDDOC_PARENT.
             String parentIddoc = getMetadataValue(SolrConstants.IDDOC_PARENT);
             if (parentIddoc != null) {
                 parent = new StructElement(parentIddoc, null);
             }
         } catch (NumberFormatException e) {
             logger.error("Malformed number with get the parent element for Lucene IDDOC: {}", luceneId);
+        } catch (PresentationException e) {
+            logger.error("Could not load parent anchor for '{}': {}", pi, e.getMessage());
         }
 
         return parent;
@@ -414,13 +431,12 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      */
     public boolean isHasChildren() throws IndexUnreachableException, PresentationException {
         if (hasChildren == null) {
-            if (DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString()) > 0) {
-                hasChildren = true;
-            } else {
-                hasChildren = false;
-            }
+            // For an anchor, "children" are its volumes (linked via the stable PI_PARENT); otherwise they are
+            // intra-record child docstructs (linked via IDDOC_PARENT).
+            String query = anchor
+                    ? new StringBuilder(SolrConstants.PI_PARENT).append(":\"").append(getPi()).append('"').toString()
+                    : new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString();
+            hasChildren = DataManager.getInstance().getSearchIndex().getHitCount(query) > 0;
         }
 
         return hasChildren;
@@ -893,7 +909,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         if (anchor) {
             SolrDocument docParent = DataManager.getInstance()
                     .getSearchIndex()
-                    .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(':').append(luceneId).toString(),
+                    .getFirstDoc(new StringBuilder(SolrConstants.PI_PARENT).append(":\"").append(getPi()).append('"').toString(),
                             Collections.singletonList(field), Collections.singletonList(new StringPair(SolrConstants.CURRENTNOSORT, "asc")));
             if (docParent == null) {
                 logger.warn("Anchor (PI: {}) has no child element: Cannot determine appropriate value", pi);
@@ -941,7 +957,7 @@ public class StructElement extends StructElementStub implements Comparable<Struc
 
             SolrDocument docVolume = DataManager.getInstance()
                     .getSearchIndex()
-                    .getFirstDoc(new StringBuilder(SolrConstants.IDDOC_PARENT).append(":\"").append(luceneId).append('"').toString(), fields,
+                    .getFirstDoc(new StringBuilder(SolrConstants.PI_PARENT).append(":\"").append(getPi()).append('"').toString(), fields,
                             sortFields);
             if (docVolume == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");

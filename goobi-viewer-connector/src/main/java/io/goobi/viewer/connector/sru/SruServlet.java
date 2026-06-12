@@ -612,7 +612,7 @@ public class SruServlet extends HttpServlet {
         } else {
             title = "";
         }
-        if (doc.getFieldValue("IDDOC_PARENT") != null) {
+        if (doc.getFieldValue(SolrConstants.PI_PARENT) != null) {
             // If this is a volume, add anchor title in front
             String anchorTitle = getAnchorTitle(doc, solr, filterQuerySuffix);
             if (anchorTitle != null) {
@@ -737,8 +737,8 @@ public class SruServlet extends HttpServlet {
      * @throws IOException
      */
     private static String getAnchorTitle(SolrDocument doc, SolrSearchIndex solr, String filterQuerySuffix) throws SolrServerException, IOException {
-        String iddocParent = (String) doc.getFieldValue(SolrConstants.IDDOC_PARENT);
-        SolrDocumentList hits = solr.search(SolrConstants.IDDOC + ":" + iddocParent, filterQuerySuffix);
+        String anchorPi = (String) doc.getFieldValue(SolrConstants.PI_PARENT);
+        SolrDocumentList hits = solr.search(SolrConstants.PI + ":\"" + anchorPi + "\"", filterQuerySuffix);
         if (hits != null && !hits.isEmpty()) {
             return (String) hits.get(0).getFirstValue("MD_TITLE");
         }

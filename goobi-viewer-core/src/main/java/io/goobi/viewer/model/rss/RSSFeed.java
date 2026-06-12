@@ -86,9 +86,10 @@ public final class RSSFeed {
     /** Constant <code>FIELDS</code>. */
     private static final String[] FIELDS = { SolrConstants.ACCESSCONDITION, SolrConstants.DATECREATED, SolrConstants.FILENAME, SolrConstants.FULLTEXT,
             SolrConstants.IDDOC, SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.IDDOC_PARENT,
-            SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.NUMVOLUMES,
-            SolrConstants.PERSON_ONEFIELD, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH, SolrConstants.PUBLISHER,
-            SolrConstants.THUMBNAIL, SolrConstants.THUMBPAGENO, SolrConstants.URN, SolrConstants.YEARPUBLISH, "MD_SHELFMARK" };
+            SolrConstants.PI_PARENT, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.LOGID, SolrConstants.MIMETYPE,
+            SolrConstants.NUMVOLUMES, SolrConstants.PERSON_ONEFIELD, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.PLACEPUBLISH,
+            SolrConstants.PUBLISHER, SolrConstants.THUMBNAIL, SolrConstants.THUMBPAGENO, SolrConstants.URN, SolrConstants.YEARPUBLISH,
+            "MD_SHELFMARK" };
 
     private static final String HTML_STRONG_PUBLISHED = "<strong>Published: </strong>";
 
@@ -266,14 +267,16 @@ public final class RSSFeed {
 
                 switch (field) {
                     case SolrConstants.LABEL:
-                        // It is important that LABEL comes before IDDOC_PARENT in the static field list!
+                        // It is important that LABEL comes before PI_PARENT in the static field list!
                         label = (String) value;
                         break;
-                    case SolrConstants.IDDOC_PARENT:
+                    case SolrConstants.PI_PARENT:
+                        // For a volume, prepend the anchor (book series) label. Resolve the anchor by its stable
+                        // PI (the anchor's IDDOC may have changed since this volume was indexed).
                         // TODO This query is executed O(size of feed) times.
                         SolrDocumentList hits = DataManager.getInstance()
                                 .getSearchIndex()
-                                .search(new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
+                                .search(new StringBuilder(SolrConstants.PI).append(":\"").append(value).append('"').toString(), 1, null,
                                         Collections.singletonList(SolrConstants.LABEL));
                         if (hits != null && hits.getNumFound() > 0) {
                             SolrDocument parent = hits.get(0);
@@ -577,14 +580,16 @@ public final class RSSFeed {
                 if (value != null) {
                     switch (field) {
                         case SolrConstants.LABEL:
-                            // It is important that LABEL comes before IDDOC_PARENT in the static field list!
+                            // It is important that LABEL comes before PI_PARENT in the static field list!
                             label = (String) value;
                             break;
-                        case SolrConstants.IDDOC_PARENT:
+                        case SolrConstants.PI_PARENT:
+                            // For a volume, prepend the anchor (book series) label. Resolve the anchor by its stable
+                            // PI (the anchor's IDDOC may have changed since this volume was indexed).
                             // TODO This query is executed O(size of feed) times.
                             SolrDocumentList hits = DataManager.getInstance()
                                     .getSearchIndex()
-                                    .search(new StringBuilder(SolrConstants.IDDOC).append(':').append(value).toString(), 1, null,
+                                    .search(new StringBuilder(SolrConstants.PI).append(":\"").append(value).append('"').toString(), 1, null,
                                             Collections.singletonList(SolrConstants.LABEL));
                             if (hits != null && hits.getNumFound() > 0) {
                                 SolrDocument parent = hits.get(0);

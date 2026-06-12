@@ -515,7 +515,9 @@ public final class TocMaker {
             throw new IllegalArgumentException("page must be >=1");
         }
 
-        String query = new StringBuilder(SolrConstants.IDDOC_PARENT).append(":\"").append(iddoc).append('"').toString();
+        // Volumes are linked to their anchor by the stable PI_PARENT (the anchor's IDDOC may change on re-index).
+        String anchorPi = (String) anchorDoc.getFieldValue(SolrConstants.PI);
+        String query = new StringBuilder(SolrConstants.PI_PARENT).append(":\"").append(anchorPi).append('"').toString();
         int hits = (int) DataManager.getInstance().getSearchIndex().getHitCount(query);
         int offset = 0;
         int useHitsPerPage = hitsPerPage;

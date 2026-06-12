@@ -154,6 +154,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     private boolean hasTeiFiles = false;
     @JsonIgnore
     private long numVolumes = 0;
+    /** True once the live volume count has been computed for this (anchor) element. */
+    @JsonIgnore
+    private boolean numVolumesComputed = false;
     private String pi;
     private String logId;
     @JsonIgnore
@@ -374,7 +377,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         work = structElement.isWork();
         anchor = structElement.isAnchor();
         cmsPage = structElement.isCmsPage();
-        numVolumes = structElement.getNumVolumes();
+        // numVolumes is computed live on demand (see getNumVolumes()), not read from the stored NUMVOLUMES field, so
+        // search hits show the current volume count even if the anchor has not yet been re-indexed after a change.
         docStructType = structElement.getDocStructType();
 
         pi = structElement.getPi();
@@ -1150,12 +1154,40 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * Getter for the field <code>numVolumes</code>.
+     * Returns the number of volumes contained in this anchor record. The value is computed live (a Solr count of the
+     * anchor's volumes) rather than read from the stored NUMVOLUMES field, so the figure shown in search hits is current
+     * even if the anchor has not yet been re-indexed after a volume was added or removed. The result is cached per
+     * BrowseElement instance. Non-anchor elements always return 0.
      *
      * @return the number of volumes contained in this anchor record
      */
     public long getNumVolumes() {
+        if (anchor && !numVolumesComputed) {
+            numVolumes = countVolumes();
+            numVolumesComputed = true;
+        }
         return numVolumes;
+    }
+
+    /**
+     * Counts the currently indexed volumes of this anchor (ISWORK records linked to it via the stable PI_PARENT).
+     *
+     * @return the live volume count, or the previously known value if the count query fails
+     */
+    private long countVolumes() {
+        try {
+            return DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(new StringBuilder(SolrConstants.PI_PARENT).append(":\"")
+                            .append(pi)
+                            .append("\" AND ")
+                            .append(SolrConstants.ISWORK)
+                            .append(":true")
+                            .toString());
+        } catch (IndexUnreachableException | PresentationException e) {
+            logger.warn("Could not count volumes for anchor '{}': {}", pi, e.getMessage());
+            return numVolumes;
+        }
     }
 
     /**

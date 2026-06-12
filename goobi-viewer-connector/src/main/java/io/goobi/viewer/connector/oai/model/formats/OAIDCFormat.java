@@ -252,9 +252,10 @@ public class OAIDCFormat extends Format {
         SolrDocument anchorDoc = null;
         if (!isAnchor) {
             SolrDocument childDoc = topstructDoc != null ? topstructDoc : doc;
-            String iddocAnchor = (String) childDoc.getFieldValue(SolrConstants.IDDOC_PARENT);
-            if (iddocAnchor != null) {
-                SolrDocumentList docList = solr.search("+" + SolrConstants.IDDOC + ":" + iddocAnchor, filterQuerySuffix);
+            // Resolve the anchor by its stable PI_PARENT (the anchor's IDDOC may have changed since indexing).
+            String anchorPi = (String) childDoc.getFieldValue(SolrConstants.PI_PARENT);
+            if (anchorPi != null) {
+                SolrDocumentList docList = solr.search("+" + SolrConstants.PI + ":\"" + anchorPi + "\"", filterQuerySuffix);
                 if (docList != null && !docList.isEmpty()) {
                     anchorDoc = docList.get(0);
                 }
@@ -422,15 +423,15 @@ public class OAIDCFormat extends Format {
                 } else if (StringUtils.isNotEmpty(md.getMasterValue())) {
                     // Static value
                     String val = md.getMasterValue();
-                    if ("title".equals(md.getLabel()) && isWork && doc.getFieldValue(SolrConstants.IDDOC_PARENT) != null) {
-                        // If this is a volume, add anchor title in front
-                        String iddocParent = (String) doc.getFieldValue(SolrConstants.IDDOC_PARENT);
-                        String anchorTitle = anchorTitles.get(iddocParent);
+                    if ("title".equals(md.getLabel()) && isWork && doc.getFieldValue(SolrConstants.PI_PARENT) != null) {
+                        // If this is a volume, add anchor title in front (anchor resolved by stable PI_PARENT)
+                        String anchorPi = (String) doc.getFieldValue(SolrConstants.PI_PARENT);
+                        String anchorTitle = anchorTitles.get(anchorPi);
                         if (anchorTitle == null) {
-                            anchorTitle = getAnchorTitle(iddocParent, filterQuerySuffix);
+                            anchorTitle = getAnchorTitle(anchorPi, filterQuerySuffix);
                             if (anchorTitle != null) {
                                 val = anchorTitle + "; " + val;
-                                anchorTitles.put(iddocParent, anchorTitle);
+                                anchorTitles.put(anchorPi, anchorTitle);
                             }
                         }
                     }
@@ -458,14 +459,14 @@ public class OAIDCFormat extends Format {
      * getAnchorTitle.
      * </p>
      *
-     * @param iddocParent
+     * @param anchorPi PI of the anchor record
      * @param filterQuerySuffix Filter query suffix for the client's session
      * @return a {@link java.lang.String} object.
      */
-    protected String getAnchorTitle(String iddocParent, String filterQuerySuffix) {
+    protected String getAnchorTitle(String anchorPi, String filterQuerySuffix) {
         try {
-            logger.trace("anchor title query: {}:{}", SolrConstants.IDDOC, iddocParent);
-            SolrDocumentList hits = solr.search("+" + SolrConstants.IDDOC + ":" + iddocParent, filterQuerySuffix);
+            logger.trace("anchor title query: {}:{}", SolrConstants.PI, anchorPi);
+            SolrDocumentList hits = solr.search("+" + SolrConstants.PI + ":\"" + anchorPi + "\"", filterQuerySuffix);
             if (hits != null && !hits.isEmpty()) {
                 return (String) hits.get(0).getFirstValue(SolrConstants.TITLE);
             }

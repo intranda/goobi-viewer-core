@@ -146,9 +146,10 @@ public class EuropeanaFormat extends OAIDCFormat {
         SolrDocument anchorDoc = null;
         if (!isAnchor) {
             SolrDocument childDoc = topstructDoc != null ? topstructDoc : doc;
-            String iddocAnchor = (String) childDoc.getFieldValue(SolrConstants.IDDOC_PARENT);
-            if (iddocAnchor != null) {
-                SolrDocumentList docList = solr.search("+" + SolrConstants.IDDOC + ":" + iddocAnchor, filterQuerySuffix);
+            // Resolve the anchor by its stable PI_PARENT (the anchor's IDDOC may have changed since indexing).
+            String anchorPi = (String) childDoc.getFieldValue(SolrConstants.PI_PARENT);
+            if (anchorPi != null) {
+                SolrDocumentList docList = solr.search("+" + SolrConstants.PI + ":\"" + anchorPi + "\"", filterQuerySuffix);
                 if (docList != null && !docList.isEmpty()) {
                     anchorDoc = docList.get(0);
                 }
@@ -204,15 +205,15 @@ public class EuropeanaFormat extends OAIDCFormat {
         if (doc.getFieldValues(SolrConstants.TITLE) != null) {
             title = (String) doc.getFieldValues(SolrConstants.TITLE).iterator().next();
         }
-        if (isWork && doc.getFieldValue(SolrConstants.IDDOC_PARENT) != null) {
-            // If this is a volume, add anchor title in front
-            String iddocParent = (String) doc.getFieldValue(SolrConstants.IDDOC_PARENT);
-            String anchorTitle = anchorTitles.get(iddocParent);
+        if (isWork && doc.getFieldValue(SolrConstants.PI_PARENT) != null) {
+            // If this is a volume, add anchor title in front (anchor resolved by stable PI_PARENT)
+            String anchorPi = (String) doc.getFieldValue(SolrConstants.PI_PARENT);
+            String anchorTitle = anchorTitles.get(anchorPi);
             if (anchorTitle == null) {
-                anchorTitle = getAnchorTitle(iddocParent, filterQuerySuffix);
+                anchorTitle = getAnchorTitle(anchorPi, filterQuerySuffix);
                 if (anchorTitle != null) {
                     title = anchorTitle + "; " + title;
-                    anchorTitles.put(iddocParent, anchorTitle);
+                    anchorTitles.put(anchorPi, anchorTitle);
                 }
             }
         }

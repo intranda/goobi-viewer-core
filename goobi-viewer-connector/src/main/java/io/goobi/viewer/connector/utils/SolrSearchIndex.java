@@ -601,7 +601,7 @@ public class SolrSearchIndex implements Closeable {
         }
 
         SolrDocumentList volumes = search(
-                SolrConstants.ISWORK + ":true AND " + SolrConstants.IDDOC_PARENT + ":" + (String) anchorDoc.getFieldValue(SolrConstants.IDDOC),
+                SolrConstants.ISWORK + ":true AND " + SolrConstants.PI_PARENT + ":\"" + (String) anchorDoc.getFieldValue(SolrConstants.PI) + "\"",
                 filterQuerySuffix);
         if (volumes == null) {
             return -1;

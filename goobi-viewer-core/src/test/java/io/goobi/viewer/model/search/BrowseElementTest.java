@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.viewer.PageType;
@@ -74,6 +75,27 @@ class BrowseElementTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().size());
         assertEquals(1, be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).size());
         assertEquals("bar", be.getMetadataList().get(0).getValues().get(0).getParamValues().get(0).get(0));
+    }
+
+    /**
+     * @verifies compute the volume count live for an anchor
+     */
+    @Test
+    void getNumVolumes_shouldComputeVolumeCountLiveForAnchor() throws Exception {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":306653648", null);
+        assertNotNull(doc);
+        StructElement anchor = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
+        assertTrue(anchor.isAnchor());
+
+        BrowseElement be = new BrowseElement(anchor, Collections.singletonMap(Configuration.METADATA_LIST_TYPE_SEARCH_HIT, new ArrayList<>()),
+                Locale.ENGLISH, null, null, null);
+
+        // getNumVolumes() must return the live count of the anchor's volumes (PI_PARENT + ISWORK), not the stored NUMVOLUMES.
+        long liveCount = DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(SolrConstants.PI_PARENT + ":\"306653648\" AND " + SolrConstants.ISWORK + ":true");
+        assertTrue(liveCount > 0, "test index anchor must have at least one volume");
+        assertEquals(liveCount, be.getNumVolumes());
     }
 
     /**
