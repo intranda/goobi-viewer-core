@@ -132,6 +132,41 @@ describe('setActive', () => {
         expect(chapterLi.classList.contains('widget-toc__element--expanded')).toBe(true);
     });
 
+    test('siblings of the newly-active element become visible when parent is expanded', () => {
+        // Build a TOC where two siblings (section1, section2) are under a collapsed chapter.
+        document.body.innerHTML = `
+            <div id="widgetToc">
+                <div class="widget-toc__elements">
+                    <li class="widget-toc__element parent widget-toc__element--expanded"
+                        data-level="0" data-iddoc="iddoc_root">
+                        <button class="widget-toc__toggle" aria-expanded="true"></button>
+                        <a class="widget-toc__element-link">Root</a>
+                    </li>
+                    <li class="widget-toc__element parent" data-level="1" data-iddoc="iddoc_chapter">
+                        <button class="widget-toc__toggle" aria-expanded="false"></button>
+                        <a class="widget-toc__element-link">Chapter</a>
+                    </li>
+                    <li class="widget-toc__element widget-toc__element--hidden"
+                        data-level="2" data-iddoc="iddoc_section1">
+                        <a class="widget-toc__element-link">Section 1</a>
+                    </li>
+                    <li class="widget-toc__element widget-toc__element--hidden"
+                        data-level="2" data-iddoc="iddoc_section2">
+                        <a class="widget-toc__element-link">Section 2</a>
+                    </li>
+                </div>
+            </div>`;
+        viewerJS.widgetToc.init();
+
+        // Activate section2 (which is hidden); section1 is a sibling and should also appear.
+        viewerJS.widgetToc.setActive('section2');
+
+        const section1Li = document.querySelector('[data-iddoc="iddoc_section1"]');
+        const section2Li = document.querySelector('[data-iddoc="iddoc_section2"]');
+        expect(section2Li.classList.contains('widget-toc__element--hidden')).toBe(false);
+        expect(section1Li.classList.contains('widget-toc__element--hidden')).toBe(false);
+    });
+
     test('is a safe no-op when the iddoc has no matching element', () => {
         buildToc();
         viewerJS.widgetToc.init();
