@@ -225,6 +225,7 @@ var viewerJS = (function (viewer) {
                 prev.classList.add('widget-toc__element--expanded');
                 _updateToggle(prev, true);
                 prev.classList.remove('widget-toc__element--hidden');
+                _showDirectChildren(prev);
                 if (prevLevel === 0) break;
                 level = prevLevel;
             }
