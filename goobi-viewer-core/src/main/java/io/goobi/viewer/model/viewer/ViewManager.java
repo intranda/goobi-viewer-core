@@ -1057,7 +1057,7 @@ public class ViewManager implements Serializable {
      * @return a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated directly use {@link PhysicalElement#getImageWidth() instead
+     * @deprecated directly use {@link PhysicalElement#getImageWidth()} instead
      */
     @Deprecated(since = "26.06")
     public int getCurrentWidth() throws IndexUnreachableException, DAOException {
@@ -1077,7 +1077,7 @@ public class ViewManager implements Serializable {
      * @return a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-     * @deprecated directly use {@link PhysicalElement#getImageHeight() instead
+     * @deprecated directly use {@link PhysicalElement#getImageHeight()} instead
      */
     @Deprecated(since = "26.06")
     public int getCurrentHeight() throws IndexUnreachableException, DAOException {
