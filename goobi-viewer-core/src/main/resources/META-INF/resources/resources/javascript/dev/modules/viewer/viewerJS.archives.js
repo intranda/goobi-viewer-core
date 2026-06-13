@@ -46,17 +46,15 @@ var viewerJS = (function (viewer) {
                 if (this.config.initHcSticky) {
                     this.initHcStickyWithChromeHack();
                 }
-                viewerJS.jsfAjax.success
-                    .pipe(rxjs.operators.filter((e) => $(e.source).attr('data-select-entry') != undefined))
-                    .subscribe((e) => {
-                        $('.archives__object-image').hide();
-                        this.initImageDisplay().then(() => {
-                            if (this.config.initHcSticky) {
-                                this.refreshStickyWithChromeHack();
-                            }
-                            this.setLocation(e.source);
-                        });
+                viewerJS.jsfAjax.success.pipe(rxjs.operators.filter((e) => $(e.source).attr('data-select-entry') != undefined)).subscribe((e) => {
+                    $('.archives__object-image').hide();
+                    this.initImageDisplay().then(() => {
+                        if (this.config.initHcSticky) {
+                            this.refreshStickyWithChromeHack();
+                        }
+                        this.setLocation(e.source);
                     });
+                });
 
                 if (this.config.initSearch) {
                     this.initSearch();
@@ -67,16 +65,14 @@ var viewerJS = (function (viewer) {
                 }
 
                 // execute when expanding or collapsing entries after ajax success
-                viewerJS.jsfAjax.success
-                    .pipe(rxjs.operators.filter((e) => $(e.source).attr('data-expand-entry') != undefined))
-                    .subscribe((e) => {
-                        $('.archives__object-image').hide();
-                        this.initImageDisplay().then(() => {
-                            if (this.config.initHcSticky) {
-                                this.refreshStickyWithChromeHack();
-                            }
-                        });
+                viewerJS.jsfAjax.success.pipe(rxjs.operators.filter((e) => $(e.source).attr('data-expand-entry') != undefined)).subscribe((e) => {
+                    $('.archives__object-image').hide();
+                    this.initImageDisplay().then(() => {
+                        if (this.config.initHcSticky) {
+                            this.refreshStickyWithChromeHack();
+                        }
                     });
+                });
             });
         },
 
@@ -256,7 +252,7 @@ var viewerJS = (function (viewer) {
                 top: 20,
                 bottom: 20,
                 responsive: {
-                    993: {
+                    992: {
                         disable: true,
                     },
                 },
@@ -283,7 +279,7 @@ var viewerJS = (function (viewer) {
                 top: 20,
                 bottom: 20,
                 responsive: {
-                    993: {
+                    992: {
                         disable: true,
                     },
                 },
@@ -295,7 +291,7 @@ var viewerJS = (function (viewer) {
                 top: 80,
                 bottom: 20,
                 responsive: {
-                    993: {
+                    992: {
                         disable: true,
                     },
                 },
