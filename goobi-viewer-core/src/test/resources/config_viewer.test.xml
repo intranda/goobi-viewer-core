@@ -1206,6 +1206,21 @@
                 <subtitleField>MD_AUTHOR</subtitleField>
             </widget>
 
+            <widget name="recommendations">
+                <maxResults>6</maxResults>
+                <identifierSourceField>MD_RELATEDWORK</identifierSourceField>
+                <identifierTargetField>MD_IDENTIFIER</identifierTargetField>
+                <sollFields>
+                    <field>MD_TOPIC</field>
+                    <field>DC</field>
+                </sollFields>
+                <fillRandom>true</fillRandom>
+                <sortField>SORT_TITLE</sortField>
+                <sortOrder>asc</sortOrder>
+                <titleField>LABEL</titleField>
+                <subtitleField>MD_AUTHOR</subtitleField>
+            </widget>
+
             <!-- OTHER WIDGETS -->
             
             <!-- browsing-terms: Term browsing widget. -->

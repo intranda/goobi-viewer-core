@@ -1450,6 +1450,88 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * @return maximum number of recommended records shown in the recommendations section; default is 4
+     * @should return correct value
+     */
+    public int getSidebarWidgetRecommendationsMaxResults() {
+        return getSidebarWidgetIntValue("recommendations", "maxResults", 4);
+    }
+
+    /**
+     * @return solr field on the current record holding the related-work identifier(s); default is IdentifierRelatedWork
+     * @should return correct value
+     */
+    public String getSidebarWidgetRecommendationsIdentifierSourceField() {
+        return getSidebarWidgetStringValue("recommendations", "identifierSourceField", "IdentifierRelatedWork");
+    }
+
+    /**
+     * @return solr field on the target record matched against the source identifier; default is PI
+     * @should return correct value
+     */
+    public String getSidebarWidgetRecommendationsIdentifierTargetField() {
+        return getSidebarWidgetStringValue("recommendations", "identifierTargetField", SolrConstants.PI);
+    }
+
+    /**
+     * @return fallback similarity fields for the recommendations section; defaults to a single-element list [MD_TOPIC]
+     * @should return correct value
+     */
+    public List<String> getSidebarWidgetRecommendationsSollFields() {
+        List<String> ret = new ArrayList<>();
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("recommendations");
+        if (widgetConfig != null) {
+            for (Object o : widgetConfig.getList("sollFields.field", new ArrayList<>())) {
+                ret.add((String) o);
+            }
+        }
+        if (ret.isEmpty()) {
+            ret.add("MD_TOPIC");
+        }
+        return ret;
+    }
+
+    /**
+     * @return true if free recommendation slots should be filled with random works from the same collection; default is false
+     * @should return correct value
+     */
+    public boolean isSidebarWidgetRecommendationsFillRandom() {
+        return getSidebarWidgetBooleanValue("recommendations", "fillRandom", false);
+    }
+
+    /**
+     * @return solr field used for sorting recommended records; default is DATECREATED
+     * @should return correct value
+     */
+    public String getSidebarWidgetRecommendationsSortField() {
+        return getSidebarWidgetStringValue("recommendations", "sortField", SolrConstants.DATECREATED);
+    }
+
+    /**
+     * @return sort order for recommended records (asc or desc); default is desc
+     * @should return correct value
+     */
+    public String getSidebarWidgetRecommendationsSortOrder() {
+        return getSidebarWidgetStringValue("recommendations", "sortOrder", "desc");
+    }
+
+    /**
+     * @return solr field used as the card title in the recommendations section; default is MD_TITLE
+     * @should return correct value
+     */
+    public String getSidebarWidgetRecommendationsTitleField() {
+        return getSidebarWidgetStringValue("recommendations", "titleField", SolrConstants.TITLE);
+    }
+
+    /**
+     * @return solr field used as the card subtitle in the recommendations section; default is MD_CREATOR
+     * @should return correct value
+     */
+    public String getSidebarWidgetRecommendationsSubtitleField() {
+        return getSidebarWidgetStringValue("recommendations", "subtitleField", SolrConstants.PERSON_ONEFIELD);
+    }
+
+    /**
      * isBrowsingMenuEnabled.
      *
      * @should return correct value

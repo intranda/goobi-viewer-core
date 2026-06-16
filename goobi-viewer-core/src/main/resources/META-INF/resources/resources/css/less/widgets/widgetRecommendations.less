@@ -1,0 +1,14 @@
+/* ==============================================================
+   Widget Recommendations
+   "Das könnte Sie auch interessieren" content section (below object image).
+   Reuses the related-record card grid via the mixins defined in
+   widgetRelatedGroups.less (imported earlier in constructor.less).
+   ============================================================== */
+.mx-related-record-section(~'recommendations-section');
+
+@media (prefers-color-scheme: dark) {
+    .mx-related-record-section-dark(~'recommendations-section');
+}
+.color-theme-dark {
+    .mx-related-record-section-dark(~'recommendations-section');
+}

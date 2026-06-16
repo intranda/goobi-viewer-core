@@ -117,6 +117,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.record.relatedgroups.GroupMemberDetail;
+import io.goobi.viewer.model.viewer.record.relatedgroups.RecommendationsResolver;
 import io.goobi.viewer.model.viewer.record.relatedgroups.RelatedGroupsResolver;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.modules.IModule;
@@ -228,6 +229,8 @@ public class ActiveDocumentBean implements Serializable {
     private volatile List<GroupMemberDetail> groupMembershipDetails; //NOSONAR S3077: DCL; list is built then published, never mutated after
     // PI tracked alongside the cache so reset()-between-check-and-publish races can be detected
     private volatile String groupMembershipDetailsPi;
+    private volatile List<GroupMemberDetail> recommendationDetails; //NOSONAR S3077: DCL; list is built then published, never mutated after
+    private volatile String recommendationDetailsPi;
 
     @Inject
     @Push
@@ -324,6 +327,8 @@ public class ActiveDocumentBean implements Serializable {
             cachedFullPdfSize = null;
             groupMembershipDetails = null;
             groupMembershipDetailsPi = null;
+            recommendationDetails = null;
+            recommendationDetailsPi = null;
 
             // Any cleanup modules need to do when a record is unloaded
             for (IModule module : DataManager.getInstance().getModules()) {
@@ -2519,6 +2524,77 @@ public class ActiveDocumentBean implements Serializable {
     public List<GroupMemberDetail> getGroupMembershipDetailsForSection() {
         int max = DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsMaxResults();
         List<GroupMemberDetail> all = getGroupMembershipDetails();
+        if (max <= 0 || all.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return all.size() <= max ? all : all.subList(0, max);
+    }
+
+    /**
+     * Returns recommended records for the "Das könnte Sie auch interessieren" section.
+     *
+     * <p>Delegates to {@link RecommendationsResolver} and applies the same PI-guarded
+     * double-checked-locking cache as {@link #getGroupMembershipDetails()} so a concurrent
+     * {@link #reset()} cannot publish stale data. Errors are caught here so the view never sees them.
+     *
+     * @return List of GroupMemberDetail objects; empty if none, no record loaded, or on error
+     */
+    public List<GroupMemberDetail> getRecommendations() {
+        ViewManager vm = this.viewManager;
+        if (vm == null) {
+            return Collections.emptyList();
+        }
+        String currentPi;
+        try {
+            currentPi = vm.getPi();
+        } catch (IndexUnreachableException e) {
+            logger.warn("Could not read current PI for recommendations cache lookup: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+
+        // --- Fast path: volatile read, no lock ---
+        List<GroupMemberDetail> cached = this.recommendationDetails;
+        if (cached != null && currentPi != null && currentPi.equals(this.recommendationDetailsPi)) {
+            return cached;
+        }
+
+        // --- Load outside the monitor ---
+        List<GroupMemberDetail> fresh;
+        try {
+            fresh = new RecommendationsResolver(imageDelivery).resolve(vm);
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Could not load recommendations for {}: {}", currentPi, e.getMessage());
+            fresh = Collections.emptyList();
+        } catch (NullPointerException | IllegalArgumentException | IllegalStateException e) {
+            logger.warn("Unexpected error while loading recommendations for {}: {}", currentPi, e.toString());
+            fresh = Collections.emptyList();
+        }
+
+        // --- Publish only if PI hasn't changed in the meantime ---
+        synchronized (this) {
+            ViewManager vmNow = this.viewManager;
+            String nowPi = null;
+            if (vmNow != null) {
+                try {
+                    nowPi = vmNow.getPi();
+                } catch (IndexUnreachableException e) {
+                    logger.warn("Could not read current PI when publishing recommendations cache: {}", e.getMessage());
+                }
+            }
+            if (nowPi != null && nowPi.equals(currentPi)) {
+                this.recommendationDetails = fresh;
+                this.recommendationDetailsPi = currentPi;
+            }
+        }
+        return fresh;
+    }
+
+    /**
+     * @return Recommendations capped at the configured maxResults (for the content section template).
+     */
+    public List<GroupMemberDetail> getRecommendationsForSection() {
+        int max = DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsMaxResults();
+        List<GroupMemberDetail> all = getRecommendations();
         if (max <= 0 || all.isEmpty()) {
             return Collections.emptyList();
         }
