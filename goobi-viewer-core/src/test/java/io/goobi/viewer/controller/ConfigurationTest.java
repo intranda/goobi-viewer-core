@@ -781,6 +781,24 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getSearchHitMetadataForTemplate(String)
+     * @verifies use the numYears label and live numvolumes param for newspapers
+     */
+    @Test
+    void getSearchHitMetadataForTemplate_shouldUseNumYearsLabelForNewspaper() {
+        assertEquals(1, DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate("Newspaper").size());
+        assertEquals("numYears",
+                DataManager.getInstance().getConfiguration().getSearchHitMetadataForTemplate("Newspaper").get(0).getLabel());
+        assertEquals(MetadataParameterType.NUMVOLUMES, DataManager.getInstance()
+                .getConfiguration()
+                .getSearchHitMetadataForTemplate("Newspaper")
+                .get(0)
+                .getParams()
+                .get(0)
+                .getType());
+    }
+
+    /**
+     * @see Configuration#getSearchHitMetadataForTemplate(String)
      * @verifies return default template configuration if requested not found
      */
     @Test

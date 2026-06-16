@@ -76,7 +76,9 @@ public class MetadataParameter implements Serializable {
         NORMDATAURI("normdatauri"),
         NORMDATASEARCH("normdatasearch"),
         CITEPROC("citeproc"),
-        RELATEDFIELD("related");
+        RELATEDFIELD("related"),
+        /** Live count of an anchor's volumes (computed at render time, not read from a stored field). */
+        NUMVOLUMES("numvolumes");
 
         private static final Logger logger = LogManager.getLogger(MetadataParameterType.class);
 

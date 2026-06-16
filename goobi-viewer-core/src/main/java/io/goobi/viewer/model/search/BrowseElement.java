@@ -1176,14 +1176,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      */
     private long countVolumes() {
         try {
-            return DataManager.getInstance()
-                    .getSearchIndex()
-                    .getHitCount(new StringBuilder(SolrConstants.PI_PARENT).append(":\"")
-                            .append(pi)
-                            .append("\" AND ")
-                            .append(SolrConstants.ISWORK)
-                            .append(":true")
-                            .toString());
+            return SearchHelper.getVolumeCount(pi);
         } catch (IndexUnreachableException | PresentationException e) {
             logger.warn("Could not count volumes for anchor '{}': {}", pi, e.getMessage());
             return numVolumes;

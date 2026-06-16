@@ -5,7 +5,6 @@
     xmlns="http://xmlns.jcp.org/xml/ns/javaee"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-fragment_4_0.xsd">
-    <display-name>goobi-viewer-core</display-name>
     <!-- Application-internal listeners are registered via @WebListener annotations -->
     <context-param>
         <param-name>jakarta.faces.PROJECT_STAGE</param-name>

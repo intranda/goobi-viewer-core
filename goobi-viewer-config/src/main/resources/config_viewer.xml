@@ -1183,9 +1183,54 @@
                     <param type="field" key="UGCTERMS" />
                 </metadata>
 
-                <!-- Number of volumes for anchors -->
+                <!-- Number of volumes for anchors (live count, not the stored NUMVOLUMES field) -->
                 <metadata label="numVolumes">
-                    <param type="field" key="NUMVOLUMES" />
+                    <param type="numvolumes" />
+                </metadata>
+            </template>
+
+            <!-- Newspapers/periodicals open in calendar view; their "volumes" are years, so relabel the (live) count.
+                 Per-docstruct templates replace _DEFAULT, so the default fields are repeated here. -->
+            <template name="Newspaper">
+                <metadata label="MD_CREATOR">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_YEARPUBLISH">
+                    <param type="field" key="MD_YEARPUBLISH" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+                <metadata label="MD_SHELFMARK">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+                <metadata label="UGCTERMS">
+                    <param type="field" key="UGCTERMS" />
+                </metadata>
+                <!-- Number of years for newspapers (live count) -->
+                <metadata label="numYears">
+                    <param type="numvolumes" />
+                </metadata>
+            </template>
+            <template name="Periodical">
+                <metadata label="MD_CREATOR">
+                    <param type="field" key="MD_CREATOR" />
+                </metadata>
+                <metadata label="MD_YEARPUBLISH">
+                    <param type="field" key="MD_YEARPUBLISH" />
+                </metadata>
+                <metadata label="MD_PLACEPUBLISH">
+                    <param type="field" key="MD_PLACEPUBLISH" />
+                </metadata>
+                <metadata label="MD_SHELFMARK">
+                    <param type="field" key="MD_SHELFMARK" />
+                </metadata>
+                <metadata label="UGCTERMS">
+                    <param type="field" key="UGCTERMS" />
+                </metadata>
+                <!-- Number of years for periodicals (live count) -->
+                <metadata label="numYears">
+                    <param type="numvolumes" />
                 </metadata>
             </template>
         </metadataList>

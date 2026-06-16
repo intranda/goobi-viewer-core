@@ -30,14 +30,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 import io.goobi.viewer.model.metadata.MetadataReplaceRule.MetadataReplaceRuleType;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
@@ -160,6 +163,28 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
         Metadata metadata = new Metadata("", "MD_FIELD", "", "val");
         assertEquals(1, metadata.getValues().size());
         Assertions.assertFalse(metadata.isBlank(null));
+    }
+
+    /**
+     * @verifies resolve numvolumes param to the live volume count for an anchor
+     * @see Metadata#populate(StructElement, String, java.util.List, Locale)
+     */
+    @Test
+    void populate_shouldResolveNumvolumesParamLiveForAnchor() throws Exception {
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":306653648", null);
+        Assertions.assertNotNull(doc);
+        StructElement anchor = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
+        Assertions.assertTrue(anchor.isAnchor());
+
+        long expected = SearchHelper.getVolumeCount("306653648");
+        Assertions.assertTrue(expected > 0, "test index anchor must have volumes");
+
+        Metadata metadata = new Metadata("numYears", "",
+                Collections.singletonList(new MetadataParameter().setType(MetadataParameterType.NUMVOLUMES)));
+        metadata.populate(anchor, String.valueOf(anchor.getLuceneId()), null, Locale.ENGLISH);
+
+        Assertions.assertFalse(metadata.isBlank(null));
+        assertEquals(String.valueOf(expected), metadata.getValues().get(0).getComboValueShort(0));
     }
 
     /**

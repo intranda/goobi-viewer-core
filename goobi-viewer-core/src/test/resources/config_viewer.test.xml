@@ -770,6 +770,11 @@
 					<param type="field" key="DC" />
 				</metadata>
 			</template>
+			<template name="Newspaper">
+				<metadata label="numYears">
+					<param type="numvolumes" />
+				</metadata>
+			</template>
 		</metadataList>
 
 		<!-- metadataList[@type="sidebar"]: defines metadata that are displayed in the sidebar. -->

@@ -1853,6 +1853,27 @@ public final class SearchHelper {
     }
 
     /**
+     * Returns the live number of volumes belonging to the given anchor, i.e. the current count of ISWORK records that
+     * reference it via PI_PARENT. Computed at query time rather than read from the anchor's stored NUMVOLUMES field,
+     * so it reflects volumes added or removed since the anchor was last (re-)indexed.
+     *
+     * @param anchorPi PI of the anchor record
+     * @return the current number of volumes
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public static long getVolumeCount(String anchorPi) throws PresentationException, IndexUnreachableException {
+        return DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(new StringBuilder(SolrConstants.PI_PARENT).append(":\"")
+                        .append(anchorPi)
+                        .append("\" AND ")
+                        .append(SolrConstants.ISWORK)
+                        .append(":true")
+                        .toString());
+    }
+
+    /**
      * Returns a list of values for a given facet field and the given query.
      *
      * @param query Solr search query string

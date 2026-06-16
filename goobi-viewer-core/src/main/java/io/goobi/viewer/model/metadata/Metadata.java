@@ -930,6 +930,26 @@ public class Metadata implements MetadataListElement, Serializable {
             int count = 0;
             int indexOfParam = params.indexOf(param);
             // logger.trace("{} ({})", param.toString(), indexOfParam); //NOSONAR Debug
+
+            // Live volume count (e.g. the number of years for a newspaper): computed at render time from the
+            // anchor's PI rather than read from the stored NUMVOLUMES field, so it is current even if the anchor
+            // has not been re-indexed yet. Only meaningful for anchors; produces no value otherwise.
+            if (MetadataParameterType.NUMVOLUMES.equals(param.getType())) {
+                if (se.isAnchor()) {
+                    try {
+                        long volumeCount = SearchHelper.getVolumeCount(se.getPi());
+                        if (volumeCount > 0) {
+                            setParamValue(0, indexOfParam, Collections.singletonList(String.valueOf(volumeCount)), param.getKey(), null,
+                                    null, null, locale);
+                            found = true;
+                        }
+                    } catch (IndexUnreachableException | PresentationException e) {
+                        logger.warn("Could not compute live volume count for '{}': {}", se.getPi(), e.getMessage());
+                    }
+                }
+                continue;
+            }
+
             List<String> vals = null;
             if (MetadataParameterType.TOPSTRUCTFIELD.equals(param.getType()) && se.getTopStruct() != null) {
                 // Use topstruct value, if the parameter has the type "topstructfield"
