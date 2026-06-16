@@ -128,6 +128,20 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * Like {@link #StructElement(String, SolrDocument)}, but uses pre-loaded shape documents
+     * instead of issuing a per-element Solr query. Pass an empty list to signal "no shapes".
+     *
+     * @param luceneId Solr IDDOC
+     * @param doc primary Solr document
+     * @param preloadedShapeDocs SHAPE child docs for this element (null falls back to Solr query)
+     * @throws IndexUnreachableException
+     */
+    public StructElement(String luceneId, SolrDocument doc, List<SolrDocument> preloadedShapeDocs) throws IndexUnreachableException {
+        super(luceneId);
+        init(doc, preloadedShapeDocs);
+    }
+
+    /**
      * Like {@link #StructElement(String, SolrDocument)}, but get the lucene Id from the SolrDocument.
      *
      * @param doc the Solr document to build the element from
@@ -206,6 +220,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws IndexUnreachableException
      */
     private final void init(final SolrDocument solrDoc) throws IndexUnreachableException {
+        init(solrDoc, null);
+    }
+
+    /**
+     * Like {@link #init(SolrDocument)}, but uses pre-loaded shape documents instead of querying Solr.
+     * Pass an empty list to explicitly signal "no shapes"; pass null to fall back to a Solr query.
+     *
+     * @param solrDoc SolrDocument
+     * @param preloadedShapeDocs pre-fetched SHAPE child docs keyed by IDDOC_OWNER, or null to query
+     * @throws IndexUnreachableException
+     */
+    private final void init(final SolrDocument solrDoc, final List<SolrDocument> preloadedShapeDocs) throws IndexUnreachableException {
         try {
             SolrDocument doc = solrDoc;
             if (doc == null) {
@@ -269,27 +295,33 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                 }
             }
             rtl = Boolean.valueOf(getMetadataValue(SolrConstants.BOOL_DIRECTION_RTL));
-            // Load shape metadata
-            // TODO use indicator field in doc to avoid this extra search for non-shape elements
-            String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse(null);
-            if (iddoc != null) {
-                SolrDocumentList shapeDocs =
-                        MetadataTools.getGroupedMetadata(iddoc, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), null);
-                if (!shapeDocs.isEmpty()) {
-                    this.shapeMetadata = new ArrayList<>(shapeDocs.size());
-                    for (SolrDocument shapeDoc : shapeDocs) {
-                        String label = getLabel();
-                        String shape = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
-                        String coords = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
-                        String order = String.valueOf(shapeDoc.getFieldValue(SolrConstants.ORDER));
-                        this.shapeMetadata.add(new ShapeMetadata(label, shape, coords, getPi(),
-                                "null".equals(order) ? getImageNumber() : Integer.parseInt(order), this.logid));
-                    }
+            // Load shape metadata — use pre-loaded docs if available, else query Solr
+            if (preloadedShapeDocs != null) {
+                buildShapeMetadataFromDocs(preloadedShapeDocs);
+            } else {
+                String iddoc = Optional.ofNullable(doc.getFieldValue(SolrConstants.IDDOC)).map(Object::toString).orElse(null);
+                if (iddoc != null) {
+                    buildShapeMetadataFromDocs(
+                            MetadataTools.getGroupedMetadata(iddoc, " +" + SolrConstants.METADATATYPE + ':' + MetadataGroupType.SHAPE.name(), null));
                 }
             }
         } catch (PresentationException | IndexUnreachableException e) {
             // Catch exception to skip the rest of the code block, but do not do anything (already logged elsewhere)
             logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
+        }
+    }
+
+    private void buildShapeMetadataFromDocs(List<SolrDocument> shapeDocs) {
+        if (shapeDocs == null || shapeDocs.isEmpty()) {
+            return;
+        }
+        this.shapeMetadata = new ArrayList<>(shapeDocs.size());
+        for (SolrDocument shapeDoc : shapeDocs) {
+            String shape = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_SHAPE");
+            String coords = SolrTools.getSingleFieldStringValue(shapeDoc, "MD_COORDS");
+            String order = String.valueOf(shapeDoc.getFieldValue(SolrConstants.ORDER));
+            this.shapeMetadata.add(new ShapeMetadata(getLabel(), shape, coords, getPi(),
+                    "null".equals(order) ? getImageNumber() : Integer.parseInt(order), this.logid));
         }
     }
 
