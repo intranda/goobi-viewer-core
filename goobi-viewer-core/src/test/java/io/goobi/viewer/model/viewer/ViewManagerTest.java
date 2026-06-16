@@ -49,11 +49,11 @@ import org.mockito.Mockito;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
-import io.goobi.viewer.controller.imaging.ThumbnailHandler;
-import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.imaging.ThumbnailHandler;
+import io.goobi.viewer.controller.imaging.WatermarkHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IDDOCNotFoundException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -69,12 +69,12 @@ import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus.Status;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
-import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.LeanPageLoader;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.faces.context.FacesContext;
 
 class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -376,7 +376,8 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies return expected value for given input
      */
     @Test
-    void getPageDownloadUrl_shouldReturnExpectedValueForGivenInput() throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
+    void getPageDownloadUrl_shouldReturnExpectedValueForGivenInput()
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException {
 
         String pi = "PPN123";
         String docstructType = "Catalogue";
@@ -842,7 +843,8 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @verifies update cite links on page change
      */
     @Test
-    void getSidebarWidgetUsageCitationLinksForLevel_shouldUpdateCiteLinksOnPageChange() throws IndexUnreachableException, PresentationException, DAOException, IDDOCNotFoundException {
+    void getSidebarWidgetUsageCitationLinksForLevel_shouldUpdateCiteLinksOnPageChange()
+            throws IndexUnreachableException, PresentationException, DAOException, IDDOCNotFoundException {
         String linkPattern = "https://nbn-resolving.org/{value}/fragment/page={page}";
         String linkValue = "http://resolver.sub.uni-goettingen.de/purl?PPN517154005";
         int page1 = 10;
@@ -989,9 +991,8 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * Verifies that the SEQUENCE navigation branch of {@link ViewManager#getImageInfos(PageType)}
-     * batch-prefetches and seeds the five per-page privileges on every {@link PhysicalElement}.
-     * The open-access kleiuniv fixture must come back granted for every page after the call.
+     * Verifies that the SEQUENCE navigation branch of {@link ViewManager#getImageInfos(PageType)} batch-prefetches and seeds the five per-page
+     * privileges on every {@link PhysicalElement}. The open-access kleiuniv fixture must come back granted for every page after the call.
      *
      * @see ViewManager#getImageInfos(io.goobi.viewer.model.viewer.PageType)
      * @verifies seed all five privileges on all pages in sequence mode
@@ -1029,8 +1030,8 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * Verifies that SINGLE page navigation does NOT trigger the batch-prefetch path.
-     * Guards against an accidental prefetch in single-page mode, where it would be wasted work.
+     * Verifies that SINGLE page navigation does NOT trigger the batch-prefetch path. Guards against an accidental prefetch in single-page mode, where
+     * it would be wasted work.
      *
      * @see ViewManager#getImageInfos(io.goobi.viewer.model.viewer.PageType)
      * @verifies not batch prefetch in single page mode
@@ -1050,9 +1051,8 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * Non-regression: a record with restrictive access conditions must still come back as
-     * denied after the batch prefetch. Guards against the risk that the batch query (page-scoped,
-     * no per-file filter) silently grants access where the per-file path would deny it.
+     * Non-regression: a record with restrictive access conditions must still come back as denied after the batch prefetch. Guards against the risk
+     * that the batch query (page-scoped, no per-file filter) silently grants access where the per-file path would deny it.
      *
      * @see ViewManager#getImageInfos(io.goobi.viewer.model.viewer.PageType)
      * @verifies preserve denied decision for restricted record in sequence mode
@@ -1093,6 +1093,101 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         } finally {
             DataManager.getInstance().getConfiguration().overrideValue("accessConditions.fullAccessForLocalhost", previous);
         }
+    }
+
+    // -----------------------------------------------------------------------
+    // getContainedStructElements
+    // -----------------------------------------------------------------------
+
+    /**
+     * In SEQUENCE mode the implementation issues at most two Solr queries regardless of how many pages the record has: one for the SHAPE documents
+     * and, only when shapes exist, one for the owning DOCSTRCT documents. The old THUMBPAGENO-based per-page path must never be taken.
+     *
+     * @verifies issue at most two search calls in sequence mode
+     */
+    @Test
+    void getContainedStructElements_shouldIssueAtMostTwoSearchCallsInSequenceMode() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
+        viewManager.setPageNavigation(PageNavigation.SEQUENCE);
+
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        viewManager.getContainedStructElements();
+
+        // At most 2 top-level search(String) calls (SHAPE query + optional DOCSTRCT query).
+        Mockito.verify(spy, Mockito.atMost(2)).search(Mockito.anyString());
+        // The old per-page THUMBPAGENO path must not be used.
+        Mockito.verify(spy, Mockito.never()).search(Mockito.contains(SolrConstants.THUMBPAGENO));
+    }
+
+    /**
+     * The first SEQUENCE-mode call seeds every page's cache. A subsequent call must not issue any additional Solr queries — all results are served
+     * from the per-page cache.
+     *
+     * @verifies not issue additional solr queries on second call in sequence mode
+     */
+    @Test
+    void getContainedStructElements_shouldNotIssueAdditionalSolrQueriesOnSecondCallInSequenceMode() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
+        viewManager.setPageNavigation(PageNavigation.SEQUENCE);
+
+        // Prime the caches on the first call (real Solr, no spy yet).
+        viewManager.getContainedStructElements();
+
+        // Now install the spy and call again — zero new queries expected.
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        viewManager.getContainedStructElements();
+
+        Mockito.verify(spy, Mockito.never()).search(Mockito.anyString());
+    }
+
+    /**
+     * In SINGLE mode the batch-prefetch path must not be taken. Instead the existing per-page THUMBPAGENO query is issued for the current page.
+     *
+     * @verifies not use batch query in single mode
+     */
+    @Test
+    void getContainedStructElements_shouldNotUseBatchQueryInSingleMode() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
+        viewManager.setPageNavigation(PageNavigation.SINGLE);
+        viewManager.setCurrentImageOrder(1);
+
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        viewManager.getContainedStructElements();
+
+        // No batch SHAPE query.
+        Mockito.verify(spy, Mockito.never()).search(Mockito.contains("METADATATYPE:SHAPE"));
+        // Per-page THUMBPAGENO query is used instead.
+        Mockito.verify(spy, Mockito.atLeastOnce()).search(Mockito.contains(SolrConstants.THUMBPAGENO));
+    }
+
+    /**
+     * In DOUBLE mode, like SINGLE, the per-page THUMBPAGENO path is used and the batch SHAPE query must not be issued.
+     *
+     * @verifies not use batch query in double mode
+     */
+    @Test
+    void getContainedStructElements_shouldNotUseBatchQueryInDoubleMode() throws Exception {
+        StructElement se = new StructElement(iddocKleiuniv);
+        ViewManager viewManager = new ViewManager(se, AbstractPageLoader.create(se), se.getLuceneId(), null, null, null);
+        viewManager.setPageNavigation(PageNavigation.DOUBLE);
+        viewManager.setCurrentImageOrder(1);
+
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        viewManager.getContainedStructElements();
+
+        Mockito.verify(spy, Mockito.never()).search(Mockito.contains("METADATATYPE:SHAPE"));
+        Mockito.verify(spy, Mockito.atLeastOnce()).search(Mockito.contains(SolrConstants.THUMBPAGENO));
     }
 
 }
