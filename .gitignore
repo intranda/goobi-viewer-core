@@ -12,3 +12,4 @@ docs/
 
 */target/
 */node_modules/
+/.project
