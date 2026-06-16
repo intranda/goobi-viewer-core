@@ -38,7 +38,7 @@
                     data-height="#{activeDocumentBean.viewManager.currentPage.getFooterHeight(navigationHelper.currentPage)}">
                     #{activeDocumentBean.viewManager.getWatermarkUrl(navigationHelper.currentPage)}
                 </div>
-                <div data-image-data="pageAreas">#{activeDocumentBean.viewManager.currentPage.containedStructElementsAsJson}</div>
+                <div data-image-data="pageAreas">#{activeDocumentBean.viewManager.containedStructElementsAsJson}</div>
                 <div
                     data-image-data="overlays"
                     data-styleclass="coords-highlighting"
@@ -341,11 +341,11 @@
 
     <ui:repeat
         var="se"
-        value="#{activeDocumentBean.viewManager.currentPage.containedStructElements}">
+        value="#{activeDocumentBean.viewManager.containedStructElements}">
         <ui:fragment rendered="#{se.hasShapeMetadata()}">
             <ui:repeat
                 var="shape"
-                value="#{se.getShapeMetadataForPage(activeDocumentBean.viewManager.currentPage.order)}"
+                value="#{se.shapeMetadata}"
                 varStatus="status">
                 <div
                     id="pageAreaFrame_#{se.logid}_#{status.index}"
