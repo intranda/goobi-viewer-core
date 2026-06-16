@@ -142,6 +142,7 @@ import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.variables.VariableReplacer;
+import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
@@ -391,6 +392,38 @@ public class ViewManager implements Serializable {
             return "";
         }
         return imageDeliveryBean.getImages().getImageUrl(null, pi, representative.getFileName());
+    }
+
+    public List<PhysicalElement> getDisplayedPages() throws IndexUnreachableException, DAOException {
+        List<PhysicalElement> pages = new ArrayList<>();
+
+        switch (getPageNavigation()) {
+            case SINGLE:
+                // Guard against null page (e.g. when currentImageOrder is not set or out of range)
+                getPage(currentImageOrder).ifPresent(pages::add);
+                break;
+            case DOUBLE:
+                getCurrentLeftPage().filter(p -> !p.isDoubleImage()).ifPresent(pages::add);
+                getCurrentRightPage().filter(p -> !p.isDoubleImage() || pages.isEmpty())
+                        .ifPresent(pages::add);
+                break;
+            case SEQUENCE:
+                // Batch-prefetch + per-page seeding of the five privileges happens inside
+                // getAllPages() (guarded by pagePermissionsPrefetched). Doing it here too
+                // would issue a duplicate Solr/DAO query — refs #27883. Restored after the
+                // develop→master merge re-introduced the inline prefetch that ce180fa49c
+                // had removed.
+                for (PhysicalElement page : this.getAllPages()) {
+                    if (page.isHasImage()) {
+                        pages.add(page);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        return pages;
     }
 
     public Map<Integer, String> getImageInfos(PageType pageType) throws IndexUnreachableException, DAOException {
@@ -4286,6 +4319,53 @@ public class ViewManager implements Serializable {
                 .getConfiguration()
                 .showImageThumbnailGallery(new ViewAttributes(this, pageType));
 
+    }
+
+    /**
+     * Lists of struct elements that start on this page. For example, if a page contains multiple elements that only cover a certain area of the page
+     * (using coordinates), this method can be used to get all shape coordinates for these elemets for visualization.
+     *
+     * @return List of <code>StructElement</code>s
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     * @should initialize the list only once
+     */
+    public List<StructElement> getContainedStructElements() throws PresentationException, IndexUnreachableException, DAOException {
+        List<PhysicalElement> pages = getDisplayedPages();
+        List<StructElement> docStructs = new ArrayList<>();
+
+        for (PhysicalElement page : pages) {
+            List<StructElement> elements = page.getContainedStructElements();
+            docStructs.addAll(elements);
+        }
+        return docStructs;
+    }
+
+    /**
+     *
+     * @return {@link String}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws JsonProcessingException
+     * @throws DAOException
+     */
+    public String getContainedStructElementsAsJson() throws PresentationException, IndexUnreachableException, JsonProcessingException, DAOException {
+
+        List<PhysicalElement> pages = getDisplayedPages();
+        List<ShapeMetadata> shapes = new ArrayList<>();
+
+        for (PhysicalElement page : pages) {
+            List<StructElement> elements = page.getContainedStructElements();
+
+            List<ShapeMetadata> pageShapes = elements.stream()
+                    .filter(ele -> ele.getShapeMetadata() != null && !ele.getShapeMetadata().isEmpty())
+                    .flatMap(ele -> ele.getShapeMetadata().stream())
+                    .toList();
+            shapes.addAll(pageShapes);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(shapes);
     }
 
     public String getMimeTypesForLoadedPagesAsJson() throws IndexUnreachableException {

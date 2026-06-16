@@ -8,7 +8,7 @@ const _config = {
     ],
 };
 
-const _debug = false;
+const _debug = true;
 
 export default class PageAreas {
     constructor(config, image) {
@@ -82,17 +82,12 @@ export default class PageAreas {
         window.history.replaceState(null, '', url.toString());
     }
 
-    drawActiveAreas(activeAreas, imageView) {
+    drawActiveAreas(activeAreas, imageView) { 
         let areasOnCanvas = [];
         activeAreas.forEach((activeArea, index) => {
-            let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(activeArea.coords);
-            rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(
-                rect,
-                imageView.viewer.openseadragon,
-                imageView.viewer.getOriginalImageSize()
-            );
-            areasOnCanvas.push(rect);
-            this.drawArea(activeArea, index, imageView);
+            const area = this.drawArea(activeArea, index, imageView);
+            areasOnCanvas.push(area?.overlay?.bounds);
+			console.log("add active area ", area, areasOnCanvas);
             let scrollPosition = window.sessionStorage.getItem('scrollPosition');
             $(document).scrollTop(parseInt(scrollPosition));
             window.sessionStorage.removeItem('scrollPosition');
@@ -128,12 +123,9 @@ export default class PageAreas {
     }
 
     drawArea(area, shapeIndex, image, clickToLeave) {
-        let rect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-        rect = ImageView.CoordinateConversion.scaleToOpenSeadragon(
-            rect,
-            image.viewer.openseadragon,
-            image.viewer.getOriginalImageSize()
-        );
+		let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+		let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
+		let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
         let $area = $('#pageAreaFrame_' + area.logId + '_' + shapeIndex);
         let $label = $('#pageAreaLabel_' + area.logId + '_' + shapeIndex);
         let overlayId = area.logId + '_' + shapeIndex;
@@ -141,7 +133,6 @@ export default class PageAreas {
             element: $area.get(0),
         };
         area.overlay = new ImageView.Overlay(rect, overlayConfig, overlayId);
-
         area.tooltip = new ImageView.Tooltip(area.overlay, area.label, image.viewer, {
             onHover: true,
             className: 'page-area-label page-area-label-text',
@@ -155,5 +146,6 @@ export default class PageAreas {
             () => $(area.tooltip.element).addClass('hover'),
             () => $(area.tooltip.element).removeClass('hover')
         );
+		return area;
     }
 }
