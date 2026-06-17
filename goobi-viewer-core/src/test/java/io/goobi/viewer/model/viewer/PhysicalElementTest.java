@@ -21,10 +21,18 @@
  */
 package io.goobi.viewer.model.viewer;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +43,11 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.ContextMocker;
+import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
@@ -287,6 +299,84 @@ class PhysicalElementTest extends AbstractDatabaseAndSolrEnabledTest {
             page.isAccessPermissionPdf();
             acu.verifyNoInteractions();
         }
+    }
+
+    // -----------------------------------------------------------------------
+    // prefetchContainedStructElements
+    // -----------------------------------------------------------------------
+
+    /**
+     * When called with a non-null shape map, prefetchContainedStructElements must build a
+     * StructElement whose shapeMetadata is populated from the supplied docs — without issuing any
+     * Solr query of its own.
+     *
+     * @verifies build struct elements with shape data without issuing a solr query
+     */
+    @Test
+    void prefetchContainedStructElements_shouldBuildStructElementsWithShapeDataWithoutSolrQuery() throws Exception {
+        // Minimal DOCSTRCT document (only fields that StructElement.init() reads).
+        SolrDocument docstructDoc = new SolrDocument();
+        docstructDoc.setField(SolrConstants.IDDOC, "9001");
+        docstructDoc.setField(SolrConstants.LOGID, "LOG_0001");
+        docstructDoc.setField(SolrConstants.DOCTYPE, "DOCSTRCT");
+        docstructDoc.setField(SolrConstants.DOCSTRCT, "Chapter");
+        docstructDoc.setField(SolrConstants.THUMBPAGENO, 2);
+
+        // Minimal SHAPE document for that DOCSTRCT.
+        SolrDocument shapeDoc = new SolrDocument();
+        shapeDoc.setField("MD_SHAPE", "RECT");
+        shapeDoc.setField("MD_COORDS", "10,20,300,400");
+        shapeDoc.setField(SolrConstants.ORDER, 2);
+
+        PhysicalElement page = new PhysicalElement("PHYS_0002", "00000002.tif", 2,
+                "2", "", "", "PI_TEST", "image/tiff", null);
+
+        // Install a spy: if the prefetch mistakenly calls Solr, the test will catch the invocation.
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        Map<String, List<SolrDocument>> shapeDocsByIddoc = Map.of("9001", List.of(shapeDoc));
+        page.prefetchContainedStructElements(List.of(docstructDoc), shapeDocsByIddoc);
+
+        // Shape query (IDDOC_OWNER + METADATATYPE:SHAPE) must NOT have been issued.
+        Mockito.verify(spy, Mockito.never()).search(Mockito.contains("METADATATYPE:SHAPE"));
+
+        List<StructElement> elements = page.getContainedStructElements();
+        assertEquals(1, elements.size(), "exactly one StructElement expected");
+
+        StructElement elem = elements.get(0);
+        assertTrue(elem.hasShapeMetadata(), "element must have shape metadata");
+        assertEquals(1, elem.getShapeMetadata().size());
+
+        ShapeMetadata sm = elem.getShapeMetadata().get(0);
+        assertEquals("RECT", sm.getShape());
+        assertEquals("10,20,300,400", sm.getCoords());
+        assertEquals(2, sm.getPageNo());
+    }
+
+    /**
+     * When prefetchContainedStructElements is called with an empty doc list the cache must be
+     * marked as populated so that a subsequent getContainedStructElements() call returns an empty
+     * list without issuing a new Solr query.
+     *
+     * @verifies mark cache as populated and suppress solr query for empty doc list
+     */
+    @Test
+    void prefetchContainedStructElements_shouldMarkCacheAsPopulatedForEmptyDocList() throws Exception {
+        PhysicalElement page = new PhysicalElement("PHYS_0001", "00000001.tif", 1,
+                "1", "", "", "PI_TEST", "image/tiff", null);
+
+        page.prefetchContainedStructElements(Collections.emptyList(), Collections.emptyMap());
+
+        assertTrue(page.isContainedStructElementsCached(), "cache must be marked populated");
+
+        // A Solr spy injected after the prefetch must not be contacted.
+        SolrSearchIndex spy = Mockito.spy(DataManager.getInstance().getSearchIndex());
+        DataManager.getInstance().injectSearchIndex(spy);
+
+        List<StructElement> elements = page.getContainedStructElements();
+        assertTrue(elements.isEmpty());
+        Mockito.verify(spy, Mockito.never()).search(Mockito.anyString());
     }
 
 }
