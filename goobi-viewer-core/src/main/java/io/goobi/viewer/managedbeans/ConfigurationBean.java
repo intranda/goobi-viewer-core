@@ -1009,6 +1009,14 @@ public class ConfigurationBean implements Serializable {
         return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsMaxResults();
     }
 
+    public String getDataInfoExternalSearchUrl() {
+        return DataManager.getInstance().getConfiguration().getDataInfoExternalSearchUrl();
+    }
+
+    public String getDataInfoExternalSearchField() {
+        return DataManager.getInstance().getConfiguration().getDataInfoExternalSearchField();
+    }
+
     /**
      * @return solr field used for sorting
      */

@@ -6117,12 +6117,13 @@ public class Configuration extends AbstractConfiguration {
                 String content = config.getString("[@content]");
                 if (value.equals(content)) {
                     String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
+                    String url = config.getString("[@url]", null);
                     String[] icons = config.getStringArray("icon");
                     // Filter out empty strings that Apache Commons Configuration may return when no <icon> elements are present
                     List<String> iconList = icons != null
                             ? Arrays.stream(icons).filter(s -> s != null && !s.isBlank()).collect(Collectors.toList())
                             : new ArrayList<>();
-                    return new CopyrightIndicatorLicense(description, iconList);
+                    return new CopyrightIndicatorLicense(content, description, iconList, url);
                 }
             }
         }
@@ -6137,6 +6138,14 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getCopyrightIndicatorLicenseField() {
         return getSidebarWidgetStringValue("copyright", "license[@field]", null);
+    }
+
+    public String getDataInfoExternalSearchUrl() {
+        return getSidebarWidgetStringValue("data-info", "externalSearch[@url]", null);
+    }
+
+    public String getDataInfoExternalSearchField() {
+        return getSidebarWidgetStringValue("data-info", "externalSearch[@field]", "identifier");
     }
 
     public boolean isDisplaySocialMediaShareLinks() {

@@ -31,27 +31,38 @@ public class CopyrightIndicatorLicense implements Serializable {
 
     private static final long serialVersionUID = -4163068583648929435L;
 
+    private final String content;
     private final String description;
     private final List<String> icons;
+    private final String url;
 
     /**
-     * 
-     * @param description human-readable license description
+     * @param content raw license text (Solr field value, used as display text)
+     * @param description message key for a human-readable license description
      * @param icons list of icon identifiers for this license
+     * @param url optional URL to the license info page, may be null
      */
-    public CopyrightIndicatorLicense(String description, List<String> icons) {
+    public CopyrightIndicatorLicense(String content, String description, List<String> icons, String url) {
+        this.content = content;
         this.description = description;
         this.icons = icons;
+        this.url = url;
     }
 
-    
+    public String getContent() {
+        return content;
+    }
+
     public String getDescription() {
         return description;
     }
 
-    
     public List<String> getIcons() {
         return icons;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
 }
