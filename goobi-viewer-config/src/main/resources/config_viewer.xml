@@ -1720,6 +1720,7 @@
                 <displayWidget name="statistics-usage" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="annotations" />
                 <displayWidget name="record-notes" />
+                <displayWidget name="data-info" />
                 <displayWidget name="downloads" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="citation" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="related-groups" expanded="false" />
@@ -1906,7 +1907,7 @@
                         <icon>nd.svg</icon>
                     </value>
                     <!-- Creative Commons: Public Domain - https://creativecommons.org/publicdomain/mark/1.0/ -->
-                    <value content="Public Domain Mark 1.0" description="COPYRIGHT_DESCRIPTION_LICENSE_PUBLICDOMAINMARK10">
+                    <value content="Public Domain Mark 1.0" description="COPYRIGHT_DESCRIPTION_LICENSE_PUBLICDOMAINMARK10" url="https://creativecommons.org/publicdomain/mark/1.0/deed">
                         <icon>pd.svg</icon>
                     </value>
                     <!-- RightsStatements: InC (In Copyright 1.0) - https://rightsstatements.org/vocab/InC/1.0/ -->
@@ -2000,7 +2001,14 @@
             
             <!-- widget[@name="rss"]/@enabled: If true, the sidebar RSS widget it displayed. Default is true. -->
             <widget name="rss" enabled="true" />
-            
+
+            <!-- widget[@name="data-info"]: Configuration for the data info widget. -->
+            <!-- externalSearch[@url]: Base URL of the external search. The configured field value is appended to the URL. -->
+            <!-- externalSearch[@field]: Field to append to the URL. Possible values: "identifier" (PI, default) or "urn". -->
+            <widget name="data-info">
+                <externalSearch url="https://aksearch.arbeiterkammer.at/Search/Results?lookfor=" field="identifier" />
+            </widget>
+
         </widgets>
     </sidebar>
 
