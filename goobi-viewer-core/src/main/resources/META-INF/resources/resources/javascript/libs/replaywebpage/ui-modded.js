@@ -1312,7 +1312,7 @@ function*(e,t){if(void 0!==e){let i=0;for(const o of e)yield t(o,i++)}}(e.resour
                   </span>
                   <span>Select Media to Download</span>
                 </a>`:Q``}
-          ${!this.editable&&(null===(e=this.downloadUrl)||void 0===e?void 0:e.startsWith("http://"))||(null===(t=this.downloadUrl)||void 0===t?void 0:t.startsWith("https://"))?Q` <hr class="dropdown-divider" />
+          ${!this.embedOpts.noMediaDownloadUI&&(!this.editable&&(null===(e=this.downloadUrl)||void 0===e?void 0:e.startsWith("http://"))||(null===(t=this.downloadUrl)||void 0===t?void 0:t.startsWith("https://")))?Q` <hr class="dropdown-divider" />
                 <a
                   href="${this.downloadUrl}"
                   role="button"
