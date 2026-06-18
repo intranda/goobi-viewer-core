@@ -213,6 +213,111 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * A record carries two access conditions: ticket-requiring type "A" and type "B" which overrides "A". A user that
+     * satisfies the overriding type "B" must be granted access <b>without</b> an access ticket.
+     *
+     * @verifies not require access ticket if user satisfies overriding license type
+     */
+    @Test
+    void checkAccessPermission_shouldNotRequireAccessTicketIfUserSatisfiesOverridingLicenseType() throws Exception {
+        LicenseType a = new LicenseType();
+        a.setName("A");
+        a.setAccessTicketRequired(true);
+        LicenseType b = new LicenseType();
+        b.setName("B");
+        b.getOverriddenLicenseTypes().add(a);
+
+        // User that holds a (ticket-free) license for the overriding type "B" only
+        User user = new User() {
+            @Override
+            public AccessPermission canSatisfyAllAccessConditions(Set<String> conditions, String privilegeName, String pi) {
+                return conditions.contains("B") ? AccessPermission.granted() : AccessPermission.denied();
+            }
+        };
+
+        Set<String> recordAccessConditions = new HashSet<>(Arrays.asList("A", "B"));
+        AccessPermission access = AccessConditionUtils.checkAccessPermission(Arrays.asList(a, b), recordAccessConditions,
+                IPrivilegeHolder.PRIV_VIEW_IMAGES, user, null, Optional.empty(), null);
+        assertTrue(access.isGranted());
+        assertFalse(access.isAccessTicketRequired());
+    }
+
+    /**
+     * A user that does not satisfy the overriding type "B" remains subject to the ticket requirement of type "A".
+     *
+     * @verifies require access ticket if user does not satisfy overriding license type
+     */
+    @Test
+    void checkAccessPermission_shouldRequireAccessTicketIfUserDoesNotSatisfyOverridingLicenseType() throws Exception {
+        LicenseType a = new LicenseType();
+        a.setName("A");
+        a.setAccessTicketRequired(true);
+        LicenseType b = new LicenseType();
+        b.setName("B");
+        b.getOverriddenLicenseTypes().add(a);
+
+        // User that holds a license for the ticket-requiring type "A" only (not the overriding type "B")
+        User user = new User() {
+            @Override
+            public AccessPermission canSatisfyAllAccessConditions(Set<String> conditions, String privilegeName, String pi) {
+                return conditions.contains("A") ? AccessPermission.granted() : AccessPermission.denied();
+            }
+        };
+
+        Set<String> recordAccessConditions = new HashSet<>(Arrays.asList("A", "B"));
+        AccessPermission access = AccessConditionUtils.checkAccessPermission(Arrays.asList(a, b), recordAccessConditions,
+                IPrivilegeHolder.PRIV_VIEW_IMAGES, user, null, Optional.empty(), null);
+        assertTrue(access.isGranted());
+        assertTrue(access.isAccessTicketRequired());
+    }
+
+    /**
+     * The general public must retain the ticket-based access granted by overridden type "A" even though overriding type
+     * "B" is also present on the record.
+     *
+     * @verifies keep public access ticket path if overriding license type present
+     */
+    @Test
+    void checkAccessPermission_shouldKeepPublicAccessTicketPathIfOverridingLicenseTypePresent() throws Exception {
+        // "A" grants the privilege by default but requires an access ticket
+        LicenseType a = new LicenseType();
+        a.setName("A");
+        a.getPrivileges().add(IPrivilegeHolder.PRIV_LIST);
+        a.setAccessTicketRequired(true);
+        LicenseType b = new LicenseType();
+        b.setName("B");
+        b.getOverriddenLicenseTypes().add(a);
+
+        Set<String> recordAccessConditions = new HashSet<>(Arrays.asList("A", "B"));
+        AccessPermission access = AccessConditionUtils.checkAccessPermission(Arrays.asList(a, b), recordAccessConditions,
+                IPrivilegeHolder.PRIV_LIST, null, null, Optional.empty(), null);
+        assertTrue(access.isGranted());
+        assertTrue(access.isAccessTicketRequired());
+    }
+
+    /**
+     * Without an override relationship, a restrictive second license type still denies the general public, preserving the
+     * "all access conditions must be satisfied" semantics.
+     *
+     * @verifies deny public access if restrictive license type does not override
+     */
+    @Test
+    void checkAccessPermission_shouldDenyPublicAccessIfRestrictiveLicenseTypeDoesNotOverride() throws Exception {
+        LicenseType a = new LicenseType();
+        a.setName("A");
+        a.getPrivileges().add(IPrivilegeHolder.PRIV_LIST);
+        a.setAccessTicketRequired(true);
+        // "B" neither grants the privilege by default nor overrides "A"
+        LicenseType b = new LicenseType();
+        b.setName("B");
+
+        Set<String> recordAccessConditions = new HashSet<>(Arrays.asList("A", "B"));
+        AccessPermission access = AccessConditionUtils.checkAccessPermission(Arrays.asList(a, b), recordAccessConditions,
+                IPrivilegeHolder.PRIV_LIST, null, null, Optional.empty(), null);
+        assertFalse(access.isGranted());
+    }
+
+    /**
      * @verifies remove license types whose names do not match access conditions
      */
     @Test

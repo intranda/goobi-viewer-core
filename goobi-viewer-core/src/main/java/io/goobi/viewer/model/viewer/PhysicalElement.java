@@ -1928,23 +1928,50 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
             if (containedStructElements == null) {
                 String query = '+' + SolrConstants.PI_TOPSTRUCT + ':' + pi + " +" + SolrConstants.THUMBPAGENO + ':' + order;
                 SolrDocumentList docstructDocs = DataManager.getInstance().getSearchIndex().search(query);
-                if (docstructDocs.isEmpty()) {
-                    containedStructElements = Collections.emptyList();
-                } else {
-                    containedStructElements = new ArrayList<>(docstructDocs.size());
-                    for (SolrDocument doc : docstructDocs) {
-                        StructElement ele = new StructElement((String) doc.getFieldValue(SolrConstants.IDDOC), doc);
-                        IMetadataValue value = TocMaker.buildTocElementLabel(doc);
-                        String label = value.getValue(BeanUtils.getLocale()).orElse(value.getValue().orElse(""));
-                        if (StringUtils.isNotBlank(label)) {
-                            ele.setLabel(label);
-                        }
-                        containedStructElements.add(ele);
-                    }
-                }
+                buildContainedStructElements(docstructDocs, null);
             }
 
             return containedStructElements;
+        }
+    }
+
+    /**
+     * Builds containedStructElements from docs. Must be called while holding {@code lock}.
+     * Pass a non-null shapeDocsByIddoc to skip per-element Solr shape queries.
+     */
+    private void buildContainedStructElements(List<SolrDocument> docs, Map<String, List<SolrDocument>> shapeDocsByIddoc)
+            throws PresentationException, IndexUnreachableException {
+        if (docs.isEmpty()) {
+            containedStructElements = Collections.emptyList();
+            return;
+        }
+        containedStructElements = new ArrayList<>(docs.size());
+        for (SolrDocument doc : docs) {
+            String iddoc = (String) doc.getFieldValue(SolrConstants.IDDOC);
+            List<SolrDocument> shapeDocs = shapeDocsByIddoc != null ? shapeDocsByIddoc.getOrDefault(iddoc, Collections.emptyList()) : null;
+            StructElement ele = new StructElement(iddoc, doc, shapeDocs);
+            IMetadataValue value = TocMaker.buildTocElementLabel(doc);
+            String label = value.getValue(BeanUtils.getLocale()).orElse(value.getValue().orElse(""));
+            if (StringUtils.isNotBlank(label)) {
+                ele.setLabel(label);
+            }
+            containedStructElements.add(ele);
+        }
+    }
+
+    boolean isContainedStructElementsCached() {
+        synchronized (lock) {
+            return containedStructElements != null;
+        }
+    }
+
+    void prefetchContainedStructElements(List<SolrDocument> docs, Map<String, List<SolrDocument>> shapeDocsByIddoc)
+            throws PresentationException, IndexUnreachableException {
+        synchronized (lock) {
+            if (containedStructElements != null) {
+                return;
+            }
+            buildContainedStructElements(docs, shapeDocsByIddoc);
         }
     }
 

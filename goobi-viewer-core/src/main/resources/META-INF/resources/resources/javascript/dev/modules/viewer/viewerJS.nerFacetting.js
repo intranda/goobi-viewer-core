@@ -156,24 +156,14 @@ var viewerJS = (function (viewer) {
                                 _renderOverview(_json);
                             }
                         } else {
-                            _html = viewer.helper.renderAlert(
-                                'alert-danger',
-                                _defaults.msg.noJSON + '<br /><br />URL: ' + _apiCall,
-                                true
-                            );
+                            _html = viewer.helper.renderAlert('alert-danger', _defaults.msg.noJSON + '<br /><br />URL: ' + _apiCall, true);
                             $(_defaults.overviewContent).html(_html);
                         }
                     })
                     .then(null, function (error) {
                         $('.facetting-content')
                             .empty()
-                            .append(
-                                viewer.helper.renderAlert(
-                                    'alert-danger',
-                                    '<strong>Status: </strong>' + error.status + ' ' + error.statusText,
-                                    false
-                                )
-                            );
+                            .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
                         console.error('ERROR: viewer.nerFacetting.init - ', error);
                     });
 
@@ -221,13 +211,7 @@ var viewerJS = (function (viewer) {
                             .then(null, function (error) {
                                 $('.facetting-content')
                                     .empty()
-                                    .append(
-                                        viewer.helper.renderAlert(
-                                            'alert-danger',
-                                            '<strong>Status: </strong>' + error.status + ' ' + error.statusText,
-                                            false
-                                        )
-                                    );
+                                    .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
                                 console.error('ERROR: viewer.nerFacetting.init - ', error);
                             });
                     }
@@ -304,24 +288,14 @@ var viewerJS = (function (viewer) {
                                 if (_json !== null || _json !== 'undefinded') {
                                     _renderOverview(_json);
                                 } else {
-                                    _html = viewer.helper.renderAlert(
-                                        'alert-danger',
-                                        _defaults.msg.noJSON + '<br /><br />URL: ' + _apiCall,
-                                        true
-                                    );
+                                    _html = viewer.helper.renderAlert('alert-danger', _defaults.msg.noJSON + '<br /><br />URL: ' + _apiCall, true);
                                     $(_defaults.overviewContent).html(_html);
                                 }
                             })
                             .then(null, function (error) {
                                 $('.facetting-content')
                                     .empty()
-                                    .append(
-                                        viewer.helper.renderAlert(
-                                            'alert-danger',
-                                            '<strong>Status: </strong>' + error.status + ' ' + error.statusText,
-                                            false
-                                        )
-                                    );
+                                    .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
                                 console.error('ERROR: viewer.nerFacetting.init - ', error);
                             });
                     }
@@ -402,13 +376,7 @@ var viewerJS = (function (viewer) {
                             .then(null, function (error) {
                                 $('.facetting-content')
                                     .empty()
-                                    .append(
-                                        viewer.helper.renderAlert(
-                                            'alert-danger',
-                                            '<strong>Status: </strong>' + error.status + ' ' + error.statusText,
-                                            false
-                                        )
-                                    );
+                                    .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
                                 console.error('ERROR: viewer.nerFacetting.init - ', error);
                             });
                     }
@@ -431,13 +399,7 @@ var viewerJS = (function (viewer) {
             } else {
                 $('.facetting-content')
                     .empty()
-                    .append(
-                        viewer.helper.renderAlert(
-                            'alert-danger',
-                            '<strong>Deactivated: </strong>Not possible to write in local Storage!',
-                            false
-                        )
-                    );
+                    .append(viewer.helper.renderAlert('alert-danger', '<strong>Deactivated: </strong>Not possible to write in local Storage!', false));
             }
         },
     };
@@ -464,72 +426,30 @@ var viewerJS = (function (viewer) {
             _html += '<div class="page-number">';
             if (data.rangeSize == 1) {
                 if (_defaults.currentPage === 'nerfacetting') {
-                    _html +=
-                        '<a href="' + _defaults.baseUrl + '/image/' + _defaults.workId + '/' + page.pageOrder + '/">';
+                    _html += '<a href="' + _defaults.baseUrl + '/image/' + _defaults.workId + '/' + page.pageOrder + '/">';
                 } else {
-                    _html +=
-                        '<a href="' +
-                        _defaults.baseUrl +
-                        '/' +
-                        _defaults.currentPage +
-                        '/' +
-                        _defaults.workId +
-                        '/' +
-                        page.pageOrder +
-                        '/">';
+                    _html += '<a href="' + _defaults.baseUrl + '/' + _defaults.currentPage + '/' + _defaults.workId + '/' + page.pageOrder + '/">';
                 }
                 _html += page.pageOrder;
                 _html += '</a>';
             } else {
                 if (_defaults.currentPage === 'nerfacetting') {
                     if (page.firstPage !== undefined || page.lastPage !== undefined) {
-                        _html +=
-                            '<a href="' +
-                            _defaults.baseUrl +
-                            '/image/' +
-                            _defaults.workId +
-                            '/' +
-                            page.firstPage +
-                            '/">';
+                        _html += '<a href="' + _defaults.baseUrl + '/image/' + _defaults.workId + '/' + page.firstPage + '/">';
                         _html += page.firstPage + '-' + page.lastPage;
                         _html += '</a>';
                     } else {
-                        _html +=
-                            '<a href="' +
-                            _defaults.baseUrl +
-                            '/image/' +
-                            _defaults.workId +
-                            '/' +
-                            page.pageOrder +
-                            '/">';
+                        _html += '<a href="' + _defaults.baseUrl + '/image/' + _defaults.workId + '/' + page.pageOrder + '/">';
                         _html += page.pageOrder;
                         _html += '</a>';
                     }
                 } else {
                     if (page.firstPage !== undefined || page.lastPage !== undefined) {
-                        _html +=
-                            '<a href="' +
-                            _defaults.baseUrl +
-                            '/' +
-                            _defaults.currentPage +
-                            '/' +
-                            _defaults.workId +
-                            '/' +
-                            page.firstPage +
-                            '/">';
+                        _html += '<a href="' + _defaults.baseUrl + '/' + _defaults.currentPage + '/' + _defaults.workId + '/' + page.firstPage + '/">';
                         _html += page.firstPage + '-' + page.lastPage;
                         _html += '</a>';
                     } else {
-                        _html +=
-                            '<a href="' +
-                            _defaults.baseUrl +
-                            '/' +
-                            _defaults.currentPage +
-                            '/' +
-                            _defaults.workId +
-                            '/' +
-                            page.pageOrder +
-                            '/">';
+                        _html += '<a href="' + _defaults.baseUrl + '/' + _defaults.currentPage + '/' + _defaults.workId + '/' + page.pageOrder + '/">';
                         _html += page.pageOrder;
                         _html += '</a>';
                     }
@@ -543,7 +463,7 @@ var viewerJS = (function (viewer) {
                 _html += '<span class="page-tag empty">' + _defaults.msg.emptyTag + '</span>';
             } else {
                 $.each(page.tags, function (t, tag) {
-                    _html += '<span class="page-tag ' + tag.type + '">' + tag.value + '</span>';
+                    _html += '<span class="page-tag ' + tag.type + '">' + _escapeHtml(tag.value) + '</span>';
                 });
             }
             _html += '</div>';
@@ -811,10 +731,7 @@ var viewerJS = (function (viewer) {
                                         .hide()
                                         .html(_html)
                                         .each(function () {
-                                            $(this)
-                                                .children('.page-tag')
-                                                .slice(_defaults.recurrenceSectionNumber)
-                                                .remove();
+                                            $(this).children('.page-tag').slice(_defaults.recurrenceSectionNumber).remove();
                                         });
                                     $(_defaults.sectionTags).show();
                                 }
@@ -825,13 +742,7 @@ var viewerJS = (function (viewer) {
                             .then(null, function (error) {
                                 $('.facetting-content')
                                     .empty()
-                                    .append(
-                                        viewer.helper.renderAlert(
-                                            'alert-danger',
-                                            '<strong>Status: </strong>' + error.status + ' ' + error.statusText,
-                                            false
-                                        )
-                                    );
+                                    .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
                                 console.error('ERROR: viewer.nerFacetting.init - ', error);
                             });
                     },
@@ -869,26 +780,14 @@ var viewerJS = (function (viewer) {
                     .then(null, function (error) {
                         $('.facetting-content')
                             .empty()
-                            .append(
-                                viewer.helper.renderAlert(
-                                    'alert-danger',
-                                    '<strong>Status: </strong>' + error.status + ' ' + error.statusText,
-                                    false
-                                )
-                            );
+                            .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
                         console.error('ERROR: viewer.nerFacetting.init - ', error);
                     });
             })
             .then(null, function (error) {
                 $('.facetting-content')
                     .empty()
-                    .append(
-                        viewer.helper.renderAlert(
-                            'alert-danger',
-                            '<strong>Status: </strong>' + error.status + ' ' + error.statusText,
-                            false
-                        )
-                    );
+                    .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
                 console.error('ERROR: viewer.nerFacetting.init - ', error);
             });
     }
@@ -915,39 +814,15 @@ var viewerJS = (function (viewer) {
                 $.each(page.tags, function (t, tag) {
                     if (_defaults.currentPage === 'nerfacetting') {
                         if (tag.counter < 10) {
-                            _html +=
-                                '<span class="page-tag ' +
-                                tag.type +
-                                '" style="font-size: 1.' +
-                                tag.counter +
-                                'rem;">' +
-                                tag.value +
-                                '</span>';
+                            _html += '<span class="page-tag ' + tag.type + '" style="font-size: 1.' + tag.counter + 'rem;">' + _escapeHtml(tag.value) + '</span>';
                         } else {
-                            _html +=
-                                '<span class="page-tag ' +
-                                tag.type +
-                                '" style="font-size: 2rem;">' +
-                                tag.value +
-                                '</span>';
+                            _html += '<span class="page-tag ' + tag.type + '" style="font-size: 2rem;">' + _escapeHtml(tag.value) + '</span>';
                         }
                     } else {
                         if (tag.counter < 10) {
-                            _html +=
-                                '<span class="page-tag ' +
-                                tag.type +
-                                '" style="font-size: 1' +
-                                tag.counter +
-                                'px;">' +
-                                tag.value +
-                                '</span>';
+                            _html += '<span class="page-tag ' + tag.type + '" style="font-size: 1' + tag.counter + 'px;">' + _escapeHtml(tag.value) + '</span>';
                         } else {
-                            _html +=
-                                '<span class="page-tag ' +
-                                tag.type +
-                                '" style="font-size: 19px;">' +
-                                tag.value +
-                                '</span>';
+                            _html += '<span class="page-tag ' + tag.type + '" style="font-size: 19px;">' + _escapeHtml(tag.value) + '</span>';
                         }
                     }
                 });
@@ -1118,6 +993,22 @@ var viewerJS = (function (viewer) {
             url += '&type=' + type;
         }
         return url;
+    }
+
+    /**
+     * Escapes HTML special characters in a string to prevent XSS when the value
+     * is concatenated into an HTML string. NER tag labels come from ALTO files via
+     * the NER API and contain raw Unicode text — a single escaping pass is both
+     * necessary and sufficient.
+     *
+     * @param str value to escape; null/undefined are treated as empty string
+     * @returns {String} HTML-safe string
+     */
+    function _escapeHtml(str) {
+        if (str == null) {
+            return '';
+        }
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
     return viewer;

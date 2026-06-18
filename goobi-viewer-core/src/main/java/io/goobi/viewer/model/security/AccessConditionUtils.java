@@ -1404,6 +1404,10 @@ public final class AccessConditionUtils {
      * @should return true if ip range allows access
      * @should not return true if no ip range matches
      * @should preserve ticket requirement
+     * @should not require access ticket if user satisfies overriding license type
+     * @should require access ticket if user does not satisfy overriding license type
+     * @should keep public access ticket path if overriding license type present
+     * @should deny public access if restrictive license type does not override
      */
     public static AccessPermission checkAccessPermission(List<LicenseType> allLicenseTypes, final Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
@@ -1444,6 +1448,22 @@ public final class AccessConditionUtils {
         boolean redirect = false;
         String redirectUrl = null;
         List<LicenseType> licenseTypesWithCustomAccessDeniedInfo = new ArrayList<>();
+
+        // License types that override another relevant license type provide an additional, licensee-specific access route
+        // (consistent with getApplyingLicenses and SearchHelper#getPersonalFilterQuerySuffix). They must not, on their own,
+        // deny the general public the baseline access granted by the type(s) they override, so they are excluded from the
+        // "all license types allow the privilege by default" check below.
+        Set<String> overridingConditionNames = HashSet.newHashSet(relevantLicenseTypes.size());
+        for (LicenseType licenseType : relevantLicenseTypes) {
+            for (LicenseType overriddenType : relevantLicenseTypes) {
+                if (!overriddenType.equals(licenseType) && licenseType.getOverriddenLicenseTypes().contains(overriddenType)) {
+                    overridingConditionNames.add(licenseType.getName());
+                    break;
+                }
+            }
+        }
+        boolean hasOverridingLicenseTypes = !overridingConditionNames.isEmpty();
+
         // Check whether *all* relevant license types allow the requested privilege by default. As soon as one doesn't, set to false.
         for (LicenseType licenseType : relevantLicenseTypes) {
             useAccessConditions.add(licenseType.getName());
@@ -1458,79 +1478,97 @@ public final class AccessConditionUtils {
             if (licenseType.isAccessTicketRequired()) {
                 accessTicketRequired = true;
             }
-            if (!licenseType.getPrivileges().contains(privilegeName) && !licenseType.isOpenAccess()
-                    && !licenseType.isRestrictionsExpired(query)) {
+            if (!overridingConditionNames.contains(licenseType.getName()) && !licenseType.getPrivileges().contains(privilegeName)
+                    && !licenseType.isOpenAccess() && !licenseType.isRestrictionsExpired(query)) {
                 logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR Debug
                 licenseTypeAllowsPriv = false;
             }
         }
-        if (licenseTypeAllowsPriv) {
+        // If every relevant license type allows the privilege by default and there are no overriding license types, grant
+        // access immediately. When overriding types are present, the public grant is deferred until after the licensee-specific
+        // checks below, so that a licensee matching an overriding type can receive a reduced (e.g. ticket-free) permission.
+        if (licenseTypeAllowsPriv && !hasOverridingLicenseTypes) {
             // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName); //NOSONAR Debug
             return AccessPermission.granted()
                     .setRedirect(redirect)
                     .setRedirectUrl(redirectUrl)
                     .setAccessTicketRequired(accessTicketRequired);
-        } else if (isFreeOpenAccess(useAccessConditions, relevantLicenseTypes)) {
+        }
+        if (isFreeOpenAccess(useAccessConditions, relevantLicenseTypes)) {
             logger.trace("Privilege '{}' is OpenAccess", privilegeName);
             return AccessPermission.granted().setRedirect(redirect).setRedirectUrl(redirectUrl).setAccessTicketRequired(accessTicketRequired);
-        } else {
-            // Check IP range
-            IpRange useIpRange = null;
-            if (StringUtils.isNotEmpty(remoteAddress)) {
-                if (NetTools.isIpAddressLocalhost(remoteAddress)
-                        && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
-                    logger.trace("Access granted to localhost");
-                    return AccessPermission.granted();
-                }
-                // Check whether the requested privilege is allowed to this IP range (for all access conditions)
-                for (IpRange ipRange : DataManager.getInstance().getIpRangeCache().getAllIpRanges()) {
-                    if (ipRange.matchIp(remoteAddress)) {
-                        useIpRange = ipRange;
-                        AccessPermission access = ipRange.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
-                        if (access.isGranted()) {
-                            logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
-                            access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, ipRange,
-                                    client.orElse(null));
-                            return access.setAccessTicketRequired(accessTicketRequired);
-                        }
+        }
+
+        // Check IP range
+        IpRange useIpRange = null;
+        if (StringUtils.isNotEmpty(remoteAddress)) {
+            if (NetTools.isIpAddressLocalhost(remoteAddress)
+                    && DataManager.getInstance().getConfiguration().isFullAccessForLocalhost()) {
+                logger.trace("Access granted to localhost");
+                return AccessPermission.granted();
+            }
+            // Check whether the requested privilege is allowed to this IP range (for all access conditions)
+            for (IpRange ipRange : DataManager.getInstance().getIpRangeCache().getAllIpRanges()) {
+                if (ipRange.matchIp(remoteAddress)) {
+                    useIpRange = ipRange;
+                    AccessPermission access = ipRange.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
+                    if (access.isGranted()) {
+                        logger.trace("Access granted to {} via IP range {}", remoteAddress, ipRange.getName());
+                        access.setAccessTicketRequired(isAccessTicketRequiredForLicensee(relevantLicenseTypes, privilegeName,
+                                conditions -> ipRange.canSatisfyAllAccessConditions(conditions, privilegeName, null)));
+                        access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, ipRange,
+                                client.orElse(null));
+                        return access;
                     }
                 }
             }
+        }
 
-            // If not within an allowed IP range, check the current user's satisfied access conditions
-            if (user != null) {
-                AccessPermission access =
-                        user.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null).setAccessTicketRequired(accessTicketRequired);
+        // If not within an allowed IP range, check the current user's satisfied access conditions
+        if (user != null) {
+            AccessPermission access = user.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
+            if (access.isGranted()) {
+                access.setAccessTicketRequired(isAccessTicketRequiredForLicensee(relevantLicenseTypes, privilegeName,
+                        conditions -> user.canSatisfyAllAccessConditions(conditions, privilegeName, null)));
+                access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
+                return access;
+            }
+        }
+
+        //check clientApplication
+        if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
+            //check if specific client matches access conditions
+            if (client.isPresent()) {
+                ClientApplication clientApplication = client.get();
+                AccessPermission access = clientApplication.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
                 if (access.isGranted()) {
+                    access.setAccessTicketRequired(isAccessTicketRequiredForLicensee(relevantLicenseTypes, privilegeName,
+                            conditions -> clientApplication.canSatisfyAllAccessConditions(conditions, privilegeName, null)));
                     access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
                     return access;
                 }
             }
-
-            //check clientApplication
-            if (client.map(c -> c.mayLogIn(remoteAddress)).orElse(false)) {
-                //check if specific client matches access conditions
-                if (client.isPresent()) {
-                    AccessPermission access = client.get()
-                            .canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
-                            .setAccessTicketRequired(accessTicketRequired);
-                    if (access.isGranted()) {
-                        access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
-                        return access;
-                    }
-                }
-                //check if access condition match for all clients
-                ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
-                if (allClients != null) {
-                    AccessPermission access =
-                            allClients.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null)
-                                    .setAccessTicketRequired(accessTicketRequired);
-                    if (access.isGranted()) {
-                        access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
-                        return access;
-                    }
+            //check if access condition match for all clients
+            ClientApplication allClients = DataManager.getInstance().getClientManager().getAllClientsFromDatabase();
+            if (allClients != null) {
+                AccessPermission access = allClients.canSatisfyAllAccessConditions(useAccessConditions, privilegeName, null);
+                if (access.isGranted()) {
+                    access.setAccessTicketRequired(isAccessTicketRequiredForLicensee(relevantLicenseTypes, privilegeName,
+                            conditions -> allClients.canSatisfyAllAccessConditions(conditions, privilegeName, null)));
+                    access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
+                    return access;
                 }
             }
+        }
+
+        // General-public baseline grant: reached when no licensee-specific route matched. When the overridden license type(s)
+        // grant the privilege by default (possibly gated by an access ticket), the general public retains that access even
+        // though an overriding license type is also present on the record.
+        if (licenseTypeAllowsPriv) {
+            return AccessPermission.granted()
+                    .setRedirect(redirect)
+                    .setRedirectUrl(redirectUrl)
+                    .setAccessTicketRequired(accessTicketRequired);
         }
 
         // TODO Determine "best" set configuration, if several LicenseTypes contain custom config?
@@ -1541,6 +1579,53 @@ public final class AccessConditionUtils {
         }
 
         return AccessPermission.denied().setAccessDeniedPlaceholderInfo(imagePlaceholders);
+    }
+
+    /**
+     * Evaluates whether a licensee satisfies a given set of access conditions for a privilege. Used to apply license-type
+     * overrides without coupling {@link #isAccessTicketRequiredForLicensee} to a concrete licensee type.
+     */
+    @FunctionalInterface
+    private interface AccessConditionEvaluator {
+        AccessPermission evaluate(Set<String> conditions) throws IndexUnreachableException, PresentationException, DAOException;
+    }
+
+    /**
+     * Determines whether an access ticket is required for a licensee that has already been granted access, honoring license-type
+     * overrides: a ticket-requiring license type does not impose its ticket requirement on a licensee that satisfies another
+     * relevant license type which overrides it. License types not subject to such an override still contribute their ticket
+     * requirement, preserving the "all access conditions must be satisfied" semantics of the record for the general case.
+     *
+     * @param relevantLicenseTypes license types relevant for the record
+     * @param privilegeName requested privilege
+     * @param evaluator evaluates whether the licensee satisfies a given set of access conditions
+     * @return true if an access ticket is required for this licensee
+     * @throws IndexUnreachableException if any.
+     * @throws PresentationException if any.
+     * @throws DAOException if any.
+     */
+    private static boolean isAccessTicketRequiredForLicensee(List<LicenseType> relevantLicenseTypes, String privilegeName,
+            AccessConditionEvaluator evaluator) throws IndexUnreachableException, PresentationException, DAOException {
+        boolean required = false;
+        for (LicenseType licenseType : relevantLicenseTypes) {
+            if (!licenseType.isAccessTicketRequired()) {
+                continue;
+            }
+            // The ticket requirement is suppressed for this licensee if it satisfies another relevant license type that
+            // overrides the ticket-requiring one.
+            boolean overridden = false;
+            for (LicenseType overridingType : relevantLicenseTypes) {
+                if (!overridingType.equals(licenseType) && overridingType.getOverriddenLicenseTypes().contains(licenseType)
+                        && evaluator.evaluate(Collections.singleton(overridingType.getName())).isGranted()) {
+                    overridden = true;
+                    break;
+                }
+            }
+            if (!overridden) {
+                required = true;
+            }
+        }
+        return required;
     }
 
     /**

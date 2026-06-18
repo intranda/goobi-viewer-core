@@ -165,7 +165,7 @@ var viewerJS = (function (viewer) {
             $paginator.find("[data-paginator='input-field']").trigger('focus');
 
             // Fill the actual page number on click
-            var $actualPageNumber = $('#paginatorActualPageNumber').html();
+            var $actualPageNumber = $('#paginatorActualPageNumber').text().trim();
             $paginator.find("[data-paginator='input-field']").val($actualPageNumber);
 
             // Automatically select the actual input value (user friendly behaviour)

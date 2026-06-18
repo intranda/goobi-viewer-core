@@ -85,7 +85,6 @@ import de.unigoettingen.sub.commons.contentlib.servlet.model.SinglePdfRequest;
 import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
-import io.goobi.viewer.controller.imaging.ImageHandler;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
@@ -95,6 +94,7 @@ import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
+import io.goobi.viewer.controller.imaging.ImageHandler;
 import io.goobi.viewer.controller.imaging.SourceImagePrewarmService;
 import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.controller.sorting.AlphanumCollatorComparator;
@@ -122,12 +122,12 @@ import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationList;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
-import io.goobi.viewer.model.resources.download.ExternalResourceUrlService;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
 import io.goobi.viewer.model.metadata.MetadataValue;
+import io.goobi.viewer.model.resources.download.ExternalResourceUrlService;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
@@ -142,6 +142,7 @@ import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.variables.VariableReplacer;
+import io.goobi.viewer.model.viewer.StructElement.ShapeMetadata;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.EagerPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
@@ -391,6 +392,38 @@ public class ViewManager implements Serializable {
             return "";
         }
         return imageDeliveryBean.getImages().getImageUrl(null, pi, representative.getFileName());
+    }
+
+    public List<PhysicalElement> getDisplayedPages() throws IndexUnreachableException, DAOException {
+        List<PhysicalElement> pages = new ArrayList<>();
+
+        switch (getPageNavigation()) {
+            case SINGLE:
+                // Guard against null page (e.g. when currentImageOrder is not set or out of range)
+                getPage(currentImageOrder).ifPresent(pages::add);
+                break;
+            case DOUBLE:
+                getCurrentLeftPage().filter(p -> !p.isDoubleImage()).ifPresent(pages::add);
+                getCurrentRightPage().filter(p -> !p.isDoubleImage() || pages.isEmpty())
+                        .ifPresent(pages::add);
+                break;
+            case SEQUENCE:
+                // Batch-prefetch + per-page seeding of the five privileges happens inside
+                // getAllPages() (guarded by pagePermissionsPrefetched). Doing it here too
+                // would issue a duplicate Solr/DAO query — refs #27883. Restored after the
+                // develop→master merge re-introduced the inline prefetch that ce180fa49c
+                // had removed.
+                for (PhysicalElement page : this.getAllPages()) {
+                    if (page.isHasImage()) {
+                        pages.add(page);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        return pages;
     }
 
     public Map<Integer, String> getImageInfos(PageType pageType) throws IndexUnreachableException, DAOException {
@@ -4286,6 +4319,97 @@ public class ViewManager implements Serializable {
                 .getConfiguration()
                 .showImageThumbnailGallery(new ViewAttributes(this, pageType));
 
+    }
+
+    /**
+     * Lists of struct elements that start on this page. For example, if a page contains multiple elements that only cover a certain area of the page
+     * (using coordinates), this method can be used to get all shape coordinates for these elemets for visualization.
+     *
+     * @return List of <code>StructElement</code>s
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     * @should initialize the list only once
+     */
+    public List<StructElement> getContainedStructElements() throws PresentationException, IndexUnreachableException, DAOException {
+
+        List<PhysicalElement> pages = getDisplayedPages();
+        if (pages.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        if (PageNavigation.SEQUENCE.equals(getPageNavigation())) {
+            prefetchContainedStructElementsForAllPages(pages);
+        }
+
+        List<StructElement> docStructs = new ArrayList<>();
+        for (PhysicalElement page : pages) {
+            docStructs.addAll(page.getContainedStructElements());
+        }
+        return docStructs;
+
+    }
+
+    private void prefetchContainedStructElementsForAllPages(List<PhysicalElement> pages)
+            throws PresentationException, IndexUnreachableException {
+        if (pages.stream().allMatch(PhysicalElement::isContainedStructElementsCached)) {
+            return;
+        }
+
+        // Query 1: all SHAPE docs for this work — gives us the set of DOCSTRCT IDDOCs that have shapes
+        List<SolrDocument> shapeDocs =
+                DataManager.getInstance().getSearchIndex().search('+' + SolrConstants.PI_TOPSTRUCT + ':' + this.pi + " +METADATATYPE:SHAPE");
+
+        Map<String, List<SolrDocument>> shapeDocsByIddocOwner = new HashMap<>();
+        for (SolrDocument shapeDoc : shapeDocs) {
+            String iddocOwner = (String) shapeDoc.getFieldValue(SolrConstants.IDDOC_OWNER);
+            if (iddocOwner != null) {
+                shapeDocsByIddocOwner.computeIfAbsent(iddocOwner, k -> new ArrayList<>()).add(shapeDoc);
+            }
+        }
+
+        // Query 2: only the DOCSTRCTs that actually own a SHAPE — no point fetching the rest
+        Map<Integer, List<SolrDocument>> docstructsByThumbPageNo = new HashMap<>();
+        if (!shapeDocsByIddocOwner.isEmpty()) {
+            String iddocClause = String.join(" ", shapeDocsByIddocOwner.keySet());
+            List<SolrDocument> docstructDocs =
+                    DataManager.getInstance().getSearchIndex().search('+' + SolrConstants.IDDOC + ":(" + iddocClause + ')');
+            for (SolrDocument doc : docstructDocs) {
+                Number thumbPageNo = (Number) doc.getFieldValue(SolrConstants.THUMBPAGENO);
+                if (thumbPageNo != null) {
+                    docstructsByThumbPageNo.computeIfAbsent(thumbPageNo.intValue(), k -> new ArrayList<>()).add(doc);
+                }
+            }
+        }
+
+        for (PhysicalElement page : pages) {
+            List<SolrDocument> pageDocs = docstructsByThumbPageNo.getOrDefault(page.getOrder(), Collections.emptyList());
+            page.prefetchContainedStructElements(pageDocs, shapeDocsByIddocOwner);
+        }
+    }
+
+    /**
+     *
+     * @return {@link String}
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws JsonProcessingException
+     * @throws DAOException
+     */
+    public String getContainedStructElementsAsJson() throws PresentationException, IndexUnreachableException, JsonProcessingException, DAOException {
+
+        List<ShapeMetadata> shapes = new ArrayList<>();
+
+        List<StructElement> elements = getContainedStructElements();
+
+        List<ShapeMetadata> pageShapes = elements.stream()
+                .filter(ele -> ele.getShapeMetadata() != null && !ele.getShapeMetadata().isEmpty())
+                .flatMap(ele -> ele.getShapeMetadata().stream())
+                .toList();
+        shapes.addAll(pageShapes);
+
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(shapes);
     }
 
     public String getMimeTypesForLoadedPagesAsJson() throws IndexUnreachableException {

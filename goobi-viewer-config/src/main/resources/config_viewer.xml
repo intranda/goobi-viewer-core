@@ -1710,8 +1710,8 @@
                 <displayWidget name="views" collapsible="false" collapsedByDefault="false" /> 
                 <displayWidget name="copyright" />
                 <displayWidget name="search-result-navigation" />
-		<displayWidget name="search-in-current-item" />
-		<displayWidget name="calendar" />
+				<displayWidget name="search-in-current-item" />
+				<displayWidget name="calendar" />
                 <displayWidget name="named-entities" />
                 <displayWidget name="metadata" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="metadata-tech" collapsible="false" collapsedByDefault="false" />
