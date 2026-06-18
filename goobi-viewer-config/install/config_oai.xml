@@ -6,5 +6,8 @@
     <!--
     <urnResolverUrl>http://localhost:8080/viewer/resolver?urn=</urnResolverUrl>
     <piResolverUrl>http://localhost:8080/viewer/piresolver?id=</piResolverUrl>
+    <solr>
+        <solrUrl>http://localhost:8983/solr/current</solrUrl>
+    </solr>
     -->
 </config>

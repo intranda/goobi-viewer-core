@@ -18,7 +18,7 @@
 
     <viewer>
         <!--<theme mainTheme="reference" discriminatorField="">
-            &lt;!&ndash; <rootPath>/opt/digiverso/viewer/themes/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/WebContent/resources/themes/</rootPath> &ndash;&gt;
+            <rootPath>/opt/digiverso/viewer/themes/goobi-viewer-theme-mytheme/goobi-viewer-theme-mytheme/WebContent/resources/themes/</rootPath>
         </theme>-->
     </viewer>
 

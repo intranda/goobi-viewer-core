@@ -232,6 +232,7 @@ pipeline {
         }
         sh '''#!/bin/bash -xe
           ALT_REPO="-DaltDeploymentRepository=${NEXUS_BASE}/${NEXUS_PUBLIC_REPO}-releases -DaltSnapshotDeploymentRepository=${NEXUS_BASE}/${NEXUS_PUBLIC_REPO}-snapshots"
+          mvn -f pom.xml -N deploy -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTest -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
           mvn -f goobi-viewer-config/pom.xml deploy -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
           mvn -f goobi-viewer-core/pom.xml deploy -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
           mvn -f goobi-viewer-connector/pom.xml deploy -Dchangelist=$BUILD_TYPE -Dmaven.main.skip=true -DskipTests -Dcheckstyle.skip=true -DskipDependencyCheck=true -U $ALT_REPO --no-transfer-progress
