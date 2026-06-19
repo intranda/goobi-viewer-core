@@ -90,6 +90,7 @@
             </ui:fragment>
 
             <!-- EXPORT OPTIONS DROPDOWN -->
+            <ui:fragment rendered="#{not empty configurationBean.enabledSearchExportFormats}">
             <div class="dropdown search-list__export-dropdown-wrapper">
                 <button
                     class="btn btn--clean dropdown-toggle search-list__option-button search-list__export-dropdown-toggle"
@@ -131,6 +132,7 @@
                     </ui:repeat>
                 </div>
             </div>
+            </ui:fragment>
 
             <!-- SEARCHLIST VIEWS -->
             <div class="search-list__views">

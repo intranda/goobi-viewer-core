@@ -245,6 +245,7 @@
                 </ui:fragment>
 
                 <!-- EXPORT FILE FORMAT DROPDOWN/BUTTON -->
+                <ui:fragment rendered="#{not empty configurationBean.enabledSearchExportFormats}">
                 <div class="dropdown search-list__hit-export-dropdown-wrapper">
                     <button
                         type="button"
@@ -273,6 +274,7 @@
                         </ui:repeat>
                     </div>
                 </div>
+                </ui:fragment>
 
                 <!-- TOGGLE BS TOOLTIPS ON BUTTONS/LINKS "MANUALLY" BY JS -->
                 <script>
