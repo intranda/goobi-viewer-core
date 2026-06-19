@@ -23,6 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -41,6 +47,7 @@ import io.goobi.viewer.connector.oai.model.ErrorCode;
 import io.goobi.viewer.connector.utils.Utils;
 import io.goobi.viewer.connector.utils.XmlConstants;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.solr.SolrConstants;
@@ -53,6 +60,9 @@ public class METSFormat extends Format {
     private static final Logger logger = LogManager.getLogger(METSFormat.class);
 
     private static final String METS_FILTER_QUERY = " +(+" + SolrConstants.SOURCEDOCFORMAT + ":METS " + "-" + SolrConstants.DATEDELETED + ":*)";
+
+    /** HTTP timeout for document resolver requests, in ms (mirrors NetTools.HTTP_TIMEOUT). */
+    private static final int HTTP_TIMEOUT = 30000;
 
     static final Namespace METS_NS = Namespace.getNamespace(Metadata.METS.getMetadataNamespacePrefix(), Metadata.METS.getMetadataNamespaceUri());
     static final Namespace MODS_NS = Namespace.getNamespace("mods", "http://www.loc.gov/mods/v3");
@@ -165,37 +175,53 @@ public class METSFormat extends Format {
         logger.trace("generateMetsRecords");
 
         Element xmlListRecords = new Element(recordType, OAI_NS);
-        for (SolrDocument doc : records) {
-            String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
-            if (pi == null) {
-                pi = (String) doc.getFieldValue(SolrConstants.PI);
-            }
-            if (pi == null) {
-                xmlListRecords.addContent(new ErrorCode().getIdDoesNotExist());
-                continue;
-            }
-            String url = new StringBuilder(DataManager.getInstance().getConfiguration().getDocumentResolverUrl()).append(pi).toString();
-            String xml = null;
-            try {
-                xml = NetTools.getWebContentGET(url);
-            } catch (HTTPException | IOException e) {
-                logger.error("Could not retrieve METS: {}", url);
-                xmlListRecords.addContent(new ErrorCode().getIdDoesNotExist());
-                continue;
-            }
 
-            if (StringUtils.isEmpty(xml)) {
-                logger.error("METS document is empty: {}", url);
-                xmlListRecords.addContent(new ErrorCode().getIdDoesNotExist());
-                continue;
-            }
+        // All records are fetched from the same document resolver host, so the SSRF check and the (DNS-pinned) HTTP client are set up once per
+        // batch and reused across the loop. This avoids building a fresh connection pool and resolving DNS for every single record, which caused a
+        // load spike (sockets piling up in TIME_WAIT) during large harvests.
+        String resolverBaseUrl = DataManager.getInstance().getConfiguration().getDocumentResolverUrl();
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setSocketTimeout(HTTP_TIMEOUT)
+                .setConnectTimeout(HTTP_TIMEOUT)
+                .setConnectionRequestTimeout(HTTP_TIMEOUT)
+                .build();
+        NetTools.validateOutboundUrl(resolverBaseUrl);
+        try (CloseableHttpClient httpClient = NetTools.buildHttpClientForUrl(resolverBaseUrl, requestConfig)) {
+            for (SolrDocument doc : records) {
+                String pi = (String) doc.getFieldValue(SolrConstants.PI_TOPSTRUCT);
+                if (pi == null) {
+                    pi = (String) doc.getFieldValue(SolrConstants.PI);
+                }
+                if (pi == null) {
+                    xmlListRecords.addContent(new ErrorCode().getIdDoesNotExist());
+                    continue;
+                }
+                String url = new StringBuilder(resolverBaseUrl).append(pi).toString();
+                String xml = null;
+                try {
+                    xml = fetchMetsXml(httpClient, url);
+                } catch (HTTPException | IOException e) {
+                    logger.error("Could not retrieve METS: {}", url);
+                    xmlListRecords.addContent(new ErrorCode().getIdDoesNotExist());
+                    continue;
+                }
 
-            Element eleRecord = generateMetsRecord(xml, doc, handler, setSpecFields, filterQuerySuffix);
-            if (eleRecord != null) {
-                xmlListRecords.addContent(eleRecord);
-            } else {
-                xmlListRecords.addContent(new ErrorCode().getIdDoesNotExist());
+                if (StringUtils.isEmpty(xml)) {
+                    logger.error("METS document is empty: {}", url);
+                    xmlListRecords.addContent(new ErrorCode().getIdDoesNotExist());
+                    continue;
+                }
+
+                Element eleRecord = generateMetsRecord(xml, doc, handler, setSpecFields, filterQuerySuffix);
+                if (eleRecord != null) {
+                    xmlListRecords.addContent(eleRecord);
+                } else {
+                    xmlListRecords.addContent(new ErrorCode().getIdDoesNotExist());
+                }
             }
+        } catch (IOException e) {
+            // Thrown only when closing the shared HTTP client fails; the per-record fetches handle their own errors above.
+            logger.error("Error closing HTTP client: {}", e.getMessage());
         }
 
         // Create resumption token
@@ -212,7 +238,28 @@ public class METSFormat extends Format {
     }
 
     /**
-     * 
+     * Fetches a single METS document via HTTP GET using the given, already-built and SSRF-validated HTTP client. Mirrors the response handling of
+     * {@link NetTools#getWebContentGET(String, int)} but reuses the shared client instead of creating a new one per call.
+     *
+     * @param httpClient Shared {@link CloseableHttpClient} to execute the request with
+     * @param url URL of the METS document
+     * @return the METS document as a string
+     * @throws IOException if the request fails
+     * @throws HTTPException if the response status code is not 200
+     */
+    private static String fetchMetsXml(CloseableHttpClient httpClient, String url) throws IOException, HTTPException {
+        HttpGet get = new HttpGet(url);
+        try (CloseableHttpResponse response = httpClient.execute(get)) {
+            int code = response.getStatusLine().getStatusCode();
+            if (code == HttpStatus.SC_OK) {
+                return EntityUtils.toString(response.getEntity(), StringTools.DEFAULT_ENCODING);
+            }
+            throw new HTTPException(code, response.getStatusLine().getReasonPhrase());
+        }
+    }
+
+    /**
+     *
      * @param xml
      * @param doc
      * @param handler
