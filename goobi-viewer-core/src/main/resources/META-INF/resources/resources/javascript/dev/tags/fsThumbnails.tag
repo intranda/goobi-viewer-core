@@ -4,7 +4,7 @@
         <div each={thumbnail in thumbnails} class="fullscreen__view-image-thumb">
             <!-- THUMBNAIL IMAGE -->
             <figure class="fullscreen__view-image-thumb-image">
-                <a href="{getViewerPageUrl(thumbnail)['@id']}">
+                <a href="{getViewerPageUrl(thumbnail)['@id']}"> 
                     <fsThumbnailImage thumbnail={thumbnail} observable={observable} root=".fullscreen__view-image-thumbs-wrapper" imgsrc={thumbnail.thumbnail['@id']}></fsThumbnailImage>
                 </a>
     
@@ -102,13 +102,18 @@
     	}.bind( this ) );
     	
     	getViewerPageUrl(thumbnail) {
+    	    let rendering;
     	    if(thumbnail.rendering) {
     	        if(Array.isArray(thumbnail.rendering)) {
-    	            return thumbnail.rendering.find(render => "text/html" == render.format)
+    	            rendering = thumbnail.rendering.find(render => "text/html" == render.format);
     	        } else {
-    	            return thumbnail.rendering;
+    	            rendering = thumbnail.rendering;
     	        }
     	    }
+    	    if(rendering && rendering['@id']) {
+    	        return { '@id': rendering['@id'].replace('/image/', '/fullscreen/') };
+    	    }
+    	    return rendering;
     	}
     </script>
 </fsThumbnails>
