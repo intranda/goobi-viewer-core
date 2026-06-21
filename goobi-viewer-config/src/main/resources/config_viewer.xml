@@ -1723,6 +1723,7 @@
                 <displayWidget name="downloads" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="citation" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="related-groups" showDetails="true" />
+                <displayWidget name="recommendations" showDetails="true" />
                 <displayWidget name="toc" />
                 <displayWidget name="version-history" />
             </view>
@@ -1975,18 +1976,22 @@
                 <collapseLengthThreshold lowestLevelToTest="2">0</collapseLengthThreshold>
             </widget>
 
-            <!-- widget[@name="related-groups"]: configuration for the related-groups widget and section (controls which sibling volumes / group members are fetched when showDetails="true"). -->
+            <!-- related-groups: sibling volumes and group members (requires showDetails="true" on the displayWidget). -->
             <widget name="related-groups">
-                <!-- maxResults: maximum number of related records shown in the content section (under the record). Default is 3. -->
                 <maxResults>3</maxResults>
-                <!-- sortField: solr field used for sorting the related records. Default is SORT_YEARPUBLISH (newest publication year first). -->
                 <sortField>SORT_YEARPUBLISH</sortField>
-                <!-- sortOrder: sort order (asc or desc). Default is desc. -->
                 <sortOrder>desc</sortOrder>
-                <!-- titleField: solr field used as the card title. Default is MD_TITLE. -->
-                <titleField>MD_TITLE</titleField>
-                <!-- subtitleField: solr field used as the card subtitle (e.g. author or subtitle). Default is MD_CREATOR. -->
-                <subtitleField>MD_CREATOR</subtitleField>
+            </widget>
+
+            <!-- recommendations: "You might also like" cards. -->
+            <widget name="recommendations">
+                <maxResults>4</maxResults>
+                <!-- type="identifier": field whose values are PIs of explicitly related works;
+                     no type: similarity field matched against other records -->
+                <fields>
+                    <field type="identifier">IdentifierRelatedWork</field>
+                    <field>MD_TOPIC</field>
+                </fields>
             </widget>
 
             <!-- OTHER WIDGETS -->

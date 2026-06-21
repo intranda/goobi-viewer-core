@@ -39,7 +39,6 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
-import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
@@ -109,33 +108,30 @@ public class RecommendationsResolver {
             return Collections.emptyList();
         }
 
-        String titleField = StringUtils.defaultIfBlank(config.getSidebarWidgetRecommendationsTitleField(), SolrConstants.TITLE);
-        String subtitleField = StringUtils.defaultIfBlank(config.getSidebarWidgetRecommendationsSubtitleField(), SolrConstants.PERSON_ONEFIELD);
-        String sortField = config.getSidebarWidgetRecommendationsSortField();
-        String sortOrder = config.getSidebarWidgetRecommendationsSortOrder();
-        List<StringPair> sortFields = StringUtils.isNotBlank(sortField)
-                ? Collections.singletonList(new StringPair(sortField, StringUtils.defaultIfBlank(sortOrder, "desc")))
-                : null;
-        List<String> fields = queryFields(titleField, subtitleField);
+        List<String> fields = queryFields();
 
-        // Prio 1: explicit related works via the identifier source field
+        // Prio 1: explicit related works via identifier fields (type="identifier" in <fields>)
         List<GroupMemberDetail> results = new ArrayList<>();
-        List<String> identifiers = topStruct.getMetadataValues(config.getSidebarWidgetRecommendationsIdentifierSourceField());
-        if (identifiers != null && !identifiers.isEmpty()) {
-            String targetField = StringUtils.defaultIfBlank(config.getSidebarWidgetRecommendationsIdentifierTargetField(), SolrConstants.PI);
-            String query = buildIdentifierQuery(targetField, identifiers, currentPi);
-            results = loadCards(query, maxResults, sortFields, fields, titleField, subtitleField);
+        for (String identifierField : config.getSidebarWidgetRecommendationsIdentifierFields()) {
+            List<String> identifiers = topStruct.getMetadataValues(identifierField);
+            if (identifiers != null && !identifiers.isEmpty()) {
+                String query = buildIdentifierQuery(SolrConstants.PI, identifiers, currentPi);
+                results = loadCards(query, maxResults, fields);
+                if (!results.isEmpty()) {
+                    break;
+                }
+            }
         }
 
         // Prio 2: content similarity via configured soll fields
         if (results.isEmpty()) {
             String query = buildSollFieldQuery(config.getSidebarWidgetRecommendationsSollFields(), topStruct, currentPi);
-            results = loadCards(query, maxResults, sortFields, fields, titleField, subtitleField);
+            results = loadCards(query, maxResults, fields);
         }
 
-        // Optional: fill remaining slots with random works from the same collection
-        if (config.isSidebarWidgetRecommendationsFillRandom() && results.size() < maxResults) {
-            fillFromCollection(results, topStruct, currentPi, maxResults, sortFields, fields, titleField, subtitleField);
+        // Fill remaining slots with random works from the same collection
+        if (results.size() < maxResults) {
+            fillFromCollection(results, topStruct, currentPi, maxResults, fields);
         }
 
         return results.size() <= maxResults ? results : new ArrayList<>(results.subList(0, maxResults));
@@ -187,7 +183,7 @@ public class RecommendationsResolver {
 
     /** Fills free slots with random works from the same collection, excluding already-shown PIs. */
     private void fillFromCollection(List<GroupMemberDetail> results, StructElement topStruct, String currentPi,
-            int maxResults, List<StringPair> sortFields, List<String> fields, String titleField, String subtitleField)
+            int maxResults, List<String> fields)
             throws PresentationException, IndexUnreachableException {
         List<String> collections = topStruct.getMetadataValues(SolrConstants.DC);
         if (collections == null || collections.isEmpty()) {
@@ -203,7 +199,7 @@ public class RecommendationsResolver {
             return;
         }
         int fetchSize = Math.min(maxResults * FILL_FETCH_MULTIPLIER, FILL_FETCH_CAP);
-        List<GroupMemberDetail> candidates = loadCards(query, fetchSize, sortFields, fields, titleField, subtitleField);
+        List<GroupMemberDetail> candidates = loadCards(query, fetchSize, fields);
         Collections.shuffle(candidates, random);
         int needed = maxResults - results.size();
         for (GroupMemberDetail candidate : candidates) {
@@ -241,18 +237,18 @@ public class RecommendationsResolver {
     }
 
     /** Runs the query and builds cards; returns a mutable list (possibly empty). */
-    private List<GroupMemberDetail> loadCards(String query, int rows, List<StringPair> sortFields, List<String> fields,
-            String titleField, String subtitleField) throws PresentationException, IndexUnreachableException {
+    private List<GroupMemberDetail> loadCards(String query, int rows, List<String> fields)
+            throws PresentationException, IndexUnreachableException {
         if (StringUtils.isBlank(query) || rows <= 0) {
             return new ArrayList<>();
         }
-        SolrDocumentList docs = searchWithSortFallback(query, rows, sortFields, fields);
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, rows, null, fields);
         if (docs == null || docs.isEmpty()) {
             return new ArrayList<>();
         }
         List<GroupMemberDetail> cards = new ArrayList<>(docs.size());
         for (SolrDocument doc : docs) {
-            GroupMemberDetail detail = buildCard(doc, titleField, subtitleField);
+            GroupMemberDetail detail = buildCard(doc);
             if (detail != null) {
                 cards.add(detail);
             }
@@ -261,50 +257,27 @@ public class RecommendationsResolver {
     }
 
     /** Solr fl list covering card display fields and what the ThumbnailHandler reads internally. */
-    private static List<String> queryFields(String titleField, String subtitleField) {
-        List<String> fields = new ArrayList<>(List.of(
+    private static List<String> queryFields() {
+        return new ArrayList<>(List.of(
                 SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
-                SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.MD_YEARPUBLISH,
-                SolrConstants.THUMBNAIL, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT,
-                SolrConstants.DATAREPOSITORY, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.FILENAME));
-        if (StringUtils.isNotBlank(titleField) && !fields.contains(titleField)) {
-            fields.add(titleField);
-        }
-        if (StringUtils.isNotBlank(subtitleField) && !fields.contains(subtitleField)) {
-            fields.add(subtitleField);
-        }
-        return fields;
-    }
-
-    /** Runs the Solr search; on a sort-related Solr error, retries unsorted (best-effort). */
-    private SolrDocumentList searchWithSortFallback(String query, int rows, List<StringPair> sortFields, List<String> fields)
-            throws PresentationException, IndexUnreachableException {
-        try {
-            return DataManager.getInstance().getSearchIndex().search(query, rows, sortFields, fields);
-        } catch (PresentationException e) {
-            if (sortFields == null) {
-                throw e;
-            }
-            logger.warn("Recommendations sort on '{}' failed, retrying unsorted: {}", sortFields, e.getMessage());
-            return DataManager.getInstance().getSearchIndex().search(query, rows, null, fields);
-        }
+                SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.PERSON_ONEFIELD,
+                SolrConstants.MD_YEARPUBLISH, SolrConstants.THUMBNAIL, SolrConstants.MIMETYPE,
+                SolrConstants.DOCSTRCT, SolrConstants.DATAREPOSITORY,
+                SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.FILENAME));
     }
 
     /** Builds a single card; returns null if the doc has no PI or any RuntimeException occurs. */
-    private GroupMemberDetail buildCard(SolrDocument doc, String titleField, String subtitleField) {
+    private GroupMemberDetail buildCard(SolrDocument doc) {
         try {
             String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
             if (StringUtils.isBlank(pi)) {
                 return null;
             }
-            String title = SolrTools.getSingleFieldStringValue(doc, titleField);
-            if (StringUtils.isBlank(title)) {
-                title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL);
-            }
+            String title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL);
             if (StringUtils.isBlank(title)) {
                 title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
             }
-            String subtitle = SolrTools.getSingleFieldStringValue(doc, subtitleField);
+            String subtitle = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PERSON_ONEFIELD);
             String year = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_YEARPUBLISH);
             String thumbnailUrl = resolveThumbnailUrl(doc, pi);
             return new GroupMemberDetail(pi, title, subtitle, year, thumbnailUrl);

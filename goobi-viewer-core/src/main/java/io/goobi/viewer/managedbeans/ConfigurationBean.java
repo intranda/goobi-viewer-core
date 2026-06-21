@@ -1014,20 +1014,6 @@ public class ConfigurationBean implements Serializable {
     }
 
     /**
-     * @return solr field used as card title
-     */
-    public String getSidebarWidgetRelatedGroupsTitleField() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsTitleField();
-    }
-
-    /**
-     * @return solr field used as card subtitle
-     */
-    public String getSidebarWidgetRelatedGroupsSubtitleField() {
-        return DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSubtitleField();
-    }
-
-    /**
      * isDisplaySidebarBrowsingTerms.
      *
      * @return true if the browsing terms widget should be displayed in the sidebar, false otherwise

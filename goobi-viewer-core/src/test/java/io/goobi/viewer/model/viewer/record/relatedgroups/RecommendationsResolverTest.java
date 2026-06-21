@@ -47,14 +47,8 @@ class RecommendationsResolverTest {
         when(dataManager.getSearchIndex()).thenReturn(searchIndex);
 
         when(config.getSidebarWidgetRecommendationsMaxResults()).thenReturn(4);
-        when(config.getSidebarWidgetRecommendationsIdentifierSourceField()).thenReturn("IdentifierRelatedWork");
-        when(config.getSidebarWidgetRecommendationsIdentifierTargetField()).thenReturn(SolrConstants.PI);
+        when(config.getSidebarWidgetRecommendationsIdentifierFields()).thenReturn(List.of("IdentifierRelatedWork"));
         when(config.getSidebarWidgetRecommendationsSollFields()).thenReturn(List.of("MD_TOPIC"));
-        when(config.isSidebarWidgetRecommendationsFillRandom()).thenReturn(false);
-        when(config.getSidebarWidgetRecommendationsSortField()).thenReturn(SolrConstants.DATECREATED);
-        when(config.getSidebarWidgetRecommendationsSortOrder()).thenReturn("desc");
-        when(config.getSidebarWidgetRecommendationsTitleField()).thenReturn(SolrConstants.TITLE);
-        when(config.getSidebarWidgetRecommendationsSubtitleField()).thenReturn(SolrConstants.PERSON_ONEFIELD);
 
         ThumbnailHandler thumbs = mock(ThumbnailHandler.class);
         when(thumbs.getThumbnailUrl(any(SolrDocument.class))).thenReturn("http://example/thumb.jpg");
@@ -145,7 +139,6 @@ class RecommendationsResolverTest {
     @Test
     void resolve_shouldFillFromCollectionWhenEnabled() throws Exception {
         when(config.getSidebarWidgetRecommendationsMaxResults()).thenReturn(4);
-        when(config.isSidebarWidgetRecommendationsFillRandom()).thenReturn(true);
         when(topStruct.getMetadataValues("IdentifierRelatedWork")).thenReturn(List.of("AC1"));
         when(topStruct.getMetadataValues(SolrConstants.DC)).thenReturn(List.of("collectionX"));
         when(searchIndex.search(anyString(), anyInt(), any(), anyList()))

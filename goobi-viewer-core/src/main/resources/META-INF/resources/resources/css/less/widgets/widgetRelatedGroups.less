@@ -129,8 +129,9 @@
         text-align: center;
         gap: 8px;
         height: 195px;
-        border: var(--border);
+        border: 1px solid var(--toc-page-border-color);
         background: transparent;
+        color: var(--fg-content-box);
         text-decoration: none;
         transition: background-color 0.15s ease;
 
@@ -138,6 +139,7 @@
         &:focus {
             background-color: var(--bg-hover);
             text-decoration: none;
+            color: var(--fg-content-box);
         }
     }
     &__view-all-icon {

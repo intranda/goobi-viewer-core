@@ -1070,6 +1070,7 @@
                 <displayWidget name="copyright" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="search-in-current-item" />
                 <displayWidget name="related-groups" showDetails="true" />
+                <displayWidget name="recommendations" showDetails="true" />
             </view>
             <view name="toc">
                 <displayWidget name="views" />
@@ -1199,40 +1200,20 @@
             </widget>
 
             <widget name="related-groups">
-                <!-- max number of cards shown -->
                 <maxResults>5</maxResults>
-                <!-- solr field used to sort the results -->
                 <sortField>MD_YEARPUBLISH</sortField>
-                <!-- sort order asc|desc -->
                 <sortOrder>asc</sortOrder>
-                <!-- solr field used as the card title -->
-                <titleField>LABEL</titleField>
-                <!-- solr field used as the card subtitle -->
-                <subtitleField>MD_AUTHOR</subtitleField>
             </widget>
 
             <widget name="recommendations">
-                <!-- max number of recommendations shown -->
                 <maxResults>6</maxResults>
-                <!-- field on the current record holding the related work identifier(s) -->
-                <identifierSourceField>MD_RELATEDWORK</identifierSourceField>
-                <!-- field on the target record the identifier is matched against -->
-                <identifierTargetField>MD_IDENTIFIER</identifierTargetField>
-                <!-- fallback fields for content similarity when no identifier match is found -->
-                <sollFields>
+                <!-- type="identifier": field whose values are PIs of explicitly related works;
+                     no type: similarity field matched against other records -->
+                <fields>
+                    <field type="identifier">MD_RELATEDWORK</field>
                     <field>MD_TOPIC</field>
                     <field>DC</field>
-                </sollFields>
-                <!-- fill free card slots with random records from the same collection (DC) -->
-                <fillRandom>true</fillRandom>
-                <!-- solr field used to sort the results -->
-                <sortField>SORT_TITLE</sortField>
-                <!-- sort order asc|desc -->
-                <sortOrder>asc</sortOrder>
-                <!-- solr field used as the card title -->
-                <titleField>LABEL</titleField>
-                <!-- solr field used as the card subtitle -->
-                <subtitleField>MD_AUTHOR</subtitleField>
+                </fields>
             </widget>
 
             <!-- OTHER WIDGETS -->

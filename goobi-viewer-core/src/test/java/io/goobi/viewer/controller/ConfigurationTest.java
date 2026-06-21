@@ -1999,67 +1999,19 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("asc", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortOrder());
     }
 
-    /**
-     * @see Configuration#getSidebarWidgetRelatedGroupsTitleField()
-     * @verifies return correct value
-     */
-    @Test
-    void getSidebarWidgetRelatedGroupsTitleField_shouldReturnCorrectValue() {
-        assertEquals("LABEL", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsTitleField());
-    }
-
-    /**
-     * @see Configuration#getSidebarWidgetRelatedGroupsSubtitleField()
-     * @verifies return correct value
-     */
-    @Test
-    void getSidebarWidgetRelatedGroupsSubtitleField_shouldReturnCorrectValue() {
-        assertEquals("MD_AUTHOR", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSubtitleField());
-    }
-
     @Test
     void getSidebarWidgetRecommendationsMaxResults_shouldReturnCorrectValue() {
         assertEquals(6, DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsMaxResults());
     }
 
     @Test
-    void getSidebarWidgetRecommendationsIdentifierSourceField_shouldReturnCorrectValue() {
-        assertEquals("MD_RELATEDWORK", DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsIdentifierSourceField());
-    }
-
-    @Test
-    void getSidebarWidgetRecommendationsIdentifierTargetField_shouldReturnCorrectValue() {
-        assertEquals("MD_IDENTIFIER", DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsIdentifierTargetField());
+    void getSidebarWidgetRecommendationsIdentifierFields_shouldReturnCorrectValue() {
+        assertEquals(List.of("MD_RELATEDWORK"), DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsIdentifierFields());
     }
 
     @Test
     void getSidebarWidgetRecommendationsSollFields_shouldReturnCorrectValue() {
         assertEquals(List.of("MD_TOPIC", "DC"), DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsSollFields());
-    }
-
-    @Test
-    void isSidebarWidgetRecommendationsFillRandom_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetRecommendationsFillRandom());
-    }
-
-    @Test
-    void getSidebarWidgetRecommendationsSortField_shouldReturnCorrectValue() {
-        assertEquals("SORT_TITLE", DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsSortField());
-    }
-
-    @Test
-    void getSidebarWidgetRecommendationsSortOrder_shouldReturnCorrectValue() {
-        assertEquals("asc", DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsSortOrder());
-    }
-
-    @Test
-    void getSidebarWidgetRecommendationsTitleField_shouldReturnCorrectValue() {
-        assertEquals("LABEL", DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsTitleField());
-    }
-
-    @Test
-    void getSidebarWidgetRecommendationsSubtitleField_shouldReturnCorrectValue() {
-        assertEquals("MD_AUTHOR", DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsSubtitleField());
     }
 
     /**
