@@ -483,11 +483,15 @@ public class GeoCoordinateConverter {
                 String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
                 boolean anchorOrGroup = SolrTools.isAnchor(doc) || SolrTools.isGroup(doc);
+                // BOOL_IMAGEAVAILABLE is absent on sub-docstructs and grouped DOCTYPE:METADATA docs, which can still
+                // carry coordinates and appear here; default to false instead of unboxing a null Boolean (NPE).
                 Boolean hasImages = (Boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE);
                 locations.addAll(getLocations(doc.getFieldValue(solrFieldName))
                         .stream()
                         .map(p -> new Location(p, label,
-                                Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false),
+                                Location.getRecordURI(pi,
+                                        PageType.determinePageType(docStructType, mimeType, anchorOrGroup, Boolean.TRUE.equals(hasImages),
+                                                false),
                                         DataManager.getInstance().getUrlBuilder())))
                         .toList());
             } catch (IllegalArgumentException e) {
