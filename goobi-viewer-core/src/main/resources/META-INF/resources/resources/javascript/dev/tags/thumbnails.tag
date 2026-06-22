@@ -209,6 +209,8 @@ handleClickOnImage(event) {
 			action: "clickImage",
 			value: event.item.index
 		})
+		//navigation is handled by the actionlistener -> don't follow the thumbnail link
+		event.preventDefault();
 	}
 	//updating is handled in actionlistener. set this to prevent double update
 	event.preventUpdate = true;

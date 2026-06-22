@@ -109,5 +109,16 @@ module.exports = {
             transform: {},
             setupFiles: [path.join(__dirname, 'jest-setup-browser.js')],
         },
+        {
+            // ES-module project for src/.../viewer/*.mjs sources.
+            displayName: 'viewer-mjs',
+            testEnvironment: 'jsdom',
+            rootDir: repoRoot,
+            testMatch: [
+                '<rootDir>/goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/viewer/__tests__/**/*.test.mjs',
+            ],
+            transform: {},
+            setupFiles: [path.join(__dirname, 'jest-setup-browser.js')],
+        },
     ],
 };

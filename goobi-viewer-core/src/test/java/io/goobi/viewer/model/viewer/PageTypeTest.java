@@ -118,4 +118,22 @@ class PageTypeTest extends AbstractTest {
     void getByName_shouldReturnCorrectTypeIfNameStartsWithMetadata() throws Exception {
         Assertions.assertEquals(PageType.viewMetadata, PageType.getByName("metadata_other"));
     }
+
+    /**
+     * @see PageType#getByName(String)
+     * @verifies resolve immersive view
+     */
+    @Test
+    void getByName_shouldResolveImmersiveView() {
+        Assertions.assertEquals(PageType.viewImmersive, PageType.getByName("immersive"));
+    }
+
+    /**
+     * @see PageType#isDocumentPage()
+     * @verifies treat immersive as document page
+     */
+    @Test
+    void isDocumentPage_shouldTreatImmersiveAsDocumentPage() {
+        Assertions.assertTrue(PageType.viewImmersive.isDocumentPage());
+    }
 }

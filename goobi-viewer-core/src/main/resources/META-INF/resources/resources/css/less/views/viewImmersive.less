@@ -1,0 +1,299 @@
+/* ==============================================================
+   Immersive view
+   layout shell for viewImmersive.xhtml
+   ==============================================================*/
+
+/* Shared white floating surface (back pill, toolbars, bottom bar, grid close). */
+.mx-immersive-floating() {
+    background-color: @white;
+    border-radius: @immersiveRadius;
+    box-shadow: @immersiveShadow;
+}
+
+/* Shared square icon button (left/right toolbars + bottom bar). */
+.mx-immersive-icon-btn() {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: @immersiveBtnSize;
+    height: @immersiveBtnSize;
+    padding: 0;
+    border: 0;
+    border-radius: @immersiveRadius;
+    background: transparent;
+    color: @immersiveCanvasBg;
+    cursor: pointer;
+    transition: background-color @immersiveTransition;
+
+    &:hover {
+        background-color: @immersiveToolbarBg;
+    }
+}
+
+.immersive {
+    /* VIEWER HERO: dark, full-bleed canvas with absolutely positioned overlay slots */
+    &__viewer {
+        position: relative;
+        height: @immersiveViewerHeight;
+        background-color: @immersiveCanvasBg;
+        overflow: hidden;
+    }
+
+    &__canvas {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* the OSD mount fills the dark canvas edge-to-edge */
+    &__image-map {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Header overlay row (back-link left, title centered) */
+    &__overlay-top {
+        position: absolute;
+        top: @immersiveGap;
+        right: @immersiveGap;
+        left: @immersiveGap;
+        z-index: @immersiveZHeader;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none; /* children re-enable pointer-events themselves */
+    }
+
+    /* Back-to-results pill (top-left, right of the left icon bar) */
+    &__back {
+        position: absolute;
+        left: calc(@immersiveToolbarWidth + @immersiveGap);
+        display: inline-flex;
+        align-items: center;
+        gap: @immersiveGapSmall;
+        height: @immersiveBtnSize;
+        padding: 0 @immersivePillPadX;
+        .mx-immersive-floating();
+        color: @immersiveCanvasBg;
+        font-size: @fontMedium;
+        text-decoration: none;
+        pointer-events: auto;
+
+        &:hover {
+            color: @immersiveCanvasBg;
+            text-decoration: none;
+        }
+    }
+
+    &__back-icon {
+        width: @immersiveIconSizeSm;
+        height: @immersiveIconSizeSm;
+    }
+
+    /* Work title (centered) */
+    &__title {
+        display: inline-flex;
+        align-items: center;
+        gap: @immersiveGapSmall;
+        max-width: 60%;
+        color: @white;
+        pointer-events: none; /* non-interactive display-only label */
+    }
+
+    &__title-icon {
+        flex-shrink: 0;
+        width: @immersiveIconSizeLg;
+        height: @immersiveIconSizeLg;
+    }
+
+    &__title-text {
+        overflow: hidden;
+        font-size: @fontNormal;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    /* Overlay toolbars - vertical icon bars (shared base, only the side differs) */
+    &__toolbar {
+        position: absolute;
+        top: @immersiveGap;
+        z-index: @immersiveZControls;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: @immersiveToolbarInnerGap;
+        padding: @immersiveToolbarPad;
+        .mx-immersive-floating();
+
+        &--left {
+            left: @immersiveGap;
+        }
+
+        &--right {
+            right: @immersiveGap;
+        }
+    }
+
+    &__tool-btn {
+        .mx-immersive-icon-btn();
+    }
+
+    &__tool-icon {
+        width: @immersiveIconSize;
+        height: @immersiveIconSize;
+    }
+
+    /* Left slide-out panel (reuses the TOC / in-work-search widgets) */
+    &__panel {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        z-index: @immersiveZPanel;
+        width: @immersivePanelWidth;
+        max-width: 80%;
+        overflow-y: auto;
+        padding: calc(@immersiveToolbarWidth + 2 * @immersiveGap) @immersiveGap @immersiveGap;
+        background-color: @white;
+        box-shadow: @immersivePanelShadow;
+        transition: transform @immersivePanelTransition;
+
+        &--left {
+            left: @immersiveToolbarWidth;
+            transform: translateX(calc(-100% - @immersiveToolbarWidth));
+
+            &.is-open {
+                transform: translateX(0);
+            }
+        }
+    }
+
+    /* Big page-turn chevrons, vertically centered at the canvas edges */
+    &__chevron {
+        position: absolute;
+        top: 50%;
+        z-index: @immersiveZControls;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: @immersiveChevronSize;
+        height: @immersiveChevronSize;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: @white;
+        cursor: pointer;
+        opacity: 0.85;
+        transform: translateY(-50%);
+        transition: opacity @immersiveTransition;
+
+        &:hover {
+            opacity: 1;
+        }
+        &--left {
+            left: @immersiveGap;
+        }
+        &--right {
+            right: @immersiveGap;
+        }
+    }
+
+    &__chevron-svg {
+        width: @immersiveChevronIconSize;
+        height: @immersiveChevronIconSize;
+    }
+
+    /* Bottom bar: floating white pill with paging + zoom controls (Mockup) */
+    &__bottombar {
+        position: absolute;
+        bottom: @immersiveGap;
+        left: 50%;
+        z-index: @immersiveZControls;
+        display: flex;
+        align-items: center;
+        gap: @immersiveToolbarPad;
+        height: @immersiveBarHeight;
+        padding: 0 @immersiveGapSmall;
+        .mx-immersive-floating();
+        transform: translateX(-50%);
+    }
+
+    &__bar-btn {
+        .mx-immersive-icon-btn();
+    }
+
+    &__bar-icon {
+        width: @immersiveIconSizeSm;
+        height: @immersiveIconSizeSm;
+    }
+
+    &__page-indicator {
+        min-width: 4.5em;
+        padding: 0 @immersiveIndicatorPadX;
+        text-align: center;
+        font-size: @fontMedium;
+        color: @immersiveCanvasBg;
+        white-space: nowrap;
+    }
+
+    /* Overview thumbnail grid overlay */
+    &__grid {
+        position: absolute;
+        inset: 0;
+        z-index: @immersiveZOverlay;
+        overflow-y: auto;
+        padding: calc(@immersiveToolbarWidth + 2 * @immersiveGap) @immersiveGap @immersiveGap;
+        background-color: rgba(@immersiveCanvasBg, 0.97);
+    }
+
+    &__grid-close {
+        position: absolute;
+        top: @immersiveGap;
+        right: @immersiveGap;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: @immersiveGridCloseSize;
+        height: @immersiveGridCloseSize;
+        padding: 0;
+        border: 0;
+        border-radius: @immersiveRadius;
+        background-color: @white;
+        color: @immersiveCanvasBg;
+        cursor: pointer;
+    }
+
+    &__grid-mount {
+        display: flex;
+        flex-wrap: wrap;
+        gap: @immersiveGap;
+        justify-content: center;
+    }
+}
+
+/* On medium screens the slide-out panel narrows so it does not dominate the canvas */
+@media screen and (max-width: @mediumBreakpoint) {
+    .immersive__panel {
+        width: @immersivePanelWidthMedium;
+    }
+}
+
+/* On small screens the left rail moves to a floating bottom-right cluster */
+@media (max-width: @smallBreakpoint) {
+    .immersive__toolbar--left {
+        top: auto;
+        right: @immersiveGap;
+        bottom: @immersiveGap;
+        left: auto;
+        width: auto;
+    }
+}
+
+/* Respect reduced-motion: disable the panel slide and hover transitions */
+@media (prefers-reduced-motion: reduce) {
+    .immersive__panel,
+    .immersive__tool-btn,
+    .immersive__bar-btn,
+    .immersive__chevron {
+        transition: none;
+    }
+}

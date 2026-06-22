@@ -49,6 +49,7 @@ public enum PageType {
     viewMetadata("metadata"),
     viewFulltext("fulltext"),
     viewFullscreen("fullscreen"),
+    viewImmersive("immersive"),
     viewObject("object"),
     viewMei("mei"),
     searchlist("searchlist", "search"),
@@ -271,6 +272,7 @@ public enum PageType {
                 case editHistory:
                 case editOcr:
                 case viewFullscreen:
+                case viewImmersive:
                 case viewFulltext:
                 case viewImage:
                 case viewMetadata:

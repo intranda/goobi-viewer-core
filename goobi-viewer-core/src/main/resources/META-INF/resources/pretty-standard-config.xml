@@ -703,6 +703,19 @@
         <action onPostback="false">#{activeDocumentBean.open}</action>
     </url-mapping>
 
+    <!-- IMMERSIVE -->
+    <url-mapping id="immersive1">
+        <pattern value="/immersive/#{pi:activeDocumentBean.persistentIdentifier}/" />
+        <view-id value="/viewImmersive.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.setImageToShow('1')}</action>
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+    <url-mapping id="immersive2">
+        <pattern value="/immersive/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+        <view-id value="/viewImmersive.xhtml" />
+        <action onPostback="false">#{activeDocumentBean.open}</action>
+    </url-mapping>
+
 	<!-- CALENDAR (DEPRECATED) -->
 	<url-mapping id="calendar1">
 		<pattern value="/calendar/#{pi:activeDocumentBean.persistentIdentifier}/" />

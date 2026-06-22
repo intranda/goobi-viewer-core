@@ -63,11 +63,7 @@
                 borderColor: styles['borderTopColor'],
                 fillColor: styles['background-color'],
             });
-            let activeStyles = viewerJS.helper.getCss('page-area focus', [
-                'borderTopColor',
-                'borderTopWidth',
-                'background-color',
-            ]);
+            let activeStyles = viewerJS.helper.getCss('page-area focus', ['borderTopColor', 'borderTopWidth', 'background-color']);
             ({
                 borderWidth: parseInt(activeStyles['borderTopWidth']),
                 borderColor: activeStyles['borderTopColor'],
@@ -125,12 +121,12 @@
             window.history.replaceState(null, '', url.toString());
         }
 
-        drawActiveAreas(activeAreas, imageView) { 
+        drawActiveAreas(activeAreas, imageView) {
             let areasOnCanvas = [];
             activeAreas.forEach((activeArea, index) => {
                 const area = this.drawArea(activeArea, index, imageView);
                 areasOnCanvas.push(area?.overlay?.bounds);
-    			console.log("add active area ", area, areasOnCanvas);
+                console.log('add active area ', area, areasOnCanvas);
                 let scrollPosition = window.sessionStorage.getItem('scrollPosition');
                 $(document).scrollTop(parseInt(scrollPosition));
                 window.sessionStorage.removeItem('scrollPosition');
@@ -166,9 +162,9 @@
         }
 
         drawArea(area, shapeIndex, image, clickToLeave) {
-    		let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-    		let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
-    		let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
+            let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+            let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
+            let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
             let $area = $('#pageAreaFrame_' + area.logId + '_' + shapeIndex);
             let $label = $('#pageAreaLabel_' + area.logId + '_' + shapeIndex);
             let overlayId = area.logId + '_' + shapeIndex;
@@ -189,7 +185,7 @@
                 () => $(area.tooltip.element).addClass('hover'),
                 () => $(area.tooltip.element).removeClass('hover')
             );
-    		return area;
+            return area;
         }
     }
 
@@ -231,7 +227,7 @@
                 showNavigator: 'imageShowNavigator',
                 allowDownload: 'allowDownload',
                 allowZoom: 'allowZoom',
-    			maxZoom: 'maxZoom'
+                maxZoom: 'maxZoom',
             },
             data: {
                 footerHeight: 'height',
@@ -252,12 +248,8 @@
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
                 this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
-                this.leftMarginElement = document.querySelector(
-                    _config.elementSelectors.data.leftMarginElement
-                )?.textContent;
-                this.rightMarginElement = document.querySelector(
-                    _config.elementSelectors.data.rightMarginElement
-                )?.textContent;
+                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
@@ -270,9 +262,7 @@
 
                 this.tileSources = createTileSource();
 
-                this.tileSourceIdToOrder = Object.fromEntries(
-                    Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
-                );
+                this.tileSourceIdToOrder = Object.fromEntries(Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order]));
 
                 if (this.viewMode == 'sequence') {
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
@@ -290,7 +280,7 @@
                                 showTooltip: element.dataset[_config.datasets.data.showTooltip],
                                 highlightClassName: 'focus',
                                 highlightOnHover: true,
-                            }); 
+                            });
                             this.overlayGroups.push(overlays);
                         } catch (e) {
                             console.error('Error parsing coords string ', coordsString, e);
@@ -312,9 +302,7 @@
                 const viewerRight = this.viewer.element.offsetLeft + this.viewer.element.offsetWidth;
                 const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
                 const margins = {
-                    left:
-                        (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) +
-                        (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
                     right: sidebarRightLeft ? viewerRight - sidebarRightLeft : 0,
                     top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
                 };
@@ -444,12 +432,8 @@
         if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
             zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
         }
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateLeft)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateRight)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateLeft).forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateRight).forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
         document.querySelectorAll(_config.elementSelectors.controls.reset).forEach((button) =>
             button.addEventListener('click', (e) => {
                 rotation.rotateTo(0);
@@ -463,42 +447,38 @@
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
             margins: {
-                bottom: Number(
-                    document.querySelector(_config.elementSelectors.data.footer)?.dataset[
-                        _config.datasets.data.footerHeight
-                    ]
-                ),
+                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight]),
             },
             zoom: {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
-    			max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
+                max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
             },
             sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
             navigator: {
                 enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
-    			position: "BOTTOM_RIGHT"
+                position: 'BOTTOM_RIGHT',
             },
         };
     }
 
     function getSequenceSettings(viewMode) {
         let columns;
-    	switch ((viewMode || '').toLowerCase()) {
+        switch ((viewMode || '').toLowerCase()) {
             case 'double':
                 columns = 2;
-    			break;
+                break;
             case 'sequence':
             case 'single':
             default:
-               columns = 1;
+                columns = 1;
         }
-    	return {
-    		columns: columns,
-    		useWindowing: true,
-    		windowSize: _sequenceWindowSize,
-    		windowExpandThreshold: _expandThreshold,
-    		windowExpandSize: _expandBatchSize
-    	}
+        return {
+            columns: columns,
+            useWindowing: true,
+            windowSize: _sequenceWindowSize,
+            windowExpandThreshold: _expandThreshold,
+            windowExpandSize: _expandBatchSize,
+        };
     }
 
     function getFittingMode(pageType) {
@@ -564,11 +544,7 @@
 
             // init area select
             try {
-                let styles = viewerJS.helper.getCss('image-fragment', [
-                    'borderTopColor',
-                    'borderTopWidth',
-                    'background-color',
-                ]);
+                let styles = viewerJS.helper.getCss('image-fragment', ['borderTopColor', 'borderTopWidth', 'background-color']);
                 var fragmentSelectConfig = {
                     removeOldAreas: true,
                     drawCondition: (event) => this.active && this.fragmentSelect?.currentOverlay == undefined,
@@ -597,8 +573,7 @@
             if (this.fragmentSelect) {
                 this.fragmentSelect.finishedHook.subscribe((area) => {
                     var areaString = this.getAreaString(area);
-                    var pageUrl =
-                        window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
+                    var pageUrl = window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
                     console.log('set area data ', pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
@@ -613,14 +588,7 @@
 
         getAreaString(area) {
             if (area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {
-                var areaString =
-                    area.x.toFixed(0) +
-                    ',' +
-                    area.y.toFixed(0) +
-                    ',' +
-                    area.width.toFixed(0) +
-                    ',' +
-                    area.height.toFixed(0);
+                var areaString = area.x.toFixed(0) + ',' + area.y.toFixed(0) + ',' + area.width.toFixed(0) + ',' + area.height.toFixed(0);
                 return areaString;
             } else {
                 return 'full';
@@ -701,10 +669,7 @@
         }
 
         toggleImageShare($panel) {
-            if (
-                $panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') &&
-                $panel.hasClass('in')
-            ) {
+            if ($panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') && $panel.hasClass('in')) {
                 this.startFragmentSelect();
             }
         }
@@ -727,8 +692,7 @@
             this.container = document.querySelector(this.config.container);
             // console.log('init voyager3d', this);
             if (this.isVisible()) {
-                this.loaded = this.initView().then(() => {
-                });
+                this.loaded = this.initView().then(() => {});
             }
         }
 
@@ -840,22 +804,428 @@
         }
     }
 
+    /**
+     * Pure helper functions for the immersive image viewer's tile-source window.
+     *
+     * No DOM, no network, no OpenSeadragon dependencies — safe to unit-test and
+     * to import in any context.
+     */
+
+    /**
+     * Resolve a service object or array to a single id string.
+     * Returns null when no id can be found.
+     *
+     * @param {object|Array} service
+     * @param {'@id'|'id'} primaryKey   - preferred property name
+     * @param {'@id'|'id'} fallbackKey  - secondary property name
+     * @returns {string|null}
+     */
+    function resolveServiceId(service, primaryKey, fallbackKey) {
+        if (!service) return null;
+        const entry = Array.isArray(service) ? service[0] : service;
+        if (!entry) return null;
+        const id = entry[primaryKey] || entry[fallbackKey];
+        return typeof id === 'string' && id.length > 0 ? id : null;
+    }
+
+    /**
+     * Extracts the ordered list of IIIF image-service base IDs from a manifest.
+     *
+     * Supports IIIF Presentation API v2 (sequences/canvases) and v3 (items).
+     * Canvases that lack a resolvable service id are silently skipped.
+     *
+     * @param {object} manifest - Parsed IIIF Presentation manifest.
+     * @returns {string[]} Ordered array of image-service id strings.
+     */
+    function parseManifestImageServices(manifest) {
+        if (!manifest || typeof manifest !== 'object') return [];
+
+        // IIIF v2: manifest.sequences[0].canvases
+        if (Array.isArray(manifest.sequences) && manifest.sequences.length > 0) {
+            const canvases = manifest.sequences[0].canvases;
+            if (!Array.isArray(canvases)) return [];
+
+            const ids = [];
+            for (const canvas of canvases) {
+                try {
+                    const service = canvas.images[0].resource.service;
+                    const id = resolveServiceId(service, '@id', 'id');
+                    if (id !== null) ids.push(id);
+                } catch {
+                    // canvas structure incomplete — skip
+                }
+            }
+            return ids;
+        }
+
+        // IIIF v3: manifest.items (canvases)
+        if (Array.isArray(manifest.items) && manifest.items.length > 0) {
+            const ids = [];
+            for (const canvas of manifest.items) {
+                try {
+                    const service = canvas.items[0].items[0].body.service;
+                    const id = resolveServiceId(service, 'id', '@id');
+                    if (id !== null) ids.push(id);
+                } catch {
+                    // canvas structure incomplete — skip
+                }
+            }
+            return ids;
+        }
+
+        return [];
+    }
+
+    /** Minimal dependency-free event emitter (rxjs-compatible `subscribe` shape). */
+    class Emitter {
+        constructor() {
+            this._subs = new Set();
+        }
+        subscribe(fn) {
+            this._subs.add(fn);
+            return () => this._subs.delete(fn);
+        }
+        emit(value) {
+            this._subs.forEach((fn) => fn(value));
+        }
+    }
+
+    /** Maps a IIIF image-service base id to an OSD tile source (its info.json URL). */
+    function toTileSource(serviceId) {
+        return serviceId.endsWith('/info.json') ? serviceId : `${serviceId}/info.json`;
+    }
+
+    // Sequence config mirrors the proven single-image path in zoomableImage.mjs
+    // (getSequenceSettings('single')). _arrangeImageSequence reads it on every open,
+    // so it must be present even though we load one image at a time.
+    const _sequence = { columns: 1, useWindowing: true, windowSize: 100, windowExpandThreshold: 10, windowExpandSize: 50 };
+    const PREFETCH_RADIUS = 1;
+
+    /**
+     * Immersive image viewer engine. Wraps a single live ImageView.Image instance
+     * and swaps the displayed page IN-PLACE on navigation (no JSF page reload),
+     * reusing OSD's proven single-image contain-fit. Neighbours are prefetched so
+     * the next swap is fast. Emits page changes; knows nothing about buttons/URLs/overlays.
+     *
+     * NOTE: a windowed multi-image variant (load a sliding window once, jump in place
+     * via setCurrentImage + goHome) was prototyped to also remove the brief tile load
+     * between pages. It was reverted: ImageView's 'fixed' (contain-fit) mode is built
+     * for a single image, and its goHome fit math (ZoomControls 'fixed' branch handles
+     * only bottom/right margins) over-zooms non-first images in the stacked multi-image
+     * world, breaking the fit. The pure window math (`resolveNavigation`) is kept and
+     * tested for a future iteration that adds custom per-page fitBounds with margin insets.
+     */
+    class IvViewer {
+        /**
+         * @param {object} opts
+         * @param {HTMLElement} opts.element   OSD mount element
+         * @param {string[]} opts.services     ordered IIIF image-service URLs (all pages)
+         * @param {number} [opts.startOrder=0] initial 0-based page index
+         * @param {number} [opts.maxZoom]
+         */
+        constructor(opts) {
+            this.services = opts.services;
+            this.total = opts.services.length;
+            this.current = Math.max(0, Math.min(opts.startOrder ?? 0, this.total - 1));
+            this.onPageChange = new Emitter();
+            this.onLoaded = new Emitter();
+
+            this.viewer = new ImageView.Image({
+                element: opts.element,
+                // 'fixed' = fit the whole image into the (full-bleed) viewport, like the
+                // fullscreen view. 'toWidth' would grow the canvas height and blow the
+                // image up in this wide container.
+                fittingMode: 'fixed',
+                // Inset the image so it never sits under the overlay chrome: the page is
+                // centered on the dark stage with margins for the title (top), bottom bar,
+                // and the left/right icon rails - this is what makes it read as a framed
+                // viewer area rather than an image bleeding to the edges.
+                margins: { top: 64, bottom: 72, left: 64, right: 64 },
+                zoom: { enabled: true, max: opts.maxZoom },
+                sequence: _sequence,
+                navigator: { enabled: false },
+            });
+            this.zoom = new ImageView.Controls.Zoom(this.viewer);
+            this.rotation = new ImageView.Controls.Rotation(this.viewer);
+
+            this._open(this.current).then(() => this.onLoaded.emit(this.current));
+        }
+
+        getCurrentOrder() {
+            return this.current;
+        }
+        getPageCount() {
+            return this.total;
+        }
+        next() {
+            this.goToPage(this.current + 1);
+        }
+        prev() {
+            this.goToPage(this.current - 1);
+        }
+
+        // --- image controls (delegated to the OSD wrapper) ---
+        zoomIn() {
+            this.zoom.zoomBy(1.5);
+        }
+        zoomOut() {
+            this.zoom.zoomBy(1 / 1.5);
+        }
+        rotateLeft() {
+            this.rotation.rotateLeft();
+        }
+        rotateRight() {
+            this.rotation.rotateRight();
+        }
+        resetView() {
+            this.rotation.rotateTo(0);
+            this.zoom.goHome();
+        }
+
+        /**
+         * Navigate to a page. The viewer instance stays alive, so this is an
+         * in-place image swap (no page reload).
+         * @param {number} order 0-based page index
+         */
+        goToPage(order) {
+            const target = Math.max(0, Math.min(order, this.total - 1));
+            if (target === this.current) return;
+            this.current = target;
+            this._open(target);
+        }
+
+        /** Loads a single page and fits it; prefetches neighbours. */
+        _open(order) {
+            const loaded = this.viewer.load([toTileSource(this.services[order])], 0);
+            this._prefetchAround(order);
+            return loaded.then(() => this._emit());
+        }
+
+        /** Warms neighbour info.json in the browser cache so the next swap is fast. */
+        _prefetchAround(order) {
+            for (let d = 1; d <= PREFETCH_RADIUS; d++) {
+                for (const o of [order - d, order + d]) {
+                    if (o >= 0 && o < this.total) {
+                        fetch(toTileSource(this.services[o])).catch(() => {});
+                    }
+                }
+            }
+        }
+
+        _emit() {
+            this.onPageChange.emit(this.current);
+        }
+    }
+
+    // Per-pi cache of in-flight/resolved Promises.
+    const cache = new Map();
+
+    /**
+     * Fetches the IIIF Presentation manifest for a given PI and returns the
+     * ordered list of image-service base URLs for all pages.
+     *
+     * The result Promise is memoized per pi so repeated calls never re-fetch.
+     *
+     * @param {string} pi       - Goobi viewer process identifier.
+     * @param {string} apiBase  - Base URL of the REST API (no trailing slash).
+     * @param {Function} fetchFn - fetch-compatible function (injectable for tests).
+     * @returns {Promise<string[]>}
+     */
+    function loadPageServices(pi, apiBase, fetchFn = fetch) {
+        if (cache.has(pi)) {
+            return cache.get(pi);
+        }
+
+        const url = `${apiBase}/records/${pi}/manifest`;
+        const promise = fetchFn(url).then((res) => {
+            if (!res.ok) {
+                throw new Error(`Failed to load manifest for "${pi}": HTTP ${res.status}`);
+            }
+            return res.json().then((manifest) => parseManifestImageServices(manifest));
+        });
+
+        cache.set(pi, promise);
+
+        // Evict on rejection so a transient failure does not permanently poison
+        // the cache; a later call will retry. The original rejection is rethrown.
+        return promise.catch((e) => {
+            cache.delete(pi);
+            throw e;
+        });
+    }
+
+    /**
+     * Rewrites the page-number segment of an immersive URL path (or appends it).
+     * The PI segment is never treated as the page number. Pure + tested.
+     *
+     * @param {string} pathname  e.g. "/viewer/immersive/PPN123/4/"
+     * @param {string} pi
+     * @param {number|string} pageNo  1-based page number
+     * @returns {string} rewritten pathname (keeps trailing slash)
+     */
+    function pageUrlPath(pathname, pi, pageNo) {
+        const parts = pathname.split('/');
+        for (let i = parts.length - 1; i >= 0; i--) {
+            if (/^\d+$/.test(parts[i]) && parts[i] !== String(pi)) {
+                parts[i] = String(pageNo);
+                return parts.join('/');
+            }
+        }
+        if (parts[parts.length - 1].length === 0) {
+            parts[parts.length - 1] = String(pageNo);
+            parts.push('');
+        } else {
+            parts.push(String(pageNo), '');
+        }
+        return parts.join('/');
+    }
+
+    /**
+     * URL-sync feature: pushes a history entry on page change (deep-linkable,
+     * back/forward steps through pages) and navigates the viewer on popstate.
+     * The viewer uses 0-based page orders; URLs use 1-based page numbers.
+     *
+     * @param {{onPageChange:{subscribe:Function}, goToPage:Function}} viewer
+     * @param {string} pi
+     */
+    function attachUrlSync(viewer, pi) {
+        viewer.onPageChange.subscribe((order) => {
+            const url = new URL(window.location.href);
+            url.pathname = pageUrlPath(url.pathname, pi, order + 1);
+            window.history.pushState({ order }, '', url.toString());
+        });
+        window.addEventListener('popstate', (e) => {
+            if (e.state && typeof e.state.order === 'number') {
+                viewer.goToPage(e.state.order);
+            }
+        });
+    }
+
     window.ShareImageFragment = ShareImageFragment;
 
     window.zoomableImageLoaded = new rxjs.Subject();
 
     document.addEventListener('DOMContentLoaded', () => {
-        window.image = new ZoomableImage();
-        window.image
-            .load()
-            .then((image) => {
-                window.zoomableImageLoaded.next(image);
-            })
-            .catch((e) => {
-                window.zoomableImageLoaded.error(e);
-            });
+        // Legacy object/fullscreen image view — only when its mount is present.
+        if (document.querySelector('[data-image="zoomable"]')) {
+            window.image = new ZoomableImage();
+            window.image
+                .load()
+                .then((image) => {
+                    window.zoomableImageLoaded.next(image);
+                })
+                .catch((e) => {
+                    window.zoomableImageLoaded.error(e);
+                });
+        }
 
         window.voyager3dView = new Voyager3dView();
+
+        // Immersive image viewer — only when its mount is present.
+        const immersiveEl = document.querySelector('[data-immersive-image]');
+        if (immersiveEl) {
+            initImmersiveViewer(immersiveEl);
+        }
     });
 
+    /**
+     * Bootstraps the immersive image viewer: fetches the IIIF manifest, instantiates
+     * the engine, and attaches the URL-sync + minimal paging controls. Everything
+     * else hooks onto viewer.onPageChange (no engine changes needed to extend).
+     *
+     * @param {HTMLElement} el  the [data-immersive-image] mount element
+     */
+    function initImmersiveViewer(el) {
+        const pi = el.dataset.pi;
+        const apiBase = el.dataset.apiBase;
+        const startOrder = Number(el.dataset.startOrder) || 0;
+        const maxZoom = el.dataset.maxZoom ? parseInt(el.dataset.maxZoom) : undefined;
+
+        loadPageServices(pi, apiBase)
+            .then((services) => {
+                const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
+                window.ivViewer = viewer;
+                attachUrlSync(viewer, pi);
+
+                const indicator = document.getElementById('immersivePageIndicator');
+                const total = viewer.getPageCount();
+                const updateIndicator = (order) => {
+                    if (indicator) indicator.textContent = `${order + 1} / ${total}`;
+                };
+                updateIndicator(viewer.getCurrentOrder());
+                viewer.onPageChange.subscribe(updateIndicator);
+
+                // Overview: lazy-mounted thumbnail grid overlay; clicking a thumbnail
+                // navigates in-place (no page reload) via the viewer engine.
+                const gridOverlay = document.getElementById('immersiveGridOverlay');
+                let gridMounted = false;
+                const gridActions = new rxjs.Subject();
+                gridActions.subscribe((e) => {
+                    if (e && e.action === 'clickImage' && typeof e.value === 'number') {
+                        viewer.goToPage(e.value);
+                        if (gridOverlay) gridOverlay.hidden = true;
+                    }
+                });
+                const toggleGrid = () => {
+                    if (!gridOverlay) return;
+                    const opening = gridOverlay.hidden;
+                    gridOverlay.hidden = !opening;
+                    if (opening && !gridMounted) {
+                        riot.mount('#immersiveThumbnails', 'thumbnails', {
+                            // IIIF v2 manifest (sequences[0].canvases); 'items' would be v3.
+                            source: `${apiBase}/records/${pi}/manifest`,
+                            type: 'sequence',
+                            actionlistener: gridActions,
+                            imagesize: '!160,220', // IIIF size string (fit within 160x220)
+                        });
+                        gridMounted = true;
+                    }
+                };
+
+                document.querySelectorAll('[data-immersive-page]').forEach((btn) => {
+                    btn.addEventListener('click', () => (btn.dataset.immersivePage === 'next' ? viewer.next() : viewer.prev()));
+                });
+                document.querySelectorAll('[data-immersive-action]').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const action = btn.dataset.immersiveAction;
+                        if (action === 'zoom-in') viewer.zoomIn();
+                        else if (action === 'zoom-out') viewer.zoomOut();
+                        else if (action === 'rotate-left') viewer.rotateLeft();
+                        else if (action === 'rotate-right') viewer.rotateRight();
+                        else if (action === 'reset') viewer.resetView();
+                        else if (action === 'fullscreen') toggleImmersiveFullscreen();
+                        else if (action === 'overview') toggleGrid();
+                    });
+                });
+
+                // Left slide-out panels (TOC / in-work search): toggle, one open at a time.
+                document.querySelectorAll('[data-immersive-panel]').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const panel = document.getElementById(btn.dataset.immersivePanel);
+                        if (!panel) return;
+                        const wasOpen = panel.classList.contains('is-open');
+                        document.querySelectorAll('.immersive__panel--left.is-open').forEach((p) => {
+                            p.classList.remove('is-open');
+                            p.setAttribute('aria-hidden', 'true');
+                        });
+                        if (!wasOpen) {
+                            panel.classList.add('is-open');
+                            panel.setAttribute('aria-hidden', 'false');
+                        }
+                    });
+                });
+            })
+            .catch((e) => console.error('immersive viewer init failed', e));
+    }
+
+    /** Toggles native browser fullscreen on the immersive viewer hero (H3 = real fullscreen, Esc exits). */
+    function toggleImmersiveFullscreen() {
+        const el = document.querySelector('.immersive__viewer');
+        if (!el) return;
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            el.requestFullscreen?.();
+        }
+    }
 })();
