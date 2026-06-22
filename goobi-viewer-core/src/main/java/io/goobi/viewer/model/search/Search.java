@@ -792,8 +792,14 @@ public class Search implements Serializable {
                 String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
                 String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
                 boolean anchorOrGroup = SolrTools.isAnchor(doc) || SolrTools.isGroup(doc);
+                // BOOL_IMAGEAVAILABLE is only written by the indexer on page docs and top/work records (ISWORK). It is
+                // never set on sub-docstructs (e.g. EAD "entry"/"view"/"chapter" children) or grouped DOCTYPE:METADATA
+                // docs, yet those can still carry WKT_COORDS and thus appear in geo search results here. getFieldValue
+                // then returns null, and since determinePageType takes a primitive boolean, unboxing null threw a NPE
+                // that escaped the IllegalArgumentException catch below. Default to false when the field is absent.
                 Boolean hasImages = (Boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE);
-                URI uri = Location.getRecordURI(pi, PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false),
+                URI uri = Location.getRecordURI(pi,
+                        PageType.determinePageType(docStructType, mimeType, anchorOrGroup, Boolean.TRUE.equals(hasImages), false),
                         DataManager.getInstance().getUrlBuilder());
                 locations.addAll(getLocations(doc.getFieldValue(solrField))
                         .stream()
