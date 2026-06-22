@@ -71,9 +71,11 @@ public final class PrettyUrlTools {
         String docStructType = (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
         String mimeType = (String) doc.getFieldValue(SolrConstants.MIMETYPE);
         boolean anchorOrGroup = SolrTools.isAnchor(doc) || SolrTools.isGroup(doc);
+        // BOOL_IMAGEAVAILABLE is absent on sub-docstructs and grouped DOCTYPE:METADATA docs; default to false instead
+        // of unboxing a null Boolean (NPE).
         Boolean hasImages = (Boolean) doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE);
 
-        return PageType.determinePageType(docStructType, mimeType, anchorOrGroup, hasImages, false);
+        return PageType.determinePageType(docStructType, mimeType, anchorOrGroup, Boolean.TRUE.equals(hasImages), false);
     }
 
     public static List<String> getSolrFieldsToDeterminePageType() {
