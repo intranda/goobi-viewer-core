@@ -53,7 +53,7 @@ import io.goobi.viewer.solr.SolrTools;
  * (e.g. {@code IdentifierRelatedWork}), the works matching those values in the configured
  * target field are returned.</li>
  * <li>Otherwise a content-similarity fallback returns works sharing any value in the configured
- * soll fields (default {@code MD_TOPIC}).</li>
+ * fallback fields (default {@code MD_TOPIC}).</li>
  * <li>If {@code fillRandom} is enabled and fewer than maxResults were found, the remaining slots
  * are filled with random works from the same collection (DC).</li>
  * </ol>
@@ -123,9 +123,9 @@ public class RecommendationsResolver {
             }
         }
 
-        // Prio 2: content similarity via configured soll fields
+        // Prio 2: content similarity via configured fallback fields
         if (results.isEmpty()) {
-            String query = buildSollFieldQuery(config.getSidebarWidgetRecommendationsSollFields(), topStruct, currentPi);
+            String query = buildFallbackFieldQuery(config.getSidebarWidgetRecommendationsFallbackFields(), topStruct, currentPi);
             results = loadCards(query, maxResults, fields);
         }
 
@@ -153,13 +153,13 @@ public class RecommendationsResolver {
                 + " AND -" + SolrConstants.PI + ":" + ClientUtils.escapeQueryChars(currentPi);
     }
 
-    /** Query for works sharing any value of the configured soll fields with the current record. */
-    private static String buildSollFieldQuery(List<String> sollFields, StructElement topStruct, String currentPi) {
-        if (sollFields == null || sollFields.isEmpty()) {
+    /** Query for works sharing any value of the configured fallback fields with the current record. */
+    private static String buildFallbackFieldQuery(List<String> fallbackFields, StructElement topStruct, String currentPi) {
+        if (fallbackFields == null || fallbackFields.isEmpty()) {
             return null;
         }
         List<String> clauses = new ArrayList<>();
-        for (String field : sollFields) {
+        for (String field : fallbackFields) {
             if (StringUtils.isBlank(field)) {
                 continue;
             }

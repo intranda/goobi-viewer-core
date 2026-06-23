@@ -7,7 +7,7 @@
         value="#{configurationBean.isSidebarWidgetForViewShowDetails(navigationHelper.currentView, 'recommendations')}" />
     <ui:fragment rendered="#{showRecommendations and not empty activeDocumentBean.recommendationsForSection}">
         <div class="recommendations-section">
-            <h2 class="recommendations-section__heading">#{msg.recommendations__heading}</h2>
+            <h2 class="recommendations-section__heading">#{msg.widget_recommendations__heading}</h2>
             <div class="recommendations-section__grid">
                 <ui:repeat
                     var="detail"

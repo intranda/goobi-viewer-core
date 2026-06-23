@@ -1208,7 +1208,7 @@
             <widget name="recommendations">
                 <maxResults>6</maxResults>
                 <!-- type="identifier": field whose values are PIs of explicitly related works;
-                     no type: similarity field matched against other records -->
+                     no type: fallback field matched against other records by shared value -->
                 <fields>
                     <field type="identifier">MD_RELATEDWORK</field>
                     <field>MD_TOPIC</field>

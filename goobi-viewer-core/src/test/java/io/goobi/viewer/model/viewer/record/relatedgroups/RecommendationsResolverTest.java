@@ -48,7 +48,7 @@ class RecommendationsResolverTest {
 
         when(config.getSidebarWidgetRecommendationsMaxResults()).thenReturn(4);
         when(config.getSidebarWidgetRecommendationsIdentifierFields()).thenReturn(List.of("IdentifierRelatedWork"));
-        when(config.getSidebarWidgetRecommendationsSollFields()).thenReturn(List.of("MD_TOPIC"));
+        when(config.getSidebarWidgetRecommendationsFallbackFields()).thenReturn(List.of("MD_TOPIC"));
 
         ThumbnailHandler thumbs = mock(ThumbnailHandler.class);
         when(thumbs.getThumbnailUrl(any(SolrDocument.class))).thenReturn("http://example/thumb.jpg");
@@ -106,7 +106,7 @@ class RecommendationsResolverTest {
     }
 
     @Test
-    void resolve_shouldFallbackToSollFieldsWhenNoIdentifier() throws Exception {
+    void resolve_shouldUseFallbackFieldsWhenNoIdentifier() throws Exception {
         when(topStruct.getMetadataValues("IdentifierRelatedWork")).thenReturn(List.of());
         when(topStruct.getMetadataValues("MD_TOPIC")).thenReturn(List.of("Arbeitsmarkt"));
         when(searchIndex.search(anyString(), anyInt(), any(), anyList())).thenReturn(docList(doc("PI_C", "Work C")));

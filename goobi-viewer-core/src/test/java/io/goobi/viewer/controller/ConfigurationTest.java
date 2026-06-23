@@ -2010,8 +2010,8 @@ class ConfigurationTest extends AbstractTest {
     }
 
     @Test
-    void getSidebarWidgetRecommendationsSollFields_shouldReturnCorrectValue() {
-        assertEquals(List.of("MD_TOPIC", "DC"), DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsSollFields());
+    void getSidebarWidgetRecommendationsFallbackFields_shouldReturnCorrectValue() {
+        assertEquals(List.of("MD_TOPIC", "DC"), DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsFallbackFields());
     }
 
     /**

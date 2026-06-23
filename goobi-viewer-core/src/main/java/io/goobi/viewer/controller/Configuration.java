@@ -1465,10 +1465,10 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return fields entries without a type attribute (similarity fields); defaults to [MD_TOPIC]
+     * @return fields entries without a type attribute, used as the content-similarity fallback; defaults to [MD_TOPIC]
      * @should return correct value
      */
-    public List<String> getSidebarWidgetRecommendationsSollFields() {
+    public List<String> getSidebarWidgetRecommendationsFallbackFields() {
         List<String> ret = new ArrayList<>();
         HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("recommendations");
         if (widgetConfig != null) {
