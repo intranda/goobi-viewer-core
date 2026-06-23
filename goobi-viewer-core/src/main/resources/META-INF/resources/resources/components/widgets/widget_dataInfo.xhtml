@@ -1,0 +1,209 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <composite:interface />
+
+    <composite:implementation>
+        <div
+            jsf:id="widgetDataInfo"
+            class="widget widget-data-info"
+            rendered="#{activeDocumentBean.viewManager != null}">
+            <div
+                tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'data-info') ? '0' : ''}"
+                role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'data-info') ? 'button' : ''}"
+                class="widget__topbar widget-data-info__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'data-info') ? 'collapsible' : ''} #{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'data-info') ? 'in' : ''}">
+                <h2 class="widget__title widget-data-info__title">#{msg.widget__data_info__title}</h2>
+
+                <div class="widget__topbar-icons-container">
+                    <div class="ajax_loader ajax_loader__image_update ajax_loader__sidebar -hidden">
+                        <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
+                    </div>
+
+                    <util:icon 
+                        icon="chevron-down"
+                        styleClass="widget__topbar-icon-collapsible icon-rot-on-open"
+                        svgClass="widget__topbar-icon-svg widget-data-info__topbar-icon-svg" />
+                </div>
+            </div>
+
+            <!-- WIDGET BODY -->
+            <div
+                id="widgetDataInfoBody"
+                class="widget__body widget-data-info__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'data-info') ? '-collapsed' : ''}">
+
+				<div class="widget-data-info__links-wrapper">
+				
+	                <!-- COPYRIGHT -->
+	                <ui:fragment rendered="#{not empty activeDocumentBean.viewManager.copyrightIndicatorLicense.content}">
+	                    <div class="widget-data-info__element widget-data-info__element-copyright">
+	                        <ui:fragment rendered="#{not empty activeDocumentBean.viewManager.copyrightIndicatorLicense.url}">
+	                            <a
+	                                href="#{activeDocumentBean.viewManager.copyrightIndicatorLicense.url}"
+	                                target="_blank"
+	                                rel="noopener noreferrer">
+	                                <util:icon icon="external-link" />
+	                                #{activeDocumentBean.viewManager.copyrightIndicatorLicense.content}
+	                            </a>
+	                        </ui:fragment>
+	                        <ui:fragment rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.url}">
+	                            <span>#{activeDocumentBean.viewManager.copyrightIndicatorLicense.content}</span>
+	                        </ui:fragment>
+	                    </div>
+	                </ui:fragment>
+	
+	                <!-- EXTERNAL SEARCH -->
+	                <ui:fragment rendered="#{not empty configurationBean.dataInfoExternalSearchUrl}">
+	                    <div class="widget-data-info__element widget-data-info__element-external-search">
+	                        <a
+	                            href="#{configurationBean.dataInfoExternalSearchUrl}#{configurationBean.dataInfoExternalSearchField == 'urn' ? activeDocumentBean.viewManager.topStructElement.getMetadataValue('URN') : activeDocumentBean.viewManager.pi}"
+	                            target="_blank"
+	                            rel="noopener noreferrer">
+	                            <util:icon icon="external-link" />
+	                            #{msg.widget__data_info__external_search}
+	                        </a>
+	                    </div>
+	                </ui:fragment>
+	
+	                <!-- PARENT / ANCHOR WORK -->
+	                <h:panelGroup
+	                    layout="block"
+	                    styleClass="widget-data-info__element widget-data-info__element-anchor"
+	                    rendered="#{activeDocumentBean.viewManager.topStructElement.anchorChild
+	                        and not empty activeDocumentBean.viewManager.anchorPi
+	                        and not empty activeDocumentBean.viewManager.anchorStructElement}">
+	                    <a href="#{navigationHelper.getRecordUrl(activeDocumentBean.viewManager.anchorPi, activeDocumentBean.viewManager.anchorStructElement.docStructType, 1, true, false)}">
+	                        <util:icon icon="external-link" />
+	                        #{activeDocumentBean.viewManager.anchorTitle}
+	                    </a>
+	                </h:panelGroup>
+                
+                </div>
+                
+                <div class="widget-data-info__infos-wrapper">
+
+	                <!-- URN -->
+	                <ui:fragment rendered="#{not empty activeDocumentBean.viewManager.topStructElement.getMetadataValue('URN')}">
+	                    <div class="widget-data-info__element widget-data-info__element-urn">
+	                        <span class="widget-data-info__label">URN:</span>
+	                        <span>#{activeDocumentBean.viewManager.topStructElement.getMetadataValue('URN')}</span>
+	                    </div>
+	                </ui:fragment>
+	
+	                <!-- IDENTIFIER (PI) -->
+	                <ui:fragment rendered="#{not empty activeDocumentBean.viewManager.pi}">
+	                    <div class="widget-data-info__element widget-data-info__element-identifier">
+	                        <span>#{activeDocumentBean.viewManager.pi}</span>
+	                    </div>
+	                </ui:fragment>
+                
+                </div>
+
+                <!-- FORMATS (badges) -->
+                <div class="widget-data-info__formats widget__badge-container">
+
+                    <!-- METS -->
+                    <ui:fragment
+                        rendered="#{displayConditions.matchRecord('{docType:![group], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
+                            class="badge badge-dark widget-data-info__format-badge"
+                            title="#{msg.metadata_dl_mets}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener">
+                            #{msg.downloadMetsButtonLabel}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- MARC XML -->
+                    <ui:fragment
+                        rendered="#{displayConditions.matchRecord('{docType:![group], accessCondition:DOWNLOAD_METADATA, sourceFormat:[METS, METS_MARC]}')}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.oaiMarcUrl}"
+                            class="badge badge-dark widget-data-info__format-badge"
+                            title="#{msg.metadata_dl_marc}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener">
+                            #{msg.marcLink}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- DUBLIN CORE (OAI) -->
+                    <ui:fragment
+                        rendered="#{displayConditions.matchRecord('{docType:![group], accessCondition:DOWNLOAD_METADATA}')}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.oaiDcUrl}"
+                            class="badge badge-dark widget-data-info__format-badge"
+                            title="#{msg.metadata_dl_dublinCore}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener">
+                            #{msg.dcLink}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- LIDO -->
+                    <ui:fragment
+                        rendered="#{displayConditions.matchRecord('{docType:![group], accessCondition:DOWNLOAD_METADATA, sourceFormat:[LIDO]}')}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
+                            class="badge badge-dark widget-data-info__format-badge"
+                            title="#{msg.metadata_dl_lido}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener">
+                            #{msg.downloadLidoButtonLabel}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- DUBLIN CORE (source file) -->
+                    <ui:fragment
+                        rendered="#{displayConditions.matchRecord('{docType:![group], accessCondition:DOWNLOAD_METADATA, sourceFormat:[DUBLINCORE]}')}">
+                        <a
+                            href="#{activeDocumentBean.viewManager.sourceFileResolverUrl}"
+                            class="badge badge-dark widget-data-info__format-badge"
+                            title="#{msg.metadata_dl_dublincore}"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            data-trigger="hover"
+                            target="_blank"
+                            rel="nofollow noopener">
+                            #{msg.downloadDublinCoreButtonLabel}
+                        </a>
+                    </ui:fragment>
+
+                    <!-- IIIF MANIFEST -->
+                    <ui:fragment
+                        rendered="#{displayConditions.matchRecord('{docType:![group], accessCondition:GENERATE_IIIF_MANIFEST, mimeType:![application], numPages:1}')}">
+                        <button
+                            class="badge badge-dark widget-data-info__format-badge"
+                            data-copy-value="#{imageDelivery.iiifManifest}"
+                            data-copy-done-msg="#{msg.copyUrlDone}"
+                            title="#{msg.copyUrl}"
+                            tabindex="0">
+                            #{msg.iiif}
+                        </button>
+                    </ui:fragment>
+                </div>
+            </div>
+            <!-- END BODY -->
+        </div>
+        <!-- END WIDGET -->
+    </composite:implementation>
+</ui:composition>
