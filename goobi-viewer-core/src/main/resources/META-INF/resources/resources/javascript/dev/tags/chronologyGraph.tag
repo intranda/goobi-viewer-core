@@ -1,5 +1,6 @@
 <chronologyGraph>
 
+	
 	<div class="widget-chronology-slider__item chronology-slider" if="{this.yearList.length > 0}">
 		<div class="chronology-slider__container" ref="container">
 			<canvas class="chronology-slider__chart" ref="chart"></canvas>
@@ -31,9 +32,7 @@
 			this.rangeFillColor = window.getComputedStyle(this.refs?.range)?.backgroundColor;
 			this.rangeOpacity = window.getComputedStyle(this.refs?.range)?.opacity;
 			
-// 			console.log("chronology graph data ", this.opts.datamap, this.opts.startYear, this.opts.endYear);
 			let completeYearMap = this.generateCompleteYearMap(this.opts.datamap);
-// 			console.log("year map ", completeYearMap);
 			
 			let chartElement = this.refs.chart;
 			this.yearList = Array.from(completeYearMap.keys()).map(y => parseInt(y));
@@ -42,8 +41,6 @@
 			this.endYear = parseInt(opts.endYear);
 			this.minYear = this.yearList[0];
 			this.maxYear = this.yearList[this.yearList.length - 1];
-			this.valueInput = document.getElementById(opts.valueInput);
-			this.updateFacet = document.getElementById(opts.updateFacet);
 			this.loader = document.getElementById(opts.loader);	
 			this.msg = opts.msg;
 			this.rtl = $( this.refs.slider ).closest('[dir="rtl"]').length > 0;
@@ -81,6 +78,7 @@
 							      displayColors: false,
 							      
 							      callbacks: {
+							    	  title: items => String(Math.round(items[0].parsed.x)),
 							    	  label: item => item.raw + " " + this.msg.hits
 							      }
 							},
@@ -91,23 +89,13 @@
 								display: false,
 							},
 							x: {
-								type: "time",
-								//min: this.yearList[0]-this.yearList[0]%100-1,
-								time: {
-									unit: "year",
-									tooltipFormat: "yyyy",
-									displayFormats: {
-										"year" : "yyyy"
-									},
-									parser: s => {
-										let date = new Date();
-										date.setYear(parseInt(s));
-										return date.getTime();
-									}
-								},
+								type: "linear",
+								min: this.minYear,
+								max: this.maxYear,
 							    ticks: {
 							    	maxTicksLimit: 5,
 							    	maxRotation: 0,
+							    	callback: value => String(Math.round(value))
 							    }
 							}
 						}
@@ -115,7 +103,6 @@
 					
 			}
 			if(this.refs.chart) {				
-				// console.log("init chart with config ", this.chartConfig);
 				this.chart = new Chart(chartElement, this.chartConfig);
 				this.initDraw();
 			
@@ -272,16 +259,19 @@
 			    Array.from(document.getElementsByClassName("chronology-slider__ok-button")).forEach(element => element.disabled = true);
 			    // set query to hidden input
 			    let value = '[' + this.startYear + ' TO ' + this.endYear + ']' ;
-			    $( this.valueInput ).val(value);
+			    $(document.getElementById(opts.valueInput)).val(value);
 			    // submit form
-			    this.updateFacet.click();
+			    document.getElementById(this.opts.updateFacet)?.click();
 		}
 			
 		calculateYearFromEvent(e) {
 			var activePoints = this.chart.getElementsAtEventForMode(e, 'nearest', { axis: "x" }, true);
-		    if(activePoints.length > 0) {			        	
+		    if(activePoints.length > 0) {
 		    	let year = this.yearList[activePoints[0].index];
 		    	return year;
+		    } else {		    	
+			    let x = e.clientX - this.refs.chart.getBoundingClientRect().left;
+			    return x <= this.chart.chartArea.left ? this.minYear : this.maxYear;
 		    }
 		}
 		
