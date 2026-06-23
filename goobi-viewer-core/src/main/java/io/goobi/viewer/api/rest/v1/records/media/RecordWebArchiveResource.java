@@ -21,23 +21,33 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.model.webarchives.ReplayJson;
+import io.goobi.viewer.api.rest.model.webarchives.WebArchivePage;
 import io.goobi.viewer.api.rest.model.webarchives.WebArchiveResource;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
@@ -65,6 +75,8 @@ import jakarta.ws.rs.core.Response.Status;
 public class RecordWebArchiveResource {
 
     private static final Logger logger = LogManager.getLogger(RecordWebArchiveResource.class);
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     /** Cache: absolute path → (lastModifiedMillis, sha256hex) to avoid rehashing large files on every request. */
     private static final ConcurrentHashMap<String, long[]> hashTimestampCache = new ConcurrentHashMap<>();
@@ -104,13 +116,17 @@ public class RecordWebArchiveResource {
 
         if (!docs.isEmpty()) {
 
-            List<WebArchiveResource> resources = docs.stream().map(doc -> {
+            List<WebArchiveResource> resources = new ArrayList<>();
+            List<WebArchivePage> initialPages = new ArrayList<>();
+
+            for (SolrDocument doc : docs) {
                 String filename = doc.getFieldValue(SolrConstants.FILENAME).toString();
                 String url = getWebArchiveUrl(this.pi, filename);
                 String hash = null;
                 Long size = null;
+                java.nio.file.Path filePath = null;
                 try {
-                    java.nio.file.Path filePath = DataFileTools.getDataFilePath(this.pi,
+                    filePath = DataFileTools.getDataFilePath(this.pi,
                             DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
                     if (Files.isRegularFile(filePath)) {
                         size = Files.size(filePath);
@@ -119,16 +135,88 @@ public class RecordWebArchiveResource {
                 } catch (Exception e) {
                     logger.warn("Could not compute hash/size for web archive {}: {}", filename, e.getMessage());
                 }
-                return new WebArchiveResource(filename, url, hash, size);
-            }).toList();
+                resources.add(new WebArchiveResource(filename, url, hash, size));
+                if (filePath != null && Files.isRegularFile(filePath)) {
+                    extractSeedPages(filePath, filename, initialPages);
+                }
+            }
 
-            ReplayJson json = new ReplayJson(this.pi, topStruct.getLabel(), resources);
+            ReplayJson json = new ReplayJson(this.pi, topStruct.getLabel(), resources, initialPages);
+            //            json.addTag("test");
+            //            json.addTag("zlb");
+            json.setCaption("My Caption");
+            json.setDescription("My Description");
+            json.setHomUrl("https://replayweb.page");
 
             return Response.ok(json).build();
         } else {
             return Response.status(Status.NOT_FOUND).build();
         }
 
+    }
+
+    private static void extractSeedPages(java.nio.file.Path waczPath, String waczFilename, List<WebArchivePage> pages) {
+        try (ZipFile zip = new ZipFile(waczPath.toFile())) {
+            ZipEntry entry = zip.getEntry("pages/pages.jsonl");
+            if (entry == null) {
+                return;
+            }
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(zip.getInputStream(entry), StandardCharsets.UTF_8))) {
+                String line;
+                boolean firstLine = true;
+                while ((line = reader.readLine()) != null) {
+                    if (line.isBlank()) {
+                        continue;
+                    }
+                    if (firstLine) {
+                        firstLine = false;
+                        // skip header line (contains "format" field)
+                        continue;
+                    }
+                    try {
+                        JsonNode node = MAPPER.readTree(line);
+                        boolean seed = node.path("seed").asBoolean(false);
+                        int depth = node.path("depth").asInt(-1);
+                        if (!seed && depth != 0) {
+                            continue;
+                        }
+                        WebArchivePage page = new WebArchivePage();
+                        if (node.hasNonNull("id")) {
+                            page.setId(node.get("id").asText());
+                        }
+                        if (node.hasNonNull("url")) {
+                            page.setUrl(node.get("url").asText());
+                        }
+                        if (node.hasNonNull("title")) {
+                            page.setTitle(node.get("title").asText());
+                        }
+                        if (node.hasNonNull("ts")) {
+                            page.setTs(node.get("ts").asText());
+                        }
+                        if (node.hasNonNull("loadState")) {
+                            page.setLoadState(node.get("loadState").asInt());
+                        }
+                        if (node.hasNonNull("status")) {
+                            page.setStatus(node.get("status").asInt());
+                        }
+                        if (node.hasNonNull("mime")) {
+                            page.setMime(node.get("mime").asText());
+                        }
+                        if (depth >= 0) {
+                            page.setDepth(depth);
+                        }
+                        page.setIsSeed(true);
+                        page.setFilename(waczFilename);
+                        pages.add(page);
+                    } catch (Exception e) {
+                        logger.warn("Could not parse page entry in {}: {}", waczFilename, e.getMessage());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Could not read seed pages from {}: {}", waczFilename, e.getMessage());
+        }
     }
 
     private String getWebArchiveUrl(String identifier, String filename) {

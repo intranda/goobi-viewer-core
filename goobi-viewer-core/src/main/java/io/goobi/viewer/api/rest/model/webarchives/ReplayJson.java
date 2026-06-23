@@ -21,11 +21,16 @@
  */
 package io.goobi.viewer.api.rest.model.webarchives;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Response model for replaywebpage json")
+@JsonInclude(Include.NON_NULL)
 public class ReplayJson {
 
     private final String id;
@@ -34,11 +39,23 @@ public class ReplayJson {
 
     private final List<WebArchiveResource> resources;
 
+    private final List<WebArchivePage> initialPages;
+
+    private String description;
+    private String caption;
+    private String homUrl;
+    private final List<String> tags = new ArrayList<>();
+
     public ReplayJson(String id, String name, List<WebArchiveResource> resources) {
+        this(id, name, resources, Collections.emptyList());
+    }
+
+    public ReplayJson(String id, String name, List<WebArchiveResource> resources, List<WebArchivePage> initialPages) {
         super();
         this.id = id;
         this.name = name;
         this.resources = resources;
+        this.initialPages = initialPages;
     }
 
     public String getId() {
@@ -53,8 +70,44 @@ public class ReplayJson {
         return resources;
     }
 
+    public List<WebArchivePage> getInitialPages() {
+        return initialPages;
+    }
+
     public String getDownloadUrl() {
         return null;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    public String getHomUrl() {
+        return homUrl;
+    }
+
+    public void setHomUrl(String homUrl) {
+        this.homUrl = homUrl;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void addTag(String tag) {
+        this.tags.add(tag);
     }
 
 }

@@ -42,13 +42,6 @@
                                 escape="false" />
                         </div>
                     </div>
-                    <div class="replay-overlay__header-close">
-                        <button
-                            data-overlay-action="dismiss"
-                            aria-label="Close">
-                            <util:icon icon="x" />
-                        </button>
-                    </div>
                 </div>
             </div>
 
@@ -63,56 +56,6 @@
                 url="#{cc.attrs.startPageUrl}"
                 replayBase="#{request.contextPath}/resources/javascript/libs/replaywebpage/"
                 source="#{cc.attrs.archiveUrl}" />
-
-            <script>
-		 		//HIDE FOWNLOAD BUTTON
-			  //<![CDATA[
-		 		document.addEventListener('DOMContentLoaded', function () {
-			      var rwp = document.querySelector('replay-web-page');
-			      if (!rwp) return;
-	
-			      function injectCSS(wrItem) {
-			    	  console.log("inject css ", wrItem);
-			    	  window.item = wrItem;
-			          if (!wrItem.shadowRoot) return;
-			          console.log("create style")
-			          var style = document.createElement('style');
-			          style.textContent =
-			              'a.dropdown-item[href$=".json"] { display: none !important; }' +
-			              'hr.dropdown-divider:has(+ a.dropdown-item[href$=".json"]) { display: none !important; }';
-			          wrItem.shadowRoot.appendChild(style);
-			      }
-	
-			      function waitForWrItem(doc) {
-			          var replayApp = doc.querySelector('replay-app-main');
-			          if (!replayApp || !replayApp.shadowRoot) {
-			              setTimeout(function () { waitForWrItem(doc); }, 300);
-			              return;
-			          }
-			          var wrItem = replayApp.shadowRoot.querySelector('wr-item');
-			          if (wrItem) { injectCSS(wrItem); return; }
-			          var obs = new MutationObserver(function () {
-			              var wi = replayApp.shadowRoot.querySelector('wr-item');
-			              if (wi) { obs.disconnect(); injectCSS(wi); }
-			          });
-			          obs.observe(replayApp.shadowRoot, { childList: true, subtree: true });
-			      }
-	
-			      function waitForIframe() {
-			          if (!rwp.shadowRoot) { setTimeout(waitForIframe, 100); return; }
-			          var iframe = rwp.shadowRoot.querySelector('iframe');
-			          if (!iframe) { setTimeout(waitForIframe, 100); return; }
-			          iframe.addEventListener('load', function () {
-			              if (iframe.contentDocument) waitForWrItem(iframe.contentDocument);
-			          });
-			          if (iframe.contentDocument && iframe.contentDocument.readyState !== 'loading')
-			              waitForWrItem(iframe.contentDocument);
-			      }
-	
-			      waitForIframe();
-			  });
-		 		//]]>
-			</script>
         </div>
     </composite:implementation>
 </ui:composition>
