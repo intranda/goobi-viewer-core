@@ -2006,7 +2006,8 @@
             <!-- externalSearch[@url]: Base URL of the external search. The configured field value is appended to the URL. -->
             <!-- externalSearch[@field]: Field to append to the URL. Possible values: "identifier" (PI, default) or "urn". -->
             <widget name="data-info">
-                <externalSearch url="https://aksearch.arbeiterkammer.at/Search/Results?lookfor=" field="identifier" />
+                <!-- Configure an external search per installation (the field value is appended to the URL), e.g.:
+                     <externalSearch url="https://your-external-search.example/Search/Results?lookfor=" field="identifier" /> -->
             </widget>
 
         </widgets>
