@@ -28,7 +28,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Create viewer.war
-        run: mvn -f pom.xml clean package -U -B
+        run: mvn -f pom.xml clean package -Dchangelist="" -U -B
       - name: Create config.tar.gz
         run: |
           cd goobi-viewer-config/install && tar -czf ../../config.tar.gz *
