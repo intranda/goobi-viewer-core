@@ -29,7 +29,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -387,10 +386,8 @@ public class Search implements Serializable {
                 SearchHelper.buildFinalQuery(currentQuery + subElementQueryFilterSuffix, true, aggregationType);
         logger.debug("Final main query: {}", finalQuery);
 
-        // Single Solr round-trip to populate both range facets (min/max) and permanently-displayed
-        // unfiltered facets. Both former methods used identical filter queries and zero-row searches
-        // against the same base query, so they are safely merged into one call.
-        populateRangesAndUnfilteredFacets(finalQuery, facets, resultGroups.size() == 1 ? resultGroups.get(0) : null, params, locale);
+        populateRanges(finalQuery, facets, resultGroups.size() == 1 ? resultGroups.get(0) : null, params);
+        populateUnfilteredFacets(finalQuery, facets, resultGroups.size() == 1 ? resultGroups.get(0) : null, params, locale);
 
         logger.trace("result groups: {}", this.resultGroups.size());
         for (SearchResultGroup resultGroup : this.resultGroups) {
@@ -431,7 +428,7 @@ public class Search implements Serializable {
         }
 
         List<String> allFacetFields = SearchHelper.facetifyList(this.facetFields);
-        
+
         // Do not filter by language here so that the calculated facets are available when switching languages (no new search executed)
 
         //Include this to see if any results have geo-coords and thus the geomap-faceting widget should be displayed
@@ -621,47 +618,59 @@ public class Search implements Serializable {
     }
 
     /**
-     * Populates slider ranges for ranged facets.
-     * 
-     * @param finalQuery fully assembled Solr query
+     * Populates absolute min/max values for range-facet sliders. Active non-range facets are included
+     * in the filter queries so that the slider range reflects the currently filtered result set.
+     *
+     * @param finalQuery fully assembled Solr query with aggregation suffix
      * @param facets active search facets to populate range values into
-     * @param resultGroup Active result group for optional filtering
+     * @param resultGroup optional result group for additional filter query
      * @param params additional Solr query parameters
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
+    private void populateRanges(String finalQuery, SearchFacets facets, SearchResultGroup resultGroup,
+            Map<String, String> params) throws PresentationException, IndexUnreachableException {
+        logger.trace("populateRanges");
+        List<String> rangeFacetFields = collectRangeFacetFields();
+
+        List<String> activeFilterQueries = facets.generateFacetFilterQueries(false);
+        if (StringUtils.isNotEmpty(customFilterQuery)) {
+            activeFilterQueries.add(customFilterQuery);
+        }
+        if (resultGroup != null) {
+            activeFilterQueries.add(resultGroup.getQuery());
+        }
+
+        logger.trace("final query: {}", finalQuery);
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .search(finalQuery, 0, 0, null, rangeFacetFields, Collections.singletonList(SolrConstants.IDDOC),
+                        activeFilterQueries, params);
+        if (resp == null || resp.getFacetFields() == null) {
+            logger.trace("No facet fields");
+            return;
+        }
+
+        processRangeFacets(resp, rangeFacetFields, facets);
+    }
+
     /**
-     * Issues a single Solr round-trip to populate both range-facet sliders and the always-visible
-     * unfiltered facet lists. The two concerns are kept logically separate:
-     * field collection and response processing are each handled by dedicated helpers
-     * ({@link #collectRangeFacetFields()}, {@link #collectUnfilteredFacetFields()},
-     * {@link #processRangeFacets}, {@link #processUnfilteredFacets}).
+     * Populates permanently-displayed facet lists from an unfiltered search (active facets are intentionally
+     * excluded from the filter queries so that counts reflect the full result set).
      *
      * @param finalQuery fully assembled Solr query with aggregation suffix
-     * @param facets active search facets to populate
+     * @param facets active search facets to populate unfiltered values into
      * @param resultGroup optional result group for additional filter query
      * @param params additional Solr query parameters
      * @param locale locale used for facet label translation
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
-    private void populateRangesAndUnfilteredFacets(String finalQuery, SearchFacets facets, SearchResultGroup resultGroup,
+    private void populateUnfilteredFacets(String finalQuery, SearchFacets facets, SearchResultGroup resultGroup,
             Map<String, String> params, Locale locale) throws PresentationException, IndexUnreachableException {
-        logger.trace("populateRangesAndUnfilteredFacets");
-
-        List<String> rangeFacetFields = collectRangeFacetFields();
+        logger.trace("populateUnfilteredFacets");
         List<String> unfilteredFacetFields = collectUnfilteredFacetFields();
 
-        // Merge into a single field list for one Solr call, avoiding duplicates
-        List<String> combinedFacetFields = new ArrayList<>(rangeFacetFields);
-        for (String f : unfilteredFacetFields) {
-            if (!combinedFacetFields.contains(f)) {
-                combinedFacetFields.add(f);
-            }
-        }
-
-        // Both concerns share the same filter queries: customFilterQuery + resultGroup only
-        // (generateFacetFilterQueries(false) returns an empty list when no facets are active)
         List<String> activeFilterQueries = new ArrayList<>(2);
         if (StringUtils.isNotEmpty(customFilterQuery)) {
             logger.trace("customFilterQuery: {}", customFilterQuery);
@@ -674,20 +683,18 @@ public class Search implements Serializable {
         logger.trace("final query: {}", finalQuery);
         QueryResponse resp = DataManager.getInstance()
                 .getSearchIndex()
-                .search(finalQuery, 0, 0, null, combinedFacetFields, Collections.singletonList(SolrConstants.IDDOC),
+                .search(finalQuery, 0, 0, null, unfilteredFacetFields, Collections.singletonList(SolrConstants.IDDOC),
                         activeFilterQueries, params);
         if (resp == null || resp.getFacetFields() == null) {
             logger.trace("No facet fields");
             return;
         }
 
-        processRangeFacets(resp, rangeFacetFields, facets);
         processUnfilteredFacets(resp, unfilteredFacetFields, facets, locale);
     }
 
     /**
-     * Returns the list of range-facet field names to request from Solr.
-     * Field names are passed as-is (e.g. YEAR, not FACET_YEAR).
+     * Returns the list of range-facet field names to request from Solr. Field names are passed as-is (e.g. YEAR, not FACET_YEAR).
      *
      * @return list of range facet field names
      */
@@ -696,8 +703,8 @@ public class Search implements Serializable {
     }
 
     /**
-     * Returns the facetified field names for facets that must always be populated
-     * regardless of active filters (always-apply and boolean facet fields).
+     * Returns the facetified field names for facets that must always be populated regardless of active filters (always-apply and boolean facet
+     * fields).
      *
      * @return list of facetified unfiltered facet field names
      */
@@ -713,8 +720,8 @@ public class Search implements Serializable {
     }
 
     /**
-     * Processes range-facet fields from a Solr response and populates absolute min/max
-     * values for each range slider via {@link SearchFacets#populateAbsoluteMinMaxValuesForField}.
+     * Processes range-facet fields from a Solr response and populates absolute min/max values for each range slider via
+     * {@link SearchFacets#populateAbsoluteMinMaxValuesForField}.
      *
      * @param resp Solr query response containing facet fields
      * @param rangeFacetFields field names to process as range facets
@@ -741,8 +748,8 @@ public class Search implements Serializable {
     }
 
     /**
-     * Processes unfiltered facet fields from a Solr response and populates the
-     * permanently-displayed facet lists via {@link FacetItem#generateFilterLinkList}.
+     * Processes unfiltered facet fields from a Solr response and populates the permanently-displayed facet lists via
+     * {@link FacetItem#generateFilterLinkList}.
      *
      * @param resp Solr query response containing facet fields
      * @param unfilteredFacetFields facetified field names to process
@@ -1048,12 +1055,10 @@ public class Search implements Serializable {
         this.expandQuery = expandQuery;
     }
 
-    
     public String getCustomFilterQuery() {
         return customFilterQuery;
     }
 
-    
     public void setCustomFilterQuery(String customFilterQuery) {
         this.customFilterQuery = customFilterQuery;
     }
@@ -1229,22 +1234,18 @@ public class Search implements Serializable {
         this.newHitsNotification = newHitsNotification;
     }
 
-    
     public int getProximitySearchDistance() {
         return proximitySearchDistance;
     }
 
-    
     public void setProximitySearchDistance(int proximitySearchDistance) {
         this.proximitySearchDistance = proximitySearchDistance;
     }
 
-    
     public List<SearchResultGroup> getResultGroups() {
         return resultGroups;
     }
 
-    
     public void setResultGroups(List<SearchResultGroup> resultGroups) {
         this.resultGroups = resultGroups;
     }
@@ -1336,7 +1337,6 @@ public class Search implements Serializable {
         DataManager.getInstance().getDao().updateSearch(this);
     }
 
-    
     public List<Location> getHitsLocationList() {
         if (!resultGroups.isEmpty()) {
             return resultGroups.get(0).getHitLocationList();
@@ -1345,7 +1345,6 @@ public class Search implements Serializable {
         return Collections.emptyList();
     }
 
-    
     public boolean isHasGeoLocationHits() {
         if (!resultGroups.isEmpty()) {
             return resultGroups.get(0).isHasGeoLocationHits();
@@ -1362,12 +1361,10 @@ public class Search implements Serializable {
         return resultGroups.size() > 1;
     }
 
-    
     public String getMetadataListType() {
         return metadataListType;
     }
 
-    
     public void setMetadataListType(String metadataListType) {
         this.metadataListType = metadataListType;
     }

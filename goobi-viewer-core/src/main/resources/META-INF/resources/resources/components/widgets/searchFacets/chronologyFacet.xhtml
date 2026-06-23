@@ -13,6 +13,10 @@
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
+        <h:outputScript
+            name="resources/javascript/libs/chartjs/chart.umd.js"
+            target="head" />
+
         <!--  WIDGET CHRONOLOGY -->
         <c:forEach
             var="field"
