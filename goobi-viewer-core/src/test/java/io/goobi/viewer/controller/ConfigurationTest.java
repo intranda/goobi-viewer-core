@@ -1923,11 +1923,12 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSidebarWidgetsForView_shouldReturnCorrectValues() {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("object");
-        assertEquals(4, result.size());
+        assertEquals(5, result.size());
         assertEquals("views", result.get(0));
         assertEquals("copyright", result.get(1));
         assertEquals("search-in-current-item", result.get(2));
         assertEquals("related-groups", result.get(3));
+        assertEquals("recommendations", result.get(4));
     }
 
     /**
