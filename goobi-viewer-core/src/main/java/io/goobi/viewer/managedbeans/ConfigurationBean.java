@@ -986,10 +986,20 @@ public class ConfigurationBean implements Serializable {
      *
      * @param view Record view name
      * @param widget Widget name
-     * @return true if widget configured to show details; false otherwise; default is false
+     * @return true if widget configured as enabled; false otherwise; default is false
      */
-    public boolean isSidebarWidgetForViewShowDetails(String view, String widget) {
-        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails(view, widget);
+    public boolean isSidebarWidgetForViewEnabled(String view, String widget) {
+        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewEnabled(view, widget);
+    }
+
+    /**
+     *
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured to display its expanded variant; false otherwise; default is false
+     */
+    public boolean isSidebarWidgetForViewExpanded(String view, String widget) {
+        return DataManager.getInstance().getConfiguration().isSidebarWidgetForViewExpanded(view, widget);
     }
 
     /**

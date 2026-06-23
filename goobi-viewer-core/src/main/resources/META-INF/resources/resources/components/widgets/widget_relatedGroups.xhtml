@@ -8,9 +8,9 @@
 
     <composite:implementation>
         <ui:param
-            name="showDetails"
-            value="#{configurationBean.isSidebarWidgetForViewShowDetails(navigationHelper.currentView, 'related-groups')}" />
-        <h:panelGroup rendered="#{(activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild) and !showDetails}">
+            name="expanded"
+            value="#{configurationBean.isSidebarWidgetForViewExpanded(navigationHelper.currentView, 'related-groups')}" />
+        <h:panelGroup rendered="#{(activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild) and !expanded}">
             <div
                 id="widgetRelatedGroups"
                 class="widget-related-groups">

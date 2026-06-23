@@ -3,9 +3,9 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
     <ui:param
-        name="showRecommendations"
-        value="#{configurationBean.isSidebarWidgetForViewShowDetails(navigationHelper.currentView, 'recommendations')}" />
-    <ui:fragment rendered="#{showRecommendations and not empty activeDocumentBean.recommendationsForSection}">
+        name="recommendationsEnabled"
+        value="#{configurationBean.isSidebarWidgetForViewEnabled(navigationHelper.currentView, 'recommendations')}" />
+    <ui:fragment rendered="#{recommendationsEnabled and not empty activeDocumentBean.recommendationsForSection}">
         <div class="recommendations-section">
             <h2 class="recommendations-section__heading">#{msg.widget_recommendations__heading}</h2>
             <div class="recommendations-section__grid">

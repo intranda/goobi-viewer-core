@@ -1963,14 +1963,25 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarWidgetForViewShowDetails(String,String)
+     * @see Configuration#isSidebarWidgetForViewEnabled(String,String)
      * @verifies return correct value
      */
     @Test
-    void isSidebarWidgetForViewShowDetails_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "related-groups"));
-        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "copyright"));
-        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "nonexistent"));
+    void isSidebarWidgetForViewEnabled_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewEnabled("object", "recommendations"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewEnabled("object", "related-groups"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewEnabled("object", "nonexistent"));
+    }
+
+    /**
+     * @see Configuration#isSidebarWidgetForViewExpanded(String,String)
+     * @verifies return correct value
+     */
+    @Test
+    void isSidebarWidgetForViewExpanded_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewExpanded("object", "related-groups"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewExpanded("object", "recommendations"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewExpanded("object", "nonexistent"));
     }
 
     /**

@@ -1722,8 +1722,8 @@
                 <displayWidget name="record-notes" />
                 <displayWidget name="downloads" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="citation" collapsible="true" collapsedByDefault="true" />
-                <displayWidget name="related-groups" showDetails="true" />
-                <displayWidget name="recommendations" showDetails="true" />
+                <displayWidget name="related-groups" expanded="false" />
+                <displayWidget name="recommendations" enabled="false" />
                 <displayWidget name="toc" />
                 <displayWidget name="version-history" />
             </view>
@@ -1976,7 +1976,7 @@
                 <collapseLengthThreshold lowestLevelToTest="2">0</collapseLengthThreshold>
             </widget>
 
-            <!-- related-groups: sibling volumes and group members (requires showDetails="true" on the displayWidget). -->
+            <!-- related-groups: sibling volumes and group members (expanded="true" on the displayWidget shows the large section instead of the compact sidebar widget). -->
             <widget name="related-groups">
                 <maxResults>3</maxResults>
                 <sortField>SORT_YEARPUBLISH</sortField>

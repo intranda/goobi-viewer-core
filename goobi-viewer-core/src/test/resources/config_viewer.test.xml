@@ -1069,8 +1069,8 @@
                 <displayWidget name="views" />
                 <displayWidget name="copyright" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="search-in-current-item" />
-                <displayWidget name="related-groups" showDetails="true" />
-                <displayWidget name="recommendations" showDetails="true" />
+                <displayWidget name="related-groups" expanded="true" />
+                <displayWidget name="recommendations" enabled="true" />
             </view>
             <view name="toc">
                 <displayWidget name="views" />
