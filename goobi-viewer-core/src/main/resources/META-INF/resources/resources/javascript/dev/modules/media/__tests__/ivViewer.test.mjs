@@ -3,40 +3,13 @@
  *
  * IvViewer (the default export) depends on the global `ImageView` object that
  * is only present in a real browser context — do NOT import or instantiate it
- * here. Only `resolveNavigation` and `Emitter` are tested.
+ * here. Only `Emitter` is tested.
  *
  * Note: Jest's `jest` global is not auto-injected in native ESM projects
  * (transform: {}). We import it explicitly from @jest/globals.
  */
 import { jest } from '@jest/globals';
-import { resolveNavigation, Emitter } from '../ivViewer.mjs';
-
-// ---------------------------------------------------------------------------
-// resolveNavigation
-// ---------------------------------------------------------------------------
-
-describe('resolveNavigation', function () {
-    test('target inside current window returns reload:false and correct indexInWindow', function () {
-        const result = resolveNavigation(3, { start: 1, end: 6 }, 7, 5);
-        expect(result).toEqual({ reload: false, indexInWindow: 2 });
-    });
-
-    test('target outside window returns reload:true with new window and correct indexInWindow', function () {
-        const result = resolveNavigation(6, { start: 0, end: 5 }, 7, 5);
-        expect(result).toEqual({ reload: true, window: { start: 2, end: 7 }, indexInWindow: 4 });
-    });
-
-    test('out-of-range target is clamped to a finite non-negative indexInWindow', function () {
-        const result = resolveNavigation(99, { start: 0, end: 5 }, 7, 5);
-        expect(result.reload).toBe(true);
-        expect(Number.isFinite(result.indexInWindow)).toBe(true);
-        expect(result.indexInWindow).toBeGreaterThanOrEqual(0);
-    });
-});
-
-// ---------------------------------------------------------------------------
-// Emitter
-// ---------------------------------------------------------------------------
+import { Emitter } from '../ivViewer.mjs';
 
 describe('Emitter', function () {
     test('subscriber receives the emitted value', function () {

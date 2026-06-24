@@ -71,41 +71,6 @@ export function parseManifestImageServices(manifest) {
 }
 
 /**
- * Computes a contiguous slice of page indices centered on the current page,
- * clamped to [0, total).
- *
- * @param {number} currentIndex - 0-based index of the current page.
- * @param {number} total        - Total number of pages (>= 0).
- * @param {number} windowSize   - Maximum number of pages in the window (>= 1).
- * @returns {{ start: number, end: number, indexInWindow: number }}
- *   start         - inclusive 0-based start of the window
- *   end           - exclusive end of the window (window = [start, end))
- *   indexInWindow - position of currentIndex within the window
- */
-export function computeWindow(currentIndex, total, windowSize) {
-    if (total === 0) {
-        return { start: 0, end: 0, indexInWindow: 0 };
-    }
-
-    const size = Math.min(windowSize, total);
-
-    // Center the window on currentIndex.
-    let start = currentIndex - Math.floor(size / 2);
-    let end = start + size;
-
-    // Clamp so the window stays within [0, total].
-    if (start < 0) {
-        start = 0;
-        end = size;
-    } else if (end > total) {
-        end = total;
-        start = total - size;
-    }
-
-    return { start, end, indexInWindow: currentIndex - start };
-}
-
-/**
  * Returns the 0-based page indices shown together for the spread that contains
  * `order`. Book layout (LTR): the cover (page 0) stands alone, then pages are
  * paired (1,2),(3,4),… An odd final page stands alone. Pure + tested.
