@@ -34,7 +34,6 @@ function resolveServiceId(service, primaryKey, fallbackKey) {
 export function parseManifestImageServices(manifest) {
     if (!manifest || typeof manifest !== 'object') return [];
 
-    // IIIF v2: manifest.sequences[0].canvases
     if (Array.isArray(manifest.sequences) && manifest.sequences.length > 0) {
         const canvases = manifest.sequences[0].canvases;
         if (!Array.isArray(canvases)) return [];
@@ -45,14 +44,11 @@ export function parseManifestImageServices(manifest) {
                 const service = canvas.images[0].resource.service;
                 const id = resolveServiceId(service, '@id', 'id');
                 if (id !== null) ids.push(id);
-            } catch {
-                // canvas structure incomplete — skip
-            }
+            } catch {}
         }
         return ids;
     }
 
-    // IIIF v3: manifest.items (canvases)
     if (Array.isArray(manifest.items) && manifest.items.length > 0) {
         const ids = [];
         for (const canvas of manifest.items) {
@@ -60,9 +56,7 @@ export function parseManifestImageServices(manifest) {
                 const service = canvas.items[0].items[0].body.service;
                 const id = resolveServiceId(service, 'id', '@id');
                 if (id !== null) ids.push(id);
-            } catch {
-                // canvas structure incomplete — skip
-            }
+            } catch {}
         }
         return ids;
     }

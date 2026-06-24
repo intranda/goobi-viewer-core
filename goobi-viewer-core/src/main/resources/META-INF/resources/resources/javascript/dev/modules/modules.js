@@ -840,7 +840,6 @@
     function parseManifestImageServices(manifest) {
         if (!manifest || typeof manifest !== 'object') return [];
 
-        // IIIF v2: manifest.sequences[0].canvases
         if (Array.isArray(manifest.sequences) && manifest.sequences.length > 0) {
             const canvases = manifest.sequences[0].canvases;
             if (!Array.isArray(canvases)) return [];
@@ -851,14 +850,11 @@
                     const service = canvas.images[0].resource.service;
                     const id = resolveServiceId(service, '@id', 'id');
                     if (id !== null) ids.push(id);
-                } catch {
-                    // canvas structure incomplete — skip
-                }
+                } catch {}
             }
             return ids;
         }
 
-        // IIIF v3: manifest.items (canvases)
         if (Array.isArray(manifest.items) && manifest.items.length > 0) {
             const ids = [];
             for (const canvas of manifest.items) {
@@ -866,9 +862,7 @@
                     const service = canvas.items[0].items[0].body.service;
                     const id = resolveServiceId(service, 'id', '@id');
                     if (id !== null) ids.push(id);
-                } catch {
-                    // canvas structure incomplete — skip
-                }
+                } catch {}
             }
             return ids;
         }
@@ -928,10 +922,6 @@
         return [...new Set([...prev, ...here, ...next])].filter((p) => p >= 0 && p < total).sort((a, b) => a - b);
     }
 
-    // ---------------------------------------------------------------------------
-    // Module helpers
-    // ---------------------------------------------------------------------------
-
     /** Minimal dependency-free event emitter (rxjs-compatible `subscribe` shape). */
     class Emitter {
         constructor() {
@@ -946,12 +936,12 @@
         }
     }
 
-    /** IIIF image-service base id -> OSD tile source (its info.json URL). */
+    /** Maps a IIIF image-service base id to an OSD tile source (its info.json URL). */
     function toTileSource(serviceId) {
         return serviceId.endsWith('/info.json') ? serviceId : `${serviceId}/info.json`;
     }
 
-    /** Tweens one TiledImage's opacity 0->1 while fading another 1->0 (rAF). */
+    /** Tweens one TiledImage's opacity 0→1 while fading another 1→0 (rAF). */
     function _crossfade(incoming, outgoing, durationMs) {
         return new Promise((resolve) => {
             let start = null;
@@ -979,23 +969,15 @@
         return band;
     }
 
-    // Single-image sequence config (mirrors zoomableImage.mjs). _arrangeImageSequence
-    // reads it on every open(), so it must be present even when loading one image.
+    /** Single-image sequence config (mirrors zoomableImage.mjs); _arrangeImageSequence reads it on every open(). */
     const _sequence = { columns: 1, useWindowing: true, windowSize: 100, windowExpandThreshold: 10, windowExpandSize: 50 };
     const PREFETCH_RADIUS = 1;
 
-    // ---------------------------------------------------------------------------
-    // Engine
-    // ---------------------------------------------------------------------------
-
     /**
      * Immersive image viewer engine around a single live ImageView.Image (OSD).
-     *
-     * Navigation is flicker-free: instead of reloading OSD per page, the target page
-     * is preloaded as a hidden tiled image and faded in over the current one. Double
-     * pages are composed by the library (columns:2) and transitioned with a snapshot
-     * crossfade. Knows nothing about buttons/URLs/overlays — consumers subscribe to
-     * `onPageChange` / `onLoaded`.
+     * Single pages are swapped flicker-free by fading in a preloaded neighbour; double
+     * pages are composed by the library and transitioned with a snapshot crossfade.
+     * Consumers subscribe to `onPageChange` / `onLoaded`.
      */
     class IvViewer {
         /**
@@ -1010,21 +992,17 @@
             this.total = opts.services.length;
             this.current = Math.max(0, Math.min(opts.startOrder ?? 0, this.total - 1));
             this.double = false;
-            this.currentItem = null; // the visible single-page TiledImage
-            this._anchor = null; // constant single-page fitBounds anchor — keeps every page at the same size/position
-            this._preloaded = new Map(); // page order -> Promise<TiledImage>
-            this._navigating = false; // guards against overlapping transitions
-            // crossfade duration; 0 (instant, still flicker-free) when the user prefers reduced motion
+            this.currentItem = null;
+            this._anchor = null;
+            this._preloaded = new Map();
+            this._navigating = false;
             this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 160;
             this.onPageChange = new Emitter();
             this.onLoaded = new Emitter();
 
             this.viewer = new ImageView.Image({
                 element: opts.element,
-                // 'fixed' = contain-fit the whole page in the full-bleed viewport (like fullscreen);
-                // 'toWidth' would blow the page up in this wide container.
                 fittingMode: 'fixed',
-                // Inset so the page sits framed on the dark stage, clear of the overlay chrome.
                 margins: { top: 64, bottom: 72, left: 64, right: 64 },
                 zoom: { enabled: true, max: opts.maxZoom },
                 sequence: _sequence,
@@ -1039,7 +1017,7 @@
             });
         }
 
-        // --- state -------------------------------------------------------------
+        // --- state ---
 
         getCurrentOrder() {
             return this.current;
@@ -1058,7 +1036,7 @@
             return this.double ? computeSpread(this.current, this.total) : [this.current];
         }
 
-        // --- navigation --------------------------------------------------------
+        // --- navigation ---
 
         /** Navigate to the page/spread containing `order` (snaps to the spread leader in double mode). */
         goToPage(order) {
@@ -1083,11 +1061,10 @@
         }
 
         prev() {
-            // -1 lands in the previous spread; goToPage snaps it to that spread's leader.
             this.goToPage(this.current - 1);
         }
 
-        // --- view controls -----------------------------------------------------
+        // --- view controls ---
 
         zoomIn() {
             this.zoom.zoomBy(1.5);
@@ -1105,9 +1082,9 @@
             this.rotation.rotateRight();
         }
 
+        /** Resets rotation and zoom to fit the whole page (whole spread in double mode). */
         resetView() {
             this.rotation.rotateTo(0);
-            // double mode holds two images in the world -> fit the whole world, not one image
             if (this.double) {
                 this.viewer.openseadragon.viewport.goHome(true);
             } else {
@@ -1115,7 +1092,7 @@
             }
         }
 
-        /** Toggle book-spread mode and re-open at the current position. Returns the new state. */
+        /** Toggles book-spread mode and re-opens at the current position. Returns the new state. */
         toggleDoublePage() {
             this.double = !this.double;
             this.current = this.getCurrentPages()[0];
@@ -1123,7 +1100,7 @@
             return this.double;
         }
 
-        // --- single-page crossfade ---------------------------------------------
+        // --- single-page crossfade ---
 
         /**
          * Single-page navigation: fade the (preloaded or freshly added) target page in
@@ -1151,7 +1128,7 @@
         /**
          * Returns a cached promise for the TiledImage of `order`, adding it hidden and
          * preloaded (at `bounds`) if not already present/in-flight. Caching by order lets
-         * an in-flight preload and an on-demand navigation share one image. Resolves as
+         * an in-flight preload and an on-demand navigation share one image; it resolves as
          * soon as the image is added (not when fully loaded).
          */
         _acquire(order, bounds) {
@@ -1218,7 +1195,7 @@
             }
         }
 
-        // --- double-page spread (snapshot crossfade) ---------------------------
+        // --- double-page spread (snapshot crossfade) ---
 
         /**
          * Double-page navigation: freeze the current spread as a snapshot overlay, let the
@@ -1296,7 +1273,7 @@
             }
         }
 
-        // --- loading -----------------------------------------------------------
+        // --- loading ---
 
         /**
          * Loads the page(s) for `order` via the library (a single page, or a columns:2
@@ -1305,7 +1282,7 @@
          */
         _open(order) {
             const pages = this.double ? computeSpread(order, this.total) : [order];
-            this.viewer.config.sequence.columns = pages.length; // read at open() by _arrangeImageSequence
+            this.viewer.config.sequence.columns = pages.length;
             const sources = pages.map((p) => toTileSource(this.services[p]));
             const loaded = this.viewer.load(sources, 0);
             this._prefetchAround(pages[pages.length - 1]);
@@ -1336,7 +1313,6 @@
         }
     }
 
-    // Per-pi cache of in-flight/resolved Promises.
     const cache = new Map();
 
     /**
@@ -1365,8 +1341,7 @@
 
         cache.set(pi, promise);
 
-        // Evict on rejection so a transient failure does not permanently poison
-        // the cache; a later call will retry. The original rejection is rethrown.
+        // Evict on failure so a transient error doesn't poison the cache; the rejection is rethrown.
         return promise.catch((e) => {
             cache.delete(pi);
             throw e;
@@ -1477,8 +1452,7 @@
                 updateIndicator();
                 viewer.onPageChange.subscribe(() => updateIndicator());
 
-                // Overview: lazy-mounted thumbnail grid overlay; clicking a thumbnail
-                // navigates in-place (no page reload) via the viewer engine.
+                // Overview: thumbnail grid overlay (lazy-mounted).
                 const gridOverlay = document.getElementById('immersiveGridOverlay');
                 let gridMounted = false;
                 const gridActions = new rxjs.Subject();
@@ -1494,7 +1468,6 @@
                     gridOverlay.hidden = !opening;
                     if (opening && !gridMounted) {
                         riot.mount('#immersiveThumbnails', 'thumbnails', {
-                            // IIIF v2 manifest (sequences[0].canvases); 'items' would be v3.
                             source: `${apiBase}/records/${pi}/manifest`,
                             type: 'sequence',
                             actionlistener: gridActions,
@@ -1525,7 +1498,7 @@
                     });
                 });
 
-                // Left slide-out panels (TOC / in-work search): toggle, one open at a time.
+                // Left slide-out panels (TOC / search).
                 document.querySelectorAll('[data-immersive-panel]').forEach((btn) => {
                     btn.addEventListener('click', () => {
                         const panel = document.getElementById(btn.dataset.immersivePanel);

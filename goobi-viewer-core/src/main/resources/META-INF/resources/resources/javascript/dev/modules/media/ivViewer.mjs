@@ -1,9 +1,5 @@
 import { computeSpread, residentPages } from './iv_imageWindow.mjs';
 
-// ---------------------------------------------------------------------------
-// Module helpers
-// ---------------------------------------------------------------------------
-
 /** Minimal dependency-free event emitter (rxjs-compatible `subscribe` shape). */
 export class Emitter {
     constructor() {
@@ -18,12 +14,12 @@ export class Emitter {
     }
 }
 
-/** IIIF image-service base id -> OSD tile source (its info.json URL). */
+/** Maps a IIIF image-service base id to an OSD tile source (its info.json URL). */
 function toTileSource(serviceId) {
     return serviceId.endsWith('/info.json') ? serviceId : `${serviceId}/info.json`;
 }
 
-/** Tweens one TiledImage's opacity 0->1 while fading another 1->0 (rAF). */
+/** Tweens one TiledImage's opacity 0→1 while fading another 1→0 (rAF). */
 function _crossfade(incoming, outgoing, durationMs) {
     return new Promise((resolve) => {
         let start = null;
@@ -51,23 +47,15 @@ function _heightBand(rect) {
     return band;
 }
 
-// Single-image sequence config (mirrors zoomableImage.mjs). _arrangeImageSequence
-// reads it on every open(), so it must be present even when loading one image.
+/** Single-image sequence config (mirrors zoomableImage.mjs); _arrangeImageSequence reads it on every open(). */
 const _sequence = { columns: 1, useWindowing: true, windowSize: 100, windowExpandThreshold: 10, windowExpandSize: 50 };
 const PREFETCH_RADIUS = 1;
 
-// ---------------------------------------------------------------------------
-// Engine
-// ---------------------------------------------------------------------------
-
 /**
  * Immersive image viewer engine around a single live ImageView.Image (OSD).
- *
- * Navigation is flicker-free: instead of reloading OSD per page, the target page
- * is preloaded as a hidden tiled image and faded in over the current one. Double
- * pages are composed by the library (columns:2) and transitioned with a snapshot
- * crossfade. Knows nothing about buttons/URLs/overlays — consumers subscribe to
- * `onPageChange` / `onLoaded`.
+ * Single pages are swapped flicker-free by fading in a preloaded neighbour; double
+ * pages are composed by the library and transitioned with a snapshot crossfade.
+ * Consumers subscribe to `onPageChange` / `onLoaded`.
  */
 export default class IvViewer {
     /**
@@ -82,21 +70,17 @@ export default class IvViewer {
         this.total = opts.services.length;
         this.current = Math.max(0, Math.min(opts.startOrder ?? 0, this.total - 1));
         this.double = false;
-        this.currentItem = null; // the visible single-page TiledImage
-        this._anchor = null; // constant single-page fitBounds anchor — keeps every page at the same size/position
-        this._preloaded = new Map(); // page order -> Promise<TiledImage>
-        this._navigating = false; // guards against overlapping transitions
-        // crossfade duration; 0 (instant, still flicker-free) when the user prefers reduced motion
+        this.currentItem = null;
+        this._anchor = null;
+        this._preloaded = new Map();
+        this._navigating = false;
         this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 160;
         this.onPageChange = new Emitter();
         this.onLoaded = new Emitter();
 
         this.viewer = new ImageView.Image({
             element: opts.element,
-            // 'fixed' = contain-fit the whole page in the full-bleed viewport (like fullscreen);
-            // 'toWidth' would blow the page up in this wide container.
             fittingMode: 'fixed',
-            // Inset so the page sits framed on the dark stage, clear of the overlay chrome.
             margins: { top: 64, bottom: 72, left: 64, right: 64 },
             zoom: { enabled: true, max: opts.maxZoom },
             sequence: _sequence,
@@ -111,7 +95,7 @@ export default class IvViewer {
         });
     }
 
-    // --- state -------------------------------------------------------------
+    // --- state ---
 
     getCurrentOrder() {
         return this.current;
@@ -130,7 +114,7 @@ export default class IvViewer {
         return this.double ? computeSpread(this.current, this.total) : [this.current];
     }
 
-    // --- navigation --------------------------------------------------------
+    // --- navigation ---
 
     /** Navigate to the page/spread containing `order` (snaps to the spread leader in double mode). */
     goToPage(order) {
@@ -155,11 +139,10 @@ export default class IvViewer {
     }
 
     prev() {
-        // -1 lands in the previous spread; goToPage snaps it to that spread's leader.
         this.goToPage(this.current - 1);
     }
 
-    // --- view controls -----------------------------------------------------
+    // --- view controls ---
 
     zoomIn() {
         this.zoom.zoomBy(1.5);
@@ -177,9 +160,9 @@ export default class IvViewer {
         this.rotation.rotateRight();
     }
 
+    /** Resets rotation and zoom to fit the whole page (whole spread in double mode). */
     resetView() {
         this.rotation.rotateTo(0);
-        // double mode holds two images in the world -> fit the whole world, not one image
         if (this.double) {
             this.viewer.openseadragon.viewport.goHome(true);
         } else {
@@ -187,7 +170,7 @@ export default class IvViewer {
         }
     }
 
-    /** Toggle book-spread mode and re-open at the current position. Returns the new state. */
+    /** Toggles book-spread mode and re-opens at the current position. Returns the new state. */
     toggleDoublePage() {
         this.double = !this.double;
         this.current = this.getCurrentPages()[0];
@@ -195,7 +178,7 @@ export default class IvViewer {
         return this.double;
     }
 
-    // --- single-page crossfade ---------------------------------------------
+    // --- single-page crossfade ---
 
     /**
      * Single-page navigation: fade the (preloaded or freshly added) target page in
@@ -223,7 +206,7 @@ export default class IvViewer {
     /**
      * Returns a cached promise for the TiledImage of `order`, adding it hidden and
      * preloaded (at `bounds`) if not already present/in-flight. Caching by order lets
-     * an in-flight preload and an on-demand navigation share one image. Resolves as
+     * an in-flight preload and an on-demand navigation share one image; it resolves as
      * soon as the image is added (not when fully loaded).
      */
     _acquire(order, bounds) {
@@ -290,7 +273,7 @@ export default class IvViewer {
         }
     }
 
-    // --- double-page spread (snapshot crossfade) ---------------------------
+    // --- double-page spread (snapshot crossfade) ---
 
     /**
      * Double-page navigation: freeze the current spread as a snapshot overlay, let the
@@ -368,7 +351,7 @@ export default class IvViewer {
         }
     }
 
-    // --- loading -----------------------------------------------------------
+    // --- loading ---
 
     /**
      * Loads the page(s) for `order` via the library (a single page, or a columns:2
@@ -377,7 +360,7 @@ export default class IvViewer {
      */
     _open(order) {
         const pages = this.double ? computeSpread(order, this.total) : [order];
-        this.viewer.config.sequence.columns = pages.length; // read at open() by _arrangeImageSequence
+        this.viewer.config.sequence.columns = pages.length;
         const sources = pages.map((p) => toTileSource(this.services[p]));
         const loaded = this.viewer.load(sources, 0);
         this._prefetchAround(pages[pages.length - 1]);

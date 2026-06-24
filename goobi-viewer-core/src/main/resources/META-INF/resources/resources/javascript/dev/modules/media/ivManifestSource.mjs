@@ -1,6 +1,5 @@
 import { parseManifestImageServices } from './iv_imageWindow.mjs';
 
-// Per-pi cache of in-flight/resolved Promises.
 const cache = new Map();
 
 /**
@@ -29,8 +28,7 @@ export function loadPageServices(pi, apiBase, fetchFn = fetch) {
 
     cache.set(pi, promise);
 
-    // Evict on rejection so a transient failure does not permanently poison
-    // the cache; a later call will retry. The original rejection is rethrown.
+    // Evict on failure so a transient error doesn't poison the cache; the rejection is rethrown.
     return promise.catch((e) => {
         cache.delete(pi);
         throw e;

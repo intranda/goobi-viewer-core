@@ -62,8 +62,7 @@ function initImmersiveViewer(el) {
             updateIndicator();
             viewer.onPageChange.subscribe(() => updateIndicator());
 
-            // Overview: lazy-mounted thumbnail grid overlay; clicking a thumbnail
-            // navigates in-place (no page reload) via the viewer engine.
+            // Overview: thumbnail grid overlay (lazy-mounted).
             const gridOverlay = document.getElementById('immersiveGridOverlay');
             let gridMounted = false;
             const gridActions = new rxjs.Subject();
@@ -79,7 +78,6 @@ function initImmersiveViewer(el) {
                 gridOverlay.hidden = !opening;
                 if (opening && !gridMounted) {
                     riot.mount('#immersiveThumbnails', 'thumbnails', {
-                        // IIIF v2 manifest (sequences[0].canvases); 'items' would be v3.
                         source: `${apiBase}/records/${pi}/manifest`,
                         type: 'sequence',
                         actionlistener: gridActions,
@@ -110,7 +108,7 @@ function initImmersiveViewer(el) {
                 });
             });
 
-            // Left slide-out panels (TOC / in-work search): toggle, one open at a time.
+            // Left slide-out panels (TOC / search).
             document.querySelectorAll('[data-immersive-panel]').forEach((btn) => {
                 btn.addEventListener('click', () => {
                     const panel = document.getElementById(btn.dataset.immersivePanel);
