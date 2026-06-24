@@ -104,3 +104,25 @@ export function computeWindow(currentIndex, total, windowSize) {
 
     return { start, end, indexInWindow: currentIndex - start };
 }
+
+/**
+ * Returns the 0-based page indices shown together for the spread that contains
+ * `order`. Book layout (LTR): the cover (page 0) stands alone, then pages are
+ * paired (1,2),(3,4),… An odd final page stands alone. Pure + tested.
+ *
+ * @param {number} order  0-based page index
+ * @param {number} total  total page count
+ * @param {{coverAlone?:boolean}} [opts]
+ * @returns {number[]} one or two page indices, ascending
+ */
+export function computeSpread(order, total, { coverAlone = true } = {}) {
+    const o = Math.max(0, Math.min(order, total - 1));
+    let leader;
+    if (coverAlone) {
+        if (o === 0) return [0];
+        leader = 1 + 2 * Math.floor((o - 1) / 2);
+    } else {
+        leader = o - (o % 2);
+    }
+    return leader + 1 <= total - 1 ? [leader, leader + 1] : [leader];
+}

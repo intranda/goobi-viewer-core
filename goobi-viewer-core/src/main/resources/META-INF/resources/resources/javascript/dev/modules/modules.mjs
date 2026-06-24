@@ -53,11 +53,14 @@ function initImmersiveViewer(el) {
 
             const indicator = document.getElementById('immersivePageIndicator');
             const total = viewer.getPageCount();
-            const updateIndicator = (order) => {
-                if (indicator) indicator.textContent = `${order + 1} / ${total}`;
+            const updateIndicator = () => {
+                if (!indicator) return;
+                const pages = viewer.getCurrentPages().map((p) => p + 1);
+                const label = pages.length > 1 ? `${pages[0]}–${pages[pages.length - 1]}` : `${pages[0]}`;
+                indicator.textContent = `${label} / ${total}`;
             };
-            updateIndicator(viewer.getCurrentOrder());
-            viewer.onPageChange.subscribe(updateIndicator);
+            updateIndicator();
+            viewer.onPageChange.subscribe(() => updateIndicator());
 
             // Overview: lazy-mounted thumbnail grid overlay; clicking a thumbnail
             // navigates in-place (no page reload) via the viewer engine.
@@ -99,6 +102,11 @@ function initImmersiveViewer(el) {
                     else if (action === 'reset') viewer.resetView();
                     else if (action === 'fullscreen') toggleImmersiveFullscreen();
                     else if (action === 'overview') toggleGrid();
+                    else if (action === 'double-page') {
+                        const on = viewer.toggleDoublePage();
+                        btn.setAttribute('aria-pressed', String(on));
+                        btn.classList.toggle('immersive__tool-btn--active', on);
+                    }
                 });
             });
 

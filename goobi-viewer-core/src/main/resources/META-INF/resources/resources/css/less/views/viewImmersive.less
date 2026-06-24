@@ -133,8 +133,26 @@
         }
     }
 
+    &__toolbar-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        align-self: stretch;
+        gap: @immersiveToolbarInnerGap;
+
+        & + & {
+            padding-top: @immersiveToolbarInnerGap;
+            border-top: 1px solid @immersiveToolbarDivider;
+        }
+    }
+
     &__tool-btn {
         .mx-immersive-icon-btn();
+    }
+
+    &__tool-btn--active {
+        background-color: @immersiveToolbarBg;
+        color: @immersiveAccent;
     }
 
     &__tool-icon {
@@ -214,6 +232,17 @@
         padding: 0 @immersiveGapSmall;
         .mx-immersive-floating();
         transform: translateX(-50%);
+    }
+
+    &__bottombar-group {
+        display: flex;
+        align-items: center;
+        gap: @immersiveToolbarPad;
+
+        & + & {
+            padding-left: @immersiveToolbarPad;
+            border-left: 1px solid @immersiveToolbarDivider;
+        }
     }
 
     &__bar-btn {

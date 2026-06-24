@@ -876,6 +876,28 @@
         return [];
     }
 
+    /**
+     * Returns the 0-based page indices shown together for the spread that contains
+     * `order`. Book layout (LTR): the cover (page 0) stands alone, then pages are
+     * paired (1,2),(3,4),… An odd final page stands alone. Pure + tested.
+     *
+     * @param {number} order  0-based page index
+     * @param {number} total  total page count
+     * @param {{coverAlone?:boolean}} [opts]
+     * @returns {number[]} one or two page indices, ascending
+     */
+    function computeSpread(order, total, { coverAlone = true } = {}) {
+        const o = Math.max(0, Math.min(order, total - 1));
+        let leader;
+        if (coverAlone) {
+            if (o === 0) return [0];
+            leader = 1 + 2 * Math.floor((o - 1) / 2);
+        } else {
+            leader = o - (o % 2);
+        }
+        return leader + 1 <= total - 1 ? [leader, leader + 1] : [leader];
+    }
+
     /** Minimal dependency-free event emitter (rxjs-compatible `subscribe` shape). */
     class Emitter {
         constructor() {
@@ -927,6 +949,7 @@
             this.services = opts.services;
             this.total = opts.services.length;
             this.current = Math.max(0, Math.min(opts.startOrder ?? 0, this.total - 1));
+            this.double = false; // double-page (book spread) mode
             this.onPageChange = new Emitter();
             this.onLoaded = new Emitter();
 
@@ -957,11 +980,35 @@
         getPageCount() {
             return this.total;
         }
+        isDoublePage() {
+            return this.double;
+        }
+
+        /** Returns the 0-based page indices currently displayed (1 or 2). */
+        getCurrentPages() {
+            return this.double ? computeSpread(this.current, this.total) : [this.current];
+        }
+
+        /**
+         * Toggles double-page mode and re-opens the spread/page for the current
+         * position. Returns the new state.
+         */
+        toggleDoublePage() {
+            this.double = !this.double;
+            this.current = this.getCurrentPages()[0]; // snap to spread leader (or keep page in single mode)
+            this._open(this.current);
+            return this.double;
+        }
         next() {
-            this.goToPage(this.current + 1);
+            if (this.double) {
+                const pages = computeSpread(this.current, this.total);
+                this.goToPage(pages[pages.length - 1] + 1);
+            } else {
+                this.goToPage(this.current + 1);
+            }
         }
         prev() {
-            this.goToPage(this.current - 1);
+            this.goToPage(this.current - 1); // -1 lands in the previous spread; goToPage snaps to its leader
         }
 
         // --- image controls (delegated to the OSD wrapper) ---
@@ -979,25 +1026,40 @@
         }
         resetView() {
             this.rotation.rotateTo(0);
-            this.zoom.goHome();
+            if (this.double) {
+                this.viewer.openseadragon.viewport.goHome(true);
+            } else {
+                this.zoom.goHome();
+            }
         }
 
         /**
-         * Navigate to a page. The viewer instance stays alive, so this is an
-         * in-place image swap (no page reload).
+         * Navigate to the spread/page containing `order`. In double-page mode the
+         * target snaps to the spread leader so paging is spread-by-spread.
          * @param {number} order 0-based page index
          */
         goToPage(order) {
             const target = Math.max(0, Math.min(order, this.total - 1));
-            if (target === this.current) return;
-            this.current = target;
-            this._open(target);
+            const leader = this.double ? computeSpread(target, this.total)[0] : target;
+            if (leader === this.current) return;
+            this.current = leader;
+            this._open(leader);
         }
 
-        /** Loads a single page and fits it; prefetches neighbours. */
+        /**
+         * Loads the page(s) for `order`. In double-page mode this loads the spread
+         * (1–2 pages) the order belongs to and arranges them side by side via the
+         * library's column layout; the column-aware Extent + homeFillsViewer fit the
+         * whole spread (margins like single mode). Single mode loads one page.
+         * The viewer instance stays alive → in-place swap, no page reload.
+         */
         _open(order) {
-            const loaded = this.viewer.load([toTileSource(this.services[order])], 0);
-            this._prefetchAround(order);
+            const pages = this.double ? computeSpread(order, this.total) : [order];
+            // columns is read at open time by _arrangeImageSequence + Extent.
+            this.viewer.config.sequence.columns = pages.length;
+            const sources = pages.map((p) => toTileSource(this.services[p]));
+            const loaded = this.viewer.load(sources, 0);
+            this._prefetchAround(pages[pages.length - 1]);
             return loaded.then(() => this._emit());
         }
 
@@ -1149,11 +1211,14 @@
 
                 const indicator = document.getElementById('immersivePageIndicator');
                 const total = viewer.getPageCount();
-                const updateIndicator = (order) => {
-                    if (indicator) indicator.textContent = `${order + 1} / ${total}`;
+                const updateIndicator = () => {
+                    if (!indicator) return;
+                    const pages = viewer.getCurrentPages().map((p) => p + 1);
+                    const label = pages.length > 1 ? `${pages[0]}–${pages[pages.length - 1]}` : `${pages[0]}`;
+                    indicator.textContent = `${label} / ${total}`;
                 };
-                updateIndicator(viewer.getCurrentOrder());
-                viewer.onPageChange.subscribe(updateIndicator);
+                updateIndicator();
+                viewer.onPageChange.subscribe(() => updateIndicator());
 
                 // Overview: lazy-mounted thumbnail grid overlay; clicking a thumbnail
                 // navigates in-place (no page reload) via the viewer engine.
@@ -1195,6 +1260,11 @@
                         else if (action === 'reset') viewer.resetView();
                         else if (action === 'fullscreen') toggleImmersiveFullscreen();
                         else if (action === 'overview') toggleGrid();
+                        else if (action === 'double-page') {
+                            const on = viewer.toggleDoublePage();
+                            btn.setAttribute('aria-pressed', String(on));
+                            btn.classList.toggle('immersive__tool-btn--active', on);
+                        }
                     });
                 });
 

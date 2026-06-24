@@ -5,7 +5,7 @@
  *   - parseManifestImageServices: extract IIIF image-service IDs from a manifest
  *   - computeWindow: compute a centered, clamped page-index window
  */
-import { parseManifestImageServices, computeWindow } from '../iv_imageWindow.mjs';
+import { parseManifestImageServices, computeWindow, computeSpread } from '../iv_imageWindow.mjs';
 
 // ---------------------------------------------------------------------------
 // parseManifestImageServices
@@ -170,5 +170,36 @@ describe('computeWindow', function () {
 
     test('windowSize === total: full range, indexInWindow equals currentIndex', function () {
         expect(computeWindow(3, 7, 7)).toEqual({ start: 0, end: 7, indexInWindow: 3 });
+    });
+});
+
+// ---------------------------------------------------------------------------
+// computeSpread — book-layout page pairing
+// ---------------------------------------------------------------------------
+
+describe('computeSpread (book layout, cover alone)', () => {
+    test('cover page stands alone', () => {
+        expect(computeSpread(0, 40)).toEqual([0]);
+    });
+    test('pairs after the cover: (1,2),(3,4)', () => {
+        expect(computeSpread(1, 40)).toEqual([1, 2]);
+        expect(computeSpread(2, 40)).toEqual([1, 2]);
+        expect(computeSpread(3, 40)).toEqual([3, 4]);
+        expect(computeSpread(4, 40)).toEqual([3, 4]);
+    });
+    test('odd final page stands alone', () => {
+        // pages 0..3 -> [0],[1,2],[3]
+        expect(computeSpread(3, 4)).toEqual([3]);
+    });
+    test('even final page is paired', () => {
+        // pages 0..4 -> [0],[1,2],[3,4]
+        expect(computeSpread(4, 5)).toEqual([3, 4]);
+    });
+    test('clamps out-of-range order', () => {
+        expect(computeSpread(99, 40)).toEqual([39]);
+    });
+    test('coverAlone:false pairs from the start', () => {
+        expect(computeSpread(0, 40, { coverAlone: false })).toEqual([0, 1]);
+        expect(computeSpread(2, 40, { coverAlone: false })).toEqual([2, 3]);
     });
 });
