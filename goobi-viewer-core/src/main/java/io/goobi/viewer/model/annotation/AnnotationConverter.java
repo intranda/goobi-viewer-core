@@ -54,6 +54,7 @@ import de.intranda.api.annotation.ISelector;
 import de.intranda.api.annotation.SimpleResource;
 import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.wa.Agent;
+import de.intranda.api.annotation.wa.Dataset;
 import de.intranda.api.annotation.wa.FragmentSelector;
 import de.intranda.api.annotation.wa.SpecificResource;
 import de.intranda.api.annotation.wa.TextualResource;
@@ -209,6 +210,8 @@ public class AnnotationConverter {
                     return mapper.readValue(anno.getBody(), GeoLocation.class);
                 case "AuthorityResource":
                     return mapper.readValue(anno.getBody(), TypedResource.class);
+                case "Dataset":
+                    return mapper.readValue(anno.getBody(), Dataset.class);
                 case "TextualBody":
                 default:
                     return getBodyAsTextualResource(anno.getBody(), mapper);
