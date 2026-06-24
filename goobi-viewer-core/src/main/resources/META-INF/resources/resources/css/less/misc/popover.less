@@ -82,6 +82,26 @@ imageFilters {
     }
 }
 
+/* Social-media share widget rendered as popover content (e.g. immersive view).
+   The shared widget ships no icon sizing; fsShare.less only covers the inline
+   fullscreen variant, so size the SVG logos here for the portaled popover. */
+.popover .widget-social-media {
+    &__links-wrapper {
+        display: flex;
+        gap: 15px;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        img {
+            width: 40px;
+            max-height: 60px;
+        }
+    }
+    &__link {
+        display: flex;
+    }
+}
+
 .page-content__sidebar {
     .popover {
         z-index: 2050;
