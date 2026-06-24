@@ -303,6 +303,23 @@
                             svgClass="immersive__bar-icon" />
                     </button>
                 </div>
+                <!-- FILTER: image adjustments (reused imageFilters riot tag in a popover) -->
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
+                    <div class="immersive__bottombar-group">
+                        <button
+                            type="button"
+                            class="immersive__bar-btn"
+                            data-popover-element="#immersiveFilterPopover"
+                            data-popover-placement="top"
+                            data-popover-dismiss="click-outside"
+                            title="#{msg.label__image_filter_toolkit}"
+                            aria-label="#{msg.label__image_filter_toolkit}">
+                            <util:icon
+                                icon="adjustments"
+                                svgClass="immersive__bar-icon" />
+                        </button>
+                    </div>
+                </ui:fragment>
             </div>
 
             <!-- Overview thumbnail grid overlay (lazy-mounted riot tag) -->
@@ -361,6 +378,12 @@
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
             <popover id="immersiveCitationPopover">
                 <widgetComponent:widget_citation id="immersiveCitationWidget" />
+            </popover>
+        </ui:fragment>
+        <!-- FILTER popover: reused imageFilters riot tag (mounted by modules.mjs) -->
+        <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
+            <popover id="immersiveFilterPopover">
+                <imageFilters />
             </popover>
         </ui:fragment>
     </div>

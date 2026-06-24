@@ -1440,6 +1440,7 @@
                 const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
                 window.ivViewer = viewer;
                 attachUrlSync(viewer, pi);
+                viewer.onLoaded.subscribe(() => mountImageFilters(viewer));
 
                 const indicator = document.getElementById('immersivePageIndicator');
                 const total = viewer.getPageCount();
@@ -1516,6 +1517,23 @@
                 });
             })
             .catch((e) => console.error('immersive viewer init failed', e));
+    }
+
+    /**
+     * Mounts the reused imageFilters riot tag on the viewer's live ImageView.Image so the
+     * Filter popover adjusts brightness/contrast/etc. Pixel filters need an origin-clean
+     * canvas (CORS); if the tiles taint it, the Filter button is hidden instead.
+     */
+    function mountImageFilters(viewer) {
+        const btn = document.querySelector('[data-popover-element="#immersiveFilterPopover"]');
+        if (!btn || !document.querySelector('imageFilters') || !window.immersiveFilterConfig) return;
+        const image = viewer.viewer;
+        const originClean = typeof image.isOriginClean !== 'function' || image.isOriginClean();
+        if (originClean) {
+            riot.mount('imageFilters', { image, config: window.immersiveFilterConfig });
+        } else {
+            btn.hidden = true;
+        }
     }
 
     /** Toggles native browser fullscreen on the immersive viewer hero (H3 = real fullscreen, Esc exits). */
