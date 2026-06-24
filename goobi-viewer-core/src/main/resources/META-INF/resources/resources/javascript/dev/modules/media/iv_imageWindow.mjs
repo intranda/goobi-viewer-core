@@ -126,3 +126,33 @@ export function computeSpread(order, total, { coverAlone = true } = {}) {
     }
     return leader + 1 <= total - 1 ? [leader, leader + 1] : [leader];
 }
+
+/**
+ * Page indices that make up the frame containing `order`.
+ * Single mode: [order]. Double mode: the spread (computeSpread). Pure.
+ *
+ * @param {number} order  0-based page index
+ * @param {number} total  total page count
+ * @param {{double?:boolean}} [opts]
+ * @returns {number[]} one or two page indices, ascending
+ */
+export function framePages(order, total, { double = false } = {}) {
+    const o = Math.max(0, Math.min(order, total - 1));
+    return double ? computeSpread(o, total) : [o];
+}
+
+/**
+ * Page indices to keep resident (current frame + the immediately adjacent
+ * frames) so neighbour navigation is instant. Deduped, ascending, in range. Pure.
+ *
+ * @param {number} order  0-based page index
+ * @param {number} total  total page count
+ * @param {{double?:boolean}} [opts]
+ * @returns {number[]} sorted, deduplicated page indices
+ */
+export function residentPages(order, total, { double = false } = {}) {
+    const here = framePages(order, total, { double });
+    const prev = framePages(here[0] - 1, total, { double });
+    const next = framePages(here[here.length - 1] + 1, total, { double });
+    return [...new Set([...prev, ...here, ...next])].filter((p) => p >= 0 && p < total).sort((a, b) => a - b);
+}

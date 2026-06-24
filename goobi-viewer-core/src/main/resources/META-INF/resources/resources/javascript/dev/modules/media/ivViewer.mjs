@@ -1,4 +1,4 @@
-import { computeWindow, computeSpread } from './iv_imageWindow.mjs';
+import { computeWindow, computeSpread, residentPages } from './iv_imageWindow.mjs';
 
 /** Minimal dependency-free event emitter (rxjs-compatible `subscribe` shape). */
 export class Emitter {
@@ -17,6 +17,35 @@ export class Emitter {
 /** Maps a IIIF image-service base id to an OSD tile source (its info.json URL). */
 function toTileSource(serviceId) {
     return serviceId.endsWith('/info.json') ? serviceId : `${serviceId}/info.json`;
+}
+
+/** Animates opacity of OSD TiledImages from 0→1 (incoming) and 1→0 (outgoing) over durationMs via rAF. */
+function _crossfade(incoming, outgoing, durationMs) {
+    return new Promise((resolve) => {
+        let start = null;
+        const step = (ts) => {
+            if (start === null) start = ts;
+            const t = durationMs <= 0 ? 1 : Math.min(1, (ts - start) / durationMs);
+            if (incoming) incoming.setOpacity(t);
+            if (outgoing) outgoing.setOpacity(1 - t);
+            if (t < 1) requestAnimationFrame(step);
+            else resolve();
+        };
+        requestAnimationFrame(step);
+    });
+}
+
+/**
+ * Widens a bounds rect into a tall band: same y and height, 3x width, same centre.
+ * Used as a fitBounds anchor so OSD constrains the image by HEIGHT (the band is wide
+ * enough that width never constrains) — pages of differing scan aspect then render at
+ * a uniform height, vertically centred, so paging never jumps vertically.
+ */
+function _heightBand(rect) {
+    const band = rect.clone();
+    band.x = rect.x - rect.width;
+    band.width = rect.width * 3;
+    return band;
 }
 
 /**
@@ -70,6 +99,16 @@ export default class IvViewer {
         this.total = opts.services.length;
         this.current = Math.max(0, Math.min(opts.startOrder ?? 0, this.total - 1));
         this.double = false; // double-page (book spread) mode
+        this._preloaded = new Map(); // page order -> Promise<TiledImage> (in-flight or settled)
+        // crossfade duration; honour prefers-reduced-motion (no fade, but still a
+        // preloaded -> flicker-free hard swap)
+        this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 160;
+        this._navigating = false; // guard against overlapping crossfades
+        this.currentItem = null; // the visible single-page TiledImage (single mode)
+        // Constant fit anchor captured from the initial load-based (correctly fit) page.
+        // Every crossfaded page is fit into the SAME anchor so pages of slightly different
+        // scan size stay centered at the same position (no jump).
+        this._anchor = null; // OpenSeadragon.Rect for single-page fit
         this.onPageChange = new Emitter();
         this.onLoaded = new Emitter();
 
@@ -91,7 +130,10 @@ export default class IvViewer {
         this.zoom = new ImageView.Controls.Zoom(this.viewer);
         this.rotation = new ImageView.Controls.Rotation(this.viewer);
 
-        this._open(this.current).then(() => this.onLoaded.emit(this.current));
+        this._open(this.current).then(() => {
+            this._refreshPreload();
+            this.onLoaded.emit(this.current);
+        });
     }
 
     getCurrentOrder() {
@@ -160,10 +202,195 @@ export default class IvViewer {
      */
     goToPage(order) {
         const target = Math.max(0, Math.min(order, this.total - 1));
-        const leader = this.double ? computeSpread(target, this.total)[0] : target;
-        if (leader === this.current) return;
+        if (this.double) {
+            const leader = computeSpread(target, this.total)[0];
+            if (leader === this.current) return;
+            this._navigateSpread(leader);
+            return;
+        }
+        if (target === this.current) return;
+        this._crossfadeTo(target);
+    }
+
+    /**
+     * Double-page spread navigation, flicker-free without hand-placing images:
+     * freeze the current spread as a pixel snapshot overlay, let the library
+     * re-compose the new spread cleanly (columns:2) underneath, then fade the
+     * snapshot out. Neighbour spreads are tile-prewarmed so the new spread is
+     * sharp almost immediately.
+     */
+    async _navigateSpread(leader) {
+        if (this._navigating) return;
+        this._navigating = true;
+        const overlay = this._snapshotOverlay();
         this.current = leader;
-        this._open(leader);
+        try {
+            await this._open(leader); // resolves on first tile of the recomposed spread
+            this._fadeOverlay(overlay);
+            this._prewarmSpreads();
+        } catch (e) {
+            if (overlay) overlay.remove();
+        } finally {
+            this._navigating = false;
+        }
+    }
+
+    /**
+     * Copies the current OSD canvas into an opacity overlay covering the viewer,
+     * so a fresh load() underneath stays hidden until the overlay is faded out.
+     * Uses canvas drawImage (not toDataURL) so cross-origin IIIF tiles don't taint.
+     */
+    _snapshotOverlay() {
+        const osd = this.viewer.openseadragon;
+        const src = osd.drawer && osd.drawer.canvas;
+        const host = this.viewer.element;
+        if (!src || !host) return null;
+        const overlay = document.createElement('canvas');
+        overlay.width = src.width;
+        overlay.height = src.height;
+        overlay.className = 'immersive__xfade';
+        overlay.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;';
+        try {
+            overlay.getContext('2d').drawImage(src, 0, 0);
+        } catch (e) {
+            return null;
+        }
+        if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+        host.appendChild(overlay);
+        return overlay;
+    }
+
+    /** Fades an overlay element to transparent over _fadeMs, then removes it. */
+    _fadeOverlay(overlay) {
+        if (!overlay) return;
+        let start = null;
+        const dur = this._fadeMs;
+        const step = (ts) => {
+            if (start === null) start = ts;
+            const t = dur <= 0 ? 1 : Math.min(1, (ts - start) / dur);
+            overlay.style.opacity = String(1 - t);
+            if (t < 1) requestAnimationFrame(step);
+            else overlay.remove();
+        };
+        requestAnimationFrame(step);
+    }
+
+    /**
+     * Warms OSD's tile cache for the adjacent spreads (hidden preloaded images)
+     * so the next spread's load() renders almost immediately. The temp images are
+     * invisible and get cleared by the next open(); their tiles stay cached.
+     */
+    _prewarmSpreads() {
+        const here = computeSpread(this.current, this.total);
+        const neighbours = [...computeSpread(here[0] - 1, this.total), ...computeSpread(here[here.length - 1] + 1, this.total)];
+        const osd = this.viewer.openseadragon;
+        for (const p of new Set(neighbours)) {
+            if (p < 0 || p >= this.total || here.includes(p)) continue;
+            osd.addTiledImage({ tileSource: toTileSource(this.services[p]), opacity: 0, preload: true });
+        }
+    }
+
+    /**
+     * Returns a cached promise for the TiledImage of `order`, adding it as a
+     * hidden, preloaded image (coincident via fitBounds) if not already present
+     * or in-flight. The promise is stored in _preloaded keyed by order, so an
+     * in-flight preload and an on-demand navigation share ONE world image (no
+     * duplicate). Resolves as soon as the image is ADDED (not when fully loaded).
+     */
+    _acquire(order, bounds) {
+        if (this._preloaded.has(order)) return this._preloaded.get(order);
+        const osd = this.viewer.openseadragon;
+        const anchor = bounds || (this.currentItem ? this.currentItem.getBounds() : undefined);
+        const p = new Promise((resolve, reject) => {
+            osd.addTiledImage({
+                tileSource: toTileSource(this.services[order]),
+                opacity: 0,
+                preload: true,
+                fitBounds: anchor,
+                success: (e) => resolve(e.item),
+                error: reject,
+            });
+        });
+        this._preloaded.set(order, p);
+        return p;
+    }
+
+    /**
+     * Resolves when the tiled image has rendered its first (low-res) tile, or is
+     * already fully loaded — so we crossfade to visible content (never to blank)
+     * without waiting for the full-resolution load.
+     */
+    _whenContent(item) {
+        if (item.getFullyLoaded()) return Promise.resolve();
+        const osd = this.viewer.openseadragon;
+        return new Promise((resolve) => {
+            let done = false;
+            const finish = () => {
+                if (done) return;
+                done = true;
+                osd.removeHandler('tile-loaded', onTile);
+                item.removeHandler('fully-loaded-change', onFull);
+                resolve();
+            };
+            const onTile = (e) => {
+                if (e.tiledImage === item) finish();
+            };
+            const onFull = (ev) => {
+                if (ev.fullyLoaded) finish();
+            };
+            osd.addHandler('tile-loaded', onTile);
+            item.addHandler('fully-loaded-change', onFull);
+        });
+    }
+
+    /**
+     * Single-page navigation via crossfade: ensure the target image (preloaded or
+     * freshly added, coincident), fade it in while fading the current out, remove
+     * the old. No reload, no blank, no positional jump.
+     */
+    async _crossfadeTo(target) {
+        if (this._navigating) return;
+        this._navigating = true;
+        try {
+            const previous = this.currentItem;
+            this.current = target;
+            const item = await this._acquire(target, this._anchor);
+            this._preloaded.delete(target); // it is becoming the visible page
+            await this._whenContent(item);
+            await _crossfade(item, previous, this._fadeMs);
+            if (previous) this.viewer.openseadragon.world.removeItem(previous);
+            this.currentItem = item;
+            this._emit();
+            this._refreshPreload();
+        } finally {
+            this._navigating = false;
+        }
+    }
+
+    /**
+     * Keeps the resident neighbour pages (±1 frame) preloaded as hidden coincident
+     * images and evicts everything else, so neighbour paging is instant and memory
+     * stays bounded. Single-page (crossfade) path only.
+     */
+    _refreshPreload() {
+        const resident = () => residentPages(this.current, this.total, { double: this.double });
+        const keep = new Set(resident());
+        for (const order of keep) {
+            if (order === this.current) continue;
+            if (!this._preloaded.has(order)) {
+                this._acquire(order, this._anchor); // fire-and-forget; same constant anchor
+            }
+        }
+        for (const [order, p] of this._preloaded) {
+            if (!keep.has(order)) {
+                p.then((item) => {
+                    try {
+                        this.viewer.openseadragon.world.removeItem(item);
+                    } catch (e) {}
+                }).catch(() => {});
+                this._preloaded.delete(order);
+            }
+        }
     }
 
     /**
@@ -180,7 +407,17 @@ export default class IvViewer {
         const sources = pages.map((p) => toTileSource(this.services[p]));
         const loaded = this.viewer.load(sources, 0);
         this._prefetchAround(pages[pages.length - 1]);
-        return loaded.then(() => this._emit());
+        return loaded.then(() => {
+            const world = this.viewer.openseadragon.world;
+            this.currentItem = world.getItemAt(0);
+            // single-page constant height-band anchor so crossfaded pages keep a
+            // uniform height / stable vertical position (see _heightBand)
+            if (!this.double && this.currentItem) {
+                this._anchor = _heightBand(this.currentItem.getBounds());
+            }
+            this._preloaded.clear();
+            this._emit();
+        });
     }
 
     /** Warms neighbour info.json in the browser cache so the next swap is fast. */
