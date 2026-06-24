@@ -898,7 +898,9 @@
                                                     <div class="admin__form-help-text in mb-2">#{msg.admin__crowdsourcing_campaign_show_log__help}</div>
                                                     <div class="d-flex justify-content-between">
                                                         <label>#{msg.admin__crowdsourcing_campaign_show_log}:</label>
-                                                        <viewerComponent:toggleSwitch value="#{crowdsourcingBean.selectedCampaign.showLog}" />
+                                                        <viewerComponent:toggleSwitch
+                                                            name="toggleLogging"
+                                                            value="#{crowdsourcingBean.selectedCampaign.showLog}" />
                                                     </div>
                                                 </div>
                                             </div>
