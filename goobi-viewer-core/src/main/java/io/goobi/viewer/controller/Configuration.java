@@ -3456,13 +3456,48 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns a list containing all simple facet fields.
+     * Returns a list containing all simple facet fields of the {@code _DEFAULT} facet template (the sidebar facet set).
      *
      * @should return correct order
      * @return a list of all configured facet field names
      */
     public List<String> getAllFacetFields() {
-        return getLocalList("search.facets.field");
+        return getFacetFieldsForTemplate(StringConstants.DEFAULT_NAME);
+    }
+
+    /**
+     * Returns the {@code <field>} names configured in the named {@code <facets><template>} block. Falls back to the {@code _DEFAULT} template if the
+     * requested template is not present.
+     *
+     * @param templateName name of the facet template to read
+     * @return ordered list of facet field names; empty list if neither the named nor the {@code _DEFAULT} template exist
+     */
+    public List<String> getFacetFieldsForTemplate(String templateName) {
+        List<String> ret = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> fieldConfig : getFacetFieldConfigsForTemplate(templateName, "field")) {
+            String field = fieldConfig.getString(".", "");
+            if (StringUtils.isNotBlank(field)) {
+                ret.add(field);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Returns the {@code <field>}/{@code <hierarchicalField>} (etc.) sub-configurations of the named facet template, selected via
+     * {@link #selectTemplate(List, String, boolean)} with {@code _DEFAULT} fallback.
+     *
+     * @param templateName name of the facet template to read
+     * @param elementName facet element name within the template (e.g. {@code field}, {@code hierarchicalField})
+     * @return list of matching sub-configurations; empty list if the template is absent
+     */
+    private List<HierarchicalConfiguration<ImmutableNode>> getFacetFieldConfigsForTemplate(String templateName, String elementName) {
+        List<HierarchicalConfiguration<ImmutableNode>> templates = getLocalConfigurationsAt("search.facets.template");
+        HierarchicalConfiguration<ImmutableNode> template = selectTemplate(templates, templateName, true);
+        if (template == null) {
+            return Collections.emptyList();
+        }
+        return template.configurationsAt(elementName);
     }
 
     /**
@@ -3694,7 +3729,18 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
-        String value = getPropertyForFacetField(facetField, "[@translateLabels]", "true");
+        return isTranslateFacetFieldLabels(StringConstants.DEFAULT_NAME, facetField);
+    }
+
+    /**
+     * Template-aware variant of {@link #isTranslateFacetFieldLabels(String)}.
+     *
+     * @param templateName name of the facet template to read
+     * @param facetField facet field name to look up
+     * @return whether facet value labels for the given field should be translated
+     */
+    public boolean isTranslateFacetFieldLabels(String templateName, String facetField) {
+        String value = getPropertyForFacetField(templateName, facetField, "[@translateLabels]", "true");
         return Boolean.parseBoolean(value);
     }
 
@@ -3778,6 +3824,21 @@ public class Configuration extends AbstractConfiguration {
      * @should return default value for blank facet field without populating cache
      */
     String getPropertyForFacetField(String facetField, String property, String defaultValue) {
+        return getPropertyForFacetField(StringConstants.DEFAULT_NAME, facetField, property, defaultValue);
+    }
+
+    /**
+     * Template-aware variant of {@link #getPropertyForFacetField(String, String, String)}. Resolves the property from the {@code <field>} entry
+     * within the named {@code <facets><template>} block, so the same Solr field may carry different attributes in different templates (e.g. the
+     * sidebar {@code _DEFAULT} set vs. a quick-filter set).
+     *
+     * @param templateName name of the facet template to read
+     * @param facetField Facet field
+     * @param property Element or attribute name to check
+     * @param defaultValue Value that is returned if none was found
+     * @return Found value or defaultValue
+     */
+    String getPropertyForFacetField(String templateName, String facetField, String property, String defaultValue) {
         if (StringUtils.isBlank(facetField)) {
             return defaultValue;
         }
@@ -3788,13 +3849,13 @@ public class Configuration extends AbstractConfiguration {
         // ASCII Unit Separator (US, 0x1F): an explicit, non-printable separator that cannot occur
         // in a Solr field name or XML attribute path, so the concatenated cache key is unambiguous
         // even when facetField/property contain spaces or other punctuation.
-        String cacheKey = facetField + '\u001F' + property;
+        String cacheKey = templateName + '\u001F' + facetField + '\u001F' + property;
         // computeIfAbsent collapses the previous get/null-check/put into a single atomic call:
         // it preserves the negative-caching semantics (the resolver may return Optional.empty(), which
         // is stored and short-circuits later lookups) and prevents duplicate resolves when concurrent
         // threads hit the same missing key. S2789 false positive on the prior null-check is gone.
         Optional<String> cached = facetFieldPropertyCache.computeIfAbsent(cacheKey,
-                k -> resolveFacetFieldProperty(facetField, property));
+                k -> resolveFacetFieldProperty(templateName, facetField, property));
         return cached.orElse(defaultValue);
     }
 
@@ -3807,27 +3868,13 @@ public class Configuration extends AbstractConfiguration {
      * @return present {@link Optional} with the XML value if a matching field node exposes this property; empty {@link Optional} otherwise (caller
      *         applies default)
      */
-    private Optional<String> resolveFacetFieldProperty(String facetField, String property) {
+    private Optional<String> resolveFacetFieldProperty(String templateName, String facetField, String property) {
         String facetifiedField = SearchHelper.facetifyField(facetField);
         String untokenized = facetField + SolrConstants.SUFFIX_UNTOKENIZED;
 
-        // Regular fields
-        List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
-        if (facetFields != null && !facetFields.isEmpty()) {
-            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(facetField) || untokenized.equals(nodeText) || nodeText.equals(facetifiedField)) {
-                    String ret = fieldConfig.getString(property);
-                    if (ret != null) {
-                        return Optional.of(ret);
-                    }
-                }
-            }
-        }
-        // Hierarchical fields
-        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
-        if (facetFields != null && !facetFields.isEmpty()) {
-            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
+        // Regular fields first, then hierarchical fields (legacy element name), both scoped to the selected template
+        for (String elementName : new String[] { "field", "hierarchicalField" }) {
+            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : getFacetFieldConfigsForTemplate(templateName, elementName)) {
                 String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField) || untokenized.equals(nodeText) || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
@@ -5217,35 +5264,38 @@ public class Configuration extends AbstractConfiguration {
         return SearchHelper.SEARCH_FILTER_ALL;
     }
 
-    public boolean isQuickFiltersEnabled() {
-        return getLocalBoolean("search.quickFilters[@enabled]", false);
+    /**
+     * Name of the {@code <facets><template>} block whose fields are exposed as quick filters on the simple search field.
+     *
+     * @return the configured template name; {@code _DEFAULT} if not set
+     */
+    public String getQuickFilterTemplateName() {
+        return getLocalString("search.quickFilters[@template]", StringConstants.DEFAULT_NAME);
     }
 
+    /**
+     * Builds the quick filter fields from the facet template named by {@link #getQuickFilterTemplateName()}. Range facet fields become date-range
+     * widgets; regular (untyped) facet fields become dropdowns. Hierarchical, geo and boolean facet fields are not supported as quick filters and
+     * are skipped.
+     *
+     * @return ordered list of quick filter fields
+     */
     public List<QuickFilterField> getQuickFilterFields() {
         List<QuickFilterField> result = new ArrayList<>();
-        List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("search.quickFilters.filter");
-        if (elements == null) {
-            return result;
-        }
-        for (HierarchicalConfiguration<ImmutableNode> element : elements) {
-            String typeStr = element.getString("[@type]", "");
-            String label = element.getString("[@label]", "");
-            String solrField = element.getString("[@solrField]", "");
-            QuickFilterField.Type type = QuickFilterField.Type.fromString(typeStr);
-            if (type == null) {
+        String templateName = getQuickFilterTemplateName();
+        for (String solrField : getFacetFieldsForTemplate(templateName)) {
+            String type = getPropertyForFacetField(templateName, solrField, XML_PATH_ATTRIBUTE_TYPE, "");
+            QuickFilterField.Type qfType;
+            if ("range".equalsIgnoreCase(type)) {
+                qfType = QuickFilterField.Type.DATE_RANGE;
+            } else if (StringUtils.isEmpty(type)) {
+                qfType = QuickFilterField.Type.FACET_DROPDOWN;
+            } else {
+                logger.warn("Quick filter template '{}' field '{}' has unsupported facet type '{}'; skipping.", templateName, solrField, type);
                 continue;
             }
-            QuickFilterField field = new QuickFilterField(type, label, solrField);
-            if (type == QuickFilterField.Type.CHECKBOX_GROUP) {
-                List<HierarchicalConfiguration<ImmutableNode>> valueElements = element.configurationsAt("value");
-                for (HierarchicalConfiguration<ImmutableNode> valueElement : valueElements) {
-                    String valueLabel = valueElement.getString("[@label]", "");
-                    String valueSolrField = valueElement.getString("[@solrField]", "");
-                    boolean defaultSelected = valueElement.getBoolean("[@default]", false);
-                    field.addValue(valueLabel, valueSolrField, defaultSelected);
-                }
-            }
-            result.add(field);
+            // label == Solr field name: the search field translates it via msg[field.label], like the sidebar facet widget
+            result.add(new QuickFilterField(qfType, solrField, solrField));
         }
         return result;
     }

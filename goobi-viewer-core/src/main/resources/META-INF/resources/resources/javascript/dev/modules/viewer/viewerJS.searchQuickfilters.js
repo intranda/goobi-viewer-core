@@ -339,7 +339,13 @@ var viewerJS = (function (viewer) {
         _loadingFields[field] = true;
 
         var lang = document.documentElement.lang || 'en';
-        fetch(_apiBase + '?field=' + encodeURIComponent(field) + '&lang=' + encodeURIComponent(lang))
+        var url = _apiBase + '?field=' + encodeURIComponent(field) + '&lang=' + encodeURIComponent(lang);
+        var panel = document.querySelector(_config.panelSelector);
+        var template = panel ? panel.getAttribute('data-quickfilter-template') : null;
+        if (template) {
+            url += '&template=' + encodeURIComponent(template);
+        }
+        fetch(url)
             .then(function (response) {
                 if (!response.ok) {
                     throw new Error('API not available');

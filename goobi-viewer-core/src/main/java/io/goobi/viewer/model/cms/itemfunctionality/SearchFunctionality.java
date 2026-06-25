@@ -515,11 +515,6 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     }
 
     @Override
-    public boolean isQuickFiltersEnabled() {
-        return getSearchBean().isQuickFiltersEnabled();
-    }
-
-    @Override
     public boolean isQuickFiltersOrigin() {
         return getSearchBean().isQuickFiltersOrigin();
     }
@@ -532,6 +527,11 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     @Override
     public List<QuickFilterField> getQuickFilterFields() {
         return getSearchBean().getQuickFilterFields();
+    }
+
+    @Override
+    public String getQuickFilterTemplateName() {
+        return getSearchBean().getQuickFilterTemplateName();
     }
 
     @Override
@@ -557,11 +557,6 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     @Override
     public Map<String, String> getQuickFilterValues() {
         return getSearchBean().getQuickFilterValues();
-    }
-
-    @Override
-    public Map<String, Boolean> getQuickFilterCheckboxValues() {
-        return getSearchBean().getQuickFilterCheckboxValues();
     }
 
     /* (non-Javadoc)

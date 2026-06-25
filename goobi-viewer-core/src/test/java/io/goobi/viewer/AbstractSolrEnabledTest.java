@@ -64,5 +64,9 @@ public abstract class AbstractSolrEnabledTest extends AbstractTest {
             client.close();
             client = null;
         }
+        // Replace the now-defunct (closed-client) search index in the singleton with a fresh lazy one, so a
+        // subsequent non-Solr test class does not inherit the dead index. injectSearchIndex ignores null, hence
+        // a fresh instance rather than null.
+        DataManager.getInstance().injectSearchIndex(new SolrSearchIndex(null));
     }
 }

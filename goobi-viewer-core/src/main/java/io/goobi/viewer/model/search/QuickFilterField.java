@@ -22,9 +22,6 @@
 package io.goobi.viewer.model.search;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 public class QuickFilterField implements Serializable {
@@ -33,8 +30,7 @@ public class QuickFilterField implements Serializable {
 
     public enum Type {
         DATE_RANGE("dateRange"),
-        FACET_DROPDOWN("facetDropdown"),
-        CHECKBOX_GROUP("checkboxGroup");
+        FACET_DROPDOWN("facetDropdown");
 
         private final String configValue;
 
@@ -56,46 +52,14 @@ public class QuickFilterField implements Serializable {
         }
     }
 
-    public static class CheckboxValue implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        private final String label;
-        private final String solrField;
-        private final boolean defaultSelected;
-
-        public CheckboxValue(String label, String solrField, boolean defaultSelected) {
-            this.label = label;
-            this.solrField = solrField;
-            this.defaultSelected = defaultSelected;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public String getSolrField() {
-            return solrField;
-        }
-
-        public boolean isDefaultSelected() {
-            return defaultSelected;
-        }
-    }
-
     private final Type type;
     private final String label;
     private final String solrField;
-    private final List<CheckboxValue> values = new ArrayList<>();
 
     public QuickFilterField(Type type, String label, String solrField) {
         this.type = type;
         this.label = label;
         this.solrField = solrField;
-    }
-
-    public void addValue(String valueLabel, String valueSolrField, boolean defaultSelected) {
-        values.add(new CheckboxValue(valueLabel, valueSolrField, defaultSelected));
     }
 
     public Type getType() {
@@ -108,10 +72,6 @@ public class QuickFilterField implements Serializable {
 
     public String getSolrField() {
         return solrField;
-    }
-
-    public List<CheckboxValue> getValues() {
-        return Collections.unmodifiableList(values);
     }
 
     @Override

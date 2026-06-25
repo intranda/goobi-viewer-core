@@ -3279,11 +3279,6 @@ public final class SearchHelper {
      */
     public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, SearchQueryGroup queryGroup,
             List<String> additionalFields) {
-        return getExpandQueryFieldList(searchType, searchFilter, queryGroup, additionalFields, null);
-    }
-
-    public static List<String> getExpandQueryFieldList(int searchType, SearchFilter searchFilter, SearchQueryGroup queryGroup,
-            List<String> additionalFields, Set<String> quickFilterFields) {
         List<String> ret = new ArrayList<>();
         // logger.trace("searchType: {}", searchType); //NOSONAR Debug
         switch (searchType) {
@@ -3336,9 +3331,7 @@ public final class SearchHelper {
                 ret.add(SolrConstants.CALENDAR_YEAR);
                 break;
             default:
-                if (quickFilterFields != null && !quickFilterFields.isEmpty()) {
-                    ret.addAll(quickFilterFields);
-                } else if (searchFilter == null || searchFilter.equals(SEARCH_FILTER_ALL)) {
+                if (searchFilter == null || searchFilter.equals(SEARCH_FILTER_ALL)) {
                     // No filters defined or ALL: use DEFAULT + FULLTEXT + UGCTERMS
                     ret.add(SolrConstants.DEFAULT);
                     ret.add(SolrConstants.FULLTEXT);
