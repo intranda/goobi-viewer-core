@@ -72,6 +72,42 @@
                 class="immersive__panel immersive__panel--left"
                 aria-hidden="true">
                 <widgetComponent:widget_searchInCurrentItem />
+                <!-- In-place fulltext search results (populated by modules.mjs) -->
+                <div
+                    id="immersiveSearchResults"
+                    class="immersive__results"
+                    data-label-hits="#{msg.hits}"
+                    data-label-empty="#{msg.hitsZero}"
+                    hidden="hidden">
+                    <div class="immersive__results-head">
+                        <span
+                            class="immersive__results-count"
+                            id="immersiveHitCounter" />
+                        <span class="immersive__results-nav">
+                            <button
+                                type="button"
+                                class="immersive__results-navbtn"
+                                data-immersive-hit="prev"
+                                aria-label="#{msg.previousHit}">
+                                <util:icon
+                                    icon="chevron-left"
+                                    svgClass="immersive__results-navicon" />
+                            </button>
+                            <button
+                                type="button"
+                                class="immersive__results-navbtn"
+                                data-immersive-hit="next"
+                                aria-label="#{msg.nextHit}">
+                                <util:icon
+                                    icon="chevron-right"
+                                    svgClass="immersive__results-navicon" />
+                            </button>
+                        </span>
+                    </div>
+                    <ul
+                        class="immersive__results-list"
+                        id="immersiveResultsList" />
+                </div>
             </aside>
 
             <!-- Central canvas: media-type dependent (universal view, mirrors viewObject.xhtml) -->

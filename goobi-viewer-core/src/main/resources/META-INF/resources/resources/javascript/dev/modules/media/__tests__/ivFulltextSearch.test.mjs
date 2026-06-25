@@ -1,0 +1,70 @@
+// media/__tests__/ivFulltextSearch.test.mjs
+import { parseSearchHits, search, nextIndex, prevIndex } from '../ivFulltextSearch.mjs';
+
+describe('parseSearchHits', () => {
+    const list = {
+        '@type': 'sc:AnnotationList',
+        within: { total: 2 },
+        resources: [
+            { '@type': 'oa:Annotation', resource: [{ value: 'der Ring' }], on: 'http://x/records/AC1/pages/19/canvas/#xywh=10,20,30,40' },
+            { '@type': 'oa:Annotation', resource: { value: 'auf der Farm' }, on: 'http://x/records/AC1/pages/5/canvas/' },
+        ],
+    };
+    test('extracts page (1-based), rect and snippet', () => {
+        expect(parseSearchHits(list)).toEqual([
+            { page: 19, rect: { x: 10, y: 20, w: 30, h: 40 }, snippet: 'der Ring' },
+            { page: 5, rect: null, snippet: 'auf der Farm' },
+        ]);
+    });
+    test('malformed/empty input → []', () => {
+        expect(parseSearchHits(null)).toEqual([]);
+        expect(parseSearchHits({})).toEqual([]);
+        expect(parseSearchHits({ resources: [{ on: 'no-page' }] })).toEqual([]);
+    });
+});
+
+describe('hit navigation index', () => {
+    test('wraps forward/backward', () => {
+        expect(nextIndex(2, 3)).toBe(0);
+        expect(prevIndex(0, 3)).toBe(2);
+    });
+    test('empty → -1', () => {
+        expect(nextIndex(0, 0)).toBe(-1);
+        expect(prevIndex(0, 0)).toBe(-1);
+    });
+});
+
+describe('search (paged fetch, injected fetchFn)', () => {
+    test('merges all within-pages and stamps 0-based order', async () => {
+        const page1 = { within: { last: 'x?q=wort&page=2' }, resources: [{ resource: [{ value: 'a' }], on: 'x/pages/2/canvas/#xywh=1,1,1,1' }] };
+        const page2 = { within: { last: 'x?q=wort&page=2' }, resources: [{ resource: [{ value: 'b' }], on: 'x/pages/4/canvas/' }] };
+        const calls = [];
+        const fetchFn = (url) => {
+            calls.push(url);
+            return Promise.resolve({ ok: true, text: () => Promise.resolve(JSON.stringify(url.includes('page=2') ? page2 : page1)) });
+        };
+        const hits = await search('PI1', 'http://api', 'wort', fetchFn, 2);
+        expect(hits.map((h) => h.order)).toEqual([1, 3]);
+        expect(calls[0]).toContain('/records/PI1/manifest/search?q=wort');
+    });
+
+    test('stops at within.last even when total overcounts (no page=2 fetch)', async () => {
+        const page1 = { within: { total: 5, last: 'x?q=w&page=1' }, resources: [{ resource: [{ value: 'a' }], on: 'x/pages/3/canvas/#xywh=0,0,9,9' }] };
+        const calls = [];
+        const fetchFn = (url) => {
+            calls.push(url);
+            return Promise.resolve({ ok: true, text: () => Promise.resolve(JSON.stringify(page1)) });
+        };
+        const hits = await search('PI', 'http://api', 'w', fetchFn, 10);
+        expect(hits.map((h) => h.order)).toEqual([2]);
+        expect(calls.length).toBe(1);
+    });
+
+    test('recovers resources from backend-malformed JSON (search:Hit without annotations)', async () => {
+        const broken =
+            '{"within":{"last":"x?page=1"},"resources":[{"resource":[{"value":"England"}],"on":"x/pages/7/canvas/#xywh=1,2,3,4"}],"hits":[{"@type":"search:Hit","annotations"}],"startIndex":0}';
+        const fetchFn = () => Promise.resolve({ ok: true, text: () => Promise.resolve(broken) });
+        const hits = await search('PI', 'http://api', 'England', fetchFn, 5);
+        expect(hits).toEqual([{ page: 7, rect: { x: 1, y: 2, w: 3, h: 4 }, snippet: 'England', order: 6 }]);
+    });
+});

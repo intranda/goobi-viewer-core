@@ -74,6 +74,7 @@ export default class IvViewer {
         this._anchor = null;
         this._preloaded = new Map();
         this._navigating = false;
+        this._highlights = [];
         this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 160;
         this.onPageChange = new Emitter();
         this.onLoaded = new Emitter();
@@ -93,6 +94,29 @@ export default class IvViewer {
             this._refreshPreload();
             this.onLoaded.emit(this.current);
         });
+    }
+
+    // --- search highlights ---
+
+    /** Zeichnet Such-Treffer-Rechtecke (Bildpixel) als Overlays über das aktuelle Bild. */
+    setHighlights(rects) {
+        this.clearHighlights();
+        const osd = this.viewer.openseadragon;
+        const item = this.currentItem || osd.world.getItemAt(0);
+        if (!item) return;
+        this._highlights = (rects || []).map((r) => {
+            const el = document.createElement('div');
+            el.className = 'immersive__hl';
+            osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
+            return el;
+        });
+    }
+
+    /** Entfernt alle Treffer-Overlays. */
+    clearHighlights() {
+        const osd = this.viewer.openseadragon;
+        (this._highlights || []).forEach((el) => osd.removeOverlay(el));
+        this._highlights = [];
     }
 
     // --- state ---
