@@ -185,47 +185,6 @@
 @fsMiddlegray: #c6c6c6;
 @fsDarkgray: #666;
 
-/* IMMERSIVE VIEW (viewImmersive.xhtml)
-   The dark stage + white floating chrome is a deliberate, theme-independent design
-   (a lightbox-style viewer), so the canvas/toolbar colours are core tokens, not
-   theme custom properties. */
-@immersiveViewerHeight: 80vh;
-@immersiveCanvasBg: #2f3136;
-@immersiveToolbarBg: #f0f3f7;
-@immersiveToolbarDivider: rgba(0, 0, 0, 0.1);
-@immersiveToolbarWidth: 40px;
-@immersiveRadius: 6px;
-@immersiveGap: 12px;
-@immersiveGapSmall: 6px;
-@immersiveToolbarPad: 4px;
-@immersiveToolbarInnerGap: 2px;
-/* sizing */
-@immersiveBtnSize: 36px;
-@immersiveBarHeight: 47px;
-@immersiveChevronSize: 48px;
-@immersiveChevronIconSize: 32px;
-@immersiveIconSize: 22px;
-@immersiveIconSizeSm: 20px;
-@immersiveIconSizeLg: 24px;
-@immersivePillPadX: 14px;
-@immersiveIndicatorPadX: 6px;
-@immersivePanelWidth: 340px;
-@immersivePanelWidthMedium: 300px;
-@immersiveGridCloseSize: 40px;
-/* accent (active/toggled tool buttons) */
-@immersiveAccent: @blue;
-/* effects */
-@immersiveShadow: 0 5px 14px 2px rgba(0, 0, 0, 0.09);
-@immersivePanelShadow: 4px 0 16px rgba(0, 0, 0, 0.18);
-@immersiveTransition: 0.15s ease;
-@immersivePanelTransition: 0.25s ease;
-/* stacking layers: panel slides under controls, header floats above, grid covers all
-   (scoped to the .immersive__viewer stacking context, so these never touch global nav) */
-@immersiveZPanel: 90;
-@immersiveZControls: 100;
-@immersiveZHeader: 110;
-@immersiveZOverlay: 300;
-
 /* RIGHT TO LEFT LANGUAGES STYLING */
 @RTL: ~'html[dir=rtl]';
 
@@ -330,3 +289,19 @@
 @datepicker-day-hasdata-hover-bg: var(--datepicker-day-hasdata-hover-bg);
 @datepicker-day-hasdata-hover-fg: var(--datepicker-day-hasdata-hover-fg);
 @datepicker-day-range-bg: var(--datepicker-day-range-bg);
+
+/* IMMERSIVE VIEW VARIABLES */
+@immersive-canvas-bg: var(--immersive-canvas-bg);
+@immersive-canvas-fg: var(--immersive-canvas-fg);
+@immersive-chrome-bg: var(--immersive-chrome-bg);
+@immersive-chrome-fg: var(--immersive-chrome-fg);
+@immersive-chrome-hover-bg: var(--immersive-chrome-hover-bg);
+@immersive-rail-bg: var(--immersive-rail-bg);
+@immersive-chrome-border: var(--immersive-chrome-border);
+@immersive-divider: var(--immersive-divider);
+@immersive-accent: var(--immersive-accent);
+@immersive-search-panel-bg: var(--immersive-search-panel-bg);
+@immersive-highlight-bg: var(--immersive-highlight-bg);
+@immersive-chrome-shadow: var(--immersive-chrome-shadow);
+@immersive-panel-shadow: var(--immersive-panel-shadow);
+@immersive-overlay-shadow: var(--immersive-overlay-shadow);

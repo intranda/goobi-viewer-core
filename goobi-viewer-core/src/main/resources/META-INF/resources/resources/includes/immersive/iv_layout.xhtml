@@ -5,7 +5,8 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:util="http://goobi.io/util"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
     <div class="immersive">
         <!-- VIEWER HERO: dark canvas + centered media + overlay slots -->
         <section class="immersive__viewer">
@@ -30,22 +31,20 @@
                 </div>
             </div>
 
-            <!-- Left toolbar: TOC + in-work search slide-out toggles -->
+            <!-- Left toolbar: record-info menu + in-work search slide-out toggles -->
             <div
                 class="immersive__toolbar immersive__toolbar--left"
                 id="immersiveToolbarLeft">
-                <ui:fragment rendered="#{activeDocumentBean.toc.hasChildren}">
-                    <button
-                        type="button"
-                        class="immersive__tool-btn"
-                        data-immersive-panel="immersivePanelToc"
-                        title="#{msg.sidebarTocAnchor}"
-                        aria-label="#{msg.sidebarTocAnchor}">
-                        <util:icon
-                            icon="list"
-                            svgClass="immersive__tool-icon" />
-                    </button>
-                </ui:fragment>
+                <button
+                    type="button"
+                    class="immersive__tool-btn"
+                    data-immersive-panel="immersivePanelMenu"
+                    title="#{msg.metadata}"
+                    aria-label="#{msg.metadata}">
+                    <util:icon
+                        icon="menu-2"
+                        svgClass="immersive__tool-icon" />
+                </button>
                 <button
                     type="button"
                     class="immersive__tool-btn"
@@ -58,15 +57,15 @@
                 </button>
             </div>
 
-            <!-- Left slide-out panels (reused TOC + in-work search widgets) -->
-            <ui:fragment rendered="#{activeDocumentBean.toc.hasChildren}">
-                <aside
-                    id="immersivePanelToc"
-                    class="immersive__panel immersive__panel--left"
-                    aria-hidden="true">
-                    <widgetComponent:widget_toc />
-                </aside>
-            </ui:fragment>
+            <!-- Left slide-out menu: the configured record sidebar, relocated here from
+                 the content region so all record widgets (metadata, TOC, downloads,
+                 citation, ...) are reachable without leaving the image view. -->
+            <aside
+                id="immersivePanelMenu"
+                class="immersive__panel immersive__panel--left immersive__panel--menu"
+                aria-hidden="true">
+                <viewerComponent:record_sidebar id="sidebar" />
+            </aside>
             <aside
                 id="immersivePanelSearch"
                 class="immersive__panel immersive__panel--left"
@@ -382,27 +381,64 @@
         <div
             class="immersive__content container"
             id="immersiveContent">
-            <!-- Related groups grid, reused from viewObject.xhtml -->
-            <ui:include src="/resources/includes/record/relatedGroupsSection.xhtml" />
-            <!-- Recommendations widget: re-enable once PR #104 adds recommendationsSection.xhtml to develop.
-                 ui:remove strips the include at compile time so the missing file is never resolved. -->
-            <ui:remove>
-                <ui:include src="/resources/includes/record/recommendationsSection.xhtml" />
-            </ui:remove>
-            <!-- Bibliographic metadata, reused from viewObject.xhtml
-                 (needs activeMetadataView from the preRenderView events on the page) -->
-            <h:panelGroup rendered="#{metadataBean.activeMetadataView != null}">
-                <ui:include src="/resources/includes/metadata/metadata.xhtml">
-                    <ui:param
-                        name="metadataViewIndex"
-                        value="#{metadataBean.activeMetadataView.index}" />
-                    <ui:param
-                        name="metadataViewLabel"
-                        value="#{metadataBean.activeMetadataView.label != null ? metadataBean.activeMetadataView.label : metadataBean.defaultMetadataLabel}" />
-                </ui:include>
-            </h:panelGroup>
-            <!-- NET-NEW (#27445 TP3): administrative data box + function button cluster -
-                 does not exist as an include yet -->
+            <div class="row immersive__content-row">
+                <!-- Main content (metadata, annotations, comments, related groups), reused from viewObject.xhtml.
+                     Full width now that the record sidebar lives in the left slide-out menu. -->
+                <div class="immersive__main col-12">
+                    <!-- Bibliographic metadata (needs activeMetadataView from the preRenderView events on the page) -->
+                    <h:panelGroup rendered="#{metadataBean.activeMetadataView != null}">
+                        <ui:include src="/resources/includes/metadata/metadata.xhtml">
+                            <ui:param
+                                name="metadataViewIndex"
+                                value="#{metadataBean.activeMetadataView.index}" />
+                            <ui:param
+                                name="metadataViewLabel"
+                                value="#{metadataBean.activeMetadataView.label != null ? metadataBean.activeMetadataView.label : metadataBean.defaultMetadataLabel}" />
+                        </ui:include>
+                    </h:panelGroup>
+
+                    <!-- Module contributions (e.g. crowdsourcing) -->
+                    <c:forEach
+                        var="module"
+                        items="#{configurationBean.modules}">
+                        <c:forEach
+                            var="contribution"
+                            items="#{module.getWidgets('viewImage')}">
+                            <ui:include src="/#{contribution}" />
+                        </c:forEach>
+                    </c:forEach>
+
+                    <!-- User generated content (annotations) of the current page -->
+                    <h:panelGroup id="userGeneratedContentGroup">
+                        <ui:fragment
+                            rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
+                            <div
+                                id="view_image_user_generated_content"
+                                class="view-object__user_generated_content">
+                                <h2>
+                                    <span>#{msg.admin__crowdsourcing_annotations}</span>
+                                </h2>
+                                <viewerComponent:annotationList
+                                    contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}"
+                                    sidebar="false" />
+                            </div>
+                        </ui:fragment>
+                    </h:panelGroup>
+
+                    <!-- User comments -->
+                    <ui:include src="/resources/includes/user/userComments.xhtml" />
+
+                    <!-- Related groups grid -->
+                    <ui:include src="/resources/includes/record/relatedGroupsSection.xhtml" />
+                    <!-- Recommendations widget: re-enable once PR #104 adds recommendationsSection.xhtml to develop.
+                         ui:remove strips the include at compile time so the missing file is never resolved. -->
+                    <ui:remove>
+                        <ui:include src="/resources/includes/record/recommendationsSection.xhtml" />
+                    </ui:remove>
+                </div>
+
+                <!-- The configured record sidebar was moved to the left slide-out menu (immersivePanelMenu). -->
+            </div>
         </div>
 
         <!-- Popovers for the right-toolbar share/cite controls (global Bootstrap popover system) -->

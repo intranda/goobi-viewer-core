@@ -3,39 +3,64 @@
    layout shell for viewImmersive.xhtml
    ==============================================================*/
 
-/* Shared white floating surface (back pill, toolbars, bottom bar, grid close). */
-.mx-immersive-floating() {
-    background-color: @white;
-    border-radius: @immersiveRadius;
-    box-shadow: @immersiveShadow;
+/* Overall view width; a theme may set this to `none` for a full-bleed, full-width view. */
+@immersiveMaxWidth: 1240px;
+
+.immersiveFloating() {
+    background-color: @immersive-chrome-bg;
+    border: @immersive-chrome-border;
+    border-radius: 6px;
+    box-shadow: @immersive-chrome-shadow;
 }
 
-/* Shared square icon button (left/right toolbars + bottom bar). */
-.mx-immersive-icon-btn() {
+.immersiveIconBtn() {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: @immersiveBtnSize;
-    height: @immersiveBtnSize;
+    width: 36px;
+    height: 36px;
     padding: 0;
     border: 0;
-    border-radius: @immersiveRadius;
+    border-radius: 6px;
     background: transparent;
-    color: @immersiveCanvasBg;
+    color: @immersive-chrome-fg;
     cursor: pointer;
-    transition: background-color @immersiveTransition;
+    transition: background-color 0.15s ease;
 
+    /* color is restated on hover to beat the global `button:hover { color }` rule */
     &:hover {
-        background-color: @immersiveToolbarBg;
+        background-color: @immersive-chrome-hover-bg;
+        color: @immersive-chrome-fg;
     }
 }
 
+/* The site footer is position:sticky (it floats at the viewport bottom). On the
+   immersive page that makes it overlap the hero's bottom chrome (bottombar, rail)
+   whenever the page scrolls past it. Pin it back into normal flow below the
+   content so it never overlays the viewer -- at any viewport size or zoom level. */
+#immersiveView .footer {
+    position: static;
+}
+
 .immersive {
-    /* VIEWER HERO: dark, full-bleed canvas with absolutely positioned overlay slots */
+    max-width: @immersiveMaxWidth;
+    margin-left: auto;
+    margin-right: auto;
+
+    /* Full-width view (@immersiveMaxWidth: none): drop the column-alignment inset on the hero. */
+    & when (@immersiveMaxWidth = none) {
+        .immersive__viewer {
+            margin-left: 0;
+            margin-right: 0;
+        }
+    }
+
     &__viewer {
         position: relative;
-        height: @immersiveViewerHeight;
-        background-color: @immersiveCanvasBg;
+        height: 80vh;
+        margin-left: 15px;
+        margin-right: 15px;
+        background-color: @immersive-canvas-bg;
         overflow: hidden;
     }
 
@@ -44,65 +69,72 @@
         height: 100%;
     }
 
-    /* the OSD mount fills the dark canvas edge-to-edge */
     &__image-map {
         width: 100%;
         height: 100%;
     }
 
-    /* Header overlay row (back-link left, title centered) */
+    &__content {
+        margin-top: 32px;
+    }
+
+    &__content.container {
+        max-width: 100%;
+    }
+
     &__overlay-top {
         position: absolute;
-        top: @immersiveGap;
-        right: @immersiveGap;
-        left: @immersiveGap;
-        z-index: @immersiveZHeader;
+        top: 12px;
+        right: 12px;
+        left: 12px;
+        z-index: 110;
         display: flex;
         align-items: center;
         justify-content: center;
-        pointer-events: none; /* children re-enable pointer-events themselves */
+        pointer-events: none;
     }
 
-    /* Back-to-results pill (top-left, right of the left icon bar) */
     &__back {
         position: absolute;
-        left: calc(@immersiveToolbarWidth + @immersiveGap);
+        left: calc(40px + 12px);
         display: inline-flex;
         align-items: center;
-        gap: @immersiveGapSmall;
-        height: @immersiveBtnSize;
-        padding: 0 @immersivePillPadX;
-        .mx-immersive-floating();
-        color: @immersiveCanvasBg;
+        gap: 6px;
+        height: 36px;
+        padding: 0 14px;
+        .immersiveFloating();
+        color: @immersive-chrome-fg;
         font-size: @fontMedium;
         text-decoration: none;
         pointer-events: auto;
+        transition: background-color 0.15s ease;
 
         &:hover {
-            color: @immersiveCanvasBg;
+            color: @immersive-chrome-fg;
             text-decoration: none;
+            background-color: @immersive-chrome-hover-bg;
         }
     }
 
     &__back-icon {
-        width: @immersiveIconSizeSm;
-        height: @immersiveIconSizeSm;
+        width: 20px;
+        height: 20px;
     }
 
-    /* Work title (centered) */
     &__title {
         display: inline-flex;
         align-items: center;
-        gap: @immersiveGapSmall;
+        gap: 6px;
         max-width: 60%;
-        color: @white;
-        pointer-events: none; /* non-interactive display-only label */
+        color: @immersive-canvas-fg;
+        filter: @immersive-overlay-shadow;
+        pointer-events: none;
     }
 
     &__title-icon {
         flex-shrink: 0;
-        width: @immersiveIconSizeLg;
-        height: @immersiveIconSizeLg;
+        width: 24px;
+        height: 24px;
     }
 
     &__title-text {
@@ -112,24 +144,56 @@
         text-overflow: ellipsis;
     }
 
-    /* Overlay toolbars - vertical icon bars (shared base, only the side differs) */
     &__toolbar {
         position: absolute;
-        top: @immersiveGap;
-        z-index: @immersiveZControls;
+        top: 12px;
+        z-index: 100;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: @immersiveToolbarInnerGap;
-        padding: @immersiveToolbarPad;
-        .mx-immersive-floating();
+        gap: 2px;
+        padding: 4px;
+        .immersiveFloating();
 
+        /*
+         * Left toolbar: a thin, full-height rail flush against the canvas edge. The canvas
+         * is dark in both themes, so the rail stays a dark "stage" surface with light icons
+         * (a light rail looked harsh against the dark canvas). Opaque on purpose: a
+         * translucent rail would reveal the slide-out panel passing behind it. The brand
+         * accent shows only on the active tool (its panel is open) as a left edge bar.
+         */
         &--left {
-            left: @immersiveGap;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            gap: 6px;
+            width: 40px;
+            padding: 48px 0 0;
+            border: 0;
+            border-right: 1px solid @immersive-divider;
+            border-radius: 0;
+            box-shadow: none;
+            background-color: @immersive-rail-bg;
+
+            .immersive__tool-btn--active {
+                position: relative;
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: -2px;
+                    width: 3px;
+                    height: 20px;
+                    border-radius: 0 2px 2px 0;
+                    background-color: @immersive-accent;
+                    transform: translateY(-50%);
+                }
+            }
         }
 
         &--right {
-            right: @immersiveGap;
+            right: 12px;
         }
     }
 
@@ -138,45 +202,48 @@
         flex-direction: column;
         align-items: center;
         align-self: stretch;
-        gap: @immersiveToolbarInnerGap;
+        gap: 2px;
 
         & + & {
-            padding-top: @immersiveToolbarInnerGap;
-            border-top: 1px solid @immersiveToolbarDivider;
+            padding-top: 2px;
+            border-top: 1px solid @immersive-divider;
         }
     }
 
     &__tool-btn {
-        .mx-immersive-icon-btn();
+        .immersiveIconBtn();
     }
 
     &__tool-btn--active {
-        background-color: @immersiveToolbarBg;
-        color: @immersiveAccent;
+        background-color: @immersive-chrome-hover-bg;
+        color: @immersive-accent;
+
+        &:hover {
+            color: @immersive-accent;
+        }
     }
 
     &__tool-icon {
-        width: @immersiveIconSize;
-        height: @immersiveIconSize;
+        width: 22px;
+        height: 22px;
     }
 
-    /* Left slide-out panel (reuses the TOC / in-work-search widgets) */
     &__panel {
         position: absolute;
         top: 0;
         bottom: 0;
-        z-index: @immersiveZPanel;
-        width: @immersivePanelWidth;
+        z-index: 90;
+        width: 340px;
         max-width: 80%;
         overflow-y: auto;
-        padding: calc(@immersiveToolbarWidth + 2 * @immersiveGap) @immersiveGap @immersiveGap;
-        background-color: @white;
-        box-shadow: @immersivePanelShadow;
-        transition: transform @immersivePanelTransition;
+        padding: calc(40px + 2 * 12px) 12px 12px;
+        background-color: @immersive-chrome-bg;
+        box-shadow: @immersive-panel-shadow;
+        transition: transform 0.25s ease;
 
         &--left {
-            left: @immersiveToolbarWidth;
-            transform: translateX(calc(-100% - @immersiveToolbarWidth));
+            left: 40px;
+            transform: translateX(calc(-100% - 40px));
 
             &.is-open {
                 transform: translateX(0);
@@ -184,162 +251,289 @@
         }
     }
 
-    /* Big page-turn chevrons, vertically centered at the canvas edges */
+    /*
+     * Burger menu: the configured record sidebar was relocated here. Flatten its
+     * boxed, blue-header widgets into a slim, light "accordion" that matches the
+     * immersive stage (à la the fullscreen sidebar) instead of the default look.
+     */
+    &__panel--menu {
+        padding: calc(40px + 12px) 0 16px;
+
+        .widget {
+            margin: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .widget + .widget {
+            border-top: 1px solid @immersive-divider;
+        }
+
+        .widget__topbar {
+            min-height: 0;
+            margin: 0;
+            padding: 14px 18px;
+            background: transparent;
+            border: 0;
+        }
+
+        .widget__title {
+            color: @immersive-chrome-fg;
+            font-size: @fontMedium;
+            font-weight: 600;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        .widget__body {
+            padding: 0 18px 16px;
+            background: transparent;
+            border: 0;
+        }
+
+        a {
+            color: var(--lk-content-box, @blue);
+        }
+    }
+
     &__chevron {
         position: absolute;
         top: 50%;
-        z-index: @immersiveZControls;
+        z-index: 100;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: @immersiveChevronSize;
-        height: @immersiveChevronSize;
+        width: 48px;
+        height: 48px;
         padding: 0;
         border: 0;
         background: transparent;
-        color: @white;
+        color: @immersive-canvas-fg;
         cursor: pointer;
         opacity: 0.85;
+        filter: @immersive-overlay-shadow;
         transform: translateY(-50%);
-        transition: opacity @immersiveTransition;
+        transition:
+            opacity 0.15s ease,
+            transform 0.15s ease;
 
         &:hover {
+            color: @immersive-canvas-fg;
             opacity: 1;
         }
+        &[hidden] {
+            display: none;
+        }
+        /* clear the 40px left rail so the prev arrow doesn't sit on the sidebar */
         &--left {
-            left: @immersiveGap;
+            left: calc(40px + 12px);
         }
         &--right {
-            right: @immersiveGap;
+            right: 12px;
         }
     }
 
     &__chevron-svg {
-        width: @immersiveChevronIconSize;
-        height: @immersiveChevronIconSize;
+        width: 32px;
+        height: 32px;
     }
 
-    /* Bottom bar: floating white pill with paging + zoom controls (Mockup) */
     &__bottombar {
         position: absolute;
-        bottom: @immersiveGap;
+        bottom: 12px;
         left: 50%;
-        z-index: @immersiveZControls;
+        z-index: 100;
         display: flex;
         align-items: center;
-        gap: @immersiveToolbarPad;
-        height: @immersiveBarHeight;
-        padding: 0 @immersiveGapSmall;
-        .mx-immersive-floating();
+        gap: 2px;
+        height: 40px;
+        padding: 0 4px;
+        .immersiveFloating();
         transform: translateX(-50%);
     }
 
     &__bottombar-group {
         display: flex;
         align-items: center;
-        gap: @immersiveToolbarPad;
+        gap: 2px;
 
         & + & {
-            padding-left: @immersiveToolbarPad;
-            border-left: 1px solid @immersiveToolbarDivider;
+            padding-left: 4px;
+            border-left: 1px solid @immersive-divider;
         }
     }
 
     &__bar-btn {
-        .mx-immersive-icon-btn();
+        .immersiveIconBtn();
+        width: 32px;
+        height: 32px;
     }
 
     &__bar-icon {
-        width: @immersiveIconSizeSm;
-        height: @immersiveIconSizeSm;
+        width: 18px;
+        height: 18px;
     }
 
     &__page-indicator {
-        min-width: 4.5em;
-        padding: 0 @immersiveIndicatorPadX;
+        min-width: 4em;
+        padding: 0 4px;
         text-align: center;
         font-size: @fontMedium;
-        color: @immersiveCanvasBg;
+        color: @immersive-chrome-fg;
         white-space: nowrap;
     }
 
-    /* Overview thumbnail grid overlay */
     &__grid {
         position: absolute;
         inset: 0;
-        z-index: @immersiveZOverlay;
+        z-index: 300;
         overflow-y: auto;
-        padding: calc(@immersiveToolbarWidth + 2 * @immersiveGap) @immersiveGap @immersiveGap;
-        background-color: rgba(@immersiveCanvasBg, 0.97);
+        padding: calc(40px + 2 * 12px) 28px 36px;
+        background-color: @immersive-canvas-bg;
+
+        /*
+         * Page overview -- a light table of "sheets". The grid reuses the shared
+         * `thumbnails` riot tag, so styles are scoped to the immersive overlay to
+         * leave the component's other uses (archives, crowdsourcing) untouched.
+         * Each page floats as a soft-shadowed sheet with its page label as a
+         * caption below; the current page carries a brand-accent ring. Colours come
+         * from the --immersive-* tokens so the overview tracks the light/dark stage.
+         */
+        .thumbnails-image-wrapper {
+            position: relative;
+            padding-bottom: 28px;
+            cursor: pointer;
+        }
+
+        .thumbnails-image-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 220px;
+            text-decoration: none;
+        }
+
+        .thumbnails-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            border-radius: 2px;
+            box-shadow:
+                0 1px 2px rgba(15, 23, 42, 0.1),
+                0 4px 10px rgba(15, 23, 42, 0.13);
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .thumbnails-image-wrapper:hover .thumbnails-image {
+            transform: translateY(-5px);
+            box-shadow:
+                0 2px 4px rgba(15, 23, 42, 0.1),
+                0 14px 28px rgba(15, 23, 42, 0.22);
+        }
+
+        .thumbnails-image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 28px;
+        }
+
+        .thumbnails-label {
+            max-width: 100%;
+            color: @immersive-chrome-fg;
+            font-size: @fontSmall;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .thumbnails-image-wrapper.selected {
+            .thumbnails-image {
+                box-shadow:
+                    0 0 0 2px @immersive-accent,
+                    0 6px 16px rgba(1, 89, 153, 0.28);
+            }
+
+            .thumbnails-label {
+                color: @immersive-accent;
+                font-weight: 700;
+            }
+        }
     }
 
     &__grid-close {
         position: absolute;
-        top: @immersiveGap;
-        right: @immersiveGap;
+        top: 12px;
+        right: 12px;
         z-index: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: @immersiveGridCloseSize;
-        height: @immersiveGridCloseSize;
+        width: 40px;
+        height: 40px;
         padding: 0;
-        border: 0;
-        border-radius: @immersiveRadius;
-        background-color: @white;
-        color: @immersiveCanvasBg;
+        border: @immersive-chrome-border;
+        border-radius: 6px;
+        background-color: @immersive-chrome-bg;
+        color: @immersive-chrome-fg;
         cursor: pointer;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background-color: @immersive-chrome-hover-bg;
+            color: @immersive-chrome-fg;
+        }
     }
 
     &__grid-mount {
-        display: flex;
-        flex-wrap: wrap;
-        gap: @immersiveGap;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 26px 20px;
+        max-width: 1140px;
+        margin: 0 auto;
     }
 }
 
-/* On medium screens the slide-out panel narrows so it does not dominate the canvas */
 @media screen and (max-width: @mediumBreakpoint) {
     .immersive__panel {
-        width: @immersivePanelWidthMedium;
+        width: 300px;
     }
 }
 
-/* On small screens the left rail moves to a floating bottom-right cluster */
-@media (max-width: @smallBreakpoint) {
-    .immersive__toolbar--left {
-        top: auto;
-        right: @immersiveGap;
-        bottom: @immersiveGap;
-        left: auto;
-        width: auto;
-    }
-}
-
-/* Respect reduced-motion: disable the panel slide and hover transitions */
 @media (prefers-reduced-motion: reduce) {
     .immersive__panel,
     .immersive__tool-btn,
     .immersive__bar-btn,
-    .immersive__chevron {
+    .immersive__chevron,
+    .immersive__back,
+    .immersive__grid-close,
+    .immersive__results-navbtn {
         transition: none;
     }
 }
 
-/* In-place fulltext search: result list (left panel) + image hit overlays */
 .immersive {
     &__results {
-        margin-top: @immersiveGap;
-        border-top: 1px solid @immersiveToolbarDivider;
-        color: @immersiveCanvasBg;
+        margin-top: 12px;
+        border-top: 1px solid @immersive-divider;
+        color: @immersive-chrome-fg;
     }
 
     &__results-head {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: @immersiveGapSmall 0;
+        padding: 6px 0;
     }
 
     &__results-count {
@@ -348,7 +542,7 @@
 
     &__results-nav {
         display: flex;
-        gap: @immersiveGapSmall;
+        gap: 6px;
     }
 
     &__results-navbtn {
@@ -356,13 +550,18 @@
         padding: 0;
         border: 0;
         background: transparent;
-        color: @immersiveCanvasBg;
+        color: @immersive-chrome-fg;
         cursor: pointer;
+        transition: color 0.15s ease;
+
+        &:hover {
+            color: @immersive-accent;
+        }
     }
 
     &__results-navicon {
-        width: @immersiveIconSizeSm;
-        height: @immersiveIconSizeSm;
+        width: 20px;
+        height: 20px;
     }
 
     &__results-list {
@@ -373,21 +572,21 @@
 
     &__results-item {
         display: flex;
-        gap: @immersiveGapSmall;
-        padding: @immersiveGapSmall;
-        border-radius: @immersiveRadius;
+        gap: 6px;
+        padding: 6px;
+        border-radius: 6px;
         cursor: pointer;
 
         &:hover,
         &.is-active {
-            background-color: @immersiveToolbarBg;
+            background-color: @immersive-chrome-hover-bg;
         }
     }
 
     &__results-page {
         flex-shrink: 0;
         font-weight: bold;
-        color: @immersiveAccent;
+        color: @immersive-accent;
     }
 
     &__results-snippet {
@@ -396,13 +595,12 @@
     }
 
     &__results-empty {
-        padding: @immersiveGapSmall;
+        padding: 6px;
     }
 
-    /* Search-hit overlay drawn over the OSD image (OpenSeadragon overlay element) */
     &__hl {
-        border: 2px solid @immersiveAccent;
-        background-color: rgba(255, 213, 0, 0.25);
+        border: 2px solid @immersive-accent;
+        background-color: @immersive-highlight-bg;
         pointer-events: none;
     }
 }

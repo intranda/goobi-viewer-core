@@ -1556,6 +1556,19 @@
                 updateIndicator();
                 viewer.onPageChange.subscribe(() => updateIndicator());
 
+                // Page chevrons: only show an arrow when paging that way is possible
+                // (hide prev on the first page, next on the last page).
+                const prevChevron = document.querySelector('.immersive__chevron[data-immersive-page="prev"]');
+                const nextChevron = document.querySelector('.immersive__chevron[data-immersive-page="next"]');
+                const updateChevrons = () => {
+                    const pages = viewer.getCurrentPages();
+                    if (!pages.length) return;
+                    if (prevChevron) prevChevron.hidden = Math.min(...pages) <= 0;
+                    if (nextChevron) nextChevron.hidden = Math.max(...pages) >= total - 1;
+                };
+                updateChevrons();
+                viewer.onPageChange.subscribe(updateChevrons);
+
                 // Fulltext: in-place IIIF content search → result list (left panel) + image hit highlights.
                 const fts = { hits: [], idx: -1, term: '' };
                 const resultsBox = document.getElementById('immersiveSearchResults');
@@ -1638,6 +1651,7 @@
                 // Overview: thumbnail grid overlay (lazy-mounted).
                 const gridOverlay = document.getElementById('immersiveGridOverlay');
                 let gridMounted = false;
+                let gridTag = null;
                 const gridActions = new rxjs.Subject();
                 gridActions.subscribe((e) => {
                     if (e && e.action === 'clickImage' && typeof e.value === 'number') {
@@ -1645,18 +1659,38 @@
                         if (gridOverlay) gridOverlay.hidden = true;
                     }
                 });
+                // The grid highlights the current page via opts.index -- the 0-based
+                // canvas index, which equals the viewer's 0-based page order. Keep it in
+                // sync so the right sheet stays selected as the page changes.
+                const currentOrder = () => {
+                    const pages = viewer.getCurrentPages ? viewer.getCurrentPages() : [];
+                    return pages.length ? pages[0] : 0;
+                };
+                const syncGridSelection = () => {
+                    if (gridTag) {
+                        gridTag.opts.index = currentOrder();
+                        gridTag.update();
+                    }
+                };
+                viewer.onPageChange.subscribe(() => {
+                    if (gridOverlay && !gridOverlay.hidden) syncGridSelection();
+                });
                 const toggleGrid = () => {
                     if (!gridOverlay) return;
                     const opening = gridOverlay.hidden;
                     gridOverlay.hidden = !opening;
-                    if (opening && !gridMounted) {
-                        riot.mount('#immersiveThumbnails', 'thumbnails', {
+                    if (!opening) return;
+                    if (!gridMounted) {
+                        gridTag = riot.mount('#immersiveThumbnails', 'thumbnails', {
                             source: `${apiBase}/records/${pi}/manifest`,
                             type: 'sequence',
                             actionlistener: gridActions,
-                            imagesize: '!160,220', // IIIF size string (fit within 160x220)
-                        });
+                            imagesize: '!320,440', // IIIF size string (fit within 320x440, crisp on HiDPI)
+                            index: currentOrder(),
+                        })[0];
                         gridMounted = true;
+                    } else {
+                        syncGridSelection();
                     }
                 };
 
@@ -1681,8 +1715,10 @@
                     });
                 });
 
-                // Left slide-out panels (TOC / search).
-                document.querySelectorAll('[data-immersive-panel]').forEach((btn) => {
+                // Left slide-out panels (TOC / search). The triggering button is marked active
+                // while its panel is open so the rail can show the brand accent on it.
+                const panelButtons = document.querySelectorAll('[data-immersive-panel]');
+                panelButtons.forEach((btn) => {
                     btn.addEventListener('click', () => {
                         const panel = document.getElementById(btn.dataset.immersivePanel);
                         if (!panel) return;
@@ -1691,9 +1727,15 @@
                             p.classList.remove('is-open');
                             p.setAttribute('aria-hidden', 'true');
                         });
+                        panelButtons.forEach((b) => {
+                            b.classList.remove('immersive__tool-btn--active');
+                            b.setAttribute('aria-expanded', 'false');
+                        });
                         if (!wasOpen) {
                             panel.classList.add('is-open');
                             panel.setAttribute('aria-hidden', 'false');
+                            btn.classList.add('immersive__tool-btn--active');
+                            btn.setAttribute('aria-expanded', 'true');
                         }
                     });
                 });
