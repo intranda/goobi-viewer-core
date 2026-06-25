@@ -2582,6 +2582,22 @@
     </configEditor>
 
 
+    <!-- logViewer: Configuration for the web-based log viewer in the admin backend.
+         logViewer/initialLines: Number of log lines loaded on initial page open. Default is 500.
+         logViewer/logFiles/logFile/@name: Symbolic name used in the URL (viewer|oai|ics|indexer).
+         logViewer/logFiles/logFile/@path: Absolute path to the log file on the server. -->
+    <logViewer>
+        <initialLines>500</initialLines>
+        <logFiles>
+            <logFile name="viewer" path="/opt/digiverso/logs/viewer.log" />
+            <logFile name="oai" path="/opt/digiverso/logs/oai.log" />
+            <logFile name="ics" path="/opt/digiverso/logs/ics.log" />
+            <logFile name="indexer" path="/opt/digiverso/logs/indexer.log" />
+        </logFiles>
+    </logViewer>
+
+
+
     <!-- proxy/@enabled: If false, the proxy configuration will be ignored; default is false. -->
     <proxy enabled="false">
         <!-- proxyUrl: Proxy URL -->
