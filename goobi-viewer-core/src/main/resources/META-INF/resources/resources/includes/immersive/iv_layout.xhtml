@@ -57,14 +57,15 @@
                 </button>
             </div>
 
-            <!-- Left slide-out menu: the configured record sidebar, relocated here from
-                 the content region so all record widgets (metadata, TOC, downloads,
-                 citation, ...) are reachable without leaving the image view. -->
+            <!-- Left slide-out menu (burger): the record's table of contents, for
+                 jumping between structural sections without leaving the image view.
+                 TOC clicks navigate in place (modules.mjs); closing is handled by
+                 re-clicking the burger toggle. -->
             <aside
                 id="immersivePanelMenu"
                 class="immersive__panel immersive__panel--left immersive__panel--menu"
                 aria-hidden="true">
-                <viewerComponent:record_sidebar id="sidebar" />
+                <widgetComponent:widget_toc />
             </aside>
             <aside
                 id="immersivePanelSearch"

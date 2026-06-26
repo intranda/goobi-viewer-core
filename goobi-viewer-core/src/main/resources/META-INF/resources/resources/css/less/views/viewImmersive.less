@@ -252,12 +252,15 @@
     }
 
     /*
-     * Burger menu: the configured record sidebar was relocated here. Flatten its
-     * boxed, blue-header widgets into a slim, light "accordion" that matches the
-     * immersive stage (à la the fullscreen sidebar) instead of the default look.
+     * Burger drawer: the record's table of contents. The shared widget_toc is
+     * restyled for the immersive stage into a calm, modern tree that tracks light
+     * and dark mode via the --immersive-* tokens (comfortable rows, clear
+     * hover/active, indented levels, right-aligned page numbers). TOC clicks page
+     * in place (modules.mjs); the drawer is closed by re-clicking the burger.
      */
     &__panel--menu {
-        padding: calc(40px + 12px) 0 16px;
+        padding: calc(40px + 12px) 8px 16px;
+        color: @immersive-chrome-fg;
 
         .widget {
             margin: 0;
@@ -267,34 +270,112 @@
             box-shadow: none;
         }
 
-        .widget + .widget {
-            border-top: 1px solid @immersive-divider;
-        }
+        .widget-toc {
+            /* Header: the reference theme paints both the widget topbar and the toc
+               title wrapper (.widget-toc__title) with the brand blue (--ci-color1).
+               Flatten both into a clean, transparent section header. */
+            .widget__topbar {
+                margin: 0;
+                padding: 4px 8px 12px;
+                background: transparent;
+                border: 0;
+            }
 
-        .widget__topbar {
-            min-height: 0;
-            margin: 0;
-            padding: 14px 18px;
-            background: transparent;
-            border: 0;
-        }
+            &__title {
+                background: transparent;
+            }
 
-        .widget__title {
-            color: @immersive-chrome-fg;
-            font-size: @fontMedium;
-            font-weight: 600;
-            letter-spacing: 0;
-            text-transform: none;
-        }
+            .widget__title {
+                margin: 0;
+                color: @immersive-chrome-fg;
+                font-size: @fontSmall;
+                font-weight: 700;
+                letter-spacing: 0.07em;
+                text-transform: uppercase;
+                opacity: 0.6;
+            }
 
-        .widget__body {
-            padding: 0 18px 16px;
-            background: transparent;
-            border: 0;
-        }
+            &__title-expand button {
+                .immersiveIconBtn();
+                width: 30px;
+                height: 30px;
+            }
 
-        a {
-            color: var(--lk-content-box, @blue);
+            &__topbar-icon-svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            /* Tree: let the panel scroll (drop the widget's nested scroll box) and
+               keep the rows tight via a small, explicit gap. */
+            &__elements {
+                max-height: none;
+                padding: 2px 6px 10px;
+                overflow: visible;
+                border: 0;
+
+                ul {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1px;
+                    margin: 0;
+                    padding: 0;
+                }
+            }
+
+            &__element {
+                margin: 0;
+                padding: 0 6px;
+                border-radius: 6px;
+                transition: background-color 0.15s ease;
+
+                &:hover {
+                    background-color: @immersive-chrome-hover-bg;
+                }
+            }
+
+            &__toggle {
+                color: @immersive-chrome-fg;
+                opacity: 0.6;
+
+                &:hover {
+                    color: @immersive-accent;
+                    opacity: 1;
+                }
+            }
+
+            &__element-link a {
+                padding: 4px 4px;
+                color: @immersive-chrome-fg;
+                font-size: @fontMedium;
+                line-height: 1.4;
+
+                &:hover,
+                &:focus,
+                &:active {
+                    color: @immersive-chrome-fg;
+                    text-decoration: none;
+                }
+            }
+
+            &__element-pagenumber {
+                color: @immersive-chrome-fg;
+                font-size: @fontSmall;
+                opacity: 0.5;
+            }
+
+            /* Active section: the current or just-clicked entry */
+            &__element.active {
+                .widget-toc__element-link a {
+                    color: @immersive-accent;
+                    font-weight: 700;
+                }
+
+                .widget-toc__element-pagenumber {
+                    color: @immersive-accent;
+                    opacity: 0.85;
+                }
+            }
         }
     }
 

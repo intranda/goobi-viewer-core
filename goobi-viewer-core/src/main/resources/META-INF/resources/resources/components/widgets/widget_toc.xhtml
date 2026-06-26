@@ -98,6 +98,7 @@
                                             class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' } #{tocElement.iddoc == activeDocumentBean.viewManager.currentStructElementIddoc ? 'active' : ''} #{!tocElement.visible ? 'widget-toc__element--hidden' : ''} #{tocElement.expanded ? 'widget-toc__element--expanded' : ''}"
                                             data-iddoc="iddoc_#{tocElement.iddoc}"
                                             data-level="#{tocElement.level}"
+                                            data-page-no="#{tocElement.pageNo}"
                                             style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px">
                                             <!-- EXPAND -->
                                             <ui:fragment rendered="#{tocElement.hasChild == true}">
@@ -172,6 +173,7 @@
                                         <li
                                             class="widget-toc__element #{tocElement.hasChild == true ? 'parent' : 'child' }"
                                             data-logid="#{tocElement.logId}"
+                                            data-page-no="#{tocElement.pageNo}"
                                             style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'margin-right:' : 'margin-left:'} #{tocElement.level * 15}px">
                                             <!-- LINK -->
                                             <div

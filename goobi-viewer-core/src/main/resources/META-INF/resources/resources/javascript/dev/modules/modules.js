@@ -996,15 +996,17 @@
             this._anchor = null;
             this._preloaded = new Map();
             this._navigating = false;
+            this._reservedLeft = false;
             this._highlights = [];
             this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 160;
             this.onPageChange = new Emitter();
             this.onLoaded = new Emitter();
+            this._baseMargins = { top: 64, bottom: 72, left: 64, right: 64 };
 
             this.viewer = new ImageView.Image({
                 element: opts.element,
                 fittingMode: 'fixed',
-                margins: { top: 64, bottom: 72, left: 64, right: 64 },
+                margins: this._baseMargins,
                 zoom: { enabled: true, max: opts.maxZoom },
                 sequence: _sequence,
                 navigator: { enabled: false },
@@ -1114,6 +1116,53 @@
             } else {
                 this.zoom.goHome();
             }
+        }
+
+        /**
+         * Reserve `drawerRightPx` of the viewer's left edge (an open slide-out panel) so
+         * the current page/spread fits into the clear area to its right; pass 0 to release.
+         * Implemented by physically insetting the OSD mount (not viewport margins, which the
+         * library's double-page layout + snapshot crossfade ignore -- that mismatch caused
+         * the over-shift and the duplicated pages). The library then composes, fits and
+         * crossfades natively inside the smaller container, so navigating while the panel
+         * stays open just works. Only acts when the page actually reaches into the strip,
+         * so a page the panel does not cover never moves.
+         */
+        reserveLeft(drawerRightPx) {
+            const osd = this.viewer.openseadragon;
+            const host = this.viewer.element;
+            const bounds = this._currentBounds();
+            if (!host || !bounds) return;
+            const gap = 24;
+            if (drawerRightPx > 0) {
+                if (this._reservedLeft) return;
+                const imgLeft = osd.viewport.viewportToViewerElementCoordinates(bounds.getTopLeft()).x;
+                if (imgLeft >= drawerRightPx) return; // page already clear of the panel -> leave it
+                const inset = Math.round(drawerRightPx + gap);
+                host.style.marginLeft = `${inset}px`;
+                host.style.width = `calc(100% - ${inset}px)`;
+                this._reservedLeft = true;
+            } else {
+                if (!this._reservedLeft) return;
+                host.style.marginLeft = '';
+                host.style.width = '';
+                this._reservedLeft = false;
+            }
+            // Push the new mount size into OSD and re-fit the current page/spread into it.
+            const Point = osd.viewport.getContainerSize().constructor;
+            osd.viewport.resize(new Point(host.clientWidth, host.clientHeight), false);
+            osd.viewport.fitBounds(this._currentBounds(), false);
+        }
+
+        /** Viewport bounds of what is on screen now: one page, or the whole two-page spread. */
+        _currentBounds() {
+            const world = this.viewer.openseadragon.world;
+            if (!world.getItemCount()) return null;
+            let bounds = world.getItemAt(0).getBounds();
+            if (this.double && this.getCurrentPages().length > 1 && world.getItemCount() > 1) {
+                bounds = bounds.union(world.getItemAt(1).getBounds());
+            }
+            return bounds;
         }
 
         /** Toggles book-spread mode and re-opens at the current position. Returns the new state. */
@@ -1737,8 +1786,72 @@
                             btn.classList.add('immersive__tool-btn--active');
                             btn.setAttribute('aria-expanded', 'true');
                         }
+                        // Shift the page out from under an open slide-out (only if the
+                        // panel actually covers it); release when no panel is open. Uses
+                        // layout offsets so the panel's slide transition is irrelevant.
+                        const openPanel = document.querySelector('.immersive__panel--left.is-open');
+                        viewer.reserveLeft(openPanel ? openPanel.offsetLeft + openPanel.offsetWidth - el.offsetLeft : 0);
                     });
                 });
+
+                // TOC drawer: clicking an entry navigates in place (no reload) and
+                // highlights that section immediately, so the click intent always wins --
+                // regardless of load latency or which page of a double-page spread the
+                // section starts on. Entries carry their 1-based physical page number as
+                // data-page-no; entries without one fall through to normal navigation.
+                const menuPanel = document.getElementById('immersivePanelMenu');
+                if (menuPanel) {
+                    const tocEntries = () =>
+                        Array.from(menuPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
+                            .map((el) => ({ el, no: Number(el.dataset.pageNo) }))
+                            .filter((x) => Number.isFinite(x.no) && x.no >= 1);
+
+                    const setTocActive = (el) => {
+                        menuPanel.querySelectorAll('.widget-toc__element.active, .widget-toc__element-link.active').forEach((x) => x.classList.remove('active'));
+                        if (el) {
+                            el.classList.add('active');
+                            if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
+                        }
+                    };
+
+                    menuPanel.addEventListener('click', (e) => {
+                        const link = e.target.closest('.widget-toc__element-link a');
+                        if (!link) return;
+                        const element = link.closest('.widget-toc__element');
+                        const pageNo = element ? Number(element.dataset.pageNo) : NaN;
+                        if (!Number.isFinite(pageNo) || pageNo < 1) return;
+                        e.preventDefault();
+                        setTocActive(element);
+                        viewer.goToPage(pageNo - 1);
+                    });
+
+                    // Keep the highlight on the section the reader is in and let it follow
+                    // along when paging via the chevrons/grid/search. A section owns the
+                    // page range [pageNo, nextPageNo). The active section is kept while any
+                    // visible page (single page, or either page of a double-page spread)
+                    // still falls in its range; otherwise the section owning the last
+                    // visible page takes over. Range-based, so a section starting on the
+                    // right page of a spread no longer mis-picks its neighbour.
+                    const syncTocActive = () => {
+                        const entries = tocEntries();
+                        const pages = viewer.getCurrentPages().map((p) => p + 1);
+                        if (!entries.length || !pages.length) return;
+                        const active = menuPanel.querySelector('.widget-toc__element.active[data-page-no]');
+                        if (active) {
+                            const no = Number(active.dataset.pageNo);
+                            const nextNo = Math.min(Infinity, ...entries.map((x) => x.no).filter((n) => n > no));
+                            if (pages.some((p) => p >= no && p < nextNo)) return;
+                        }
+                        const top = Math.max(...pages);
+                        let best = null;
+                        entries.forEach((x) => {
+                            if (x.no <= top && (!best || x.no >= best.no)) best = x;
+                        });
+                        setTocActive(best ? best.el : null);
+                    };
+                    viewer.onPageChange.subscribe(syncTocActive);
+                    syncTocActive();
+                }
             })
             .catch((e) => console.error('immersive viewer init failed', e));
     }

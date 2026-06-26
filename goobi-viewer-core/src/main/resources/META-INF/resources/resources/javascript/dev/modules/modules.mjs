@@ -247,6 +247,65 @@ function initImmersiveViewer(el) {
                     }
                 });
             });
+
+            // TOC drawer: clicking an entry navigates in place (no reload) and
+            // highlights that section immediately, so the click intent always wins --
+            // regardless of load latency or which page of a double-page spread the
+            // section starts on. Entries carry their 1-based physical page number as
+            // data-page-no; entries without one fall through to normal navigation.
+            const menuPanel = document.getElementById('immersivePanelMenu');
+            if (menuPanel) {
+                const tocEntries = () =>
+                    Array.from(menuPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
+                        .map((el) => ({ el, no: Number(el.dataset.pageNo) }))
+                        .filter((x) => Number.isFinite(x.no) && x.no >= 1);
+
+                const setTocActive = (el) => {
+                    menuPanel.querySelectorAll('.widget-toc__element.active, .widget-toc__element-link.active').forEach((x) => x.classList.remove('active'));
+                    if (el) {
+                        el.classList.add('active');
+                        if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
+                    }
+                };
+
+                menuPanel.addEventListener('click', (e) => {
+                    const link = e.target.closest('.widget-toc__element-link a');
+                    if (!link) return;
+                    const element = link.closest('.widget-toc__element');
+                    const pageNo = element ? Number(element.dataset.pageNo) : NaN;
+                    if (!Number.isFinite(pageNo) || pageNo < 1) return;
+                    e.preventDefault();
+                    setTocActive(element);
+                    viewer.goToPage(pageNo - 1);
+                });
+
+                // Keep the highlight on the section the reader is in and let it follow
+                // along when paging via the chevrons/grid/search. A section owns the
+                // page range [pageNo, nextPageNo). The active section is kept while any
+                // visible page (single page, or either page of a double-page spread)
+                // still falls in its range; otherwise the section owning the last
+                // visible page takes over. Range-based, so a section starting on the
+                // right page of a spread no longer mis-picks its neighbour.
+                const syncTocActive = () => {
+                    const entries = tocEntries();
+                    const pages = viewer.getCurrentPages().map((p) => p + 1);
+                    if (!entries.length || !pages.length) return;
+                    const active = menuPanel.querySelector('.widget-toc__element.active[data-page-no]');
+                    if (active) {
+                        const no = Number(active.dataset.pageNo);
+                        const nextNo = Math.min(Infinity, ...entries.map((x) => x.no).filter((n) => n > no));
+                        if (pages.some((p) => p >= no && p < nextNo)) return;
+                    }
+                    const top = Math.max(...pages);
+                    let best = null;
+                    entries.forEach((x) => {
+                        if (x.no <= top && (!best || x.no >= best.no)) best = x;
+                    });
+                    setTocActive(best ? best.el : null);
+                };
+                viewer.onPageChange.subscribe(syncTocActive);
+                syncTocActive();
+            }
         })
         .catch((e) => console.error('immersive viewer init failed', e));
 }
