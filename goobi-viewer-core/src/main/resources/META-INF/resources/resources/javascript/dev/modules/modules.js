@@ -996,17 +996,15 @@
             this._anchor = null;
             this._preloaded = new Map();
             this._navigating = false;
-            this._reservedLeft = false;
             this._highlights = [];
             this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 160;
             this.onPageChange = new Emitter();
             this.onLoaded = new Emitter();
-            this._baseMargins = { top: 64, bottom: 72, left: 64, right: 64 };
 
             this.viewer = new ImageView.Image({
                 element: opts.element,
                 fittingMode: 'fixed',
-                margins: this._baseMargins,
+                margins: { top: 64, bottom: 72, left: 64, right: 64 },
                 zoom: { enabled: true, max: opts.maxZoom },
                 sequence: _sequence,
                 navigator: { enabled: false },
@@ -1116,53 +1114,6 @@
             } else {
                 this.zoom.goHome();
             }
-        }
-
-        /**
-         * Reserve `drawerRightPx` of the viewer's left edge (an open slide-out panel) so
-         * the current page/spread fits into the clear area to its right; pass 0 to release.
-         * Implemented by physically insetting the OSD mount (not viewport margins, which the
-         * library's double-page layout + snapshot crossfade ignore -- that mismatch caused
-         * the over-shift and the duplicated pages). The library then composes, fits and
-         * crossfades natively inside the smaller container, so navigating while the panel
-         * stays open just works. Only acts when the page actually reaches into the strip,
-         * so a page the panel does not cover never moves.
-         */
-        reserveLeft(drawerRightPx) {
-            const osd = this.viewer.openseadragon;
-            const host = this.viewer.element;
-            const bounds = this._currentBounds();
-            if (!host || !bounds) return;
-            const gap = 24;
-            if (drawerRightPx > 0) {
-                if (this._reservedLeft) return;
-                const imgLeft = osd.viewport.viewportToViewerElementCoordinates(bounds.getTopLeft()).x;
-                if (imgLeft >= drawerRightPx) return; // page already clear of the panel -> leave it
-                const inset = Math.round(drawerRightPx + gap);
-                host.style.marginLeft = `${inset}px`;
-                host.style.width = `calc(100% - ${inset}px)`;
-                this._reservedLeft = true;
-            } else {
-                if (!this._reservedLeft) return;
-                host.style.marginLeft = '';
-                host.style.width = '';
-                this._reservedLeft = false;
-            }
-            // Push the new mount size into OSD and re-fit the current page/spread into it.
-            const Point = osd.viewport.getContainerSize().constructor;
-            osd.viewport.resize(new Point(host.clientWidth, host.clientHeight), false);
-            osd.viewport.fitBounds(this._currentBounds(), false);
-        }
-
-        /** Viewport bounds of what is on screen now: one page, or the whole two-page spread. */
-        _currentBounds() {
-            const world = this.viewer.openseadragon.world;
-            if (!world.getItemCount()) return null;
-            let bounds = world.getItemAt(0).getBounds();
-            if (this.double && this.getCurrentPages().length > 1 && world.getItemCount() > 1) {
-                bounds = bounds.union(world.getItemAt(1).getBounds());
-            }
-            return bounds;
         }
 
         /** Toggles book-spread mode and re-opens at the current position. Returns the new state. */
@@ -1699,6 +1650,7 @@
 
                 // Overview: thumbnail grid overlay (lazy-mounted).
                 const gridOverlay = document.getElementById('immersiveGridOverlay');
+                const gridLoader = document.getElementById('immersiveGridLoader');
                 let gridMounted = false;
                 let gridTag = null;
                 const gridActions = new rxjs.Subject();
@@ -1738,6 +1690,20 @@
                             index: currentOrder(),
                         })[0];
                         gridMounted = true;
+                        // Hide the loading screen as soon as the first thumbnail paints
+                        // (safety timeout in case the manifest/images never resolve).
+                        let gridLoaderDone = false;
+                        let gridLoaderTimer;
+                        const hideGridLoader = () => {
+                            if (gridLoaderDone) return;
+                            gridLoaderDone = true;
+                            clearTimeout(gridLoaderTimer);
+                            if (gridLoader) gridLoader.hidden = true;
+                        };
+                        // <img> load events don't bubble -> listen in the capture phase
+                        const thumbsMount = document.getElementById('immersiveThumbnails');
+                        if (thumbsMount) thumbsMount.addEventListener('load', hideGridLoader, { capture: true, once: true });
+                        gridLoaderTimer = setTimeout(hideGridLoader, 8000);
                     } else {
                         syncGridSelection();
                     }
@@ -1786,11 +1752,6 @@
                             btn.classList.add('immersive__tool-btn--active');
                             btn.setAttribute('aria-expanded', 'true');
                         }
-                        // Shift the page out from under an open slide-out (only if the
-                        // panel actually covers it); release when no panel is open. Uses
-                        // layout offsets so the panel's slide transition is irrelevant.
-                        const openPanel = document.querySelector('.immersive__panel--left.is-open');
-                        viewer.reserveLeft(openPanel ? openPanel.offsetLeft + openPanel.offsetWidth - el.offsetLeft : 0);
                     });
                 });
 

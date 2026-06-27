@@ -372,6 +372,15 @@
                         icon="x"
                         svgClass="immersive__tool-icon" />
                 </button>
+                <!-- Loading screen shown until the first thumbnails appear (hidden by JS) -->
+                <div
+                    id="immersiveGridLoader"
+                    class="immersive__grid-loader">
+                    <img
+                        src="#{request.contextPath}/resources/images/infinity_loader.svg"
+                        class="ajax-loader__animated-image"
+                        alt="" />
+                </div>
                 <div
                     id="immersiveThumbnails"
                     class="immersive__grid-mount" />

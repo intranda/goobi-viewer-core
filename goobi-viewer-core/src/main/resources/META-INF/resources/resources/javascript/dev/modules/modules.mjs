@@ -158,6 +158,7 @@ function initImmersiveViewer(el) {
 
             // Overview: thumbnail grid overlay (lazy-mounted).
             const gridOverlay = document.getElementById('immersiveGridOverlay');
+            const gridLoader = document.getElementById('immersiveGridLoader');
             let gridMounted = false;
             let gridTag = null;
             const gridActions = new rxjs.Subject();
@@ -197,6 +198,20 @@ function initImmersiveViewer(el) {
                         index: currentOrder(),
                     })[0];
                     gridMounted = true;
+                    // Hide the loading screen as soon as the first thumbnail paints
+                    // (safety timeout in case the manifest/images never resolve).
+                    let gridLoaderDone = false;
+                    let gridLoaderTimer;
+                    const hideGridLoader = () => {
+                        if (gridLoaderDone) return;
+                        gridLoaderDone = true;
+                        clearTimeout(gridLoaderTimer);
+                        if (gridLoader) gridLoader.hidden = true;
+                    };
+                    // <img> load events don't bubble -> listen in the capture phase
+                    const thumbsMount = document.getElementById('immersiveThumbnails');
+                    if (thumbsMount) thumbsMount.addEventListener('load', hideGridLoader, { capture: true, once: true });
+                    gridLoaderTimer = setTimeout(hideGridLoader, 8000);
                 } else {
                     syncGridSelection();
                 }
