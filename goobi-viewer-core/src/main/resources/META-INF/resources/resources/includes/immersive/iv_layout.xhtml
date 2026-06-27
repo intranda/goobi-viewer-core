@@ -45,6 +45,21 @@
                         icon="menu-2"
                         svgClass="immersive__tool-icon" />
                 </button>
+                <!-- Fulltext (page OCR) toggle; only rendered when the work has fulltext.
+                     modules.mjs disables it in double-page mode (single-page only). -->
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
+                    <button
+                        type="button"
+                        class="immersive__tool-btn"
+                        data-immersive-panel="immersivePanelFulltext"
+                        data-title-disabled="#{msg.fulltextOnlySinglePage}"
+                        title="#{msg.fulltext}"
+                        aria-label="#{msg.fulltext}">
+                        <util:icon
+                            icon="align-left"
+                            svgClass="immersive__tool-icon" />
+                    </button>
+                </ui:fragment>
                 <button
                     type="button"
                     class="immersive__tool-btn"
@@ -65,12 +80,38 @@
                 id="immersivePanelMenu"
                 class="immersive__panel immersive__panel--left immersive__panel--menu"
                 aria-hidden="true">
+                <!-- Record header: work title + (only when the TOC nests) the expand/
+                     collapse-all toggle, where the close button used to sit. The panel
+                     closes via Escape or by re-clicking the burger. -->
+                <div class="immersive__panel-header">
+                    <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
+                    <button
+                        type="button"
+                        class="immersive__toc-collapse"
+                        data-immersive-toc-toggle="true"
+                        data-label-collapse="#{msg.allClose}"
+                        data-label-expand="#{msg.allOpen}"
+                        title="#{msg.allClose}"
+                        aria-label="#{msg.allClose}"
+                        hidden="hidden">
+                        <util:icon
+                            icon="square-rounded-minus"
+                            svgClass="immersive__toc-collapse-icon immersive__toc-collapse-icon--collapse" />
+                        <util:icon
+                            icon="square-rounded-plus"
+                            svgClass="immersive__toc-collapse-icon immersive__toc-collapse-icon--expand" />
+                    </button>
+                </div>
                 <widgetComponent:widget_toc />
             </aside>
             <aside
                 id="immersivePanelSearch"
                 class="immersive__panel immersive__panel--left"
                 aria-hidden="true">
+                <!-- Record header: just the work title (closes via Escape or the burger). -->
+                <div class="immersive__panel-header">
+                    <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
+                </div>
                 <widgetComponent:widget_searchInCurrentItem />
                 <!-- In-place fulltext search results (populated by modules.mjs) -->
                 <div
@@ -109,6 +150,50 @@
                         id="immersiveResultsList" />
                 </div>
             </aside>
+            <!-- Fulltext (page OCR) panel: title header + the current page's transcription,
+                 fetched per page by modules.mjs (DFG-Viewer-like). Single-page only. -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
+                <aside
+                    id="immersivePanelFulltext"
+                    class="immersive__panel immersive__panel--left immersive__panel--fulltext"
+                    aria-hidden="true">
+                    <div class="immersive__panel-header">
+                        <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
+                        <div
+                            class="immersive__fulltext-granularity"
+                            role="group"
+                            aria-label="#{msg.fulltext__granularity_label}">
+                            <button
+                                type="button"
+                                class="immersive__fulltext-granularity-btn is-active"
+                                data-immersive-granularity="line"
+                                aria-pressed="true">
+                                #{msg.fulltext__granularity_line}
+                            </button>
+                            <button
+                                type="button"
+                                class="immersive__fulltext-granularity-btn"
+                                data-immersive-granularity="word"
+                                aria-pressed="false">
+                                #{msg.fulltext__granularity_word}
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        class="immersive__fulltext-loader"
+                        id="immersiveFulltextLoader"
+                        hidden="hidden">
+                        <img
+                            src="#{request.contextPath}/resources/images/infinity_loader.svg"
+                            class="ajax-loader__animated-image"
+                            alt="" />
+                    </div>
+                    <div
+                        class="immersive__fulltext"
+                        id="immersiveFulltext"
+                        data-label-empty="#{msg.noFulltextAvailable}" />
+                </aside>
+            </ui:fragment>
 
             <!-- Central canvas: media-type dependent (universal view, mirrors viewObject.xhtml) -->
             <main
@@ -363,6 +448,8 @@
                 class="immersive__grid"
                 id="immersiveGridOverlay"
                 hidden="hidden">
+                <!-- Close button is a direct, non-scrolling child of the overlay so it
+                     stays pinned top-right while the thumbnails scroll in __grid-scroll. -->
                 <button
                     type="button"
                     class="immersive__grid-close"
@@ -370,20 +457,22 @@
                     aria-label="#{msg.closeWindow}">
                     <util:icon
                         icon="x"
-                        svgClass="immersive__tool-icon" />
+                        svgClass="immersive__close-icon" />
                 </button>
-                <!-- Loading screen shown until the first thumbnails appear (hidden by JS) -->
-                <div
-                    id="immersiveGridLoader"
-                    class="immersive__grid-loader">
-                    <img
-                        src="#{request.contextPath}/resources/images/infinity_loader.svg"
-                        class="ajax-loader__animated-image"
-                        alt="" />
+                <div class="immersive__grid-scroll">
+                    <!-- Loading screen shown until the first thumbnails appear (hidden by JS) -->
+                    <div
+                        id="immersiveGridLoader"
+                        class="immersive__grid-loader">
+                        <img
+                            src="#{request.contextPath}/resources/images/infinity_loader.svg"
+                            class="ajax-loader__animated-image"
+                            alt="" />
+                    </div>
+                    <div
+                        id="immersiveThumbnails"
+                        class="immersive__grid-mount" />
                 </div>
-                <div
-                    id="immersiveThumbnails"
-                    class="immersive__grid-mount" />
             </div>
         </section>
 

@@ -1041,6 +1041,37 @@
             this._highlights = [];
         }
 
+        // --- text-region overlays (hover linking, separate from search highlights) ---
+
+        /**
+         * Draws OCR line boxes (image pixels) as hoverable, id-tagged overlays and
+         * returns a Map id → overlay element. Regions without a `rect` are skipped.
+         */
+        setTextRegions(regions) {
+            this.clearTextRegions();
+            const osd = this.viewer.openseadragon;
+            const item = this.currentItem || osd.world.getItemAt(0);
+            const map = new Map();
+            if (!item) return map;
+            (regions || []).forEach((r) => {
+                if (!r.rect) return;
+                const el = document.createElement('div');
+                el.className = 'immersive__text-region';
+                el.dataset.ivRegionId = r.id;
+                osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
+                map.set(r.id, el);
+            });
+            this._textRegions = Array.from(map.values());
+            return map;
+        }
+
+        /** Removes all text-region overlays (leaves search highlights untouched). */
+        clearTextRegions() {
+            const osd = this.viewer.openseadragon;
+            (this._textRegions || []).forEach((el) => osd.removeOverlay(el));
+            this._textRegions = [];
+        }
+
         // --- state ---
 
         getCurrentOrder() {
@@ -1372,6 +1403,260 @@
         });
     }
 
+    function _parseXywh(on) {
+        if (!on) return null;
+        const candidates =
+            typeof on === 'string' ? [on] : [typeof on['@id'] === 'string' ? on['@id'] : '', on.selector && typeof on.selector.value === 'string' ? on.selector.value : ''];
+        for (const c of candidates) {
+            const m = c && c.match(/xywh=(\d+),(\d+),(\d+),(\d+)/);
+            if (m) return { x: +m[1], y: +m[2], w: +m[3], h: +m[4] };
+        }
+        return null;
+    }
+
+    /**
+     * Maps a IIIF/W3C `sc:AnnotationList` (one annotation per OCR text line) to
+     * structured lines that keep the line box from the annotation `on` selector
+     * (a `xywh=x,y,w,h` fragment, found on `on` as a string, on `on['@id']`, or in
+     * `on.selector.value`). Lines without a box get `rect: null`. The `id` is the
+     * annotation `@id` when present, else a per-page index fallback `line-${i}`.
+     *
+     * @param {object} annotationList - the parsed `sc:AnnotationList` JSON.
+     * @returns {{id:string, chars:string, rect:{x:number,y:number,w:number,h:number}|null}[]}
+     */
+    function parsePageLines(annotationList) {
+        const lines = (annotationList && annotationList.resources) || [];
+        return lines.map((a, i) => ({
+            id: (a && a['@id']) || `line-${i}`,
+            chars: (a && a.resource && a.resource.chars) || '',
+            rect: _parseXywh(a && a.on),
+        }));
+    }
+
+    /**
+     * Fetches the OCR fulltext of a single page as structured lines (chars + box).
+     *
+     * @param {string} pi
+     * @param {string} apiBase
+     * @param {number} order    - 0-based page order; the endpoint is 1-based, so order + 1.
+     * @param {Function} fetchFn
+     * @returns {Promise<{id:string, chars:string, rect:object|null}[]>} lines, or [] on failure.
+     */
+    async function loadPageLines(pi, apiBase, order, fetchFn = fetch) {
+        const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/`);
+        if (!res.ok) {
+            return [];
+        }
+        return parsePageLines(await res.json());
+    }
+
+    /**
+     * Granularity dispatch for the hover-linking panel. `'line'` returns the page's
+     * OCR lines with boxes; `'word'` fetches the same page-text endpoint with
+     * `?granularity=word` and parses the result through `parsePageLines`.
+     *
+     * @param {string} pi
+     * @param {string} apiBase
+     * @param {number} order
+     * @param {string} granularity - 'line' | 'word'
+     * @param {Function} fetchFn
+     * @returns {Promise<Array>}
+     */
+    async function loadPageRegions(pi, apiBase, order, granularity, fetchFn = fetch) {
+        if (granularity === 'word') {
+            const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/?granularity=word`);
+            if (!res.ok) {
+                return [];
+            }
+            return parsePageLines(await res.json());
+        }
+        return loadPageLines(pi, apiBase, order, fetchFn);
+    }
+
+    /** OCR line ↔ image region hover linking for the immersive fulltext panel. */
+
+    const ACTIVE_CLASS = 'is-linked-active';
+
+    /**
+     * Builds the fulltext line spans for the panel: one `<span>` per line, tagged
+     * with `data-iv-region-id` to match its image overlay. Text is set via
+     * `textContent`, so OCR content can never inject markup.
+     *
+     * @param {{id:string, chars:string}[]} lines
+     * @returns {DocumentFragment}
+     */
+    function buildLineSpans(lines) {
+        const frag = document.createDocumentFragment();
+        (lines || []).forEach((line) => {
+            const span = document.createElement('span');
+            span.className = 'immersive__fulltext-line';
+            span.dataset.ivRegionId = line.id;
+            span.textContent = line.chars || '';
+            frag.appendChild(span);
+        });
+        return frag;
+    }
+
+    /**
+     * Indexes elements by their `data-iv-region-id` (elements without one are skipped).
+     * @param {Iterable<HTMLElement>} elements
+     * @returns {Map<string, HTMLElement>}
+     */
+    function indexById(elements) {
+        const map = new Map();
+        for (const el of elements) {
+            const id = el.dataset && el.dataset.ivRegionId;
+            if (id) map.set(id, el);
+        }
+        return map;
+    }
+
+    /**
+     * Computes the scrollTop needed to center a line within its scroll container,
+     * or null if the line is already fully visible. Pure (numbers only) so it is
+     * testable without a layout engine.
+     *
+     * @param {{offsetTop:number, height:number, scrollTop:number, clientHeight:number, scrollHeight:number}} m
+     * @returns {number|null}
+     */
+    function scrollTopToReveal(m) {
+        const top = m.offsetTop;
+        const bottom = m.offsetTop + m.height;
+        if (top >= m.scrollTop && bottom <= m.scrollTop + m.clientHeight) return null;
+        const target = m.offsetTop - m.clientHeight / 2 + m.height / 2;
+        const max = Math.max(0, m.scrollHeight - m.clientHeight);
+        return Math.min(Math.max(0, target), max);
+    }
+
+    /**
+     * Cumulative offsetTop of `el` relative to `container`, mirroring the panel
+     * scroll math used elsewhere in the immersive view.
+     * @param {HTMLElement} el
+     * @param {HTMLElement} container
+     * @returns {number}
+     */
+    function _offsetTopWithin(el, container) {
+        let top = 0;
+        for (let n = el; n && n !== container; n = n.offsetParent) top += n.offsetTop;
+        return top;
+    }
+
+    /**
+     * Wires bidirectional hover highlighting between the panel line spans (inside
+     * `box`) and the image region overlays (`regionEls`) that share the same
+     * `data-iv-region-id`. Hover on either side toggles `is-linked-active` on both.
+     *
+     * @param {object} opts
+     * @param {HTMLElement} opts.box - fulltext panel element containing the line spans.
+     * @param {Map<string, HTMLElement>} opts.regionEls - image overlay elements, already indexed by id.
+     * @param {HTMLElement} [opts.scrollContainer] - scrollable panel; when set, hovering an
+     *   image overlay scrolls its line into view if not fully visible.
+     * @returns {{destroy: function():void}}
+     */
+    function mountTextImageLink({ box, regionEls, scrollContainer }) {
+        const spanEls = indexById(box.querySelectorAll('[data-iv-region-id]'));
+        const regions = regionEls || new Map();
+        const listeners = [];
+
+        const setActive = (id, on) => {
+            const span = spanEls.get(id);
+            const overlay = regions.get(id);
+            if (span) span.classList.toggle(ACTIVE_CLASS, on);
+            if (overlay) overlay.classList.toggle(ACTIVE_CLASS, on);
+        };
+
+        const revealSpan = (id) => {
+            if (!scrollContainer) return;
+            const span = spanEls.get(id);
+            if (!span) return;
+            const target = scrollTopToReveal({
+                offsetTop: _offsetTopWithin(span, scrollContainer),
+                height: span.offsetHeight,
+                scrollTop: scrollContainer.scrollTop,
+                clientHeight: scrollContainer.clientHeight,
+                scrollHeight: scrollContainer.scrollHeight,
+            });
+            if (target !== null) scrollContainer.scrollTop = target;
+        };
+
+        const bind = (el, id, isOverlay) => {
+            const enter = () => {
+                setActive(id, true);
+                if (isOverlay) revealSpan(id);
+            };
+            const leave = () => setActive(id, false);
+            el.addEventListener('mouseenter', enter);
+            el.addEventListener('mouseleave', leave);
+            listeners.push([el, enter, leave]);
+        };
+
+        spanEls.forEach((el, id) => bind(el, id, false));
+        regions.forEach((el, id) => bind(el, id, true));
+
+        return {
+            destroy() {
+                listeners.forEach(([el, enter, leave]) => {
+                    el.removeEventListener('mouseenter', enter);
+                    el.removeEventListener('mouseleave', leave);
+                });
+                listeners.length = 0;
+            },
+        };
+    }
+
+    /**
+     * Groups consecutive word regions into lines by their `rect.y` (within
+     * `tolerance` px). Order preserved; a word without a rect stays on the current
+     * line. Pure.
+     *
+     * @param {{id:string, chars:string, rect:{x:number,y:number,w:number,h:number}|null}[]} regions
+     * @param {number} tolerance
+     * @returns {Array<Array<object>>}
+     */
+    function groupWordsIntoLines(regions, tolerance = 8) {
+        const lines = [];
+        let current = null;
+        let lastY = null;
+        for (const r of regions || []) {
+            const y = r && r.rect ? r.rect.y : null;
+            const newLine = current === null || (y !== null && lastY !== null && Math.abs(y - lastY) > tolerance);
+            if (newLine) {
+                current = [r];
+                lines.push(current);
+            } else {
+                current.push(r);
+            }
+            if (y !== null) lastY = y;
+        }
+        return lines;
+    }
+
+    /**
+     * Builds word spans grouped into line blocks (preserving the original line
+     * layout). Each word is a hoverable `<span data-iv-region-id>`; text via
+     * `textContent`. Reuses the `immersive__fulltext-line` block class.
+     *
+     * @param {{id:string, chars:string, rect:object|null}[]} regions
+     * @returns {DocumentFragment}
+     */
+    function buildWordSpans(regions) {
+        const frag = document.createDocumentFragment();
+        groupWordsIntoLines(regions).forEach((words) => {
+            const line = document.createElement('span');
+            line.className = 'immersive__fulltext-line';
+            words.forEach((w, i) => {
+                const span = document.createElement('span');
+                span.className = 'immersive__fulltext-word';
+                span.dataset.ivRegionId = w.id;
+                span.textContent = w.chars || '';
+                line.appendChild(span);
+                if (i < words.length - 1) line.appendChild(document.createTextNode(' '));
+            });
+            frag.appendChild(line);
+        });
+        return frag;
+    }
+
     /**
      * Rewrites the page-number segment of an immersive URL path (or appends it).
      * The PI segment is never treated as the page number. Pure + tested.
@@ -1538,6 +1823,106 @@
         const startOrder = Number(el.dataset.startOrder) || 0;
         const maxZoom = el.dataset.maxZoom ? parseInt(el.dataset.maxZoom) : undefined;
 
+        // Slide-out panels (TOC / search): bind open/close immediately -- before the IIIF
+        // services fetch -- so the server-rendered sidebar opens without waiting for the
+        // first image. The triggering button is marked active while its panel is open.
+        const immersiveRoot = el.closest('.immersive');
+        const panelButtons = document.querySelectorAll('[data-immersive-panel]');
+        // Flag the root while a left panel is open so CSS can hide the floating title and
+        // prev chevron over the image (the title + close live in the panel header now).
+        const syncPanelOpenFlag = () => {
+            if (immersiveRoot) {
+                immersiveRoot.classList.toggle('immersive--panel-open', !!document.querySelector('.immersive__panel--left.is-open'));
+            }
+        };
+        // Set by the fulltext block; clears its image overlays + hover wiring when the panel closes.
+        let onFulltextClose = null;
+        const closePanels = () => {
+            if (typeof onFulltextClose === 'function') onFulltextClose();
+            document.querySelectorAll('.immersive__panel--left.is-open').forEach((p) => {
+                p.classList.remove('is-open');
+                p.setAttribute('aria-hidden', 'true');
+            });
+            panelButtons.forEach((b) => {
+                b.classList.remove('immersive__tool-btn--active');
+                b.setAttribute('aria-expanded', 'false');
+            });
+            syncPanelOpenFlag();
+        };
+        panelButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                // A disabled rail tool (e.g. fulltext in double-page mode) must not open its panel.
+                if (btn.getAttribute('aria-disabled') === 'true') return;
+                const panel = document.getElementById(btn.dataset.immersivePanel);
+                if (!panel) return;
+                const wasOpen = panel.classList.contains('is-open');
+                closePanels();
+                if (!wasOpen) {
+                    panel.classList.add('is-open');
+                    panel.setAttribute('aria-hidden', 'false');
+                    btn.classList.add('immersive__tool-btn--active');
+                    btn.setAttribute('aria-expanded', 'true');
+                    syncPanelOpenFlag();
+                    // Bring the active TOC entry into view (e.g. reloaded on a page far down,
+                    // so the highlighted section isn't left off-screen at the top). Scroll the
+                    // panel via offset math, not scrollIntoView, so the whole page never moves.
+                    const active = panel.querySelector('.widget-toc__element.active');
+                    if (active) {
+                        let top = 0;
+                        for (let n = active; n && n !== panel; n = n.offsetParent) top += n.offsetTop;
+                        panel.scrollTop = Math.max(0, top - panel.clientHeight / 2);
+                    }
+                }
+            });
+        });
+        // No close button in the panel anymore: Escape closes the open panel (re-clicking
+        // the burger toggles it shut too).
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.querySelector('.immersive__panel--left.is-open')) {
+                closePanels();
+            }
+        });
+
+        // TOC "collapse all / expand all" toggle: the tree is server-rendered, so wire it up
+        // immediately (no viewer needed) and show it right away -- only when the TOC actually
+        // nests. Collapse folds to the top-level chapters (the record root is hidden, so we
+        // never fold to it); state-driven, so a click expands all if anything is collapsed.
+        const tocPanel = document.getElementById('immersivePanelMenu');
+        const tocContainer = document.getElementById('widgetToc');
+        const tocToggle = tocPanel && tocPanel.querySelector('[data-immersive-toc-toggle]');
+        if (tocContainer && tocToggle && tocContainer.querySelector(".widget-toc__element[data-level='2']")) {
+            tocToggle.hidden = false;
+            const reflectTocToggle = () => {
+                const collapsed = !!tocContainer.querySelector('.widget-toc__element--hidden');
+                tocToggle.classList.toggle('immersive__toc-collapse--collapsed', collapsed);
+                const label = collapsed ? tocToggle.dataset.labelExpand : tocToggle.dataset.labelCollapse;
+                tocToggle.setAttribute('aria-label', label);
+                tocToggle.setAttribute('title', label);
+            };
+            tocToggle.addEventListener('click', () => {
+                if (tocContainer.querySelector('.widget-toc__element--hidden')) {
+                    tocContainer.querySelectorAll('.widget-toc__element--hidden').forEach((li) => li.classList.remove('widget-toc__element--hidden'));
+                    tocContainer.querySelectorAll('.widget-toc__element.parent').forEach((li) => {
+                        li.classList.add('widget-toc__element--expanded');
+                        const t = li.querySelector('.widget-toc__toggle');
+                        if (t) t.setAttribute('aria-expanded', 'true');
+                    });
+                } else {
+                    tocContainer.querySelectorAll('.widget-toc__element').forEach((li) => {
+                        const level = Number(li.dataset.level);
+                        if (level >= 2) li.classList.add('widget-toc__element--hidden');
+                        if (level >= 1 && li.classList.contains('parent')) {
+                            li.classList.remove('widget-toc__element--expanded');
+                            const t = li.querySelector('.widget-toc__toggle');
+                            if (t) t.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
+                reflectTocToggle();
+            });
+            reflectTocToggle();
+        }
+
         loadPageServices(pi, apiBase)
             .then((services) => {
                 const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
@@ -1648,6 +2033,97 @@
                     });
                 });
 
+                // Fulltext (page OCR): render the current page's transcription in the left panel,
+                // DFG-Viewer style. The text endpoint is per single page, so this is single-page
+                // only -- double-page mode disables the rail button (see updateFulltextAvail).
+                const fulltextPanel = document.getElementById('immersivePanelFulltext');
+                const fulltextBox = document.getElementById('immersiveFulltext');
+                const fulltextLoader = document.getElementById('immersiveFulltextLoader');
+                const fulltextBtn = document.querySelector('[data-immersive-panel="immersivePanelFulltext"]');
+                const fulltextTitleDefault = fulltextBtn ? fulltextBtn.getAttribute('title') : '';
+                if (fulltextPanel && fulltextBox) {
+                    let granularity = 'line';
+                    let fulltextReq = 0;
+                    let currentLink = null;
+
+                    const clearFulltextLink = () => {
+                        if (currentLink) {
+                            currentLink.destroy();
+                            currentLink = null;
+                        }
+                        viewer.clearTextRegions();
+                        if (fulltextLoader) fulltextLoader.hidden = true;
+                    };
+                    // Close-Hook: when any panel close runs, drop our overlays + wiring.
+                    onFulltextClose = clearFulltextLink;
+
+                    // Out-of-order guard: only the latest page request paints its text.
+                    const loadFulltext = async () => {
+                        const order = viewer.getCurrentPages()[0];
+                        if (order === undefined) return;
+                        const req = ++fulltextReq;
+                        clearFulltextLink();
+                        if (fulltextLoader) fulltextLoader.hidden = false;
+                        fulltextBox.textContent = '';
+                        fulltextBox.classList.remove('immersive__fulltext--empty');
+                        let regions = null;
+                        try {
+                            regions = await loadPageRegions(pi, apiBase, order, granularity);
+                        } catch (e) {
+                            regions = null;
+                        }
+                        if (req !== fulltextReq) return;
+                        if (fulltextLoader) fulltextLoader.hidden = true;
+                        if (regions && regions.length) {
+                            const fragment = granularity === 'word' ? buildWordSpans(regions) : buildLineSpans(regions);
+                            fulltextBox.replaceChildren(fragment);
+                            const regionEls = viewer.setTextRegions(regions);
+                            currentLink = mountTextImageLink({ box: fulltextBox, regionEls, scrollContainer: fulltextPanel });
+                        } else {
+                            fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
+                            fulltextBox.classList.add('immersive__fulltext--empty');
+                        }
+                    };
+
+                    // Granularity toggle (v1: 'word' is disabled in the markup; hook is ready).
+                    const granularityBtns = fulltextPanel.querySelectorAll('[data-immersive-granularity]');
+                    granularityBtns.forEach((b) => {
+                        b.addEventListener('click', () => {
+                            if (b.disabled) return;
+                            granularity = b.dataset.immersiveGranularity;
+                            granularityBtns.forEach((x) => {
+                                const on = x === b;
+                                x.classList.toggle('is-active', on);
+                                x.setAttribute('aria-pressed', String(on));
+                            });
+                            if (fulltextPanel.classList.contains('is-open')) loadFulltext();
+                        });
+                    });
+
+                    if (fulltextBtn) {
+                        fulltextBtn.addEventListener('click', () => {
+                            if (fulltextPanel.classList.contains('is-open')) loadFulltext();
+                        });
+                    }
+                    viewer.onPageChange.subscribe(() => {
+                        if (fulltextPanel.classList.contains('is-open')) loadFulltext();
+                    });
+                }
+
+                // Fulltext is per single page: in double-page mode grey out + disable the rail
+                // button (its tooltip explains why) and close the panel if it was open.
+                const updateFulltextAvail = () => {
+                    if (!fulltextBtn) return;
+                    const doublePage = !!(viewer.isDoublePage && viewer.isDoublePage());
+                    fulltextBtn.classList.toggle('immersive__tool-btn--disabled', doublePage);
+                    fulltextBtn.setAttribute('aria-disabled', String(doublePage));
+                    const title = (doublePage && fulltextBtn.dataset.titleDisabled) || fulltextTitleDefault;
+                    fulltextBtn.setAttribute('title', title);
+                    fulltextBtn.setAttribute('aria-label', title);
+                    if (doublePage && fulltextPanel && fulltextPanel.classList.contains('is-open')) closePanels();
+                };
+                updateFulltextAvail();
+
                 // Overview: thumbnail grid overlay (lazy-mounted).
                 const gridOverlay = document.getElementById('immersiveGridOverlay');
                 const gridLoader = document.getElementById('immersiveGridLoader');
@@ -1709,6 +2185,13 @@
                     }
                 };
 
+                // Esc closes the open overview overlay (mirrors the close button).
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && gridOverlay && !gridOverlay.hidden) {
+                        gridOverlay.hidden = true;
+                    }
+                });
+
                 document.querySelectorAll('[data-immersive-page]').forEach((btn) => {
                     btn.addEventListener('click', () => (btn.dataset.immersivePage === 'next' ? viewer.next() : viewer.prev()));
                 });
@@ -1726,34 +2209,13 @@
                             const on = viewer.toggleDoublePage();
                             btn.setAttribute('aria-pressed', String(on));
                             btn.classList.toggle('immersive__tool-btn--active', on);
+                            updateFulltextAvail();
                         }
                     });
                 });
 
-                // Left slide-out panels (TOC / search). The triggering button is marked active
-                // while its panel is open so the rail can show the brand accent on it.
-                const panelButtons = document.querySelectorAll('[data-immersive-panel]');
-                panelButtons.forEach((btn) => {
-                    btn.addEventListener('click', () => {
-                        const panel = document.getElementById(btn.dataset.immersivePanel);
-                        if (!panel) return;
-                        const wasOpen = panel.classList.contains('is-open');
-                        document.querySelectorAll('.immersive__panel--left.is-open').forEach((p) => {
-                            p.classList.remove('is-open');
-                            p.setAttribute('aria-hidden', 'true');
-                        });
-                        panelButtons.forEach((b) => {
-                            b.classList.remove('immersive__tool-btn--active');
-                            b.setAttribute('aria-expanded', 'false');
-                        });
-                        if (!wasOpen) {
-                            panel.classList.add('is-open');
-                            panel.setAttribute('aria-hidden', 'false');
-                            btn.classList.add('immersive__tool-btn--active');
-                            btn.setAttribute('aria-expanded', 'true');
-                        }
-                    });
-                });
+                // (Panel open/close is bound earlier -- before loadPageServices -- so the
+                // sidebar opens immediately, without waiting for the first image to load.)
 
                 // TOC drawer: clicking an entry navigates in place (no reload) and
                 // highlights that section immediately, so the click intent always wins --
@@ -1764,10 +2226,20 @@
                 if (menuPanel) {
                     const tocEntries = () =>
                         Array.from(menuPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
+                            .filter((el) => el.dataset.level !== '0') // skip the hidden record root
                             .map((el) => ({ el, no: Number(el.dataset.pageNo) }))
                             .filter((x) => Number.isFinite(x.no) && x.no >= 1);
 
                     const setTocActive = (el) => {
+                        // Tree-view: let the widget set active + expand collapsed ancestors, so a
+                        // section reached via the grid/chevrons inside a collapsed branch opens up.
+                        // (Its own scroll is a no-op here -- the panel scrolls, not the list -- so
+                        // we still scrollIntoView ourselves when the panel is open.)
+                        if (el && el.dataset.iddoc && window.viewerJS && viewerJS.widgetToc) {
+                            viewerJS.widgetToc.setActive(el.dataset.iddoc.replace('iddoc_', ''));
+                            if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
+                            return;
+                        }
                         menuPanel.querySelectorAll('.widget-toc__element.active, .widget-toc__element-link.active').forEach((x) => x.classList.remove('active'));
                         if (el) {
                             el.classList.add('active');

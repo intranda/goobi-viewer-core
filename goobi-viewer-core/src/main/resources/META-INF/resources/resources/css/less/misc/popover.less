@@ -64,6 +64,10 @@ imageFilters {
         }
         &__label {
             flex-basis: 40%;
+            /* Bootstrap hard-codes .popover-body { color: #212529 }, which is invisible
+               on the dark popover surface in dark mode. Pair the label with the popover's
+               own --fg-popover token so it tracks light/dark like the surface. */
+            color: var(--fg-popover, @colorFonts);
             &-long {
                 flex-basis: 80%;
             }

@@ -27,6 +27,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_TEXT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -233,6 +234,70 @@ class RecordPageResourceTest extends AbstractRestApiTest {
             assertNotNull(pdfLink, "No PDF link in canvas");
             String id = (String) pdfLink.get("@id");
             Assertions.assertTrue(id.contains("IMG+20200322+144253.jpg"), "Wrong filename in " + id);
+        }
+    }
+
+    /**
+     * Verifies that requesting text annotations with the default granularity (line) returns HTTP 200.
+     * The endpoint path is /{pageNo}/text and the default for the new granularity param is "line",
+     * so existing callers are unaffected.
+     *
+     * @verifies return 200 with default line granularity
+     * @see RecordPageResource#getTextForPage
+     */
+    @Test
+    void getTextForPage_defaultGranularity_shouldReturn200() {
+        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(PI, PAGENO).build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, response.getStatus(),
+                    "Default (line) granularity must return HTTP 200");
+            assertNotNull(response.readEntity(String.class));
+        }
+    }
+
+    /**
+     * Verifies that requesting text annotations with {@code granularity=word} is accepted (HTTP 200)
+     * and returns a valid JSON response. For pages without an indexed ALTO file the annotation list
+     * will be empty; the assertion here covers only the HTTP contract and non-null body.
+     *
+     * @verifies return 200 with word granularity parameter
+     * @see RecordPageResource#getTextForPage
+     */
+    @Test
+    void getTextForPage_wordGranularity_shouldReturn200() {
+        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(PI, PAGENO).build();
+        try (Response response = target(url)
+                .queryParam("granularity", "word")
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, response.getStatus(),
+                    "granularity=word must return HTTP 200");
+            assertNotNull(response.readEntity(String.class));
+        }
+    }
+
+    /**
+     * An unknown granularity value (neither "line" nor "word") must be silently treated as "line"
+     * and still return HTTP 200.
+     *
+     * @verifies treat unknown granularity values as line and return 200
+     * @see RecordPageResource#getTextForPage
+     */
+    @Test
+    void getTextForPage_unknownGranularity_shouldFallBackToLineAndReturn200() {
+        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(PI, PAGENO).build();
+        try (Response response = target(url)
+                .queryParam("granularity", "paragraph")
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, response.getStatus(),
+                    "Unknown granularity must fall back to line and return HTTP 200");
+            assertNotNull(response.readEntity(String.class));
         }
     }
 

@@ -119,6 +119,37 @@ export default class IvViewer {
         this._highlights = [];
     }
 
+    // --- text-region overlays (hover linking, separate from search highlights) ---
+
+    /**
+     * Draws OCR line boxes (image pixels) as hoverable, id-tagged overlays and
+     * returns a Map id → overlay element. Regions without a `rect` are skipped.
+     */
+    setTextRegions(regions) {
+        this.clearTextRegions();
+        const osd = this.viewer.openseadragon;
+        const item = this.currentItem || osd.world.getItemAt(0);
+        const map = new Map();
+        if (!item) return map;
+        (regions || []).forEach((r) => {
+            if (!r.rect) return;
+            const el = document.createElement('div');
+            el.className = 'immersive__text-region';
+            el.dataset.ivRegionId = r.id;
+            osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
+            map.set(r.id, el);
+        });
+        this._textRegions = Array.from(map.values());
+        return map;
+    }
+
+    /** Removes all text-region overlays (leaves search highlights untouched). */
+    clearTextRegions() {
+        const osd = this.viewer.openseadragon;
+        (this._textRegions || []).forEach((el) => osd.removeOverlay(el));
+        this._textRegions = [];
+    }
+
     // --- state ---
 
     getCurrentOrder() {
