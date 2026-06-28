@@ -180,4 +180,17 @@ describe('loadPageRegions', () => {
         const fetchFn = jest.fn().mockResolvedValue({ ok: false, status: 404 });
         expect(await loadPageRegions('PPN1', 'https://h/api', 0, 'word', fetchFn)).toEqual([]);
     });
+
+    test("granularity 'word' filters out blank-chars regions (ALTO spaces)", async () => {
+        const list = {
+            resources: [
+                { '@id': 'w1', resource: { chars: 'Hallo' }, on: { selector: { value: 'xywh=1,2,3,4' } } },
+                { '@id': 'sp', resource: { chars: ' ' }, on: { selector: { value: 'xywh=5,6,7,8' } } },
+                { '@id': 'w2', resource: { chars: 'Welt' }, on: { selector: { value: 'xywh=9,10,11,12' } } },
+            ],
+        };
+        const fetchFn = jest.fn().mockResolvedValue(okResponse(list));
+        const regions = await loadPageRegions('PPN1', 'https://h/api', 0, 'word', fetchFn);
+        expect(regions.map((r) => r.id)).toEqual(['w1', 'w2']);
+    });
 });

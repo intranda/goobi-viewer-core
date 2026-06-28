@@ -110,13 +110,17 @@ describe('scrollTopToReveal', () => {
 });
 
 describe('groupWordsIntoLines', () => {
-    const W = (id, x, y) => ({ id, chars: id, rect: { x, y, w: 10, h: 10 } });
-    test('groups words with similar y into lines, keeps order, splits on y jump', () => {
-        const out = groupWordsIntoLines([W('a', 0, 100), W('b', 20, 102), W('c', 0, 200)], 8);
+    const W = (id, y, h) => ({ id, chars: id, rect: { x: 0, y, w: 10, h } });
+    test('groups vertically-overlapping words into one line, splits when no overlap', () => {
+        const out = groupWordsIntoLines([W('a', 100, 40), W('b', 105, 25), W('c', 200, 30)]);
         expect(out.map((l) => l.map((w) => w.id))).toEqual([['a', 'b'], ['c']]);
     });
+    test('tolerates within-line top variation (ascenders/descenders)', () => {
+        const out = groupWordsIntoLines([W('a', 100, 60), W('b', 118, 40)]);
+        expect(out.map((l) => l.map((w) => w.id))).toEqual([['a', 'b']]);
+    });
     test('words without rect stay on the current line', () => {
-        const out = groupWordsIntoLines([W('a', 0, 100), { id: 'x', chars: 'x', rect: null }, W('b', 20, 101)], 8);
+        const out = groupWordsIntoLines([W('a', 100, 40), { id: 'x', chars: 'x', rect: null }, W('b', 103, 40)]);
         expect(out.map((l) => l.map((w) => w.id))).toEqual([['a', 'x', 'b']]);
     });
     test('empty / null → []', () => {
@@ -126,16 +130,28 @@ describe('groupWordsIntoLines', () => {
 });
 
 describe('buildWordSpans', () => {
-    const W = (id, y) => ({ id, chars: id, rect: { x: 0, y, w: 10, h: 10 } });
-    test('one line block per group, inline word spans with data-iv-region-id and spaces', () => {
-        const frag = buildWordSpans([W('a', 100), W('b', 101), W('c', 200)]);
+    const W = (id, y, h) => ({ id, chars: id, rect: { x: 0, y, w: 10, h } });
+    test('renders line blocks with inline word spans (matches line layout)', () => {
+        const frag = buildWordSpans([W('a', 100, 40), W('b', 105, 25), W('c', 200, 30)]);
         const box = document.createElement('div');
         box.appendChild(frag);
-        expect(box.querySelectorAll('span.immersive__fulltext-line')).toHaveLength(2);
+        const lines = box.querySelectorAll('span.immersive__fulltext-line');
+        expect(lines).toHaveLength(2);
         const words = box.querySelectorAll('span.immersive__fulltext-word');
         expect(words).toHaveLength(3);
         expect(words[0].dataset.ivRegionId).toBe('a');
-        expect(words[0].textContent).toBe('a');
+        expect(lines[0].textContent).toBe('a b');
+        expect(lines[1].textContent).toBe('c');
+    });
+    test('skips blank-chars words (no empty span, no double space)', () => {
+        const frag = buildWordSpans([
+            { id: 'a', chars: 'a', rect: { x: 0, y: 100, w: 10, h: 40 } },
+            { id: 'sp', chars: '', rect: { x: 0, y: 102, w: 5, h: 40 } },
+            { id: 'b', chars: 'b', rect: { x: 0, y: 103, w: 10, h: 40 } },
+        ]);
+        const box = document.createElement('div');
+        box.appendChild(frag);
+        expect(box.querySelectorAll('span.immersive__fulltext-word')).toHaveLength(2);
         expect(box.querySelector('span.immersive__fulltext-line').textContent).toBe('a b');
     });
     test('escapes word text (no markup injection)', () => {
@@ -144,5 +160,9 @@ describe('buildWordSpans', () => {
         box.appendChild(frag);
         expect(box.querySelector('b')).toBeNull();
         expect(box.querySelector('.immersive__fulltext-word').textContent).toBe('<b>x</b>');
+    });
+    test('empty / null → empty fragment', () => {
+        expect(buildWordSpans([]).childNodes).toHaveLength(0);
+        expect(buildWordSpans(null).childNodes).toHaveLength(0);
     });
 });

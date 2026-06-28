@@ -130,54 +130,81 @@ export function mountTextImageLink({ box, regionEls, scrollContainer }) {
 }
 
 /**
- * Groups consecutive word regions into lines by their `rect.y` (within
- * `tolerance` px). Order preserved; a word without a rect stays on the current
- * line. Pure.
+ * Groups consecutive word regions into lines by VERTICAL OVERLAP of their
+ * boxes (robust against within-line top variation from ascenders/descenders).
+ * Two consecutive words share a line when their vertical ranges overlap by more
+ * than half the shorter box height. Words without a rect stay on the current
+ * line and do not reset the baseline. Order preserved. Pure.
  *
  * @param {{id:string, chars:string, rect:{x:number,y:number,w:number,h:number}|null}[]} regions
- * @param {number} tolerance
  * @returns {Array<Array<object>>}
  */
-export function groupWordsIntoLines(regions, tolerance = 8) {
+export function groupWordsIntoLines(regions) {
     const lines = [];
-    let current = null;
-    let lastY = null;
+    let cur = null;
+    let pTop = null;
+    let pBot = null;
     for (const r of regions || []) {
-        const y = r && r.rect ? r.rect.y : null;
-        const newLine = current === null || (y !== null && lastY !== null && Math.abs(y - lastY) > tolerance);
-        if (newLine) {
-            current = [r];
-            lines.push(current);
+        const rect = r && r.rect;
+        const top = rect ? rect.y : null;
+        const bot = rect ? rect.y + rect.h : null;
+        let newLine;
+        if (cur === null) {
+            newLine = true;
+        } else if (top === null || pTop === null) {
+            newLine = false;
         } else {
-            current.push(r);
+            const overlap = Math.min(pBot, bot) - Math.max(pTop, top);
+            const minH = Math.min(pBot - pTop, bot - top);
+            newLine = overlap <= 0.5 * minH;
         }
-        if (y !== null) lastY = y;
+        if (newLine) {
+            cur = [r];
+            lines.push(cur);
+        } else {
+            cur.push(r);
+        }
+        if (top !== null) {
+            pTop = top;
+            pBot = bot;
+        }
     }
     return lines;
 }
 
 /**
- * Builds word spans grouped into line blocks (preserving the original line
- * layout). Each word is a hoverable `<span data-iv-region-id>`; text via
- * `textContent`. Reuses the `immersive__fulltext-line` block class.
+ * Builds word spans grouped into line blocks (same layout as line mode, but each
+ * word is an individually hoverable `<span data-iv-region-id>`). Blank-chars
+ * words (ALTO spaces) are skipped; a single space separates rendered words.
+ * Text via `textContent`. Line blocks reuse `immersive__fulltext-line`.
  *
  * @param {{id:string, chars:string, rect:object|null}[]} regions
  * @returns {DocumentFragment}
  */
 export function buildWordSpans(regions) {
     const frag = document.createDocumentFragment();
-    groupWordsIntoLines(regions).forEach((words) => {
+    for (const words of groupWordsIntoLines(regions)) {
         const line = document.createElement('span');
         line.className = 'immersive__fulltext-line';
-        words.forEach((w, i) => {
+        let first = true;
+        for (const w of words) {
+            const text = (w && w.chars) || '';
+            if (!text.trim()) {
+                continue;
+            }
+            if (!first) {
+                line.appendChild(document.createTextNode(' '));
+            }
             const span = document.createElement('span');
             span.className = 'immersive__fulltext-word';
             span.dataset.ivRegionId = w.id;
-            span.textContent = w.chars || '';
+            span.textContent = text;
             line.appendChild(span);
-            if (i < words.length - 1) line.appendChild(document.createTextNode(' '));
-        });
-        frag.appendChild(line);
-    });
+            first = false;
+        }
+        if (line.childNodes.length) {
+            frag.appendChild(line);
+        }
+    }
     return frag;
 }

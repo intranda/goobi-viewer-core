@@ -139,7 +139,7 @@ export async function loadPageRegions(pi, apiBase, order, granularity, fetchFn =
         if (!res.ok) {
             return [];
         }
-        return parsePageLines(await res.json());
+        return parsePageLines(await res.json()).filter((r) => (r.chars || '').trim() !== '');
     }
     return loadPageLines(pi, apiBase, order, fetchFn);
 }
