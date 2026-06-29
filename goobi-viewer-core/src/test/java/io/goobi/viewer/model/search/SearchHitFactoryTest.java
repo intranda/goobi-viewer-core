@@ -169,6 +169,37 @@ class SearchHitFactoryTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @verifies not add the same field twice from default and explicit terms
+     */
+    @Test
+    void findAdditionalMetadataFieldsContainingSearchTerms_shouldNotAddTheSameFieldTwiceFromDefaultAndExplicitTerms() {
+        BrowseElement be = new BrowseElement(null, 1, "label", null, Locale.ENGLISH, null, null);
+
+        StructElement se = new StructElement();
+        // Value matches "foo" and "bar" so the DEFAULT branch and the explicit MD_ABSTRACT branch produce
+        // different highlighted strings, which would slip past the value-based duplicate guard
+        se.getMetadataFields().put("MD_ABSTRACT", Collections.singletonList("foo bar baz"));
+        Assertions.assertEquals(1, se.getMetadataFields().size());
+
+        Map<String, Set<String>> searchTerms = new HashMap<>();
+        searchTerms.put(SolrConstants.DEFAULT, new HashSet<>(Arrays.asList(new String[] { "foo", "bar" })));
+        searchTerms.put("MD_ABSTRACT", new HashSet<>(Arrays.asList(new String[] { "foo" })));
+
+        SearchHitFactory factory = new SearchHitFactory(searchTerms, null, null, 0, null, Locale.GERMAN);
+        List<MetadataWrapper> result =
+                factory.findAdditionalMetadataFieldsContainingSearchTerms(se.getMetadataFields(), searchTerms, be.getMetadataFieldNames(),
+                        String.valueOf(se.getLuceneId()), be.getLabel());
+        if (!result.isEmpty()) {
+            for (MetadataWrapper mw : result) {
+                be.getMetadataList().add(mw.getMetadata());
+            }
+        }
+
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals(1, be.getMetadataList("MD_ABSTRACT").size());
+    }
+
+    /**
      * @verifies not add ignored fields
      */
     @Test

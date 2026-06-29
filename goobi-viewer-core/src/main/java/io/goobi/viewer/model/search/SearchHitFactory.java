@@ -348,6 +348,9 @@ public class SearchHitFactory {
         }
 
         Set<String> addedValues = new HashSet<>(); // Collects already added key+value pairs to prevent duplicates
+        // Collects field names already contributed by any branch, so a field matched via the DEFAULT aggregate branch
+        // is not added again via its explicit field entry (and vice versa)
+        Set<String> addedFields = new HashSet<>();
         List<MetadataWrapper> ret = new ArrayList<>();
         for (Entry<String, Set<String>> entry : searchTerms.entrySet()) {
             // Skip fields that are in the ignore list
@@ -374,6 +377,10 @@ public class SearchHitFactory {
                         }
                         // Skip fields that are already in the list
                         if (existingMetadataFields.contains(docFieldName)) {
+                            continue;
+                        }
+                        // Skip fields already contributed by another term entry (e.g. an explicit field entry)
+                        if (addedFields.contains(docFieldName)) {
                             continue;
                         }
 
@@ -416,6 +423,7 @@ public class SearchHitFactory {
                                     ret.add(new MetadataWrapper().setMetadata(new Metadata(iddoc, docFieldName, "", val))
                                             .setValuePair(new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale), val)));
                                     addedValues.add(docFieldName + ":" + val);
+                                    addedFields.add(docFieldName);
                                 }
                             }
                         } else {
@@ -461,6 +469,7 @@ public class SearchHitFactory {
                                                             new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale),
                                                                     translatedValue)));
                                             addedValues.add(docFieldName + ":" + translatedValue);
+                                            addedFields.add(docFieldName);
                                         }
                                     } else {
                                         if (!addedValues.contains(docFieldName + ":" + highlightedValue)) {
@@ -469,6 +478,7 @@ public class SearchHitFactory {
                                                             new StringPair(ViewerResourceBundle.getTranslation(docFieldName, locale),
                                                                     highlightedValue)));
                                             addedValues.add(docFieldName + ":" + highlightedValue);
+                                            addedFields.add(docFieldName);
                                         }
                                     }
                                 }
@@ -479,6 +489,10 @@ public class SearchHitFactory {
                 default:
                     // Skip fields that are already in the list
                     if (existingMetadataFields.contains(entry.getKey())) {
+                        continue;
+                    }
+                    // Skip fields already contributed by another term entry (e.g. the DEFAULT aggregate branch)
+                    if (addedFields.contains(entry.getKey())) {
                         continue;
                     }
 
@@ -519,6 +533,7 @@ public class SearchHitFactory {
                                             .setMetadata(new Metadata(iddoc, entry.getKey(), "", val))
                                             .setValuePair(new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale), val)));
                                     addedValues.add(entry.getKey() + ":" + val);
+                                    addedFields.add(entry.getKey());
                                 }
                             }
                         } else {
@@ -558,6 +573,7 @@ public class SearchHitFactory {
                                                             new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale),
                                                                     translatedValue)));
                                             addedValues.add(entry.getKey() + ":" + translatedValue);
+                                            addedFields.add(entry.getKey());
                                         }
                                     } else {
                                         if (!addedValues.contains(entry.getKey() + ":" + highlightedValue)) {
@@ -566,6 +582,7 @@ public class SearchHitFactory {
                                                             new StringPair(ViewerResourceBundle.getTranslation(entry.getKey(), locale),
                                                                     highlightedValue)));
                                             addedValues.add(entry.getKey() + ":" + highlightedValue);
+                                            addedFields.add(entry.getKey());
                                         }
                                     }
                                 }
