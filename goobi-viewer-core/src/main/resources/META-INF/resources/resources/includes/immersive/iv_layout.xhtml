@@ -39,10 +39,20 @@
                     type="button"
                     class="immersive__tool-btn"
                     data-immersive-panel="immersivePanelMenu"
+                    title="#{msg.toc}"
+                    aria-label="#{msg.toc}">
+                    <util:icon
+                        icon="menu-2"
+                        svgClass="immersive__tool-icon" />
+                </button>
+                <button
+                    type="button"
+                    class="immersive__tool-btn"
+                    data-immersive-panel="immersivePanelMetadata"
                     title="#{msg.metadata}"
                     aria-label="#{msg.metadata}">
                     <util:icon
-                        icon="menu-2"
+                        icon="info-circle"
                         svgClass="immersive__tool-icon" />
                 </button>
                 <!-- Fulltext (page OCR) toggle; only rendered when the work has fulltext.
@@ -103,6 +113,34 @@
                     </button>
                 </div>
                 <widgetComponent:widget_toc />
+            </aside>
+            <aside
+                id="immersivePanelMetadata"
+                class="immersive__panel immersive__panel--left immersive__panel--metadata"
+                aria-hidden="true">
+                <div class="immersive__panel-header">
+                    <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
+                </div>
+                <div class="metadata immersive__metadata">
+                    <c:set
+                        var="mdList"
+                        value="#{metadataBean.metadataElementList}" />
+                    <c:set
+                        var="mdCount"
+                        value="#{not empty mdList and mdList[0].anchor ? 2 : 1}" />
+                    <c:forEach
+                        items="#{mdList}"
+                        var="metadataElement"
+                        varStatus="status">
+                        <ui:fragment rendered="#{status.index lt mdCount}">
+                            <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
+                                <ui:param
+                                    name="metadataElement"
+                                    value="#{metadataElement}" />
+                            </ui:include>
+                        </ui:fragment>
+                    </c:forEach>
+                </div>
             </aside>
             <aside
                 id="immersivePanelSearch"

@@ -2236,7 +2236,30 @@
                             const on = viewer.toggleDoublePage();
                             btn.setAttribute('aria-pressed', String(on));
                             btn.classList.toggle('immersive__tool-btn--active', on);
+                            document.querySelector('.immersive__viewer')?.classList.toggle('is-double-page', on);
                             updateFulltextAvail();
+                        }
+                    });
+                });
+
+                // Native fullscreen runs on .immersive__viewer; Bootstrap appends the
+                // share/cite/filter popovers to <body>, which is outside the fullscreen
+                // element, so they don't paint. Re-home those popovers into the fullscreen
+                // element while fullscreen is active, and restore the default on exit.
+                document.addEventListener('fullscreenchange', () => {
+                    document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
+                        const $trigger = window.$ && window.$(trigger);
+                        const inst = $trigger && $trigger.data('bs.popover');
+                        if (!inst) return;
+                        $trigger.popover('hide');
+                        if (document.fullscreenElement) {
+                            if (inst.config._savedContainer === undefined) {
+                                inst.config._savedContainer = inst.config.container;
+                            }
+                            inst.config.container = document.fullscreenElement;
+                        } else if (inst.config._savedContainer !== undefined) {
+                            inst.config.container = inst.config._savedContainer;
+                            delete inst.config._savedContainer;
                         }
                     });
                 });
