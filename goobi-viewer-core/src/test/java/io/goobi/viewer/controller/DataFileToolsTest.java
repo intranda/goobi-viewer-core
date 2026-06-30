@@ -358,6 +358,26 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see DataFileTools#isLoadAltoFromExternalSource()
+     * @verifies return true when config flag is true and external source configured
+     */
+    @Test
+    void isLoadAltoFromExternalSource_shouldReturnTrueWhenConfigFlagIsTrueAndExternalSourceConfigured() {
+        // Test config has allowExternalSource defaulting to true and different iiif/rest hosts.
+        Assertions.assertTrue(DataFileTools.isLoadAltoFromExternalSource());
+    }
+
+    /**
+     * @see DataFileTools#isLoadFulltextFromExternalSource()
+     * @verifies return true when config flag is true and external source configured
+     */
+    @Test
+    void isLoadFulltextFromExternalSource_shouldReturnTrueWhenConfigFlagIsTrueAndExternalSourceConfigured() {
+        // Test config has allowExternalSource defaulting to true and different iiif/rest hosts.
+        Assertions.assertTrue(DataFileTools.isLoadFulltextFromExternalSource());
+    }
+
+    /**
      * @see DataFileTools#fetchAltoFromExternalSource(String,String)
      * @verifies return external alto content when remote call succeeds
      */
@@ -397,6 +417,21 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
             netTools.when(() -> NetTools.getWebContentGET(Mockito.anyString())).thenReturn("<alto>external</alto>");
             StringPair result = DataFileTools.loadAlto("PPN_NO_LOCAL_FILE/00000001.xml");
             Assertions.assertEquals("<alto>external</alto>", result.getOne());
+        }
+    }
+
+    /**
+     * @see DataFileTools#loadFulltext(String, String, boolean)
+     * @verifies fetch fulltext from external source when configured and local file missing
+     */
+    @Test
+    void loadFulltext_shouldFetchFulltextFromExternalSourceWhenConfiguredAndLocalFileMissing() throws Exception {
+        // Test config has different iiif/rest hosts -> external source active. NetTools is mocked
+        // so no real network call occurs; this verifies the wiring loadFulltext -> external fetch.
+        try (MockedStatic<NetTools> netTools = Mockito.mockStatic(NetTools.class, Mockito.CALLS_REAL_METHODS)) {
+            netTools.when(() -> NetTools.getWebContentGET(Mockito.anyString())).thenReturn("external plain text");
+            String result = DataFileTools.loadFulltext(null, "fulltext/PPN_NO_LOCAL_FILE/00000001.txt", false);
+            Assertions.assertEquals("external plain text", result);
         }
     }
 

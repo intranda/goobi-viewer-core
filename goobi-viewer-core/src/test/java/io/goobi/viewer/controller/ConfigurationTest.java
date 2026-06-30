@@ -2344,6 +2344,16 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#allowExternalAltoUrlResolution()
+     * @verifies return correct value
+     */
+    @Test
+    void allowExternalAltoUrlResolution_shouldReturnCorrectValue() {
+        // allowExternalSource not set in test config -> default true
+        assertTrue(DataManager.getInstance().getConfiguration().allowExternalAltoUrlResolution());
+    }
+
+    /**
      * @see Configuration#getAltoCrowdsourcingFolder()
      * @verifies return correct value
      */
@@ -2359,6 +2369,16 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getFulltextFolder_shouldReturnCorrectValue() {
         assertEquals("fulltext", DataManager.getInstance().getConfiguration().getFulltextFolder());
+    }
+
+    /**
+     * @see Configuration#allowExternalFulltextUrlResolution()
+     * @verifies return correct value
+     */
+    @Test
+    void allowExternalFulltextUrlResolution_shouldReturnCorrectValue() {
+        // allowExternalSource not set in test config -> default true
+        assertTrue(DataManager.getInstance().getConfiguration().allowExternalFulltextUrlResolution());
     }
 
     /**

@@ -2609,6 +2609,28 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns whether loading ALTO from an external content API is permitted when the local file is missing. Controlled by the
+     * {@code altoFolder[@allowExternalSource]} configuration attribute (default: {@code true}).
+     *
+     * @return {@code true} if external ALTO source resolution is allowed
+     * @should return correct value
+     */
+    public boolean allowExternalAltoUrlResolution() {
+        return getLocalBoolean("altoFolder[@allowExternalSource]", true);
+    }
+
+    /**
+     * Returns whether loading plain full-text from an external content API is permitted when the local file is missing. Controlled by the
+     * {@code fulltextFolder[@allowExternalSource]} configuration attribute (default: {@code true}).
+     *
+     * @return {@code true} if external full-text source resolution is allowed
+     * @should return correct value
+     */
+    public boolean allowExternalFulltextUrlResolution() {
+        return getLocalBoolean("fulltextFolder[@allowExternalSource]", true);
+    }
+
+    /**
      * getAltoCrowdsourcingFolder.
      *
      * @should return correct value
