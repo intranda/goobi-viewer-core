@@ -23,6 +23,8 @@ package io.goobi.viewer.controller;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,6 +46,7 @@ import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
@@ -440,6 +443,58 @@ public final class DataFileTools {
     }
 
     /**
+     * Extracts host (and port if present) from a configured API base URL. The viewer url
+     * configuration may omit the scheme (e.g. "localhost:8080/viewer/rest"), so a scheme is
+     * prepended before parsing when none is present. Falls back to the trimmed lower-cased raw
+     * string if parsing fails, so the comparison degrades gracefully instead of throwing.
+     *
+     * @param url configured base URL, may be null
+     * @return host[:port] in lower case, or null if url is null/blank
+     * @should return host for url with scheme
+     * @should return host with port for schemeless url
+     * @should return null when url is null
+     */
+    static String extractHost(String url) {
+        if (StringUtils.isBlank(url)) {
+            return null;
+        }
+        String toParse = url.contains("://") ? url : "http://" + url;
+        try {
+            URI uri = new URI(toParse);
+            String host = uri.getHost();
+            if (host == null) {
+                return url.trim().toLowerCase();
+            }
+            String hostPort = uri.getPort() > -1 ? host + ":" + uri.getPort() : host;
+            return hostPort.toLowerCase();
+        } catch (URISyntaxException e) {
+            return url.trim().toLowerCase();
+        }
+    }
+
+    /**
+     * Compares the hosts of the content api url (urls/iiif) and the data api url (urls/rest).
+     * Used as a recursion guard: an external content fallback must only target a different host
+     * than the viewer itself, otherwise it would call back into the same endpoint (the infinite
+     * recursion that led to the fallback removal in a57b93da9a).
+     *
+     * @param iiifUrl content api base url (urls/iiif)
+     * @param restUrl data api base url (urls/rest)
+     * @return true if both urls resolve to a non-null host and the hosts differ
+     * @should return false when hosts are equal
+     * @should return true when hosts differ
+     * @should return false when either host is null
+     */
+    static boolean isDifferentHost(String iiifUrl, String restUrl) {
+        String iiifHost = extractHost(iiifUrl);
+        String restHost = extractHost(restUrl);
+        if (iiifHost == null || restHost == null) {
+            return false;
+        }
+        return !iiifHost.equals(restHost);
+    }
+
+    /**
      * Loads plain full-text via the REST service. ALTO is is a fallback (and converted to plain text, with a plain text fallback.
      *
      * @param altoFilePath ALTO file path relative to the repository root (e.g. "alto/PPN123/00000001.xml")
@@ -467,6 +522,12 @@ public final class DataFileTools {
                     return fulltext;
                 }
             } catch (ContentNotFoundException e) {
+                // External content fallback for plaintext, mirroring loadAlto(). Host guard prevents
+                // the self-call recursion removed in a57b93da9a.
+                if (isExternalContentSourceConfigured()) {
+                    return fetchFulltextFromExternalSource(FileTools.getBottomFolderFromPathString(fulltextFilePath),
+                            FileTools.getFilenameFromPathString(fulltextFilePath));
+                }
                 throw new FileNotFoundException(e.getMessage());
             } catch (PresentationException e) {
                 logger.error(e.getMessage());
@@ -488,22 +549,78 @@ public final class DataFileTools {
         return null;
     }
 
-    public static String loadFromApiURl(String fulltextFilePath) throws FileNotFoundException {
-        //try loading from content api url (same source as image content)
+    /**
+     * Loads plain full-text from the configured external content api (urls/iiif) when the local
+     * file is missing. Must only be called after {@link #isExternalContentSourceConfigured()}
+     * returned true. Uses a read timeout so an unreachable external source cannot block the thread.
+     *
+     * @param pi record identifier
+     * @param filename plain-text file name
+     * @return plain text content
+     * @throws FileNotFoundException if the external source has no such document or is unreachable
+     * @should return external plaintext when remote call succeeds
+     */
+    static String fetchFulltextFromExternalSource(String pi, String filename) throws FileNotFoundException {
+        return fetchFromExternalSource(pi, filename, ApiUrls.RECORDS_FILES_PLAINTEXT);
+    }
+
+    /**
+     * Builds the content api url (urls/iiif) for the given record file and fetches its content from
+     * the external content source. Shared by {@link #fetchAltoFromExternalSource(String, String)}
+     * and {@link #fetchFulltextFromExternalSource(String, String)}. A read timeout is applied (via
+     * {@link NetTools#getWebContentGET(String)}) so an unreachable external source cannot block the
+     * request thread — the pre-25.01 implementation used a timeout-less call that could hang.
+     *
+     * @param pi record identifier
+     * @param filename file name
+     * @param filesSubPath ApiUrls files sub-path, e.g. {@link ApiUrls#RECORDS_FILES_ALTO} or
+     *            {@link ApiUrls#RECORDS_FILES_PLAINTEXT}
+     * @return content of the requested file
+     * @throws FileNotFoundException if the external source has no such document or is unreachable
+     */
+    private static String fetchFromExternalSource(String pi, String filename, String filesSubPath) throws FileNotFoundException {
+        String url = DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(ApiUrls.RECORDS_FILES, filesSubPath).params(pi, filename).build())
+                .orElseThrow(() -> new FileNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND));
         try {
-            String filename = FileTools.getFilenameFromPathString(fulltextFilePath);
-            String pi = FileTools.getBottomFolderFromPathString(fulltextFilePath);
-            return DataManager.getInstance()
-                    .getRestApiManager()
-                    .getContentApiManager()
-                    .map(urls -> urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_PLAINTEXT).params(pi, filename).build())
-                    .map(NetTools::callUrlGET)
-                    .filter(array -> NetTools.isStatusOk(array[0]))
-                    .map(array -> array[1])
-                    .orElseThrow(() -> new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND));
-        } catch (ContentNotFoundException e1) {
-            return "";
+            return NetTools.getWebContentGET(url);
+        } catch (IOException | HTTPException e) {
+            throw new FileNotFoundException(e.getMessage());
         }
+    }
+
+    /**
+     * Indicates whether an external content source is configured for the ocr/fulltext fallback,
+     * i.e. urls/iiif points to a different host than urls/rest. Guards against the self-call
+     * recursion removed in a57b93da9a.
+     *
+     * @return true if urls/iiif and urls/rest resolve to different hosts
+     * @should return true when iiif and rest urls have different hosts
+     */
+    static boolean isExternalContentSourceConfigured() {
+        Configuration config = DataManager.getInstance().getConfiguration();
+        return isDifferentHost(config.getIIIFApiUrl(), config.getRestApiUrl());
+    }
+
+    /**
+     * Loads an ALTO document from the configured external content api (urls/iiif) when the local
+     * file is missing. Must only be called after {@link #isExternalContentSourceConfigured()}
+     * returned true. A read timeout is applied (via {@link NetTools#getWebContentGET(String)}) so
+     * an unreachable external source cannot block the request thread — the pre-25.01 implementation
+     * used a timeout-less call that could hang.
+     *
+     * @param pi record identifier
+     * @param filename ALTO file name
+     * @return StringPair(alto, null)
+     * @throws FileNotFoundException if the external source has no such document or is unreachable
+     * @should return external alto content when remote call succeeds
+     * @should throw FileNotFoundException when remote call fails
+     */
+    static StringPair fetchAltoFromExternalSource(String pi, String filename) throws FileNotFoundException {
+        // ALTO content from the external source is returned with unknown charset (null).
+        return new StringPair(fetchFromExternalSource(pi, filename, ApiUrls.RECORDS_FILES_ALTO), null);
     }
 
     /**
@@ -529,6 +646,13 @@ public final class DataFileTools {
             TextResourceBuilder builder = new TextResourceBuilder();
             return builder.getAltoDocument(pi, filename);
         } catch (ContentNotFoundException e) {
+            // External content fallback: when the ALTO file is missing locally and urls/iiif points
+            // to a different host than urls/rest, fetch it from that external goobi content server.
+            // The host guard prevents the self-call that caused the infinite recursion removed in
+            // a57b93da9a.
+            if (isExternalContentSourceConfigured()) {
+                return fetchAltoFromExternalSource(pi, filename);
+            }
             throw new FileNotFoundException(e.getMessage());
         }
     }

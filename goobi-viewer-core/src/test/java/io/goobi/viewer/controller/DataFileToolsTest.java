@@ -21,20 +21,25 @@
  */
 package io.goobi.viewer.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.exceptions.AccessDeniedException;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 
 class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -261,6 +266,62 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see DataFileTools#extractHost(String)
+     * @verifies return host for url with scheme
+     */
+    @Test
+    void extractHost_shouldReturnHostForUrlWithScheme() {
+        Assertions.assertEquals("example.org", DataFileTools.extractHost("https://example.org/viewer/api/v1/"));
+    }
+
+    /**
+     * @see DataFileTools#extractHost(String)
+     * @verifies return host with port for schemeless url
+     */
+    @Test
+    void extractHost_shouldReturnHostWithPortForSchemelessUrl() {
+        Assertions.assertEquals("localhost:8080", DataFileTools.extractHost("localhost:8080/default-viewer/rest/"));
+    }
+
+    /**
+     * @see DataFileTools#extractHost(String)
+     * @verifies return null when url is null
+     */
+    @Test
+    void extractHost_shouldReturnNullWhenUrlIsNull() {
+        Assertions.assertNull(DataFileTools.extractHost(null));
+    }
+
+    /**
+     * @see DataFileTools#isDifferentHost(String,String)
+     * @verifies return false when hosts are equal
+     */
+    @Test
+    void isDifferentHost_shouldReturnFalseWhenHostsAreEqual() {
+        Assertions.assertFalse(DataFileTools.isDifferentHost(
+                "https://host.example/viewer/api/v1/", "https://host.example/viewer/rest/"));
+    }
+
+    /**
+     * @see DataFileTools#isDifferentHost(String,String)
+     * @verifies return true when hosts differ
+     */
+    @Test
+    void isDifferentHost_shouldReturnTrueWhenHostsDiffer() {
+        Assertions.assertTrue(DataFileTools.isDifferentHost(
+                "https://external.example/viewer/api/v1/", "localhost:8080/default-viewer/rest/"));
+    }
+
+    /**
+     * @see DataFileTools#isDifferentHost(String,String)
+     * @verifies return false when either host is null
+     */
+    @Test
+    void isDifferentHost_shouldReturnFalseWhenEitherHostIsNull() {
+        Assertions.assertFalse(DataFileTools.isDifferentHost(null, "localhost:8080/rest/"));
+    }
+
+    /**
      * @verifies throw record not found exception if pi not found
      * @see DataFileTools#loadMei(String, HttpServletRequest)
      */
@@ -284,5 +345,71 @@ class DataFileToolsTest extends AbstractDatabaseAndSolrEnabledTest {
             throws AccessDeniedException, DAOException, IOException, IndexUnreachableException, PresentationException, RecordNotFoundException {
         String mei = DataFileTools.loadMei(AbstractSolrEnabledTest.PI_KLEIUNIV, null);
         Assertions.assertNull(mei);
+    }
+
+    /**
+     * @see DataFileTools#isExternalContentSourceConfigured()
+     * @verifies return true when iiif and rest urls have different hosts
+     */
+    @Test
+    void isExternalContentSourceConfigured_shouldReturnTrueWhenIiifAndRestUrlsHaveDifferentHosts() {
+        // Test config: urls/iiif=viewer.goobi.io, urls/rest=localhost:8080 -> different hosts.
+        Assertions.assertTrue(DataFileTools.isExternalContentSourceConfigured());
+    }
+
+    /**
+     * @see DataFileTools#fetchAltoFromExternalSource(String,String)
+     * @verifies return external alto content when remote call succeeds
+     */
+    @Test
+    void fetchAltoFromExternalSource_shouldReturnExternalAltoContentWhenRemoteCallSucceeds() throws Exception {
+        try (MockedStatic<NetTools> netTools = Mockito.mockStatic(NetTools.class, Mockito.CALLS_REAL_METHODS)) {
+            netTools.when(() -> NetTools.getWebContentGET(Mockito.anyString())).thenReturn("<alto>external</alto>");
+            StringPair result = DataFileTools.fetchAltoFromExternalSource("PPN123", "00000001.xml");
+            Assertions.assertNotNull(result);
+            Assertions.assertEquals("<alto>external</alto>", result.getOne());
+        }
+    }
+
+    /**
+     * @see DataFileTools#fetchAltoFromExternalSource(String,String)
+     * @verifies throw FileNotFoundException when remote call fails
+     */
+    @Test
+    void fetchAltoFromExternalSource_shouldThrowFileNotFoundExceptionWhenRemoteCallFails() {
+        try (MockedStatic<NetTools> netTools = Mockito.mockStatic(NetTools.class, Mockito.CALLS_REAL_METHODS)) {
+            netTools.when(() -> NetTools.getWebContentGET(Mockito.anyString()))
+                    .thenThrow(new HTTPException(404, "not found"));
+            Assertions.assertThrows(FileNotFoundException.class,
+                    () -> DataFileTools.fetchAltoFromExternalSource("PPN123", "00000001.xml"));
+        }
+    }
+
+    /**
+     * @see DataFileTools#loadAlto(String)
+     * @verifies fetch from external source when configured and local file missing
+     */
+    @Test
+    void loadAlto_shouldFetchFromExternalSourceWhenConfiguredAndLocalFileMissing() throws Exception {
+        // Test config has different iiif/rest hosts -> external source active. NetTools is mocked,
+        // so no real network call occurs; this verifies the wiring loadAlto -> external fetch.
+        try (MockedStatic<NetTools> netTools = Mockito.mockStatic(NetTools.class, Mockito.CALLS_REAL_METHODS)) {
+            netTools.when(() -> NetTools.getWebContentGET(Mockito.anyString())).thenReturn("<alto>external</alto>");
+            StringPair result = DataFileTools.loadAlto("PPN_NO_LOCAL_FILE/00000001.xml");
+            Assertions.assertEquals("<alto>external</alto>", result.getOne());
+        }
+    }
+
+    /**
+     * @see DataFileTools#fetchFulltextFromExternalSource(String,String)
+     * @verifies return external plaintext when remote call succeeds
+     */
+    @Test
+    void fetchFulltextFromExternalSource_shouldReturnExternalPlaintextWhenRemoteCallSucceeds() throws Exception {
+        try (MockedStatic<NetTools> netTools = Mockito.mockStatic(NetTools.class, Mockito.CALLS_REAL_METHODS)) {
+            netTools.when(() -> NetTools.getWebContentGET(Mockito.anyString())).thenReturn("external plain text");
+            String result = DataFileTools.fetchFulltextFromExternalSource("PPN123", "00000001.txt");
+            Assertions.assertEquals("external plain text", result);
+        }
     }
 }
