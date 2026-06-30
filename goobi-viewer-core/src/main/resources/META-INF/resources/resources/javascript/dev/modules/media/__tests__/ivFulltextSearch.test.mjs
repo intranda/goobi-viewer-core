@@ -21,6 +21,15 @@ describe('parseSearchHits', () => {
         expect(parseSearchHits({})).toEqual([]);
         expect(parseSearchHits({ resources: [{ on: 'no-page' }] })).toEqual([]);
     });
+    test('attaches before/match/after context from the hits block (by annotation id)', () => {
+        const withContext = {
+            resources: [{ '@id': 'anno1', resource: { value: 'Ring' }, on: 'http://x/records/AC1/pages/19/canvas/#xywh=10,20,30,40' }],
+            hits: [{ '@type': 'search:Hit', annotations: ['anno1'], match: 'Ring', before: 'der goldene ', after: ' der Macht' }],
+        };
+        expect(parseSearchHits(withContext)).toEqual([
+            { page: 19, rect: { x: 10, y: 20, w: 30, h: 40 }, snippet: 'Ring', before: 'der goldene ', match: 'Ring', after: ' der Macht' },
+        ]);
+    });
 });
 
 describe('hit navigation index', () => {

@@ -14,15 +14,17 @@
             <div
                 class="immersive__overlay-top"
                 id="immersiveOverlayTop">
-                <a
-                    class="immersive__back"
-                    href="#{searchBean.lastUsedSearchUrl}"
-                    title="#{msg.returnToHitlist}">
-                    <util:icon-text
-                        icon="arrow-narrow-left"
-                        iconSvgClass="immersive__back-icon"
-                        text="#{msg.returnToHitlist}" />
-                </a>
+                <ui:fragment rendered="#{searchBean.hitsCount > 0}">
+                    <a
+                        class="immersive__back"
+                        href="#{searchBean.lastUsedSearchUrl}"
+                        title="#{msg.returnToHitlist}">
+                        <util:icon-text
+                            icon="arrow-narrow-left"
+                            iconSvgClass="immersive__back-icon"
+                            text="#{msg.returnToHitlist}" />
+                    </a>
+                </ui:fragment>
                 <div class="immersive__title">
                     <button
                         type="button"
@@ -164,6 +166,9 @@
                     <c:set
                         var="mdList"
                         value="#{metadataBean.metadataElementList}" />
+                    <!-- Visible blocks: ISANCHOR:true (multivolume work + volume) -> 2, else
+                         -> 1. Deeper structural blocks (chapters) fold under a "more / less
+                         metadata" toggle (config-independent). -->
                     <c:set
                         var="mdCount"
                         value="#{not empty mdList and mdList[0].anchor ? 2 : 1}" />
@@ -179,6 +184,34 @@
                             </ui:include>
                         </ui:fragment>
                     </c:forEach>
+                    <ui:fragment rendered="#{not empty mdList and mdList.size() gt mdCount}">
+                        <div
+                            class="immersive__metadata-more"
+                            id="immersiveMetadataMore"
+                            hidden="hidden">
+                            <c:forEach
+                                items="#{mdList}"
+                                var="metadataElement"
+                                varStatus="status">
+                                <ui:fragment rendered="#{status.index ge mdCount}">
+                                    <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
+                                        <ui:param
+                                            name="metadataElement"
+                                            value="#{metadataElement}" />
+                                    </ui:include>
+                                </ui:fragment>
+                            </c:forEach>
+                        </div>
+                        <button
+                            type="button"
+                            class="immersive__metadata-toggle"
+                            data-immersive-metadata-toggle="immersiveMetadataMore"
+                            aria-controls="immersiveMetadataMore"
+                            aria-expanded="false">
+                            <span class="immersive__metadata-toggle-more">#{msg.metadata__fold_show_more}</span>
+                            <span class="immersive__metadata-toggle-less">#{msg.metadata__fold_show_less}</span>
+                        </button>
+                    </ui:fragment>
                 </div>
             </aside>
             <aside
@@ -196,6 +229,7 @@
                     class="immersive__results"
                     data-label-hits="#{msg.hits}"
                     data-label-empty="#{msg.hitsZero}"
+                    data-label-reset="#{msg.searchList_resetCurrentSearch}"
                     hidden="hidden">
                     <div class="immersive__results-head">
                         <span

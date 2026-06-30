@@ -193,6 +193,21 @@ function initImmersiveViewer(el) {
         reflectTocToggle();
     }
 
+    // Metadata "more / less" fold: the first 1-2 blocks (ISANCHOR rule, server-rendered)
+    // stay; deeper structural blocks (chapters) live in #immersiveMetadataMore and are
+    // revealed by this toggle. Server-rendered, so bound once (no viewer needed).
+    const metadataToggle = document.querySelector('[data-immersive-metadata-toggle]');
+    if (metadataToggle) {
+        const moreEl = document.getElementById(metadataToggle.dataset.immersiveMetadataToggle);
+        if (moreEl) {
+            metadataToggle.addEventListener('click', () => {
+                const willOpen = moreEl.hidden;
+                moreEl.hidden = !willOpen;
+                metadataToggle.setAttribute('aria-expanded', String(willOpen));
+            });
+        }
+    }
+
     loadPageServices(pi, apiBase)
         .then((services) => {
             const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
@@ -339,10 +354,13 @@ function initImmersiveViewer(el) {
             const hitsOnOrder = (order) => fts.hits.filter((h) => h.order === order);
 
             const renderHighlights = () => {
+                // Highlight every match on the current page(s), but flag the active hit so it
+                // stands out (e.g. two matches of the same word on one page).
+                const activeHit = fts.hits[fts.idx];
                 const rects = viewer.getCurrentPages().flatMap((o) =>
                     hitsOnOrder(o)
-                        .map((h) => h.rect)
-                        .filter(Boolean)
+                        .filter((h) => h.rect)
+                        .map((h) => ({ ...h.rect, active: h === activeHit }))
                 );
                 viewer.setHighlights(rects);
             };
@@ -367,7 +385,22 @@ function initImmersiveViewer(el) {
                     page.textContent = h.page;
                     const snippet = document.createElement('span');
                     snippet.className = 'immersive__results-snippet';
-                    snippet.textContent = h.snippet || '';
+                    // Teaser: context before + the highlighted match + context after. Falls
+                    // back to the plain matched word when the backend sends no before/after.
+                    if (h.before || h.after) {
+                        const mark = document.createElement('mark');
+                        mark.className = 'immersive__results-match';
+                        mark.textContent = h.match || h.snippet || '';
+                        // The backend trims the boundary whitespace from before/after -- restore
+                        // a single space so the match doesn't glue to the context ("Geschichtedas").
+                        snippet.append(
+                            document.createTextNode(h.before ? `${h.before} ` : ''),
+                            mark,
+                            document.createTextNode(h.after ? ` ${h.after}` : '')
+                        );
+                    } else {
+                        snippet.textContent = h.snippet || '';
+                    }
                     li.append(page, snippet);
                     li.addEventListener('click', () => gotoHit(i));
                     resultsList.appendChild(li);
@@ -401,6 +434,34 @@ function initImmersiveViewer(el) {
                 searchForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     runSearch(searchInput.value.trim());
+                });
+
+                // Reset affordance: an (×) inside the field (+ Escape) that empties the input
+                // and clears the result list and image highlights. Shown only when there's text.
+                const clearBtn = document.createElement('button');
+                clearBtn.type = 'button';
+                clearBtn.className = 'immersive__search-clear';
+                clearBtn.textContent = '×';
+                clearBtn.setAttribute('aria-label', (resultsBox && resultsBox.dataset.labelReset) || 'Reset');
+                clearBtn.hidden = !searchInput.value;
+                const group = searchInput.closest('.input-group') || searchInput.parentElement;
+                group.insertBefore(clearBtn, group.querySelector('.input-group-addon') || null);
+                const syncClear = () => {
+                    clearBtn.hidden = !searchInput.value;
+                };
+                const resetSearch = () => {
+                    searchInput.value = '';
+                    syncClear();
+                    runSearch('');
+                    searchInput.focus();
+                };
+                searchInput.addEventListener('input', syncClear);
+                clearBtn.addEventListener('click', resetSearch);
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && searchInput.value) {
+                        e.preventDefault();
+                        resetSearch();
+                    }
                 });
             }
             document.querySelectorAll('[data-immersive-hit]').forEach((btn) => {

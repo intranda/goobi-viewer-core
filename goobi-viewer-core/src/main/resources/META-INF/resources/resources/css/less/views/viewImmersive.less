@@ -124,7 +124,14 @@
 
     &__title {
         position: relative;
-        max-width: 60%;
+        display: flex;
+        align-items: center;
+        /* min-width:0 must propagate down the whole flex chain, otherwise the inner
+           title-text can't shrink and its text-overflow:ellipsis never fires. */
+        min-width: 0;
+        /* Cap the trigger so a long title truncates instead of spanning the whole top
+           (and reaching into the open panel). Stays responsive on narrow viewports. */
+        max-width: ~'min(60%, 420px)';
         /* container stays click-through; the trigger button re-enables pointer events */
         pointer-events: none;
     }
@@ -134,6 +141,7 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        min-width: 0;
         max-width: 100%;
         padding: 4px 8px;
         border: 0;
@@ -182,11 +190,15 @@
     &--panel-open {
         .immersive__overlay-top {
             opacity: 0;
-            /* faded out -> also non-interactive, so the (invisible) title trigger and its
-               page dropdown can't be clicked while a side panel owns the view. */
-            pointer-events: none;
         }
-        .immersive__back {
+        /* Faded out -> also non-interactive. These each set pointer-events:auto, which
+           overrides a `none` on the container, so they must be disabled explicitly --
+           otherwise the invisible, full-width title trigger keeps intercepting clicks
+           meant for the open panel's header (e.g. the Line/Word toggle). */
+        .immersive__overlay-top,
+        .immersive__back,
+        .immersive__title-trigger,
+        .immersive__page-dropdown {
             pointer-events: none;
         }
         .immersive__chevron--left {
@@ -509,51 +521,228 @@
     &__panel--metadata .metadata {
         color: @immersive-chrome-fg;
 
-        /* Structure type (e.g. "Monografie") as an accent eyebrow above the fields. */
-        .metadata__elements-h2,
-        .metadata__elements-h3 {
-            margin: 0 0 16px;
-            font-size: @fontSmall;
-            font-weight: 700;
-            line-height: 1.2;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: @immersive-accent;
+        /* The base metadata component wraps grouped/ungrouped/single fields in white
+           (and nested grey) "cards" with padding. On the dark immersive panel those read
+           as glaring boxes -- flatten every wrapper to transparent, no padding/margin. */
+        .metadata__elements,
+        .metadata__events,
+        .metadata__wrapper,
+        .metadata__wrapper.-isBoxed,
+        .metadata__ungrouped-wrapper,
+        .metadata__grouped-wrapper,
+        .metadata__element-wrapper,
+        .metadata__element-wrapper-single,
+        .metadata__event-inside-wrapper {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
         }
 
-        /* One field per dl: stack label over value with rhythm between fields. */
+        /* Section headings (structure type + any grouped-metadata headings): a calm accent
+           eyebrow, set off by space and ONE quiet hairline -- the same divider vocabulary
+           as the panel header -- never the base component's boxes/chevrons. */
+        .metadata__elements-h2,
+        .metadata__elements-h3,
+        .metadata__heading {
+            margin: 30px 0 14px;
+            padding: 18px 0 0;
+            border-top: 1px solid @immersive-divider;
+            background: transparent;
+            font-size: @fontSmall;
+            font-weight: 700;
+            line-height: 1.25;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: @immersive-accent;
+
+            /* drop the base chevron decoration before grouped headings */
+            &::before {
+                content: none;
+            }
+        }
+
+        /* First heading sits flush under the panel header (no leading rule/space). */
+        .metadata__elements-h2:first-child,
+        .metadata__elements-h3:first-child,
+        .metadata__heading:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: 0;
+        }
+
+        /* One field per row: a quiet label eyebrow over a readable value. */
         .metadata__element-dl,
-        .metadata__event-dl {
+        .metadata__event-dl,
+        .metadata__element-ungrouped {
             display: block;
-            margin: 0 0 14px;
+            grid-template-columns: none;
+            margin: 0 0 16px;
 
             /* Label: muted uppercase eyebrow. */
             dt {
                 display: block;
                 float: none;
                 width: auto;
-                margin: 0 0 3px;
+                margin: 0 0 4px;
                 font-size: @fontSmall;
                 font-weight: 600;
                 line-height: 1.3;
                 text-transform: uppercase;
-                letter-spacing: 0.04em;
+                letter-spacing: 0.06em;
                 white-space: normal;
-                opacity: 0.6;
+                color: @immersive-chrome-fg;
+                opacity: 0.5;
             }
 
             /* Value: readable, full width. */
             dd {
                 margin: 0;
                 font-size: @fontNormal;
-                line-height: 1.45;
+                line-height: 1.5;
                 overflow-wrap: anywhere;
 
                 & + dd {
-                    margin-top: 3px;
+                    margin-top: 4px;
+                }
+
+                /* Inline links (collections, authority records) as quiet accent links. */
+                a {
+                    color: @immersive-accent;
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+
+                /* Affordance buttons (authority data, in-work search) as bare icons. */
+                button {
+                    padding: 0;
+                    border: 0;
+                    background: transparent;
+                    color: inherit;
+                    cursor: pointer;
+                    vertical-align: baseline;
+                }
+
+                /* The little map-pin / authority / search icons: unobtrusive, sized to the
+                   text, brightening to the accent on hover. */
+                .icon,
+                .icon-svg {
+                    width: 15px;
+                    height: 15px;
+                    vertical-align: -2px;
+                    color: @immersive-chrome-fg;
+                    opacity: 0.45;
+                    transition:
+                        opacity 0.15s ease,
+                        color 0.15s ease;
+                }
+
+                a:hover .icon,
+                a:hover .icon-svg,
+                button:hover .icon,
+                button:hover .icon-svg {
+                    opacity: 1;
+                    color: @immersive-accent;
                 }
             }
         }
+
+        /* "More / less metadata" fold toggle (SLUB-style). The base markup is a default
+           button (border + fill); restyle it as a quiet accent text+caret link. The
+           &.-hidden rule must stay -- our higher specificity would otherwise reveal the
+           currently-inactive (show-more / show-less) button. */
+        .metadata__fold-button {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 12px;
+            padding: 4px 0;
+            border: 0;
+            background: transparent;
+            color: @immersive-accent;
+            font-size: @fontSmall;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+
+            &:hover {
+                color: @immersive-accent;
+                background: transparent;
+                text-decoration: underline;
+            }
+
+            &.-hidden {
+                display: none;
+            }
+
+            .metadata__fold-button-inner {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .icon,
+            .icon-svg,
+            svg {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+
+    /* Config-independent per-block "more / less metadata" fold (injected by modules.mjs):
+       a quiet accent text link with a CSS caret, matching the rest of the immersive chrome. */
+    &__metadata-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 14px;
+        padding: 4px 0;
+        border: 0;
+        background: transparent;
+        color: @immersive-accent;
+        font-size: @fontSmall;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+
+        /* CSS caret (down); rotates up when expanded -- no SVG to build in JS. */
+        &::before {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 5px solid currentColor;
+            transition: transform 0.15s ease;
+        }
+
+        &[aria-expanded='true']::before {
+            transform: rotate(180deg);
+        }
+
+        &:hover {
+            color: @immersive-accent;
+            background: transparent;
+            text-decoration: underline;
+        }
+    }
+
+    /* Swap the more/less label based on the toggle's expanded state. */
+    &__metadata-toggle-less {
+        display: none;
+    }
+
+    .immersive__metadata-toggle[aria-expanded='true'] &__metadata-toggle-more {
+        display: none;
+    }
+
+    .immersive__metadata-toggle[aria-expanded='true'] &__metadata-toggle-less {
+        display: inline;
     }
 
     /*
@@ -578,6 +767,12 @@
         font-size: @fontMedium;
         font-weight: 700;
         line-height: 1.3;
+        /* Clamp long work titles to two lines (… overflow) in every panel header. */
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        overflow: hidden;
     }
 
     /* Expand/collapse-all toggle, top-right in the panel header (where the close button
@@ -991,8 +1186,121 @@
 }
 
 .immersive {
+    /* "Search in work": the reference-theme widget (Bootstrap input-group + blue btn) is
+       reskinned to match the immersive chrome -- one quiet rounded field with a transparent
+       input and a bare icon button that picks up the accent. Adapts to light/dark via the
+       --immersive-* tokens. */
+    &__panel .widget-search-in-current-item {
+        .form-group {
+            margin: 0;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: stretch;
+            overflow: hidden;
+            border: 1px solid @immersive-divider;
+            border-radius: 8px;
+            background: transparent;
+            transition: border-color 0.15s ease;
+
+            &:focus-within {
+                border-color: @immersive-accent;
+            }
+        }
+
+        .form-control {
+            flex: 1 1 auto;
+            min-width: 0;
+            height: auto;
+            padding: 8px 12px;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
+            color: @immersive-chrome-fg;
+            font-size: @fontNormal;
+
+            &::placeholder {
+                color: @immersive-chrome-fg;
+                opacity: 0.5;
+            }
+
+            &:focus {
+                outline: none;
+                box-shadow: none;
+                background: transparent;
+                color: @immersive-chrome-fg;
+            }
+        }
+
+        /* Injected reset (×): clears the query + results + highlights; only shown with text. */
+        .immersive__search-clear {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            padding: 0 0 2px;
+            border: 0;
+            background: transparent;
+            color: @immersive-chrome-fg;
+            font-size: 20px;
+            line-height: 1;
+            opacity: 0.5;
+            cursor: pointer;
+            transition:
+                opacity 0.15s ease,
+                color 0.15s ease;
+
+            &[hidden] {
+                display: none;
+            }
+
+            &:hover {
+                opacity: 1;
+                color: @immersive-accent;
+            }
+        }
+
+        .input-group-addon {
+            display: flex;
+            padding: 0;
+            border: 0;
+            background: transparent;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            color: @immersive-chrome-fg;
+            cursor: pointer;
+            transition:
+                background-color 0.15s ease,
+                color 0.15s ease;
+
+            &:hover,
+            &:focus {
+                color: @immersive-accent;
+                background-color: @immersive-chrome-hover-bg;
+            }
+
+            .icon,
+            .icon-svg,
+            svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+    }
+
     &__results {
-        margin-top: 12px;
+        margin-top: 14px;
+        padding-top: 14px;
         border-top: 1px solid @immersive-divider;
         color: @immersive-chrome-fg;
     }
@@ -1001,69 +1309,112 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 6px 0;
+        margin-bottom: 8px;
     }
 
+    /* Hit counter ("3 / 17") -- a quiet caption with tabular figures so it doesn't jitter. */
     &__results-count {
-        font-size: @fontMedium;
+        font-size: @fontSmall;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        font-variant-numeric: tabular-nums;
+        opacity: 0.65;
     }
 
     &__results-nav {
         display: flex;
-        gap: 6px;
+        gap: 4px;
     }
 
     &__results-navbtn {
         display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
         padding: 0;
         border: 0;
+        border-radius: 6px;
         background: transparent;
         color: @immersive-chrome-fg;
         cursor: pointer;
-        transition: color 0.15s ease;
+        transition:
+            color 0.15s ease,
+            background-color 0.15s ease;
 
         &:hover {
             color: @immersive-accent;
+            background-color: @immersive-chrome-hover-bg;
         }
     }
 
     &__results-navicon {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
     }
 
     &__results-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
         margin: 0;
         padding: 0;
         list-style: none;
     }
 
+    /* One hit: page number + context teaser. Hover tints; the active hit (in sync with the
+       image highlight + the counter) gets an accent edge, so you always know which match
+       you're on -- even with two matches of the same word on one page. */
     &__results-item {
         display: flex;
-        gap: 6px;
-        padding: 6px;
-        border-radius: 6px;
+        gap: 10px;
+        padding: 9px 10px;
+        border-radius: 8px;
+        border-left: 2px solid transparent;
         cursor: pointer;
+        transition:
+            background-color 0.15s ease,
+            border-color 0.15s ease;
 
-        &:hover,
+        &:hover {
+            background-color: @immersive-chrome-hover-bg;
+        }
+
         &.is-active {
             background-color: @immersive-chrome-hover-bg;
+            border-left-color: @immersive-accent;
         }
     }
 
     &__results-page {
         flex-shrink: 0;
-        font-weight: bold;
+        min-width: 1.7em;
         color: @immersive-accent;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.45;
     }
 
     &__results-snippet {
         overflow: hidden;
-        text-overflow: ellipsis;
+        /* Teaser with context can run long -- clamp to two lines. */
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        line-height: 1.45;
+    }
+
+    /* The matched term inside the teaser -- accent + weight, not the browser's yellow <mark>. */
+    &__results-match {
+        background: transparent;
+        color: @immersive-accent;
+        font-weight: 600;
     }
 
     &__results-empty {
-        padding: 6px;
+        padding: 12px 10px;
+        opacity: 0.6;
     }
 
     /* Fulltext drawer: a touch more horizontal breathing room for the text column. */
@@ -1105,8 +1456,16 @@
 
     &__hl {
         border: 2px solid @immersive-accent;
-        background-color: @immersive-highlight-bg;
+        background-color: transparent;
         pointer-events: none;
+        border-radius: 1px;
+        transition: background-color 0.15s ease;
+    }
+
+    /* The active hit is filled; the other matches on the page stay as a quiet accent outline,
+       so the current match reads clearly without dimming the rest. */
+    &__hl--active {
+        background-color: @immersive-highlight-bg;
     }
 
     /* Fulltext panel: one block per OCR line; hover links it to its image box. */

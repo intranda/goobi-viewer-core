@@ -5,23 +5,46 @@ function _snippet(resource) {
 }
 
 /**
+ * Indexes the `search:Hit` list by annotation id → surrounding context
+ * (`before` / `match` / `after`), for building a teaser around each match.
+ */
+function _contextByAnnotation(annotationList) {
+    const map = new Map();
+    const hits = Array.isArray(annotationList.hits) ? annotationList.hits : [];
+    for (const hit of hits) {
+        const annos = Array.isArray(hit.annotations) ? hit.annotations : hit.annotations ? [hit.annotations] : [];
+        for (const id of annos) {
+            map.set(id, { before: hit.before, match: hit.match, after: hit.after });
+        }
+    }
+    return map;
+}
+
+/**
  * Parst eine IIIF Content Search `sc:AnnotationList` zu Treffern.
  * Seite ist 1-basiert (wie in der `on`-URL `/pages/{n}/canvas`); der Aufrufer
  * rechnet auf die 0-basierte IvViewer-Order um (order = page - 1).
- * @returns {{page:number, rect:{x,y,w,h}|null, snippet:string}[]}
+ * `before`/`match`/`after` stammen aus dem `hits`-Block (per Annotation-Id verknüpft)
+ * und sind undefined, wenn kein Kontext geliefert wird.
+ * @returns {{page:number, rect:{x,y,w,h}|null, snippet:string, before?:string, match?:string, after?:string}[]}
  */
 export function parseSearchHits(annotationList) {
     if (!annotationList || !Array.isArray(annotationList.resources)) return [];
+    const context = _contextByAnnotation(annotationList);
     const hits = [];
     for (const res of annotationList.resources) {
         const on = typeof res.on === 'string' ? res.on : (res.on && res.on['@id']) || '';
         const page = on.match(/\/pages\/(\d+)\/canvas/);
         if (!page) continue;
         const xywh = on.match(/#xywh=(\d+),(\d+),(\d+),(\d+)/);
+        const ctx = context.get(res['@id'] || res.id) || {};
         hits.push({
             page: Number(page[1]),
             rect: xywh ? { x: +xywh[1], y: +xywh[2], w: +xywh[3], h: +xywh[4] } : null,
             snippet: _snippet(res.resource),
+            before: ctx.before,
+            match: ctx.match,
+            after: ctx.after,
         });
     }
     return hits;

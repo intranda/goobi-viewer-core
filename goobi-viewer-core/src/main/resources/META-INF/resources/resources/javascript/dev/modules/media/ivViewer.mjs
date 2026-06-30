@@ -106,7 +106,7 @@ export default class IvViewer {
         if (!item) return;
         this._highlights = (rects || []).map((r) => {
             const el = document.createElement('div');
-            el.className = 'immersive__hl';
+            el.className = r.active ? 'immersive__hl immersive__hl--active' : 'immersive__hl';
             osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
             return el;
         });
