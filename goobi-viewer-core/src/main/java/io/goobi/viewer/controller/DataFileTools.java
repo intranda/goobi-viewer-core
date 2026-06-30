@@ -122,12 +122,12 @@ public final class DataFileTools {
     }
 
     /**
-     * Returns the root paths of all media directories across every configured data repository,
-     * including the viewer-home media directory for records that are not assigned to any repository.
+     * Returns the root paths of all media directories across every configured data repository, including the viewer-home media directory for records
+     * that are not assigned to any repository.
      *
-     * <p>Each returned path has the form {@code …/mediaFolder/} and may or may not exist on disk.
-     * Callers should check {@link Files#isDirectory(Path, java.nio.file.LinkOption...)} before
-     * attempting to list contents.
+     * <p>
+     * Each returned path has the form {@code …/mediaFolder/} and may or may not exist on disk. Callers should check
+     * {@link Files#isDirectory(Path, java.nio.file.LinkOption...)} before attempting to list contents.
      *
      * @return list of media root {@link Path}s; never {@code null}
      */
@@ -443,10 +443,9 @@ public final class DataFileTools {
     }
 
     /**
-     * Extracts host (and port if present) from a configured API base URL. The viewer url
-     * configuration may omit the scheme (e.g. "localhost:8080/viewer/rest"), so a scheme is
-     * prepended before parsing when none is present. Falls back to the trimmed lower-cased raw
-     * string if parsing fails, so the comparison degrades gracefully instead of throwing.
+     * Extracts host (and port if present) from a configured API base URL. The viewer url configuration may omit the scheme (e.g.
+     * "localhost:8080/viewer/rest"), so a scheme is prepended before parsing when none is present. Falls back to the trimmed lower-cased raw string
+     * if parsing fails, so the comparison degrades gracefully instead of throwing.
      *
      * @param url configured base URL, may be null
      * @return host[:port] in lower case, or null if url is null/blank
@@ -473,10 +472,9 @@ public final class DataFileTools {
     }
 
     /**
-     * Compares the hosts of the content api url (urls/iiif) and the data api url (urls/rest).
-     * Used as a recursion guard: an external content fallback must only target a different host
-     * than the viewer itself, otherwise it would call back into the same endpoint (the infinite
-     * recursion that led to the fallback removal in a57b93da9a).
+     * Compares the hosts of the content api url (urls/iiif) and the data api url (urls/rest). Used as a recursion guard: an external content fallback
+     * must only target a different host than the viewer itself, otherwise it would call back into the same endpoint (the infinite recursion that led
+     * to the fallback removal in a57b93da9a).
      *
      * @param iiifUrl content api base url (urls/iiif)
      * @param restUrl data api base url (urls/rest)
@@ -502,6 +500,7 @@ public final class DataFileTools {
      * @param mergeLineBreakWords true to merge words split across line breaks
      * @should load fulltext from alto correctly
      * @should load fulltext from plain text correctly
+     * @should fetch fulltext from external source when configured and local file missing
      * @return the plain text content of the page, or null if no fulltext could be loaded
      * @throws io.goobi.viewer.exceptions.AccessDeniedException if any.
      * @throws java.io.FileNotFoundException if any.
@@ -524,7 +523,7 @@ public final class DataFileTools {
             } catch (ContentNotFoundException e) {
                 // External content fallback for plaintext, mirroring loadAlto(). Host guard prevents
                 // the self-call recursion removed in a57b93da9a.
-                if (isExternalContentSourceConfigured()) {
+                if (isLoadFulltextFromExternalSource()) {
                     return fetchFulltextFromExternalSource(FileTools.getBottomFolderFromPathString(fulltextFilePath),
                             FileTools.getFilenameFromPathString(fulltextFilePath));
                 }
@@ -550,9 +549,8 @@ public final class DataFileTools {
     }
 
     /**
-     * Loads plain full-text from the configured external content api (urls/iiif) when the local
-     * file is missing. Must only be called after {@link #isExternalContentSourceConfigured()}
-     * returned true. Uses a read timeout so an unreachable external source cannot block the thread.
+     * Loads plain full-text from the configured external content api (urls/iiif) when the local file is missing. Must only be called after
+     * {@link #isExternalContentSourceConfigured()} returned true. Uses a read timeout so an unreachable external source cannot block the thread.
      *
      * @param pi record identifier
      * @param filename plain-text file name
@@ -565,16 +563,14 @@ public final class DataFileTools {
     }
 
     /**
-     * Builds the content api url (urls/iiif) for the given record file and fetches its content from
-     * the external content source. Shared by {@link #fetchAltoFromExternalSource(String, String)}
-     * and {@link #fetchFulltextFromExternalSource(String, String)}. A read timeout is applied (via
-     * {@link NetTools#getWebContentGET(String)}) so an unreachable external source cannot block the
-     * request thread — the pre-25.01 implementation used a timeout-less call that could hang.
+     * Builds the content api url (urls/iiif) for the given record file and fetches its content from the external content source. Shared by
+     * {@link #fetchAltoFromExternalSource(String, String)} and {@link #fetchFulltextFromExternalSource(String, String)}. A read timeout is applied
+     * (via {@link NetTools#getWebContentGET(String)}) so an unreachable external source cannot block the request thread — the pre-25.01
+     * implementation used a timeout-less call that could hang.
      *
      * @param pi record identifier
      * @param filename file name
-     * @param filesSubPath ApiUrls files sub-path, e.g. {@link ApiUrls#RECORDS_FILES_ALTO} or
-     *            {@link ApiUrls#RECORDS_FILES_PLAINTEXT}
+     * @param filesSubPath ApiUrls files sub-path, e.g. {@link ApiUrls#RECORDS_FILES_ALTO} or {@link ApiUrls#RECORDS_FILES_PLAINTEXT}
      * @return content of the requested file
      * @throws FileNotFoundException if the external source has no such document or is unreachable
      */
@@ -592,9 +588,34 @@ public final class DataFileTools {
     }
 
     /**
-     * Indicates whether an external content source is configured for the ocr/fulltext fallback,
-     * i.e. urls/iiif points to a different host than urls/rest. Guards against the self-call
-     * recursion removed in a57b93da9a.
+     * Returns {@code true} when plain full-text files may be fetched from the configured external content API (urls/iiif) as a fallback for missing
+     * local files. Both the per-format config flag ({@link Configuration#allowExternalFulltextUrlResolution()}) and the host guard
+     * ({@link #isExternalContentSourceConfigured()}) must pass.
+     *
+     * @return {@code true} if external full-text source resolution is active
+     * @should return true when config flag is true and external source configured
+     * @should return false when config flag is false
+     */
+    static boolean isLoadFulltextFromExternalSource() {
+        return DataManager.getInstance().getConfiguration().allowExternalFulltextUrlResolution() && isExternalContentSourceConfigured();
+    }
+
+    /**
+     * Returns {@code true} when ALTO files may be fetched from the configured external content API (urls/iiif) as a fallback for missing local
+     * files. Both the per-format config flag ({@link Configuration#allowExternalAltoUrlResolution()}) and the host guard
+     * ({@link #isExternalContentSourceConfigured()}) must pass.
+     *
+     * @return {@code true} if external ALTO source resolution is active
+     * @should return true when config flag is true and external source configured
+     * @should return false when config flag is false
+     */
+    static boolean isLoadAltoFromExternalSource() {
+        return DataManager.getInstance().getConfiguration().allowExternalAltoUrlResolution() && isExternalContentSourceConfigured();
+    }
+
+    /**
+     * Indicates whether an external content source is configured for the ocr/fulltext fallback, i.e. urls/iiif points to a different host than
+     * urls/rest. Guards against the self-call recursion removed in a57b93da9a.
      *
      * @return true if urls/iiif and urls/rest resolve to different hosts
      * @should return true when iiif and rest urls have different hosts
@@ -605,11 +626,9 @@ public final class DataFileTools {
     }
 
     /**
-     * Loads an ALTO document from the configured external content api (urls/iiif) when the local
-     * file is missing. Must only be called after {@link #isExternalContentSourceConfigured()}
-     * returned true. A read timeout is applied (via {@link NetTools#getWebContentGET(String)}) so
-     * an unreachable external source cannot block the request thread — the pre-25.01 implementation
-     * used a timeout-less call that could hang.
+     * Loads an ALTO document from the configured external content api (urls/iiif) when the local file is missing. Must only be called after
+     * {@link #isExternalContentSourceConfigured()} returned true. A read timeout is applied (via {@link NetTools#getWebContentGET(String)}) so an
+     * unreachable external source cannot block the request thread — the pre-25.01 implementation used a timeout-less call that could hang.
      *
      * @param pi record identifier
      * @param filename ALTO file name
@@ -650,7 +669,7 @@ public final class DataFileTools {
             // to a different host than urls/rest, fetch it from that external goobi content server.
             // The host guard prevents the self-call that caused the infinite recursion removed in
             // a57b93da9a.
-            if (isExternalContentSourceConfigured()) {
+            if (isLoadAltoFromExternalSource()) {
                 return fetchAltoFromExternalSource(pi, filename);
             }
             throw new FileNotFoundException(e.getMessage());
