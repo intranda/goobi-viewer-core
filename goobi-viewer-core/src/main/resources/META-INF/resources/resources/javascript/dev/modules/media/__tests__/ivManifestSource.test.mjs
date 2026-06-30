@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { loadPageServices, loadPageText, parsePageText, parsePageLines, loadPageLines, loadPageRegions, _clearCache } from '../ivManifestSource.mjs';
+import { loadPageServices, loadPageLabels, loadPageText, parsePageText, parsePageLines, loadPageLines, loadPageRegions, _clearCache } from '../ivManifestSource.mjs';
 
 const V2 = {
     sequences: [
@@ -51,6 +51,37 @@ describe('loadPageServices', () => {
 
         expect(result).toEqual(['https://h/img/1', 'https://h/img/2']);
         expect(fetchFn).toHaveBeenCalledTimes(2);
+    });
+});
+
+const V2_LABELS = {
+    sequences: [
+        {
+            canvases: [
+                { label: ' - ', images: [{ resource: { service: { '@id': 'https://h/img/1' } } }] },
+                { label: '[1]', images: [{ resource: { service: { '@id': 'https://h/img/2' } } }] },
+            ],
+        },
+    ],
+};
+
+describe('loadPageLabels', () => {
+    test('fetches manifest and returns ordered canvas labels', async () => {
+        const fetchFn = jest.fn().mockResolvedValue(okResponse(V2_LABELS));
+
+        const result = await loadPageLabels('PPN1', 'https://h/api', fetchFn);
+
+        expect(result).toEqual([' - ', '[1]']);
+    });
+
+    test('shares the memoized manifest fetch with loadPageServices (one request per pi)', async () => {
+        const fetchFn = jest.fn().mockResolvedValue(okResponse(V2_LABELS));
+
+        const [services, labels] = await Promise.all([loadPageServices('PPN1', 'https://h/api', fetchFn), loadPageLabels('PPN1', 'https://h/api', fetchFn)]);
+
+        expect(services).toEqual(['https://h/img/1', 'https://h/img/2']);
+        expect(labels).toEqual([' - ', '[1]']);
+        expect(fetchFn).toHaveBeenCalledTimes(1);
     });
 });
 

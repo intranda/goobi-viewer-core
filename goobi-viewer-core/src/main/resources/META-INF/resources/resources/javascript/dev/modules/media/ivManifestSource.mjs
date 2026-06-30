@@ -1,19 +1,17 @@
-import { parseManifestImageServices } from './iv_imageWindow.mjs';
+import { parseManifestImageServices, parseManifestPageLabels } from './iv_imageWindow.mjs';
 
 const cache = new Map();
 
 /**
- * Fetches the IIIF Presentation manifest for a given PI and returns the
- * ordered list of image-service base URLs for all pages.
- *
- * The result Promise is memoized per pi so repeated calls never re-fetch.
+ * Fetches (and memoizes per pi) the parsed IIIF Presentation manifest for a PI, so
+ * services and labels share a single network request.
  *
  * @param {string} pi       - Goobi viewer process identifier.
  * @param {string} apiBase  - Base URL of the REST API (no trailing slash).
  * @param {Function} fetchFn - fetch-compatible function (injectable for tests).
- * @returns {Promise<string[]>}
+ * @returns {Promise<object>} the parsed manifest JSON.
  */
-export function loadPageServices(pi, apiBase, fetchFn = fetch) {
+function loadManifest(pi, apiBase, fetchFn = fetch) {
     if (cache.has(pi)) {
         return cache.get(pi);
     }
@@ -23,7 +21,7 @@ export function loadPageServices(pi, apiBase, fetchFn = fetch) {
         if (!res.ok) {
             throw new Error(`Failed to load manifest for "${pi}": HTTP ${res.status}`);
         }
-        return res.json().then((manifest) => parseManifestImageServices(manifest));
+        return res.json();
     });
 
     cache.set(pi, promise);
@@ -33,6 +31,31 @@ export function loadPageServices(pi, apiBase, fetchFn = fetch) {
         cache.delete(pi);
         throw e;
     });
+}
+
+/**
+ * Returns the ordered list of image-service base URLs for all pages of a record.
+ *
+ * @param {string} pi       - Goobi viewer process identifier.
+ * @param {string} apiBase  - Base URL of the REST API (no trailing slash).
+ * @param {Function} fetchFn - fetch-compatible function (injectable for tests).
+ * @returns {Promise<string[]>}
+ */
+export function loadPageServices(pi, apiBase, fetchFn = fetch) {
+    return loadManifest(pi, apiBase, fetchFn).then(parseManifestImageServices);
+}
+
+/**
+ * Returns the ordered list of canvas labels for all pages, index-aligned with
+ * {@link loadPageServices}. Shares the memoized manifest fetch (no extra request).
+ *
+ * @param {string} pi       - Goobi viewer process identifier.
+ * @param {string} apiBase  - Base URL of the REST API (no trailing slash).
+ * @param {Function} fetchFn - fetch-compatible function (injectable for tests).
+ * @returns {Promise<string[]>}
+ */
+export function loadPageLabels(pi, apiBase, fetchFn = fetch) {
+    return loadManifest(pi, apiBase, fetchFn).then(parseManifestPageLabels);
 }
 
 /**

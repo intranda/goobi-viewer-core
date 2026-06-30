@@ -2,7 +2,7 @@ import ZoomableImage from './media/zoomableImage.mjs';
 import ShareImageFragment from './media/shareImageFragment.mjs';
 import Voyager3dView from './media/voyager3DViewer.mjs';
 import IvViewer from './media/ivViewer.mjs';
-import { loadPageServices, loadPageRegions } from './media/ivManifestSource.mjs';
+import { loadPageServices, loadPageLabels, loadPageRegions } from './media/ivManifestSource.mjs';
 import { buildLineSpans, buildWordSpans, mountTextImageLink } from './media/ivTextImageLink.mjs';
 import { attachUrlSync } from './viewer/viewerImmersive.mjs';
 import { search, nextIndex, prevIndex } from './media/ivFulltextSearch.mjs';
@@ -107,6 +107,52 @@ function initImmersiveViewer(el) {
         }
     });
 
+    // Sidebar resize: one drag handle at the open panel's right edge sets a single
+    // --immersive-panel-width on .immersive__viewer, so all left panels share one width.
+    // The chosen width persists in localStorage and is re-applied (clamped) on load.
+    const immersiveViewer = immersiveRoot && immersiveRoot.querySelector('.immersive__viewer');
+    if (immersiveViewer) {
+        const WIDTH_KEY = 'immersive-panel-width';
+        const RAIL_WIDTH = 40; // left tool rail; panels start at left: 40px
+        const MIN_WIDTH = 240;
+        const maxWidth = () => immersiveViewer.getBoundingClientRect().width * 0.8;
+        const clamp = (px) => Math.min(Math.max(px, MIN_WIDTH), maxWidth());
+        const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
+        let stored = NaN;
+        try {
+            stored = parseInt(localStorage.getItem(WIDTH_KEY), 10);
+        } catch (e) {
+            // localStorage may be unavailable (private mode / blocked) -- defaults apply.
+        }
+        if (Number.isFinite(stored)) applyWidth(clamp(stored));
+
+        const handle = document.createElement('div');
+        handle.className = 'immersive__panel-resize-handle';
+        handle.setAttribute('aria-hidden', 'true');
+        immersiveViewer.appendChild(handle);
+        handle.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            handle.setPointerCapture(e.pointerId);
+            immersiveRoot.classList.add('immersive--resizing');
+            const viewerLeft = immersiveViewer.getBoundingClientRect().left;
+            const widthAt = (ev) => clamp(ev.clientX - viewerLeft - RAIL_WIDTH);
+            const onMove = (ev) => applyWidth(widthAt(ev));
+            const onUp = (ev) => {
+                handle.releasePointerCapture(e.pointerId);
+                handle.removeEventListener('pointermove', onMove);
+                handle.removeEventListener('pointerup', onUp);
+                immersiveRoot.classList.remove('immersive--resizing');
+                try {
+                    localStorage.setItem(WIDTH_KEY, String(Math.round(widthAt(ev))));
+                } catch (err) {
+                    // ignore: nothing to persist if storage is unavailable
+                }
+            };
+            handle.addEventListener('pointermove', onMove);
+            handle.addEventListener('pointerup', onUp);
+        });
+    }
+
     // TOC "collapse all / expand all" toggle: the tree is server-rendered, so wire it up
     // immediately (no viewer needed) and show it right away -- only when the TOC actually
     // nests. Collapse folds to the top-level chapters (the record root is hidden, so we
@@ -155,12 +201,14 @@ function initImmersiveViewer(el) {
             viewer.onLoaded.subscribe(() => mountImageFilters(viewer));
 
             const indicator = document.getElementById('immersivePageIndicator');
+            const titlePage = document.getElementById('immersiveTitlePage');
             const total = viewer.getPageCount();
             const updateIndicator = () => {
-                if (!indicator) return;
                 const pages = viewer.getCurrentPages().map((p) => p + 1);
                 const label = pages.length > 1 ? `${pages[0]}–${pages[pages.length - 1]}` : `${pages[0]}`;
-                indicator.textContent = `${label} / ${total}`;
+                if (indicator) indicator.textContent = `${label} / ${total}`;
+                // Mirror the page next to the work title, e.g. "(5 / 40)".
+                if (titlePage) titlePage.textContent = `(${label} / ${total})`;
             };
             updateIndicator();
             viewer.onPageChange.subscribe(() => updateIndicator());
@@ -177,6 +225,111 @@ function initImmersiveViewer(el) {
             };
             updateChevrons();
             viewer.onPageChange.subscribe(updateChevrons);
+
+            // Title page picker: clicking the work title opens a dropdown with a "go to page"
+            // input and a scrollable list of the IIIF manifest page labels. Selecting jumps
+            // the viewer. Labels share the memoized manifest fetch, so this costs no request.
+            const setupPageDropdown = (labels) => {
+                const trigger = document.querySelector('[data-immersive-title-trigger]');
+                const dropdown = document.getElementById('immersivePageDropdown');
+                const list = document.getElementById('immersivePageList');
+                const input = document.getElementById('immersivePageInput');
+                if (!trigger || !dropdown || !list) return;
+                // A single-page record has nothing to pick: leave the title non-interactive.
+                if (total < 2) {
+                    trigger.classList.add('immersive__title-trigger--static');
+                    return;
+                }
+                if (input) input.max = String(total);
+
+                // One row per page as "<running number>: <raw manifest label>", e.g.
+                // "1: -", "3: [1]", "8: 5" -- the manifest label is shown verbatim
+                // (a blank " - " label trims to "-"), like the classic page dropdown.
+                const items = [];
+                for (let order = 0; order < total; order++) {
+                    const li = document.createElement('li');
+                    li.setAttribute('role', 'option');
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'immersive__page-dropdown-item';
+                    btn.dataset.order = String(order);
+                    const num = document.createElement('span');
+                    num.className = 'immersive__page-dropdown-num';
+                    num.textContent = `${order + 1}:`;
+                    const lbl = document.createElement('span');
+                    lbl.className = 'immersive__page-dropdown-itemlabel';
+                    lbl.textContent = (labels[order] || '').trim();
+                    btn.append(num, lbl);
+                    li.append(btn);
+                    list.append(li);
+                    items.push(btn);
+                }
+
+                const markActive = () => {
+                    const current = viewer.getCurrentPages();
+                    items.forEach((btn) => {
+                        const on = current.includes(Number(btn.dataset.order));
+                        btn.classList.toggle('is-active', on);
+                        btn.setAttribute('aria-selected', on ? 'true' : 'false');
+                    });
+                };
+
+                const isOpen = () => !dropdown.hidden;
+                const onOutside = (e) => {
+                    if (!dropdown.contains(e.target) && !trigger.contains(e.target)) close();
+                };
+                const close = () => {
+                    if (!isOpen()) return;
+                    dropdown.hidden = true;
+                    trigger.setAttribute('aria-expanded', 'false');
+                    document.removeEventListener('pointerdown', onOutside, true);
+                };
+                const open = () => {
+                    if (isOpen()) return;
+                    markActive();
+                    dropdown.hidden = false;
+                    trigger.setAttribute('aria-expanded', 'true');
+                    document.addEventListener('pointerdown', onOutside, true);
+                    // Centre the active row WITHIN the list only -- never via scrollIntoView /
+                    // focus(), which would scroll the page and visibly shift the image.
+                    const active = list.querySelector('.immersive__page-dropdown-item.is-active');
+                    if (active) {
+                        list.scrollTop = Math.max(0, active.offsetTop - list.offsetTop - (list.clientHeight - active.clientHeight) / 2);
+                    }
+                    if (input) {
+                        input.value = '';
+                        input.focus({ preventScroll: true });
+                    }
+                };
+
+                trigger.addEventListener('click', () => (isOpen() ? close() : open()));
+                list.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.immersive__page-dropdown-item');
+                    if (!btn) return;
+                    viewer.goToPage(Number(btn.dataset.order));
+                    close();
+                });
+                if (input) {
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key !== 'Enter') return;
+                        e.preventDefault();
+                        const n = parseInt(input.value, 10);
+                        if (Number.isFinite(n) && n >= 1 && n <= total) {
+                            viewer.goToPage(n - 1);
+                            close();
+                        }
+                    });
+                }
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && isOpen()) {
+                        close();
+                        trigger.focus();
+                    }
+                });
+                viewer.onPageChange.subscribe(markActive);
+                markActive();
+            };
+            loadPageLabels(pi, apiBase).then(setupPageDropdown).catch(() => {});
 
             // Fulltext: in-place IIIF content search → result list (left panel) + image hit highlights.
             const fts = { hits: [], idx: -1, term: '' };

@@ -23,6 +23,73 @@ function resolveServiceId(service, primaryKey, fallbackKey) {
 }
 
 /**
+ * Resolve a IIIF canvas `label` to a single display string. Handles a plain string,
+ * a v2 `{'@value'}` object, an array of either, and a v3 language map
+ * (`{ de: ['…'], none: ['…'] }`). Returns the first non-empty value found, or ''.
+ *
+ * @param {string|object|Array} label
+ * @returns {string}
+ */
+function resolveCanvasLabel(label) {
+    if (label == null) return '';
+    if (typeof label === 'string') return label;
+    if (Array.isArray(label)) {
+        for (const item of label) {
+            const v = resolveCanvasLabel(item);
+            if (v) return v;
+        }
+        return '';
+    }
+    if (typeof label === 'object') {
+        if (typeof label['@value'] === 'string' && label['@value'].length > 0) return label['@value'];
+        for (const v of Object.values(label)) {
+            const resolved = resolveCanvasLabel(v);
+            if (resolved) return resolved;
+        }
+    }
+    return '';
+}
+
+/**
+ * Extracts ordered `{id, label}` entries from a manifest's canvases (v2 sequences/
+ * canvases or v3 items). Canvases without a resolvable image-service id are skipped,
+ * so the result stays index-aligned for both the service URLs and the page labels.
+ *
+ * @param {object} manifest
+ * @returns {Array<{id: string, label: string}>}
+ */
+function parseManifestCanvasEntries(manifest) {
+    if (!manifest || typeof manifest !== 'object') return [];
+
+    if (Array.isArray(manifest.sequences) && manifest.sequences.length > 0) {
+        const canvases = manifest.sequences[0].canvases;
+        if (!Array.isArray(canvases)) return [];
+
+        const entries = [];
+        for (const canvas of canvases) {
+            try {
+                const id = resolveServiceId(canvas.images[0].resource.service, '@id', 'id');
+                if (id !== null) entries.push({ id, label: resolveCanvasLabel(canvas.label) });
+            } catch {}
+        }
+        return entries;
+    }
+
+    if (Array.isArray(manifest.items) && manifest.items.length > 0) {
+        const entries = [];
+        for (const canvas of manifest.items) {
+            try {
+                const id = resolveServiceId(canvas.items[0].items[0].body.service, 'id', '@id');
+                if (id !== null) entries.push({ id, label: resolveCanvasLabel(canvas.label) });
+            } catch {}
+        }
+        return entries;
+    }
+
+    return [];
+}
+
+/**
  * Extracts the ordered list of IIIF image-service base IDs from a manifest.
  *
  * Supports IIIF Presentation API v2 (sequences/canvases) and v3 (items).
@@ -32,36 +99,18 @@ function resolveServiceId(service, primaryKey, fallbackKey) {
  * @returns {string[]} Ordered array of image-service id strings.
  */
 export function parseManifestImageServices(manifest) {
-    if (!manifest || typeof manifest !== 'object') return [];
+    return parseManifestCanvasEntries(manifest).map((e) => e.id);
+}
 
-    if (Array.isArray(manifest.sequences) && manifest.sequences.length > 0) {
-        const canvases = manifest.sequences[0].canvases;
-        if (!Array.isArray(canvases)) return [];
-
-        const ids = [];
-        for (const canvas of canvases) {
-            try {
-                const service = canvas.images[0].resource.service;
-                const id = resolveServiceId(service, '@id', 'id');
-                if (id !== null) ids.push(id);
-            } catch {}
-        }
-        return ids;
-    }
-
-    if (Array.isArray(manifest.items) && manifest.items.length > 0) {
-        const ids = [];
-        for (const canvas of manifest.items) {
-            try {
-                const service = canvas.items[0].items[0].body.service;
-                const id = resolveServiceId(service, 'id', '@id');
-                if (id !== null) ids.push(id);
-            } catch {}
-        }
-        return ids;
-    }
-
-    return [];
+/**
+ * Extracts the ordered list of canvas labels from a manifest, index-aligned with
+ * {@link parseManifestImageServices}. Canvases without a resolvable label yield ''.
+ *
+ * @param {object} manifest - Parsed IIIF Presentation manifest.
+ * @returns {string[]} Ordered array of label strings (one per page).
+ */
+export function parseManifestPageLabels(manifest) {
+    return parseManifestCanvasEntries(manifest).map((e) => e.label);
 }
 
 /**

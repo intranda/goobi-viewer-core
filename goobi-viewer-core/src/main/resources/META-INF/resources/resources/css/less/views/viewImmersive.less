@@ -123,13 +123,57 @@
     }
 
     &__title {
+        position: relative;
+        max-width: 60%;
+        /* container stays click-through; the trigger button re-enables pointer events */
+        pointer-events: none;
+    }
+
+    /* The work title doubles as the page-picker trigger. */
+    &__title-trigger {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        max-width: 60%;
+        max-width: 100%;
+        padding: 4px 8px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
         color: @immersive-canvas-fg;
         filter: @immersive-overlay-shadow;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background-color: @immersive-chrome-hover-bg;
+            color: @immersive-canvas-fg;
+        }
+    }
+
+    &__title-caret {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        transition: transform 0.15s ease;
+
+        .immersive__title-trigger[aria-expanded='true'] & {
+            transform: rotate(180deg);
+        }
+    }
+
+    /* Single-page record: nothing to pick -- present the title as plain, static text. */
+    &__title-trigger--static {
+        cursor: default;
         pointer-events: none;
+
+        &:hover {
+            background: transparent;
+        }
+
+        .immersive__title-caret {
+            display: none;
+        }
     }
 
     /* While a left panel is open it owns the left column. Fade out the top overlay
@@ -138,6 +182,9 @@
     &--panel-open {
         .immersive__overlay-top {
             opacity: 0;
+            /* faded out -> also non-interactive, so the (invisible) title trigger and its
+               page dropdown can't be clicked while a side panel owns the view. */
+            pointer-events: none;
         }
         .immersive__back {
             pointer-events: none;
@@ -156,7 +203,114 @@
 
     &__title-text {
         overflow: hidden;
+        /* allow the title to shrink + ellipsize so the page number stays visible */
+        min-width: 0;
         font-size: @fontNormal;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    /* Current page next to the title, e.g. "(5 / 40)" -- filled by modules.mjs. A muted,
+       non-shrinking detail that survives even when a long title truncates. */
+    &__title-page {
+        flex-shrink: 0;
+        font-size: @fontNormal;
+        white-space: nowrap;
+        opacity: 0.75;
+
+        &:empty {
+            display: none;
+        }
+    }
+
+    /* Page-picker dropdown anchored under the title trigger; chrome-styled like the panels. */
+    &__page-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 110;
+        display: flex;
+        flex-direction: column;
+        width: 280px;
+        max-width: 80vw;
+        max-height: 60vh;
+        padding: 10px;
+        border-radius: 8px;
+        background-color: @immersive-chrome-bg;
+        color: @immersive-chrome-fg;
+        box-shadow: @immersive-panel-shadow;
+        pointer-events: auto;
+        text-align: left;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__page-dropdown-jump {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &__page-dropdown-label {
+        font-size: @fontSmall;
+    }
+
+    &__page-dropdown-input {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid @immersive-divider;
+        border-radius: 6px;
+        background-color: transparent;
+        color: @immersive-chrome-fg;
+        font-size: @fontNormal;
+
+        &:focus {
+            outline: none;
+            border-color: @immersive-accent;
+        }
+    }
+
+    &__page-dropdown-list {
+        margin: 8px 0 0;
+        padding: 8px 0 0;
+        border-top: 1px solid @immersive-divider;
+        list-style: none;
+        overflow-y: auto;
+    }
+
+    &__page-dropdown-item {
+        display: flex;
+        gap: 6px;
+        width: 100%;
+        padding: 6px 8px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: @immersive-chrome-fg;
+        text-align: left;
+        cursor: pointer;
+
+        &:hover,
+        &.is-active {
+            background-color: @immersive-chrome-hover-bg;
+        }
+    }
+
+    &__page-dropdown-num {
+        flex-shrink: 0;
+        color: @immersive-accent;
+        font-variant-numeric: tabular-nums;
+
+        .immersive__page-dropdown-item.is-active & {
+            font-weight: bold;
+        }
+    }
+
+    &__page-dropdown-itemlabel {
+        overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
     }
@@ -263,7 +417,10 @@
         top: 0;
         bottom: 0;
         z-index: 90;
-        width: 340px;
+        /* Shared sidebar width: --immersive-panel-width drives ALL left panels at once
+           (set per context below, or inline by the resize handle). The fallback is the
+           default width when the user hasn't dragged. */
+        width: var(--immersive-panel-width, 340px);
         max-width: 80%;
         overflow-y: auto;
         /* reserve the scrollbar gutter so collapsing the TOC (scrollbar disappears)
@@ -284,16 +441,63 @@
         }
     }
 
+    /* Single sidebar resize handle: a thin vertical strip at the open panel's right edge.
+       Dragging it sets --immersive-panel-width inline on .immersive__viewer, so every left
+       panel resizes together. Injected once by JS and only shown while a panel is open. */
+    &__panel-resize-handle {
+        display: none;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc(40px + var(--immersive-panel-width, 340px));
+        z-index: 95;
+        width: 12px;
+        margin-left: -6px;
+        cursor: col-resize;
+        touch-action: none;
+
+        /* the visible grab line, centred in the wider (easier-to-hit) drag area */
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            transform: translateX(-50%);
+            background-color: transparent;
+            transition: background-color 0.15s ease;
+        }
+
+        &:hover::after {
+            background-color: @immersive-accent;
+        }
+    }
+
+    &--panel-open &__panel-resize-handle {
+        display: block;
+    }
+
+    /* While dragging: suppress text selection and keep the grab line highlighted. */
+    &--resizing {
+        user-select: none;
+
+        .immersive__panel-resize-handle::after {
+            background-color: @immersive-accent;
+        }
+    }
+
     /* Fullscreen: give the sidebar more reading width — but not in double-page mode,
        where the spread needs the horizontal space. (:fullscreen for Firefox and
        :-webkit-full-screen for Chromium/WebKit must be separate rules — a browser
-       drops the whole group if one selector token is unknown.) */
-    &__viewer:fullscreen:not(.is-double-page) .immersive__panel {
-        width: 420px;
+       drops the whole group if one selector token is unknown.) The user's dragged
+       width (inline on the viewer) still wins over this default. */
+    &__viewer:fullscreen:not(.is-double-page) {
+        --immersive-panel-width: 420px;
     }
 
-    &__viewer:-webkit-full-screen:not(.is-double-page) .immersive__panel {
-        width: 420px;
+    &__viewer:-webkit-full-screen:not(.is-double-page) {
+        --immersive-panel-width: 420px;
     }
 
     /* Metadata panel — bespoke, modern treatment for the narrow immersive sidebar.
@@ -769,8 +973,8 @@
 }
 
 @media screen and (max-width: @mediumBreakpoint) {
-    .immersive__panel {
-        width: 300px;
+    .immersive__viewer {
+        --immersive-panel-width: 300px;
     }
 }
 

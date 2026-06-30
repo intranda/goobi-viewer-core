@@ -24,10 +24,49 @@
                         text="#{msg.returnToHitlist}" />
                 </a>
                 <div class="immersive__title">
-                    <util:icon
-                        icon="book"
-                        svgClass="immersive__title-icon" />
-                    <span class="immersive__title-text">#{activeDocumentBean.titleBarLabel}</span>
+                    <button
+                        type="button"
+                        class="immersive__title-trigger"
+                        data-immersive-title-trigger="true"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-controls="immersivePageDropdown"
+                        title="#{msg.aria_label__select_page}"
+                        aria-label="#{msg.aria_label__select_page}">
+                        <util:icon
+                            icon="book"
+                            svgClass="immersive__title-icon" />
+                        <span class="immersive__title-text">#{activeDocumentBean.titleBarLabel}</span>
+                        <span
+                            class="immersive__title-page"
+                            id="immersiveTitlePage" />
+                        <util:icon
+                            icon="chevron-down"
+                            svgClass="immersive__title-caret" />
+                    </button>
+                    <div
+                        class="immersive__page-dropdown"
+                        id="immersivePageDropdown"
+                        hidden="hidden">
+                        <div class="immersive__page-dropdown-jump">
+                            <label
+                                class="immersive__page-dropdown-label"
+                                for="immersivePageInput">
+                                #{msg.aria__label_pagination_goto}
+                            </label>
+                            <input
+                                type="number"
+                                min="1"
+                                id="immersivePageInput"
+                                class="immersive__page-dropdown-input"
+                                inputmode="numeric"
+                                autocomplete="off" />
+                        </div>
+                        <ul
+                            class="immersive__page-dropdown-list"
+                            id="immersivePageList"
+                            role="listbox" />
+                    </div>
                 </div>
             </div>
 
@@ -42,17 +81,7 @@
                     title="#{msg.toc}"
                     aria-label="#{msg.toc}">
                     <util:icon
-                        icon="menu-2"
-                        svgClass="immersive__tool-icon" />
-                </button>
-                <button
-                    type="button"
-                    class="immersive__tool-btn"
-                    data-immersive-panel="immersivePanelMetadata"
-                    title="#{msg.metadata}"
-                    aria-label="#{msg.metadata}">
-                    <util:icon
-                        icon="info-circle"
+                        icon="list"
                         svgClass="immersive__tool-icon" />
                 </button>
                 <!-- Fulltext (page OCR) toggle; only rendered when the work has fulltext.
@@ -66,7 +95,7 @@
                         title="#{msg.fulltext}"
                         aria-label="#{msg.fulltext}">
                         <util:icon
-                            icon="align-left"
+                            icon="file-text"
                             svgClass="immersive__tool-icon" />
                     </button>
                 </ui:fragment>
@@ -78,6 +107,16 @@
                     aria-label="#{msg.search}">
                     <util:icon
                         icon="search"
+                        svgClass="immersive__tool-icon" />
+                </button>
+                <button
+                    type="button"
+                    class="immersive__tool-btn"
+                    data-immersive-panel="immersivePanelMetadata"
+                    title="#{msg.metadata}"
+                    aria-label="#{msg.metadata}">
+                    <util:icon
+                        icon="info-circle"
                         svgClass="immersive__tool-icon" />
                 </button>
             </div>
