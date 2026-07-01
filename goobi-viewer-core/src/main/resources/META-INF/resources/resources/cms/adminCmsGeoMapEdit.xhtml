@@ -643,8 +643,8 @@
                                              	    		}
                                              	    	}
                                              	    	//change active featureSet
-                                             	    	//trigger on body because the panelFeatureSets can be swapped per ajax
-                                        on langauge change
+                                             	    	// trigger on body because the panelFeatureSets can be swapped per ajax
+                                             	    	// on language change
                                              	    	if(!#{featureSet.queryResultSet}) {
                                              	    		$("body").off("click.setactive", "#panelFeatureSet_#{status.index}");
                                              	    		$("body").on("click.setactive", "#panelFeatureSet_#{status.index}", e => {
