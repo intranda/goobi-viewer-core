@@ -1,0 +1,234 @@
+.immersive {
+    &__overlay-top {
+        position: absolute;
+        top: @immersive-edge-inset;
+        right: @immersive-edge-inset;
+        left: @immersive-edge-inset;
+        z-index: 110;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    &__back {
+        position: absolute;
+        left: calc(@immersive-rail-width + @immersive-edge-inset);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 36px;
+        padding: 0 14px;
+        .immersive-floating();
+        color: @immersive-chrome-fg;
+        font-size: @fontMedium;
+        text-decoration: none;
+        pointer-events: auto;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            color: @immersive-chrome-fg;
+            text-decoration: none;
+            background-color: @immersive-chrome-hover-bg;
+        }
+    }
+
+    &__back-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    &__title {
+        position: relative;
+        display: flex;
+        align-items: center;
+        /* min-width:0 lets the flex child shrink so a long title can ellipsize. */
+        min-width: 0;
+        max-width: ~'min(60%, 420px)';
+        pointer-events: none;
+    }
+
+    &__title-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        max-width: 100%;
+        padding: 4px 8px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: @immersive-canvas-fg;
+        filter: @immersive-overlay-shadow;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background-color: @immersive-chrome-hover-bg;
+            color: @immersive-canvas-fg;
+        }
+    }
+
+    &__title-caret {
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        transition: transform 0.15s ease;
+
+        .immersive__title-trigger[aria-expanded='true'] & {
+            transform: rotate(180deg);
+        }
+    }
+
+    &__title-trigger--static {
+        cursor: default;
+        pointer-events: none;
+
+        &:hover {
+            background: transparent;
+        }
+
+        .immersive__title-caret {
+            display: none;
+        }
+    }
+
+    &--panel-open {
+        .immersive__overlay-top {
+            opacity: 0;
+        }
+        /* Each of these re-enables pointer-events, so disable them explicitly here — otherwise
+           the invisible full-width title trigger keeps stealing clicks meant for the open panel. */
+        .immersive__overlay-top,
+        .immersive__back,
+        .immersive__title-trigger,
+        .immersive__page-dropdown {
+            pointer-events: none;
+        }
+        .immersive__chevron--left {
+            opacity: 0;
+            pointer-events: none;
+        }
+    }
+
+    &__title-icon {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+    }
+
+    &__title-text {
+        overflow: hidden;
+        min-width: 0;
+        font-size: @fontNormal;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    &__title-page {
+        flex-shrink: 0;
+        font-size: @fontNormal;
+        white-space: nowrap;
+        opacity: 0.75;
+
+        &:empty {
+            display: none;
+        }
+    }
+
+    &__page-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 110;
+        display: flex;
+        flex-direction: column;
+        width: 280px;
+        max-width: 80vw;
+        max-height: 60vh;
+        padding: 10px;
+        border-radius: 8px;
+        background-color: @immersive-chrome-bg;
+        color: @immersive-chrome-fg;
+        box-shadow: @immersive-panel-shadow;
+        pointer-events: auto;
+        text-align: left;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__page-dropdown-jump {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &__page-dropdown-label {
+        font-size: @fontSmall;
+    }
+
+    &__page-dropdown-input {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid @immersive-divider;
+        border-radius: 6px;
+        background-color: transparent;
+        color: @immersive-chrome-fg;
+        font-size: @fontNormal;
+
+        &:focus {
+            border-color: @immersive-accent;
+        }
+
+        &:focus-visible {
+            .immersive-focus-ring();
+        }
+    }
+
+    &__page-dropdown-list {
+        margin: 8px 0 0;
+        padding: 8px 0 0;
+        border-top: 1px solid @immersive-divider;
+        list-style: none;
+        overflow-y: auto;
+    }
+
+    &__page-dropdown-item {
+        display: flex;
+        gap: 6px;
+        width: 100%;
+        padding: 6px 8px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: @immersive-chrome-fg;
+        text-align: left;
+        cursor: pointer;
+
+        &:hover,
+        &.is-active {
+            background-color: @immersive-chrome-hover-bg;
+        }
+    }
+
+    &__page-dropdown-num {
+        flex-shrink: 0;
+        color: @immersive-accent;
+        font-variant-numeric: tabular-nums;
+
+        .immersive__page-dropdown-item.is-active & {
+            font-weight: bold;
+        }
+    }
+
+    &__page-dropdown-itemlabel {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}

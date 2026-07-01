@@ -1,0 +1,47 @@
+@immersiveMaxWidth: 1240px;
+@immersive-rail-width: 40px;
+@immersive-edge-inset: 12px;
+@immersive-chevron-scrim: rgba(0, 0, 0, 0.3);
+
+/* resets.less strips every focus outline; restore a scoped, accent-coloured focus ring. */
+.immersive :focus-visible {
+    .immersive-focus-ring();
+    border-radius: 2px;
+}
+
+.immersive-floating() {
+    background-color: @immersive-chrome-bg;
+    border: @immersive-chrome-border;
+    border-radius: 6px;
+    box-shadow: @immersive-chrome-shadow;
+}
+
+.immersive-icon-button() {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: @immersive-chrome-fg;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background-color: @immersive-chrome-hover-bg;
+        color: @immersive-chrome-fg;
+    }
+}
+
+.immersive-focus-ring() {
+    outline: 2px solid @immersive-accent;
+    outline-offset: 2px;
+}
+
+/* The sticky site footer would overlap the viewer chrome on scroll; keep it in flow. */
+#immersiveView .footer {
+    position: static;
+}

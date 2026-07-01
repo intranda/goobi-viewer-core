@@ -1,0 +1,204 @@
+/* Bootstrap portals these popovers to <body>, outside .immersive — so target them by their
+   content and restyle them to match the immersive chrome. */
+.popover:has(.widget-citation),
+.popover:has(.widget-social-media),
+.popover:has(imageFilters) {
+    max-width: 320px;
+    color: @immersive-chrome-fg;
+    background-color: @immersive-chrome-bg;
+    border: @immersive-chrome-border;
+    border-radius: 6px;
+    box-shadow: @immersive-chrome-shadow;
+
+    & :focus-visible {
+        .immersive-focus-ring();
+    }
+
+    &.bs-popover-top .arrow::before,
+    &.bs-popover-top .arrow::after {
+        border-top-color: @immersive-chrome-bg;
+    }
+    &.bs-popover-right .arrow::before,
+    &.bs-popover-right .arrow::after {
+        border-right-color: @immersive-chrome-bg;
+    }
+    &.bs-popover-bottom .arrow::before,
+    &.bs-popover-bottom .arrow::after {
+        border-bottom-color: @immersive-chrome-bg;
+    }
+    &.bs-popover-left .arrow::before,
+    &.bs-popover-left .arrow::after {
+        border-left-color: @immersive-chrome-bg;
+    }
+
+    .popover-body {
+        padding: 0;
+    }
+
+    .popover-header {
+        margin: 0;
+        padding: 12px 14px 4px;
+        color: @immersive-chrome-fg;
+        background: transparent;
+        border: 0;
+        font-size: @fontSmall;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        opacity: 0.6;
+    }
+
+    .widget {
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+}
+
+.popover:has(.widget-citation) {
+    .widget-citation__topbar {
+        display: none;
+    }
+    .widget-citation__body {
+        display: block !important;
+        padding: 4px 14px 14px;
+    }
+
+    .widget-citation__license-text,
+    .widget-citation__citerecommendation-text-info {
+        color: @immersive-chrome-fg;
+        font-size: @fontSmall;
+        opacity: 0.6;
+    }
+
+    .widget-citation__subtitle,
+    .widget__badge-container-heading {
+        margin-bottom: 6px;
+        color: @immersive-chrome-fg;
+        font-size: @fontMedium;
+        font-weight: 700;
+    }
+
+    .widget__badge-container .badge,
+    .widget__badge-container .badge-dark {
+        color: @immersive-accent;
+        background-color: ~'rgba(var(--immersive-accent-rgb), 0.08)';
+        border-radius: 6px;
+
+        &:hover,
+        &:active,
+        &:focus {
+            color: @immersive-accent;
+            background-color: ~'rgba(var(--immersive-accent-rgb), 0.1)';
+            text-decoration: underline;
+        }
+    }
+
+    .custom-control--select {
+        color: @immersive-chrome-fg;
+        background-color: @immersive-chrome-hover-bg;
+        border: @immersive-chrome-border;
+        border-radius: 6px;
+
+        &::after {
+            border-top-color: @immersive-chrome-fg;
+        }
+
+        select {
+            color: @immersive-chrome-fg;
+            background-color: transparent;
+        }
+    }
+
+    .widget-citation__citerecommendation-text-wrapper .fa-quote-right {
+        color: @immersive-chrome-fg;
+        opacity: 0.35;
+    }
+    .widget-citation__citerecommendation-copy-text {
+        color: @immersive-chrome-fg;
+
+        &:hover,
+        &:active,
+        &:focus {
+            color: @immersive-chrome-fg;
+        }
+    }
+}
+
+.popover:has(.widget-social-media) {
+    .widget-social-media__body {
+        padding: 8px 14px 14px;
+    }
+
+    .widget-social-media__link {
+        display: flex;
+        padding: 6px;
+        border-radius: 8px;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background-color: @immersive-chrome-hover-bg;
+        }
+    }
+
+    /* Only the monochrome X logo inverts per theme; brand-coloured logos must not (invert breaks their colour). */
+    .widget-social-media__link img[src$='x_logo.svg'] {
+        filter: invert(@immersive-logo-invert);
+    }
+}
+
+.immersive-share-popover-dark() {
+    .popover .widget-social-media {
+        .widget-social-media__link,
+        .widget-social-media__link:hover,
+        .widget-social-media__link:focus {
+            color: @immersive-chrome-fg;
+        }
+    }
+}
+@media (prefers-color-scheme: dark) {
+    .immersive-share-popover-dark();
+}
+.color-theme-dark {
+    .immersive-share-popover-dark();
+}
+
+.popover:has(imageFilters) {
+    input[type='range'],
+    input[type='checkbox'] {
+        accent-color: @immersive-accent;
+    }
+
+    .imagefilters__filter-list {
+        padding: 6px 14px 2px;
+    }
+
+    .imagefilters__label {
+        color: @immersive-chrome-fg;
+    }
+
+    .imagefilters__options {
+        padding: 6px 14px 14px;
+
+        .btn--full {
+            color: @immersive-chrome-fg;
+            background-color: transparent;
+            border: @immersive-chrome-border;
+            border-radius: 6px;
+            transition:
+                border-color 0.15s ease,
+                background-color 0.15s ease,
+                color 0.15s ease;
+
+            &:hover,
+            &:active,
+            &:focus {
+                color: @immersive-chrome-fg;
+                border-color: @immersive-accent;
+                background-color: @immersive-chrome-hover-bg;
+            }
+        }
+    }
+}

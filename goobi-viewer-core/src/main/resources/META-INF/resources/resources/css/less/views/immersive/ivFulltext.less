@@ -1,0 +1,105 @@
+.immersive {
+    &__panel--fulltext {
+        padding: 16px 16px 18px;
+    }
+
+    &__fulltext {
+        color: @immersive-chrome-fg;
+        font-size: @fontMedium;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
+
+    &__fulltext--empty {
+        padding-top: 8px;
+        font-style: italic;
+        text-align: center;
+        color: @immersive-chrome-fg;
+        opacity: 0.75;
+    }
+
+    &__fulltext-loader {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80px;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__hl {
+        border: 2px solid @immersive-accent;
+        background-color: transparent;
+        pointer-events: none;
+        border-radius: 1px;
+        transition: background-color 0.15s ease;
+    }
+
+    &__hl--active {
+        background-color: @immersive-highlight-bg;
+    }
+
+    &__fulltext-line {
+        display: block;
+        border-radius: 2px;
+        transition: background-color 0.1s ease;
+
+        &.is-linked-active {
+            background-color: @immersive-highlight-bg;
+        }
+    }
+
+    &__fulltext-word {
+        border-radius: 2px;
+        transition: background-color 0.1s ease;
+
+        &.is-linked-active {
+            background-color: @immersive-highlight-bg;
+        }
+    }
+
+    &__text-region {
+        pointer-events: auto;
+        border: 2px solid transparent;
+        transition:
+            border-color 0.1s ease,
+            background-color 0.1s ease;
+
+        &.is-linked-active {
+            border-color: @immersive-accent;
+            background-color: @immersive-highlight-bg;
+        }
+    }
+
+    &__fulltext-granularity {
+        display: inline-flex;
+        gap: 2px;
+        margin-left: auto;
+    }
+
+    &__fulltext-granularity-btn {
+        background: none;
+        border: 1px solid @immersive-divider;
+        color: @immersive-chrome-fg;
+        border-radius: 3px;
+        padding: 1px 8px;
+        font-size: @fontSmall;
+        cursor: pointer;
+
+        &.is-active,
+        &[aria-pressed='true'] {
+            border-color: @immersive-accent;
+            color: @immersive-accent;
+        }
+
+        &[disabled] {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+    }
+}

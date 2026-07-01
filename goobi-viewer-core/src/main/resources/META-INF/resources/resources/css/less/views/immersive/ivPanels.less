@@ -1,0 +1,76 @@
+.immersive {
+    &__panel {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        z-index: 90;
+        width: var(--immersive-panel-width, 340px);
+        max-width: 80%;
+        overflow-y: auto;
+        scrollbar-gutter: stable;
+        padding: 16px 12px 12px;
+        background-color: @immersive-chrome-bg;
+        box-shadow: @immersive-panel-shadow;
+        transition: transform 0.25s ease;
+
+        &--left {
+            left: @immersive-rail-width;
+            transform: translateX(calc(-100% - @immersive-rail-width));
+
+            &.is-open {
+                transform: translateX(0);
+            }
+        }
+    }
+
+    &__panel-resize-handle {
+        display: none;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc(@immersive-rail-width + var(--immersive-panel-width, 340px));
+        z-index: 95;
+        width: 12px;
+        margin-left: -6px;
+        cursor: col-resize;
+        touch-action: none;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            transform: translateX(-50%);
+            background-color: transparent;
+            transition: background-color 0.15s ease;
+        }
+
+        &:hover::after {
+            background-color: @immersive-accent;
+        }
+    }
+
+    &--panel-open &__panel-resize-handle {
+        display: block;
+    }
+
+    &--resizing {
+        user-select: none;
+
+        .immersive__panel-resize-handle::after {
+            background-color: @immersive-accent;
+        }
+    }
+
+    /* :fullscreen and :-webkit-full-screen must stay separate rules — a browser drops the
+       whole selector list if it does not recognise one of the tokens. */
+    &__viewer:fullscreen:not(.is-double-page) {
+        --immersive-panel-width: 420px;
+    }
+
+    &__viewer:-webkit-full-screen:not(.is-double-page) {
+        --immersive-panel-width: 420px;
+    }
+}

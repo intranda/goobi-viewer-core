@@ -1,0 +1,127 @@
+.immersive {
+    &__grid {
+        position: absolute;
+        inset: 0;
+        z-index: 300;
+        background-color: @immersive-canvas-bg;
+
+        .thumbnails-image-wrapper {
+            position: relative;
+            padding-bottom: 28px;
+            cursor: pointer;
+        }
+
+        .thumbnails-image-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 220px;
+            text-decoration: none;
+        }
+
+        .thumbnails-image {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            border-radius: 2px;
+            box-shadow:
+                0 1px 2px rgba(15, 23, 42, 0.1),
+                0 4px 10px rgba(15, 23, 42, 0.13);
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .thumbnails-image-wrapper:hover .thumbnails-image {
+            transform: translateY(-5px);
+            box-shadow:
+                0 2px 4px rgba(15, 23, 42, 0.1),
+                0 14px 28px rgba(15, 23, 42, 0.22);
+        }
+
+        .thumbnails-image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 28px;
+        }
+
+        .thumbnails-label {
+            max-width: 100%;
+            color: @immersive-chrome-fg;
+            font-size: @fontSmall;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .thumbnails-image-wrapper.selected {
+            .thumbnails-image {
+                box-shadow:
+                    0 0 0 3px @immersive-accent,
+                    0 6px 16px ~'rgba(var(--immersive-accent-rgb), 0.35)';
+            }
+
+            .thumbnails-label {
+                color: @immersive-accent;
+                font-weight: 700;
+            }
+        }
+    }
+
+    &__grid-scroll {
+        position: absolute;
+        inset: 0;
+        overflow-y: auto;
+        padding: calc(@immersive-rail-width + 2 * @immersive-edge-inset) 28px 36px;
+    }
+
+    &__grid-close {
+        position: absolute;
+        top: @immersive-edge-inset;
+        right: @immersive-edge-inset;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: @immersive-canvas-fg;
+        cursor: pointer;
+        opacity: 0.85;
+        filter: @immersive-overlay-shadow;
+        transition:
+            opacity 0.15s ease,
+            color 0.15s ease,
+            transform 0.15s ease;
+
+        &:hover {
+            color: @immersive-accent;
+            opacity: 1;
+            transform: scale(1.12);
+        }
+    }
+
+    &__grid-mount {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 26px 20px;
+        max-width: 1140px;
+        margin: 0 auto;
+    }
+
+    &__grid-loader {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+    }
+}
