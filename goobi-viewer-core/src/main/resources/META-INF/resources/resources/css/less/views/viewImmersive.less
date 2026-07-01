@@ -1,29 +1,22 @@
-/* ==============================================================
-   Immersive view
-   layout shell for viewImmersive.xhtml
-   ==============================================================*/
-
-/* Overall view width; a theme may set this to `none` for a full-bleed, full-width view. */
 @immersiveMaxWidth: 1240px;
+@immersive-rail-width: 40px;
+@immersive-edge-inset: 12px;
+@immersive-chevron-scrim: rgba(0, 0, 0, 0.3);
 
-/* A global reset (resets.less) strips every focus outline and adds no :focus-visible
-   replacement, so keyboard focus is invisible inside the stage. Restore a scoped,
-   accent-coloured focus ring for every focusable element in the immersive view.
-   Accent reaches >=5.3:1 on chrome-bg / >=6.1:1 on canvas-bg -- well over the 3:1 ring floor. */
+/* resets.less strips every focus outline; restore a scoped, accent-coloured focus ring. */
 .immersive :focus-visible {
-    outline: 2px solid @immersive-accent;
-    outline-offset: 2px;
+    .immersive-focus-ring();
     border-radius: 2px;
 }
 
-.immersiveFloating() {
+.immersive-floating() {
     background-color: @immersive-chrome-bg;
     border: @immersive-chrome-border;
     border-radius: 6px;
     box-shadow: @immersive-chrome-shadow;
 }
 
-.immersiveIconBtn() {
+.immersive-icon-button() {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -37,17 +30,18 @@
     cursor: pointer;
     transition: background-color 0.15s ease;
 
-    /* color is restated on hover to beat the global `button:hover { color }` rule */
     &:hover {
         background-color: @immersive-chrome-hover-bg;
         color: @immersive-chrome-fg;
     }
 }
 
-/* The site footer is position:sticky (it floats at the viewport bottom). On the
-   immersive page that makes it overlap the hero's bottom chrome (bottombar, rail)
-   whenever the page scrolls past it. Pin it back into normal flow below the
-   content so it never overlays the viewer -- at any viewport size or zoom level. */
+.immersive-focus-ring() {
+    outline: 2px solid @immersive-accent;
+    outline-offset: 2px;
+}
+
+/* The sticky site footer would overlap the viewer chrome on scroll; keep it in flow. */
 #immersiveView .footer {
     position: static;
 }
@@ -57,7 +51,6 @@
     margin-left: auto;
     margin-right: auto;
 
-    /* Full-width view (@immersiveMaxWidth: none): drop the column-alignment inset on the hero. */
     & when (@immersiveMaxWidth = none) {
         .immersive__viewer {
             margin-left: 0;
@@ -68,12 +61,10 @@
     &__viewer {
         position: relative;
         height: 80vh;
-        /* Float the whole stage as a card inset from the viewport on every side. */
         margin: 15px;
         background-color: @immersive-canvas-bg;
         border: @immersive-chrome-border;
         border-radius: 12px;
-        /* Lighter than the shared chrome shadow -- a big surface needs only a hint of lift. */
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
         overflow: hidden;
     }
@@ -98,9 +89,9 @@
 
     &__overlay-top {
         position: absolute;
-        top: 12px;
-        right: 12px;
-        left: 12px;
+        top: @immersive-edge-inset;
+        right: @immersive-edge-inset;
+        left: @immersive-edge-inset;
         z-index: 110;
         display: flex;
         align-items: center;
@@ -111,13 +102,13 @@
 
     &__back {
         position: absolute;
-        left: calc(40px + 12px);
+        left: calc(@immersive-rail-width + @immersive-edge-inset);
         display: inline-flex;
         align-items: center;
         gap: 6px;
         height: 36px;
         padding: 0 14px;
-        .immersiveFloating();
+        .immersive-floating();
         color: @immersive-chrome-fg;
         font-size: @fontMedium;
         text-decoration: none;
@@ -140,17 +131,12 @@
         position: relative;
         display: flex;
         align-items: center;
-        /* min-width:0 must propagate down the whole flex chain, otherwise the inner
-           title-text can't shrink and its text-overflow:ellipsis never fires. */
+        /* min-width:0 lets the flex child shrink so a long title can ellipsize. */
         min-width: 0;
-        /* Cap the trigger so a long title truncates instead of spanning the whole top
-           (and reaching into the open panel). Stays responsive on narrow viewports. */
         max-width: ~'min(60%, 420px)';
-        /* container stays click-through; the trigger button re-enables pointer events */
         pointer-events: none;
     }
 
-    /* The work title doubles as the page-picker trigger. */
     &__title-trigger {
         display: inline-flex;
         align-items: center;
@@ -184,7 +170,6 @@
         }
     }
 
-    /* Single-page record: nothing to pick -- present the title as plain, static text. */
     &__title-trigger--static {
         cursor: default;
         pointer-events: none;
@@ -198,17 +183,12 @@
         }
     }
 
-    /* While a left panel is open it owns the left column. Fade out the top overlay
-       (back-to-results + title) and the prev chevron. Bound to the open STATE, not the
-       panel's slide -- so switching between panels never flickers them back in. */
     &--panel-open {
         .immersive__overlay-top {
             opacity: 0;
         }
-        /* Faded out -> also non-interactive. These each set pointer-events:auto, which
-           overrides a `none` on the container, so they must be disabled explicitly --
-           otherwise the invisible, full-width title trigger keeps intercepting clicks
-           meant for the open panel's header (e.g. the Line/Word toggle). */
+        /* Each of these re-enables pointer-events, so disable them explicitly here — otherwise
+           the invisible full-width title trigger keeps stealing clicks meant for the open panel. */
         .immersive__overlay-top,
         .immersive__back,
         .immersive__title-trigger,
@@ -229,15 +209,12 @@
 
     &__title-text {
         overflow: hidden;
-        /* allow the title to shrink + ellipsize so the page number stays visible */
         min-width: 0;
         font-size: @fontNormal;
         white-space: nowrap;
         text-overflow: ellipsis;
     }
 
-    /* Current page next to the title, e.g. "(5 / 40)" -- filled by modules.mjs. A muted,
-       non-shrinking detail that survives even when a long title truncates. */
     &__title-page {
         flex-shrink: 0;
         font-size: @fontNormal;
@@ -249,7 +226,6 @@
         }
     }
 
-    /* Page-picker dropdown anchored under the title trigger; chrome-styled like the panels. */
     &__page-dropdown {
         position: absolute;
         top: calc(100% + 8px);
@@ -298,8 +274,7 @@
         }
 
         &:focus-visible {
-            outline: 2px solid @immersive-accent;
-            outline-offset: 2px;
+            .immersive-focus-ring();
         }
     }
 
@@ -347,28 +322,21 @@
 
     &__toolbar {
         position: absolute;
-        top: 12px;
+        top: @immersive-edge-inset;
         z-index: 100;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 2px;
         padding: 4px;
-        .immersiveFloating();
+        .immersive-floating();
 
-        /*
-         * Left toolbar: a thin, full-height rail flush against the canvas edge. The canvas
-         * is dark in both themes, so the rail stays a dark "stage" surface with light icons
-         * (a light rail looked harsh against the dark canvas). Opaque on purpose: a
-         * translucent rail would reveal the slide-out panel passing behind it. The brand
-         * accent shows only on the active tool (its panel is open) as a left edge bar.
-         */
         &--left {
             top: 0;
             bottom: 0;
             left: 0;
             gap: 6px;
-            width: 40px;
+            width: @immersive-rail-width;
             padding: 48px 0 0;
             border: 0;
             border-right: 1px solid @immersive-divider;
@@ -394,7 +362,7 @@
         }
 
         &--right {
-            right: 12px;
+            right: @immersive-edge-inset;
         }
     }
 
@@ -412,30 +380,23 @@
     }
 
     &__tool-btn {
-        .immersiveIconBtn();
+        .immersive-icon-button();
     }
 
     &__tool-btn--active,
     &__tool-btn[aria-pressed='true'],
     &__bar-btn--active,
     &__bar-btn[aria-pressed='true'] {
-        /* Accent tint keeps the surface dark so the (light) accent icon stays >=4.5:1;
-           the previous chrome-hover-bg fill was too light for a blue icon. The tint alone
-           is ~1.14:1 in light mode (invisible), so add a mode-independent inset accent ring
-           (>=5.3:1 on chrome-bg) as the real active/pressed cue on toolbars without an edge bar. */
-        background-color: rgba(77, 171, 247, 0.16);
+        background-color: ~'rgba(var(--immersive-accent-rgb), 0.16)';
         color: @immersive-accent;
         box-shadow: inset 0 0 0 2px @immersive-accent;
 
         &:hover {
             color: @immersive-accent;
-            background-color: rgba(77, 171, 247, 0.24);
+            background-color: ~'rgba(var(--immersive-accent-rgb), 0.24)';
         }
     }
 
-    /* A disabled rail tool (fulltext in double-page mode): greyed and non-interactive, but
-       still hoverable so its title tooltip can explain why -- which is why modules.mjs uses
-       aria-disabled rather than the native disabled attribute. */
     &__tool-btn--disabled {
         opacity: 0.35;
         cursor: not-allowed;
@@ -456,14 +417,9 @@
         top: 0;
         bottom: 0;
         z-index: 90;
-        /* Shared sidebar width: --immersive-panel-width drives ALL left panels at once
-           (set per context below, or inline by the resize handle). The fallback is the
-           default width when the user hasn't dragged. */
         width: var(--immersive-panel-width, 340px);
         max-width: 80%;
         overflow-y: auto;
-        /* reserve the scrollbar gutter so collapsing the TOC (scrollbar disappears)
-           doesn't shift the content sideways */
         scrollbar-gutter: stable;
         padding: 16px 12px 12px;
         background-color: @immersive-chrome-bg;
@@ -471,8 +427,8 @@
         transition: transform 0.25s ease;
 
         &--left {
-            left: 40px;
-            transform: translateX(calc(-100% - 40px));
+            left: @immersive-rail-width;
+            transform: translateX(calc(-100% - @immersive-rail-width));
 
             &.is-open {
                 transform: translateX(0);
@@ -480,22 +436,18 @@
         }
     }
 
-    /* Single sidebar resize handle: a thin vertical strip at the open panel's right edge.
-       Dragging it sets --immersive-panel-width inline on .immersive__viewer, so every left
-       panel resizes together. Injected once by JS and only shown while a panel is open. */
     &__panel-resize-handle {
         display: none;
         position: absolute;
         top: 0;
         bottom: 0;
-        left: calc(40px + var(--immersive-panel-width, 340px));
+        left: calc(@immersive-rail-width + var(--immersive-panel-width, 340px));
         z-index: 95;
         width: 12px;
         margin-left: -6px;
         cursor: col-resize;
         touch-action: none;
 
-        /* the visible grab line, centred in the wider (easier-to-hit) drag area */
         &::after {
             content: '';
             position: absolute;
@@ -517,7 +469,6 @@
         display: block;
     }
 
-    /* While dragging: suppress text selection and keep the grab line highlighted. */
     &--resizing {
         user-select: none;
 
@@ -526,11 +477,8 @@
         }
     }
 
-    /* Fullscreen: give the sidebar more reading width — but not in double-page mode,
-       where the spread needs the horizontal space. (:fullscreen for Firefox and
-       :-webkit-full-screen for Chromium/WebKit must be separate rules — a browser
-       drops the whole group if one selector token is unknown.) The user's dragged
-       width (inline on the viewer) still wins over this default. */
+    /* :fullscreen and :-webkit-full-screen must stay separate rules — a browser drops the
+       whole selector list if it does not recognise one of the tokens. */
     &__viewer:fullscreen:not(.is-double-page) {
         --immersive-panel-width: 420px;
     }
@@ -539,18 +487,9 @@
         --immersive-panel-width: 420px;
     }
 
-    /* Metadata panel — bespoke, modern treatment for the narrow immersive sidebar.
-       The content-area metadata renders each pair as a fixed-column CSS grid
-       (viewMetadata.less `.metadata__element-dl`, ~240px label column) which collapses
-       the value to per-character wrapping at ~340px. Re-style as a stacked, editorial
-       label/value list, cohesive with the immersive chrome (accent eyebrows, muted
-       uppercase labels, readable values, calm vertical rhythm). */
     &__panel--metadata .metadata {
         color: @immersive-chrome-fg;
 
-        /* The base metadata component wraps grouped/ungrouped/single fields in white
-           (and nested grey) "cards" with padding. On the dark immersive panel those read
-           as glaring boxes -- flatten every wrapper to transparent, no padding/margin. */
         .metadata__elements,
         .metadata__events,
         .metadata__wrapper,
@@ -566,9 +505,6 @@
             background: transparent;
         }
 
-        /* Section headings (structure type + any grouped-metadata headings): a calm accent
-           eyebrow, set off by space and ONE quiet hairline -- the same divider vocabulary
-           as the panel header -- never the base component's boxes/chevrons. */
         .metadata__elements-h2,
         .metadata__elements-h3,
         .metadata__heading {
@@ -583,13 +519,11 @@
             letter-spacing: 0.1em;
             color: @immersive-accent;
 
-            /* drop the base chevron decoration before grouped headings */
             &::before {
                 content: none;
             }
         }
 
-        /* First heading sits flush under the panel header (no leading rule/space). */
         .metadata__elements-h2:first-child,
         .metadata__elements-h3:first-child,
         .metadata__heading:first-child {
@@ -598,7 +532,6 @@
             border-top: 0;
         }
 
-        /* One field per row: a quiet label eyebrow over a readable value. */
         .metadata__element-dl,
         .metadata__event-dl,
         .metadata__element-ungrouped {
@@ -606,7 +539,6 @@
             grid-template-columns: none;
             margin: 0 0 16px;
 
-            /* Label: muted uppercase eyebrow. */
             dt {
                 display: block;
                 float: none;
@@ -622,7 +554,6 @@
                 opacity: 0.75;
             }
 
-            /* Value: readable, full width. */
             dd {
                 margin: 0;
                 font-size: @fontNormal;
@@ -633,7 +564,6 @@
                     margin-top: 4px;
                 }
 
-                /* Inline links (collections, authority records) as quiet accent links. */
                 a {
                     color: @immersive-accent;
                     text-decoration: none;
@@ -643,7 +573,6 @@
                     }
                 }
 
-                /* Affordance buttons (authority data, in-work search) as bare icons. */
                 button {
                     padding: 0;
                     border: 0;
@@ -653,8 +582,6 @@
                     vertical-align: baseline;
                 }
 
-                /* The little map-pin / authority / search icons: unobtrusive, sized to the
-                   text, brightening to the accent on hover. */
                 .icon,
                 .icon-svg {
                     width: 15px;
@@ -677,10 +604,6 @@
             }
         }
 
-        /* "More / less metadata" fold toggle (SLUB-style). The base markup is a default
-           button (border + fill); restyle it as a quiet accent text+caret link. The
-           &.-hidden rule must stay -- our higher specificity would otherwise reveal the
-           currently-inactive (show-more / show-less) button. */
         .metadata__fold-button {
             display: inline-flex;
             align-items: center;
@@ -720,8 +643,6 @@
         }
     }
 
-    /* Config-independent per-block "more / less metadata" fold (injected by modules.mjs):
-       a quiet accent text link with a CSS caret, matching the rest of the immersive chrome. */
     &__metadata-toggle {
         display: inline-flex;
         align-items: center;
@@ -737,7 +658,6 @@
         letter-spacing: 0.06em;
         cursor: pointer;
 
-        /* CSS caret (down); rotates up when expanded -- no SVG to build in JS. */
         &::before {
             content: '';
             width: 0;
@@ -759,7 +679,6 @@
         }
     }
 
-    /* Swap the more/less label based on the toggle's expanded state. */
     &__metadata-toggle-less {
         display: none;
     }
@@ -772,11 +691,6 @@
         display: inline;
     }
 
-    /*
-     * Record header at the top of an open left panel: the work title (which floats over
-     * the image while the panel is closed) on the left and a close button on the right,
-     * so the panel reads as one self-contained unit.
-     */
     &__panel-header {
         display: flex;
         align-items: center;
@@ -794,7 +708,6 @@
         font-size: @fontMedium;
         font-weight: 700;
         line-height: 1.3;
-        /* Clamp long work titles to two lines (… overflow) in every panel header. */
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
@@ -802,16 +715,11 @@
         overflow: hidden;
     }
 
-    /* Expand/collapse-all toggle, top-right in the panel header (where the close button
-       used to sit). modules.mjs unhides it only when the TOC actually nests. Single
-       toggle: minus (collapse all) by default, plus (expand all) once collapsed. */
     &__toc-collapse {
-        .immersiveIconBtn();
+        .immersive-icon-button();
         flex-shrink: 0;
         margin: -4px -4px 0 0;
 
-        /* respect the hidden attribute -- the mixin's display:flex would otherwise beat
-           the UA [hidden]{display:none} and show the toggle on flat TOCs. */
         &[hidden] {
             display: none;
         }
@@ -835,13 +743,6 @@
         height: 20px;
     }
 
-    /*
-     * Burger drawer: the record's table of contents. The shared widget_toc is
-     * restyled for the immersive stage into a calm, modern tree that tracks light
-     * and dark mode via the --immersive-* tokens (comfortable rows, clear
-     * hover/active, indented levels, right-aligned page numbers). TOC clicks page
-     * in place (modules.mjs); the drawer is closed by re-clicking the burger.
-     */
     &__panel--menu {
         padding: 16px 8px 16px;
         color: @immersive-chrome-fg;
@@ -855,11 +756,6 @@
         }
 
         .widget-toc {
-            /* The panel header already shows the record title + close, so strip the
-               widget's own chrome to a single clean list: drop the topbar ("TABLE OF
-               CONTENTS" caption + expand/collapse-all) and the redundant record root,
-               and pull the now-top chapters flush left. Deeper levels keep their
-               relative indent; !important is needed to beat the inline per-level margin. */
             .widget__topbar {
                 display: none;
             }
@@ -868,6 +764,7 @@
                 display: none;
             }
 
+            /* !important overrides the widget's inline per-level margin. */
             &__element[data-level='1'] {
                 margin-left: 0 !important;
             }
@@ -881,8 +778,6 @@
                 margin-left: 45px !important;
             }
 
-            /* Tree: let the panel scroll (drop the widget's nested scroll box) and
-               keep the rows tight via a small, explicit gap. */
             &__elements {
                 max-height: none;
                 padding: 2px 6px 10px;
@@ -939,13 +834,8 @@
                 opacity: 0.75;
             }
 
-            /* Active section: the current or just-clicked entry. The widget marks both the
-               row and its link active; the theme paints the link, so neutralise that and
-               give the row our own subtle highlight (token-driven, theme-independent). */
             &__element.active {
                 background-color: @immersive-chrome-hover-bg;
-                /* Accent text on hover-bg is only 2.41:1 in dark; move the "current" cue to an
-                   accent left-border and keep the label at chrome-fg (4.7:1 on hover-bg). */
                 border-left: 3px solid @immersive-accent;
                 padding-left: 3px;
 
@@ -977,7 +867,6 @@
         height: 48px;
         padding: 0;
         border: 0;
-        /* Always round; the scrim behind the icon is mode-conditional (see below). */
         border-radius: 50%;
         background: transparent;
         color: @immersive-canvas-fg;
@@ -996,12 +885,11 @@
         &[hidden] {
             display: none;
         }
-        /* clear the 40px left rail so the prev arrow doesn't sit on the sidebar */
         &--left {
-            left: calc(40px + 12px);
+            left: calc(@immersive-rail-width + @immersive-edge-inset);
         }
         &--right {
-            right: 12px;
+            right: @immersive-edge-inset;
         }
     }
 
@@ -1012,7 +900,7 @@
 
     &__bottombar {
         position: absolute;
-        bottom: 12px;
+        bottom: @immersive-edge-inset;
         left: 50%;
         z-index: 100;
         display: flex;
@@ -1020,7 +908,7 @@
         gap: 2px;
         height: 40px;
         padding: 0 4px;
-        .immersiveFloating();
+        .immersive-floating();
         transform: translateX(-50%);
     }
 
@@ -1036,7 +924,7 @@
     }
 
     &__bar-btn {
-        .immersiveIconBtn();
+        .immersive-icon-button();
         width: 32px;
         height: 32px;
     }
@@ -1061,14 +949,6 @@
         z-index: 300;
         background-color: @immersive-canvas-bg;
 
-        /*
-         * Page overview -- a light table of "sheets". The grid reuses the shared
-         * `thumbnails` riot tag, so styles are scoped to the immersive overlay to
-         * leave the component's other uses (archives, crowdsourcing) untouched.
-         * Each page floats as a soft-shadowed sheet with its page label as a
-         * caption below; the current page carries a brand-accent ring. Colours come
-         * from the --immersive-* tokens so the overview tracks the light/dark stage.
-         */
         .thumbnails-image-wrapper {
             position: relative;
             padding-bottom: 28px;
@@ -1129,7 +1009,7 @@
             .thumbnails-image {
                 box-shadow:
                     0 0 0 3px @immersive-accent,
-                    0 6px 16px rgba(1, 89, 153, 0.35);
+                    0 6px 16px ~'rgba(var(--immersive-accent-rgb), 0.35)';
             }
 
             .thumbnails-label {
@@ -1139,22 +1019,17 @@
         }
     }
 
-    /* The thumbnails scroll inside here; the overlay (__grid) and its close button do not,
-       so the close button stays pinned top-right while the user scrolls the pages. */
     &__grid-scroll {
         position: absolute;
         inset: 0;
         overflow-y: auto;
-        padding: calc(40px + 2 * 12px) 28px 36px;
+        padding: calc(@immersive-rail-width + 2 * @immersive-edge-inset) 28px 36px;
     }
 
-    /* The close sits OVER the thumbnails, not inside chrome -- so it follows the
-       page-turn chevrons' "ghost icon over the stage" language (bare icon, soft
-       overlay shadow, brightens on hover) rather than a heavy floating card. */
     &__grid-close {
         position: absolute;
-        top: 12px;
-        right: 12px;
+        top: @immersive-edge-inset;
+        right: @immersive-edge-inset;
         z-index: 1;
         display: flex;
         align-items: center;
@@ -1173,8 +1048,6 @@
             color 0.15s ease,
             transform 0.15s ease;
 
-        /* a touch more presence on hover -- tint to the accent and nudge up in size,
-           without bringing back a heavy box */
         &:hover {
             color: @immersive-accent;
             opacity: 1;
@@ -1190,9 +1063,6 @@
         margin: 0 auto;
     }
 
-    /* Loading screen over the (still empty) overview until the first thumbnails load.
-       Reuses the shared infinity loader (.ajax-loader__animated-image centres itself);
-       transparent so it sits on the stage background and lets the close button through. */
     &__grid-loader {
         position: absolute;
         inset: 0;
@@ -1200,18 +1070,15 @@
     }
 }
 
-/* Chevron scrim: only needed in DARK mode, where the light arrow can vanish over a
-   near-white scan when zoomed. In LIGHT mode the arrow is dark (canvas-fg) so a dark
-   scrim would REDUCE contrast -- keep it transparent there. Mirror the theme's own
-   dual mechanism: prefers-color-scheme + a .color-theme-* ancestor class (the explicit
-   class wins over the media query by specificity). */
+/* Scrim only in dark mode: a light chevron can vanish over a near-white scan; in light mode a
+   scrim would only hurt contrast. Mirror the theme's media-query + ancestor-class dual mechanism. */
 @media (prefers-color-scheme: dark) {
     .immersive__chevron {
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: @immersive-chevron-scrim;
     }
 }
 .color-theme-dark .immersive__chevron {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: @immersive-chevron-scrim;
 }
 .color-theme-light .immersive__chevron {
     background-color: transparent;
@@ -1239,10 +1106,6 @@
 }
 
 .immersive {
-    /* "Search in work": the reference-theme widget (Bootstrap input-group + blue btn) is
-       reskinned to match the immersive chrome -- one quiet rounded field with a transparent
-       input and a bare icon button that picks up the accent. Adapts to light/dark via the
-       --immersive-* tokens. */
     &__panel .widget-search-in-current-item {
         .form-group {
             margin: 0;
@@ -1285,12 +1148,10 @@
             }
 
             &:focus-visible {
-                outline: 2px solid @immersive-accent;
-                outline-offset: 2px;
+                .immersive-focus-ring();
             }
         }
 
-        /* Injected reset (×): clears the query + results + highlights; only shown with text. */
         .immersive__search-clear {
             display: flex;
             align-items: center;
@@ -1369,7 +1230,6 @@
         margin-bottom: 8px;
     }
 
-    /* Hit counter ("3 / 17") -- a quiet caption with tabular figures so it doesn't jitter. */
     &__results-count {
         font-size: @fontSmall;
         font-weight: 600;
@@ -1419,9 +1279,6 @@
         list-style: none;
     }
 
-    /* One hit: page number + context teaser. Hover tints; the active hit (in sync with the
-       image highlight + the counter) gets an accent edge, so you always know which match
-       you're on -- even with two matches of the same word on one page. */
     &__results-item {
         display: flex;
         gap: 10px;
@@ -1454,7 +1311,6 @@
 
     &__results-snippet {
         overflow: hidden;
-        /* Teaser with context can run long -- clamp to two lines. */
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
@@ -1462,7 +1318,6 @@
         line-height: 1.45;
     }
 
-    /* The matched term inside the teaser -- accent + weight, not the browser's yellow <mark>. */
     &__results-match {
         background: transparent;
         color: @immersive-accent;
@@ -1471,20 +1326,14 @@
 
     &__results-empty {
         padding: 12px 10px;
-        /* Pin to the chrome foreground at reduced emphasis rather than inheriting a base
-           muted grey (~#8a8c8e, ~3.4:1 light); chrome-fg @0.75 stays >=4.5:1 in both modes. */
         color: @immersive-chrome-fg;
         opacity: 0.75;
     }
 
-    /* Fulltext drawer: a touch more horizontal breathing room for the text column. */
     &__panel--fulltext {
         padding: 16px 16px 18px;
     }
 
-    /* The current page's OCR transcription, DFG-Viewer style -- a calm, readable text column
-       that tracks light/dark via the --immersive-* tokens. The text endpoint returns one
-       annotation per OCR line; we keep those breaks (pre-wrap) and let the panel scroll. */
     &__fulltext {
         color: @immersive-chrome-fg;
         font-size: @fontMedium;
@@ -1498,13 +1347,10 @@
         padding-top: 8px;
         font-style: italic;
         text-align: center;
-        /* Same as results-empty: pin to chrome-fg @0.75 so the message stays >=4.5:1
-           instead of inheriting a base muted grey that fails in light mode. */
         color: @immersive-chrome-fg;
         opacity: 0.75;
     }
 
-    /* Loading screen while a page's text is fetched (reuses the shared infinity loader). */
     &__fulltext-loader {
         position: relative;
         display: flex;
@@ -1525,13 +1371,10 @@
         transition: background-color 0.15s ease;
     }
 
-    /* The active hit is filled; the other matches on the page stay as a quiet accent outline,
-       so the current match reads clearly without dimming the rest. */
     &__hl--active {
         background-color: @immersive-highlight-bg;
     }
 
-    /* Fulltext panel: one block per OCR line; hover links it to its image box. */
     &__fulltext-line {
         display: block;
         border-radius: 2px;
@@ -1551,7 +1394,6 @@
         }
     }
 
-    /* Image overlay for one OCR line; highlighted on hover from either side. */
     &__text-region {
         pointer-events: auto;
         border: 2px solid transparent;
@@ -1565,7 +1407,6 @@
         }
     }
 
-    /* Line/Word granularity toggle in the fulltext panel header. */
     &__fulltext-granularity {
         display: inline-flex;
         gap: 2px;
@@ -1581,9 +1422,6 @@
         font-size: @fontSmall;
         cursor: pointer;
 
-        /* Active granularity: the base border is @immersive-divider (1.46:1 in dark);
-           pin the active border to a solid accent (>=5.3:1 on chrome-bg) so the selected
-           state is perceivable. Keyed on both the class and aria-pressed for robustness. */
         &.is-active,
         &[aria-pressed='true'] {
             border-color: @immersive-accent;
@@ -1597,14 +1435,8 @@
     }
 }
 
-/* ==============================================================
-   Cite, share & filter popovers (right toolbar)
-   ==============================================================
-   widget_citation, widget_socialMedia_share and the imageFilters tag are reused as
-   Bootstrap popover content. Bootstrap portals the popover to <body>, so they live
-   OUTSIDE .immersive and are scoped by their content selector here. All three are
-   restyled onto the immersive stage like the burger TOC: one flat title and chrome
-   that tracks light/dark via the --immersive-* tokens. */
+/* Bootstrap portals these popovers to <body>, outside .immersive — so target them by their
+   content and restyle them to match the immersive chrome. */
 .popover:has(.widget-citation),
 .popover:has(.widget-social-media),
 .popover:has(imageFilters) {
@@ -1615,14 +1447,10 @@
     border-radius: 6px;
     box-shadow: @immersive-chrome-shadow;
 
-    /* These popovers are portaled to <body> outside .immersive, so the scoped
-       `.immersive :focus-visible` ring never reaches their controls -- restate it here. */
     & :focus-visible {
-        outline: 2px solid @immersive-accent;
-        outline-offset: 2px;
+        .immersive-focus-ring();
     }
 
-    /* tint the Bootstrap arrow to the chrome surface (whichever side it points) */
     &.bs-popover-top .arrow::before,
     &.bs-popover-top .arrow::after {
         border-top-color: @immersive-chrome-bg;
@@ -1644,8 +1472,6 @@
         padding: 0;
     }
 
-    /* the trigger's title attribute becomes the popover header -- keep it as the
-       single, flat title (uppercase + muted, like the TOC section header) */
     .popover-header {
         margin: 0;
         padding: 12px 14px 4px;
@@ -1668,10 +1494,7 @@
     }
 }
 
-/* --- Cite popover --------------------------------------------------------- */
 .popover:has(.widget-citation) {
-    /* the widget's own collapsible bar duplicates the title and makes no sense in a
-       popover -- drop it and always show the body (beats -collapsed and slideToggle) */
     .widget-citation__topbar {
         display: none;
     }
@@ -1695,24 +1518,21 @@
         font-weight: 700;
     }
 
-    /* citation links (PURL ...) -- accent-tinted chips; accent text on the light chrome-hover-bg
-       only reached ~2.4:1, so use a dark accent tint (accent text stays >=4.5:1) + underline on hover */
     .widget__badge-container .badge,
     .widget__badge-container .badge-dark {
         color: @immersive-accent;
-        background-color: rgba(77, 171, 247, 0.08);
+        background-color: ~'rgba(var(--immersive-accent-rgb), 0.08)';
         border-radius: 6px;
 
         &:hover,
         &:active,
         &:focus {
             color: @immersive-accent;
-            background-color: rgba(77, 171, 247, 0.1);
+            background-color: ~'rgba(var(--immersive-accent-rgb), 0.1)';
             text-decoration: underline;
         }
     }
 
-    /* citation-style dropdown */
     .custom-control--select {
         color: @immersive-chrome-fg;
         background-color: @immersive-chrome-hover-bg;
@@ -1729,7 +1549,6 @@
         }
     }
 
-    /* recommended-citation text + quote glyph */
     .widget-citation__citerecommendation-text-wrapper .fa-quote-right {
         color: @immersive-chrome-fg;
         opacity: 0.35;
@@ -1745,13 +1564,11 @@
     }
 }
 
-/* --- Share popover -------------------------------------------------------- */
 .popover:has(.widget-social-media) {
     .widget-social-media__body {
         padding: 8px 14px 14px;
     }
 
-    /* give each brand icon a calm, rounded hit target on the chrome */
     .widget-social-media__link {
         display: flex;
         padding: 6px;
@@ -1763,38 +1580,28 @@
         }
     }
 
+    /* Only the monochrome X logo inverts per theme; brand-coloured logos must not (invert breaks their colour). */
     .widget-social-media__link img[src$='x_logo.svg'] {
         filter: invert(@immersive-logo-invert);
     }
 }
 
-/* The share popover is portaled to <body>, so in the site's dark theme its links inherit
-   the near-black theme link color (~1.2:1 on the dark navy chrome). Force a light foreground
-   in dark mode. The Facebook logo is a coloured (blue) brand mark and stays as-is -- do NOT
-   invert it (invert turns the blue orange); it reads fine on both light and dark chrome.
-   Mirror the theme's dual mechanism: prefers-color-scheme + a .color-theme-dark ancestor. */
-.dark-share-popover-fix() {
+.immersive-share-popover-dark() {
     .popover .widget-social-media {
         .widget-social-media__link,
         .widget-social-media__link:hover,
         .widget-social-media__link:focus {
-            /* #e3e4e7 on the dark navy popover bg (#253044) resolves to 10.42:1 (>=4.5:1) */
             color: @immersive-chrome-fg;
         }
     }
 }
 @media (prefers-color-scheme: dark) {
-    .dark-share-popover-fix();
+    .immersive-share-popover-dark();
 }
 .color-theme-dark {
-    .dark-share-popover-fix();
+    .immersive-share-popover-dark();
 }
 
-/* --- Filter popover ------------------------------------------------------- */
-/* Chrome, arrow, header, focus ring and zeroed body padding come from the shared
-   rule above; only the imageFilters internals need placing on the chrome here.
-   The range/checkbox controls render with the UA default track (~1.18:1 on the
-   chrome bg in dark), so tint them with the brand accent (>=5.3:1 on chrome-bg). */
 .popover:has(imageFilters) {
     input[type='range'],
     input[type='checkbox'] {
@@ -1805,8 +1612,6 @@
         padding: 6px 14px 2px;
     }
 
-    /* the widget's shared styling pins the label to --fg-popover; on the immersive
-       chrome track the chrome fg instead so it matches the rest of the popover */
     .imagefilters__label {
         color: @immersive-chrome-fg;
     }
@@ -1814,14 +1619,6 @@
     .imagefilters__options {
         padding: 6px 14px 14px;
 
-        /* the shared widget ships a solid blue .btn--full; recast it as a quiet chrome
-           button that lights its border to the accent on hover -- same language as the
-           search field's focus ring and the tool buttons. WCAG-safe in both modes: accent
-           text on chrome-hover-bg fails contrast, so the label stays chrome-fg (4.59:1).
-           Target .btn--full (not `button`): the reference theme forces
-           `.color-theme-{light,dark} .popover-body .btn--full { color:white }` (0,3,0) --
-           white-on-white in light mode -- so we need to outrank it (0,3,1), not just beat
-           the base .popover styling. */
         .btn--full {
             color: @immersive-chrome-fg;
             background-color: transparent;
