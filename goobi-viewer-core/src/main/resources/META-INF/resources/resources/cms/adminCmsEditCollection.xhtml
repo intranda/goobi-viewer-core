@@ -344,9 +344,8 @@
                                 value="#{cmsCollectionsBean.dirty}" />
                         </h:form>
                         <script>
-                            //Click on link to translations checks dirty status of current collection and ask for
-                            confirmation
-                            //before following link if status is dirty
+                            // Click on link to translations checks dirty status of current collection and ask for
+                            // confirmation before following link if status is dirty
                             $("[data-trigger='displayTranslations']").on('click', (e) => {
                                 let target = e.target.href;
                                 viewerJS.jsfAjax.success
