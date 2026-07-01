@@ -948,7 +948,13 @@ function bindImageFiltersMount(viewer) {
         return;
     }
     // Mount once, the first time Bootstrap shows the popover (element now in the DOM).
-    $(btn).one('shown.bs.popover', () => mountImageFilters(viewer));
+    // riot fills the popover *after* Popper positioned the still-empty shell, so the
+    // grown content would hang below the trigger on that first open; reposition once
+    // mounted so it sits above the button like on every later open.
+    $(btn).one('shown.bs.popover', () => {
+        mountImageFilters(viewer);
+        $(btn).popover('update');
+    });
 }
 
 /**
@@ -993,7 +999,14 @@ function setupImmersivePopoverA11y() {
             // Move focus into the popover (first control, else the container itself).
             const first = pop.querySelector(FOCUSABLE);
             if (first) {
+                // Bootstrap tooltips fire on focus, so auto-focusing the first control on
+                // open would flash its tooltip (e.g. the share links' "share on X"). Disable
+                // it across the programmatic focus, then re-enable so hover/focus still work.
+                const $first = $(first);
+                const hasTip = typeof $first.tooltip === 'function' && !!$first.data('bs.tooltip');
+                if (hasTip) $first.tooltip('disable');
                 first.focus();
+                if (hasTip) $first.tooltip('enable');
             } else {
                 if (!pop.hasAttribute('tabindex')) pop.setAttribute('tabindex', '-1');
                 pop.focus();

@@ -631,6 +631,13 @@ if ($.fn.tooltip && $.fn.tooltip.Constructor) {
     $.fn.tooltip.Constructor.Default.boundary = 'window';
     $.fn.dropdown.Constructor.Default.boundary = 'window';
 }
+// Popovers have their own Default (Popover extends Tooltip): with the inherited
+// 'scrollParent' boundary Popper positions them against the immersive stage's scroll
+// container, so they get shifted/clipped depending on scroll position. Pin them to the
+// window like the tooltips/dropdowns above so they stay fully visible wherever you scroll.
+if ($.fn.popover && $.fn.popover.Constructor) {
+    $.fn.popover.Constructor.Default.boundary = 'window';
+}
 
 // CommonJS export for Jest. No-op in the browser where `module` is undefined.
 if (typeof module !== 'undefined' && module.exports) {

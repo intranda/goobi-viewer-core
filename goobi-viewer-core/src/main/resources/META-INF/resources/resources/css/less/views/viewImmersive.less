@@ -1598,15 +1598,16 @@
 }
 
 /* ==============================================================
-   Cite & share popovers (right toolbar)
+   Cite, share & filter popovers (right toolbar)
    ==============================================================
-   widget_citation and widget_socialMedia_share are reused as Bootstrap popover
-   content. Bootstrap portals the popover to <body>, so they live OUTSIDE .immersive
-   and are scoped by their widget class here. Both are restyled onto the immersive
-   stage like the burger TOC: one flat title and chrome that tracks light/dark via
-   the --immersive-* tokens. */
+   widget_citation, widget_socialMedia_share and the imageFilters tag are reused as
+   Bootstrap popover content. Bootstrap portals the popover to <body>, so they live
+   OUTSIDE .immersive and are scoped by their content selector here. All three are
+   restyled onto the immersive stage like the burger TOC: one flat title and chrome
+   that tracks light/dark via the --immersive-* tokens. */
 .popover:has(.widget-citation),
-.popover:has(.widget-social-media) {
+.popover:has(.widget-social-media),
+.popover:has(imageFilters) {
     max-width: 320px;
     color: @immersive-chrome-fg;
     background-color: @immersive-chrome-bg;
@@ -1789,16 +1790,55 @@
     .dark-share-popover-fix();
 }
 
-/* --- Filter / imageFilters popover ---------------------------------------- */
-/* The image-filter popover is also portaled to <body> outside .immersive. Its range
-   sliders render with the UA default track (~1.18:1 on the chrome bg in dark). Give
-   them the brand accent (>=5.3:1 on chrome-bg) as a safe baseline; the fuller restyle
-   lives in imageFilters.tag. Also restore a focus-visible ring for its controls. */
-.popover input[type='range'] {
-    accent-color: @immersive-accent;
-}
+/* --- Filter popover ------------------------------------------------------- */
+/* Chrome, arrow, header, focus ring and zeroed body padding come from the shared
+   rule above; only the imageFilters internals need placing on the chrome here.
+   The range/checkbox controls render with the UA default track (~1.18:1 on the
+   chrome bg in dark), so tint them with the brand accent (>=5.3:1 on chrome-bg). */
+.popover:has(imageFilters) {
+    input[type='range'],
+    input[type='checkbox'] {
+        accent-color: @immersive-accent;
+    }
 
-.popover :focus-visible {
-    outline: 2px solid @immersive-accent;
-    outline-offset: 2px;
+    .imagefilters__filter-list {
+        padding: 6px 14px 2px;
+    }
+
+    /* the widget's shared styling pins the label to --fg-popover; on the immersive
+       chrome track the chrome fg instead so it matches the rest of the popover */
+    .imagefilters__label {
+        color: @immersive-chrome-fg;
+    }
+
+    .imagefilters__options {
+        padding: 6px 14px 14px;
+
+        /* the shared widget ships a solid blue .btn--full; recast it as a quiet chrome
+           button that lights its border to the accent on hover -- same language as the
+           search field's focus ring and the tool buttons. WCAG-safe in both modes: accent
+           text on chrome-hover-bg fails contrast, so the label stays chrome-fg (4.59:1).
+           Target .btn--full (not `button`): the reference theme forces
+           `.color-theme-{light,dark} .popover-body .btn--full { color:white }` (0,3,0) --
+           white-on-white in light mode -- so we need to outrank it (0,3,1), not just beat
+           the base .popover styling. */
+        .btn--full {
+            color: @immersive-chrome-fg;
+            background-color: transparent;
+            border: @immersive-chrome-border;
+            border-radius: 6px;
+            transition:
+                border-color 0.15s ease,
+                background-color 0.15s ease,
+                color 0.15s ease;
+
+            &:hover,
+            &:active,
+            &:focus {
+                color: @immersive-chrome-fg;
+                border-color: @immersive-accent;
+                background-color: @immersive-chrome-hover-bg;
+            }
+        }
+    }
 }
