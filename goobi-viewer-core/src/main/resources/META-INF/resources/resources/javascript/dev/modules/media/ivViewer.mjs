@@ -90,6 +90,17 @@ export default class IvViewer {
         this.zoom = new ImageView.Controls.Zoom(this.viewer);
         this.rotation = new ImageView.Controls.Rotation(this.viewer);
 
+        // Left/right arrows page the work instead of panning (preventDefaultAction skips OSD's
+        // horizontal pan for that key); all other keys keep OSD's native handling.
+        this.viewer.openseadragon.addHandler('canvas-key', (e) => {
+            const key = e.originalEvent.key;
+            if (key === 'ArrowRight') this.next();
+            else if (key === 'ArrowLeft') this.prev();
+            else return;
+            e.preventDefaultAction = true;
+            e.originalEvent.preventDefault();
+        });
+
         this._open(this.current).then(() => {
             this._refreshPreload();
             this.onLoaded.emit(this.current);

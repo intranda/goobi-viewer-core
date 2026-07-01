@@ -1061,6 +1061,17 @@
             this.zoom = new ImageView.Controls.Zoom(this.viewer);
             this.rotation = new ImageView.Controls.Rotation(this.viewer);
 
+            // Left/right arrows page the work instead of panning (preventDefaultAction skips OSD's
+            // horizontal pan for that key); all other keys keep OSD's native handling.
+            this.viewer.openseadragon.addHandler('canvas-key', (e) => {
+                const key = e.originalEvent.key;
+                if (key === 'ArrowRight') this.next();
+                else if (key === 'ArrowLeft') this.prev();
+                else return;
+                e.preventDefaultAction = true;
+                e.originalEvent.preventDefault();
+            });
+
             this._open(this.current).then(() => {
                 this._refreshPreload();
                 this.onLoaded.emit(this.current);
@@ -1965,6 +1976,9 @@
         // first image. The triggering button is marked active while its panel is open.
         const immersiveRoot = el.closest('.immersive');
         const panelButtons = document.querySelectorAll('[data-immersive-panel]');
+        // Closed panels sit off-screen (transform); start them inert so their focusable children
+        // stay out of the tab order and the a11y tree until the panel is actually opened.
+        document.querySelectorAll('.immersive__panel--left').forEach((p) => (p.inert = true));
         // Flag the root while a left panel is open so CSS can hide the floating title and
         // prev chevron over the image (the title + close live in the panel header now).
         const syncPanelOpenFlag = () => {
@@ -1979,6 +1993,8 @@
             document.querySelectorAll('.immersive__panel--left.is-open').forEach((p) => {
                 p.classList.remove('is-open');
                 p.setAttribute('aria-hidden', 'true');
+                // Off-screen again: make it inert so it drops out of tab order + screen reader.
+                p.inert = true;
             });
             panelButtons.forEach((b) => {
                 b.classList.remove('immersive__tool-btn--active');
@@ -1997,6 +2013,7 @@
                 if (!wasOpen) {
                     panel.classList.add('is-open');
                     panel.setAttribute('aria-hidden', 'false');
+                    panel.inert = false;
                     btn.classList.add('immersive__tool-btn--active');
                     btn.setAttribute('aria-expanded', 'true');
                     syncPanelOpenFlag();
