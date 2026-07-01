@@ -52,6 +52,9 @@ function initImmersiveViewer(el) {
     // first image. The triggering button is marked active while its panel is open.
     const immersiveRoot = el.closest('.immersive');
     const panelButtons = document.querySelectorAll('[data-immersive-panel]');
+    // Closed panels sit off-screen (transform); start them inert so their focusable children
+    // stay out of the tab order and the a11y tree until the panel is actually opened.
+    document.querySelectorAll('.immersive__panel--left').forEach((p) => (p.inert = true));
     // Flag the root while a left panel is open so CSS can hide the floating title and
     // prev chevron over the image (the title + close live in the panel header now).
     const syncPanelOpenFlag = () => {
@@ -66,6 +69,8 @@ function initImmersiveViewer(el) {
         document.querySelectorAll('.immersive__panel--left.is-open').forEach((p) => {
             p.classList.remove('is-open');
             p.setAttribute('aria-hidden', 'true');
+            // Off-screen again: make it inert so it drops out of tab order + screen reader.
+            p.inert = true;
         });
         panelButtons.forEach((b) => {
             b.classList.remove('immersive__tool-btn--active');
@@ -84,6 +89,7 @@ function initImmersiveViewer(el) {
             if (!wasOpen) {
                 panel.classList.add('is-open');
                 panel.setAttribute('aria-hidden', 'false');
+                panel.inert = false;
                 btn.classList.add('immersive__tool-btn--active');
                 btn.setAttribute('aria-expanded', 'true');
                 syncPanelOpenFlag();
