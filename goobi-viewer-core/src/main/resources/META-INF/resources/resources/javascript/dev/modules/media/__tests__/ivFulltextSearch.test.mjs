@@ -27,7 +27,7 @@ describe('parseSearchHits', () => {
             hits: [{ '@type': 'search:Hit', annotations: ['anno1'], match: 'Ring', before: 'der goldene ', after: ' der Macht' }],
         };
         expect(parseSearchHits(withContext)).toEqual([
-            { page: 19, rect: { x: 10, y: 20, w: 30, h: 40 }, snippet: 'Ring', before: 'der goldene ', match: 'Ring', after: ' der Macht' },
+            { id: 'anno1', page: 19, rect: { x: 10, y: 20, w: 30, h: 40 }, snippet: 'Ring', before: 'der goldene ', match: 'Ring', after: ' der Macht' },
         ]);
     });
 });
@@ -67,6 +67,39 @@ describe('search (paged fetch, injected fetchFn)', () => {
         const hits = await search('PI', 'http://api', 'w', fetchFn, 10);
         expect(hits.map((h) => h.order)).toEqual([2]);
         expect(calls.length).toBe(1);
+    });
+
+    test('dedupes overlapping pages by annotation id (broken backend paging restarts page 2)', async () => {
+        const page1 = {
+            within: { last: 'x?q=w&page=2' },
+            resources: [{ '@id': 'A', resource: [{ value: 'x' }], on: 'x/pages/2/canvas/#xywh=1,1,1,1' }],
+        };
+        const page2 = {
+            within: { last: 'x?q=w&page=2' },
+            resources: [
+                { '@id': 'A', resource: [{ value: 'x' }], on: 'x/pages/2/canvas/#xywh=1,1,1,1' },
+                { '@id': 'B', resource: [{ value: 'y' }], on: 'x/pages/3/canvas/#xywh=2,2,2,2' },
+            ],
+        };
+        const fetchFn = (url) =>
+            Promise.resolve({ ok: true, text: () => Promise.resolve(JSON.stringify(url.includes('page=2') ? page2 : page1)) });
+        const hits = await search('PI', 'http://api', 'w', fetchFn, 5);
+        expect(hits.map((h) => h.id)).toEqual(['A', 'B']);
+    });
+
+    test('stops once a page repeats with nothing new, even if within.last claims many more pages', async () => {
+        const same = {
+            within: { last: 'x?q=w&page=16' },
+            resources: [{ '@id': 'A', resource: [{ value: 'x' }], on: 'x/pages/2/canvas/#xywh=1,1,1,1' }],
+        };
+        const calls = [];
+        const fetchFn = (url) => {
+            calls.push(url);
+            return Promise.resolve({ ok: true, text: () => Promise.resolve(JSON.stringify(same)) });
+        };
+        const hits = await search('PI', 'http://api', 'w', fetchFn, 50);
+        expect(hits.map((h) => h.id)).toEqual(['A']);
+        expect(calls.length).toBe(2); // page 1 + page 2 (adds nothing) -> stop, not 16
     });
 
     test('recovers resources from backend-malformed JSON (search:Hit without annotations)', async () => {

@@ -1842,8 +1842,10 @@
             const page = on.match(/\/pages\/(\d+)\/canvas/);
             if (!page) continue;
             const xywh = on.match(/#xywh=(\d+),(\d+),(\d+),(\d+)/);
-            const ctx = context.get(res['@id'] || res.id) || {};
+            const id = res['@id'] || res.id;
+            const ctx = context.get(id) || {};
             hits.push({
+                id,
                 page: Number(page[1]),
                 rect: xywh ? { x: +xywh[1], y: +xywh[2], w: +xywh[3], h: +xywh[4] } : null,
                 snippet: _snippet(res.resource),
@@ -1893,16 +1895,29 @@
      */
     async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50) {
         const base = `${apiBase}/records/${pi}/manifest/search?q=${encodeURIComponent(term)}`;
-        const all = [];
+        // The backend's content-search paging can be broken (page 2+ may restart from the top
+        // instead of returning the next slice), which would duplicate -- and needlessly re-fetch --
+        // the whole list. Dedupe by annotation id (with a page/rect/snippet fallback for hits that
+        // carry no id) as we go, and stop as soon as a page brings nothing new.
+        const seen = new Set();
+        const out = [];
         for (let p = 1; p <= maxPages; p++) {
             const res = await fetchFn(p === 1 ? base : `${base}&page=${p}`);
             if (!res.ok) break;
             const list = _parseSearchJson(await res.text());
             const hits = parseSearchHits(list);
-            all.push(...hits);
-            if (hits.length === 0 || p >= _lastPage(list)) break;
+            let added = 0;
+            for (const h of hits) {
+                const rect = h.rect ? `${h.rect.x},${h.rect.y},${h.rect.w},${h.rect.h}` : '';
+                const key = h.id || `${h.page}|${rect}|${h.snippet}`;
+                if (seen.has(key)) continue;
+                seen.add(key);
+                out.push({ ...h, order: h.page - 1 });
+                added++;
+            }
+            if (hits.length === 0 || added === 0 || p >= _lastPage(list)) break;
         }
-        return all.map((h) => ({ ...h, order: h.page - 1 }));
+        return out;
     }
 
     window.ShareImageFragment = ShareImageFragment;
