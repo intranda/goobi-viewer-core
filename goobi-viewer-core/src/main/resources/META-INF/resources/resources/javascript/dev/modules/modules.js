@@ -1023,6 +1023,14 @@
     const PREFETCH_RADIUS = 1;
 
     /**
+     * Last-resort release for the navigation lock. Double-page navigation re-opens the library
+     * (a fresh OpenSeadragon per spread) and only settles on its async 'open' event; if rapid
+     * reopens lose that event the promise never settles. Freeing the lock after this window
+     * keeps the viewer from staying frozen. Long enough not to abort a genuinely slow load.
+     */
+    const NAV_WATCHDOG_MS = 8000;
+
+    /**
      * Immersive image viewer engine around a single live ImageView.Image (OSD).
      * Single pages are swapped flicker-free by fading in a preloaded neighbour; double
      * pages are composed by the library and transitioned with a snapshot crossfade.
@@ -1045,6 +1053,9 @@
             this._anchor = null;
             this._preloaded = new Map();
             this._navigating = false;
+            this._queuedNav = null; // latest page order requested while a navigation is running
+            this._queuedReopen = false; // a mode toggle requested while navigating (reopen on release)
+            this._navWatchdogMs = opts.navWatchdogMs ?? NAV_WATCHDOG_MS;
             this._highlights = [];
             this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 160;
             this.onPageChange = new Emitter();
@@ -1156,6 +1167,13 @@
         /** Navigate to the page/spread containing `order` (snaps to the spread leader in double mode). */
         goToPage(order) {
             const target = Math.max(0, Math.min(order, this.total - 1));
+            // One navigation runs at a time. A click during an in-flight transition is remembered
+            // as the latest target (not dropped, not run concurrently) and honoured on release, so
+            // rapid TOC clicking lands on the last page instead of racing overlapping reopens.
+            if (this._navigating) {
+                this._queuedNav = target;
+                return;
+            }
             if (this.double) {
                 const leader = computeSpread(target, this.total)[0];
                 if (leader === this.current) return;
@@ -1177,6 +1195,53 @@
 
         prev() {
             this.goToPage(this.current - 1);
+        }
+
+        /**
+         * Runs exactly one navigation at a time and ALWAYS releases the lock afterwards. `run`
+         * returns the settle promise; `onStuck` (optional) cleans up if the watchdog fires. A
+         * request that arrived while busy is honoured on release: a queued mode reopen first,
+         * else the latest queued page target -- so rapid clicks converge on the last one and a
+         * lost OSD 'open' can never leave the viewer permanently frozen.
+         */
+        _withNavLock(run, onStuck) {
+            this._navigating = true;
+            let released = false;
+            const release = () => {
+                if (released) return;
+                released = true;
+                clearTimeout(watchdog);
+                this._navigating = false;
+                if (this._queuedReopen) {
+                    this._queuedReopen = false;
+                    this._reopen();
+                    return;
+                }
+                const next = this._queuedNav;
+                this._queuedNav = null;
+                if (next != null) this.goToPage(next);
+            };
+            const watchdog = setTimeout(() => {
+                try {
+                    if (onStuck) onStuck();
+                } catch (e) {}
+                release();
+            }, this._navWatchdogMs);
+            // Invoke `run` synchronously so the underlying open is dispatched immediately (an
+            // async `run` executes up to its first await), then release once it settles -- or
+            // the watchdog fires if it never does.
+            try {
+                Promise.resolve(run())
+                    .catch(() => {})
+                    .finally(release);
+            } catch (e) {
+                release();
+            }
+        }
+
+        /** Re-opens the current position in the current mode, serialised through the nav lock. */
+        _reopen() {
+            this._withNavLock(() => this._open(this.current));
         }
 
         // --- view controls ---
@@ -1211,7 +1276,14 @@
         toggleDoublePage() {
             this.double = !this.double;
             this.current = this.getCurrentPages()[0];
-            this._open(this.current);
+            // Never re-open concurrently with an in-flight navigation: two live OpenSeadragon
+            // instances on one element race and can drop the 'open' event. Defer to the lock's
+            // release if a navigation is running.
+            if (this._navigating) {
+                this._queuedReopen = true;
+            } else {
+                this._reopen();
+            }
             return this.double;
         }
 
@@ -1221,10 +1293,8 @@
          * Single-page navigation: fade the (preloaded or freshly added) target page in
          * over the current one, then drop the old. No reload, no blank, no jump.
          */
-        async _crossfadeTo(target) {
-            if (this._navigating) return;
-            this._navigating = true;
-            try {
+        _crossfadeTo(target) {
+            this._withNavLock(async () => {
                 const previous = this.currentItem;
                 this.current = target;
                 const item = await this._acquire(target, this._anchor);
@@ -1235,9 +1305,7 @@
                 this.currentItem = item;
                 this._emit();
                 this._refreshPreload();
-            } finally {
-                this._navigating = false;
-            }
+            });
         }
 
         /**
@@ -1317,20 +1385,20 @@
          * library re-compose the new spread (columns:2) underneath, then fade the snapshot
          * out. Neighbour spreads are tile-prewarmed for near-instant sharpness.
          */
-        async _navigateSpread(leader) {
-            if (this._navigating) return;
-            this._navigating = true;
+        _navigateSpread(leader) {
             const overlay = this._snapshotOverlay();
             this.current = leader;
-            try {
-                await this._open(leader);
-                this._fadeOverlay(overlay);
-                this._prewarmSpreads();
-            } catch (e) {
-                if (overlay) overlay.remove();
-            } finally {
-                this._navigating = false;
-            }
+            this._withNavLock(
+                async () => {
+                    await this._open(leader);
+                    this._fadeOverlay(overlay);
+                    this._prewarmSpreads();
+                },
+                // Watchdog cleanup: if the reopen never settles, drop the frozen snapshot too.
+                () => {
+                    if (overlay) overlay.remove();
+                }
+            );
         }
 
         /**
