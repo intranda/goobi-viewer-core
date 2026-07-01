@@ -15,8 +15,8 @@ For ambigious sources, the additional opts.type property determines how the sour
 
 <thumbnails>
 		<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''} {getPageStatus(index)}" each="{canvas, index in thumbnails}">
-			<a class="thumbnails-image-link" href="{getLink(canvas)}"  onclick="{handleClickOnImage}">
-				<img class="thumbnails-image" alt="{getObjectTitle() + ': ' + getValue(canvas.label)}" src="{getImage(canvas)}" loading="lazy" />
+			<a class="thumbnails-image-link" href="{getLink(canvas)}" aria-label="{getAriaLabel(canvas, index)}" tabindex="{getLink(canvas) ? undefined : '0'}" role="{getLink(canvas) ? undefined : 'link'}" onclick="{handleClickOnImage}" onkeydown="{handleKeydownOnImage}">
+				<img class="thumbnails-image" alt="{getImageAlt(canvas)}" src="{getImage(canvas)}" loading="lazy" />
 			<div class="thumbnails-image-overlay">
 				<div class="thumbnails-label">{getValue(canvas.label)}</div>
 			</div>
@@ -152,6 +152,23 @@ getObjectTitle() {
 	}
 }
 
+// accessible name for the thumbnail link: prefer the canvas label, fall back to page number
+getAriaLabel(canvas, index) {
+	let label = this.getValue(canvas.label);
+	return (label && label.trim()) ? label : (index + 1) + "";
+}
+
+// alt text for the image: reuse the object title only when it is present, otherwise the
+// page label -- never build the ":  - " junk that results from empty title/label parts
+getImageAlt(canvas) {
+	let title = this.getObjectTitle();
+	let label = this.getValue(canvas.label);
+	if(title && label) {
+		return title + ": " + label;
+	}
+	return label || title || "";
+}
+
 getImage(canvas) {
 // 	console.log("get image from ", canvas);
 	if(canvas.items) {
@@ -214,6 +231,19 @@ handleClickOnImage(event) {
 	}
 	//updating is handled in actionlistener. set this to prevent double update
 	event.preventUpdate = true;
+}
+
+// when the link has no real href it is focusable via tabindex/role -- activate it with
+// Enter/Space so it is keyboard-operable like a native link
+handleKeydownOnImage(event) {
+	if(event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
+		if(!this.getLink(event.item.canvas)) {
+			event.preventDefault();
+			this.handleClickOnImage(event);
+		}
+	} else {
+		event.preventUpdate = true;
+	}
 }
 
 getPageStatus(index) {

@@ -8,6 +8,10 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:c="http://java.sun.com/jsp/jstl/core">
     <div class="immersive">
+        <!-- Page-level heading for the immersive view (visually hidden): gives screen
+             readers and the document outline a top-level heading without adding visible
+             chrome. The visible work title lives in the overlay title-trigger. -->
+        <h1 class="sr-only">#{activeDocumentBean.titleBarLabel}</h1>
         <!-- VIEWER HERO: dark canvas + centered media + overlay slots -->
         <section class="immersive__viewer">
             <!-- Header overlay: back-to-results (left) + work title (centered) -->
@@ -80,6 +84,8 @@
                     type="button"
                     class="immersive__tool-btn"
                     data-immersive-panel="immersivePanelMenu"
+                    aria-controls="immersivePanelMenu"
+                    aria-expanded="false"
                     title="#{msg.toc}"
                     aria-label="#{msg.toc}">
                     <util:icon
@@ -94,6 +100,8 @@
                         class="immersive__tool-btn"
                         data-immersive-panel="immersivePanelFulltext"
                         data-title-disabled="#{msg.fulltextOnlySinglePage}"
+                        aria-controls="immersivePanelFulltext"
+                        aria-expanded="false"
                         title="#{msg.fulltext}"
                         aria-label="#{msg.fulltext}">
                         <util:icon
@@ -105,6 +113,8 @@
                     type="button"
                     class="immersive__tool-btn"
                     data-immersive-panel="immersivePanelSearch"
+                    aria-controls="immersivePanelSearch"
+                    aria-expanded="false"
                     title="#{msg.search}"
                     aria-label="#{msg.search}">
                     <util:icon
@@ -115,6 +125,8 @@
                     type="button"
                     class="immersive__tool-btn"
                     data-immersive-panel="immersivePanelMetadata"
+                    aria-controls="immersivePanelMetadata"
+                    aria-expanded="false"
                     title="#{msg.metadata}"
                     aria-label="#{msg.metadata}">
                     <util:icon
@@ -130,6 +142,7 @@
             <aside
                 id="immersivePanelMenu"
                 class="immersive__panel immersive__panel--left immersive__panel--menu"
+                aria-label="#{msg.toc}"
                 aria-hidden="true">
                 <!-- Record header: work title + (only when the TOC nests) the expand/
                      collapse-all toggle, where the close button used to sit. The panel
@@ -158,6 +171,7 @@
             <aside
                 id="immersivePanelMetadata"
                 class="immersive__panel immersive__panel--left immersive__panel--metadata"
+                aria-label="#{msg.metadata}"
                 aria-hidden="true">
                 <div class="immersive__panel-header">
                     <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
@@ -217,6 +231,7 @@
             <aside
                 id="immersivePanelSearch"
                 class="immersive__panel immersive__panel--left"
+                aria-label="#{msg.search}"
                 aria-hidden="true">
                 <!-- Record header: just the work title (closes via Escape or the burger). -->
                 <div class="immersive__panel-header">
@@ -234,7 +249,9 @@
                     <div class="immersive__results-head">
                         <span
                             class="immersive__results-count"
-                            id="immersiveHitCounter" />
+                            id="immersiveHitCounter"
+                            aria-live="polite"
+                            aria-atomic="true" />
                         <span class="immersive__results-nav">
                             <button
                                 type="button"
@@ -267,6 +284,7 @@
                 <aside
                     id="immersivePanelFulltext"
                     class="immersive__panel immersive__panel--left immersive__panel--fulltext"
+                    aria-label="#{msg.fulltext}"
                     aria-hidden="true">
                     <div class="immersive__panel-header">
                         <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
@@ -307,7 +325,7 @@
             </ui:fragment>
 
             <!-- Central canvas: media-type dependent (universal view, mirrors viewObject.xhtml) -->
-            <main
+            <div
                 class="immersive__canvas"
                 id="immersiveCanvas">
                 <!-- IMAGE (OSD, client-driven in-place navigation) -->
@@ -335,7 +353,7 @@
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.sandboxedHtml}">
                     <ui:include src="/resources/includes/object/text.xhtml" />
                 </h:panelGroup>
-            </main>
+            </div>
 
             <!-- Big page-turn chevrons (left/right, vertically centered) -->
             <button
@@ -388,6 +406,9 @@
                             data-popover-element="#immersiveSharePopover"
                             data-popover-placement="left"
                             data-popover-dismiss="click-outside"
+                            aria-haspopup="dialog"
+                            aria-expanded="false"
+                            aria-controls="immersiveSharePopover"
                             title="#{msg.action__share}"
                             aria-label="#{msg.action__share}">
                             <util:icon
@@ -403,6 +424,9 @@
                             data-popover-element="#immersiveCitationPopover"
                             data-popover-placement="left"
                             data-popover-dismiss="click-outside"
+                            aria-haspopup="dialog"
+                            aria-expanded="false"
+                            aria-controls="immersiveCitationPopover"
                             title="#{msg.widget_citation}"
                             aria-label="#{msg.widget_citation}">
                             <util:icon
@@ -448,8 +472,11 @@
                         type="button"
                         class="immersive__tool-btn"
                         data-immersive-action="fullscreen"
+                        data-label-enter="#{msg.fullscreen_enter}"
+                        data-label-exit="#{msg.fullscreen_exit}"
                         title="#{msg.fullscreen_enter}"
-                        aria-label="#{msg.fullscreen_enter}">
+                        aria-label="#{msg.fullscreen_enter}"
+                        aria-pressed="false">
                         <util:icon
                             icon="maximize"
                             svgClass="immersive__tool-icon" />
@@ -475,7 +502,9 @@
                     </button>
                     <span
                         class="immersive__page-indicator"
-                        id="immersivePageIndicator">
+                        id="immersivePageIndicator"
+                        aria-live="polite"
+                        aria-atomic="true">
                         #{activeDocumentBean.viewManager.currentImageOrder}
                     </span>
                     <button
@@ -544,6 +573,9 @@
                             data-popover-element="#immersiveFilterPopover"
                             data-popover-placement="top"
                             data-popover-dismiss="click-outside"
+                            aria-haspopup="dialog"
+                            aria-expanded="false"
+                            aria-controls="immersiveFilterPopover"
                             title="#{msg.label__image_filter_toolkit}"
                             aria-label="#{msg.label__image_filter_toolkit}">
                             <util:icon

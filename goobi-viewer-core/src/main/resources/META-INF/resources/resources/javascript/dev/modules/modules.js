@@ -1988,8 +1988,11 @@
         };
         // Set by the fulltext block; clears its image overlays + hover wiring when the panel closes.
         let onFulltextClose = null;
-        const closePanels = () => {
+        // The rail button that opened the current panel, so focus can return to it on close.
+        let activePanelBtn = null;
+        const closePanels = (restoreFocus = false) => {
             if (typeof onFulltextClose === 'function') onFulltextClose();
+            const closedAny = !!document.querySelector('.immersive__panel--left.is-open');
             document.querySelectorAll('.immersive__panel--left.is-open').forEach((p) => {
                 p.classList.remove('is-open');
                 p.setAttribute('aria-hidden', 'true');
@@ -2001,6 +2004,10 @@
                 b.setAttribute('aria-expanded', 'false');
             });
             syncPanelOpenFlag();
+            // Return focus to the rail button that opened the panel (focus would otherwise be
+            // lost when the panel becomes inert, e.g. on Escape from inside the panel).
+            if (restoreFocus && closedAny && activePanelBtn) activePanelBtn.focus();
+            activePanelBtn = null;
         };
         panelButtons.forEach((btn) => {
             btn.addEventListener('click', () => {
@@ -2016,6 +2023,7 @@
                     panel.inert = false;
                     btn.classList.add('immersive__tool-btn--active');
                     btn.setAttribute('aria-expanded', 'true');
+                    activePanelBtn = btn;
                     syncPanelOpenFlag();
                     // Bring the active TOC entry into view (e.g. reloaded on a page far down,
                     // so the highlighted section isn't left off-screen at the top). Scroll the
@@ -2026,6 +2034,15 @@
                         for (let n = active; n && n !== panel; n = n.offsetParent) top += n.offsetTop;
                         panel.scrollTop = Math.max(0, top - panel.clientHeight / 2);
                     }
+                    // Move focus into the panel so keyboard users land inside it. Prefer a
+                    // meaningful control; fall back to the panel container itself.
+                    const focusTarget = panel.querySelector('input, a[href], button');
+                    if (focusTarget) {
+                        focusTarget.focus({ preventScroll: true });
+                    } else {
+                        if (!panel.hasAttribute('tabindex')) panel.setAttribute('tabindex', '-1');
+                        panel.focus({ preventScroll: true });
+                    }
                 }
             });
         });
@@ -2033,7 +2050,7 @@
         // the burger toggles it shut too).
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && document.querySelector('.immersive__panel--left.is-open')) {
-                closePanels();
+                closePanels(true);
             }
         });
 
@@ -2095,6 +2112,7 @@
             const reflectTocToggle = () => {
                 const collapsed = !!tocContainer.querySelector('.widget-toc__element--hidden');
                 tocToggle.classList.toggle('immersive__toc-collapse--collapsed', collapsed);
+                tocToggle.setAttribute('aria-expanded', String(!collapsed));
                 const label = collapsed ? tocToggle.dataset.labelExpand : tocToggle.dataset.labelCollapse;
                 tocToggle.setAttribute('aria-label', label);
                 tocToggle.setAttribute('title', label);
@@ -2130,30 +2148,53 @@
         if (metadataToggle) {
             const moreEl = document.getElementById(metadataToggle.dataset.immersiveMetadataToggle);
             if (moreEl) {
+                // Only the visible label should be in the accessible name (else it reads "more less").
+                const moreLabel = metadataToggle.querySelector('.immersive__metadata-toggle-more');
+                const lessLabel = metadataToggle.querySelector('.immersive__metadata-toggle-less');
+                const syncMetadataToggleLabel = (open) => {
+                    if (moreLabel) moreLabel.setAttribute('aria-hidden', String(open));
+                    if (lessLabel) lessLabel.setAttribute('aria-hidden', String(!open));
+                };
+                syncMetadataToggleLabel(!moreEl.hidden);
                 metadataToggle.addEventListener('click', () => {
                     const willOpen = moreEl.hidden;
                     moreEl.hidden = !willOpen;
                     metadataToggle.setAttribute('aria-expanded', String(willOpen));
+                    syncMetadataToggleLabel(willOpen);
                 });
             }
         }
+
+        // Accessible focus/keyboard management for the three immersive Bootstrap popovers
+        // (Share / Cite / Filter). The shared popovers controller isn't touched: we only hook
+        // its Bootstrap shown/hidden events on these specific triggers to move focus into the
+        // portaled popover on open, trap Escape to close + restore focus, and sync aria-expanded.
+        setupImmersivePopoverA11y();
 
         loadPageServices(pi, apiBase)
             .then((services) => {
                 const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
                 window.ivViewer = viewer;
                 attachUrlSync(viewer, pi);
-                viewer.onLoaded.subscribe(() => mountImageFilters(viewer));
+                // The <imageFilters> tag lives inside #immersiveFilterPopover, which Bootstrap
+                // only portals into the DOM when the popover is first shown. Mount lazily on that
+                // event (guarded once) instead of on load, when the target isn't rendered yet.
+                viewer.onLoaded.subscribe(() => bindImageFiltersMount(viewer));
 
                 const indicator = document.getElementById('immersivePageIndicator');
                 const titlePage = document.getElementById('immersiveTitlePage');
                 const total = viewer.getPageCount();
+                const workTitle = (document.querySelector('.immersive__title-text')?.textContent || '').trim();
                 const updateIndicator = () => {
                     const pages = viewer.getCurrentPages().map((p) => p + 1);
                     const label = pages.length > 1 ? `${pages[0]}–${pages[pages.length - 1]}` : `${pages[0]}`;
                     if (indicator) indicator.textContent = `${label} / ${total}`;
                     // Mirror the page next to the work title, e.g. "(5 / 40)".
                     if (titlePage) titlePage.textContent = `(${label} / ${total})`;
+                    // Name the (otherwise silent) OSD canvas for screen readers, updated per page.
+                    const imageSurface = el.querySelector('.openseadragon-canvas') || el;
+                    imageSurface.setAttribute('role', 'img');
+                    imageSurface.setAttribute('aria-label', workTitle ? `${workTitle}, ${label} / ${total}` : `${label} / ${total}`);
                 };
                 updateIndicator();
                 viewer.onPageChange.subscribe(() => updateIndicator());
@@ -2186,18 +2227,27 @@
                         return;
                     }
                     if (input) input.max = String(total);
+                    // Name the listbox for screen readers, reusing the "go to page" label.
+                    const listLabel = input && input.labels && input.labels[0] ? input.labels[0].textContent.trim() : '';
+                    if (listLabel) list.setAttribute('aria-label', listLabel);
 
                     // One row per page as "<running number>: <raw manifest label>", e.g.
                     // "1: -", "3: [1]", "8: 5" -- the manifest label is shown verbatim
                     // (a blank " - " label trims to "-"), like the classic page dropdown.
+                    // role="option"/aria-selected live on the button (the actual option); the
+                    // <li> is presentational so the listbox exposes one option per button.
                     const items = [];
                     for (let order = 0; order < total; order++) {
                         const li = document.createElement('li');
-                        li.setAttribute('role', 'option');
+                        li.setAttribute('role', 'presentation');
                         const btn = document.createElement('button');
                         btn.type = 'button';
                         btn.className = 'immersive__page-dropdown-item';
                         btn.dataset.order = String(order);
+                        btn.setAttribute('role', 'option');
+                        btn.setAttribute('aria-selected', 'false');
+                        // Roving tabindex: only the current option is tabbable.
+                        btn.tabIndex = -1;
                         const num = document.createElement('span');
                         num.className = 'immersive__page-dropdown-num';
                         num.textContent = `${order + 1}:`;
@@ -2212,11 +2262,27 @@
 
                     const markActive = () => {
                         const current = viewer.getCurrentPages();
+                        let rovingSet = false;
                         items.forEach((btn) => {
                             const on = current.includes(Number(btn.dataset.order));
                             btn.classList.toggle('is-active', on);
                             btn.setAttribute('aria-selected', on ? 'true' : 'false');
+                            // Roving tabindex follows the current page so Tab lands on it.
+                            btn.tabIndex = on && !rovingSet ? 0 : -1;
+                            if (on) rovingSet = true;
                         });
+                        // No current option in the list -> keep the first one reachable via Tab.
+                        if (!rovingSet && items.length) items[0].tabIndex = 0;
+                    };
+
+                    // Move the roving tabindex to a given option and focus it (keyboard nav).
+                    const focusOption = (idx) => {
+                        if (idx < 0) idx = 0;
+                        if (idx > items.length - 1) idx = items.length - 1;
+                        const target = items[idx];
+                        if (!target) return;
+                        items.forEach((btn) => (btn.tabIndex = btn === target ? 0 : -1));
+                        target.focus();
                     };
 
                     const isOpen = () => !dropdown.hidden;
@@ -2253,6 +2319,43 @@
                         if (!btn) return;
                         viewer.goToPage(Number(btn.dataset.order));
                         close();
+                    });
+                    // Listbox keyboard nav: arrows move the roving focus, Home/End jump to the
+                    // ends, Enter/Space activate the focused option, Escape closes the dropdown.
+                    list.addEventListener('keydown', (e) => {
+                        const cur = items.indexOf(document.activeElement);
+                        if (cur === -1 && !['Escape'].includes(e.key)) return;
+                        switch (e.key) {
+                            case 'ArrowDown':
+                                e.preventDefault();
+                                focusOption(cur + 1);
+                                break;
+                            case 'ArrowUp':
+                                e.preventDefault();
+                                focusOption(cur - 1);
+                                break;
+                            case 'Home':
+                                e.preventDefault();
+                                focusOption(0);
+                                break;
+                            case 'End':
+                                e.preventDefault();
+                                focusOption(items.length - 1);
+                                break;
+                            case 'Enter':
+                            case ' ':
+                            case 'Spacebar':
+                                e.preventDefault();
+                                viewer.goToPage(Number(items[cur].dataset.order));
+                                close();
+                                trigger.focus();
+                                break;
+                            case 'Escape':
+                                e.preventDefault();
+                                close();
+                                trigger.focus();
+                                break;
+                        }
                     });
                     if (input) {
                         input.addEventListener('keydown', (e) => {
@@ -2483,6 +2586,8 @@
                     const doublePage = !!(viewer.isDoublePage && viewer.isDoublePage());
                     fulltextBtn.classList.toggle('immersive__tool-btn--disabled', doublePage);
                     fulltextBtn.setAttribute('aria-disabled', String(doublePage));
+                    // Disabled -> drop out of the tab order so it can't be focused/activated.
+                    fulltextBtn.setAttribute('tabindex', doublePage ? '-1' : '0');
                     const title = (doublePage && fulltextBtn.dataset.titleDisabled) || fulltextTitleDefault;
                     fulltextBtn.setAttribute('title', title);
                     fulltextBtn.setAttribute('aria-label', title);
@@ -2493,13 +2598,23 @@
                 // Overview: thumbnail grid overlay (lazy-mounted).
                 const gridOverlay = document.getElementById('immersiveGridOverlay');
                 const gridLoader = document.getElementById('immersiveGridLoader');
+                const gridClose = gridOverlay && gridOverlay.querySelector('.immersive__grid-close');
+                const gridTrigger = document.querySelector('[data-immersive-action="overview"]:not(.immersive__grid-close)');
                 let gridMounted = false;
                 let gridTag = null;
+                // Element to restore focus to when the overlay closes (the opener).
+                let gridOpener = null;
+                // Focus-trap keydown handler, added on open and removed on close.
+                let gridTrapHandler = null;
+                const gridFocusables = () =>
+                    Array.from(gridOverlay.querySelectorAll('a[href],button,input,[tabindex]:not([tabindex="-1"])')).filter(
+                        (n) => !n.hidden && !n.disabled && n.offsetParent !== null
+                    );
                 const gridActions = new rxjs.Subject();
                 gridActions.subscribe((e) => {
                     if (e && e.action === 'clickImage' && typeof e.value === 'number') {
                         viewer.goToPage(e.value);
-                        if (gridOverlay) gridOverlay.hidden = true;
+                        closeGrid();
                     }
                 });
                 // The grid highlights the current page via opts.index -- the 0-based
@@ -2518,11 +2633,31 @@
                 viewer.onPageChange.subscribe(() => {
                     if (gridOverlay && !gridOverlay.hidden) syncGridSelection();
                 });
-                const toggleGrid = () => {
-                    if (!gridOverlay) return;
-                    const opening = gridOverlay.hidden;
-                    gridOverlay.hidden = !opening;
-                    if (!opening) return;
+                const openGrid = () => {
+                    // Remember the opener so focus returns there on close.
+                    gridOpener = gridTrigger || document.activeElement;
+                    gridOverlay.hidden = false;
+                    // Modal dialog semantics + accessible name (reuse the trigger's label).
+                    gridOverlay.setAttribute('role', 'dialog');
+                    gridOverlay.setAttribute('aria-modal', 'true');
+                    const gridLabel = gridTrigger && gridTrigger.getAttribute('aria-label');
+                    if (gridLabel) gridOverlay.setAttribute('aria-label', gridLabel);
+                    // Focus trap: keep Tab/Shift+Tab cycling within the overlay.
+                    gridTrapHandler = (e) => {
+                        if (e.key !== 'Tab') return;
+                        const f = gridFocusables();
+                        if (!f.length) return;
+                        const first = f[0];
+                        const last = f[f.length - 1];
+                        if (e.shiftKey && document.activeElement === first) {
+                            e.preventDefault();
+                            last.focus();
+                        } else if (!e.shiftKey && document.activeElement === last) {
+                            e.preventDefault();
+                            first.focus();
+                        }
+                    };
+                    gridOverlay.addEventListener('keydown', gridTrapHandler);
                     if (!gridMounted) {
                         gridTag = riot.mount('#immersiveThumbnails', 'thumbnails', {
                             source: `${apiBase}/records/${pi}/manifest`,
@@ -2549,12 +2684,31 @@
                     } else {
                         syncGridSelection();
                     }
+                    // Move focus into the dialog (the close button).
+                    if (gridClose) gridClose.focus();
+                };
+                const closeGrid = () => {
+                    if (!gridOverlay || gridOverlay.hidden) return;
+                    gridOverlay.hidden = true;
+                    if (gridTrapHandler) {
+                        gridOverlay.removeEventListener('keydown', gridTrapHandler);
+                        gridTrapHandler = null;
+                    }
+                    // Return focus to whatever opened the overlay.
+                    const restore = gridOpener || gridTrigger;
+                    gridOpener = null;
+                    if (restore && typeof restore.focus === 'function') restore.focus();
+                };
+                const toggleGrid = () => {
+                    if (!gridOverlay) return;
+                    if (gridOverlay.hidden) openGrid();
+                    else closeGrid();
                 };
 
                 // Esc closes the open overview overlay (mirrors the close button).
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape' && gridOverlay && !gridOverlay.hidden) {
-                        gridOverlay.hidden = true;
+                        closeGrid();
                     }
                 });
 
@@ -2585,7 +2739,20 @@
                 // share/cite/filter popovers to <body>, which is outside the fullscreen
                 // element, so they don't paint. Re-home those popovers into the fullscreen
                 // element while fullscreen is active, and restore the default on exit.
+                const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
                 document.addEventListener('fullscreenchange', () => {
+                    // Expose the fullscreen toggle's on/off state (no exit-label message wired
+                    // in the markup, so at least announce pressed state).
+                    if (fullscreenBtn) {
+                        fullscreenBtn.setAttribute('aria-pressed', String(!!document.fullscreenElement));
+                        const exitLabel = fullscreenBtn.dataset.labelExit;
+                        const enterLabel = fullscreenBtn.dataset.labelEnter || fullscreenBtn.getAttribute('aria-label');
+                        const label = document.fullscreenElement && exitLabel ? exitLabel : enterLabel;
+                        if (label) {
+                            fullscreenBtn.setAttribute('aria-label', label);
+                            fullscreenBtn.setAttribute('title', label);
+                        }
+                    }
                     document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
                         const $trigger = window.$ && window.$(trigger);
                         const inst = $trigger && $trigger.data('bs.popover');
@@ -2676,6 +2843,91 @@
                 }
             })
             .catch((e) => console.error('immersive viewer init failed', e));
+    }
+
+    /**
+     * Defers the imageFilters mount until the Filter popover is first shown. Bootstrap only
+     * portals #immersiveFilterPopover (and its <imageFilters> child) into the DOM on show, so
+     * mounting on load finds nothing and the popover opens empty. Mounts once on the first
+     * shown.bs.popover; the origin-clean check may still hide the button before it can open.
+     */
+    function bindImageFiltersMount(viewer) {
+        const btn = document.querySelector('[data-popover-element="#immersiveFilterPopover"]');
+        if (!btn) return;
+        // Origin-tainted tiles can't be filtered (CORS): hide the Filter button up front.
+        const image = viewer.viewer;
+        const originClean = typeof image.isOriginClean !== 'function' || image.isOriginClean();
+        if (!originClean) {
+            btn.hidden = true;
+            return;
+        }
+        const $ = window.$ || window.jQuery;
+        if (!$) {
+            // No jQuery -> fall back to the immediate (pre-portal) mount attempt.
+            mountImageFilters(viewer);
+            return;
+        }
+        // Mount once, the first time Bootstrap shows the popover (element now in the DOM).
+        $(btn).one('shown.bs.popover', () => mountImageFilters(viewer));
+    }
+
+    /**
+     * Adds focus/keyboard management to the three immersive Bootstrap popovers (Share / Cite /
+     * Filter) without touching the shared popovers controller. On open, focus moves into the
+     * portaled popover; Escape inside it closes and returns focus to the trigger; aria-expanded
+     * is kept in sync. Hooks only these triggers via Bootstrap's shown/hidden.bs.popover events.
+     */
+    function setupImmersivePopoverA11y() {
+        const $ = window.$ || window.jQuery;
+        if (!$) return;
+        const FOCUSABLE = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
+        const selectors = ['#immersiveSharePopover', '#immersiveCitationPopover', '#immersiveFilterPopover'];
+        selectors.forEach((sel) => {
+            const trigger = document.querySelector(`[data-popover-element="${sel}"]`);
+            // Guard against double-binding if init runs more than once.
+            if (!trigger || trigger.dataset.a11yBound === 'true') return;
+            trigger.dataset.a11yBound = 'true';
+
+            // Resolve the portaled .popover element: Bootstrap sets aria-describedby on the
+            // trigger while shown; fall back to the last visible .popover in the DOM.
+            const popoverEl = () => {
+                const id = trigger.getAttribute('aria-describedby');
+                const byId = id && document.getElementById(id);
+                if (byId) return byId;
+                const all = Array.from(document.querySelectorAll('.popover')).filter((p) => p.offsetParent !== null);
+                return all.length ? all[all.length - 1] : null;
+            };
+
+            $(trigger).on('shown.bs.popover', () => {
+                trigger.setAttribute('aria-expanded', 'true');
+                const pop = popoverEl();
+                if (!pop) return;
+                // Escape inside the popover closes it and returns focus to the trigger.
+                pop.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        $(trigger).popover('hide');
+                        trigger.focus();
+                    }
+                });
+                // Move focus into the popover (first control, else the container itself).
+                const first = pop.querySelector(FOCUSABLE);
+                if (first) {
+                    first.focus();
+                } else {
+                    if (!pop.hasAttribute('tabindex')) pop.setAttribute('tabindex', '-1');
+                    pop.focus();
+                }
+            });
+
+            $(trigger).on('hidden.bs.popover', () => {
+                trigger.setAttribute('aria-expanded', 'false');
+                // The popover was removed from the DOM: if focus was inside it (or fell to body),
+                // pull it back to the trigger so keyboard users aren't stranded.
+                const active = document.activeElement;
+                if (!active || active === document.body) trigger.focus();
+            });
+        });
     }
 
     /**

@@ -6,6 +6,16 @@
 /* Overall view width; a theme may set this to `none` for a full-bleed, full-width view. */
 @immersiveMaxWidth: 1240px;
 
+/* A global reset (resets.less) strips every focus outline and adds no :focus-visible
+   replacement, so keyboard focus is invisible inside the stage. Restore a scoped,
+   accent-coloured focus ring for every focusable element in the immersive view.
+   Accent reaches >=5.3:1 on chrome-bg / >=6.1:1 on canvas-bg -- well over the 3:1 ring floor. */
+.immersive :focus-visible {
+    outline: 2px solid @immersive-accent;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
 .immersiveFloating() {
     background-color: @immersive-chrome-bg;
     border: @immersive-chrome-border;
@@ -284,8 +294,12 @@
         font-size: @fontNormal;
 
         &:focus {
-            outline: none;
             border-color: @immersive-accent;
+        }
+
+        &:focus-visible {
+            outline: 2px solid @immersive-accent;
+            outline-offset: 2px;
         }
     }
 
@@ -401,12 +415,21 @@
         .immersiveIconBtn();
     }
 
-    &__tool-btn--active {
-        background-color: @immersive-chrome-hover-bg;
+    &__tool-btn--active,
+    &__tool-btn[aria-pressed='true'],
+    &__bar-btn--active,
+    &__bar-btn[aria-pressed='true'] {
+        /* Accent tint keeps the surface dark so the (light) accent icon stays >=4.5:1;
+           the previous chrome-hover-bg fill was too light for a blue icon. The tint alone
+           is ~1.14:1 in light mode (invisible), so add a mode-independent inset accent ring
+           (>=5.3:1 on chrome-bg) as the real active/pressed cue on toolbars without an edge bar. */
+        background-color: rgba(77, 171, 247, 0.16);
         color: @immersive-accent;
+        box-shadow: inset 0 0 0 2px @immersive-accent;
 
         &:hover {
             color: @immersive-accent;
+            background-color: rgba(77, 171, 247, 0.24);
         }
     }
 
@@ -596,7 +619,7 @@
                 letter-spacing: 0.06em;
                 white-space: normal;
                 color: @immersive-chrome-fg;
-                opacity: 0.5;
+                opacity: 0.75;
             }
 
             /* Value: readable, full width. */
@@ -913,7 +936,7 @@
             &__element-pagenumber {
                 color: @immersive-chrome-fg;
                 font-size: @fontSmall;
-                opacity: 0.5;
+                opacity: 0.75;
             }
 
             /* Active section: the current or just-clicked entry. The widget marks both the
@@ -921,19 +944,23 @@
                give the row our own subtle highlight (token-driven, theme-independent). */
             &__element.active {
                 background-color: @immersive-chrome-hover-bg;
+                /* Accent text on hover-bg is only 2.41:1 in dark; move the "current" cue to an
+                   accent left-border and keep the label at chrome-fg (4.7:1 on hover-bg). */
+                border-left: 3px solid @immersive-accent;
+                padding-left: 3px;
 
                 .widget-toc__element-link {
                     background: transparent;
                 }
 
                 .widget-toc__element-link a {
-                    color: @immersive-accent;
+                    color: @immersive-chrome-fg;
                     font-weight: 700;
                 }
 
                 .widget-toc__element-pagenumber {
-                    color: @immersive-accent;
-                    opacity: 0.85;
+                    color: @immersive-chrome-fg;
+                    opacity: 1;
                 }
             }
         }
@@ -950,6 +977,8 @@
         height: 48px;
         padding: 0;
         border: 0;
+        /* Always round; the scrim behind the icon is mode-conditional (see below). */
+        border-radius: 50%;
         background: transparent;
         color: @immersive-canvas-fg;
         cursor: pointer;
@@ -1099,8 +1128,8 @@
         .thumbnails-image-wrapper.selected {
             .thumbnails-image {
                 box-shadow:
-                    0 0 0 2px @immersive-accent,
-                    0 6px 16px rgba(1, 89, 153, 0.28);
+                    0 0 0 3px @immersive-accent,
+                    0 6px 16px rgba(1, 89, 153, 0.35);
             }
 
             .thumbnails-label {
@@ -1171,6 +1200,23 @@
     }
 }
 
+/* Chevron scrim: only needed in DARK mode, where the light arrow can vanish over a
+   near-white scan when zoomed. In LIGHT mode the arrow is dark (canvas-fg) so a dark
+   scrim would REDUCE contrast -- keep it transparent there. Mirror the theme's own
+   dual mechanism: prefers-color-scheme + a .color-theme-* ancestor class (the explicit
+   class wins over the media query by specificity). */
+@media (prefers-color-scheme: dark) {
+    .immersive__chevron {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+}
+.color-theme-dark .immersive__chevron {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.color-theme-light .immersive__chevron {
+    background-color: transparent;
+}
+
 @media screen and (max-width: @mediumBreakpoint) {
     .immersive__viewer {
         --immersive-panel-width: 300px;
@@ -1178,6 +1224,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    #immersiveOverlayTop,
+    .immersive__overlay-top,
+    .immersive__title-trigger,
     .immersive__panel,
     .immersive__tool-btn,
     .immersive__bar-btn,
@@ -1226,14 +1275,18 @@
 
             &::placeholder {
                 color: @immersive-chrome-fg;
-                opacity: 0.5;
+                opacity: 0.75;
             }
 
             &:focus {
-                outline: none;
                 box-shadow: none;
                 background: transparent;
                 color: @immersive-chrome-fg;
+            }
+
+            &:focus-visible {
+                outline: 2px solid @immersive-accent;
+                outline-offset: 2px;
             }
         }
 
@@ -1249,7 +1302,7 @@
             color: @immersive-chrome-fg;
             font-size: 20px;
             line-height: 1;
-            opacity: 0.5;
+            opacity: 0.75;
             cursor: pointer;
             transition:
                 opacity 0.15s ease,
@@ -1418,7 +1471,10 @@
 
     &__results-empty {
         padding: 12px 10px;
-        opacity: 0.6;
+        /* Pin to the chrome foreground at reduced emphasis rather than inheriting a base
+           muted grey (~#8a8c8e, ~3.4:1 light); chrome-fg @0.75 stays >=4.5:1 in both modes. */
+        color: @immersive-chrome-fg;
+        opacity: 0.75;
     }
 
     /* Fulltext drawer: a touch more horizontal breathing room for the text column. */
@@ -1442,7 +1498,10 @@
         padding-top: 8px;
         font-style: italic;
         text-align: center;
-        opacity: 0.6;
+        /* Same as results-empty: pin to chrome-fg @0.75 so the message stays >=4.5:1
+           instead of inheriting a base muted grey that fails in light mode. */
+        color: @immersive-chrome-fg;
+        opacity: 0.75;
     }
 
     /* Loading screen while a page's text is fetched (reuses the shared infinity loader). */
@@ -1522,7 +1581,11 @@
         font-size: @fontSmall;
         cursor: pointer;
 
-        &.is-active {
+        /* Active granularity: the base border is @immersive-divider (1.46:1 in dark);
+           pin the active border to a solid accent (>=5.3:1 on chrome-bg) so the selected
+           state is perceivable. Keyed on both the class and aria-pressed for robustness. */
+        &.is-active,
+        &[aria-pressed='true'] {
             border-color: @immersive-accent;
             color: @immersive-accent;
         }
@@ -1550,6 +1613,13 @@
     border: @immersive-chrome-border;
     border-radius: 6px;
     box-shadow: @immersive-chrome-shadow;
+
+    /* These popovers are portaled to <body> outside .immersive, so the scoped
+       `.immersive :focus-visible` ring never reaches their controls -- restate it here. */
+    & :focus-visible {
+        outline: 2px solid @immersive-accent;
+        outline-offset: 2px;
+    }
 
     /* tint the Bootstrap arrow to the chrome surface (whichever side it points) */
     &.bs-popover-top .arrow::before,
@@ -1624,18 +1694,20 @@
         font-weight: 700;
     }
 
-    /* citation links (PURL ...) -- calm chrome chips that tint to the accent on hover */
+    /* citation links (PURL ...) -- accent-tinted chips; accent text on the light chrome-hover-bg
+       only reached ~2.4:1, so use a dark accent tint (accent text stays >=4.5:1) + underline on hover */
     .widget__badge-container .badge,
     .widget__badge-container .badge-dark {
-        color: @immersive-chrome-fg;
-        background-color: @immersive-chrome-hover-bg;
+        color: @immersive-accent;
+        background-color: rgba(77, 171, 247, 0.08);
         border-radius: 6px;
 
         &:hover,
         &:active,
         &:focus {
             color: @immersive-accent;
-            background-color: @immersive-chrome-hover-bg;
+            background-color: rgba(77, 171, 247, 0.1);
+            text-decoration: underline;
         }
     }
 
@@ -1693,4 +1765,40 @@
     .widget-social-media__link img[src$='x_logo.svg'] {
         filter: invert(@immersive-logo-invert);
     }
+}
+
+/* The share popover is portaled to <body>, so in the site's dark theme its links inherit
+   the near-black theme link color (~1.2:1 on the dark navy chrome). Force a light foreground
+   in dark mode. The Facebook logo is a coloured (blue) brand mark and stays as-is -- do NOT
+   invert it (invert turns the blue orange); it reads fine on both light and dark chrome.
+   Mirror the theme's dual mechanism: prefers-color-scheme + a .color-theme-dark ancestor. */
+.dark-share-popover-fix() {
+    .popover .widget-social-media {
+        .widget-social-media__link,
+        .widget-social-media__link:hover,
+        .widget-social-media__link:focus {
+            /* #e3e4e7 on the dark navy popover bg (#253044) resolves to 10.42:1 (>=4.5:1) */
+            color: @immersive-chrome-fg;
+        }
+    }
+}
+@media (prefers-color-scheme: dark) {
+    .dark-share-popover-fix();
+}
+.color-theme-dark {
+    .dark-share-popover-fix();
+}
+
+/* --- Filter / imageFilters popover ---------------------------------------- */
+/* The image-filter popover is also portaled to <body> outside .immersive. Its range
+   sliders render with the UA default track (~1.18:1 on the chrome bg in dark). Give
+   them the brand accent (>=5.3:1 on chrome-bg) as a safe baseline; the fuller restyle
+   lives in imageFilters.tag. Also restore a focus-visible ring for its controls. */
+.popover input[type='range'] {
+    accent-color: @immersive-accent;
+}
+
+.popover :focus-visible {
+    outline: 2px solid @immersive-accent;
+    outline-offset: 2px;
 }
