@@ -468,6 +468,25 @@ public class SequenceBuilder extends AbstractBuilder {
      */
     public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas2 canvas, boolean populate)
             throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
+        return addOtherContent(doc, page, canvas, populate, AltoAnnotationBuilder.Granularity.LINE);
+    }
+
+    /**
+     * Same as {@link #addOtherContent(StructElement, PhysicalElement, Canvas2, boolean)}, but ALTO-based text annotations are created at the
+     * given granularity.
+     *
+     * @param doc structure element providing the record PI for text lookups
+     * @param page physical page whose full-text, audio, and video resources are added
+     * @param canvas IIIF canvas to attach annotation lists to
+     * @param populate if true, annotation bodies are fully resolved; otherwise only list stubs are created
+     * @param altoGranularity granularity of the annotations created from an ALTO document
+     * @return a map of annotation type to annotation list for all content types found on the given page
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     */
+    public Map<AnnotationType, AnnotationList> addOtherContent(StructElement doc, PhysicalElement page, Canvas2 canvas, boolean populate,
+            AltoAnnotationBuilder.Granularity altoGranularity) throws URISyntaxException, IndexUnreachableException, ViewerConfigurationException {
 
         Map<AnnotationType, AnnotationList> annotationMap = new EnumMap<>(AnnotationType.class);
         TextResourceBuilder builder = new TextResourceBuilder();
@@ -485,7 +504,7 @@ public class SequenceBuilder extends AbstractBuilder {
                         if (alto.getFirstPage() != null && StringUtils.isNotBlank(alto.getFirstPage().getContent())) {
                             List<AbstractAnnotation> annos =
                                     new AltoAnnotationBuilder(urls, "oa").createAnnotations(alto.getFirstPage(), doc.getPi(), page.getOrder(), canvas,
-                                            AltoAnnotationBuilder.Granularity.LINE, false);
+                                            altoGranularity, false);
                             for (AbstractAnnotation annotation : annos) {
                                 annoList.addResource(annotation);
                             }

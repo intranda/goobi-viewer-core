@@ -32,10 +32,8 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_TEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,16 +52,13 @@ import jakarta.ws.rs.core.MediaType;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdom2.JDOMException;
 
-import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.v2.AnnotationList;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
 import de.intranda.api.iiif.presentation.v2.Layer;
-import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -75,7 +70,6 @@ import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
-import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -83,15 +77,14 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.BuildMode;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder;
-import io.goobi.viewer.model.annotation.AltoAnnotationBuilder;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PhysicalElement;
-import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -248,6 +241,19 @@ public class RecordPageResource {
         return new AnnotationsResourceBuilder(urls, servletRequest).getOAnnotationListForPageComments(pi, pageNo, uri);
     }
 
+    /**
+     * Returns the text content of a page as an IIIF 2 annotation list, at line or word granularity.
+     *
+     * @param pageNo page number (1-based)
+     * @param format annotation format of the response ('oa' or W3C web annotations)
+     * @param granularity OCR annotation granularity, 'word' or 'line'; unknown values are treated as 'line'
+     * @return annotation list containing the page text
+     * @throws URISyntaxException
+     * @throws DAOException
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws ViewerConfigurationException
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -259,9 +265,10 @@ public class RecordPageResource {
             @Parameter(description = "Page number (1-based)",
                     schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo,
             @Parameter(
-                    description = "annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations,"
+                    description = "annotation format of the response. If it is 'oa' the annotations will be delivered as OpenAnnotations,"
                             + " otherwise as W3C-Webannotations") @QueryParam("format") String format,
-            @Parameter(description = "OCR annotation granularity: 'word' for word-level annotations, 'line' (default) for line-level")
+            @Parameter(description = "OCR annotation granularity: 'word' for word-level annotations, 'line' (default) for line-level",
+                    schema = @Schema(allowableValues = { "line", "word" }, defaultValue = "line"))
             @QueryParam("granularity") @DefaultValue("line") String granularity)
             throws URISyntaxException, DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
         requireValidPageNo(pageNo);
@@ -275,20 +282,17 @@ public class RecordPageResource {
             access = false;
         }
 
-        boolean wordLevel = "word".equalsIgnoreCase(granularity);
-
         Map<AnnotationType, AnnotationList> annotations;
         if (access) {
             SequenceBuilder builder = new SequenceBuilder(urls);
             StructElement doc = new ManifestBuilder(urls).getDocument(pi);
             PhysicalElement page = builder.getPage(doc, pageNo);
             Canvas2 canvas = builder.generateCanvas(doc.getPi(), page);
-
-            if (wordLevel && page != null && page.getAltoFileName() != null && !page.getAltoFileName().isBlank()) {
-                annotations = buildWordAnnotations(doc, page, canvas);
-            } else {
-                annotations = builder.addOtherContent(doc, page, canvas, true);
-            }
+            AltoAnnotationBuilder.Granularity altoGranularity =
+                    AltoAnnotationBuilder.Granularity.WORD.name().equalsIgnoreCase(granularity)
+                            ? AltoAnnotationBuilder.Granularity.WORD
+                            : AltoAnnotationBuilder.Granularity.LINE;
+            annotations = builder.addOtherContent(doc, page, canvas, true, altoGranularity);
         } else {
             annotations = new HashMap<>();
         }
@@ -308,46 +312,6 @@ public class RecordPageResource {
         } else {
             return new AnnotationList(new SequenceBuilder(urls).getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT, true));
         }
-    }
-
-    /**
-     * Builds an ALTO-backed annotation list at word granularity for the given page.
-     *
-     * <p>This is used when {@code granularity=word} is requested. The result is wrapped in an
-     * {@link AnnotationType#ALTO} entry so the caller's response-assembly logic remains unchanged.
-     * If the ALTO file cannot be loaded, an empty annotation map is returned and the error is logged.
-     *
-     * @param doc structure element providing the record PI
-     * @param page physical page whose ALTO file is used
-     * @param canvas IIIF canvas to annotate
-     * @return map with a single {@link AnnotationType#ALTO} entry containing word-level annotations,
-     *         or an empty map if the ALTO document could not be loaded
-     */
-    private Map<AnnotationType, AnnotationList> buildWordAnnotations(StructElement doc, PhysicalElement page, Canvas2 canvas)
-            throws IndexUnreachableException {
-        Map<AnnotationType, AnnotationList> result = new HashMap<>();
-        AnnotationList annoList =
-                new AnnotationList(new SequenceBuilder(urls).getAnnotationListURI(page.getPi(), page.getOrder(), AnnotationType.ALTO, true));
-        annoList.setLabel(ViewerResourceBundle.getTranslations(AnnotationType.ALTO.name()));
-        try {
-            String altoFilename = Paths.get(page.getAltoFileName()).getFileName().toString();
-            StringPair altoPair = new TextResourceBuilder().getAltoDocument(doc.getPi(), altoFilename);
-            AltoDocument alto = AltoDocument.getDocumentFromString(altoPair.getOne(), altoPair.getTwo());
-            if (alto.getFirstPage() != null && alto.getFirstPage().getContent() != null && !alto.getFirstPage().getContent().isBlank()) {
-                List<AbstractAnnotation> annos =
-                        new AltoAnnotationBuilder(urls, "oa").createAnnotations(alto.getFirstPage(), doc.getPi(), page.getOrder(), canvas,
-                                AltoAnnotationBuilder.Granularity.WORD, false);
-                for (AbstractAnnotation annotation : annos) {
-                    annoList.addResource(annotation);
-                }
-                result.put(AnnotationType.ALTO, annoList);
-            }
-        } catch (ContentNotFoundException e) {
-            logger.trace("No alto file found: {}", page.getAltoFileName());
-        } catch (PresentationException | IOException | JDOMException e) {
-            logger.error("Error loading alto text from {}", page.getAltoFileName(), e);
-        }
-        return result;
     }
 
     /**

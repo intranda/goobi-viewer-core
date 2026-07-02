@@ -31,10 +31,12 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_TEXT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.util.Map;
 
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -67,6 +69,11 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     private static final String PI_ANNOTATIONS = "PI_1";
     private static final String PI_SPACE_IN_FILENAME = "4fda256e-70b3-11ea-b891-08606e6a464a";
     private static final String PAGENO_ANNOTATIONS = "1";
+    // ALTO data exists both in the testing Solr index and in src/test/resources/data/viewer/data/1/alto/PPN648829383/
+    private static final String PI_WITH_ALTO = "PPN648829383";
+    private static final String PAGENO_WITH_ALTO = "1";
+    // Indexed without FILENAME_ALTO, but with plain fulltext in src/test/resources/data/viewer/data/1/fulltext/PPN517154005/
+    private static final String PI_WITHOUT_ALTO = "PPN517154005";
 
     /**
      * @throws java.lang.Exception
@@ -238,67 +245,99 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Verifies that requesting text annotations with the default granularity (line) returns HTTP 200.
-     * The endpoint path is /{pageNo}/text and the default for the new granularity param is "line",
-     * so existing callers are unaffected.
+     * Requests the page text annotation list and returns the number of contained annotation resources.
      *
-     * @verifies return 200 with default line granularity
-     * @see RecordPageResource#getTextForPage
+     * @param pi record identifier
+     * @param pageNo page number
+     * @param granularity granularity query parameter value, or null to omit the parameter
+     * @return number of resources in the returned annotation list
      */
-    @Test
-    void getTextForPage_defaultGranularity_shouldReturn200() {
-        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(PI, PAGENO).build();
-        try (Response response = target(url)
+    private int countTextAnnotations(String pi, String pageNo, String granularity) {
+        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(pi, pageNo).build();
+        WebTarget textTarget = target(url);
+        if (granularity != null) {
+            textTarget = textTarget.queryParam("granularity", granularity);
+        }
+        try (Response response = textTarget
                 .request()
                 .accept(MediaType.APPLICATION_JSON)
                 .get()) {
-            assertEquals(200, response.getStatus(),
-                    "Default (line) granularity must return HTTP 200");
-            assertNotNull(response.readEntity(String.class));
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+            JSONArray resources = new JSONObject(entity).optJSONArray("resources");
+            return resources == null ? 0 : resources.length();
         }
     }
 
     /**
-     * Verifies that requesting text annotations with {@code granularity=word} is accepted (HTTP 200)
-     * and returns a valid JSON response. For pages without an indexed ALTO file the annotation list
-     * will be empty; the assertion here covers only the HTTP contract and non-null body.
+     * The default (line) granularity must return line-level annotations for a page with ALTO data,
+     * so existing callers are unaffected by the new granularity parameter.
      *
-     * @verifies return 200 with word granularity parameter
+     * @verifies return line annotations with default granularity
      * @see RecordPageResource#getTextForPage
      */
     @Test
-    void getTextForPage_wordGranularity_shouldReturn200() {
-        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(PI, PAGENO).build();
-        try (Response response = target(url)
-                .queryParam("granularity", "word")
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get()) {
-            assertEquals(200, response.getStatus(),
-                    "granularity=word must return HTTP 200");
-            assertNotNull(response.readEntity(String.class));
-        }
+    void getTextForPage_defaultGranularity_shouldReturnLineAnnotations() {
+        int lineCount = countTextAnnotations(PI_WITH_ALTO, PAGENO_WITH_ALTO, null);
+        assertTrue(lineCount > 0, "Default granularity should return line-level annotations");
     }
 
     /**
-     * An unknown granularity value (neither "line" nor "word") must be silently treated as "line"
-     * and still return HTTP 200.
+     * {@code granularity=word} must return word-level annotations, i.e. more annotations than the
+     * line-level response for the same page.
      *
-     * @verifies treat unknown granularity values as line and return 200
+     * @verifies return word annotations with word granularity
      * @see RecordPageResource#getTextForPage
      */
     @Test
-    void getTextForPage_unknownGranularity_shouldFallBackToLineAndReturn200() {
-        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_TEXT).params(PI, PAGENO).build();
-        try (Response response = target(url)
-                .queryParam("granularity", "paragraph")
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .get()) {
-            assertEquals(200, response.getStatus(),
-                    "Unknown granularity must fall back to line and return HTTP 200");
-            assertNotNull(response.readEntity(String.class));
-        }
+    void getTextForPage_wordGranularity_shouldReturnWordAnnotations() {
+        int lineCount = countTextAnnotations(PI_WITH_ALTO, PAGENO_WITH_ALTO, null);
+        int wordCount = countTextAnnotations(PI_WITH_ALTO, PAGENO_WITH_ALTO, "word");
+        assertTrue(lineCount > 0, "Line-level response should contain annotations");
+        assertTrue(wordCount > lineCount,
+                "Word granularity should return more annotations than line granularity (got " + wordCount + " vs " + lineCount + ")");
+    }
+
+    /**
+     * The granularity parameter value must be case-insensitive.
+     *
+     * @verifies treat granularity value case-insensitively
+     * @see RecordPageResource#getTextForPage
+     */
+    @Test
+    void getTextForPage_wordGranularity_shouldBeCaseInsensitive() {
+        int wordCount = countTextAnnotations(PI_WITH_ALTO, PAGENO_WITH_ALTO, "word");
+        int upperCaseCount = countTextAnnotations(PI_WITH_ALTO, PAGENO_WITH_ALTO, "WORD");
+        assertTrue(wordCount > 0, "Word-level response should contain annotations");
+        assertEquals(wordCount, upperCaseCount, "granularity=WORD should behave like granularity=word");
+    }
+
+    /**
+     * An unknown granularity value (neither "line" nor "word") must be silently treated as "line".
+     *
+     * @verifies treat unknown granularity values as line
+     * @see RecordPageResource#getTextForPage
+     */
+    @Test
+    void getTextForPage_unknownGranularity_shouldFallBackToLine() {
+        int lineCount = countTextAnnotations(PI_WITH_ALTO, PAGENO_WITH_ALTO, "line");
+        int unknownCount = countTextAnnotations(PI_WITH_ALTO, PAGENO_WITH_ALTO, "paragraph");
+        assertEquals(lineCount, unknownCount, "Unknown granularity should fall back to line granularity");
+    }
+
+    /**
+     * For a page without an indexed ALTO file, {@code granularity=word} must fall back to the
+     * default (plain fulltext) response instead of failing or returning an empty list.
+     *
+     * @verifies fall back to default response for word granularity without alto
+     * @see RecordPageResource#getTextForPage
+     */
+    @Test
+    void getTextForPage_wordGranularityWithoutAlto_shouldFallBackToDefaultResponse() {
+        int defaultCount = countTextAnnotations(PI_WITHOUT_ALTO, "1", null);
+        int wordCount = countTextAnnotations(PI_WITHOUT_ALTO, "1", "word");
+        assertEquals(defaultCount, wordCount, "granularity=word without ALTO should return the default response");
     }
 
     /**
