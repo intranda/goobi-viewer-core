@@ -110,3 +110,89 @@
     clip: rect(0, 0, 0, 0);
     border: 0;
 }
+
+/* LINE CLAMP */
+.mx-line-clamp(@lines: 2) {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: @lines;
+    line-clamp: @lines;
+}
+
+/* IMMERSIVE VIEW: accent-coloured focus ring, scoped to the immersive surface */
+.mx-immersive-focus-ring() {
+    outline: 2px solid @immersive-accent;
+    outline-offset: 2px;
+}
+
+/* IMMERSIVE VIEW: floating chrome surface (toolbar, bottombar, back link) */
+.mx-immersive-floating() {
+    background-color: @immersive-chrome-bg;
+    border: 1px solid @immersive-chrome-border-color;
+    border-radius: @immersive-radius;
+    box-shadow: @immersive-chrome-shadow;
+}
+
+/* IMMERSIVE VIEW: borderless icon button on a chrome surface */
+.mx-immersive-icon-button(@size: 36px) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: @size;
+    height: @size;
+    padding: 0;
+    border: 0;
+    border-radius: @immersive-radius;
+    background: transparent;
+    color: @immersive-chrome-fg;
+    cursor: pointer;
+    transition: background-color @immersive-transition;
+
+    &:hover {
+        background-color: @immersive-chrome-hover-bg;
+        /* Repeated colour guards against theme a:hover/button:hover rules. */
+        color: @immersive-chrome-fg;
+    }
+}
+
+/* IMMERSIVE VIEW: icon button floating over the canvas (chevron, grid close) */
+.mx-immersive-overlay-button(@size) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: @size;
+    height: @size;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: @immersive-canvas-fg;
+    cursor: pointer;
+    opacity: 0.85;
+    filter: @immersive-overlay-shadow;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+/* IMMERSIVE VIEW: uppercase accent text toggle (show more/less) */
+.mx-immersive-text-toggle() {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    color: @immersive-accent;
+    font-size: @fontSmall;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+
+    &:hover {
+        color: @immersive-accent;
+        background: transparent;
+        text-decoration: underline;
+    }
+}

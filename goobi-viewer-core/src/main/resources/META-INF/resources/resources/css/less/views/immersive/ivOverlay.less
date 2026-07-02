@@ -1,10 +1,17 @@
+/* ==============================================================
+   Immersive View: Overlay
+   style declarations for viewImmersive.xhtml (back link, title bar and page dropdown)
+   ==============================================================*/
+
+@immersive-z-overlay: 110;
+
 .immersive {
     &__overlay-top {
         position: absolute;
         top: @immersive-edge-inset;
         right: @immersive-edge-inset;
         left: @immersive-edge-inset;
-        z-index: 110;
+        z-index: @immersive-z-overlay;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -20,12 +27,12 @@
         gap: 6px;
         height: 36px;
         padding: 0 14px;
-        .immersive-floating();
+        .mx-immersive-floating();
         color: @immersive-chrome-fg;
         font-size: @fontMedium;
         text-decoration: none;
         pointer-events: auto;
-        transition: background-color 0.15s ease;
+        transition: background-color @immersive-transition;
 
         &:hover {
             color: @immersive-chrome-fg;
@@ -43,7 +50,6 @@
         position: relative;
         display: flex;
         align-items: center;
-        /* min-width:0 lets the flex child shrink so a long title can ellipsize. */
         min-width: 0;
         max-width: ~'min(60%, 420px)';
         pointer-events: none;
@@ -57,13 +63,13 @@
         max-width: 100%;
         padding: 4px 8px;
         border: 0;
-        border-radius: 6px;
+        border-radius: @immersive-radius;
         background: transparent;
         color: @immersive-canvas-fg;
         filter: @immersive-overlay-shadow;
         cursor: pointer;
         pointer-events: auto;
-        transition: background-color 0.15s ease;
+        transition: background-color @immersive-transition;
 
         &:hover {
             background-color: @immersive-chrome-hover-bg;
@@ -75,7 +81,7 @@
         flex-shrink: 0;
         width: 18px;
         height: 18px;
-        transition: transform 0.15s ease;
+        transition: transform @immersive-transition;
 
         .immersive__title-trigger[aria-expanded='true'] & {
             transform: rotate(180deg);
@@ -99,8 +105,6 @@
         .immersive__overlay-top {
             opacity: 0;
         }
-        /* Each of these re-enables pointer-events, so disable them explicitly here — otherwise
-           the invisible full-width title trigger keeps stealing clicks meant for the open panel. */
         .immersive__overlay-top,
         .immersive__back,
         .immersive__title-trigger,
@@ -143,14 +147,14 @@
         top: calc(100% + 8px);
         left: 50%;
         transform: translateX(-50%);
-        z-index: 110;
+        z-index: @immersive-z-overlay;
         display: flex;
         flex-direction: column;
         width: 280px;
         max-width: 80vw;
         max-height: 60vh;
         padding: 10px;
-        border-radius: 8px;
+        border-radius: @immersive-radius-lg;
         background-color: @immersive-chrome-bg;
         color: @immersive-chrome-fg;
         box-shadow: @immersive-panel-shadow;
@@ -176,17 +180,13 @@
         width: 100%;
         padding: 6px 8px;
         border: 1px solid @immersive-divider;
-        border-radius: 6px;
+        border-radius: @immersive-radius;
         background-color: transparent;
         color: @immersive-chrome-fg;
         font-size: @fontNormal;
 
         &:focus {
             border-color: @immersive-accent;
-        }
-
-        &:focus-visible {
-            .immersive-focus-ring();
         }
     }
 
@@ -204,31 +204,43 @@
         width: 100%;
         padding: 6px 8px;
         border: 0;
-        border-radius: 6px;
+        border-radius: @immersive-radius;
         background: transparent;
         color: @immersive-chrome-fg;
         text-align: left;
         cursor: pointer;
 
         &:hover,
-        &.is-active {
+        &--active {
             background-color: @immersive-chrome-hover-bg;
         }
     }
 
-    &__page-dropdown-num {
+    &__page-dropdown-number {
         flex-shrink: 0;
         color: @immersive-accent;
         font-variant-numeric: tabular-nums;
 
-        .immersive__page-dropdown-item.is-active & {
+        .immersive__page-dropdown-item--active & {
             font-weight: bold;
         }
     }
 
-    &__page-dropdown-itemlabel {
+    &__page-dropdown-item-label {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
     }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

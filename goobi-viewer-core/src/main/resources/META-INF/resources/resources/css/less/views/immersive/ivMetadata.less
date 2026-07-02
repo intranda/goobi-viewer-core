@@ -1,3 +1,8 @@
+/* ==============================================================
+   Immersive View: Metadata
+   style declarations for viewImmersive.xhtml (metadata panel)
+   ==============================================================*/
+
 .immersive {
     &__panel--metadata .metadata {
         color: @immersive-chrome-fg;
@@ -75,66 +80,50 @@
                 & + dd {
                     margin-top: 4px;
                 }
+            }
 
-                a {
-                    color: @immersive-accent;
-                    text-decoration: none;
+            dd a {
+                color: @immersive-accent;
+                text-decoration: none;
 
-                    &:hover {
-                        text-decoration: underline;
-                    }
+                &:hover {
+                    text-decoration: underline;
                 }
+            }
 
-                button {
-                    padding: 0;
-                    border: 0;
-                    background: transparent;
-                    color: inherit;
-                    cursor: pointer;
-                    vertical-align: baseline;
-                }
+            dd button {
+                padding: 0;
+                border: 0;
+                background: transparent;
+                color: inherit;
+                cursor: pointer;
+                vertical-align: baseline;
+            }
 
-                .icon,
-                .icon-svg {
-                    width: 15px;
-                    height: 15px;
-                    vertical-align: -2px;
-                    color: @immersive-chrome-fg;
-                    opacity: 0.45;
-                    transition:
-                        opacity 0.15s ease,
-                        color 0.15s ease;
-                }
+            dd .icon,
+            dd .icon-svg {
+                width: 15px;
+                height: 15px;
+                vertical-align: -2px;
+                color: @immersive-chrome-fg;
+                opacity: 0.45;
+                transition:
+                    opacity @immersive-transition,
+                    color @immersive-transition;
+            }
 
-                a:hover .icon,
-                a:hover .icon-svg,
-                button:hover .icon,
-                button:hover .icon-svg {
-                    opacity: 1;
-                    color: @immersive-accent;
-                }
+            dd a:hover .icon,
+            dd a:hover .icon-svg,
+            dd button:hover .icon,
+            dd button:hover .icon-svg {
+                opacity: 1;
+                color: @immersive-accent;
             }
         }
 
         .metadata__fold-button {
-            display: inline-flex;
-            align-items: center;
+            .mx-immersive-text-toggle();
             margin-top: 12px;
-            padding: 4px 0;
-            border: 0;
-            background: transparent;
-            color: @immersive-accent;
-            font-size: @fontSmall;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            cursor: pointer;
-
-            &:hover {
-                color: @immersive-accent;
-                background: transparent;
-                text-decoration: underline;
-            }
 
             &.-hidden {
                 display: none;
@@ -156,19 +145,9 @@
     }
 
     &__metadata-toggle {
-        display: inline-flex;
-        align-items: center;
+        .mx-immersive-text-toggle();
         gap: 6px;
         margin-top: 14px;
-        padding: 4px 0;
-        border: 0;
-        background: transparent;
-        color: @immersive-accent;
-        font-size: @fontSmall;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        cursor: pointer;
 
         &::before {
             content: '';
@@ -177,17 +156,11 @@
             border-left: 4px solid transparent;
             border-right: 4px solid transparent;
             border-top: 5px solid currentColor;
-            transition: transform 0.15s ease;
+            transition: transform @immersive-transition;
         }
 
         &[aria-expanded='true']::before {
             transform: rotate(180deg);
-        }
-
-        &:hover {
-            color: @immersive-accent;
-            background: transparent;
-            text-decoration: underline;
         }
     }
 
@@ -202,4 +175,16 @@
     .immersive__metadata-toggle[aria-expanded='true'] &__metadata-toggle-less {
         display: inline;
     }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

@@ -1,17 +1,22 @@
-/* Bootstrap portals these popovers to <body>, outside .immersive — so target them by their
-   content and restyle them to match the immersive chrome. */
+/* ==============================================================
+   Immersive View: Popovers
+   style declarations for viewImmersive.xhtml (share/cite/filter popovers);
+   Bootstrap portals them to <body>, outside .immersive — so they are
+   targeted by their content and restyled to match the immersive chrome
+   ==============================================================*/
+
 .popover:has(.widget-citation),
 .popover:has(.widget-social-media),
 .popover:has(imageFilters) {
     max-width: 320px;
     color: @immersive-chrome-fg;
     background-color: @immersive-chrome-bg;
-    border: @immersive-chrome-border;
-    border-radius: 6px;
+    border: 1px solid @immersive-chrome-border-color;
+    border-radius: @immersive-radius;
     box-shadow: @immersive-chrome-shadow;
 
     & :focus-visible {
-        .immersive-focus-ring();
+        .mx-immersive-focus-ring();
     }
 
     &.bs-popover-top .arrow::before,
@@ -62,6 +67,7 @@
         display: none;
     }
     .widget-citation__body {
+        /* !important overrides the inline display left behind by the sidebar slideToggle collapse. */
         display: block !important;
         padding: 4px 14px 14px;
     }
@@ -85,7 +91,7 @@
     .widget__badge-container .badge-dark {
         color: @immersive-accent;
         background-color: ~'rgba(var(--immersive-accent-rgb), 0.08)';
-        border-radius: 6px;
+        border-radius: @immersive-radius;
 
         &:hover,
         &:active,
@@ -99,8 +105,8 @@
     .custom-control--select {
         color: @immersive-chrome-fg;
         background-color: @immersive-chrome-hover-bg;
-        border: @immersive-chrome-border;
-        border-radius: 6px;
+        border: 1px solid @immersive-chrome-border-color;
+        border-radius: @immersive-radius;
 
         &::after {
             border-top-color: @immersive-chrome-fg;
@@ -133,13 +139,19 @@
     }
 
     .widget-social-media__link {
-        display: flex;
         padding: 6px;
-        border-radius: 8px;
-        transition: background-color 0.15s ease;
+        border-radius: @immersive-radius-lg;
+        color: @immersive-chrome-fg;
+        transition: background-color @immersive-transition;
 
         &:hover {
             background-color: @immersive-chrome-hover-bg;
+        }
+
+        &:hover,
+        &:focus {
+            /* Repeated colour guards against theme a:hover/a:focus rules. */
+            color: @immersive-chrome-fg;
         }
     }
 
@@ -147,22 +159,6 @@
     .widget-social-media__link img[src$='x_logo.svg'] {
         filter: invert(@immersive-logo-invert);
     }
-}
-
-.immersive-share-popover-dark() {
-    .popover .widget-social-media {
-        .widget-social-media__link,
-        .widget-social-media__link:hover,
-        .widget-social-media__link:focus {
-            color: @immersive-chrome-fg;
-        }
-    }
-}
-@media (prefers-color-scheme: dark) {
-    .immersive-share-popover-dark();
-}
-.color-theme-dark {
-    .immersive-share-popover-dark();
 }
 
 .popover:has(imageFilters) {
@@ -185,12 +181,12 @@
         .btn--full {
             color: @immersive-chrome-fg;
             background-color: transparent;
-            border: @immersive-chrome-border;
-            border-radius: 6px;
+            border: 1px solid @immersive-chrome-border-color;
+            border-radius: @immersive-radius;
             transition:
-                border-color 0.15s ease,
-                background-color 0.15s ease,
-                color 0.15s ease;
+                border-color @immersive-transition,
+                background-color @immersive-transition,
+                color @immersive-transition;
 
             &:hover,
             &:active,
@@ -201,4 +197,16 @@
             }
         }
     }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

@@ -1,3 +1,8 @@
+/* ==============================================================
+   Immersive View: Search
+   style declarations for viewImmersive.xhtml (search-in-document panel)
+   ==============================================================*/
+
 .immersive {
     &__panel .widget-search-in-current-item {
         .form-group {
@@ -9,9 +14,9 @@
             align-items: stretch;
             overflow: hidden;
             border: 1px solid @immersive-divider;
-            border-radius: 8px;
+            border-radius: @immersive-radius-lg;
             background: transparent;
-            transition: border-color 0.15s ease;
+            transition: border-color @immersive-transition;
 
             &:focus-within {
                 border-color: @immersive-accent;
@@ -41,7 +46,7 @@
             }
 
             &:focus-visible {
-                .immersive-focus-ring();
+                .mx-immersive-focus-ring();
             }
         }
 
@@ -54,13 +59,13 @@
             border: 0;
             background: transparent;
             color: @immersive-chrome-fg;
-            font-size: 20px;
+            font-size: 2rem;
             line-height: 1;
             opacity: 0.75;
             cursor: pointer;
             transition:
-                opacity 0.15s ease,
-                color 0.15s ease;
+                opacity @immersive-transition,
+                color @immersive-transition;
 
             &[hidden] {
                 display: none;
@@ -91,8 +96,8 @@
             color: @immersive-chrome-fg;
             cursor: pointer;
             transition:
-                background-color 0.15s ease,
-                color 0.15s ease;
+                background-color @immersive-transition,
+                color @immersive-transition;
 
             &:hover,
             &:focus {
@@ -136,29 +141,18 @@
         gap: 4px;
     }
 
-    &__results-navbtn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
-        height: 30px;
-        padding: 0;
-        border: 0;
-        border-radius: 6px;
-        background: transparent;
-        color: @immersive-chrome-fg;
-        cursor: pointer;
+    &__results-nav-btn {
+        .mx-immersive-icon-button(30px);
         transition:
-            color 0.15s ease,
-            background-color 0.15s ease;
+            color @immersive-transition,
+            background-color @immersive-transition;
 
         &:hover {
             color: @immersive-accent;
-            background-color: @immersive-chrome-hover-bg;
         }
     }
 
-    &__results-navicon {
+    &__results-nav-icon {
         width: 18px;
         height: 18px;
     }
@@ -172,22 +166,29 @@
         list-style: none;
     }
 
+    /* Hits are <button>s (keyboard access): reset the UA button styles. */
     &__results-item {
         display: flex;
         gap: 10px;
+        width: 100%;
         padding: 9px 10px;
-        border-radius: 8px;
+        border: 0;
         border-left: 2px solid transparent;
+        border-radius: @immersive-radius-lg;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        text-align: left;
         cursor: pointer;
         transition:
-            background-color 0.15s ease,
-            border-color 0.15s ease;
+            background-color @immersive-transition,
+            border-color @immersive-transition;
 
         &:hover {
             background-color: @immersive-chrome-hover-bg;
         }
 
-        &.is-active {
+        &--active {
             background-color: @immersive-chrome-hover-bg;
             border-left-color: @immersive-accent;
         }
@@ -203,11 +204,7 @@
     }
 
     &__results-snippet {
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
+        .mx-line-clamp(2);
         line-height: 1.45;
     }
 
@@ -222,4 +219,16 @@
         color: @immersive-chrome-fg;
         opacity: 0.75;
     }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

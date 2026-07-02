@@ -1,29 +1,23 @@
+/* ==============================================================
+   Immersive View: Bottom Navigation
+   style declarations for viewImmersive.xhtml (bottom bar and page chevrons)
+   ==============================================================*/
+
 .immersive {
     &__chevron {
+        .mx-immersive-overlay-button(48px);
         position: absolute;
         top: 50%;
         z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 48px;
-        height: 48px;
-        padding: 0;
-        border: 0;
         border-radius: 50%;
-        background: transparent;
-        color: @immersive-canvas-fg;
-        cursor: pointer;
-        opacity: 0.85;
-        filter: @immersive-overlay-shadow;
+        background-color: @immersive-chevron-scrim;
         transform: translateY(-50%);
         transition:
-            opacity 0.15s ease,
-            transform 0.15s ease;
+            opacity @immersive-transition,
+            transform @immersive-transition;
 
         &:hover {
             color: @immersive-canvas-fg;
-            opacity: 1;
         }
         &[hidden] {
             display: none;
@@ -51,7 +45,7 @@
         gap: 2px;
         height: 40px;
         padding: 0 4px;
-        .immersive-floating();
+        .mx-immersive-floating();
         transform: translateX(-50%);
     }
 
@@ -67,9 +61,7 @@
     }
 
     &__bar-btn {
-        .immersive-icon-button();
-        width: 32px;
-        height: 32px;
+        .mx-immersive-icon-button(32px);
     }
 
     &__bar-icon {
@@ -85,4 +77,16 @@
         color: @immersive-chrome-fg;
         white-space: nowrap;
     }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

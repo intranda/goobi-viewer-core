@@ -1004,7 +1004,7 @@
             if (!item) return;
             this._highlights = (rects || []).map((r) => {
                 const el = document.createElement('div');
-                el.className = r.active ? 'immersive__hl immersive__hl--active' : 'immersive__hl';
+                el.className = r.active ? 'immersive__highlight immersive__highlight--active' : 'immersive__highlight';
                 osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
                 return el;
             });
@@ -2240,7 +2240,7 @@
                             granularity = b.dataset.immersiveGranularity;
                             granularityBtns.forEach((x) => {
                                 const on = x === b;
-                                x.classList.toggle('is-active', on);
+                                x.classList.toggle('immersive__fulltext-granularity-btn--active', on);
                                 x.setAttribute('aria-pressed', String(on));
                             });
                             if (fulltextPanel.classList.contains('is-open')) loadFulltext();
@@ -2477,7 +2477,7 @@
             btn.setAttribute('aria-selected', 'false');
             btn.tabIndex = -1;
             const num = document.createElement('span');
-            num.className = 'immersive__page-dropdown-num';
+            num.className = 'immersive__page-dropdown-number';
             num.textContent = `${order + 1}:`;
             const lbl = document.createElement('span');
             lbl.className = 'immersive__page-dropdown-item-label';
@@ -2493,7 +2493,7 @@
             let rovingSet = false;
             items.forEach((btn) => {
                 const on = current.includes(Number(btn.dataset.order));
-                btn.classList.toggle('is-active', on);
+                btn.classList.toggle('immersive__page-dropdown-item--active', on);
                 btn.setAttribute('aria-selected', on ? 'true' : 'false');
                 btn.tabIndex = on && !rovingSet ? 0 : -1;
                 if (on) rovingSet = true;
@@ -2526,7 +2526,7 @@
             dropdown.hidden = false;
             trigger.setAttribute('aria-expanded', 'true');
             document.addEventListener('pointerdown', onOutside, true);
-            const active = list.querySelector('.immersive__page-dropdown-item.is-active');
+            const active = list.querySelector('.immersive__page-dropdown-item--active');
             if (active) {
                 list.scrollTop = Math.max(0, active.offsetTop - list.offsetTop - (list.clientHeight - active.clientHeight) / 2);
             }
@@ -2644,7 +2644,7 @@
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'immersive__results-item' + (i === searchState.activeIndex ? ' is-active' : '');
+                btn.className = 'immersive__results-item' + (i === searchState.activeIndex ? ' immersive__results-item--active' : '');
                 const page = document.createElement('span');
                 page.className = 'immersive__results-page';
                 page.textContent = h.page;

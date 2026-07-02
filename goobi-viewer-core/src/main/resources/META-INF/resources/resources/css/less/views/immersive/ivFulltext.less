@@ -1,3 +1,8 @@
+/* ==============================================================
+   Immersive View: Fulltext
+   style declarations for viewImmersive.xhtml (fulltext panel and text-image highlights)
+   ==============================================================*/
+
 .immersive {
     &__panel--fulltext {
         padding: 16px 16px 18px;
@@ -32,15 +37,15 @@
         }
     }
 
-    &__hl {
+    &__highlight {
         border: 2px solid @immersive-accent;
         background-color: transparent;
         pointer-events: none;
         border-radius: 1px;
-        transition: background-color 0.15s ease;
+        transition: background-color @immersive-transition;
     }
 
-    &__hl--active {
+    &__highlight--active {
         background-color: @immersive-highlight-bg;
     }
 
@@ -91,7 +96,7 @@
         font-size: @fontSmall;
         cursor: pointer;
 
-        &.is-active,
+        &--active,
         &[aria-pressed='true'] {
             border-color: @immersive-accent;
             color: @immersive-accent;
@@ -102,4 +107,16 @@
             cursor: not-allowed;
         }
     }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

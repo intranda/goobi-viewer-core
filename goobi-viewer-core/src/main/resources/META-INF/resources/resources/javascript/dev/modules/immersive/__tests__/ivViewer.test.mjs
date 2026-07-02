@@ -368,8 +368,8 @@ describe('IvViewer overlays (search highlights + text regions)', () => {
 
         expect(osd.addOverlay).toHaveBeenCalledTimes(2);
         const [first, second] = osd.addOverlay.mock.calls.map((c) => c[0]);
-        expect(first.element.className).toBe('immersive__hl');
-        expect(second.element.className).toBe('immersive__hl immersive__hl--active');
+        expect(first.element.className).toBe('immersive__highlight');
+        expect(second.element.className).toBe('immersive__highlight immersive__highlight--active');
         expect(first.location).toEqual({ x: 1, y: 2, w: 3, h: 4 });
 
         v.clearHighlights();
