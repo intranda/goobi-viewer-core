@@ -15,8 +15,9 @@ For ambigious sources, the additional opts.type property determines how the sour
 
 <thumbnails>
 		<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''} {getPageStatus(index)}" each="{canvas, index in thumbnails}">
-			<a class="thumbnails-image-link" href="{getLink(canvas)}" aria-label="{getAriaLabel(canvas, index)}" tabindex="{getLink(canvas) ? undefined : '0'}" role="{getLink(canvas) ? undefined : 'link'}" onclick="{handleClickOnImage}" onkeydown="{handleKeydownOnImage}">
-				<img class="thumbnails-image" alt="{getImageAlt(canvas)}" src="{getImage(canvas)}" loading="lazy" />
+			<a class="thumbnails-image-link" href="{getLink(canvas)}" aria-label="{getAriaLabel(canvas, index)}" aria-current="{this.opts.index == index ? 'page' : undefined}" tabindex="{needsKeyboardFocus(canvas) ? '0' : undefined}" role="{needsKeyboardFocus(canvas) ? 'link' : undefined}" onclick="{handleClickOnImage}" onkeydown="{handleKeydownOnImage}">
+				<!-- the link carries the accessible name via aria-label; a speaking alt would be read twice by screen readers -->
+				<img class="thumbnails-image" alt="" src="{getImage(canvas)}" loading="lazy" />
 			<div class="thumbnails-image-overlay">
 				<div class="thumbnails-label">{getValue(canvas.label)}</div>
 			</div>
@@ -142,31 +143,33 @@ getValue(value) {
 	return viewerJS.iiif.getValue(value, this.language, this.language == "en" ? "de" : "en");
 }
 
-getObjectTitle() {
-	try {
-	return document.querySelector('.archives__object-title').innerHTML;
-	}
-	catch (e) {
-		// console.log(e);
-		return '';
-	}
-}
-
-// accessible name for the thumbnail link: prefer the canvas label, fall back to page number
+/**
+ * Returns the accessible name for a thumbnail link: the canvas label, or the
+ * 1-based page number as fallback, prefixed with the translated opts.msg.page
+ * text if the mounting code provides one.
+ * @param {Object} canvas - IIIF canvas the thumbnail is created from
+ * @param {Number} index - zero-based thumbnail index
+ * @returns {String} the accessible name for the link
+ */
 getAriaLabel(canvas, index) {
 	let label = this.getValue(canvas.label);
-	return (label && label.trim()) ? label : (index + 1) + "";
+	label = typeof label === "string" ? label.trim() : "";
+	if(label) {
+		return label;
+	}
+	let pageNumber = String(index + 1);
+	return this.opts.msg && this.opts.msg.page ? this.opts.msg.page + " " + pageNumber : pageNumber;
 }
 
-// alt text for the image: reuse the object title only when it is present, otherwise the
-// page label -- never build the ":  - " junk that results from empty title/label parts
-getImageAlt(canvas) {
-	let title = this.getObjectTitle();
-	let label = this.getValue(canvas.label);
-	if(title && label) {
-		return title + ": " + label;
-	}
-	return label || title || "";
+/**
+ * Determines whether a thumbnail link must be made focusable and
+ * keyboard-activatable manually: only when it has no real href and clicks are
+ * handled by the actionlistener instead.
+ * @param {Object} canvas - IIIF canvas the thumbnail is created from
+ * @returns {Boolean} true if tabindex, role and Enter activation are needed
+ */
+needsKeyboardFocus(canvas) {
+	return !this.getLink(canvas) && this.opts.actionlistener != undefined;
 }
 
 getImage(canvas) {
@@ -220,8 +223,13 @@ getHomepage(canvas) {
 	}
 }
 
+/**
+ * Notifies the actionlistener about an activated thumbnail. Modified clicks
+ * (Ctrl/Cmd/Shift) keep the browser default so "open in new tab" still works.
+ * @param {Event} event - click event, or a keydown event delegated by handleKeydownOnImage
+ */
 handleClickOnImage(event) {
-	if(this.opts.actionlistener) {
+	if(this.opts.actionlistener && !(event.ctrlKey || event.metaKey || event.shiftKey)) {
 		this.opts.actionlistener.next({
 			action: "clickImage",
 			value: event.item.index
@@ -233,16 +241,17 @@ handleClickOnImage(event) {
 	event.preventUpdate = true;
 }
 
-// when the link has no real href it is focusable via tabindex/role -- activate it with
-// Enter/Space so it is keyboard-operable like a native link
+/**
+ * Activates a thumbnail link that has no real href (see needsKeyboardFocus)
+ * with the Enter key, so it is keyboard-operable like a native link.
+ * Enter only: the element announces itself as a link, not as a button.
+ * @param {Event} event - keydown event from the thumbnail link
+ */
 handleKeydownOnImage(event) {
-	if(event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
-		if(!this.getLink(event.item.canvas)) {
-			event.preventDefault();
-			this.handleClickOnImage(event);
-		}
-	} else {
-		event.preventUpdate = true;
+	event.preventUpdate = true;
+	if(event.key === "Enter" && this.needsKeyboardFocus(event.item.canvas)) {
+		event.preventDefault();
+		this.handleClickOnImage(event);
 	}
 }
 

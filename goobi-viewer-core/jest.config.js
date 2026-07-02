@@ -83,6 +83,7 @@ module.exports = {
             rootDir: repoRoot,
             testMatch: [
                 '<rootDir>/goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/**/__tests__/**/*.test.js',
+                '<rootDir>/goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/tags/**/__tests__/**/*.test.js',
             ],
             // Binds real jQuery to jsdom's window for every test file in
             // this project. See jest-setup-browser.js for the rationale and
