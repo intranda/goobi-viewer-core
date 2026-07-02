@@ -805,124 +805,16 @@
     }
 
     /**
-     * Pure helper functions for the immersive image viewer's tile-source window.
+     * Pure page/spread window math for the immersive image viewer.
      *
      * No DOM, no network, no OpenSeadragon dependencies — safe to unit-test and
      * to import in any context.
      */
 
     /**
-     * Resolve a service object or array to a single id string.
-     * Returns null when no id can be found.
-     *
-     * @param {object|Array} service
-     * @param {'@id'|'id'} primaryKey   - preferred property name
-     * @param {'@id'|'id'} fallbackKey  - secondary property name
-     * @returns {string|null}
-     */
-    function resolveServiceId(service, primaryKey, fallbackKey) {
-        if (!service) return null;
-        const entry = Array.isArray(service) ? service[0] : service;
-        if (!entry) return null;
-        const id = entry[primaryKey] || entry[fallbackKey];
-        return typeof id === 'string' && id.length > 0 ? id : null;
-    }
-
-    /**
-     * Resolve a IIIF canvas `label` to a single display string. Handles a plain string,
-     * a v2 `{'@value'}` object, an array of either, and a v3 language map
-     * (`{ de: ['…'], none: ['…'] }`). Returns the first non-empty value found, or ''.
-     *
-     * @param {string|object|Array} label
-     * @returns {string}
-     */
-    function resolveCanvasLabel(label) {
-        if (label == null) return '';
-        if (typeof label === 'string') return label;
-        if (Array.isArray(label)) {
-            for (const item of label) {
-                const v = resolveCanvasLabel(item);
-                if (v) return v;
-            }
-            return '';
-        }
-        if (typeof label === 'object') {
-            if (typeof label['@value'] === 'string' && label['@value'].length > 0) return label['@value'];
-            for (const v of Object.values(label)) {
-                const resolved = resolveCanvasLabel(v);
-                if (resolved) return resolved;
-            }
-        }
-        return '';
-    }
-
-    /**
-     * Extracts ordered `{id, label}` entries from a manifest's canvases (v2 sequences/
-     * canvases or v3 items). Canvases without a resolvable image-service id are skipped,
-     * so the result stays index-aligned for both the service URLs and the page labels.
-     *
-     * @param {object} manifest
-     * @returns {Array<{id: string, label: string}>}
-     */
-    function parseManifestCanvasEntries(manifest) {
-        if (!manifest || typeof manifest !== 'object') return [];
-
-        if (Array.isArray(manifest.sequences) && manifest.sequences.length > 0) {
-            const canvases = manifest.sequences[0].canvases;
-            if (!Array.isArray(canvases)) return [];
-
-            const entries = [];
-            for (const canvas of canvases) {
-                try {
-                    const id = resolveServiceId(canvas.images[0].resource.service, '@id', 'id');
-                    if (id !== null) entries.push({ id, label: resolveCanvasLabel(canvas.label) });
-                } catch {}
-            }
-            return entries;
-        }
-
-        if (Array.isArray(manifest.items) && manifest.items.length > 0) {
-            const entries = [];
-            for (const canvas of manifest.items) {
-                try {
-                    const id = resolveServiceId(canvas.items[0].items[0].body.service, 'id', '@id');
-                    if (id !== null) entries.push({ id, label: resolveCanvasLabel(canvas.label) });
-                } catch {}
-            }
-            return entries;
-        }
-
-        return [];
-    }
-
-    /**
-     * Extracts the ordered list of IIIF image-service base IDs from a manifest.
-     *
-     * Supports IIIF Presentation API v2 (sequences/canvases) and v3 (items).
-     * Canvases that lack a resolvable service id are silently skipped.
-     *
-     * @param {object} manifest - Parsed IIIF Presentation manifest.
-     * @returns {string[]} Ordered array of image-service id strings.
-     */
-    function parseManifestImageServices(manifest) {
-        return parseManifestCanvasEntries(manifest).map((e) => e.id);
-    }
-
-    /**
-     * Extracts the ordered list of canvas labels from a manifest, index-aligned with
-     * {@link parseManifestImageServices}. Canvases without a resolvable label yield ''.
-     *
-     * @param {object} manifest - Parsed IIIF Presentation manifest.
-     * @returns {string[]} Ordered array of label strings (one per page).
-     */
-    function parseManifestPageLabels(manifest) {
-        return parseManifestCanvasEntries(manifest).map((e) => e.label);
-    }
-
-    /**
      * Returns the 0-based page indices shown together for the spread that contains
      * `order`. Book layout (LTR): the cover (page 0) stands alone, then pages are
-     * paired (1,2),(3,4),… An odd final page stands alone. Pure + tested.
+     * paired (1,2),(3,4),… An odd final page stands alone.
      *
      * @param {number} order  0-based page index
      * @param {number} total  total page count
@@ -942,8 +834,8 @@
     }
 
     /**
-     * Page indices that make up the frame containing `order`.
-     * Single mode: [order]. Double mode: the spread (computeSpread). Pure.
+     * Page indices that make up the frame containing `order`: just the page in
+     * single mode, the spread in double mode.
      *
      * @param {number} order  0-based page index
      * @param {number} total  total page count
@@ -957,7 +849,7 @@
 
     /**
      * Page indices to keep resident (current frame + the immediately adjacent
-     * frames) so neighbour navigation is instant. Deduped, ascending, in range. Pure.
+     * frames) so neighbour navigation is instant.
      *
      * @param {number} order  0-based page index
      * @param {number} total  total page count
@@ -990,19 +882,29 @@
         return serviceId.endsWith('/info.json') ? serviceId : `${serviceId}/info.json`;
     }
 
-    /** Tweens one TiledImage's opacity 0→1 while fading another 1→0 (rAF). */
-    function _crossfade(incoming, outgoing, durationMs) {
+    /**
+     * Runs a rAF tween over `durationMs`, calling `onFrame` with the progress 0→1
+     * each frame (a non-positive duration jumps straight to 1). Resolves when done.
+     */
+    function _tween(durationMs, onFrame) {
         return new Promise((resolve) => {
             let start = null;
             const step = (ts) => {
                 if (start === null) start = ts;
                 const t = durationMs <= 0 ? 1 : Math.min(1, (ts - start) / durationMs);
-                if (incoming) incoming.setOpacity(t);
-                if (outgoing) outgoing.setOpacity(1 - t);
+                onFrame(t);
                 if (t < 1) requestAnimationFrame(step);
                 else resolve();
             };
             requestAnimationFrame(step);
+        });
+    }
+
+    /** Tweens one TiledImage's opacity 0→1 while fading another 1→0 (rAF). */
+    function _crossfade(incoming, outgoing, durationMs) {
+        return _tween(durationMs, (t) => {
+            if (incoming) incoming.setOpacity(t);
+            if (outgoing) outgoing.setOpacity(1 - t);
         });
     }
 
@@ -1018,9 +920,14 @@
         return band;
     }
 
-    /** Single-image sequence config (mirrors zoomableImage.mjs); _arrangeImageSequence reads it on every open(). */
-    const _sequence = { columns: 1, useWindowing: true, windowSize: 100, windowExpandThreshold: 10, windowExpandSize: 50 };
+    /**
+     * Default single-image sequence config (mirrors zoomableImage.mjs); _arrangeImageSequence
+     * reads it on every open(). Copied per instance because _open() mutates `columns`.
+     */
+    const SEQUENCE_DEFAULTS = { columns: 1, useWindowing: true, windowSize: 100, windowExpandThreshold: 10, windowExpandSize: 50 };
     const PREFETCH_RADIUS = 1;
+    const ZOOM_STEP = 1.5;
+    const FADE_MS = 160;
 
     /**
      * Last-resort release for the navigation lock. Double-page navigation re-opens the library
@@ -1053,11 +960,11 @@
             this._anchor = null;
             this._preloaded = new Map();
             this._navigating = false;
-            this._queuedNav = null; // latest page order requested while a navigation is running
-            this._queuedReopen = false; // a mode toggle requested while navigating (reopen on release)
+            this._queuedNav = null;
+            this._queuedReopen = false;
             this._navWatchdogMs = opts.navWatchdogMs ?? NAV_WATCHDOG_MS;
             this._highlights = [];
-            this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 160;
+            this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
             this.onPageChange = new Emitter();
             this.onLoaded = new Emitter();
 
@@ -1066,14 +973,12 @@
                 fittingMode: 'fixed',
                 margins: { top: 64, bottom: 72, left: 64, right: 64 },
                 zoom: { enabled: true, max: opts.maxZoom },
-                sequence: _sequence,
+                sequence: { ...SEQUENCE_DEFAULTS },
                 navigator: { enabled: false },
             });
             this.zoom = new ImageView.Controls.Zoom(this.viewer);
             this.rotation = new ImageView.Controls.Rotation(this.viewer);
 
-            // Left/right arrows page the work instead of panning (preventDefaultAction skips OSD's
-            // horizontal pan for that key); all other keys keep OSD's native handling.
             this.viewer.openseadragon.addHandler('canvas-key', (e) => {
                 const key = e.originalEvent.key;
                 if (key === 'ArrowRight') this.next();
@@ -1083,15 +988,15 @@
                 e.originalEvent.preventDefault();
             });
 
-            this._open(this.current).then(() => {
-                this._refreshPreload();
-                this.onLoaded.emit(this.current);
-            });
+            this._open(this.current)
+                .then(() => {
+                    this._refreshPreload();
+                    this.onLoaded.emit(this.current);
+                })
+                .catch((e) => console.error('immersive viewer initial open failed', e));
         }
 
-        // --- search highlights ---
-
-        /** Zeichnet Such-Treffer-Rechtecke (Bildpixel) als Overlays über das aktuelle Bild. */
+        /** Draws search-hit rectangles (image pixel coordinates) as overlays on the current image. */
         setHighlights(rects) {
             this.clearHighlights();
             const osd = this.viewer.openseadragon;
@@ -1105,14 +1010,12 @@
             });
         }
 
-        /** Entfernt alle Treffer-Overlays. */
+        /** Removes all search-hit overlays (leaves text regions untouched). */
         clearHighlights() {
             const osd = this.viewer.openseadragon;
             (this._highlights || []).forEach((el) => osd.removeOverlay(el));
             this._highlights = [];
         }
-
-        // --- text-region overlays (hover linking, separate from search highlights) ---
 
         /**
          * Draws OCR line boxes (image pixels) as hoverable, id-tagged overlays and
@@ -1143,16 +1046,17 @@
             this._textRegions = [];
         }
 
-        // --- state ---
-
+        /** Current 0-based page order (the spread leader in double mode). */
         getCurrentOrder() {
             return this.current;
         }
 
+        /** Total page count. */
         getPageCount() {
             return this.total;
         }
 
+        /** Whether book-spread (double-page) mode is active. */
         isDoublePage() {
             return this.double;
         }
@@ -1162,14 +1066,9 @@
             return this.double ? computeSpread(this.current, this.total) : [this.current];
         }
 
-        // --- navigation ---
-
         /** Navigate to the page/spread containing `order` (snaps to the spread leader in double mode). */
         goToPage(order) {
             const target = Math.max(0, Math.min(order, this.total - 1));
-            // One navigation runs at a time. A click during an in-flight transition is remembered
-            // as the latest target (not dropped, not run concurrently) and honoured on release, so
-            // rapid TOC clicking lands on the last page instead of racing overlapping reopens.
             if (this._navigating) {
                 this._queuedNav = target;
                 return;
@@ -1184,6 +1083,7 @@
             this._crossfadeTo(target);
         }
 
+        /** Pages forward: the next page, or the page after the current spread in double mode. */
         next() {
             if (this.double) {
                 const pages = computeSpread(this.current, this.total);
@@ -1193,6 +1093,7 @@
             }
         }
 
+        /** Pages one page back (snaps to the containing spread in double mode). */
         prev() {
             this.goToPage(this.current - 1);
         }
@@ -1224,17 +1125,14 @@
             const watchdog = setTimeout(() => {
                 try {
                     if (onStuck) onStuck();
-                } catch (e) {}
+                } catch {}
                 release();
             }, this._navWatchdogMs);
-            // Invoke `run` synchronously so the underlying open is dispatched immediately (an
-            // async `run` executes up to its first await), then release once it settles -- or
-            // the watchdog fires if it never does.
             try {
                 Promise.resolve(run())
                     .catch(() => {})
                     .finally(release);
-            } catch (e) {
+            } catch {
                 release();
             }
         }
@@ -1244,14 +1142,12 @@
             this._withNavLock(() => this._open(this.current));
         }
 
-        // --- view controls ---
-
         zoomIn() {
-            this.zoom.zoomBy(1.5);
+            this.zoom.zoomBy(ZOOM_STEP);
         }
 
         zoomOut() {
-            this.zoom.zoomBy(1 / 1.5);
+            this.zoom.zoomBy(1 / ZOOM_STEP);
         }
 
         rotateLeft() {
@@ -1276,9 +1172,6 @@
         toggleDoublePage() {
             this.double = !this.double;
             this.current = this.getCurrentPages()[0];
-            // Never re-open concurrently with an in-flight navigation: two live OpenSeadragon
-            // instances on one element race and can drop the 'open' event. Defer to the lock's
-            // release if a navigation is running.
             if (this._navigating) {
                 this._queuedReopen = true;
             } else {
@@ -1286,8 +1179,6 @@
             }
             return this.double;
         }
-
-        // --- single-page crossfade ---
 
         /**
          * Single-page navigation: fade the (preloaded or freshly added) target page in
@@ -1371,14 +1262,12 @@
                     p.then((item) => {
                         try {
                             this.viewer.openseadragon.world.removeItem(item);
-                        } catch (e) {}
+                        } catch {}
                     }).catch(() => {});
                     this._preloaded.delete(order);
                 }
             }
         }
-
-        // --- double-page spread (snapshot crossfade) ---
 
         /**
          * Double-page navigation: freeze the current spread as a snapshot overlay, let the
@@ -1394,7 +1283,7 @@
                     this._fadeOverlay(overlay);
                     this._prewarmSpreads();
                 },
-                // Watchdog cleanup: if the reopen never settles, drop the frozen snapshot too.
+                // onStuck: drop the frozen snapshot if the reopen never settles.
                 () => {
                     if (overlay) overlay.remove();
                 }
@@ -1418,7 +1307,7 @@
             overlay.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;';
             try {
                 overlay.getContext('2d').drawImage(src, 0, 0);
-            } catch (e) {
+            } catch {
                 return null;
             }
             if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
@@ -1429,16 +1318,9 @@
         /** Fades an overlay element out over `_fadeMs`, then removes it. */
         _fadeOverlay(overlay) {
             if (!overlay) return;
-            let start = null;
-            const dur = this._fadeMs;
-            const step = (ts) => {
-                if (start === null) start = ts;
-                const t = dur <= 0 ? 1 : Math.min(1, (ts - start) / dur);
+            _tween(this._fadeMs, (t) => {
                 overlay.style.opacity = String(1 - t);
-                if (t < 1) requestAnimationFrame(step);
-                else overlay.remove();
-            };
-            requestAnimationFrame(step);
+            }).then(() => overlay.remove());
         }
 
         /**
@@ -1455,8 +1337,6 @@
                 osd.addTiledImage({ tileSource: toTileSource(this.services[p]), opacity: 0, preload: true });
             }
         }
-
-        // --- loading ---
 
         /**
          * Loads the page(s) for `order` via the library (a single page, or a columns:2
@@ -1499,13 +1379,129 @@
     const cache = new Map();
 
     /**
-     * Fetches (and memoizes per pi) the parsed IIIF Presentation manifest for a PI, so
-     * services and labels share a single network request.
+     * Resolves a service object or array to a single id string.
      *
-     * @param {string} pi       - Goobi viewer process identifier.
-     * @param {string} apiBase  - Base URL of the REST API (no trailing slash).
-     * @param {Function} fetchFn - fetch-compatible function (injectable for tests).
-     * @returns {Promise<object>} the parsed manifest JSON.
+     * @param {object|Array} service
+     * @param {'@id'|'id'} primaryKey   preferred property name
+     * @param {'@id'|'id'} fallbackKey  secondary property name
+     * @returns {string|null} the id, or null when none can be found
+     */
+    function _resolveServiceId(service, primaryKey, fallbackKey) {
+        if (!service) return null;
+        const entry = Array.isArray(service) ? service[0] : service;
+        if (!entry) return null;
+        const id = entry[primaryKey] || entry[fallbackKey];
+        return typeof id === 'string' && id.length > 0 ? id : null;
+    }
+
+    /**
+     * Resolves a IIIF canvas `label` (plain string, v2 `{'@value'}`, array, or v3
+     * language map) to one display string: preferred language first, then
+     * `none`/`@none`, then the first non-empty value. Returns '' when nothing matches.
+     *
+     * @param {string|object|Array} label
+     * @param {string} [lang] preferred language code (e.g. the UI language)
+     * @returns {string}
+     */
+    function _resolveCanvasLabel(label, lang) {
+        if (label == null) return '';
+        if (typeof label === 'string') return label;
+        if (Array.isArray(label)) {
+            for (const item of label) {
+                const v = _resolveCanvasLabel(item, lang);
+                if (v) return v;
+            }
+            return '';
+        }
+        if (typeof label === 'object') {
+            if (typeof label['@value'] === 'string' && label['@value'].length > 0) return label['@value'];
+            for (const key of [lang, 'none', '@none']) {
+                if (key && label[key]) {
+                    const v = _resolveCanvasLabel(label[key], lang);
+                    if (v) return v;
+                }
+            }
+            for (const v of Object.values(label)) {
+                const resolved = _resolveCanvasLabel(v, lang);
+                if (resolved) return resolved;
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Extracts ordered `{id, label}` entries from a manifest's canvases (v2 sequences/
+     * canvases or v3 items). Canvases without a resolvable image-service id are skipped
+     * entirely, so service URLs and page labels stay index-aligned.
+     *
+     * @param {object} manifest
+     * @param {string} [lang] preferred label language
+     * @returns {Array<{id: string, label: string}>}
+     */
+    function _parseManifestCanvasEntries(manifest, lang) {
+        if (!manifest || typeof manifest !== 'object') return [];
+
+        if (Array.isArray(manifest.sequences) && manifest.sequences.length > 0) {
+            const canvases = manifest.sequences[0].canvases;
+            if (!Array.isArray(canvases)) return [];
+
+            const entries = [];
+            for (const canvas of canvases) {
+                try {
+                    const id = _resolveServiceId(canvas.images[0].resource.service, '@id', 'id');
+                    if (id !== null) entries.push({ id, label: _resolveCanvasLabel(canvas.label, lang) });
+                } catch {}
+            }
+            return entries;
+        }
+
+        if (Array.isArray(manifest.items) && manifest.items.length > 0) {
+            const entries = [];
+            for (const canvas of manifest.items) {
+                try {
+                    const id = _resolveServiceId(canvas.items[0].items[0].body.service, 'id', '@id');
+                    if (id !== null) entries.push({ id, label: _resolveCanvasLabel(canvas.label, lang) });
+                } catch {}
+            }
+            return entries;
+        }
+
+        return [];
+    }
+
+    /**
+     * Extracts the ordered list of IIIF image-service base IDs from a manifest
+     * (Presentation API v2 and v3).
+     *
+     * @param {object} manifest parsed IIIF Presentation manifest
+     * @returns {string[]}
+     */
+    function parseManifestImageServices(manifest) {
+        return _parseManifestCanvasEntries(manifest).map((e) => e.id);
+    }
+
+    /**
+     * Extracts the ordered list of canvas labels from a manifest, index-aligned with
+     * {@link parseManifestImageServices}. Canvases without a resolvable label yield ''.
+     *
+     * @param {object} manifest parsed IIIF Presentation manifest
+     * @param {string} [lang]   preferred label language for v3 language maps
+     * @returns {string[]}
+     */
+    function parseManifestPageLabels(manifest, lang) {
+        return _parseManifestCanvasEntries(manifest, lang).map((e) => e.label);
+    }
+
+    /**
+     * Fetches (and memoizes per pi) the parsed IIIF Presentation manifest, so
+     * services and labels share a single network request. A failed request is
+     * evicted from the cache so a transient error doesn't poison it; the
+     * rejection is rethrown.
+     *
+     * @param {string} pi        Goobi viewer record identifier
+     * @param {string} apiBase   base URL of the REST API (no trailing slash)
+     * @param {Function} fetchFn fetch-compatible function (injectable for tests)
+     * @returns {Promise<object>} the parsed manifest JSON
      */
     function loadManifest(pi, apiBase, fetchFn = fetch) {
         if (cache.has(pi)) {
@@ -1522,7 +1518,6 @@
 
         cache.set(pi, promise);
 
-        // Evict on failure so a transient error doesn't poison the cache; the rejection is rethrown.
         return promise.catch((e) => {
             cache.delete(pi);
             throw e;
@@ -1532,9 +1527,9 @@
     /**
      * Returns the ordered list of image-service base URLs for all pages of a record.
      *
-     * @param {string} pi       - Goobi viewer process identifier.
-     * @param {string} apiBase  - Base URL of the REST API (no trailing slash).
-     * @param {Function} fetchFn - fetch-compatible function (injectable for tests).
+     * @param {string} pi        Goobi viewer record identifier
+     * @param {string} apiBase   base URL of the REST API (no trailing slash)
+     * @param {Function} fetchFn fetch-compatible function (injectable for tests)
      * @returns {Promise<string[]>}
      */
     function loadPageServices(pi, apiBase, fetchFn = fetch) {
@@ -1543,15 +1538,16 @@
 
     /**
      * Returns the ordered list of canvas labels for all pages, index-aligned with
-     * {@link loadPageServices}. Shares the memoized manifest fetch (no extra request).
+     * {@link loadPageServices}. Shares the memoized manifest fetch.
      *
-     * @param {string} pi       - Goobi viewer process identifier.
-     * @param {string} apiBase  - Base URL of the REST API (no trailing slash).
-     * @param {Function} fetchFn - fetch-compatible function (injectable for tests).
+     * @param {string} pi        Goobi viewer record identifier
+     * @param {string} apiBase   base URL of the REST API (no trailing slash)
+     * @param {Function} fetchFn fetch-compatible function (injectable for tests)
+     * @param {string} [lang]    preferred label language for v3 language maps
      * @returns {Promise<string[]>}
      */
-    function loadPageLabels(pi, apiBase, fetchFn = fetch) {
-        return loadManifest(pi, apiBase, fetchFn).then(parseManifestPageLabels);
+    function loadPageLabels(pi, apiBase, fetchFn = fetch, lang) {
+        return loadManifest(pi, apiBase, fetchFn).then((manifest) => parseManifestPageLabels(manifest, lang));
     }
 
     function _parseXywh(on) {
@@ -1566,13 +1562,11 @@
     }
 
     /**
-     * Maps a IIIF/W3C `sc:AnnotationList` (one annotation per OCR text line) to
-     * structured lines that keep the line box from the annotation `on` selector
-     * (a `xywh=x,y,w,h` fragment, found on `on` as a string, on `on['@id']`, or in
-     * `on.selector.value`). Lines without a box get `rect: null`. The `id` is the
-     * annotation `@id` when present, else a per-page index fallback `line-${i}`.
+     * Maps a IIIF/W3C `sc:AnnotationList` to one structured line per OCR annotation:
+     * the box comes from the `xywh` fragment on the annotation's `on` selector
+     * (rect: null without one), the id from `@id` with a per-page index fallback.
      *
-     * @param {object} annotationList - the parsed `sc:AnnotationList` JSON.
+     * @param {object} annotationList the parsed `sc:AnnotationList` JSON
      * @returns {{id:string, chars:string, rect:{x:number,y:number,w:number,h:number}|null}[]}
      */
     function parsePageLines(annotationList) {
@@ -1585,16 +1579,17 @@
     }
 
     /**
-     * Fetches the OCR fulltext of a single page as structured lines (chars + box).
+     * Fetches one page's text annotations and parses them into structured lines.
      *
      * @param {string} pi
      * @param {string} apiBase
-     * @param {number} order    - 0-based page order; the endpoint is 1-based, so order + 1.
+     * @param {number} order    0-based page order; the endpoint is 1-based, so order + 1
      * @param {Function} fetchFn
-     * @returns {Promise<{id:string, chars:string, rect:object|null}[]>} lines, or [] on failure.
+     * @param {string} query    optional query string appended to the endpoint URL
+     * @returns {Promise<{id:string, chars:string, rect:object|null}[]>} lines, or [] on failure
      */
-    async function loadPageLines(pi, apiBase, order, fetchFn = fetch) {
-        const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/`);
+    async function _fetchPageLines(pi, apiBase, order, fetchFn, query = '') {
+        const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/${query}`);
         if (!res.ok) {
             return [];
         }
@@ -1602,24 +1597,33 @@
     }
 
     /**
-     * Granularity dispatch for the hover-linking panel. `'line'` returns the page's
-     * OCR lines with boxes; `'word'` fetches the same page-text endpoint with
-     * `?granularity=word` and parses the result through `parsePageLines`.
+     * Fetches the OCR fulltext of a single page as structured lines (chars + box).
+     *
+     * @param {string} pi
+     * @param {string} apiBase
+     * @param {number} order    0-based page order; the endpoint is 1-based, so order + 1
+     * @param {Function} fetchFn
+     * @returns {Promise<{id:string, chars:string, rect:object|null}[]>} lines, or [] on failure
+     */
+    function loadPageLines(pi, apiBase, order, fetchFn = fetch) {
+        return _fetchPageLines(pi, apiBase, order, fetchFn);
+    }
+
+    /**
+     * Granularity dispatch for the hover-linking panel: `'line'` returns the page's
+     * OCR lines, `'word'` fetches `?granularity=word` and drops blank words (ALTO spaces).
      *
      * @param {string} pi
      * @param {string} apiBase
      * @param {number} order
-     * @param {string} granularity - 'line' | 'word'
+     * @param {string} granularity 'line' | 'word'
      * @param {Function} fetchFn
      * @returns {Promise<Array>}
      */
     async function loadPageRegions(pi, apiBase, order, granularity, fetchFn = fetch) {
         if (granularity === 'word') {
-            const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/?granularity=word`);
-            if (!res.ok) {
-                return [];
-            }
-            return parsePageLines(await res.json()).filter((r) => (r.chars || '').trim() !== '');
+            const words = await _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=word');
+            return words.filter((r) => (r.chars || '').trim() !== '');
         }
         return loadPageLines(pi, apiBase, order, fetchFn);
     }
@@ -1650,6 +1654,7 @@
 
     /**
      * Indexes elements by their `data-iv-region-id` (elements without one are skipped).
+     *
      * @param {Iterable<HTMLElement>} elements
      * @returns {Map<string, HTMLElement>}
      */
@@ -1667,26 +1672,27 @@
      * or null if the line is already fully visible. Pure (numbers only) so it is
      * testable without a layout engine.
      *
-     * @param {{offsetTop:number, height:number, scrollTop:number, clientHeight:number, scrollHeight:number}} m
+     * @param {{offsetTop:number, height:number, scrollTop:number, clientHeight:number, scrollHeight:number}} metrics
      * @returns {number|null}
      */
-    function scrollTopToReveal(m) {
-        const top = m.offsetTop;
-        const bottom = m.offsetTop + m.height;
-        if (top >= m.scrollTop && bottom <= m.scrollTop + m.clientHeight) return null;
-        const target = m.offsetTop - m.clientHeight / 2 + m.height / 2;
-        const max = Math.max(0, m.scrollHeight - m.clientHeight);
+    function scrollTopToReveal(metrics) {
+        const top = metrics.offsetTop;
+        const bottom = metrics.offsetTop + metrics.height;
+        if (top >= metrics.scrollTop && bottom <= metrics.scrollTop + metrics.clientHeight) return null;
+        const target = metrics.offsetTop - metrics.clientHeight / 2 + metrics.height / 2;
+        const max = Math.max(0, metrics.scrollHeight - metrics.clientHeight);
         return Math.min(Math.max(0, target), max);
     }
 
     /**
-     * Cumulative offsetTop of `el` relative to `container`, mirroring the panel
-     * scroll math used elsewhere in the immersive view.
+     * Cumulative offsetTop of `el` relative to `container` (walks the offsetParent
+     * chain), for scrolling panel content into view without moving the page.
+     *
      * @param {HTMLElement} el
      * @param {HTMLElement} container
      * @returns {number}
      */
-    function _offsetTopWithin(el, container) {
+    function offsetTopWithin(el, container) {
         let top = 0;
         for (let n = el; n && n !== container; n = n.offsetParent) top += n.offsetTop;
         return top;
@@ -1696,12 +1702,14 @@
      * Wires bidirectional hover highlighting between the panel line spans (inside
      * `box`) and the image region overlays (`regionEls`) that share the same
      * `data-iv-region-id`. Hover on either side toggles `is-linked-active` on both.
+     * Deliberately pointer-only: the highlight is a supplementary cue, the text
+     * itself stays fully readable and reachable without it.
      *
      * @param {object} opts
-     * @param {HTMLElement} opts.box - fulltext panel element containing the line spans.
-     * @param {Map<string, HTMLElement>} opts.regionEls - image overlay elements, already indexed by id.
-     * @param {HTMLElement} [opts.scrollContainer] - scrollable panel; when set, hovering an
-     *   image overlay scrolls its line into view if not fully visible.
+     * @param {HTMLElement} opts.box fulltext panel element containing the line spans
+     * @param {Map<string, HTMLElement>} opts.regionEls image overlay elements, indexed by id
+     * @param {HTMLElement} [opts.scrollContainer] scrollable panel; when set, hovering an
+     *   image overlay scrolls its line into view if not fully visible
      * @returns {{destroy: function():void}}
      */
     function mountTextImageLink({ box, regionEls, scrollContainer }) {
@@ -1721,7 +1729,7 @@
             const span = spanEls.get(id);
             if (!span) return;
             const target = scrollTopToReveal({
-                offsetTop: _offsetTopWithin(span, scrollContainer),
+                offsetTop: offsetTopWithin(span, scrollContainer),
                 height: span.offsetHeight,
                 scrollTop: scrollContainer.scrollTop,
                 clientHeight: scrollContainer.clientHeight,
@@ -1756,43 +1764,42 @@
     }
 
     /**
-     * Groups consecutive word regions into lines by VERTICAL OVERLAP of their
-     * boxes (robust against within-line top variation from ascenders/descenders).
-     * Two consecutive words share a line when their vertical ranges overlap by more
-     * than half the shorter box height. Words without a rect stay on the current
-     * line and do not reset the baseline. Order preserved. Pure.
+     * Groups consecutive word regions into lines by vertical overlap of their boxes
+     * (robust against within-line top variation from ascenders/descenders). Two
+     * consecutive words share a line when their vertical ranges overlap by more than
+     * half the shorter box height; words without a rect stay on the current line.
      *
      * @param {{id:string, chars:string, rect:{x:number,y:number,w:number,h:number}|null}[]} regions
      * @returns {Array<Array<object>>}
      */
     function groupWordsIntoLines(regions) {
         const lines = [];
-        let cur = null;
-        let pTop = null;
-        let pBot = null;
+        let currentLine = null;
+        let prevTop = null;
+        let prevBottom = null;
         for (const r of regions || []) {
             const rect = r && r.rect;
             const top = rect ? rect.y : null;
-            const bot = rect ? rect.y + rect.h : null;
+            const bottom = rect ? rect.y + rect.h : null;
             let newLine;
-            if (cur === null) {
+            if (currentLine === null) {
                 newLine = true;
-            } else if (top === null || pTop === null) {
+            } else if (top === null || prevTop === null) {
                 newLine = false;
             } else {
-                const overlap = Math.min(pBot, bot) - Math.max(pTop, top);
-                const minH = Math.min(pBot - pTop, bot - top);
-                newLine = overlap <= 0.5 * minH;
+                const overlap = Math.min(prevBottom, bottom) - Math.max(prevTop, top);
+                const minHeight = Math.min(prevBottom - prevTop, bottom - top);
+                newLine = overlap <= 0.5 * minHeight;
             }
             if (newLine) {
-                cur = [r];
-                lines.push(cur);
+                currentLine = [r];
+                lines.push(currentLine);
             } else {
-                cur.push(r);
+                currentLine.push(r);
             }
             if (top !== null) {
-                pTop = top;
-                pBot = bot;
+                prevTop = top;
+                prevBottom = bottom;
             }
         }
         return lines;
@@ -1800,9 +1807,8 @@
 
     /**
      * Builds word spans grouped into line blocks (same layout as line mode, but each
-     * word is an individually hoverable `<span data-iv-region-id>`). Blank-chars
-     * words (ALTO spaces) are skipped; a single space separates rendered words.
-     * Text via `textContent`. Line blocks reuse `immersive__fulltext-line`.
+     * word is an individually hoverable `<span data-iv-region-id>`). Blank words
+     * (ALTO spaces) are skipped; a single space separates rendered words.
      *
      * @param {{id:string, chars:string, rect:object|null}[]} regions
      * @returns {DocumentFragment}
@@ -1835,6 +1841,132 @@
         return frag;
     }
 
+    /** Extracts the snippet text from a IIIF `resource` (object, array, or missing). */
+    function _snippet(resource) {
+        const r = Array.isArray(resource) ? resource[0] : resource;
+        return r && typeof r.value === 'string' ? r.value : '';
+    }
+
+    /**
+     * Indexes the `search:Hit` list by annotation id → surrounding context
+     * (`before` / `match` / `after`), for building a teaser around each match.
+     */
+    function _contextByAnnotation(annotationList) {
+        const map = new Map();
+        const hits = Array.isArray(annotationList.hits) ? annotationList.hits : [];
+        for (const hit of hits) {
+            const annos = Array.isArray(hit.annotations) ? hit.annotations : hit.annotations ? [hit.annotations] : [];
+            for (const id of annos) {
+                map.set(id, { before: hit.before, match: hit.match, after: hit.after });
+            }
+        }
+        return map;
+    }
+
+    /**
+     * Parses a IIIF Content Search `sc:AnnotationList` into hits. Pages are 1-based
+     * (as in the `on` URL `/pages/{n}/canvas`); the caller converts to the 0-based
+     * IvViewer order. `before`/`match`/`after` come from the `hits` block and are
+     * undefined when no context is provided.
+     *
+     * @returns {{id:string, page:number, rect:{x,y,w,h}|null, snippet:string, before?:string, match?:string, after?:string}[]}
+     */
+    function parseSearchHits(annotationList) {
+        if (!annotationList || !Array.isArray(annotationList.resources)) return [];
+        const context = _contextByAnnotation(annotationList);
+        const hits = [];
+        for (const res of annotationList.resources) {
+            const on = typeof res.on === 'string' ? res.on : (res.on && res.on['@id']) || '';
+            const page = on.match(/\/pages\/(\d+)\/canvas/);
+            if (!page) continue;
+            const xywh = on.match(/#xywh=(\d+),(\d+),(\d+),(\d+)/);
+            const id = res['@id'] || res.id;
+            const ctx = context.get(id) || {};
+            hits.push({
+                id,
+                page: Number(page[1]),
+                rect: xywh ? { x: +xywh[1], y: +xywh[2], w: +xywh[3], h: +xywh[4] } : null,
+                snippet: _snippet(res.resource),
+                before: ctx.before,
+                match: ctx.match,
+                after: ctx.after,
+            });
+        }
+        return hits;
+    }
+
+    /** Next hit index with wrap-around; -1 when there are no hits. */
+    function nextIndex(i, total) {
+        return total ? (i + 1) % total : -1;
+    }
+
+    /** Previous hit index with wrap-around; -1 when there are no hits. */
+    function prevIndex(i, total) {
+        return total ? (i - 1 + total) % total : -1;
+    }
+
+    /** Last result page from `within.last` (`…&page=N`); 1 when absent. */
+    function _lastPage(list) {
+        const last = list && list.within && list.within.last;
+        const m = typeof last === 'string' ? last.match(/[?&]page=(\d+)/) : null;
+        return m ? Number(m[1]) : 1;
+    }
+
+    /**
+     * Parses the IIIF search response tolerantly against a backend bug: a `search:Hit`
+     * without annotations is serialized as `{"@type":"search:Hit","annotations"}` (key
+     * without value) → invalid JSON. Plain parsing is tried first so valid responses
+     * are never rewritten.
+     * TODO(iiif-api-model): remove once the URLOnlySerializer fix lands (empty
+     * annotations → valid JSON) — then a plain `res.json()` suffices.
+     */
+    function _parseSearchJson(text) {
+        try {
+            return JSON.parse(text);
+        } catch {
+            try {
+                return JSON.parse(text.replace(/"annotations"\}/g, '"annotations":[]}'));
+            } catch {
+                return {};
+            }
+        }
+    }
+
+    /**
+     * Fetches all result pages of the IIIF Content Search and returns hits with the
+     * 0-based IvViewer `order` (order = page - 1), in document order. Tolerates
+     * broken backend paging (page 2+ may restart from the top): hits are deduped by
+     * annotation id and fetching stops once a page adds nothing new.
+     *
+     * @param {string} pi        Goobi viewer record identifier
+     * @param {string} apiBase   base URL of the REST API (no trailing slash)
+     * @param {string} term      search term
+     * @param {Function} fetchFn fetch-compatible function (injectable for tests)
+     * @param {number} maxPages  safety cap for the within-paging loop
+     */
+    async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50) {
+        const base = `${apiBase}/records/${pi}/manifest/search?q=${encodeURIComponent(term)}`;
+        const seen = new Set();
+        const out = [];
+        for (let p = 1; p <= maxPages; p++) {
+            const res = await fetchFn(p === 1 ? base : `${base}&page=${p}`);
+            if (!res.ok) break;
+            const list = _parseSearchJson(await res.text());
+            const hits = parseSearchHits(list);
+            let added = 0;
+            for (const h of hits) {
+                const rect = h.rect ? `${h.rect.x},${h.rect.y},${h.rect.w},${h.rect.h}` : '';
+                const key = h.id || `${h.page}|${rect}|${h.snippet}`;
+                if (seen.has(key)) continue;
+                seen.add(key);
+                out.push({ ...h, order: h.page - 1 });
+                added++;
+            }
+            if (hits.length === 0 || added === 0 || p >= _lastPage(list)) break;
+        }
+        return out;
+    }
+
     /**
      * Rewrites the page-number segment of an immersive URL path (or appends it).
      * The PI segment is never treated as the page number. Pure + tested.
@@ -1862,6 +1994,33 @@
     }
 
     /**
+     * Picks the 1-based page number of the TOC section that should be highlighted.
+     * A section owns the page range [its page, next section's page). Returns the
+     * current `activeNo` unchanged while any visible page (single page, or either
+     * page of a double-page spread) still falls in its range, so the highlight is
+     * kept; otherwise the section owning the last visible page, or null when no
+     * section starts at or before it. Pure + tested.
+     *
+     * @param {number[]} entryNos      1-based start pages of all TOC sections
+     * @param {number[]} visiblePages  1-based page numbers currently shown
+     * @param {number|null} activeNo   start page of the currently highlighted section
+     * @returns {number|null}
+     */
+    function pickActiveTocPageNo(entryNos, visiblePages, activeNo = null) {
+        if (!entryNos.length || !visiblePages.length) return activeNo;
+        if (activeNo !== null) {
+            const nextNo = Math.min(...entryNos.filter((n) => n > activeNo), Infinity);
+            if (visiblePages.some((p) => p >= activeNo && p < nextNo)) return activeNo;
+        }
+        const top = Math.max(...visiblePages);
+        let best = null;
+        for (const no of entryNos) {
+            if (no <= top && (best === null || no >= best)) best = no;
+        }
+        return best;
+    }
+
+    /**
      * URL-sync feature: pushes a history entry on page change (deep-linkable,
      * back/forward steps through pages) and navigates the viewer on popstate.
      * The viewer uses 0-based page orders; URLs use 1-based page numbers.
@@ -1882,129 +2041,11 @@
         });
     }
 
-    /** Snippet aus IIIF `resource` (Objekt, Array oder fehlend) ziehen. */
-    function _snippet(resource) {
-        const r = Array.isArray(resource) ? resource[0] : resource;
-        return r && typeof r.value === 'string' ? r.value : '';
-    }
-
-    /**
-     * Indexes the `search:Hit` list by annotation id → surrounding context
-     * (`before` / `match` / `after`), for building a teaser around each match.
-     */
-    function _contextByAnnotation(annotationList) {
-        const map = new Map();
-        const hits = Array.isArray(annotationList.hits) ? annotationList.hits : [];
-        for (const hit of hits) {
-            const annos = Array.isArray(hit.annotations) ? hit.annotations : hit.annotations ? [hit.annotations] : [];
-            for (const id of annos) {
-                map.set(id, { before: hit.before, match: hit.match, after: hit.after });
-            }
-        }
-        return map;
-    }
-
-    /**
-     * Parst eine IIIF Content Search `sc:AnnotationList` zu Treffern.
-     * Seite ist 1-basiert (wie in der `on`-URL `/pages/{n}/canvas`); der Aufrufer
-     * rechnet auf die 0-basierte IvViewer-Order um (order = page - 1).
-     * `before`/`match`/`after` stammen aus dem `hits`-Block (per Annotation-Id verknüpft)
-     * und sind undefined, wenn kein Kontext geliefert wird.
-     * @returns {{page:number, rect:{x,y,w,h}|null, snippet:string, before?:string, match?:string, after?:string}[]}
-     */
-    function parseSearchHits(annotationList) {
-        if (!annotationList || !Array.isArray(annotationList.resources)) return [];
-        const context = _contextByAnnotation(annotationList);
-        const hits = [];
-        for (const res of annotationList.resources) {
-            const on = typeof res.on === 'string' ? res.on : (res.on && res.on['@id']) || '';
-            const page = on.match(/\/pages\/(\d+)\/canvas/);
-            if (!page) continue;
-            const xywh = on.match(/#xywh=(\d+),(\d+),(\d+),(\d+)/);
-            const id = res['@id'] || res.id;
-            const ctx = context.get(id) || {};
-            hits.push({
-                id,
-                page: Number(page[1]),
-                rect: xywh ? { x: +xywh[1], y: +xywh[2], w: +xywh[3], h: +xywh[4] } : null,
-                snippet: _snippet(res.resource),
-                before: ctx.before,
-                match: ctx.match,
-                after: ctx.after,
-            });
-        }
-        return hits;
-    }
-
-    function nextIndex(i, total) {
-        return total ? (i + 1) % total : -1;
-    }
-    function prevIndex(i, total) {
-        return total ? (i - 1 + total) % total : -1;
-    }
-
-    /** Letzte Ergebnis-Seite aus `within.last` (`…&page=N`); 1 wenn nicht vorhanden. */
-    function _lastPage(list) {
-        const last = list && list.within && list.within.last;
-        const m = typeof last === 'string' ? last.match(/[?&]page=(\d+)/) : null;
-        return m ? Number(m[1]) : 1;
-    }
-
-    /**
-     * Parst die IIIF-Search-Response tolerant gegen einen Backend-Bug: ein `search:Hit`
-     * ohne Annotationen wird als `{"@type":"search:Hit","annotations"}` (Key ohne Wert)
-     * serialisiert → invalides JSON. Genau dieses Muster wird vor dem Parsen repariert;
-     * wir nutzen ohnehin nur `resources`, nicht `hits`.
-     * TODO(iiif-api-model): nach URLOnlySerializer-Fix (leere annotations → valides JSON)
-     * entfernen — dann reicht `res.json()` ohne Repair.
-     */
-    function _parseSearchJson(text) {
-        try {
-            return JSON.parse(text.replace(/"annotations"\}/g, '"annotations":[]}'));
-        } catch (e) {
-            return {};
-        }
-    }
-
-    /**
-     * Holt alle Ergebnis-Seiten der IIIF Content Search und liefert Treffer mit
-     * 0-basierter IvViewer-`order` (order = page - 1), in Dokumentreihenfolge.
-     * @param {function} fetchFn fetch-kompatibel (injizierbar für Tests)
-     * @param {number} maxPages Sicherheits-Cap der within-Paging-Schleife
-     */
-    async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50) {
-        const base = `${apiBase}/records/${pi}/manifest/search?q=${encodeURIComponent(term)}`;
-        // The backend's content-search paging can be broken (page 2+ may restart from the top
-        // instead of returning the next slice), which would duplicate -- and needlessly re-fetch --
-        // the whole list. Dedupe by annotation id (with a page/rect/snippet fallback for hits that
-        // carry no id) as we go, and stop as soon as a page brings nothing new.
-        const seen = new Set();
-        const out = [];
-        for (let p = 1; p <= maxPages; p++) {
-            const res = await fetchFn(p === 1 ? base : `${base}&page=${p}`);
-            if (!res.ok) break;
-            const list = _parseSearchJson(await res.text());
-            const hits = parseSearchHits(list);
-            let added = 0;
-            for (const h of hits) {
-                const rect = h.rect ? `${h.rect.x},${h.rect.y},${h.rect.w},${h.rect.h}` : '';
-                const key = h.id || `${h.page}|${rect}|${h.snippet}`;
-                if (seen.has(key)) continue;
-                seen.add(key);
-                out.push({ ...h, order: h.page - 1 });
-                added++;
-            }
-            if (hits.length === 0 || added === 0 || p >= _lastPage(list)) break;
-        }
-        return out;
-    }
-
     window.ShareImageFragment = ShareImageFragment;
 
     window.zoomableImageLoaded = new rxjs.Subject();
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Legacy object/fullscreen image view — only when its mount is present.
         if (document.querySelector('[data-image="zoomable"]')) {
             window.image = new ZoomableImage();
             window.image
@@ -2019,7 +2060,6 @@
 
         window.voyager3dView = new Voyager3dView();
 
-        // Immersive image viewer — only when its mount is present.
         const immersiveEl = document.querySelector('[data-immersive-image]');
         if (immersiveEl) {
             initImmersiveViewer(immersiveEl);
@@ -2037,26 +2077,16 @@
         const pi = el.dataset.pi;
         const apiBase = el.dataset.apiBase;
         const startOrder = Number(el.dataset.startOrder) || 0;
-        const maxZoom = el.dataset.maxZoom ? parseInt(el.dataset.maxZoom) : undefined;
-
-        // Slide-out panels (TOC / search): bind open/close immediately -- before the IIIF
-        // services fetch -- so the server-rendered sidebar opens without waiting for the
-        // first image. The triggering button is marked active while its panel is open.
+        const maxZoom = el.dataset.maxZoom ? parseInt(el.dataset.maxZoom, 10) : undefined;
         const immersiveRoot = el.closest('.immersive');
         const panelButtons = document.querySelectorAll('[data-immersive-panel]');
-        // Closed panels sit off-screen (transform); start them inert so their focusable children
-        // stay out of the tab order and the a11y tree until the panel is actually opened.
         document.querySelectorAll('.immersive__panel--left').forEach((p) => (p.inert = true));
-        // Flag the root while a left panel is open so CSS can hide the floating title and
-        // prev chevron over the image (the title + close live in the panel header now).
         const syncPanelOpenFlag = () => {
             if (immersiveRoot) {
                 immersiveRoot.classList.toggle('immersive--panel-open', !!document.querySelector('.immersive__panel--left.is-open'));
             }
         };
-        // Set by the fulltext block; clears its image overlays + hover wiring when the panel closes.
         let onFulltextClose = null;
-        // The rail button that opened the current panel, so focus can return to it on close.
         let activePanelBtn = null;
         const closePanels = (restoreFocus = false) => {
             if (typeof onFulltextClose === 'function') onFulltextClose();
@@ -2064,7 +2094,6 @@
             document.querySelectorAll('.immersive__panel--left.is-open').forEach((p) => {
                 p.classList.remove('is-open');
                 p.setAttribute('aria-hidden', 'true');
-                // Off-screen again: make it inert so it drops out of tab order + screen reader.
                 p.inert = true;
             });
             panelButtons.forEach((b) => {
@@ -2072,14 +2101,11 @@
                 b.setAttribute('aria-expanded', 'false');
             });
             syncPanelOpenFlag();
-            // Return focus to the rail button that opened the panel (focus would otherwise be
-            // lost when the panel becomes inert, e.g. on Escape from inside the panel).
             if (restoreFocus && closedAny && activePanelBtn) activePanelBtn.focus();
             activePanelBtn = null;
         };
         panelButtons.forEach((btn) => {
             btn.addEventListener('click', () => {
-                // A disabled rail tool (e.g. fulltext in double-page mode) must not open its panel.
                 if (btn.getAttribute('aria-disabled') === 'true') return;
                 const panel = document.getElementById(btn.dataset.immersivePanel);
                 if (!panel) return;
@@ -2093,18 +2119,12 @@
                     btn.setAttribute('aria-expanded', 'true');
                     activePanelBtn = btn;
                     syncPanelOpenFlag();
-                    // Bring the active TOC entry into view (e.g. reloaded on a page far down,
-                    // so the highlighted section isn't left off-screen at the top). Scroll the
-                    // panel via offset math, not scrollIntoView, so the whole page never moves.
+                    // Scroll via offset math, not scrollIntoView, so the page itself never moves.
                     const active = panel.querySelector('.widget-toc__element.active');
                     if (active) {
-                        let top = 0;
-                        for (let n = active; n && n !== panel; n = n.offsetParent) top += n.offsetTop;
-                        panel.scrollTop = Math.max(0, top - panel.clientHeight / 2);
+                        panel.scrollTop = Math.max(0, offsetTopWithin(active, panel) - panel.clientHeight / 2);
                     }
-                    // Move focus into the panel so keyboard users land inside it. Prefer a
-                    // meaningful control; fall back to the panel container itself.
-                    const focusTarget = panel.querySelector('input, a[href], button');
+                    const focusTarget = Array.from(panel.querySelectorAll('input, a[href], button')).find((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
                     if (focusTarget) {
                         focusTarget.focus({ preventScroll: true });
                     } else {
@@ -2114,64 +2134,254 @@
                 }
             });
         });
-        // No close button in the panel anymore: Escape closes the open panel (re-clicking
-        // the burger toggles it shut too).
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.querySelector('.immersive__panel--left.is-open')) {
+            if (e.key !== 'Escape') return;
+            if (document.querySelector('#immersiveGridOverlay:not([hidden]), #immersivePageDropdown:not([hidden])')) return;
+            if (document.querySelector('.immersive__panel--left.is-open')) {
                 closePanels(true);
             }
         });
 
-        // Sidebar resize: one drag handle at the open panel's right edge sets a single
-        // --immersive-panel-width on .immersive__viewer, so all left panels share one width.
-        // The chosen width persists in localStorage and is re-applied (clamped) on load.
-        const immersiveViewer = immersiveRoot && immersiveRoot.querySelector('.immersive__viewer');
-        if (immersiveViewer) {
-            const WIDTH_KEY = 'immersive-panel-width';
-            const RAIL_WIDTH = 40; // left tool rail; panels start at left: 40px
-            const MIN_WIDTH = 240;
-            const maxWidth = () => immersiveViewer.getBoundingClientRect().width * 0.8;
-            const clamp = (px) => Math.min(Math.max(px, MIN_WIDTH), maxWidth());
-            const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
-            let stored = NaN;
-            try {
-                stored = parseInt(localStorage.getItem(WIDTH_KEY), 10);
-            } catch (e) {
-                // localStorage may be unavailable (private mode / blocked) -- defaults apply.
-            }
-            if (Number.isFinite(stored)) applyWidth(clamp(stored));
+        setupPanelResize(immersiveRoot);
+        setupTocCollapseToggle();
+        setupMetadataToggle();
+        setupImmersivePopoverA11y();
 
-            const handle = document.createElement('div');
-            handle.className = 'immersive__panel-resize-handle';
-            handle.setAttribute('aria-hidden', 'true');
-            immersiveViewer.appendChild(handle);
-            handle.addEventListener('pointerdown', (e) => {
-                e.preventDefault();
-                handle.setPointerCapture(e.pointerId);
-                immersiveRoot.classList.add('immersive--resizing');
-                const viewerLeft = immersiveViewer.getBoundingClientRect().left;
-                const widthAt = (ev) => clamp(ev.clientX - viewerLeft - RAIL_WIDTH);
-                const onMove = (ev) => applyWidth(widthAt(ev));
-                const onUp = (ev) => {
-                    handle.releasePointerCapture(e.pointerId);
-                    handle.removeEventListener('pointermove', onMove);
-                    handle.removeEventListener('pointerup', onUp);
-                    immersiveRoot.classList.remove('immersive--resizing');
-                    try {
-                        localStorage.setItem(WIDTH_KEY, String(Math.round(widthAt(ev))));
-                    } catch (err) {
-                        // ignore: nothing to persist if storage is unavailable
-                    }
+        loadPageServices(pi, apiBase)
+            .then((services) => {
+                const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
+                window.ivViewer = viewer;
+                attachUrlSync(viewer, pi);
+                viewer.onLoaded.subscribe(() => bindImageFiltersMount(viewer));
+
+                const indicator = document.getElementById('immersivePageIndicator');
+                const titlePage = document.getElementById('immersiveTitlePage');
+                const total = viewer.getPageCount();
+                const workTitle = (document.querySelector('.immersive__title-text')?.textContent || '').trim();
+                const updateIndicator = () => {
+                    const pages = viewer.getCurrentPages().map((p) => p + 1);
+                    const label = pages.length > 1 ? `${pages[0]}–${pages[pages.length - 1]}` : `${pages[0]}`;
+                    if (indicator) indicator.textContent = `${label} / ${total}`;
+                    if (titlePage) titlePage.textContent = `(${label} / ${total})`;
+                    const imageSurface = el.querySelector('.openseadragon-canvas') || el;
+                    imageSurface.setAttribute('role', 'img');
+                    imageSurface.setAttribute('aria-label', workTitle ? `${workTitle}, ${label} / ${total}` : `${label} / ${total}`);
                 };
-                handle.addEventListener('pointermove', onMove);
-                handle.addEventListener('pointerup', onUp);
-            });
-        }
+                updateIndicator();
+                viewer.onPageChange.subscribe(() => updateIndicator());
 
-        // TOC "collapse all / expand all" toggle: the tree is server-rendered, so wire it up
-        // immediately (no viewer needed) and show it right away -- only when the TOC actually
-        // nests. Collapse folds to the top-level chapters (the record root is hidden, so we
-        // never fold to it); state-driven, so a click expands all if anything is collapsed.
+                const prevChevron = document.querySelector('.immersive__chevron[data-immersive-page="prev"]');
+                const nextChevron = document.querySelector('.immersive__chevron[data-immersive-page="next"]');
+                const updateChevrons = () => {
+                    const pages = viewer.getCurrentPages();
+                    if (!pages.length) return;
+                    if (prevChevron) prevChevron.hidden = Math.min(...pages) <= 0;
+                    if (nextChevron) nextChevron.hidden = Math.max(...pages) >= total - 1;
+                };
+                updateChevrons();
+                viewer.onPageChange.subscribe(updateChevrons);
+
+                loadPageLabels(pi, apiBase, fetch, document.documentElement.lang)
+                    .then((labels) => setupPageDropdown(viewer, labels))
+                    .catch((e) => console.warn('immersive page labels failed', e));
+
+                setupFulltextSearch(viewer, pi, apiBase);
+
+                const fulltextPanel = document.getElementById('immersivePanelFulltext');
+                const fulltextBox = document.getElementById('immersiveFulltext');
+                const fulltextLoader = document.getElementById('immersiveFulltextLoader');
+                const fulltextBtn = document.querySelector('[data-immersive-panel="immersivePanelFulltext"]');
+                const fulltextTitleDefault = fulltextBtn ? fulltextBtn.getAttribute('title') : '';
+                if (fulltextPanel && fulltextBox) {
+                    let granularity = 'line';
+                    let fulltextReq = 0;
+                    let currentLink = null;
+
+                    const clearFulltextLink = () => {
+                        if (currentLink) {
+                            currentLink.destroy();
+                            currentLink = null;
+                        }
+                        viewer.clearTextRegions();
+                        if (fulltextLoader) fulltextLoader.hidden = true;
+                    };
+                    onFulltextClose = clearFulltextLink;
+
+                    const loadFulltext = async () => {
+                        const order = currentOrder(viewer);
+                        const req = ++fulltextReq;
+                        clearFulltextLink();
+                        if (fulltextLoader) fulltextLoader.hidden = false;
+                        fulltextBox.textContent = '';
+                        fulltextBox.classList.remove('immersive__fulltext--empty');
+                        let regions = null;
+                        try {
+                            regions = await loadPageRegions(pi, apiBase, order, granularity);
+                        } catch {
+                            regions = null;
+                        }
+                        if (req !== fulltextReq) return;
+                        if (fulltextLoader) fulltextLoader.hidden = true;
+                        if (regions && regions.length) {
+                            const fragment = granularity === 'word' ? buildWordSpans(regions) : buildLineSpans(regions);
+                            fulltextBox.replaceChildren(fragment);
+                            const regionEls = viewer.setTextRegions(regions);
+                            currentLink = mountTextImageLink({ box: fulltextBox, regionEls, scrollContainer: fulltextPanel });
+                        } else {
+                            fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
+                            fulltextBox.classList.add('immersive__fulltext--empty');
+                        }
+                    };
+
+                    const granularityBtns = fulltextPanel.querySelectorAll('[data-immersive-granularity]');
+                    granularityBtns.forEach((b) => {
+                        b.addEventListener('click', () => {
+                            if (b.disabled) return;
+                            granularity = b.dataset.immersiveGranularity;
+                            granularityBtns.forEach((x) => {
+                                const on = x === b;
+                                x.classList.toggle('is-active', on);
+                                x.setAttribute('aria-pressed', String(on));
+                            });
+                            if (fulltextPanel.classList.contains('is-open')) loadFulltext();
+                        });
+                    });
+
+                    if (fulltextBtn) {
+                        fulltextBtn.addEventListener('click', () => {
+                            if (fulltextPanel.classList.contains('is-open')) loadFulltext();
+                        });
+                    }
+                    viewer.onPageChange.subscribe(() => {
+                        if (fulltextPanel.classList.contains('is-open')) loadFulltext();
+                    });
+                }
+
+                const updateFulltextAvail = () => {
+                    if (!fulltextBtn) return;
+                    const doublePage = !!(viewer.isDoublePage && viewer.isDoublePage());
+                    fulltextBtn.classList.toggle('immersive__tool-btn--disabled', doublePage);
+                    fulltextBtn.setAttribute('aria-disabled', String(doublePage));
+                    fulltextBtn.setAttribute('tabindex', doublePage ? '-1' : '0');
+                    const title = (doublePage && fulltextBtn.dataset.titleDisabled) || fulltextTitleDefault;
+                    fulltextBtn.setAttribute('title', title);
+                    fulltextBtn.setAttribute('aria-label', title);
+                    if (doublePage && fulltextPanel && fulltextPanel.classList.contains('is-open')) closePanels();
+                };
+                updateFulltextAvail();
+
+                const toggleGrid = setupOverviewGrid(viewer, pi, apiBase);
+
+                document.querySelectorAll('[data-immersive-page]').forEach((btn) => {
+                    btn.addEventListener('click', () => (btn.dataset.immersivePage === 'next' ? viewer.next() : viewer.prev()));
+                });
+                document.querySelectorAll('[data-immersive-action]').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const action = btn.dataset.immersiveAction;
+                        if (action === 'zoom-in') viewer.zoomIn();
+                        else if (action === 'zoom-out') viewer.zoomOut();
+                        else if (action === 'rotate-left') viewer.rotateLeft();
+                        else if (action === 'rotate-right') viewer.rotateRight();
+                        else if (action === 'reset') viewer.resetView();
+                        else if (action === 'fullscreen') toggleImmersiveFullscreen();
+                        else if (action === 'overview') toggleGrid();
+                        else if (action === 'double-page') {
+                            const on = viewer.toggleDoublePage();
+                            btn.setAttribute('aria-pressed', String(on));
+                            btn.classList.toggle('immersive__tool-btn--active', on);
+                            document.querySelector('.immersive__viewer')?.classList.toggle('is-double-page', on);
+                            updateFulltextAvail();
+                        }
+                    });
+                });
+
+                const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
+                document.addEventListener('fullscreenchange', () => {
+                    if (fullscreenBtn) {
+                        fullscreenBtn.setAttribute('aria-pressed', String(!!document.fullscreenElement));
+                        const exitLabel = fullscreenBtn.dataset.labelExit;
+                        const enterLabel = fullscreenBtn.dataset.labelEnter || fullscreenBtn.getAttribute('aria-label');
+                        const label = document.fullscreenElement && exitLabel ? exitLabel : enterLabel;
+                        if (label) {
+                            fullscreenBtn.setAttribute('aria-label', label);
+                            fullscreenBtn.setAttribute('title', label);
+                        }
+                    }
+                    document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
+                        const $trigger = window.$ && window.$(trigger);
+                        const inst = $trigger && $trigger.data('bs.popover');
+                        if (!inst) return;
+                        $trigger.popover('hide');
+                        if (document.fullscreenElement) {
+                            if (inst.config._savedContainer === undefined) {
+                                inst.config._savedContainer = inst.config.container;
+                            }
+                            inst.config.container = document.fullscreenElement;
+                        } else if (inst.config._savedContainer !== undefined) {
+                            inst.config.container = inst.config._savedContainer;
+                            delete inst.config._savedContainer;
+                        }
+                    });
+                });
+
+                setupTocSync(viewer);
+            })
+            .catch((e) => console.error('immersive viewer init failed', e));
+    }
+
+    /** First visible page as 0-based order (the leading page of a double-page spread). */
+    function currentOrder(viewer) {
+        const pages = viewer.getCurrentPages ? viewer.getCurrentPages() : [];
+        return pages.length ? pages[0] : 0;
+    }
+
+    /**
+     * Adds the drag handle that resizes the left panels: one shared
+     * --immersive-panel-width custom property, persisted in localStorage.
+     */
+    function setupPanelResize(immersiveRoot) {
+        const immersiveViewer = immersiveRoot && immersiveRoot.querySelector('.immersive__viewer');
+        if (!immersiveViewer) return;
+        const WIDTH_KEY = 'immersive-panel-width';
+        const RAIL_WIDTH = 40;
+        const MIN_WIDTH = 240;
+        const MAX_WIDTH_RATIO = 0.8;
+        const maxWidth = () => immersiveViewer.getBoundingClientRect().width * MAX_WIDTH_RATIO;
+        const clamp = (px) => Math.min(Math.max(px, MIN_WIDTH), maxWidth());
+        const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
+        let stored = NaN;
+        try {
+            stored = parseInt(localStorage.getItem(WIDTH_KEY), 10);
+        } catch {}
+        if (Number.isFinite(stored)) applyWidth(clamp(stored));
+
+        const handle = document.createElement('div');
+        handle.className = 'immersive__panel-resize-handle';
+        handle.setAttribute('aria-hidden', 'true');
+        immersiveViewer.appendChild(handle);
+        handle.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            handle.setPointerCapture(e.pointerId);
+            immersiveRoot.classList.add('immersive--resizing');
+            const viewerLeft = immersiveViewer.getBoundingClientRect().left;
+            const widthAt = (ev) => clamp(ev.clientX - viewerLeft - RAIL_WIDTH);
+            const onMove = (ev) => applyWidth(widthAt(ev));
+            const onUp = (ev) => {
+                handle.releasePointerCapture(e.pointerId);
+                handle.removeEventListener('pointermove', onMove);
+                handle.removeEventListener('pointerup', onUp);
+                immersiveRoot.classList.remove('immersive--resizing');
+                try {
+                    localStorage.setItem(WIDTH_KEY, String(Math.round(widthAt(ev))));
+                } catch {}
+            };
+            handle.addEventListener('pointermove', onMove);
+            handle.addEventListener('pointerup', onUp);
+        });
+    }
+
+    /** Wires the "collapse all / expand all" toggle on the server-rendered TOC tree (shown only when the TOC nests). */
+    function setupTocCollapseToggle() {
         const tocPanel = document.getElementById('immersivePanelMenu');
         const tocContainer = document.getElementById('widgetToc');
         const tocToggle = tocPanel && tocPanel.querySelector('[data-immersive-toc-toggle]');
@@ -2208,15 +2418,14 @@
             });
             reflectTocToggle();
         }
+    }
 
-        // Metadata "more / less" fold: the first 1-2 blocks (ISANCHOR rule, server-rendered)
-        // stay; deeper structural blocks (chapters) live in #immersiveMetadataMore and are
-        // revealed by this toggle. Server-rendered, so bound once (no viewer needed).
+    /** Wires the metadata "more / less" fold that reveals the deeper structural blocks. */
+    function setupMetadataToggle() {
         const metadataToggle = document.querySelector('[data-immersive-metadata-toggle]');
         if (metadataToggle) {
             const moreEl = document.getElementById(metadataToggle.dataset.immersiveMetadataToggle);
             if (moreEl) {
-                // Only the visible label should be in the accessible name (else it reads "more less").
                 const moreLabel = metadataToggle.querySelector('.immersive__metadata-toggle-more');
                 const lessLabel = metadataToggle.querySelector('.immersive__metadata-toggle-less');
                 const syncMetadataToggleLabel = (open) => {
@@ -2232,713 +2441,501 @@
                 });
             }
         }
-
-        // Accessible focus/keyboard management for the three immersive Bootstrap popovers
-        // (Share / Cite / Filter). The shared popovers controller isn't touched: we only hook
-        // its Bootstrap shown/hidden events on these specific triggers to move focus into the
-        // portaled popover on open, trap Escape to close + restore focus, and sync aria-expanded.
-        setupImmersivePopoverA11y();
-
-        loadPageServices(pi, apiBase)
-            .then((services) => {
-                const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
-                window.ivViewer = viewer;
-                attachUrlSync(viewer, pi);
-                // The <imageFilters> tag lives inside #immersiveFilterPopover, which Bootstrap
-                // only portals into the DOM when the popover is first shown. Mount lazily on that
-                // event (guarded once) instead of on load, when the target isn't rendered yet.
-                viewer.onLoaded.subscribe(() => bindImageFiltersMount(viewer));
-
-                const indicator = document.getElementById('immersivePageIndicator');
-                const titlePage = document.getElementById('immersiveTitlePage');
-                const total = viewer.getPageCount();
-                const workTitle = (document.querySelector('.immersive__title-text')?.textContent || '').trim();
-                const updateIndicator = () => {
-                    const pages = viewer.getCurrentPages().map((p) => p + 1);
-                    const label = pages.length > 1 ? `${pages[0]}–${pages[pages.length - 1]}` : `${pages[0]}`;
-                    if (indicator) indicator.textContent = `${label} / ${total}`;
-                    // Mirror the page next to the work title, e.g. "(5 / 40)".
-                    if (titlePage) titlePage.textContent = `(${label} / ${total})`;
-                    // Name the (otherwise silent) OSD canvas for screen readers, updated per page.
-                    const imageSurface = el.querySelector('.openseadragon-canvas') || el;
-                    imageSurface.setAttribute('role', 'img');
-                    imageSurface.setAttribute('aria-label', workTitle ? `${workTitle}, ${label} / ${total}` : `${label} / ${total}`);
-                };
-                updateIndicator();
-                viewer.onPageChange.subscribe(() => updateIndicator());
-
-                // Page chevrons: only show an arrow when paging that way is possible
-                // (hide prev on the first page, next on the last page).
-                const prevChevron = document.querySelector('.immersive__chevron[data-immersive-page="prev"]');
-                const nextChevron = document.querySelector('.immersive__chevron[data-immersive-page="next"]');
-                const updateChevrons = () => {
-                    const pages = viewer.getCurrentPages();
-                    if (!pages.length) return;
-                    if (prevChevron) prevChevron.hidden = Math.min(...pages) <= 0;
-                    if (nextChevron) nextChevron.hidden = Math.max(...pages) >= total - 1;
-                };
-                updateChevrons();
-                viewer.onPageChange.subscribe(updateChevrons);
-
-                // Title page picker: clicking the work title opens a dropdown with a "go to page"
-                // input and a scrollable list of the IIIF manifest page labels. Selecting jumps
-                // the viewer. Labels share the memoized manifest fetch, so this costs no request.
-                const setupPageDropdown = (labels) => {
-                    const trigger = document.querySelector('[data-immersive-title-trigger]');
-                    const dropdown = document.getElementById('immersivePageDropdown');
-                    const list = document.getElementById('immersivePageList');
-                    const input = document.getElementById('immersivePageInput');
-                    if (!trigger || !dropdown || !list) return;
-                    // A single-page record has nothing to pick: leave the title non-interactive.
-                    if (total < 2) {
-                        trigger.classList.add('immersive__title-trigger--static');
-                        return;
-                    }
-                    if (input) input.max = String(total);
-                    // Name the listbox for screen readers, reusing the "go to page" label.
-                    const listLabel = input && input.labels && input.labels[0] ? input.labels[0].textContent.trim() : '';
-                    if (listLabel) list.setAttribute('aria-label', listLabel);
-
-                    // One row per page as "<running number>: <raw manifest label>", e.g.
-                    // "1: -", "3: [1]", "8: 5" -- the manifest label is shown verbatim
-                    // (a blank " - " label trims to "-"), like the classic page dropdown.
-                    // role="option"/aria-selected live on the button (the actual option); the
-                    // <li> is presentational so the listbox exposes one option per button.
-                    const items = [];
-                    for (let order = 0; order < total; order++) {
-                        const li = document.createElement('li');
-                        li.setAttribute('role', 'presentation');
-                        const btn = document.createElement('button');
-                        btn.type = 'button';
-                        btn.className = 'immersive__page-dropdown-item';
-                        btn.dataset.order = String(order);
-                        btn.setAttribute('role', 'option');
-                        btn.setAttribute('aria-selected', 'false');
-                        // Roving tabindex: only the current option is tabbable.
-                        btn.tabIndex = -1;
-                        const num = document.createElement('span');
-                        num.className = 'immersive__page-dropdown-num';
-                        num.textContent = `${order + 1}:`;
-                        const lbl = document.createElement('span');
-                        lbl.className = 'immersive__page-dropdown-itemlabel';
-                        lbl.textContent = (labels[order] || '').trim();
-                        btn.append(num, lbl);
-                        li.append(btn);
-                        list.append(li);
-                        items.push(btn);
-                    }
-
-                    const markActive = () => {
-                        const current = viewer.getCurrentPages();
-                        let rovingSet = false;
-                        items.forEach((btn) => {
-                            const on = current.includes(Number(btn.dataset.order));
-                            btn.classList.toggle('is-active', on);
-                            btn.setAttribute('aria-selected', on ? 'true' : 'false');
-                            // Roving tabindex follows the current page so Tab lands on it.
-                            btn.tabIndex = on && !rovingSet ? 0 : -1;
-                            if (on) rovingSet = true;
-                        });
-                        // No current option in the list -> keep the first one reachable via Tab.
-                        if (!rovingSet && items.length) items[0].tabIndex = 0;
-                    };
-
-                    // Move the roving tabindex to a given option and focus it (keyboard nav).
-                    const focusOption = (idx) => {
-                        if (idx < 0) idx = 0;
-                        if (idx > items.length - 1) idx = items.length - 1;
-                        const target = items[idx];
-                        if (!target) return;
-                        items.forEach((btn) => (btn.tabIndex = btn === target ? 0 : -1));
-                        target.focus();
-                    };
-
-                    const isOpen = () => !dropdown.hidden;
-                    const onOutside = (e) => {
-                        if (!dropdown.contains(e.target) && !trigger.contains(e.target)) close();
-                    };
-                    const close = () => {
-                        if (!isOpen()) return;
-                        dropdown.hidden = true;
-                        trigger.setAttribute('aria-expanded', 'false');
-                        document.removeEventListener('pointerdown', onOutside, true);
-                    };
-                    const open = () => {
-                        if (isOpen()) return;
-                        markActive();
-                        dropdown.hidden = false;
-                        trigger.setAttribute('aria-expanded', 'true');
-                        document.addEventListener('pointerdown', onOutside, true);
-                        // Centre the active row WITHIN the list only -- never via scrollIntoView /
-                        // focus(), which would scroll the page and visibly shift the image.
-                        const active = list.querySelector('.immersive__page-dropdown-item.is-active');
-                        if (active) {
-                            list.scrollTop = Math.max(0, active.offsetTop - list.offsetTop - (list.clientHeight - active.clientHeight) / 2);
-                        }
-                        if (input) {
-                            input.value = '';
-                            input.focus({ preventScroll: true });
-                        }
-                    };
-
-                    trigger.addEventListener('click', () => (isOpen() ? close() : open()));
-                    list.addEventListener('click', (e) => {
-                        const btn = e.target.closest('.immersive__page-dropdown-item');
-                        if (!btn) return;
-                        viewer.goToPage(Number(btn.dataset.order));
-                        close();
-                    });
-                    // Listbox keyboard nav: arrows move the roving focus, Home/End jump to the
-                    // ends, Enter/Space activate the focused option, Escape closes the dropdown.
-                    list.addEventListener('keydown', (e) => {
-                        const cur = items.indexOf(document.activeElement);
-                        if (cur === -1 && !['Escape'].includes(e.key)) return;
-                        switch (e.key) {
-                            case 'ArrowDown':
-                                e.preventDefault();
-                                focusOption(cur + 1);
-                                break;
-                            case 'ArrowUp':
-                                e.preventDefault();
-                                focusOption(cur - 1);
-                                break;
-                            case 'Home':
-                                e.preventDefault();
-                                focusOption(0);
-                                break;
-                            case 'End':
-                                e.preventDefault();
-                                focusOption(items.length - 1);
-                                break;
-                            case 'Enter':
-                            case ' ':
-                            case 'Spacebar':
-                                e.preventDefault();
-                                viewer.goToPage(Number(items[cur].dataset.order));
-                                close();
-                                trigger.focus();
-                                break;
-                            case 'Escape':
-                                e.preventDefault();
-                                close();
-                                trigger.focus();
-                                break;
-                        }
-                    });
-                    if (input) {
-                        input.addEventListener('keydown', (e) => {
-                            if (e.key !== 'Enter') return;
-                            e.preventDefault();
-                            const n = parseInt(input.value, 10);
-                            if (Number.isFinite(n) && n >= 1 && n <= total) {
-                                viewer.goToPage(n - 1);
-                                close();
-                            }
-                        });
-                    }
-                    document.addEventListener('keydown', (e) => {
-                        if (e.key === 'Escape' && isOpen()) {
-                            close();
-                            trigger.focus();
-                        }
-                    });
-                    viewer.onPageChange.subscribe(markActive);
-                    markActive();
-                };
-                loadPageLabels(pi, apiBase)
-                    .then(setupPageDropdown)
-                    .catch(() => {});
-
-                // Fulltext: in-place IIIF content search → result list (left panel) + image hit highlights.
-                const fts = { hits: [], idx: -1, term: '' };
-                const resultsBox = document.getElementById('immersiveSearchResults');
-                const resultsList = document.getElementById('immersiveResultsList');
-                const hitCounter = document.getElementById('immersiveHitCounter');
-                const hitsOnOrder = (order) => fts.hits.filter((h) => h.order === order);
-
-                const renderHighlights = () => {
-                    // Highlight every match on the current page(s), but flag the active hit so it
-                    // stands out (e.g. two matches of the same word on one page).
-                    const activeHit = fts.hits[fts.idx];
-                    const rects = viewer.getCurrentPages().flatMap((o) =>
-                        hitsOnOrder(o)
-                            .filter((h) => h.rect)
-                            .map((h) => ({ ...h.rect, active: h === activeHit }))
-                    );
-                    viewer.setHighlights(rects);
-                };
-
-                const renderResults = () => {
-                    if (!resultsBox || !resultsList) return;
-                    resultsBox.hidden = !fts.term;
-                    hitCounter.textContent = fts.hits.length ? `${fts.idx + 1} / ${fts.hits.length}` : '';
-                    resultsList.innerHTML = '';
-                    if (fts.term && !fts.hits.length) {
-                        const empty = document.createElement('li');
-                        empty.className = 'immersive__results-empty';
-                        empty.textContent = resultsBox.dataset.labelEmpty;
-                        resultsList.appendChild(empty);
-                        return;
-                    }
-                    fts.hits.forEach((h, i) => {
-                        const li = document.createElement('li');
-                        li.className = 'immersive__results-item' + (i === fts.idx ? ' is-active' : '');
-                        const page = document.createElement('span');
-                        page.className = 'immersive__results-page';
-                        page.textContent = h.page;
-                        const snippet = document.createElement('span');
-                        snippet.className = 'immersive__results-snippet';
-                        // Teaser: context before + the highlighted match + context after. Falls
-                        // back to the plain matched word when the backend sends no before/after.
-                        if (h.before || h.after) {
-                            const mark = document.createElement('mark');
-                            mark.className = 'immersive__results-match';
-                            mark.textContent = h.match || h.snippet || '';
-                            // The backend trims the boundary whitespace from before/after -- restore
-                            // a single space so the match doesn't glue to the context ("Geschichtedas").
-                            snippet.append(document.createTextNode(h.before ? `${h.before} ` : ''), mark, document.createTextNode(h.after ? ` ${h.after}` : ''));
-                        } else {
-                            snippet.textContent = h.snippet || '';
-                        }
-                        li.append(page, snippet);
-                        li.addEventListener('click', () => gotoHit(i));
-                        resultsList.appendChild(li);
-                    });
-                };
-
-                const gotoHit = (i) => {
-                    if (!fts.hits.length) return;
-                    fts.idx = (i + fts.hits.length) % fts.hits.length;
-                    const hit = fts.hits[fts.idx];
-                    if (!viewer.getCurrentPages().includes(hit.order)) viewer.goToPage(hit.order);
-                    else renderHighlights();
-                    renderResults();
-                };
-
-                const runSearch = async (term) => {
-                    fts.term = term;
-                    fts.hits = term ? await search(pi, apiBase, term) : [];
-                    fts.idx = fts.hits.length ? 0 : -1;
-                    renderResults();
-                    if (fts.idx >= 0) gotoHit(0);
-                    else viewer.clearHighlights();
-                };
-
-                viewer.onPageChange.subscribe(renderHighlights);
-
-                const searchPanel = document.getElementById('immersivePanelSearch');
-                const searchForm = searchPanel && searchPanel.querySelector('form');
-                const searchInput = searchPanel && searchPanel.querySelector('input[type="text"]');
-                if (searchForm && searchInput) {
-                    searchForm.addEventListener('submit', (e) => {
-                        e.preventDefault();
-                        runSearch(searchInput.value.trim());
-                    });
-
-                    // Reset affordance: an (×) inside the field (+ Escape) that empties the input
-                    // and clears the result list and image highlights. Shown only when there's text.
-                    const clearBtn = document.createElement('button');
-                    clearBtn.type = 'button';
-                    clearBtn.className = 'immersive__search-clear';
-                    clearBtn.textContent = '×';
-                    clearBtn.setAttribute('aria-label', (resultsBox && resultsBox.dataset.labelReset) || 'Reset');
-                    clearBtn.hidden = !searchInput.value;
-                    const group = searchInput.closest('.input-group') || searchInput.parentElement;
-                    group.insertBefore(clearBtn, group.querySelector('.input-group-addon') || null);
-                    const syncClear = () => {
-                        clearBtn.hidden = !searchInput.value;
-                    };
-                    const resetSearch = () => {
-                        searchInput.value = '';
-                        syncClear();
-                        runSearch('');
-                        searchInput.focus();
-                    };
-                    searchInput.addEventListener('input', syncClear);
-                    clearBtn.addEventListener('click', resetSearch);
-                    searchInput.addEventListener('keydown', (e) => {
-                        if (e.key === 'Escape' && searchInput.value) {
-                            e.preventDefault();
-                            resetSearch();
-                        }
-                    });
-                }
-                document.querySelectorAll('[data-immersive-hit]').forEach((btn) => {
-                    btn.addEventListener('click', () => {
-                        const n = fts.hits.length;
-                        gotoHit(btn.dataset.immersiveHit === 'next' ? nextIndex(fts.idx, n) : prevIndex(fts.idx, n));
-                    });
-                });
-
-                // Fulltext (page OCR): render the current page's transcription in the left panel,
-                // DFG-Viewer style. The text endpoint is per single page, so this is single-page
-                // only -- double-page mode disables the rail button (see updateFulltextAvail).
-                const fulltextPanel = document.getElementById('immersivePanelFulltext');
-                const fulltextBox = document.getElementById('immersiveFulltext');
-                const fulltextLoader = document.getElementById('immersiveFulltextLoader');
-                const fulltextBtn = document.querySelector('[data-immersive-panel="immersivePanelFulltext"]');
-                const fulltextTitleDefault = fulltextBtn ? fulltextBtn.getAttribute('title') : '';
-                if (fulltextPanel && fulltextBox) {
-                    let granularity = 'line';
-                    let fulltextReq = 0;
-                    let currentLink = null;
-
-                    const clearFulltextLink = () => {
-                        if (currentLink) {
-                            currentLink.destroy();
-                            currentLink = null;
-                        }
-                        viewer.clearTextRegions();
-                        if (fulltextLoader) fulltextLoader.hidden = true;
-                    };
-                    // Close-Hook: when any panel close runs, drop our overlays + wiring.
-                    onFulltextClose = clearFulltextLink;
-
-                    // Out-of-order guard: only the latest page request paints its text.
-                    const loadFulltext = async () => {
-                        const order = viewer.getCurrentPages()[0];
-                        if (order === undefined) return;
-                        const req = ++fulltextReq;
-                        clearFulltextLink();
-                        if (fulltextLoader) fulltextLoader.hidden = false;
-                        fulltextBox.textContent = '';
-                        fulltextBox.classList.remove('immersive__fulltext--empty');
-                        let regions = null;
-                        try {
-                            regions = await loadPageRegions(pi, apiBase, order, granularity);
-                        } catch (e) {
-                            regions = null;
-                        }
-                        if (req !== fulltextReq) return;
-                        if (fulltextLoader) fulltextLoader.hidden = true;
-                        if (regions && regions.length) {
-                            const fragment = granularity === 'word' ? buildWordSpans(regions) : buildLineSpans(regions);
-                            fulltextBox.replaceChildren(fragment);
-                            const regionEls = viewer.setTextRegions(regions);
-                            currentLink = mountTextImageLink({ box: fulltextBox, regionEls, scrollContainer: fulltextPanel });
-                        } else {
-                            fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
-                            fulltextBox.classList.add('immersive__fulltext--empty');
-                        }
-                    };
-
-                    // Granularity toggle (v1: 'word' is disabled in the markup; hook is ready).
-                    const granularityBtns = fulltextPanel.querySelectorAll('[data-immersive-granularity]');
-                    granularityBtns.forEach((b) => {
-                        b.addEventListener('click', () => {
-                            if (b.disabled) return;
-                            granularity = b.dataset.immersiveGranularity;
-                            granularityBtns.forEach((x) => {
-                                const on = x === b;
-                                x.classList.toggle('is-active', on);
-                                x.setAttribute('aria-pressed', String(on));
-                            });
-                            if (fulltextPanel.classList.contains('is-open')) loadFulltext();
-                        });
-                    });
-
-                    if (fulltextBtn) {
-                        fulltextBtn.addEventListener('click', () => {
-                            if (fulltextPanel.classList.contains('is-open')) loadFulltext();
-                        });
-                    }
-                    viewer.onPageChange.subscribe(() => {
-                        if (fulltextPanel.classList.contains('is-open')) loadFulltext();
-                    });
-                }
-
-                // Fulltext is per single page: in double-page mode grey out + disable the rail
-                // button (its tooltip explains why) and close the panel if it was open.
-                const updateFulltextAvail = () => {
-                    if (!fulltextBtn) return;
-                    const doublePage = !!(viewer.isDoublePage && viewer.isDoublePage());
-                    fulltextBtn.classList.toggle('immersive__tool-btn--disabled', doublePage);
-                    fulltextBtn.setAttribute('aria-disabled', String(doublePage));
-                    // Disabled -> drop out of the tab order so it can't be focused/activated.
-                    fulltextBtn.setAttribute('tabindex', doublePage ? '-1' : '0');
-                    const title = (doublePage && fulltextBtn.dataset.titleDisabled) || fulltextTitleDefault;
-                    fulltextBtn.setAttribute('title', title);
-                    fulltextBtn.setAttribute('aria-label', title);
-                    if (doublePage && fulltextPanel && fulltextPanel.classList.contains('is-open')) closePanels();
-                };
-                updateFulltextAvail();
-
-                // Overview: thumbnail grid overlay (lazy-mounted).
-                const gridOverlay = document.getElementById('immersiveGridOverlay');
-                const gridLoader = document.getElementById('immersiveGridLoader');
-                const gridClose = gridOverlay && gridOverlay.querySelector('.immersive__grid-close');
-                const gridTrigger = document.querySelector('[data-immersive-action="overview"]:not(.immersive__grid-close)');
-                let gridMounted = false;
-                let gridTag = null;
-                // Element to restore focus to when the overlay closes (the opener).
-                let gridOpener = null;
-                // Focus-trap keydown handler, added on open and removed on close.
-                let gridTrapHandler = null;
-                const gridFocusables = () =>
-                    Array.from(gridOverlay.querySelectorAll('a[href],button,input,[tabindex]:not([tabindex="-1"])')).filter(
-                        (n) => !n.hidden && !n.disabled && n.offsetParent !== null
-                    );
-                const gridActions = new rxjs.Subject();
-                gridActions.subscribe((e) => {
-                    if (e && e.action === 'clickImage' && typeof e.value === 'number') {
-                        viewer.goToPage(e.value);
-                        closeGrid();
-                    }
-                });
-                // The grid highlights the current page via opts.index -- the 0-based
-                // canvas index, which equals the viewer's 0-based page order. Keep it in
-                // sync so the right sheet stays selected as the page changes.
-                const currentOrder = () => {
-                    const pages = viewer.getCurrentPages ? viewer.getCurrentPages() : [];
-                    return pages.length ? pages[0] : 0;
-                };
-                const syncGridSelection = () => {
-                    if (gridTag) {
-                        gridTag.opts.index = currentOrder();
-                        gridTag.update();
-                    }
-                };
-                viewer.onPageChange.subscribe(() => {
-                    if (gridOverlay && !gridOverlay.hidden) syncGridSelection();
-                });
-                const openGrid = () => {
-                    // Remember the opener so focus returns there on close.
-                    gridOpener = gridTrigger || document.activeElement;
-                    gridOverlay.hidden = false;
-                    // Modal dialog semantics + accessible name (reuse the trigger's label).
-                    gridOverlay.setAttribute('role', 'dialog');
-                    gridOverlay.setAttribute('aria-modal', 'true');
-                    const gridLabel = gridTrigger && gridTrigger.getAttribute('aria-label');
-                    if (gridLabel) gridOverlay.setAttribute('aria-label', gridLabel);
-                    // Focus trap: keep Tab/Shift+Tab cycling within the overlay.
-                    gridTrapHandler = (e) => {
-                        if (e.key !== 'Tab') return;
-                        const f = gridFocusables();
-                        if (!f.length) return;
-                        const first = f[0];
-                        const last = f[f.length - 1];
-                        if (e.shiftKey && document.activeElement === first) {
-                            e.preventDefault();
-                            last.focus();
-                        } else if (!e.shiftKey && document.activeElement === last) {
-                            e.preventDefault();
-                            first.focus();
-                        }
-                    };
-                    gridOverlay.addEventListener('keydown', gridTrapHandler);
-                    if (!gridMounted) {
-                        gridTag = riot.mount('#immersiveThumbnails', 'thumbnails', {
-                            source: `${apiBase}/records/${pi}/manifest`,
-                            type: 'sequence',
-                            actionlistener: gridActions,
-                            imagesize: '!320,440', // IIIF size string (fit within 320x440, crisp on HiDPI)
-                            index: currentOrder(),
-                        })[0];
-                        gridMounted = true;
-                        // Hide the loading screen as soon as the first thumbnail paints
-                        // (safety timeout in case the manifest/images never resolve).
-                        let gridLoaderDone = false;
-                        let gridLoaderTimer;
-                        const hideGridLoader = () => {
-                            if (gridLoaderDone) return;
-                            gridLoaderDone = true;
-                            clearTimeout(gridLoaderTimer);
-                            if (gridLoader) gridLoader.hidden = true;
-                        };
-                        // <img> load events don't bubble -> listen in the capture phase
-                        const thumbsMount = document.getElementById('immersiveThumbnails');
-                        if (thumbsMount) thumbsMount.addEventListener('load', hideGridLoader, { capture: true, once: true });
-                        gridLoaderTimer = setTimeout(hideGridLoader, 8000);
-                    } else {
-                        syncGridSelection();
-                    }
-                    // Move focus into the dialog (the close button).
-                    if (gridClose) gridClose.focus();
-                };
-                const closeGrid = () => {
-                    if (!gridOverlay || gridOverlay.hidden) return;
-                    gridOverlay.hidden = true;
-                    if (gridTrapHandler) {
-                        gridOverlay.removeEventListener('keydown', gridTrapHandler);
-                        gridTrapHandler = null;
-                    }
-                    // Return focus to whatever opened the overlay.
-                    const restore = gridOpener || gridTrigger;
-                    gridOpener = null;
-                    if (restore && typeof restore.focus === 'function') restore.focus();
-                };
-                const toggleGrid = () => {
-                    if (!gridOverlay) return;
-                    if (gridOverlay.hidden) openGrid();
-                    else closeGrid();
-                };
-
-                // Esc closes the open overview overlay (mirrors the close button).
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && gridOverlay && !gridOverlay.hidden) {
-                        closeGrid();
-                    }
-                });
-
-                document.querySelectorAll('[data-immersive-page]').forEach((btn) => {
-                    btn.addEventListener('click', () => (btn.dataset.immersivePage === 'next' ? viewer.next() : viewer.prev()));
-                });
-                document.querySelectorAll('[data-immersive-action]').forEach((btn) => {
-                    btn.addEventListener('click', () => {
-                        const action = btn.dataset.immersiveAction;
-                        if (action === 'zoom-in') viewer.zoomIn();
-                        else if (action === 'zoom-out') viewer.zoomOut();
-                        else if (action === 'rotate-left') viewer.rotateLeft();
-                        else if (action === 'rotate-right') viewer.rotateRight();
-                        else if (action === 'reset') viewer.resetView();
-                        else if (action === 'fullscreen') toggleImmersiveFullscreen();
-                        else if (action === 'overview') toggleGrid();
-                        else if (action === 'double-page') {
-                            const on = viewer.toggleDoublePage();
-                            btn.setAttribute('aria-pressed', String(on));
-                            btn.classList.toggle('immersive__tool-btn--active', on);
-                            document.querySelector('.immersive__viewer')?.classList.toggle('is-double-page', on);
-                            updateFulltextAvail();
-                        }
-                    });
-                });
-
-                // Native fullscreen runs on .immersive__viewer; Bootstrap appends the
-                // share/cite/filter popovers to <body>, which is outside the fullscreen
-                // element, so they don't paint. Re-home those popovers into the fullscreen
-                // element while fullscreen is active, and restore the default on exit.
-                const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
-                document.addEventListener('fullscreenchange', () => {
-                    // Expose the fullscreen toggle's on/off state (no exit-label message wired
-                    // in the markup, so at least announce pressed state).
-                    if (fullscreenBtn) {
-                        fullscreenBtn.setAttribute('aria-pressed', String(!!document.fullscreenElement));
-                        const exitLabel = fullscreenBtn.dataset.labelExit;
-                        const enterLabel = fullscreenBtn.dataset.labelEnter || fullscreenBtn.getAttribute('aria-label');
-                        const label = document.fullscreenElement && exitLabel ? exitLabel : enterLabel;
-                        if (label) {
-                            fullscreenBtn.setAttribute('aria-label', label);
-                            fullscreenBtn.setAttribute('title', label);
-                        }
-                    }
-                    document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
-                        const $trigger = window.$ && window.$(trigger);
-                        const inst = $trigger && $trigger.data('bs.popover');
-                        if (!inst) return;
-                        $trigger.popover('hide');
-                        if (document.fullscreenElement) {
-                            if (inst.config._savedContainer === undefined) {
-                                inst.config._savedContainer = inst.config.container;
-                            }
-                            inst.config.container = document.fullscreenElement;
-                        } else if (inst.config._savedContainer !== undefined) {
-                            inst.config.container = inst.config._savedContainer;
-                            delete inst.config._savedContainer;
-                        }
-                    });
-                });
-
-                // (Panel open/close is bound earlier -- before loadPageServices -- so the
-                // sidebar opens immediately, without waiting for the first image to load.)
-
-                // TOC drawer: clicking an entry navigates in place (no reload) and
-                // highlights that section immediately, so the click intent always wins --
-                // regardless of load latency or which page of a double-page spread the
-                // section starts on. Entries carry their 1-based physical page number as
-                // data-page-no; entries without one fall through to normal navigation.
-                const menuPanel = document.getElementById('immersivePanelMenu');
-                if (menuPanel) {
-                    const tocEntries = () =>
-                        Array.from(menuPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
-                            .filter((el) => el.dataset.level !== '0') // skip the hidden record root
-                            .map((el) => ({ el, no: Number(el.dataset.pageNo) }))
-                            .filter((x) => Number.isFinite(x.no) && x.no >= 1);
-
-                    const setTocActive = (el) => {
-                        // Tree-view: let the widget set active + expand collapsed ancestors, so a
-                        // section reached via the grid/chevrons inside a collapsed branch opens up.
-                        // (Its own scroll is a no-op here -- the panel scrolls, not the list -- so
-                        // we still scrollIntoView ourselves when the panel is open.)
-                        if (el && el.dataset.iddoc && window.viewerJS && viewerJS.widgetToc) {
-                            viewerJS.widgetToc.setActive(el.dataset.iddoc.replace('iddoc_', ''));
-                            if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
-                            return;
-                        }
-                        menuPanel.querySelectorAll('.widget-toc__element.active, .widget-toc__element-link.active').forEach((x) => x.classList.remove('active'));
-                        if (el) {
-                            el.classList.add('active');
-                            if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
-                        }
-                    };
-
-                    menuPanel.addEventListener('click', (e) => {
-                        const link = e.target.closest('.widget-toc__element-link a');
-                        if (!link) return;
-                        const element = link.closest('.widget-toc__element');
-                        const pageNo = element ? Number(element.dataset.pageNo) : NaN;
-                        if (!Number.isFinite(pageNo) || pageNo < 1) return;
-                        e.preventDefault();
-                        setTocActive(element);
-                        viewer.goToPage(pageNo - 1);
-                    });
-
-                    // Keep the highlight on the section the reader is in and let it follow
-                    // along when paging via the chevrons/grid/search. A section owns the
-                    // page range [pageNo, nextPageNo). The active section is kept while any
-                    // visible page (single page, or either page of a double-page spread)
-                    // still falls in its range; otherwise the section owning the last
-                    // visible page takes over. Range-based, so a section starting on the
-                    // right page of a spread no longer mis-picks its neighbour.
-                    const syncTocActive = () => {
-                        const entries = tocEntries();
-                        const pages = viewer.getCurrentPages().map((p) => p + 1);
-                        if (!entries.length || !pages.length) return;
-                        const active = menuPanel.querySelector('.widget-toc__element.active[data-page-no]');
-                        if (active) {
-                            const no = Number(active.dataset.pageNo);
-                            const nextNo = Math.min(Infinity, ...entries.map((x) => x.no).filter((n) => n > no));
-                            if (pages.some((p) => p >= no && p < nextNo)) return;
-                        }
-                        const top = Math.max(...pages);
-                        let best = null;
-                        entries.forEach((x) => {
-                            if (x.no <= top && (!best || x.no >= best.no)) best = x;
-                        });
-                        setTocActive(best ? best.el : null);
-                    };
-                    viewer.onPageChange.subscribe(syncTocActive);
-                    syncTocActive();
-                }
-            })
-            .catch((e) => console.error('immersive viewer init failed', e));
     }
 
     /**
-     * Defers the imageFilters mount until the Filter popover is first shown. Bootstrap only
-     * portals #immersiveFilterPopover (and its <imageFilters> child) into the DOM on show, so
-     * mounting on load finds nothing and the popover opens empty. Mounts once on the first
-     * shown.bs.popover; the origin-clean check may still hide the button before it can open.
+     * Builds the title page picker: a "go to page" input plus a listbox with one
+     * option per page, labelled with the manifest page labels.
+     *
+     * @param {IvViewer} viewer
+     * @param {string[]} labels page labels, index-aligned with the page orders
+     */
+    function setupPageDropdown(viewer, labels) {
+        const total = viewer.getPageCount();
+        const trigger = document.querySelector('[data-immersive-title-trigger]');
+        const dropdown = document.getElementById('immersivePageDropdown');
+        const list = document.getElementById('immersivePageList');
+        const input = document.getElementById('immersivePageInput');
+        if (!trigger || !dropdown || !list) return;
+        if (total < 2) {
+            trigger.classList.add('immersive__title-trigger--static');
+            return;
+        }
+        if (input) input.max = String(total);
+        const listLabel = input && input.labels && input.labels[0] ? input.labels[0].textContent.trim() : '';
+        if (listLabel) list.setAttribute('aria-label', listLabel);
+
+        const items = [];
+        for (let order = 0; order < total; order++) {
+            const li = document.createElement('li');
+            li.setAttribute('role', 'presentation');
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'immersive__page-dropdown-item';
+            btn.dataset.order = String(order);
+            btn.setAttribute('role', 'option');
+            btn.setAttribute('aria-selected', 'false');
+            btn.tabIndex = -1;
+            const num = document.createElement('span');
+            num.className = 'immersive__page-dropdown-num';
+            num.textContent = `${order + 1}:`;
+            const lbl = document.createElement('span');
+            lbl.className = 'immersive__page-dropdown-item-label';
+            lbl.textContent = (labels[order] || '').trim();
+            btn.append(num, lbl);
+            li.append(btn);
+            list.append(li);
+            items.push(btn);
+        }
+
+        const markActive = () => {
+            const current = viewer.getCurrentPages();
+            let rovingSet = false;
+            items.forEach((btn) => {
+                const on = current.includes(Number(btn.dataset.order));
+                btn.classList.toggle('is-active', on);
+                btn.setAttribute('aria-selected', on ? 'true' : 'false');
+                btn.tabIndex = on && !rovingSet ? 0 : -1;
+                if (on) rovingSet = true;
+            });
+            if (!rovingSet && items.length) items[0].tabIndex = 0;
+        };
+
+        const focusOption = (idx) => {
+            if (idx < 0) idx = 0;
+            if (idx > items.length - 1) idx = items.length - 1;
+            const target = items[idx];
+            if (!target) return;
+            items.forEach((btn) => (btn.tabIndex = btn === target ? 0 : -1));
+            target.focus();
+        };
+
+        const isOpen = () => !dropdown.hidden;
+        const onOutside = (e) => {
+            if (!dropdown.contains(e.target) && !trigger.contains(e.target)) close();
+        };
+        const close = () => {
+            if (!isOpen()) return;
+            dropdown.hidden = true;
+            trigger.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('pointerdown', onOutside, true);
+        };
+        const open = () => {
+            if (isOpen()) return;
+            markActive();
+            dropdown.hidden = false;
+            trigger.setAttribute('aria-expanded', 'true');
+            document.addEventListener('pointerdown', onOutside, true);
+            const active = list.querySelector('.immersive__page-dropdown-item.is-active');
+            if (active) {
+                list.scrollTop = Math.max(0, active.offsetTop - list.offsetTop - (list.clientHeight - active.clientHeight) / 2);
+            }
+            if (input) {
+                input.value = '';
+                input.focus({ preventScroll: true });
+            }
+        };
+
+        trigger.addEventListener('click', () => (isOpen() ? close() : open()));
+        list.addEventListener('click', (e) => {
+            const btn = e.target.closest('.immersive__page-dropdown-item');
+            if (!btn) return;
+            viewer.goToPage(Number(btn.dataset.order));
+            close();
+        });
+        list.addEventListener('keydown', (e) => {
+            const cur = items.indexOf(document.activeElement);
+            if (cur === -1 && !['Escape'].includes(e.key)) return;
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    focusOption(cur + 1);
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    focusOption(cur - 1);
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    focusOption(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    focusOption(items.length - 1);
+                    break;
+                case 'Enter':
+                case ' ':
+                case 'Spacebar':
+                    e.preventDefault();
+                    viewer.goToPage(Number(items[cur].dataset.order));
+                    close();
+                    trigger.focus();
+                    break;
+                case 'Escape':
+                    e.preventDefault();
+                    close();
+                    trigger.focus();
+                    break;
+            }
+        });
+        if (input) {
+            input.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                const n = parseInt(input.value, 10);
+                if (Number.isFinite(n) && n >= 1 && n <= total) {
+                    viewer.goToPage(n - 1);
+                    close();
+                }
+            });
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isOpen() && !document.querySelector('#immersiveGridOverlay:not([hidden])')) {
+                close();
+                trigger.focus();
+            }
+        });
+        viewer.onPageChange.subscribe(markActive);
+        markActive();
+    }
+
+    /**
+     * Wires the in-place IIIF content search: result list in the left panel,
+     * prev/next hit buttons, and hit highlights on the image.
+     *
+     * @param {IvViewer} viewer
+     * @param {string} pi
+     * @param {string} apiBase
+     */
+    function setupFulltextSearch(viewer, pi, apiBase) {
+        const searchState = { hits: [], activeIndex: -1, term: '' };
+        const resultsBox = document.getElementById('immersiveSearchResults');
+        const resultsList = document.getElementById('immersiveResultsList');
+        const hitCounter = document.getElementById('immersiveHitCounter');
+        const hitsOnOrder = (order) => searchState.hits.filter((h) => h.order === order);
+
+        const renderHighlights = () => {
+            const activeHit = searchState.hits[searchState.activeIndex];
+            const rects = viewer.getCurrentPages().flatMap((o) =>
+                hitsOnOrder(o)
+                    .filter((h) => h.rect)
+                    .map((h) => ({ ...h.rect, active: h === activeHit }))
+            );
+            viewer.setHighlights(rects);
+        };
+
+        const renderResults = () => {
+            if (!resultsBox || !resultsList) return;
+            resultsBox.hidden = !searchState.term;
+            if (hitCounter) {
+                hitCounter.textContent = searchState.hits.length
+                    ? `${searchState.activeIndex + 1} / ${searchState.hits.length}`
+                    : (searchState.term && resultsBox.dataset.labelEmpty) || '';
+            }
+            resultsList.innerHTML = '';
+            if (searchState.term && !searchState.hits.length) {
+                const empty = document.createElement('li');
+                empty.className = 'immersive__results-empty';
+                empty.textContent = resultsBox.dataset.labelEmpty || '';
+                resultsList.appendChild(empty);
+                return;
+            }
+            searchState.hits.forEach((h, i) => {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'immersive__results-item' + (i === searchState.activeIndex ? ' is-active' : '');
+                const page = document.createElement('span');
+                page.className = 'immersive__results-page';
+                page.textContent = h.page;
+                const snippet = document.createElement('span');
+                snippet.className = 'immersive__results-snippet';
+                if (h.before || h.after) {
+                    const mark = document.createElement('mark');
+                    mark.className = 'immersive__results-match';
+                    mark.textContent = h.match || h.snippet || '';
+                    snippet.append(document.createTextNode(h.before ? `${h.before} ` : ''), mark, document.createTextNode(h.after ? ` ${h.after}` : ''));
+                } else {
+                    snippet.textContent = h.snippet || '';
+                }
+                btn.append(page, snippet);
+                btn.addEventListener('click', () => goToHit(i));
+                li.append(btn);
+                resultsList.appendChild(li);
+            });
+        };
+
+        const goToHit = (i) => {
+            if (!searchState.hits.length) return;
+            searchState.activeIndex = (i + searchState.hits.length) % searchState.hits.length;
+            const hit = searchState.hits[searchState.activeIndex];
+            if (!viewer.getCurrentPages().includes(hit.order)) viewer.goToPage(hit.order);
+            else renderHighlights();
+            renderResults();
+        };
+
+        const runSearch = async (term) => {
+            searchState.term = term;
+            searchState.hits = term
+                ? await search(pi, apiBase, term).catch((e) => {
+                      console.error('immersive fulltext search failed', e);
+                      return [];
+                  })
+                : [];
+            searchState.activeIndex = searchState.hits.length ? 0 : -1;
+            renderResults();
+            if (searchState.activeIndex >= 0) goToHit(0);
+            else viewer.clearHighlights();
+        };
+
+        viewer.onPageChange.subscribe(renderHighlights);
+
+        const searchPanel = document.getElementById('immersivePanelSearch');
+        const searchForm = searchPanel && searchPanel.querySelector('form');
+        const searchInput = searchPanel && searchPanel.querySelector('input[type="text"]');
+        if (searchForm && searchInput) {
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                runSearch(searchInput.value.trim());
+            });
+
+            const clearBtn = document.createElement('button');
+            clearBtn.type = 'button';
+            clearBtn.className = 'immersive__search-clear';
+            clearBtn.textContent = '×';
+            clearBtn.setAttribute('aria-label', (resultsBox && resultsBox.dataset.labelReset) || '');
+            clearBtn.hidden = !searchInput.value;
+            const group = searchInput.closest('.input-group') || searchInput.parentElement;
+            group.insertBefore(clearBtn, group.querySelector('.input-group-addon') || null);
+            const syncClear = () => {
+                clearBtn.hidden = !searchInput.value;
+            };
+            const resetSearch = () => {
+                searchInput.value = '';
+                syncClear();
+                runSearch('');
+                searchInput.focus();
+            };
+            searchInput.addEventListener('input', syncClear);
+            clearBtn.addEventListener('click', resetSearch);
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && searchInput.value) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    resetSearch();
+                }
+            });
+        }
+        document.querySelectorAll('[data-immersive-hit]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const n = searchState.hits.length;
+                goToHit(btn.dataset.immersiveHit === 'next' ? nextIndex(searchState.activeIndex, n) : prevIndex(searchState.activeIndex, n));
+            });
+        });
+    }
+
+    /**
+     * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
+     * focus handling and keeps its selection on the current page.
+     *
+     * @param {IvViewer} viewer
+     * @param {string} pi
+     * @param {string} apiBase
+     * @returns {function():void} toggles the overlay
+     */
+    function setupOverviewGrid(viewer, pi, apiBase) {
+        const GRID_LOADER_TIMEOUT_MS = 8000;
+        const gridOverlay = document.getElementById('immersiveGridOverlay');
+        const gridLoader = document.getElementById('immersiveGridLoader');
+        const gridClose = gridOverlay && gridOverlay.querySelector('.immersive__grid-close');
+        const gridTrigger = document.querySelector('[data-immersive-action="overview"]:not(.immersive__grid-close)');
+        let gridMounted = false;
+        let gridTag = null;
+        let gridOpener = null;
+        let gridTrapHandler = null;
+        const gridFocusables = () =>
+            Array.from(gridOverlay.querySelectorAll('a[href],button,input,[tabindex]:not([tabindex="-1"])')).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
+        const gridActions = new rxjs.Subject();
+        gridActions.subscribe((e) => {
+            if (e && e.action === 'clickImage' && typeof e.value === 'number') {
+                viewer.goToPage(e.value);
+                closeGrid();
+            }
+        });
+        const syncGridSelection = () => {
+            if (gridTag) {
+                gridTag.opts.index = currentOrder(viewer);
+                gridTag.update();
+            }
+        };
+        viewer.onPageChange.subscribe(() => {
+            if (gridOverlay && !gridOverlay.hidden) syncGridSelection();
+        });
+        const openGrid = () => {
+            gridOpener = gridTrigger || document.activeElement;
+            gridOverlay.hidden = false;
+            gridOverlay.setAttribute('role', 'dialog');
+            gridOverlay.setAttribute('aria-modal', 'true');
+            const gridLabel = gridTrigger && gridTrigger.getAttribute('aria-label');
+            if (gridLabel) gridOverlay.setAttribute('aria-label', gridLabel);
+            gridTrapHandler = (e) => {
+                if (e.key !== 'Tab') return;
+                const f = gridFocusables();
+                if (!f.length) return;
+                const first = f[0];
+                const last = f[f.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            };
+            gridOverlay.addEventListener('keydown', gridTrapHandler);
+            if (!gridMounted) {
+                gridTag = riot.mount('#immersiveThumbnails', 'thumbnails', {
+                    source: `${apiBase}/records/${pi}/manifest`,
+                    type: 'sequence',
+                    actionlistener: gridActions,
+                    imagesize: '!320,440',
+                    index: currentOrder(viewer),
+                })[0];
+                gridMounted = true;
+                let gridLoaderDone = false;
+                let gridLoaderTimer;
+                const hideGridLoader = () => {
+                    if (gridLoaderDone) return;
+                    gridLoaderDone = true;
+                    clearTimeout(gridLoaderTimer);
+                    if (gridLoader) gridLoader.hidden = true;
+                };
+                const thumbsMount = document.getElementById('immersiveThumbnails');
+                if (thumbsMount) thumbsMount.addEventListener('load', hideGridLoader, { capture: true, once: true });
+                gridLoaderTimer = setTimeout(hideGridLoader, GRID_LOADER_TIMEOUT_MS);
+            } else {
+                syncGridSelection();
+            }
+            if (gridClose) gridClose.focus();
+        };
+        const closeGrid = () => {
+            if (!gridOverlay || gridOverlay.hidden) return;
+            gridOverlay.hidden = true;
+            if (gridTrapHandler) {
+                gridOverlay.removeEventListener('keydown', gridTrapHandler);
+                gridTrapHandler = null;
+            }
+            const restore = gridOpener || gridTrigger;
+            gridOpener = null;
+            if (restore && typeof restore.focus === 'function') restore.focus();
+        };
+        const toggleGrid = () => {
+            if (!gridOverlay) return;
+            if (gridOverlay.hidden) openGrid();
+            else closeGrid();
+        };
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && gridOverlay && !gridOverlay.hidden) {
+                closeGrid();
+            }
+        });
+        return toggleGrid;
+    }
+
+    /**
+     * TOC drawer: entry clicks navigate in place (entries carry their 1-based page
+     * number as data-page-no), and the active-section highlight follows the
+     * currently visible page(s).
+     *
+     * @param {IvViewer} viewer
+     */
+    function setupTocSync(viewer) {
+        const menuPanel = document.getElementById('immersivePanelMenu');
+        if (!menuPanel) return;
+        const tocEntries = () =>
+            Array.from(menuPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
+                .filter((el) => el.dataset.level !== '0') // skip the hidden record root
+                .map((el) => ({ el, no: Number(el.dataset.pageNo) }))
+                .filter((x) => Number.isFinite(x.no) && x.no >= 1);
+
+        const setTocActive = (el) => {
+            if (el && el.dataset.iddoc && window.viewerJS && viewerJS.widgetToc) {
+                viewerJS.widgetToc.setActive(el.dataset.iddoc.replace('iddoc_', ''));
+                if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
+                return;
+            }
+            menuPanel.querySelectorAll('.widget-toc__element.active, .widget-toc__element-link.active').forEach((x) => x.classList.remove('active'));
+            if (el) {
+                el.classList.add('active');
+                if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
+            }
+        };
+
+        menuPanel.addEventListener('click', (e) => {
+            const link = e.target.closest('.widget-toc__element-link a');
+            if (!link) return;
+            const element = link.closest('.widget-toc__element');
+            const pageNo = element ? Number(element.dataset.pageNo) : NaN;
+            if (!Number.isFinite(pageNo) || pageNo < 1) return;
+            e.preventDefault();
+            setTocActive(element);
+            viewer.goToPage(pageNo - 1);
+        });
+
+        const syncTocActive = () => {
+            const entries = tocEntries();
+            const pages = viewer.getCurrentPages().map((p) => p + 1);
+            if (!entries.length || !pages.length) return;
+            const active = menuPanel.querySelector('.widget-toc__element.active[data-page-no]');
+            const activeNo = active ? Number(active.dataset.pageNo) : null;
+            const targetNo = pickActiveTocPageNo(
+                entries.map((x) => x.no),
+                pages,
+                activeNo
+            );
+            if (active && targetNo === activeNo) return;
+            let best = null;
+            entries.forEach((x) => {
+                if (x.no === targetNo) best = x;
+            });
+            setTocActive(best ? best.el : null);
+        };
+        viewer.onPageChange.subscribe(syncTocActive);
+        syncTocActive();
+    }
+
+    const FILTER_TRIGGER_SELECTOR = '[data-popover-element="#immersiveFilterPopover"]';
+
+    /**
+     * Whether the viewer's canvas is origin-clean (CORS): pixel filters would throw on a
+     * tainted canvas. Checked both up front and again at mount time, because the taint
+     * status can change once tiles have actually loaded.
+     */
+    function isViewerOriginClean(viewer) {
+        const image = viewer.viewer;
+        return typeof image.isOriginClean !== 'function' || image.isOriginClean();
+    }
+
+    /**
+     * Defers the imageFilters mount until the Filter popover is first shown: Bootstrap only
+     * portals #immersiveFilterPopover (and its <imageFilters> child) into the DOM on show,
+     * so mounting on load would find nothing and the popover would open empty. After the
+     * mount the popover is repositioned, because riot fills it only after Popper has
+     * already measured the still-empty shell.
      */
     function bindImageFiltersMount(viewer) {
-        const btn = document.querySelector('[data-popover-element="#immersiveFilterPopover"]');
+        const btn = document.querySelector(FILTER_TRIGGER_SELECTOR);
         if (!btn) return;
-        // Origin-tainted tiles can't be filtered (CORS): hide the Filter button up front.
-        const image = viewer.viewer;
-        const originClean = typeof image.isOriginClean !== 'function' || image.isOriginClean();
-        if (!originClean) {
+        if (!isViewerOriginClean(viewer)) {
             btn.hidden = true;
             return;
         }
         const $ = window.$ || window.jQuery;
         if (!$) {
-            // No jQuery -> fall back to the immediate (pre-portal) mount attempt.
             mountImageFilters(viewer);
             return;
         }
-        // Mount once, the first time Bootstrap shows the popover (element now in the DOM).
-        // riot fills the popover *after* Popper positioned the still-empty shell, so the
-        // grown content would hang below the trigger on that first open; reposition once
-        // mounted so it sits above the button like on every later open.
         $(btn).one('shown.bs.popover', () => {
             mountImageFilters(viewer);
             $(btn).popover('update');
@@ -2958,12 +2955,9 @@
         const selectors = ['#immersiveSharePopover', '#immersiveCitationPopover', '#immersiveFilterPopover'];
         selectors.forEach((sel) => {
             const trigger = document.querySelector(`[data-popover-element="${sel}"]`);
-            // Guard against double-binding if init runs more than once.
             if (!trigger || trigger.dataset.a11yBound === 'true') return;
             trigger.dataset.a11yBound = 'true';
 
-            // Resolve the portaled .popover element: Bootstrap sets aria-describedby on the
-            // trigger while shown; fall back to the last visible .popover in the DOM.
             const popoverEl = () => {
                 const id = trigger.getAttribute('aria-describedby');
                 const byId = id && document.getElementById(id);
@@ -2976,7 +2970,6 @@
                 trigger.setAttribute('aria-expanded', 'true');
                 const pop = popoverEl();
                 if (!pop) return;
-                // Escape inside the popover closes it and returns focus to the trigger.
                 pop.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         e.preventDefault();
@@ -2984,12 +2977,8 @@
                         trigger.focus();
                     }
                 });
-                // Move focus into the popover (first control, else the container itself).
                 const first = pop.querySelector(FOCUSABLE);
                 if (first) {
-                    // Bootstrap tooltips fire on focus, so auto-focusing the first control on
-                    // open would flash its tooltip (e.g. the share links' "share on X"). Disable
-                    // it across the programmatic focus, then re-enable so hover/focus still work.
                     const $first = $(first);
                     const hasTip = typeof $first.tooltip === 'function' && !!$first.data('bs.tooltip');
                     if (hasTip) $first.tooltip('disable');
@@ -3003,8 +2992,6 @@
 
             $(trigger).on('hidden.bs.popover', () => {
                 trigger.setAttribute('aria-expanded', 'false');
-                // The popover was removed from the DOM: if focus was inside it (or fell to body),
-                // pull it back to the trigger so keyboard users aren't stranded.
                 const active = document.activeElement;
                 if (!active || active === document.body) trigger.focus();
             });
@@ -3017,12 +3004,10 @@
      * canvas (CORS); if the tiles taint it, the Filter button is hidden instead.
      */
     function mountImageFilters(viewer) {
-        const btn = document.querySelector('[data-popover-element="#immersiveFilterPopover"]');
+        const btn = document.querySelector(FILTER_TRIGGER_SELECTOR);
         if (!btn || !document.querySelector('imageFilters') || !window.immersiveFilterConfig) return;
-        const image = viewer.viewer;
-        const originClean = typeof image.isOriginClean !== 'function' || image.isOriginClean();
-        if (originClean) {
-            riot.mount('imageFilters', { image, config: window.immersiveFilterConfig });
+        if (isViewerOriginClean(viewer)) {
+            riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
         } else {
             btn.hidden = true;
         }

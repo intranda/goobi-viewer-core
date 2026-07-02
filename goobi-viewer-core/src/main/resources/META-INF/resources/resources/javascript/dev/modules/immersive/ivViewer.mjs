@@ -1,4 +1,4 @@
-import { computeSpread, residentPages } from './iv_imageWindow.mjs';
+import { computeSpread, residentPages } from './ivImageWindow.mjs';
 
 /** Minimal dependency-free event emitter (rxjs-compatible `subscribe` shape). */
 export class Emitter {
@@ -19,19 +19,29 @@ function toTileSource(serviceId) {
     return serviceId.endsWith('/info.json') ? serviceId : `${serviceId}/info.json`;
 }
 
-/** Tweens one TiledImage's opacity 0→1 while fading another 1→0 (rAF). */
-function _crossfade(incoming, outgoing, durationMs) {
+/**
+ * Runs a rAF tween over `durationMs`, calling `onFrame` with the progress 0→1
+ * each frame (a non-positive duration jumps straight to 1). Resolves when done.
+ */
+function _tween(durationMs, onFrame) {
     return new Promise((resolve) => {
         let start = null;
         const step = (ts) => {
             if (start === null) start = ts;
             const t = durationMs <= 0 ? 1 : Math.min(1, (ts - start) / durationMs);
-            if (incoming) incoming.setOpacity(t);
-            if (outgoing) outgoing.setOpacity(1 - t);
+            onFrame(t);
             if (t < 1) requestAnimationFrame(step);
             else resolve();
         };
         requestAnimationFrame(step);
+    });
+}
+
+/** Tweens one TiledImage's opacity 0→1 while fading another 1→0 (rAF). */
+function _crossfade(incoming, outgoing, durationMs) {
+    return _tween(durationMs, (t) => {
+        if (incoming) incoming.setOpacity(t);
+        if (outgoing) outgoing.setOpacity(1 - t);
     });
 }
 
@@ -47,9 +57,14 @@ function _heightBand(rect) {
     return band;
 }
 
-/** Single-image sequence config (mirrors zoomableImage.mjs); _arrangeImageSequence reads it on every open(). */
-const _sequence = { columns: 1, useWindowing: true, windowSize: 100, windowExpandThreshold: 10, windowExpandSize: 50 };
+/**
+ * Default single-image sequence config (mirrors zoomableImage.mjs); _arrangeImageSequence
+ * reads it on every open(). Copied per instance because _open() mutates `columns`.
+ */
+const SEQUENCE_DEFAULTS = { columns: 1, useWindowing: true, windowSize: 100, windowExpandThreshold: 10, windowExpandSize: 50 };
 const PREFETCH_RADIUS = 1;
+const ZOOM_STEP = 1.5;
+const FADE_MS = 160;
 
 /**
  * Last-resort release for the navigation lock. Double-page navigation re-opens the library
@@ -82,11 +97,11 @@ export default class IvViewer {
         this._anchor = null;
         this._preloaded = new Map();
         this._navigating = false;
-        this._queuedNav = null; // latest page order requested while a navigation is running
-        this._queuedReopen = false; // a mode toggle requested while navigating (reopen on release)
+        this._queuedNav = null;
+        this._queuedReopen = false;
         this._navWatchdogMs = opts.navWatchdogMs ?? NAV_WATCHDOG_MS;
         this._highlights = [];
-        this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 160;
+        this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
         this.onPageChange = new Emitter();
         this.onLoaded = new Emitter();
 
@@ -95,14 +110,12 @@ export default class IvViewer {
             fittingMode: 'fixed',
             margins: { top: 64, bottom: 72, left: 64, right: 64 },
             zoom: { enabled: true, max: opts.maxZoom },
-            sequence: _sequence,
+            sequence: { ...SEQUENCE_DEFAULTS },
             navigator: { enabled: false },
         });
         this.zoom = new ImageView.Controls.Zoom(this.viewer);
         this.rotation = new ImageView.Controls.Rotation(this.viewer);
 
-        // Left/right arrows page the work instead of panning (preventDefaultAction skips OSD's
-        // horizontal pan for that key); all other keys keep OSD's native handling.
         this.viewer.openseadragon.addHandler('canvas-key', (e) => {
             const key = e.originalEvent.key;
             if (key === 'ArrowRight') this.next();
@@ -112,15 +125,15 @@ export default class IvViewer {
             e.originalEvent.preventDefault();
         });
 
-        this._open(this.current).then(() => {
-            this._refreshPreload();
-            this.onLoaded.emit(this.current);
-        });
+        this._open(this.current)
+            .then(() => {
+                this._refreshPreload();
+                this.onLoaded.emit(this.current);
+            })
+            .catch((e) => console.error('immersive viewer initial open failed', e));
     }
 
-    // --- search highlights ---
-
-    /** Zeichnet Such-Treffer-Rechtecke (Bildpixel) als Overlays über das aktuelle Bild. */
+    /** Draws search-hit rectangles (image pixel coordinates) as overlays on the current image. */
     setHighlights(rects) {
         this.clearHighlights();
         const osd = this.viewer.openseadragon;
@@ -134,14 +147,12 @@ export default class IvViewer {
         });
     }
 
-    /** Entfernt alle Treffer-Overlays. */
+    /** Removes all search-hit overlays (leaves text regions untouched). */
     clearHighlights() {
         const osd = this.viewer.openseadragon;
         (this._highlights || []).forEach((el) => osd.removeOverlay(el));
         this._highlights = [];
     }
-
-    // --- text-region overlays (hover linking, separate from search highlights) ---
 
     /**
      * Draws OCR line boxes (image pixels) as hoverable, id-tagged overlays and
@@ -172,16 +183,17 @@ export default class IvViewer {
         this._textRegions = [];
     }
 
-    // --- state ---
-
+    /** Current 0-based page order (the spread leader in double mode). */
     getCurrentOrder() {
         return this.current;
     }
 
+    /** Total page count. */
     getPageCount() {
         return this.total;
     }
 
+    /** Whether book-spread (double-page) mode is active. */
     isDoublePage() {
         return this.double;
     }
@@ -191,14 +203,9 @@ export default class IvViewer {
         return this.double ? computeSpread(this.current, this.total) : [this.current];
     }
 
-    // --- navigation ---
-
     /** Navigate to the page/spread containing `order` (snaps to the spread leader in double mode). */
     goToPage(order) {
         const target = Math.max(0, Math.min(order, this.total - 1));
-        // One navigation runs at a time. A click during an in-flight transition is remembered
-        // as the latest target (not dropped, not run concurrently) and honoured on release, so
-        // rapid TOC clicking lands on the last page instead of racing overlapping reopens.
         if (this._navigating) {
             this._queuedNav = target;
             return;
@@ -213,6 +220,7 @@ export default class IvViewer {
         this._crossfadeTo(target);
     }
 
+    /** Pages forward: the next page, or the page after the current spread in double mode. */
     next() {
         if (this.double) {
             const pages = computeSpread(this.current, this.total);
@@ -222,6 +230,7 @@ export default class IvViewer {
         }
     }
 
+    /** Pages one page back (snaps to the containing spread in double mode). */
     prev() {
         this.goToPage(this.current - 1);
     }
@@ -253,17 +262,14 @@ export default class IvViewer {
         const watchdog = setTimeout(() => {
             try {
                 if (onStuck) onStuck();
-            } catch (e) {}
+            } catch {}
             release();
         }, this._navWatchdogMs);
-        // Invoke `run` synchronously so the underlying open is dispatched immediately (an
-        // async `run` executes up to its first await), then release once it settles -- or
-        // the watchdog fires if it never does.
         try {
             Promise.resolve(run())
                 .catch(() => {})
                 .finally(release);
-        } catch (e) {
+        } catch {
             release();
         }
     }
@@ -273,14 +279,12 @@ export default class IvViewer {
         this._withNavLock(() => this._open(this.current));
     }
 
-    // --- view controls ---
-
     zoomIn() {
-        this.zoom.zoomBy(1.5);
+        this.zoom.zoomBy(ZOOM_STEP);
     }
 
     zoomOut() {
-        this.zoom.zoomBy(1 / 1.5);
+        this.zoom.zoomBy(1 / ZOOM_STEP);
     }
 
     rotateLeft() {
@@ -305,9 +309,6 @@ export default class IvViewer {
     toggleDoublePage() {
         this.double = !this.double;
         this.current = this.getCurrentPages()[0];
-        // Never re-open concurrently with an in-flight navigation: two live OpenSeadragon
-        // instances on one element race and can drop the 'open' event. Defer to the lock's
-        // release if a navigation is running.
         if (this._navigating) {
             this._queuedReopen = true;
         } else {
@@ -315,8 +316,6 @@ export default class IvViewer {
         }
         return this.double;
     }
-
-    // --- single-page crossfade ---
 
     /**
      * Single-page navigation: fade the (preloaded or freshly added) target page in
@@ -400,14 +399,12 @@ export default class IvViewer {
                 p.then((item) => {
                     try {
                         this.viewer.openseadragon.world.removeItem(item);
-                    } catch (e) {}
+                    } catch {}
                 }).catch(() => {});
                 this._preloaded.delete(order);
             }
         }
     }
-
-    // --- double-page spread (snapshot crossfade) ---
 
     /**
      * Double-page navigation: freeze the current spread as a snapshot overlay, let the
@@ -423,7 +420,7 @@ export default class IvViewer {
                 this._fadeOverlay(overlay);
                 this._prewarmSpreads();
             },
-            // Watchdog cleanup: if the reopen never settles, drop the frozen snapshot too.
+            // onStuck: drop the frozen snapshot if the reopen never settles.
             () => {
                 if (overlay) overlay.remove();
             }
@@ -447,7 +444,7 @@ export default class IvViewer {
         overlay.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;';
         try {
             overlay.getContext('2d').drawImage(src, 0, 0);
-        } catch (e) {
+        } catch {
             return null;
         }
         if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
@@ -458,16 +455,9 @@ export default class IvViewer {
     /** Fades an overlay element out over `_fadeMs`, then removes it. */
     _fadeOverlay(overlay) {
         if (!overlay) return;
-        let start = null;
-        const dur = this._fadeMs;
-        const step = (ts) => {
-            if (start === null) start = ts;
-            const t = dur <= 0 ? 1 : Math.min(1, (ts - start) / dur);
+        _tween(this._fadeMs, (t) => {
             overlay.style.opacity = String(1 - t);
-            if (t < 1) requestAnimationFrame(step);
-            else overlay.remove();
-        };
-        requestAnimationFrame(step);
+        }).then(() => overlay.remove());
     }
 
     /**
@@ -484,8 +474,6 @@ export default class IvViewer {
             osd.addTiledImage({ tileSource: toTileSource(this.services[p]), opacity: 0, preload: true });
         }
     }
-
-    // --- loading ---
 
     /**
      * Loads the page(s) for `order` via the library (a single page, or a columns:2

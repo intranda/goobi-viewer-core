@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { buildLineSpans, indexById, mountTextImageLink, scrollTopToReveal, groupWordsIntoLines, buildWordSpans } from '../ivTextImageLink.mjs';
+import { buildLineSpans, indexById, mountTextImageLink, scrollTopToReveal, offsetTopWithin, groupWordsIntoLines, buildWordSpans } from '../ivTextImageLink.mjs';
 
 describe('buildLineSpans', () => {
     test('one span per line with data-iv-region-id and text set via textContent (escaped)', () => {
@@ -89,6 +89,56 @@ describe('mountTextImageLink', () => {
         expect(spanA.classList.contains('is-linked-active')).toBe(false);
         expect(overlayA.classList.contains('is-linked-active')).toBe(false);
     });
+
+    // jsdom has no layout: stub the offset/scroll metrics the reveal path reads.
+    function setupWithScrollContainer({ spanOffsetTop }) {
+        const scrollContainer = document.createElement('div');
+        Object.defineProperty(scrollContainer, 'clientHeight', { value: 200 });
+        Object.defineProperty(scrollContainer, 'scrollHeight', { value: 1000 });
+        scrollContainer.scrollTop = 0;
+        const box = document.createElement('div');
+        box.appendChild(buildLineSpans([{ id: 'a', chars: 'A' }]));
+        scrollContainer.appendChild(box);
+        const spanA = box.querySelector('[data-iv-region-id="a"]');
+        Object.defineProperty(spanA, 'offsetTop', { value: spanOffsetTop });
+        Object.defineProperty(spanA, 'offsetHeight', { value: 20 });
+        Object.defineProperty(spanA, 'offsetParent', { value: scrollContainer });
+        const overlayA = document.createElement('div');
+        overlayA.dataset.ivRegionId = 'a';
+        mountTextImageLink({ box, regionEls: new Map([['a', overlayA]]), scrollContainer });
+        return { scrollContainer, spanA, overlayA };
+    }
+
+    test('hovering an overlay scrolls its off-screen span into view (centered)', () => {
+        const { scrollContainer, overlayA } = setupWithScrollContainer({ spanOffsetTop: 600 });
+        enter(overlayA);
+        expect(scrollContainer.scrollTop).toBe(510);
+    });
+
+    test('hovering an overlay leaves the scroll alone when the span is visible', () => {
+        const { scrollContainer, overlayA } = setupWithScrollContainer({ spanOffsetTop: 100 });
+        enter(overlayA);
+        expect(scrollContainer.scrollTop).toBe(0);
+    });
+
+    test('hovering the text side never scrolls', () => {
+        const { scrollContainer, spanA } = setupWithScrollContainer({ spanOffsetTop: 600 });
+        enter(spanA);
+        expect(scrollContainer.scrollTop).toBe(0);
+    });
+});
+
+describe('offsetTopWithin', () => {
+    test('sums offsetTop along the offsetParent chain up to the container', () => {
+        const container = {};
+        const parent = { offsetTop: 100, offsetParent: container };
+        const el = { offsetTop: 10, offsetParent: parent };
+        expect(offsetTopWithin(el, container)).toBe(110);
+    });
+    test('returns the element offset when it is a direct child', () => {
+        const container = {};
+        expect(offsetTopWithin({ offsetTop: 42, offsetParent: container }, container)).toBe(42);
+    });
 });
 
 describe('scrollTopToReveal', () => {
@@ -123,6 +173,10 @@ describe('groupWordsIntoLines', () => {
         const out = groupWordsIntoLines([W('a', 100, 40), { id: 'x', chars: 'x', rect: null }, W('b', 103, 40)]);
         expect(out.map((l) => l.map((w) => w.id))).toEqual([['a', 'x', 'b']]);
     });
+    test('a leading rect-less word starts the line and the next rect word joins it', () => {
+        const out = groupWordsIntoLines([{ id: 'x', chars: 'x', rect: null }, W('a', 100, 40)]);
+        expect(out.map((l) => l.map((w) => w.id))).toEqual([['x', 'a']]);
+    });
     test('empty / null → []', () => {
         expect(groupWordsIntoLines([])).toEqual([]);
         expect(groupWordsIntoLines(null)).toEqual([]);
@@ -153,6 +207,19 @@ describe('buildWordSpans', () => {
         box.appendChild(frag);
         expect(box.querySelectorAll('span.immersive__fulltext-word')).toHaveLength(2);
         expect(box.querySelector('span.immersive__fulltext-line').textContent).toBe('a b');
+    });
+    test('drops a line whose words are all blank', () => {
+        const frag = buildWordSpans([
+            W('a', 100, 40),
+            { id: 'sp1', chars: ' ', rect: { x: 0, y: 200, w: 5, h: 40 } },
+            { id: 'sp2', chars: ' ', rect: { x: 10, y: 202, w: 5, h: 40 } },
+            W('b', 300, 40),
+        ]);
+        const box = document.createElement('div');
+        box.appendChild(frag);
+        const lines = box.querySelectorAll('span.immersive__fulltext-line');
+        expect(lines).toHaveLength(2);
+        expect(Array.from(lines).map((l) => l.textContent)).toEqual(['a', 'b']);
     });
     test('escapes word text (no markup injection)', () => {
         const frag = buildWordSpans([{ id: 'w', chars: '<b>x</b>', rect: { x: 0, y: 0, w: 1, h: 1 } }]);

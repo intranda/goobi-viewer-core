@@ -1,4 +1,4 @@
-/** Snippet aus IIIF `resource` (Objekt, Array oder fehlend) ziehen. */
+/** Extracts the snippet text from a IIIF `resource` (object, array, or missing). */
 function _snippet(resource) {
     const r = Array.isArray(resource) ? resource[0] : resource;
     return r && typeof r.value === 'string' ? r.value : '';
@@ -21,12 +21,12 @@ function _contextByAnnotation(annotationList) {
 }
 
 /**
- * Parst eine IIIF Content Search `sc:AnnotationList` zu Treffern.
- * Seite ist 1-basiert (wie in der `on`-URL `/pages/{n}/canvas`); der Aufrufer
- * rechnet auf die 0-basierte IvViewer-Order um (order = page - 1).
- * `before`/`match`/`after` stammen aus dem `hits`-Block (per Annotation-Id verknüpft)
- * und sind undefined, wenn kein Kontext geliefert wird.
- * @returns {{page:number, rect:{x,y,w,h}|null, snippet:string, before?:string, match?:string, after?:string}[]}
+ * Parses a IIIF Content Search `sc:AnnotationList` into hits. Pages are 1-based
+ * (as in the `on` URL `/pages/{n}/canvas`); the caller converts to the 0-based
+ * IvViewer order. `before`/`match`/`after` come from the `hits` block and are
+ * undefined when no context is provided.
+ *
+ * @returns {{id:string, page:number, rect:{x,y,w,h}|null, snippet:string, before?:string, match?:string, after?:string}[]}
  */
 export function parseSearchHits(annotationList) {
     if (!annotationList || !Array.isArray(annotationList.resources)) return [];
@@ -52,14 +52,17 @@ export function parseSearchHits(annotationList) {
     return hits;
 }
 
+/** Next hit index with wrap-around; -1 when there are no hits. */
 export function nextIndex(i, total) {
     return total ? (i + 1) % total : -1;
 }
+
+/** Previous hit index with wrap-around; -1 when there are no hits. */
 export function prevIndex(i, total) {
     return total ? (i - 1 + total) % total : -1;
 }
 
-/** Letzte Ergebnis-Seite aus `within.last` (`…&page=N`); 1 wenn nicht vorhanden. */
+/** Last result page from `within.last` (`…&page=N`); 1 when absent. */
 function _lastPage(list) {
     const last = list && list.within && list.within.last;
     const m = typeof last === 'string' ? last.match(/[?&]page=(\d+)/) : null;
@@ -67,33 +70,39 @@ function _lastPage(list) {
 }
 
 /**
- * Parst die IIIF-Search-Response tolerant gegen einen Backend-Bug: ein `search:Hit`
- * ohne Annotationen wird als `{"@type":"search:Hit","annotations"}` (Key ohne Wert)
- * serialisiert → invalides JSON. Genau dieses Muster wird vor dem Parsen repariert;
- * wir nutzen ohnehin nur `resources`, nicht `hits`.
- * TODO(iiif-api-model): nach URLOnlySerializer-Fix (leere annotations → valides JSON)
- * entfernen — dann reicht `res.json()` ohne Repair.
+ * Parses the IIIF search response tolerantly against a backend bug: a `search:Hit`
+ * without annotations is serialized as `{"@type":"search:Hit","annotations"}` (key
+ * without value) → invalid JSON. Plain parsing is tried first so valid responses
+ * are never rewritten.
+ * TODO(iiif-api-model): remove once the URLOnlySerializer fix lands (empty
+ * annotations → valid JSON) — then a plain `res.json()` suffices.
  */
 function _parseSearchJson(text) {
     try {
-        return JSON.parse(text.replace(/"annotations"\}/g, '"annotations":[]}'));
-    } catch (e) {
-        return {};
+        return JSON.parse(text);
+    } catch {
+        try {
+            return JSON.parse(text.replace(/"annotations"\}/g, '"annotations":[]}'));
+        } catch {
+            return {};
+        }
     }
 }
 
 /**
- * Holt alle Ergebnis-Seiten der IIIF Content Search und liefert Treffer mit
- * 0-basierter IvViewer-`order` (order = page - 1), in Dokumentreihenfolge.
- * @param {function} fetchFn fetch-kompatibel (injizierbar für Tests)
- * @param {number} maxPages Sicherheits-Cap der within-Paging-Schleife
+ * Fetches all result pages of the IIIF Content Search and returns hits with the
+ * 0-based IvViewer `order` (order = page - 1), in document order. Tolerates
+ * broken backend paging (page 2+ may restart from the top): hits are deduped by
+ * annotation id and fetching stops once a page adds nothing new.
+ *
+ * @param {string} pi        Goobi viewer record identifier
+ * @param {string} apiBase   base URL of the REST API (no trailing slash)
+ * @param {string} term      search term
+ * @param {Function} fetchFn fetch-compatible function (injectable for tests)
+ * @param {number} maxPages  safety cap for the within-paging loop
  */
 export async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50) {
     const base = `${apiBase}/records/${pi}/manifest/search?q=${encodeURIComponent(term)}`;
-    // The backend's content-search paging can be broken (page 2+ may restart from the top
-    // instead of returning the next slice), which would duplicate -- and needlessly re-fetch --
-    // the whole list. Dedupe by annotation id (with a page/rect/snippet fallback for hits that
-    // carry no id) as we go, and stop as soon as a page brings nothing new.
     const seen = new Set();
     const out = [];
     for (let p = 1; p <= maxPages; p++) {

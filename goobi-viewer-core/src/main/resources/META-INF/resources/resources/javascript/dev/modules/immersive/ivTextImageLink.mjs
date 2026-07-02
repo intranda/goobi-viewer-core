@@ -24,6 +24,7 @@ export function buildLineSpans(lines) {
 
 /**
  * Indexes elements by their `data-iv-region-id` (elements without one are skipped).
+ *
  * @param {Iterable<HTMLElement>} elements
  * @returns {Map<string, HTMLElement>}
  */
@@ -41,26 +42,27 @@ export function indexById(elements) {
  * or null if the line is already fully visible. Pure (numbers only) so it is
  * testable without a layout engine.
  *
- * @param {{offsetTop:number, height:number, scrollTop:number, clientHeight:number, scrollHeight:number}} m
+ * @param {{offsetTop:number, height:number, scrollTop:number, clientHeight:number, scrollHeight:number}} metrics
  * @returns {number|null}
  */
-export function scrollTopToReveal(m) {
-    const top = m.offsetTop;
-    const bottom = m.offsetTop + m.height;
-    if (top >= m.scrollTop && bottom <= m.scrollTop + m.clientHeight) return null;
-    const target = m.offsetTop - m.clientHeight / 2 + m.height / 2;
-    const max = Math.max(0, m.scrollHeight - m.clientHeight);
+export function scrollTopToReveal(metrics) {
+    const top = metrics.offsetTop;
+    const bottom = metrics.offsetTop + metrics.height;
+    if (top >= metrics.scrollTop && bottom <= metrics.scrollTop + metrics.clientHeight) return null;
+    const target = metrics.offsetTop - metrics.clientHeight / 2 + metrics.height / 2;
+    const max = Math.max(0, metrics.scrollHeight - metrics.clientHeight);
     return Math.min(Math.max(0, target), max);
 }
 
 /**
- * Cumulative offsetTop of `el` relative to `container`, mirroring the panel
- * scroll math used elsewhere in the immersive view.
+ * Cumulative offsetTop of `el` relative to `container` (walks the offsetParent
+ * chain), for scrolling panel content into view without moving the page.
+ *
  * @param {HTMLElement} el
  * @param {HTMLElement} container
  * @returns {number}
  */
-function _offsetTopWithin(el, container) {
+export function offsetTopWithin(el, container) {
     let top = 0;
     for (let n = el; n && n !== container; n = n.offsetParent) top += n.offsetTop;
     return top;
@@ -70,12 +72,14 @@ function _offsetTopWithin(el, container) {
  * Wires bidirectional hover highlighting between the panel line spans (inside
  * `box`) and the image region overlays (`regionEls`) that share the same
  * `data-iv-region-id`. Hover on either side toggles `is-linked-active` on both.
+ * Deliberately pointer-only: the highlight is a supplementary cue, the text
+ * itself stays fully readable and reachable without it.
  *
  * @param {object} opts
- * @param {HTMLElement} opts.box - fulltext panel element containing the line spans.
- * @param {Map<string, HTMLElement>} opts.regionEls - image overlay elements, already indexed by id.
- * @param {HTMLElement} [opts.scrollContainer] - scrollable panel; when set, hovering an
- *   image overlay scrolls its line into view if not fully visible.
+ * @param {HTMLElement} opts.box fulltext panel element containing the line spans
+ * @param {Map<string, HTMLElement>} opts.regionEls image overlay elements, indexed by id
+ * @param {HTMLElement} [opts.scrollContainer] scrollable panel; when set, hovering an
+ *   image overlay scrolls its line into view if not fully visible
  * @returns {{destroy: function():void}}
  */
 export function mountTextImageLink({ box, regionEls, scrollContainer }) {
@@ -95,7 +99,7 @@ export function mountTextImageLink({ box, regionEls, scrollContainer }) {
         const span = spanEls.get(id);
         if (!span) return;
         const target = scrollTopToReveal({
-            offsetTop: _offsetTopWithin(span, scrollContainer),
+            offsetTop: offsetTopWithin(span, scrollContainer),
             height: span.offsetHeight,
             scrollTop: scrollContainer.scrollTop,
             clientHeight: scrollContainer.clientHeight,
@@ -130,43 +134,42 @@ export function mountTextImageLink({ box, regionEls, scrollContainer }) {
 }
 
 /**
- * Groups consecutive word regions into lines by VERTICAL OVERLAP of their
- * boxes (robust against within-line top variation from ascenders/descenders).
- * Two consecutive words share a line when their vertical ranges overlap by more
- * than half the shorter box height. Words without a rect stay on the current
- * line and do not reset the baseline. Order preserved. Pure.
+ * Groups consecutive word regions into lines by vertical overlap of their boxes
+ * (robust against within-line top variation from ascenders/descenders). Two
+ * consecutive words share a line when their vertical ranges overlap by more than
+ * half the shorter box height; words without a rect stay on the current line.
  *
  * @param {{id:string, chars:string, rect:{x:number,y:number,w:number,h:number}|null}[]} regions
  * @returns {Array<Array<object>>}
  */
 export function groupWordsIntoLines(regions) {
     const lines = [];
-    let cur = null;
-    let pTop = null;
-    let pBot = null;
+    let currentLine = null;
+    let prevTop = null;
+    let prevBottom = null;
     for (const r of regions || []) {
         const rect = r && r.rect;
         const top = rect ? rect.y : null;
-        const bot = rect ? rect.y + rect.h : null;
+        const bottom = rect ? rect.y + rect.h : null;
         let newLine;
-        if (cur === null) {
+        if (currentLine === null) {
             newLine = true;
-        } else if (top === null || pTop === null) {
+        } else if (top === null || prevTop === null) {
             newLine = false;
         } else {
-            const overlap = Math.min(pBot, bot) - Math.max(pTop, top);
-            const minH = Math.min(pBot - pTop, bot - top);
-            newLine = overlap <= 0.5 * minH;
+            const overlap = Math.min(prevBottom, bottom) - Math.max(prevTop, top);
+            const minHeight = Math.min(prevBottom - prevTop, bottom - top);
+            newLine = overlap <= 0.5 * minHeight;
         }
         if (newLine) {
-            cur = [r];
-            lines.push(cur);
+            currentLine = [r];
+            lines.push(currentLine);
         } else {
-            cur.push(r);
+            currentLine.push(r);
         }
         if (top !== null) {
-            pTop = top;
-            pBot = bot;
+            prevTop = top;
+            prevBottom = bottom;
         }
     }
     return lines;
@@ -174,9 +177,8 @@ export function groupWordsIntoLines(regions) {
 
 /**
  * Builds word spans grouped into line blocks (same layout as line mode, but each
- * word is an individually hoverable `<span data-iv-region-id>`). Blank-chars
- * words (ALTO spaces) are skipped; a single space separates rendered words.
- * Text via `textContent`. Line blocks reuse `immersive__fulltext-line`.
+ * word is an individually hoverable `<span data-iv-region-id>`). Blank words
+ * (ALTO spaces) are skipped; a single space separates rendered words.
  *
  * @param {{id:string, chars:string, rect:object|null}[]} regions
  * @returns {DocumentFragment}

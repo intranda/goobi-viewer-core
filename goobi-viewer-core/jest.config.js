@@ -97,27 +97,16 @@ module.exports = {
             testMatch: ['<rootDir>/scripts/pre-commit/__tests__/**/*.test.js'],
         },
         {
-            // ES-module project for src/.../media/*.mjs sources. Activated via
-            // `NODE_OPTIONS=--experimental-vm-modules` set in the npm scripts.
-            // Test files are *.test.mjs and use native `import` syntax.
-            displayName: 'media-mjs',
+            // ES-module project for all src/.../modules/**/*.mjs sources (media,
+            // immersive, viewer, …). Activated via `NODE_OPTIONS=--experimental-vm-modules`
+            // set in the npm scripts. Test files are *.test.mjs and use native `import`.
+            displayName: 'modules-mjs',
             testEnvironment: 'jsdom',
             rootDir: repoRoot,
             testMatch: [
-                '<rootDir>/goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/media/__tests__/**/*.test.mjs',
+                '<rootDir>/goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/**/__tests__/**/*.test.mjs',
             ],
             // No transform - Node executes .mjs natively under the experimental flag.
-            transform: {},
-            setupFiles: [path.join(__dirname, 'jest-setup-browser.js')],
-        },
-        {
-            // ES-module project for src/.../viewer/*.mjs sources.
-            displayName: 'viewer-mjs',
-            testEnvironment: 'jsdom',
-            rootDir: repoRoot,
-            testMatch: [
-                '<rootDir>/goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/viewer/__tests__/**/*.test.mjs',
-            ],
             transform: {},
             setupFiles: [path.join(__dirname, 'jest-setup-browser.js')],
         },

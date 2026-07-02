@@ -1,5 +1,16 @@
 import { jest } from '@jest/globals';
-import { loadPageServices, loadPageLabels, loadPageText, parsePageText, parsePageLines, loadPageLines, loadPageRegions, _clearCache } from '../ivManifestSource.mjs';
+import {
+    loadPageServices,
+    loadPageLabels,
+    loadPageText,
+    parseManifestImageServices,
+    parseManifestPageLabels,
+    parsePageText,
+    parsePageLines,
+    loadPageLines,
+    loadPageRegions,
+    _clearCache,
+} from '../ivManifestSource.mjs';
 
 const V2 = {
     sequences: [
@@ -15,6 +26,180 @@ function okResponse(body) {
 
 beforeEach(() => {
     _clearCache();
+});
+
+// ---------------------------------------------------------------------------
+// parseManifestImageServices — IIIF v2/v3 manifest parsing
+// ---------------------------------------------------------------------------
+
+describe('parseManifestImageServices', function () {
+    test('IIIF v2: service as object with @id', function () {
+        const manifest = {
+            sequences: [
+                {
+                    canvases: [
+                        { images: [{ resource: { service: { '@id': 'https://example.org/iiif/image/1' } } }] },
+                        { images: [{ resource: { service: { '@id': 'https://example.org/iiif/image/2' } } }] },
+                    ],
+                },
+            ],
+        };
+        expect(parseManifestImageServices(manifest)).toEqual(['https://example.org/iiif/image/1', 'https://example.org/iiif/image/2']);
+    });
+
+    test('IIIF v2: service as an array (takes first element)', function () {
+        const manifest = {
+            sequences: [
+                {
+                    canvases: [
+                        {
+                            images: [
+                                {
+                                    resource: {
+                                        service: [{ '@id': 'https://example.org/iiif/image/10' }, { '@id': 'https://example.org/iiif/image/10-extra' }],
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        };
+        expect(parseManifestImageServices(manifest)).toEqual(['https://example.org/iiif/image/10']);
+    });
+
+    test('IIIF v3: manifest with items array', function () {
+        const manifest = {
+            items: [
+                { items: [{ items: [{ body: { service: { id: 'https://example.org/iiif3/image/1' } } }] }] },
+                { items: [{ items: [{ body: { service: [{ id: 'https://example.org/iiif3/image/2' }] } }] }] },
+            ],
+        };
+        expect(parseManifestImageServices(manifest)).toEqual(['https://example.org/iiif3/image/1', 'https://example.org/iiif3/image/2']);
+    });
+
+    test('malformed / empty manifest returns []', function () {
+        expect(parseManifestImageServices({})).toEqual([]);
+        expect(parseManifestImageServices(null)).toEqual([]);
+        expect(parseManifestImageServices(undefined)).toEqual([]);
+        expect(parseManifestImageServices({ sequences: [] })).toEqual([]);
+    });
+
+    test('v2: skips individual canvases that lack a resolvable service id', function () {
+        const manifest = {
+            sequences: [
+                {
+                    canvases: [
+                        { images: [{ resource: { service: { '@id': 'https://example.org/iiif/image/1' } } }] },
+                        // canvas without a service id
+                        { images: [{ resource: { service: {} } }] },
+                        { images: [{ resource: { service: { '@id': 'https://example.org/iiif/image/3' } } }] },
+                    ],
+                },
+            ],
+        };
+        expect(parseManifestImageServices(manifest)).toEqual(['https://example.org/iiif/image/1', 'https://example.org/iiif/image/3']);
+    });
+
+    test('v3: skips canvases without a resolvable service (no throw)', function () {
+        const manifest = {
+            items: [
+                { items: [{ items: [{ body: { service: { id: 'https://h3/1' } } }] }] },
+                { items: [] }, // broken canvas
+                { items: [{ items: [{ body: { service: { id: 'https://h3/3' } } }] }] },
+            ],
+        };
+        expect(parseManifestImageServices(manifest)).toEqual(['https://h3/1', 'https://h3/3']);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// parseManifestPageLabels — canvas labels, index-aligned with the services
+// ---------------------------------------------------------------------------
+
+describe('parseManifestPageLabels', function () {
+    test('IIIF v2: string labels in canvas order', function () {
+        const manifest = {
+            sequences: [
+                {
+                    canvases: [
+                        { label: ' - ', images: [{ resource: { service: { '@id': 'https://h/1' } } }] },
+                        { label: '[1]', images: [{ resource: { service: { '@id': 'https://h/2' } } }] },
+                        { label: '4', images: [{ resource: { service: { '@id': 'https://h/3' } } }] },
+                    ],
+                },
+            ],
+        };
+        expect(parseManifestPageLabels(manifest)).toEqual([' - ', '[1]', '4']);
+    });
+
+    test('stays index-aligned with services: skipped canvases drop their label too', function () {
+        const manifest = {
+            sequences: [
+                {
+                    canvases: [
+                        { label: 'A', images: [{ resource: { service: { '@id': 'https://h/1' } } }] },
+                        { label: 'skip', images: [{ resource: { service: {} } }] }, // no id → skipped
+                        { label: 'C', images: [{ resource: { service: { '@id': 'https://h/3' } } }] },
+                    ],
+                },
+            ],
+        };
+        expect(parseManifestImageServices(manifest)).toEqual(['https://h/1', 'https://h/3']);
+        expect(parseManifestPageLabels(manifest)).toEqual(['A', 'C']);
+    });
+
+    test('IIIF v2 @value label objects and label arrays resolve to the first non-empty value', function () {
+        const manifest = {
+            sequences: [
+                {
+                    canvases: [
+                        { label: { '@value': 'S. 3' }, images: [{ resource: { service: { '@id': 'https://h/1' } } }] },
+                        { label: [{ '@value': '' }, { '@value': '4' }], images: [{ resource: { service: { '@id': 'https://h/2' } } }] },
+                    ],
+                },
+            ],
+        };
+        expect(parseManifestPageLabels(manifest)).toEqual(['S. 3', '4']);
+    });
+
+    test('IIIF v3 language map: first non-empty value wins when no language is preferred', function () {
+        const manifest = {
+            items: [{ label: { none: ['5'] }, items: [{ items: [{ body: { service: { id: 'https://h3/1' } } }] }] }],
+        };
+        expect(parseManifestPageLabels(manifest)).toEqual(['5']);
+    });
+
+    test('IIIF v3 language map: the preferred language wins over insertion order', function () {
+        const manifest = {
+            items: [{ label: { en: ['page 5'], de: ['Seite 5'] }, items: [{ items: [{ body: { service: { id: 'https://h3/1' } } }] }] }],
+        };
+        expect(parseManifestPageLabels(manifest, 'de')).toEqual(['Seite 5']);
+        expect(parseManifestPageLabels(manifest, 'en')).toEqual(['page 5']);
+    });
+
+    test("IIIF v3 language map: falls back to 'none', then to any non-empty value", function () {
+        const noneManifest = {
+            items: [{ label: { en: ['page 5'], none: ['5'] }, items: [{ items: [{ body: { service: { id: 'https://h3/1' } } }] }] }],
+        };
+        expect(parseManifestPageLabels(noneManifest, 'de')).toEqual(['5']);
+        const otherLangOnly = {
+            items: [{ label: { fr: ['page 5'] }, items: [{ items: [{ body: { service: { id: 'https://h3/1' } } }] }] }],
+        };
+        expect(parseManifestPageLabels(otherLangOnly, 'de')).toEqual(['page 5']);
+    });
+
+    test('missing label yields empty string', function () {
+        const manifest = {
+            sequences: [{ canvases: [{ images: [{ resource: { service: { '@id': 'https://h/1' } } }] }] }],
+        };
+        expect(parseManifestPageLabels(manifest)).toEqual(['']);
+    });
+
+    test('empty / non-object manifests yield []', function () {
+        expect(parseManifestPageLabels({})).toEqual([]);
+        expect(parseManifestPageLabels(null)).toEqual([]);
+    });
 });
 
 describe('loadPageServices', () => {
@@ -52,6 +237,16 @@ describe('loadPageServices', () => {
         expect(result).toEqual(['https://h/img/1', 'https://h/img/2']);
         expect(fetchFn).toHaveBeenCalledTimes(2);
     });
+
+    test('retries after a non-ok response (HTTP error is not cached)', async () => {
+        const fetchFn = jest.fn().mockResolvedValueOnce({ ok: false, status: 503 }).mockResolvedValueOnce(okResponse(V2));
+
+        await expect(loadPageServices('PPN1', 'https://h/api', fetchFn)).rejects.toThrow();
+        const result = await loadPageServices('PPN1', 'https://h/api', fetchFn);
+
+        expect(result).toEqual(['https://h/img/1', 'https://h/img/2']);
+        expect(fetchFn).toHaveBeenCalledTimes(2);
+    });
 });
 
 const V2_LABELS = {
@@ -82,6 +277,15 @@ describe('loadPageLabels', () => {
         expect(services).toEqual(['https://h/img/1', 'https://h/img/2']);
         expect(labels).toEqual([' - ', '[1]']);
         expect(fetchFn).toHaveBeenCalledTimes(1);
+    });
+
+    test('passes the preferred label language through to the parser', async () => {
+        const v3 = {
+            items: [{ label: { en: ['page 5'], de: ['Seite 5'] }, items: [{ items: [{ body: { service: { id: 'https://h3/1' } } }] }] }],
+        };
+        const fetchFn = jest.fn().mockResolvedValue(okResponse(v3));
+
+        expect(await loadPageLabels('PPN1', 'https://h/api', fetchFn, 'de')).toEqual(['Seite 5']);
     });
 });
 
