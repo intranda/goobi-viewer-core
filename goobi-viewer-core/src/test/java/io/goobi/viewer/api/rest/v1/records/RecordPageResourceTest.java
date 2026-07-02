@@ -69,10 +69,8 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     private static final String PI_ANNOTATIONS = "PI_1";
     private static final String PI_SPACE_IN_FILENAME = "4fda256e-70b3-11ea-b891-08606e6a464a";
     private static final String PAGENO_ANNOTATIONS = "1";
-    // ALTO data exists both in the testing Solr index and in src/test/resources/data/viewer/data/1/alto/PPN648829383/
     private static final String PI_WITH_ALTO = "PPN648829383";
     private static final String PAGENO_WITH_ALTO = "1";
-    // Indexed without FILENAME_ALTO, but with plain fulltext in src/test/resources/data/viewer/data/1/fulltext/PPN517154005/
     private static final String PI_WITHOUT_ALTO = "PPN517154005";
 
     /**
@@ -199,7 +197,6 @@ class RecordPageResourceTest extends AbstractRestApiTest {
             assertEquals(3, collection.getResources().size());
         }
     }
-    
 
     /**
      * @verifies escape spaces in filenames within rendering links
@@ -271,8 +268,8 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * The default (line) granularity must return line-level annotations for a page with ALTO data,
-     * so existing callers are unaffected by the new granularity parameter.
+     * The default (line) granularity must return line-level annotations for a page with ALTO data, so existing callers are unaffected by the new
+     * granularity parameter.
      *
      * @verifies return line annotations with default granularity
      * @see RecordPageResource#getTextForPage
@@ -284,8 +281,7 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * {@code granularity=word} must return word-level annotations, i.e. more annotations than the
-     * line-level response for the same page.
+     * {@code granularity=word} must return word-level annotations, i.e. more annotations than the line-level response for the same page.
      *
      * @verifies return word annotations with word granularity
      * @see RecordPageResource#getTextForPage
@@ -327,8 +323,8 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * For a page without an indexed ALTO file, {@code granularity=word} must fall back to the
-     * default (plain fulltext) response instead of failing or returning an empty list.
+     * For a page without an indexed ALTO file, {@code granularity=word} must fall back to the default (plain fulltext) response instead of failing or
+     * returning an empty list.
      *
      * @verifies fall back to default response for word granularity without alto
      * @see RecordPageResource#getTextForPage
@@ -341,9 +337,9 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * A PI containing illegal characters (e.g. carriage return %0D, unicode garbage) must return
-     * HTTP 400, not 500. Before the fix, RecordPageResource did not validate the PI in its
-     * constructor, so invalid PIs could reach Solr and cause NPEs or unexpected exceptions.
+     * A PI containing illegal characters (e.g. carriage return %0D, unicode garbage) must return HTTP 400, not 500. Before the fix,
+     * RecordPageResource did not validate the PI in its constructor, so invalid PIs could reach Solr and cause NPEs or unexpected exceptions.
+     * 
      * @verifies return http 400 when pi contains illegal characters
      */
     @Test
