@@ -46,7 +46,7 @@
             }
 
             &:focus-visible {
-                .mx-immersive-focus-ring();
+                outline: none;
             }
         }
 
@@ -95,14 +95,12 @@
             background: transparent;
             color: @immersive-chrome-fg;
             cursor: pointer;
-            transition:
-                background-color @immersive-transition,
-                color @immersive-transition;
+            transition: color @immersive-transition;
 
             &:hover,
             &:focus {
                 color: @immersive-accent;
-                background-color: @immersive-chrome-hover-bg;
+                background-color: transparent;
             }
 
             .icon,
@@ -184,8 +182,10 @@
             background-color @immersive-transition,
             border-color @immersive-transition;
 
-        &:hover {
+        &:hover,
+        &:active {
             background-color: @immersive-chrome-hover-bg;
+            color: inherit;
         }
 
         &--active {

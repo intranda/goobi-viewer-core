@@ -22,6 +22,26 @@
             background: transparent;
         }
 
+        .metadata__wrapper .metadata__fold-wrapper > * + *,
+        .metadata__wrapper .metadata__fold-wrapper + .metadata__fold-wrapper > :first-child {
+            margin-top: 12px;
+        }
+
+        .metadata__element-wrapper,
+        .metadata__element-wrapper-single {
+            margin: 0 0 14px;
+            padding: 14px;
+            border: 1px solid @immersive-divider;
+            border-radius: @immersive-radius-lg;
+        }
+
+        .metadata__elements .metadata__element-wrapper,
+        .metadata__elements .metadata__element-wrapper-single {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
         .metadata__elements-h2,
         .metadata__elements-h3,
         .metadata__heading {
@@ -54,7 +74,7 @@
         .metadata__element-ungrouped {
             display: block;
             grid-template-columns: none;
-            margin: 0 0 16px;
+            margin: 0;
 
             dt {
                 display: block;

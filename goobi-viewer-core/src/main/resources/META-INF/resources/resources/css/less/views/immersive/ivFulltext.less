@@ -96,6 +96,11 @@
         font-size: @fontSmall;
         cursor: pointer;
 
+        &:hover,
+        &:active {
+            color: @immersive-chrome-fg;
+        }
+
         &--active,
         &[aria-pressed='true'] {
             border-color: @immersive-accent;
