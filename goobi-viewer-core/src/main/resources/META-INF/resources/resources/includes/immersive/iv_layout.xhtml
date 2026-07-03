@@ -550,6 +550,19 @@
                             svgClass="immersive__bar-icon" />
                     </button>
                 </div>
+                <!-- RESET -->
+                <div class="immersive__bottombar-group">
+                    <button
+                        type="button"
+                        class="immersive__bar-btn"
+                        data-immersive-action="reset"
+                        title="#{msg.resetImage}"
+                        aria-label="#{msg.resetImage}">
+                        <util:icon
+                            icon="restore"
+                            svgClass="immersive__bar-icon" />
+                    </button>
+                </div>
                 <!-- FILTER -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
                     <div class="immersive__bottombar-group">
