@@ -976,6 +976,7 @@
                 sequence: { ...SEQUENCE_DEFAULTS },
                 navigator: { enabled: false },
             });
+            this.viewer.openseadragon.crossOriginPolicy = 'Anonymous';
             this.zoom = new ImageView.Controls.Zoom(this.viewer);
             this.rotation = new ImageView.Controls.Rotation(this.viewer);
 
@@ -2152,7 +2153,7 @@
                 const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
                 window.ivViewer = viewer;
                 attachUrlSync(viewer, pi);
-                viewer.onLoaded.subscribe(() => bindImageFiltersMount(viewer));
+                bindImageFiltersMount(viewer);
 
                 const indicator = document.getElementById('immersivePageIndicator');
                 const titlePage = document.getElementById('immersiveTitlePage');
@@ -2929,22 +2930,29 @@
      * so mounting on load would find nothing and the popover would open empty. After the
      * mount the popover is repositioned, because riot fills it only after Popper has
      * already measured the still-empty shell.
+     *
+     * The origin-clean check runs at open time (the canvas only taints once tiles have
+     * been drawn); a persistent handler with a mounted flag replaces one(), so an open
+     * where the mount cannot happen yet does not burn the only mount attempt.
      */
     function bindImageFiltersMount(viewer) {
         const btn = document.querySelector(FILTER_TRIGGER_SELECTOR);
         if (!btn) return;
-        if (!isViewerOriginClean(viewer)) {
-            btn.hidden = true;
-            return;
-        }
         const $ = window.$ || window.jQuery;
         if (!$) {
             mountImageFilters(viewer);
             return;
         }
-        $(btn).one('shown.bs.popover', () => {
-            mountImageFilters(viewer);
-            $(btn).popover('update');
+        let mounted = false;
+        $(btn).on('shown.bs.popover.immersiveFilters', () => {
+            if (mounted) return;
+            if (!isViewerOriginClean(viewer)) {
+                $(btn).popover('hide');
+                btn.hidden = true;
+                return;
+            }
+            mounted = mountImageFilters(viewer);
+            if (mounted) $(btn).popover('update');
         });
     }
 
@@ -3006,17 +3014,14 @@
 
     /**
      * Mounts the reused imageFilters riot tag on the viewer's live ImageView.Image so the
-     * Filter popover adjusts brightness/contrast/etc. Pixel filters need an origin-clean
-     * canvas (CORS); if the tiles taint it, the Filter button is hidden instead.
+     * Filter popover adjusts brightness/contrast/etc.
+     *
+     * @returns {boolean} whether the tag was mounted
      */
     function mountImageFilters(viewer) {
-        const btn = document.querySelector(FILTER_TRIGGER_SELECTOR);
-        if (!btn || !document.querySelector('imageFilters') || !window.immersiveFilterConfig) return;
-        if (isViewerOriginClean(viewer)) {
-            riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
-        } else {
-            btn.hidden = true;
-        }
+        if (!document.querySelector('imageFilters') || !window.immersiveFilterConfig) return false;
+        riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
+        return true;
     }
 
     /** Toggles native browser fullscreen on the immersive viewer hero (Esc exits). */

@@ -113,6 +113,7 @@ export default class IvViewer {
             sequence: { ...SEQUENCE_DEFAULTS },
             navigator: { enabled: false },
         });
+        this.viewer.openseadragon.crossOriginPolicy = 'Anonymous';
         this.zoom = new ImageView.Controls.Zoom(this.viewer);
         this.rotation = new ImageView.Controls.Rotation(this.viewer);
 

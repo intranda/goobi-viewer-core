@@ -129,6 +129,11 @@ describe('IvViewer construction', () => {
         expect(b.viewer.config.sequence.columns).toBe(1);
     });
 
+    test('loads tiles with CORS so the canvas stays origin-clean for the image filters', () => {
+        const v = new IvViewer({ element: {}, services: services(3) });
+        expect(v.viewer.openseadragon.crossOriginPolicy).toBe('Anonymous');
+    });
+
     test('arrow keys page instead of panning; other keys keep OSD handling', () => {
         const v = new IvViewer({ element: {}, services: services(5) });
         v.next = jest.fn();
