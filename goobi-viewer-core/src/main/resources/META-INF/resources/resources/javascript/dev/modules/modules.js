@@ -2263,7 +2263,7 @@
                     fulltextBtn.classList.toggle('immersive__tool-btn--disabled', doublePage);
                     fulltextBtn.setAttribute('aria-disabled', String(doublePage));
                     fulltextBtn.setAttribute('tabindex', doublePage ? '-1' : '0');
-                    const title = (doublePage && fulltextBtn.dataset.titleDisabled) || fulltextTitleDefault;
+                    const title = (doublePage && fulltextBtn.dataset.labelDisabled) || fulltextTitleDefault;
                     fulltextBtn.setAttribute('title', title);
                     fulltextBtn.setAttribute('aria-label', title);
                     if (doublePage && fulltextPanel && fulltextPanel.classList.contains('is-open')) closePanels();
@@ -2459,6 +2459,10 @@
         if (!trigger || !dropdown || !list) return;
         if (total < 2) {
             trigger.classList.add('immersive__title-trigger--static');
+            // no dropdown for single-page records: drop the popup semantics announced by the markup
+            trigger.removeAttribute('aria-haspopup');
+            trigger.removeAttribute('aria-expanded');
+            trigger.removeAttribute('aria-controls');
             return;
         }
         if (input) input.max = String(total);
@@ -2816,11 +2820,13 @@
             } else {
                 syncGridSelection();
             }
+            if (gridTrigger) gridTrigger.setAttribute('aria-expanded', 'true');
             if (gridClose) gridClose.focus();
         };
         const closeGrid = () => {
             if (!gridOverlay || gridOverlay.hidden) return;
             gridOverlay.hidden = true;
+            if (gridTrigger) gridTrigger.setAttribute('aria-expanded', 'false');
             if (gridTrapHandler) {
                 gridOverlay.removeEventListener('keydown', gridTrapHandler);
                 gridTrapHandler = null;
@@ -3013,7 +3019,7 @@
         }
     }
 
-    /** Toggles native browser fullscreen on the immersive viewer hero (H3 = real fullscreen, Esc exits). */
+    /** Toggles native browser fullscreen on the immersive viewer hero (Esc exits). */
     function toggleImmersiveFullscreen() {
         const el = document.querySelector('.immersive__viewer');
         if (!el) return;

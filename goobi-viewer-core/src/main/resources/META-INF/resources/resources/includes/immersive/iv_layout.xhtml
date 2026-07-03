@@ -2,27 +2,20 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:util="http://goobi.io/util"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:c="http://java.sun.com/jsp/jstl/core">
     <div class="immersive">
-        <!-- Page-level heading for the immersive view (visually hidden): gives screen
-             readers and the document outline a top-level heading without adding visible
-             chrome. The visible work title lives in the overlay title-trigger. -->
         <h1 class="sr-only">#{activeDocumentBean.titleBarLabel}</h1>
-        <!-- VIEWER HERO: dark canvas + centered media + overlay slots -->
+        <!-- VIEWER HERO -->
         <section class="immersive__viewer">
-            <!-- Header overlay: back-to-results (left) + work title (centered) -->
-            <div
-                class="immersive__overlay-top"
-                id="immersiveOverlayTop">
+            <!-- HEADER OVERLAY -->
+            <div class="immersive__overlay-top">
                 <ui:fragment rendered="#{searchBean.hitsCount > 0}">
                     <a
                         class="immersive__back"
-                        href="#{searchBean.lastUsedSearchUrl}"
-                        title="#{msg.returnToHitlist}">
+                        href="#{searchBean.lastUsedSearchUrl}">
                         <util:icon-text
                             icon="arrow-narrow-left"
                             iconSvgClass="immersive__back-icon"
@@ -33,12 +26,11 @@
                     <button
                         type="button"
                         class="immersive__title-trigger"
-                        data-immersive-title-trigger="true"
-                        aria-haspopup="listbox"
+                        data-immersive-title-trigger=""
+                        aria-haspopup="dialog"
                         aria-expanded="false"
                         aria-controls="immersivePageDropdown"
-                        title="#{msg.aria_label__select_page}"
-                        aria-label="#{msg.aria_label__select_page}">
+                        title="#{msg.aria_label__select_page}">
                         <util:icon
                             icon="book"
                             svgClass="immersive__title-icon" />
@@ -53,6 +45,8 @@
                     <div
                         class="immersive__page-dropdown"
                         id="immersivePageDropdown"
+                        role="dialog"
+                        aria-label="#{msg.aria_label__select_page}"
                         hidden="hidden">
                         <div class="immersive__page-dropdown-jump">
                             <label
@@ -76,10 +70,9 @@
                 </div>
             </div>
 
-            <!-- Left toolbar: record-info menu + in-work search slide-out toggles -->
-            <div
-                class="immersive__toolbar immersive__toolbar--left"
-                id="immersiveToolbarLeft">
+            <!-- LEFT TOOLBAR -->
+            <div class="immersive__toolbar immersive__toolbar--left">
+                <!-- TOC -->
                 <button
                     type="button"
                     class="immersive__tool-btn"
@@ -92,14 +85,13 @@
                         icon="list"
                         svgClass="immersive__tool-icon" />
                 </button>
-                <!-- Fulltext (page OCR) toggle; only rendered when the work has fulltext.
-                     modules.mjs disables it in double-page mode (single-page only). -->
+                <!-- FULLTEXT -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
                     <button
                         type="button"
                         class="immersive__tool-btn"
                         data-immersive-panel="immersivePanelFulltext"
-                        data-title-disabled="#{msg.fulltextOnlySinglePage}"
+                        data-label-disabled="#{msg.fulltextOnlySinglePage}"
                         aria-controls="immersivePanelFulltext"
                         aria-expanded="false"
                         title="#{msg.fulltext}"
@@ -109,6 +101,7 @@
                             svgClass="immersive__tool-icon" />
                     </button>
                 </ui:fragment>
+                <!-- SEARCH -->
                 <button
                     type="button"
                     class="immersive__tool-btn"
@@ -121,6 +114,7 @@
                         icon="search"
                         svgClass="immersive__tool-icon" />
                 </button>
+                <!-- METADATA -->
                 <button
                     type="button"
                     class="immersive__tool-btn"
@@ -135,24 +129,19 @@
                 </button>
             </div>
 
-            <!-- Left slide-out menu (burger): the record's table of contents, for
-                 jumping between structural sections without leaving the image view.
-                 TOC clicks navigate in place (modules.mjs); closing is handled by
-                 re-clicking the burger toggle. -->
+            <!-- TOC PANEL -->
             <aside
                 id="immersivePanelMenu"
                 class="immersive__panel immersive__panel--left immersive__panel--menu"
                 aria-label="#{msg.toc}"
-                aria-hidden="true">
-                <!-- Record header: work title + (only when the TOC nests) the expand/
-                     collapse-all toggle, where the close button used to sit. The panel
-                     closes via Escape or by re-clicking the burger. -->
+                aria-hidden="true"
+                inert="inert">
                 <div class="immersive__panel-header">
                     <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
                     <button
                         type="button"
                         class="immersive__toc-collapse"
-                        data-immersive-toc-toggle="true"
+                        data-immersive-toc-toggle=""
                         data-label-collapse="#{msg.allClose}"
                         data-label-expand="#{msg.allOpen}"
                         title="#{msg.allClose}"
@@ -168,21 +157,21 @@
                 </div>
                 <widgetComponent:widget_toc />
             </aside>
+            <!-- METADATA PANEL -->
             <aside
                 id="immersivePanelMetadata"
                 class="immersive__panel immersive__panel--left immersive__panel--metadata"
                 aria-label="#{msg.metadata}"
-                aria-hidden="true">
+                aria-hidden="true"
+                inert="inert">
                 <div class="immersive__panel-header">
                     <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
                 </div>
-                <div class="metadata immersive__metadata">
+                <div class="metadata">
                     <c:set
+                        scope="request"
                         var="mdList"
                         value="#{metadataBean.metadataElementList}" />
-                    <!-- Visible blocks: ISANCHOR:true (multivolume work + volume) -> 2, else
-                         -> 1. Deeper structural blocks (chapters) fold under a "more / less
-                         metadata" toggle (config-independent). -->
                     <c:set
                         var="mdCount"
                         value="#{not empty mdList and mdList[0].anchor ? 2 : 1}" />
@@ -200,7 +189,6 @@
                     </c:forEach>
                     <ui:fragment rendered="#{not empty mdList and mdList.size() gt mdCount}">
                         <div
-                            class="immersive__metadata-more"
                             id="immersiveMetadataMore"
                             hidden="hidden">
                             <c:forEach
@@ -228,21 +216,20 @@
                     </ui:fragment>
                 </div>
             </aside>
+            <!-- SEARCH PANEL -->
             <aside
                 id="immersivePanelSearch"
                 class="immersive__panel immersive__panel--left"
                 aria-label="#{msg.search}"
-                aria-hidden="true">
-                <!-- Record header: just the work title (closes via Escape or the burger). -->
+                aria-hidden="true"
+                inert="inert">
                 <div class="immersive__panel-header">
                     <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
                 </div>
                 <widgetComponent:widget_searchInCurrentItem />
-                <!-- In-place fulltext search results (populated by modules.mjs) -->
                 <div
                     id="immersiveSearchResults"
                     class="immersive__results"
-                    data-label-hits="#{msg.hits}"
                     data-label-empty="#{msg.hitsZero}"
                     data-label-reset="#{msg.searchList_resetCurrentSearch}"
                     hidden="hidden">
@@ -257,6 +244,7 @@
                                 type="button"
                                 class="immersive__results-nav-btn"
                                 data-immersive-hit="prev"
+                                title="#{msg.previousHit}"
                                 aria-label="#{msg.previousHit}">
                                 <util:icon
                                     icon="chevron-left"
@@ -266,6 +254,7 @@
                                 type="button"
                                 class="immersive__results-nav-btn"
                                 data-immersive-hit="next"
+                                title="#{msg.nextHit}"
                                 aria-label="#{msg.nextHit}">
                                 <util:icon
                                     icon="chevron-right"
@@ -278,14 +267,14 @@
                         id="immersiveResultsList" />
                 </div>
             </aside>
-            <!-- Fulltext (page OCR) panel: title header + the current page's transcription,
-                 fetched per page by modules.mjs (DFG-Viewer-like). Single-page only. -->
+            <!-- FULLTEXT PANEL -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
                 <aside
                     id="immersivePanelFulltext"
                     class="immersive__panel immersive__panel--left immersive__panel--fulltext"
                     aria-label="#{msg.fulltext}"
-                    aria-hidden="true">
+                    aria-hidden="true"
+                    inert="inert">
                     <div class="immersive__panel-header">
                         <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
                         <div
@@ -311,6 +300,7 @@
                     <div
                         class="immersive__fulltext-loader"
                         id="immersiveFulltextLoader"
+                        role="status"
                         hidden="hidden">
                         <img
                             src="#{request.contextPath}/resources/images/infinity_loader.svg"
@@ -324,23 +314,21 @@
                 </aside>
             </ui:fragment>
 
-            <!-- Central canvas: media-type dependent (universal view, mirrors viewObject.xhtml) -->
-            <div
-                class="immersive__canvas"
-                id="immersiveCanvas">
-                <!-- IMAGE (OSD, client-driven in-place navigation) -->
+            <!-- MEDIA CANVAS -->
+            <div class="immersive__canvas">
+                <!-- VIEW IMAGE -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
                     <ui:include src="/resources/includes/immersive/iv_image.xhtml" />
                 </h:panelGroup>
-                <!-- VIDEO -->
+                <!-- VIEW VIDEO -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.video}">
                     <ui:include src="/resources/includes/object/video.xhtml" />
                 </h:panelGroup>
-                <!-- AUDIO -->
+                <!-- VIEW AUDIO -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.audio}">
                     <ui:include src="/resources/includes/object/audio.xhtml" />
                 </h:panelGroup>
-                <!-- 3D -->
+                <!-- VIEW 3D OBJECT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.is3DModel()}">
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType.matches('.*\\/gl(tf|b)(\\+json)?')}">
                         <ui:include src="/resources/includes/object/voyager3d.xhtml" />
@@ -349,13 +337,13 @@
                         <ui:include src="/resources/includes/object/object3d.xhtml" />
                     </ui:fragment>
                 </h:panelGroup>
-                <!-- TEXT (sandboxed HTML) -->
+                <!-- VIEW TEXT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.sandboxedHtml}">
                     <ui:include src="/resources/includes/object/text.xhtml" />
                 </h:panelGroup>
             </div>
 
-            <!-- Big page-turn chevrons (left/right, vertically centered) -->
+            <!-- PAGE-TURN CHEVRONS -->
             <button
                 type="button"
                 class="immersive__chevron immersive__chevron--left"
@@ -363,7 +351,7 @@
                 aria-label="#{msg.prevImage}">
                 <util:icon
                     icon="chevron-left"
-                    svgClass="immersive__chevron-svg" />
+                    svgClass="immersive__chevron-icon" />
             </button>
             <button
                 type="button"
@@ -372,19 +360,17 @@
                 aria-label="#{msg.nextImage}">
                 <util:icon
                     icon="chevron-right"
-                    svgClass="immersive__chevron-svg" />
+                    svgClass="immersive__chevron-icon" />
             </button>
 
-            <!-- Right toolbar (actions / views) -->
-            <div
-                class="immersive__toolbar immersive__toolbar--right"
-                id="immersiveToolbarRight">
-                <!-- ACTIONS: download / share / cite -->
+            <!-- RIGHT TOOLBAR -->
+            <div class="immersive__toolbar immersive__toolbar--right">
+                <!-- ACTIONS -->
                 <h:panelGroup
                     layout="block"
                     styleClass="immersive__toolbar-group"
                     rendered="#{activeDocumentBean.accessPermissionPdf or configurationBean.displaySocialMediaShareLinks or configurationBean.displaySidebarWidgetUsageCitationLinks}">
-                    <!-- DOWNLOAD: whole-work PDF (B8) -->
+                    <!-- DOWNLOAD PDF -->
                     <ui:fragment rendered="#{activeDocumentBean.accessPermissionPdf}">
                         <a
                             class="immersive__tool-btn"
@@ -398,7 +384,7 @@
                                 svgClass="immersive__tool-icon" />
                         </a>
                     </ui:fragment>
-                    <!-- SHARE (B6): reuse social-media share widget in a popover -->
+                    <!-- SHARE -->
                     <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
                         <button
                             type="button"
@@ -416,7 +402,7 @@
                                 svgClass="immersive__tool-icon" />
                         </button>
                     </ui:fragment>
-                    <!-- CITE (B7): reuse citation widget in a popover -->
+                    <!-- CITE -->
                     <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
                         <button
                             type="button"
@@ -436,11 +422,11 @@
                     </ui:fragment>
                 </h:panelGroup>
 
-                <!-- VIEWS: double-page / overview / fullscreen -->
+                <!-- VIEWS -->
                 <h:panelGroup
                     layout="block"
                     styleClass="immersive__toolbar-group">
-                    <!-- DOUBLE PAGE: book-spread toggle -->
+                    <!-- DOUBLE PAGE -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
                         <button
                             type="button"
@@ -454,12 +440,14 @@
                                 svgClass="immersive__tool-icon" />
                         </button>
                     </ui:fragment>
-                    <!-- OVERVIEW: thumbnail grid overlay (in-place navigation) -->
+                    <!-- OVERVIEW -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
                         <button
                             type="button"
                             class="immersive__tool-btn"
                             data-immersive-action="overview"
+                            aria-haspopup="dialog"
+                            aria-expanded="false"
                             title="#{msg.fullscreen_showThumbs}"
                             aria-label="#{msg.fullscreen_showThumbs}">
                             <util:icon
@@ -467,7 +455,7 @@
                                 svgClass="immersive__tool-icon" />
                         </button>
                     </ui:fragment>
-                    <!-- FULLSCREEN (H3): real browser fullscreen on the viewer hero -->
+                    <!-- FULLSCREEN -->
                     <button
                         type="button"
                         class="immersive__tool-btn"
@@ -484,10 +472,8 @@
                 </h:panelGroup>
             </div>
 
-            <!-- Bottom bar: navigation / zoom / rotate -->
-            <div
-                class="immersive__bottombar"
-                id="immersiveBottomBar">
+            <!-- BOTTOM BAR -->
+            <div class="immersive__bottombar">
                 <!-- NAVIGATION -->
                 <div class="immersive__bottombar-group">
                     <button
@@ -564,7 +550,7 @@
                             svgClass="immersive__bar-icon" />
                     </button>
                 </div>
-                <!-- FILTER: image adjustments (reused imageFilters riot tag in a popover) -->
+                <!-- FILTER -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
                     <div class="immersive__bottombar-group">
                         <button
@@ -586,27 +572,23 @@
                 </ui:fragment>
             </div>
 
-            <!-- Overview thumbnail grid overlay (lazy-mounted riot tag) -->
+            <!-- OVERVIEW GRID -->
             <div
                 class="immersive__grid"
                 id="immersiveGridOverlay"
                 hidden="hidden">
-                <!-- Close button is a direct, non-scrolling child of the overlay so it
-                     stays pinned top-right while the thumbnails scroll in __grid-scroll. -->
                 <button
                     type="button"
                     class="immersive__grid-close"
                     data-immersive-action="overview"
                     aria-label="#{msg.closeWindow}">
-                    <util:icon
-                        icon="x"
-                        svgClass="immersive__close-icon" />
+                    <util:icon icon="x" />
                 </button>
                 <div class="immersive__grid-scroll">
-                    <!-- Loading screen shown until the first thumbnails appear (hidden by JS) -->
                     <div
                         id="immersiveGridLoader"
-                        class="immersive__grid-loader">
+                        class="immersive__grid-loader"
+                        role="status">
                         <img
                             src="#{request.contextPath}/resources/images/infinity_loader.svg"
                             class="ajax-loader__animated-image"
@@ -619,15 +601,11 @@
             </div>
         </section>
 
-        <!-- CONTENT REGION below the viewer - existing includes reused -->
-        <div
-            class="immersive__content container"
-            id="immersiveContent">
-            <div class="row immersive__content-row">
-                <!-- Main content (metadata, annotations, comments, related groups), reused from viewObject.xhtml.
-                     Full width now that the record sidebar lives in the left slide-out menu. -->
-                <div class="immersive__main col-12">
-                    <!-- Bibliographic metadata (needs activeMetadataView from the preRenderView events on the page) -->
+        <!-- CONTENT REGION -->
+        <div class="immersive__content container">
+            <div class="row">
+                <div class="col-12">
+                    <!-- METADATA -->
                     <h:panelGroup rendered="#{metadataBean.activeMetadataView != null}">
                         <ui:include src="/resources/includes/metadata/metadata.xhtml">
                             <ui:param
@@ -639,7 +617,7 @@
                         </ui:include>
                     </h:panelGroup>
 
-                    <!-- Module contributions (e.g. crowdsourcing) -->
+                    <!-- MODULE CONTRIBUTIONS -->
                     <c:forEach
                         var="module"
                         items="#{configurationBean.modules}">
@@ -650,7 +628,7 @@
                         </c:forEach>
                     </c:forEach>
 
-                    <!-- User generated content (annotations) of the current page -->
+                    <!-- USER GENERATED CONTENT (ANNOTATIONS) -->
                     <h:panelGroup id="userGeneratedContentGroup">
                         <ui:fragment
                             rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
@@ -667,34 +645,28 @@
                         </ui:fragment>
                     </h:panelGroup>
 
-                    <!-- User comments -->
+                    <!-- USER COMMENTS -->
                     <ui:include src="/resources/includes/user/userComments.xhtml" />
 
-                    <!-- Related groups grid -->
+                    <!-- RELATED GROUPS CONTENT SECTION -->
                     <ui:include src="/resources/includes/record/relatedGroupsSection.xhtml" />
-                    <!-- Recommendations widget: re-enable once PR #104 adds recommendationsSection.xhtml to develop.
-                         ui:remove strips the include at compile time so the missing file is never resolved. -->
-                    <ui:remove>
-                        <ui:include src="/resources/includes/record/recommendationsSection.xhtml" />
-                    </ui:remove>
                 </div>
-
-                <!-- The configured record sidebar was moved to the left slide-out menu (immersivePanelMenu). -->
             </div>
         </div>
 
-        <!-- Popovers for the right-toolbar share/cite controls (global Bootstrap popover system) -->
+        <!-- SHARE POPOVER -->
         <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
             <popover id="immersiveSharePopover">
                 <widgetComponent:widget_socialMedia_share />
             </popover>
         </ui:fragment>
+        <!-- CITE POPOVER -->
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
             <popover id="immersiveCitationPopover">
                 <widgetComponent:widget_citation id="immersiveCitationWidget" />
             </popover>
         </ui:fragment>
-        <!-- FILTER popover: reused imageFilters riot tag (mounted by modules.mjs) -->
+        <!-- FILTER POPOVER -->
         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
             <popover id="immersiveFilterPopover">
                 <imageFilters />

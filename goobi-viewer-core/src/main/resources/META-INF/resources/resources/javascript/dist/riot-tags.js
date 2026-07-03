@@ -3392,160 +3392,6 @@ riot.tag2('timematrix', '<div class="timematrix__subarea"><span class="timematri
 
 });
 
-riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialview="{this.opts.geomap.initialView}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
-
-this.on("mount", () => {
-    if(this.opts.contentid) {
-        let content = document.getElementById(this.opts.contentid).innerText;
-        try {
-	        this.annotationBody = JSON.parse(content);
-	        this.type = this.annotationBody.type;
-	        if(!this.type) {
-	            this.type = this.anotationBody["@type"];
-	        }
-	        this.format = this.annotationBody.format;
-    	} catch(e) {
-    	    this.annotationBody = {value: content};
-    	    this.type = "TextualResource";
-    	    this.format = "text/plain";
-   		}
-        this.update();
-    }
-})
-
-this.isPlaintext = function() {
-    if(this.type == "TextualBody" || this.type == "TextualResource") {
-        return !this.format || this.format == "text/plain";
-    }
-    return false;
-}.bind(this)
-
-this.isHtml = function() {
-    if(this.type == "TextualBody" || this.type == "TextualResource") {
-        return this.format == "text/html";
-    }
-    return false;
-}.bind(this)
-
-this.isGeoJson = function() {
-    return this.type == "Feature";
-}.bind(this)
-
-this.isAuthorityResource = function() {
-    return this.type == "AuthorityResource";
-}.bind(this)
-
-this.isDatasetResource = function() {
-    return this.type == "Dataset";
-}.bind(this)
-
-});
-
-
-riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if="{normdataList.length == 0}">{authorityId}</div><dl class="annotation__body__authority__normdata_list" each="{normdata in normdataList}"><dt class="normdata_list__label">{normdata.property}: </dt><dd class="normdata_list__value">{normdata.value}</dd></dl></div>', '', '', function(opts) {
-    this.normdataList = [];
-
-	this.on("mount", () => {
-		this.authorityId = this.opts.resource.id;
-	    this.url = this.opts.resturl + "authority/resolver?id=" + this.unicodeEscapeUri(this.authorityId) + "&template=ANNOTATION&lang=" + this.opts.currentlang
-		this.update();
-	    fetch(this.url)
-	    .then(response => {
-	        if(!response.ok) {
-	            throw "Error: " + response.status;
-	        } else {
-	            return response;
-	        }
-	    })
-	    .then(response => response.json())
-	    .then(response => {
-	        this.normdataList = this.parseResponse(response);
-	    })
-	    .catch(error => {
-	        console.error("failed to load ", this.url, ": " + error);
-	    })
-	    .then(() => this.update());
-	})
-
-	this.unicodeEscapeUri = function(uri) {
-    	return uri.replace(/\//g, 'U002F').replace('/\\/g','U005C').replace('/?/g','U003F').replace('/%/g','U0025');
-	}.bind(this)
-
-	this.parseResponse = function(jsonResponse) {
-	    let normdataList = [];
-	    $.each( jsonResponse, (i, object ) => {
-            $.each( object, ( property, value ) => {
-                let stringValue = value.map(v => v.text).join("; ");
-                normdataList.push({property: property, value:stringValue});
-            });
-	    });
-	    return normdataList;
-	}.bind(this)
-
-});
-riot.tag2('datasetresource', '<div class="annotation__body__dataset"><dl class="annotation__body__dataset__data_list" each="{field in dataFields}"><dt class="data_list__label">{getName(field)}: </dt><dd class="data_list__value">{getValue(field)}</dd></dl></div>', '', '', function(opts) {
-    this.dataSet = {};
-    this.dataFields = [];
-
-	this.on("mount", () => {
-		this.dataSet = this.opts.resource.data;
-		this.dataFields = Object.keys(this.dataSet);
-		if(viewerJS.translator) {
-		    viewerJS.translator.addTranslations(this.dataFields)
-			.then(() => this.update());
-		} else {
-			viewerJS.initialized.subscribe(() => {
-		        viewerJS.translator.addTranslations(this.dataFields)
-				.then(() => this.update());
-			});
-		}
-	})
-
-	this.getValue = function(field) {
-	    let value = this.dataSet[field];
-	    if(!value) {
-	        return "";
-	    } else if(Array.isArray(value)) {
-	        return value.join("; ")
-	    } else {
-	        return value;
-	    }
-	}.bind(this)
-
-	this.getName = function(field) {
-	    return viewerJS.translator.translate(field);
-	}.bind(this)
-
-});
-
-riot.tag2('geomapresource', '<div id="geomap_{opts.annotationid}" class="annotation__body__geomap geomap"></div>', '', '', function(opts) {
-
-this.on("mount", () => {
-	this.feature = this.opts.resource;
-	this.config = {
-	        popover: undefined,
-	        mapId: "geomap_" + this.opts.annotationid,
-	        fixed: true,
-	        clusterMarkers: false,
-	        initialView : this.opts.initialview,
-	    };
-    this.geoMap = new viewerJS.GeoMap(this.config);
-    let view = this.feature.view;
-    let features = [this.feature];
-    this.geoMap.init(view, features);
-
-});
-
-});
-riot.tag2('htmltextresource', '<div ref="container" class="annotation__body__htmltext"></div>', '', '', function(opts) {
-
-	this.on("mount", () => {
-	    this.refs.container.innerHTML = this.opts.resource.value;
-	})
-
-});
-riot.tag2('plaintextresource', '<div class="annotation__body__plaintext">{this.opts.resource.value}</div>', '', '', function(opts) {
-});
 riot.tag2('authorityresourcequestion', '<div if="{this.showInstructions()}" class="crowdsourcing-annotations__instruction"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__create_rect_on_image⁗)}</label></div><div if="{this.showInactiveInstructions()}" class="crowdsourcing-annotations__single-instruction -inactive"><label>{Crowdsourcing.translate(⁗crowdsourcing__help__make_active⁗)}</label></div><div class="crowdsourcing-annotations__wrapper" id="question_{opts.index}_annotation_{index}" each="{anno, index in this.question.annotations}"><div class="crowdsourcing-annotations__annotation-area -small"><div if="{this.showAnnotationImages()}" class="crowdsourcing-annotations__annotation-area-image" riot-style="border-color: {anno.getColor()}"><img riot-src="{this.question.getImage(anno)}"></img></div><div if="{!this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><span class="crowdsourcing-annotations__gnd-text">https://d-nb.info/gnd/</span><input class="crowdsourcing-annotations__gnd-id form-control" onchange="{setIdFromEvent}" riot-value="{question.authorityData.baseUri && getIdAsNumber(anno)}"></input></div><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__question-text-input"><input class="form-control pl-1" disabled="{this.opts.item.isReviewMode() ? \'disabled\' : \'\'}" riot-value="{question.authorityData.baseUri}{getIdAsNumber(anno)}"></input><div if="{this.opts.item.isReviewMode()}" class="crowdsourcing-annotations__jump-to-gnd"><a target="_blank" href="{question.authorityData.baseUri}{getIdAsNumber(anno)}">{Crowdsourcing.translate(⁗cms_menu_create_item_new_tab⁗)}</a></div></div><div class="cms-module__actions crowdsourcing-annotations__annotation-action"><button if="{!this.opts.item.isReviewMode()}" onclick="{deleteAnnotationFromEvent}" class="crowdsourcing-annotations__delete-annotation btn btn--clean delete">{Crowdsourcing.translate(⁗action__delete_annotation⁗)} </button></div></div></div><button if="{showAddAnnotationButton()}" onclick="{addAnnotation}" class="options-wrapper__option btn btn--default" id="add-annotation">{Crowdsourcing.translate(⁗action__add_annotation⁗)}</button>', '', '', function(opts) {
 
 	this.question = this.opts.question;
@@ -5387,4 +5233,158 @@ riot.tag2('slider', '<div ref="container" class="swiper slider-{this.styleName}_
     	return layout;
     }.bind(this)
 
+});
+riot.tag2('annotationbody', '<plaintextresource if="{isPlaintext()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></plaintextResource><htmltextresource if="{isHtml()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}"></htmltextResource><geomapresource if="{isGeoJson()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" mapboxtoken="{this.opts.mapboxtoken}" initialview="{this.opts.geomap.initialView}"></geoMapResource><authorityresource if="{isAuthorityResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></authorityResource><datasetresource if="{isDatasetResource()}" resource="{this.annotationBody}" annotationid="{this.opts.annotationid}" currentlang="{this.opts.currentlang}" resturl="{this.opts.resturl}"></datasetResource>', '', '', function(opts) {
+
+this.on("mount", () => {
+    if(this.opts.contentid) {
+        let content = document.getElementById(this.opts.contentid).innerText;
+        try {
+	        this.annotationBody = JSON.parse(content);
+	        this.type = this.annotationBody.type;
+	        if(!this.type) {
+	            this.type = this.anotationBody["@type"];
+	        }
+	        this.format = this.annotationBody.format;
+    	} catch(e) {
+    	    this.annotationBody = {value: content};
+    	    this.type = "TextualResource";
+    	    this.format = "text/plain";
+   		}
+        this.update();
+    }
+})
+
+this.isPlaintext = function() {
+    if(this.type == "TextualBody" || this.type == "TextualResource") {
+        return !this.format || this.format == "text/plain";
+    }
+    return false;
+}.bind(this)
+
+this.isHtml = function() {
+    if(this.type == "TextualBody" || this.type == "TextualResource") {
+        return this.format == "text/html";
+    }
+    return false;
+}.bind(this)
+
+this.isGeoJson = function() {
+    return this.type == "Feature";
+}.bind(this)
+
+this.isAuthorityResource = function() {
+    return this.type == "AuthorityResource";
+}.bind(this)
+
+this.isDatasetResource = function() {
+    return this.type == "Dataset";
+}.bind(this)
+
+});
+
+
+riot.tag2('authorityresource', '<div class="annotation__body__authority"><div if="{normdataList.length == 0}">{authorityId}</div><dl class="annotation__body__authority__normdata_list" each="{normdata in normdataList}"><dt class="normdata_list__label">{normdata.property}: </dt><dd class="normdata_list__value">{normdata.value}</dd></dl></div>', '', '', function(opts) {
+    this.normdataList = [];
+
+	this.on("mount", () => {
+		this.authorityId = this.opts.resource.id;
+	    this.url = this.opts.resturl + "authority/resolver?id=" + this.unicodeEscapeUri(this.authorityId) + "&template=ANNOTATION&lang=" + this.opts.currentlang
+		this.update();
+	    fetch(this.url)
+	    .then(response => {
+	        if(!response.ok) {
+	            throw "Error: " + response.status;
+	        } else {
+	            return response;
+	        }
+	    })
+	    .then(response => response.json())
+	    .then(response => {
+	        this.normdataList = this.parseResponse(response);
+	    })
+	    .catch(error => {
+	        console.error("failed to load ", this.url, ": " + error);
+	    })
+	    .then(() => this.update());
+	})
+
+	this.unicodeEscapeUri = function(uri) {
+    	return uri.replace(/\//g, 'U002F').replace('/\\/g','U005C').replace('/?/g','U003F').replace('/%/g','U0025');
+	}.bind(this)
+
+	this.parseResponse = function(jsonResponse) {
+	    let normdataList = [];
+	    $.each( jsonResponse, (i, object ) => {
+            $.each( object, ( property, value ) => {
+                let stringValue = value.map(v => v.text).join("; ");
+                normdataList.push({property: property, value:stringValue});
+            });
+	    });
+	    return normdataList;
+	}.bind(this)
+
+});
+riot.tag2('datasetresource', '<div class="annotation__body__dataset"><dl class="annotation__body__dataset__data_list" each="{field in dataFields}"><dt class="data_list__label">{getName(field)}: </dt><dd class="data_list__value">{getValue(field)}</dd></dl></div>', '', '', function(opts) {
+    this.dataSet = {};
+    this.dataFields = [];
+
+	this.on("mount", () => {
+		this.dataSet = this.opts.resource.data;
+		this.dataFields = Object.keys(this.dataSet);
+		if(viewerJS.translator) {
+		    viewerJS.translator.addTranslations(this.dataFields)
+			.then(() => this.update());
+		} else {
+			viewerJS.initialized.subscribe(() => {
+		        viewerJS.translator.addTranslations(this.dataFields)
+				.then(() => this.update());
+			});
+		}
+	})
+
+	this.getValue = function(field) {
+	    let value = this.dataSet[field];
+	    if(!value) {
+	        return "";
+	    } else if(Array.isArray(value)) {
+	        return value.join("; ")
+	    } else {
+	        return value;
+	    }
+	}.bind(this)
+
+	this.getName = function(field) {
+	    return viewerJS.translator.translate(field);
+	}.bind(this)
+
+});
+
+riot.tag2('geomapresource', '<div id="geomap_{opts.annotationid}" class="annotation__body__geomap geomap"></div>', '', '', function(opts) {
+
+this.on("mount", () => {
+	this.feature = this.opts.resource;
+	this.config = {
+	        popover: undefined,
+	        mapId: "geomap_" + this.opts.annotationid,
+	        fixed: true,
+	        clusterMarkers: false,
+	        initialView : this.opts.initialview,
+	    };
+    this.geoMap = new viewerJS.GeoMap(this.config);
+    let view = this.feature.view;
+    let features = [this.feature];
+    this.geoMap.init(view, features);
+
+});
+
+});
+riot.tag2('htmltextresource', '<div ref="container" class="annotation__body__htmltext"></div>', '', '', function(opts) {
+
+	this.on("mount", () => {
+	    this.refs.container.innerHTML = this.opts.resource.value;
+	})
+
+});
+riot.tag2('plaintextresource', '<div class="annotation__body__plaintext">{this.opts.resource.value}</div>', '', '', function(opts) {
 });
