@@ -331,8 +331,11 @@ public class ArchiveManager implements Serializable {
                 .filter(StringUtils::isNotEmpty)
                 .collect(Collectors.toSet());
 
-        // Find records with linked archive nodes that belong to the relevant archive
-        String query3 = "+" + SolrConstants.EAD_NODE_ID + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name();
+        // Find records with linked archive nodes that belong to the relevant archive.
+        // Require a PI to restrict the hits to top-level records: sub-structure DOCSTRCT elements carry
+        // EAD_NODE_ID but no PI, are not navigable targets, and would otherwise produce a null PI below.
+        String query3 =
+                "+" + SolrConstants.PI + ":* +" + SolrConstants.EAD_NODE_ID + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name();
         SolrDocumentList linkedRecordDocs = DataManager.getInstance()
                 .getSearchIndex()
                 .search(query3, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.EAD_NODE_ID, "asc")),
@@ -351,11 +354,13 @@ public class ArchiveManager implements Serializable {
             if (entryId.equals(nodeId)) {
                 if (iter.hasNext()) {
                     String nextPi = SolrTools.getSingleFieldStringValue(iter.next(), SolrConstants.PI);
-                    next = Optional.of(nextPi);
+                    // Use ofNullable to stay null-safe if a hit unexpectedly lacks a PI (Optional.of would throw an NPE)
+                    next = Optional.ofNullable(nextPi);
                 }
                 break;
             }
-            prev = Optional.of(pi);
+            // Use ofNullable to stay null-safe if a hit unexpectedly lacks a PI (Optional.of would throw an NPE)
+            prev = Optional.ofNullable(pi);
         }
 
         return Pair.of(prev, next);
