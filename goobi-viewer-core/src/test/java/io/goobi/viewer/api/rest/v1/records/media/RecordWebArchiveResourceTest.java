@@ -215,5 +215,6 @@ class RecordWebArchiveResourceTest {
         assertEquals(200, page.getStatus());
         assertEquals("text/html", page.getMime());
         assertEquals(0, page.getDepth());
+
     }
 }
