@@ -130,6 +130,7 @@ class WebArchiveReaderSeedUrlTest extends AbstractSolrEnabledTest {
         fallbackDocs.add(new SolrDocument(Map.of(SolrConstants.MD_WEBARCHIVE_IDENTIFIER,
                 List.of("http://exa mple.org/broken",
                         "https://replayweb.page/?source=https://archive.example.org/replay.json#view=pages&url=https://example.org/start"))));
+
         Mockito.when(mockedIndex.getDocs(ArgumentMatchers.startsWith(FALLBACK_QUERY_PREFIX), ArgumentMatchers.eq(Collections.emptyList())))
                 .thenReturn(fallbackDocs);
 
