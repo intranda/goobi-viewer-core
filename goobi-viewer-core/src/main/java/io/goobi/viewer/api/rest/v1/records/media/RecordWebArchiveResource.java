@@ -126,6 +126,10 @@ public class RecordWebArchiveResource {
             return Response.status(Status.NOT_FOUND).build();
         }
 
+        if (externalUrls.size() == 1 && externalUrls.get(0).toLowerCase().endsWith(".json")) {
+            return Response.status(Status.FOUND).location(URI.create(externalUrls.get(0))).build();
+        }
+
         return buildExternalWebarchiveJson(search, externalUrls);
     }
 

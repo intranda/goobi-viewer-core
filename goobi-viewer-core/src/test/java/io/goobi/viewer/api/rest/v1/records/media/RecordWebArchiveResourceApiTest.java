@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.glassfish.jersey.client.ClientProperties;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -142,6 +143,52 @@ class RecordWebArchiveResourceApiTest extends AbstractRestApiTest {
             JSONArray resources = json.getJSONArray("resources");
             assertEquals(1, resources.length());
             assertEquals("site1.wacz", resources.getJSONObject(0).getString("name"));
+        }
+    }
+
+    /**
+     * @verifies redirect to the resolved url when exactly one external identifier is found and it resolves to a json url
+     * @see RecordWebArchiveResource#getWebarchiveJson()
+     */
+    @Test
+    void getWebarchiveJson_shouldRedirectWhenSingleExternalUrlIsJson() throws Exception {
+        String jsonUrl = "https://example.org/manifest/index.json";
+        SolrDocumentList fallbackDocs = new SolrDocumentList();
+        fallbackDocs.add(new SolrDocument(Map.of(SolrConstants.MD_WEBARCHIVE_IDENTIFIER, List.of(jsonUrl))));
+        Mockito.when(mockedIndex.getDocs(ArgumentMatchers.startsWith(FALLBACK_QUERY_PREFIX), ArgumentMatchers.eq(Collections.emptyList())))
+                .thenReturn(fallbackDocs);
+
+        try (Response response = target(webarchiveJsonUrl(PI))
+                .property(ClientProperties.FOLLOW_REDIRECTS, false)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(302, response.getStatus());
+            assertEquals(jsonUrl, response.getHeaderString("Location"));
+        }
+    }
+
+    /**
+     * @verifies redirect to the decoded source query parameter value when the identifier url has one and it resolves to a json url
+     * @see RecordWebArchiveResource#getWebarchiveJson()
+     */
+    @Test
+    void getWebarchiveJson_shouldRedirectToSourceParamValueWhenPresent() throws Exception {
+        String actualJsonUrl = "https://example.org/manifest.json";
+        String rawIdentifier =
+                "https://archive.example.org/replay?source=" + java.net.URLEncoder.encode(actualJsonUrl, java.nio.charset.StandardCharsets.UTF_8);
+        SolrDocumentList fallbackDocs = new SolrDocumentList();
+        fallbackDocs.add(new SolrDocument(Map.of(SolrConstants.MD_WEBARCHIVE_IDENTIFIER, List.of(rawIdentifier))));
+        Mockito.when(mockedIndex.getDocs(ArgumentMatchers.startsWith(FALLBACK_QUERY_PREFIX), ArgumentMatchers.eq(Collections.emptyList())))
+                .thenReturn(fallbackDocs);
+
+        try (Response response = target(webarchiveJsonUrl(PI))
+                .property(ClientProperties.FOLLOW_REDIRECTS, false)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(302, response.getStatus());
+            assertEquals(actualJsonUrl, response.getHeaderString("Location"));
         }
     }
 
