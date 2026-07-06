@@ -26,9 +26,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -38,10 +40,13 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 import org.json.JSONObject;
 
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 
 public class WebArchiveReader {
@@ -60,20 +65,65 @@ public class WebArchiveReader {
                     .getSearchIndex()
                     .getDocs("+PI_TOPSTRUCT:%s +DOCTYPE:PAGE +MIMETYPE:application/warc".formatted(pi),
                             Collections.emptyList());
-            if (docs.isEmpty()) {
+            if (docs != null && !docs.isEmpty()) {
+                for (SolrDocument doc : docs) {
+                    String filename = doc.getFieldValue(SolrConstants.FILENAME).toString();
+                    Path waczPath = DataFileTools.getDataFilePath(pi,
+                            DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
+                    if (Files.isRegularFile(waczPath)) {
+                        String url = readSeedUrlFromWacz(waczPath);
+                        if (StringUtils.isNotBlank(url)) {
+                            return url;
+                        }
+                    }
+                }
                 return "";
             }
-            String filename = docs.get(0).getFieldValue(SolrConstants.FILENAME).toString();
-            Path waczPath = DataFileTools.getDataFilePath(pi,
-                    DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
-            if (!Files.isRegularFile(waczPath)) {
-                return "";
-            }
-            return readSeedUrlFromWacz(waczPath);
+
+            return findExternalSeedUrl(pi);
+
         } catch (Exception e) {
             logger.warn("Could not read seed URL from web archive for PI {}: {}", pi, e.getMessage());
             return "";
         }
+    }
+
+    /**
+     * Finds the seed URL among {@code MD_WEBARCHIVE_IDENTIFIER} values on the document matching {@code PI:<pi>}: the
+     * first non-blank {@code url} query parameter value among them, or {@code ""} if none is found.
+     *
+     * @param pi persistent identifier of the record
+     * @return the resolved seed URL, or {@code ""} if no matching document or usable identifier is found
+     */
+    private static String findExternalSeedUrl(String pi) throws IndexUnreachableException, PresentationException {
+        var docs = DataManager.getInstance()
+                .getSearchIndex()
+                .getDocs("+PI:%s +MD_WEBARCHIVE_IDENTIFIER:*".formatted(pi), Collections.emptyList());
+        if (docs == null || docs.isEmpty()) {
+            return "";
+        }
+
+        for (SolrDocument doc : docs) {
+            Collection<Object> rawIdentifiers = doc.getFieldValues(SolrConstants.MD_WEBARCHIVE_IDENTIFIER);
+            if (rawIdentifiers == null) {
+                continue;
+            }
+            for (Object rawIdentifier : rawIdentifiers) {
+                String value = rawIdentifier.toString();
+                if (StringUtils.isBlank(value)) {
+                    continue;
+                }
+                try {
+                    String seedUrl = extractQueryParamValue(new URI(value), "url");
+                    if (StringUtils.isNotBlank(seedUrl)) {
+                        return seedUrl;
+                    }
+                } catch (URISyntaxException e) {
+                    logger.warn("Could not parse web archive identifier URL '{}': {}", value, e.getMessage());
+                }
+            }
+        }
+        return "";
     }
 
     /**
