@@ -12,16 +12,6 @@
         <section class="immersive__viewer">
             <!-- HEADER OVERLAY -->
             <div class="immersive__overlay-top">
-                <ui:fragment rendered="#{searchBean.hitsCount > 0}">
-                    <a
-                        class="immersive__back"
-                        href="#{searchBean.lastUsedSearchUrl}">
-                        <util:icon-text
-                            icon="arrow-narrow-left"
-                            iconSvgClass="immersive__back-icon"
-                            text="#{msg.returnToHitlist}" />
-                    </a>
-                </ui:fragment>
                 <div class="immersive__title">
                     <button
                         type="button"
@@ -72,75 +62,91 @@
 
             <!-- LEFT TOOLBAR -->
             <div class="immersive__toolbar immersive__toolbar--left">
-                <!-- TOC -->
-                <button
-                    type="button"
-                    class="immersive__tool-btn"
-                    data-immersive-panel="immersivePanelMenu"
-                    aria-controls="immersivePanelMenu"
-                    aria-expanded="false"
-                    title="#{msg.toc}"
-                    aria-label="#{msg.toc}">
-                    <util:icon
-                        icon="list"
-                        svgClass="immersive__tool-icon" />
-                </button>
-                <!-- FULLTEXT -->
-                <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
+                <!-- BACK TO SEARCH RESULTS -->
+                <ui:fragment rendered="#{searchBean.hitsCount > 0}">
+                    <div class="immersive__toolbar-group">
+                        <a
+                            class="immersive__tool-btn immersive__back"
+                            href="#{searchBean.lastUsedSearchUrl}"
+                            title="#{msg.returnToHitlist}"
+                            aria-label="#{msg.returnToHitlist}">
+                            <util:icon
+                                icon="arrow-narrow-left"
+                                svgClass="immersive__tool-icon" />
+                        </a>
+                    </div>
+                </ui:fragment>
+                <div class="immersive__toolbar-group immersive__toolbar-group--grow">
+                    <!-- TOC -->
                     <button
                         type="button"
                         class="immersive__tool-btn"
-                        data-immersive-panel="immersivePanelFulltext"
-                        data-label-disabled="#{msg.fulltextOnlySinglePage}"
-                        aria-controls="immersivePanelFulltext"
+                        data-immersive-panel="immersivePanelMenu"
+                        aria-controls="immersivePanelMenu"
                         aria-expanded="false"
-                        title="#{msg.fulltext}"
-                        aria-label="#{msg.fulltext}">
+                        title="#{msg.toc}"
+                        aria-label="#{msg.toc}">
                         <util:icon
-                            icon="file-text"
+                            icon="list"
                             svgClass="immersive__tool-icon" />
                     </button>
-                </ui:fragment>
-                <!-- SEARCH -->
-                <button
-                    type="button"
-                    class="immersive__tool-btn"
-                    data-immersive-panel="immersivePanelSearch"
-                    aria-controls="immersivePanelSearch"
-                    aria-expanded="false"
-                    title="#{msg.search}"
-                    aria-label="#{msg.search}">
-                    <util:icon
-                        icon="search"
-                        svgClass="immersive__tool-icon" />
-                </button>
-                <!-- METADATA -->
-                <button
-                    type="button"
-                    class="immersive__tool-btn"
-                    data-immersive-panel="immersivePanelMetadata"
-                    aria-controls="immersivePanelMetadata"
-                    aria-expanded="false"
-                    title="#{msg.metadata}"
-                    aria-label="#{msg.metadata}">
-                    <util:icon
-                        icon="info-circle"
-                        svgClass="immersive__tool-icon" />
-                </button>
-                <!-- KEYBOARD SHORTCUTS -->
-                <button
-                    type="button"
-                    class="immersive__tool-btn immersive__shortcuts-btn"
-                    data-immersive-shortcuts-trigger=""
-                    aria-haspopup="dialog"
-                    aria-expanded="false"
-                    aria-controls="immersiveShortcuts"
-                    title="#{msg.immersive__shortcuts}"
-                    aria-label="#{msg.immersive__shortcuts}">
-                    <util:icon
-                        icon="keyboard"
-                        svgClass="immersive__tool-icon" />
-                </button>
+                    <!-- FULLTEXT -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
+                        <button
+                            type="button"
+                            class="immersive__tool-btn"
+                            data-immersive-panel="immersivePanelFulltext"
+                            data-label-disabled="#{msg.fulltextOnlySinglePage}"
+                            aria-controls="immersivePanelFulltext"
+                            aria-expanded="false"
+                            title="#{msg.fulltext}"
+                            aria-label="#{msg.fulltext}">
+                            <util:icon
+                                icon="file-text"
+                                svgClass="immersive__tool-icon" />
+                        </button>
+                    </ui:fragment>
+                    <!-- SEARCH -->
+                    <button
+                        type="button"
+                        class="immersive__tool-btn"
+                        data-immersive-panel="immersivePanelSearch"
+                        aria-controls="immersivePanelSearch"
+                        aria-expanded="false"
+                        title="#{msg.search}"
+                        aria-label="#{msg.search}">
+                        <util:icon
+                            icon="search"
+                            svgClass="immersive__tool-icon" />
+                    </button>
+                    <!-- METADATA -->
+                    <button
+                        type="button"
+                        class="immersive__tool-btn"
+                        data-immersive-panel="immersivePanelMetadata"
+                        aria-controls="immersivePanelMetadata"
+                        aria-expanded="false"
+                        title="#{msg.metadata}"
+                        aria-label="#{msg.metadata}">
+                        <util:icon
+                            icon="info-circle"
+                            svgClass="immersive__tool-icon" />
+                    </button>
+                    <!-- KEYBOARD SHORTCUTS -->
+                    <button
+                        type="button"
+                        class="immersive__tool-btn immersive__shortcuts-btn"
+                        data-immersive-shortcuts-trigger=""
+                        aria-haspopup="dialog"
+                        aria-expanded="false"
+                        aria-controls="immersiveShortcuts"
+                        title="#{msg.immersive__shortcuts}"
+                        aria-label="#{msg.immersive__shortcuts}">
+                        <util:icon
+                            icon="keyboard"
+                            svgClass="immersive__tool-icon" />
+                    </button>
+                </div>
             </div>
 
             <!-- TOC PANEL -->

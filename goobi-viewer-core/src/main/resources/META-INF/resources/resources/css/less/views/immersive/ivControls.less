@@ -19,9 +19,17 @@
             left: 0;
             gap: 6px;
             width: @immersive-rail-width;
-            padding: 48px 0 0;
+            padding: 10px 0 0;
             border-right: 1px solid @immersive-divider;
             background-color: @immersive-rail-bg;
+
+            .immersive__toolbar-group {
+                gap: 6px;
+
+                & + .immersive__toolbar-group {
+                    padding-top: 6px;
+                }
+            }
         }
 
         &--right {
@@ -41,6 +49,18 @@
         & + & {
             padding-top: 2px;
             border-top: 1px solid @immersive-divider;
+        }
+    }
+
+    &__toolbar-group--grow {
+        flex: 1;
+    }
+
+    &__back {
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: none;
         }
     }
 

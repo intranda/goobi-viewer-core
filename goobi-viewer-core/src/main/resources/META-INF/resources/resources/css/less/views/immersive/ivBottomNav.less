@@ -6,11 +6,12 @@
 .immersive {
     &__chevron {
         .mx-immersive-overlay-button(48px);
+        display: none;
         position: absolute;
         top: 50%;
         z-index: 100;
         border-radius: 50%;
-        background-color: @immersive-chevron-scrim;
+        background-color: transparent;
         transform: translateY(-50%);
         transition:
             opacity @immersive-transition,
