@@ -189,6 +189,7 @@ class RecordWebArchiveResourceApiTest extends AbstractRestApiTest {
                 .get()) {
             assertEquals(302, response.getStatus());
             assertEquals(actualJsonUrl, response.getHeaderString("Location"));
+
         }
     }
 
