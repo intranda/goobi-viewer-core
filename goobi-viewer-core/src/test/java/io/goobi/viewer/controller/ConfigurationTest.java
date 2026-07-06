@@ -2050,7 +2050,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getFacetFieldsForTemplate_shouldReturnNamedTemplateFields() {
-        List<String> result = DataManager.getInstance().getConfiguration().getFacetFieldsForTemplate("tardis");
+        List<String> result = DataManager.getInstance().getConfiguration().getFacetFieldsForTemplate("quickfilters");
         assertEquals(3, result.size());
         assertEquals("YEAR", result.get(0));
         assertEquals("MD_CREATOR", result.get(1));
@@ -2074,7 +2074,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getQuickFilterTemplateName_shouldReturnConfiguredName() {
-        assertEquals("tardis", DataManager.getInstance().getConfiguration().getQuickFilterTemplateName());
+        assertEquals("quickfilters", DataManager.getInstance().getConfiguration().getQuickFilterTemplateName());
     }
 
     /**

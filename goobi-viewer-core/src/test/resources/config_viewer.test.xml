@@ -469,7 +469,7 @@
 			</template>
 			<!-- Named template exposed as quick filters on the simple search field. Note MD_CREATOR is a plain
 			     dropdown here even though it is hierarchical in _DEFAULT. -->
-			<template name="tardis">
+			<template name="quickfilters">
 				<field type="range">YEAR</field>
 				<field>MD_CREATOR</field>
 				<field>MD_PLACEPUBLISH</field>
@@ -479,7 +479,7 @@
 			<initialElementNumber>23</initialElementNumber>
 		</facets>
 		<!-- Quick filters on the simple search field; fields come from the named <facets><template>. -->
-		<quickFilters template="tardis" />
+		<quickFilters template="quickfilters" />
 		<!-- @enabled: Enables the advanced search (default is true) -->
         <advanced enabled="false">
 			<!-- advancedSearchDefaultItemNumber: number of advanced search items 

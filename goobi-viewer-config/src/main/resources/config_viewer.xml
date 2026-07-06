@@ -538,25 +538,44 @@
         <!-- geo: the field contains geographical coordinates which are displayed on a map -->
         <!-- hierarchical: The field contains hierarchical values, usually a type of digital collection -->
         <facets>
-            <field type="range">YEAR</field>
-            <!-- <field type="range" style="graph">MDNUM_YEARPUBLISH</field> -->
-            <field type="geo" predicate="IsWithin" displayResultsOnMap="true">WKT_COORDS</field>
-            <!-- HINT: We always need a facet for DC, otherwise the facet query when opening collections will not
-                       automatically search in subcollections, too. FACET_DC:foo only, FACET_DC:foo.* is missing.
-                       If you want to hide faceting for DC from the default options, specify it locally and add
-                       the skipInWidget="true" attribute. -->
-            <field type="hierarchical" initialElementNumber="4">DC</field>
-            <field initialElementNumber="3">DOCSTRCT_TOP</field>
-            <field initialElementNumber="3">DOCSTRCT_SUB</field>
-            <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_CREATOR</field>
-            <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_PLACEPUBLISH</field>
-            <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">FULLTEXTAVAILABLE</field> -->
-            <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">BOOL_IMAGEAVAILABLE</field> -->
-            <!-- <field labelField="MD_LABEL">MD_VALUE</field> -->
-            <!-- <field translateLabels="false">MD_OTHERVALUE</field> -->
-            <!-- <field sortOrder="alphabetical" groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_TITLE</field> -->
-            <!-- <field multiValueOperator="OR">MD_LANGUAGE</field> -->
+            <!-- Facet fields are grouped into named <template> blocks (like metadata templates). The "_DEFAULT"
+                 template is the sidebar facet set. Additional named templates can be referenced elsewhere, e.g. by
+                 <quickFilters template="..."/> below. NOTE: the flat <field> layout without a <template> is no longer
+                 supported - fields must be wrapped in a <template>. -->
+            <template name="_DEFAULT">
+                <field type="range">YEAR</field>
+                <!-- <field type="range" style="graph">MDNUM_YEARPUBLISH</field> -->
+                <field type="geo" predicate="IsWithin" displayResultsOnMap="true">WKT_COORDS</field>
+                <!-- HINT: We always need a facet for DC, otherwise the facet query when opening collections will not
+                           automatically search in subcollections, too. FACET_DC:foo only, FACET_DC:foo.* is missing.
+                           If you want to hide faceting for DC from the default options, specify it locally and add
+                           the skipInWidget="true" attribute. -->
+                <field type="hierarchical" initialElementNumber="4">DC</field>
+                <field initialElementNumber="3">DOCSTRCT_TOP</field>
+                <field initialElementNumber="3">DOCSTRCT_SUB</field>
+                <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_CREATOR</field>
+                <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_PLACEPUBLISH</field>
+                <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">FULLTEXTAVAILABLE</field> -->
+                <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">BOOL_IMAGEAVAILABLE</field> -->
+                <!-- <field labelField="MD_LABEL">MD_VALUE</field> -->
+                <!-- <field translateLabels="false">MD_OTHERVALUE</field> -->
+                <!-- <field sortOrder="alphabetical" groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_TITLE</field> -->
+                <!-- <field multiValueOperator="OR">MD_LANGUAGE</field> -->
+            </template>
+            <!-- Example template exposing a subset of fields as quick filters on the simple search field. Reference it
+                 via <quickFilters template="quickfilters"/>. Only type="range" (rendered as a from/to date widget) and
+                 untyped fields (rendered as value dropdowns) are supported here; hierarchical/geo/boolean are skipped.
+            <template name="quickfilters">
+                <field type="range">YEAR</field>
+                <field>MD_CREATOR</field>
+                <field>DOCSTRCT_TOP</field>
+            </template>
+            -->
         </facets>
+
+        <!-- Quick filters shown on the simple search field when the "Search quick filters" CMS component is used.
+             @template names the <facets><template> whose fields are exposed (defaults to _DEFAULT). -->
+        <!-- <quickFilters template="quickfilters" /> -->
 
         <!-- advanced/@enabled: If true, the advanced search is enabled. Default is true. -->
         <advanced enabled="true">

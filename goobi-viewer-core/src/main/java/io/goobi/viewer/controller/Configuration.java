@@ -172,6 +172,9 @@ public class Configuration extends AbstractConfiguration {
     /** Guards the "deprecated flat facet config" ERROR so it is logged at most once per Configuration instance. */
     private volatile boolean legacyFacetConfigLogged = false;
 
+    /** Facet template names already warned about as "not found" (logged once each per Configuration instance). */
+    private final java.util.Set<String> loggedMissingFacetTemplates = ConcurrentHashMap.newKeySet();
+
     /**
      * Creates a new Configuration instance.
      *
@@ -3495,7 +3498,7 @@ public class Configuration extends AbstractConfiguration {
      * @return list of matching sub-configurations; empty list if the template is absent
      */
     private List<HierarchicalConfiguration<ImmutableNode>> getFacetFieldConfigsForTemplate(String templateName, String elementName) {
-        HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getFacetTemplateConfigs(), templateName, true);
+        HierarchicalConfiguration<ImmutableNode> template = resolveFacetTemplate(templateName);
         if (template == null) {
             return Collections.emptyList();
         }
@@ -3503,22 +3506,47 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the {@code <facets><template>} configurations to use. Prefers the local (deployment) config. If the local config has no
-     * {@code <template>} but still uses the deprecated flat {@code <facets><field>} layout, that legacy config is ignored (an ERROR is logged) and
-     * the packaged default configuration from the JAR is used instead.
+     * Resolves a {@code <facets><template>} by name, searching the local (deployment) config first and then the packaged default config, so a
+     * template defined in either is found and a local definition wins. If the requested template is not found anywhere, falls back to the
+     * {@code _DEFAULT} template (again local-first) and logs a warning. If the local config has no {@code <template>} at all but still uses the
+     * deprecated flat {@code <facets><field>} layout, that legacy config is ignored and an ERROR is logged.
      *
-     * @return list of facet template sub-configurations (possibly empty)
+     * @param templateName requested template name
+     * @return the matching template sub-configuration, or null if neither the requested template nor {@code _DEFAULT} exist anywhere
      */
-    private List<HierarchicalConfiguration<ImmutableNode>> getFacetTemplateConfigs() {
+    private HierarchicalConfiguration<ImmutableNode> resolveFacetTemplate(String templateName) {
         List<HierarchicalConfiguration<ImmutableNode>> localTemplates = getConfigLocal().configurationsAt("search.facets.template");
-        if (localTemplates != null && !localTemplates.isEmpty()) {
-            return localTemplates;
-        }
-        if (isLocalFacetConfigLegacy()) {
+        List<HierarchicalConfiguration<ImmutableNode>> defaultTemplates = getConfig().configurationsAt("search.facets.template");
+
+        if ((localTemplates == null || localTemplates.isEmpty()) && isLocalFacetConfigLegacy()) {
             warnLegacyFacetConfigOnce();
         }
-        // Fall back to the packaged default configuration from the JAR.
-        return getConfig().configurationsAt("search.facets.template");
+
+        // Exact match by name: local first, then packaged default.
+        HierarchicalConfiguration<ImmutableNode> template = selectTemplate(localTemplates, templateName, false);
+        if (template == null) {
+            template = selectTemplate(defaultTemplates, templateName, false);
+        }
+        if (template != null) {
+            return template;
+        }
+
+        // Requested template not found anywhere: warn (once per name), then fall back to _DEFAULT (local first).
+        if (!StringConstants.DEFAULT_NAME.equals(templateName)) {
+            warnMissingFacetTemplateOnce(templateName);
+        }
+        template = selectTemplate(localTemplates, StringConstants.DEFAULT_NAME, false);
+        if (template == null) {
+            template = selectTemplate(defaultTemplates, StringConstants.DEFAULT_NAME, false);
+        }
+        return template;
+    }
+
+    private void warnMissingFacetTemplateOnce(String templateName) {
+        if (loggedMissingFacetTemplates.add(templateName)) {
+            logger.warn("Facet template '{}' not found in local or default configuration; falling back to the '{}' template.", templateName,
+                    StringConstants.DEFAULT_NAME);
+        }
     }
 
     /**
