@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HexFormat;
 import java.util.List;
@@ -116,48 +117,99 @@ public class RecordWebArchiveResource {
 
         SolrDocumentList docs = search.getDocs(filteredQuery, Collections.emptyList());
 
-        SolrDocument topDoc = search.getDocumentByPI(pi);
-        StructElement topStruct = new StructElement(topDoc);
+        if (docs != null && !docs.isEmpty()) {
+            return buildLocalWebarchiveJson(search, docs);
+        }
 
-        if (!docs.isEmpty()) {
-
-            List<WebArchiveResource> resources = new ArrayList<>();
-            List<WebArchivePage> initialPages = new ArrayList<>();
-
-            for (SolrDocument doc : docs) {
-                String filename = doc.getFieldValue(SolrConstants.FILENAME).toString();
-                String url = getWebArchiveUrl(this.pi, filename);
-                String hash = null;
-                Long size = null;
-                java.nio.file.Path filePath = null;
-                try {
-                    filePath = DataFileTools.getDataFilePath(this.pi,
-                            DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
-                    if (Files.isRegularFile(filePath)) {
-                        size = Files.size(filePath);
-                        hash = getCachedSha256(filePath);
-                    }
-                } catch (Exception e) {
-                    logger.warn("Could not compute hash/size for web archive {}: {}", filename, e.getMessage());
-                }
-                resources.add(new WebArchiveResource(filename, url, hash, size));
-                if (filePath != null && Files.isRegularFile(filePath)) {
-                    extractSeedPages(filePath, filename, initialPages);
-                }
-            }
-
-            ReplayJson json = new ReplayJson(this.pi, topStruct.getLabel(), resources, initialPages);
-            //            json.addTag("test");
-            //            json.addTag("zlb");
-            json.setCaption("My Caption");
-            json.setDescription("My Description");
-            json.setHomUrl("https://replayweb.page");
-
-            return Response.ok(json).build();
-        } else {
+        List<String> externalUrls = findExternalWebArchiveUrls(search);
+        if (externalUrls.isEmpty()) {
             return Response.status(Status.NOT_FOUND).build();
         }
 
+        return buildExternalWebarchiveJson(search, externalUrls);
+    }
+
+    private Response buildLocalWebarchiveJson(SolrSearchIndex search, SolrDocumentList docs)
+            throws IndexUnreachableException, PresentationException {
+        StructElement topStruct = new StructElement(search.getDocumentByPI(this.pi));
+
+        List<WebArchiveResource> resources = new ArrayList<>();
+        List<WebArchivePage> initialPages = new ArrayList<>();
+
+        for (SolrDocument doc : docs) {
+            String filename = doc.getFieldValue(SolrConstants.FILENAME).toString();
+            String url = getWebArchiveUrl(this.pi, filename);
+            String hash = null;
+            Long size = null;
+            java.nio.file.Path filePath = null;
+            try {
+                filePath = DataFileTools.getDataFilePath(this.pi,
+                        DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
+                if (Files.isRegularFile(filePath)) {
+                    size = Files.size(filePath);
+                    hash = getCachedSha256(filePath);
+                }
+            } catch (Exception e) {
+                logger.warn("Could not compute hash/size for web archive {}: {}", filename, e.getMessage());
+            }
+            resources.add(new WebArchiveResource(filename, url, hash, size));
+            if (filePath != null && Files.isRegularFile(filePath)) {
+                extractSeedPages(filePath, filename, initialPages);
+            }
+        }
+
+        return Response.ok(buildReplayJson(topStruct, resources, initialPages)).build();
+    }
+
+    /**
+     * Finds all external web archive URLs referenced via {@code MD_WEBARCHIVE_IDENTIFIER} on the document matching
+     * {@code PI:<pi>}, resolving each raw identifier via {@link #resolveWebArchiveUrl(String)}.
+     *
+     * @param search Solr search index to query
+     * @return resolved URLs; empty if no matching document is found or none of its identifiers could be resolved
+     */
+    private List<String> findExternalWebArchiveUrls(SolrSearchIndex search) throws IndexUnreachableException, PresentationException {
+        String query = "+PI:%s +MD_WEBARCHIVE_IDENTIFIER:*".formatted(this.pi);
+        String filteredQuery = query + SearchHelper.getAllSuffixes(servletRequest, true, true);
+        SolrDocumentList docs = search.getDocs(filteredQuery, Collections.emptyList());
+        if (docs == null || docs.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> resolvedUrls = new ArrayList<>();
+        for (SolrDocument doc : docs) {
+            Collection<Object> rawIdentifiers = doc.getFieldValues(SolrConstants.MD_WEBARCHIVE_IDENTIFIER);
+            if (rawIdentifiers == null) {
+                continue;
+            }
+            for (Object rawIdentifier : rawIdentifiers) {
+                String resolvedUrl = resolveWebArchiveUrl(rawIdentifier.toString());
+                if (resolvedUrl != null) {
+                    resolvedUrls.add(resolvedUrl);
+                }
+            }
+        }
+        return resolvedUrls;
+    }
+
+    private Response buildExternalWebarchiveJson(SolrSearchIndex search, List<String> externalUrls)
+            throws IndexUnreachableException, PresentationException {
+        StructElement topStruct = new StructElement(search.getDocumentByPI(this.pi));
+
+        List<WebArchiveResource> resources = new ArrayList<>();
+        for (String url : externalUrls) {
+            resources.add(new WebArchiveResource(deriveExternalResourceName(url), url, null, null));
+        }
+
+        return Response.ok(buildReplayJson(topStruct, resources, Collections.emptyList())).build();
+    }
+
+    private ReplayJson buildReplayJson(StructElement topStruct, List<WebArchiveResource> resources, List<WebArchivePage> initialPages) {
+        ReplayJson json = new ReplayJson(this.pi, topStruct.getLabel(), resources, initialPages);
+        json.setCaption("My Caption");
+        json.setDescription("My Description");
+        json.setHomUrl("https://replayweb.page");
+        return json;
     }
 
     private static void extractSeedPages(java.nio.file.Path waczPath, String waczFilename, List<WebArchivePage> pages) {
