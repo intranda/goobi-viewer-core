@@ -3,12 +3,42 @@
    style declarations for viewImmersive.xhtml (thumbnail overview overlay)
    ==============================================================*/
 
+@immersive-grid-gutter: 28px;
+
+.mx-immersive-grid-slider-track() {
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(to right, @immersive-accent 0 var(--immersive-slider-fill), @immersive-slider-track var(--immersive-slider-fill));
+}
+
+.mx-immersive-grid-slider-thumb() {
+    width: 16px;
+    height: 16px;
+    border: 0;
+    border-radius: 50%;
+    background-color: @immersive-accent;
+    box-shadow: @immersive-thumb-shadow;
+    transition: transform @immersive-transition;
+}
+
 .immersive {
     &__grid {
         position: absolute;
         inset: 0;
         z-index: 300;
         background-color: @immersive-canvas-bg;
+        --immersive-grid-col: 150px;
+        --immersive-grid-thumb-h: 220px;
+
+        &[data-thumb-size='0'] {
+            --immersive-grid-col: 110px;
+            --immersive-grid-thumb-h: 150px;
+        }
+
+        &[data-thumb-size='2'] {
+            --immersive-grid-col: 230px;
+            --immersive-grid-thumb-h: 330px;
+        }
 
         .thumbnails-image-wrapper {
             position: relative;
@@ -20,8 +50,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 220px;
+            height: var(--immersive-grid-thumb-h);
             text-decoration: none;
+            transition: height 0.2s ease;
         }
 
         .thumbnails-image {
@@ -80,7 +111,7 @@
         position: absolute;
         inset: 0;
         overflow-y: auto;
-        padding: calc(@immersive-rail-width + 2 * @immersive-edge-inset) 28px 36px;
+        padding: calc(@immersive-rail-width + 2 * @immersive-edge-inset) @immersive-grid-gutter 72px;
     }
 
     &__grid-close {
@@ -100,9 +131,95 @@
         }
     }
 
+    &__grid-top {
+        .mx-immersive-icon-button(40px);
+        position: absolute;
+        right: @immersive-grid-gutter;
+        bottom: @immersive-edge-inset;
+        z-index: 1;
+        .mx-immersive-floating();
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__grid-top-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    &__grid-size {
+        position: absolute;
+        bottom: @immersive-edge-inset;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 40px;
+        padding: 0 14px;
+        .mx-immersive-floating();
+        color: @immersive-chrome-fg;
+    }
+
+    &__grid-size-icon {
+        opacity: 0.7;
+
+        &--small {
+            width: 16px;
+            height: 16px;
+        }
+
+        &--large {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    &__grid-size-slider {
+        --immersive-slider-fill: 50%;
+        appearance: none;
+        width: 140px;
+        height: 24px;
+        margin: 0;
+        background: transparent;
+        cursor: pointer;
+
+        &::-webkit-slider-runnable-track {
+            .mx-immersive-grid-slider-track();
+        }
+
+        &::-moz-range-track {
+            .mx-immersive-grid-slider-track();
+        }
+
+        &::-webkit-slider-thumb {
+            .mx-immersive-grid-slider-thumb();
+            appearance: none;
+            // centers the 16px thumb on the 4px webkit track
+            margin-top: -6px;
+        }
+
+        &::-moz-range-thumb {
+            .mx-immersive-grid-slider-thumb();
+        }
+
+        &:hover::-webkit-slider-thumb,
+        &:focus-visible::-webkit-slider-thumb {
+            transform: scale(1.15);
+        }
+
+        &:hover::-moz-range-thumb,
+        &:focus-visible::-moz-range-thumb {
+            transform: scale(1.15);
+        }
+    }
+
     &__grid-mount {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(var(--immersive-grid-col), 1fr));
         gap: 26px 20px;
         max-width: 1140px;
         margin: 0 auto;
@@ -125,4 +242,9 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
+    .immersive {
+        &__grid-size-slider {
+            width: 100px;
+        }
+    }
 }

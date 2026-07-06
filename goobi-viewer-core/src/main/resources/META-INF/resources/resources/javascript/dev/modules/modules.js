@@ -2059,6 +2059,51 @@
         });
     }
 
+    const THUMB_SIZE_KEY = 'immersive-thumb-size';
+
+    const THUMB_SIZE_DEFAULT = 1;
+
+    /**
+     * Clamps a stored thumbnail-size value to a valid grid step. Accepts numbers
+     * or numeric strings; anything else falls back to the default (medium).
+     * Pure + tested.
+     *
+     * @param {*} value
+     * @returns {number} 0 | 1 | 2
+     */
+    function clampThumbSizeStep(value) {
+        const n = parseInt(value, 10);
+        return n === 0 || n === 1 || n === 2 ? n : THUMB_SIZE_DEFAULT;
+    }
+
+    /**
+     * Reads the persisted thumbnail-size step. Falls back to the default when
+     * the storage is unavailable (private mode) or holds an invalid value.
+     *
+     * @param {Storage} storage  e.g. window.localStorage
+     * @returns {number} 0 | 1 | 2
+     */
+    function readThumbSizeStep(storage) {
+        try {
+            return clampThumbSizeStep(storage.getItem(THUMB_SIZE_KEY));
+        } catch (e) {
+            return THUMB_SIZE_DEFAULT;
+        }
+    }
+
+    /**
+     * Persists the thumbnail-size step; invalid steps are clamped. Storage
+     * errors (private mode, quota) are swallowed.
+     *
+     * @param {Storage} storage
+     * @param {number|string} step
+     */
+    function writeThumbSizeStep(storage, step) {
+        try {
+            storage.setItem(THUMB_SIZE_KEY, String(clampThumbSizeStep(step)));
+        } catch (e) {}
+    }
+
     window.ShareImageFragment = ShareImageFragment;
 
     window.zoomableImageLoaded = new rxjs.Subject();
@@ -2767,10 +2812,39 @@
      */
     function setupOverviewGrid(viewer, pi, apiBase) {
         const GRID_LOADER_TIMEOUT_MS = 8000;
+        const GRID_TOP_VISIBLE_AFTER_PX = 200;
         const gridOverlay = document.getElementById('immersiveGridOverlay');
         const gridLoader = document.getElementById('immersiveGridLoader');
         const gridClose = gridOverlay && gridOverlay.querySelector('.immersive__grid-close');
         const gridTrigger = document.querySelector('[data-immersive-action="overview"]:not(.immersive__grid-close)');
+        const sizeSlider = document.getElementById('immersiveGridSize');
+        const sizeLabels = sizeSlider ? [sizeSlider.dataset.labelSmall, sizeSlider.dataset.labelMedium, sizeSlider.dataset.labelLarge] : [];
+        const applyThumbSize = (step) => {
+            if (gridOverlay) gridOverlay.setAttribute('data-thumb-size', String(step));
+            if (sizeSlider) {
+                sizeSlider.value = String(step);
+                sizeSlider.style.setProperty('--immersive-slider-fill', `${(step / 2) * 100}%`);
+                if (sizeLabels[step]) sizeSlider.setAttribute('aria-valuetext', sizeLabels[step]);
+            }
+        };
+        applyThumbSize(readThumbSizeStep(window.localStorage));
+        if (sizeSlider) {
+            sizeSlider.addEventListener('input', () => {
+                const step = clampThumbSizeStep(sizeSlider.value);
+                applyThumbSize(step);
+                writeThumbSizeStep(window.localStorage, step);
+            });
+        }
+        const gridScroll = gridOverlay && gridOverlay.querySelector('.immersive__grid-scroll');
+        const gridTopBtn = gridOverlay && gridOverlay.querySelector('.immersive__grid-top');
+        if (gridScroll && gridTopBtn) {
+            gridTopBtn.addEventListener('click', () => {
+                gridScroll.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            gridScroll.addEventListener('scroll', () => {
+                gridTopBtn.hidden = gridScroll.scrollTop < GRID_TOP_VISIBLE_AFTER_PX;
+            });
+        }
         let gridMounted = false;
         let gridTag = null;
         let gridOpener = null;
@@ -2820,7 +2894,7 @@
                     source: `${apiBase}/records/${pi}/manifest`,
                     type: 'sequence',
                     actionlistener: gridActions,
-                    imagesize: '!320,440',
+                    imagesize: '!400,560',
                     index: currentOrder(viewer),
                 })[0];
                 gridMounted = true;
