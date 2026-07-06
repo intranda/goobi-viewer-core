@@ -314,7 +314,6 @@ public class IIIFSearchBuilder {
                 resultList.add(annotations);
                 mostHits = Math.max(mostHits, annotations.getNumHits());
                 total += annotations.getNumHits();
-
             }
         }
 
@@ -543,7 +542,10 @@ public class IIIFSearchBuilder {
             if (firstHitIndex < docList.size()) {
                 List<SolrDocument> filteredDocList = docList.subList(firstHitIndex, Math.min(firstHitIndex + hitsPerPage, docList.size()));
                 for (SolrDocument doc : filteredDocList) {
-                    results.add(converter.convertUGCToHit(AbstractSearchParser.getQueryRegex(query), doc));
+                    SearchHit hit = converter.convertUGCToHit(AbstractSearchParser.getQueryRegex(query), doc);
+                    if (StringUtils.isNotBlank(hit.getMatch())) {
+                        results.add(hit);
+                    }
 
                 }
             }

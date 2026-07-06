@@ -50,6 +50,16 @@ public class CMSComponentReader {
 
     private static final Logger logger = LogManager.getLogger(CMSComponentReader.class);
 
+    /**
+     * Reads a single component template XML file and constructs the {@link CMSComponent} described by it.
+     *
+     * @param templateFile path to the component template XML file
+     * @return the constructed {@link CMSComponent}
+     * @throws IOException if the file cannot be read
+     * @throws JDOMException if the file cannot be parsed as XML
+     * @should skip content item without className
+     * @should construct content item from className
+     */
     public CMSComponent read(Path templateFile) throws IOException, JDOMException {
 
         Document templateDoc = XmlTools.readXmlFile(templateFile);
@@ -94,7 +104,19 @@ public class CMSComponentReader {
 
         for (Element element : contentElements) {
 
+            String componentId = element.getAttributeValue("id");
             String className = XmlTools.evaluateToFirstElement("className", element, null).map(Element::getText).orElse(null);
+
+            // Precise diagnostics: a content item without a <className> can never produce a CMSContent. This
+            // usually means a legacy-format page template was picked up as a component template, or the tag
+            // was simply omitted. Naming the template file and item id makes the offending source
+            // identifiable instead of the previous, useless "class 'null'" message.
+            if (StringUtils.isBlank(className)) {
+                logger.error("Skipping content item '{}' in component template '{}': no <className> defined.",
+                        componentId, templateFile.getFileName());
+                continue;
+            }
+
             try {
                 String elementJsfComponentLibrary =
                         XmlTools.evaluateToFirstElement("jsfComponent/library", element, null).map(Element::getText).orElse(null);
@@ -103,7 +125,6 @@ public class CMSComponentReader {
                 String elementLabel = XmlTools.evaluateToFirstElement("label", element, null).map(Element::getText).orElse(null);
                 String elementDesc = XmlTools.evaluateToFirstElement("description", element, null).map(Element::getText).orElse(null);
                 String htmlGroup = XmlTools.evaluateToFirstElement("htmlGroup", element, null).map(Element::getText).orElse(null);
-                String componentId = element.getAttributeValue("id");
                 String requiredString = element.getAttributeValue("required", "false");
                 boolean required = !requiredString.equalsIgnoreCase("false");
 
@@ -113,7 +134,10 @@ public class CMSComponentReader {
 
                 component.addContentItem(item);
             } catch (InstantiationException e) {
-                logger.error("Error instantiating CMSContent from class '{}'", className);
+                // Include the template file, the item id and the actual cause (previously swallowed) so that
+                // ClassNotFound, wrong-type and missing-no-arg-constructor cases can be told apart.
+                logger.error("Error instantiating CMSContent from class '{}' for content item '{}' in component template '{}': {}",
+                        className, componentId, templateFile.getFileName(), e.getMessage());
             }
         }
 

@@ -318,6 +318,45 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * When overriding license types are present AND a user satisfies access conditions but the returned AccessPermission
+     * carries a secondary requirement that fails, the baseline public grant must still fire.
+     *
+     * @verifies fall through to baseline grant if secondary access check invalidates licensee access
+     */
+    @Test
+    void checkAccessPermission_shouldFallThroughToBaselineGrantIfSecondaryAccessCheckInvalidatesLicenseeAccess()
+            throws Exception {
+        // "A" grants the privilege by default (non-overriding)
+        LicenseType a = new LicenseType();
+        a.setName("A");
+        a.getPrivileges().add(IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        // "B" overrides "A" and does not grant the privilege by default
+        LicenseType b = new LicenseType();
+        b.setName("B");
+        b.getOverriddenLicenseTypes().add(a);
+
+        // A different user that will be embedded as the secondary requirement
+        User secondaryUser = new User();
+        secondaryUser.setId(999L);
+
+        // Session user whose canSatisfyAllAccessConditions passes but returns an AccessPermission
+        // that demands a secondary check against a different user (will fail)
+        User sessionUser = new User() {
+            @Override
+            public AccessPermission canSatisfyAllAccessConditions(Set<String> conditions, String privilegeName, String pi) {
+                return AccessPermission.granted().setAddionalCheckRequired(secondaryUser);
+            }
+        };
+
+        Set<String> recordAccessConditions = new HashSet<>(Arrays.asList("A", "B"));
+        AccessPermission access = AccessConditionUtils.checkAccessPermission(Arrays.asList(a, b), recordAccessConditions,
+                IPrivilegeHolder.PRIV_VIEW_IMAGES, sessionUser, null, Optional.empty(), null);
+        // Secondary check fails (sessionUser != secondaryUser), but the baseline grant fires
+        // because type "A" allows the privilege by default
+        assertTrue(access.isGranted());
+    }
+
+    /**
      * @verifies remove license types whose names do not match access conditions
      */
     @Test
