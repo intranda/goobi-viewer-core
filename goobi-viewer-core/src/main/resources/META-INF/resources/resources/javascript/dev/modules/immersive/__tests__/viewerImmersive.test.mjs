@@ -1,12 +1,21 @@
 /**
- * Unit tests for viewerImmersive.mjs — pageUrlPath and pickActiveTocPageNo (pure)
- * and attachUrlSync (DOM-bound).
+ * Unit tests for the viewerImmersive.mjs helpers (pure functions and the
+ * DOM-bound attachUrlSync).
  *
  * Note: Jest's `jest` global is not auto-injected in native ESM projects
  * (transform: {}). We import it explicitly from @jest/globals.
  */
 import { jest } from '@jest/globals';
-import { pageUrlPath, pickActiveTocPageNo, attachUrlSync, normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_KEY } from '../viewerImmersive.mjs';
+import {
+    pageUrlPath,
+    pickActiveTocPageNo,
+    attachUrlSync,
+    normalizeThumbSizeStep,
+    readThumbSizeStep,
+    writeThumbSizeStep,
+    THUMB_SIZE_KEY,
+    isTypingTarget,
+} from '../viewerImmersive.mjs';
 
 // ---------------------------------------------------------------------------
 // pageUrlPath
@@ -183,5 +192,45 @@ describe('readThumbSizeStep / writeThumbSizeStep', function () {
         };
         expect(readThumbSizeStep(throwing)).toBe(1);
         expect(() => writeThumbSizeStep(throwing, 2)).not.toThrow();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// isTypingTarget
+// ---------------------------------------------------------------------------
+
+describe('isTypingTarget', function () {
+    test('true for form fields (input, textarea, select)', function () {
+        ['input', 'textarea', 'select'].forEach(function (tag) {
+            expect(isTypingTarget(document.createElement(tag))).toBe(true);
+        });
+    });
+
+    test('true for contenteditable elements and their descendants', function () {
+        const editor = document.createElement('div');
+        editor.setAttribute('contenteditable', 'true');
+        const child = document.createElement('span');
+        editor.appendChild(child);
+        expect(isTypingTarget(editor)).toBe(true);
+        expect(isTypingTarget(child)).toBe(true);
+    });
+
+    test('true for an empty contenteditable attribute', function () {
+        const editor = document.createElement('div');
+        editor.setAttribute('contenteditable', '');
+        expect(isTypingTarget(editor)).toBe(true);
+    });
+
+    test('false for contenteditable="false"', function () {
+        const el = document.createElement('div');
+        el.setAttribute('contenteditable', 'false');
+        expect(isTypingTarget(el)).toBe(false);
+    });
+
+    test('false for plain elements and non-element targets', function () {
+        expect(isTypingTarget(document.createElement('button'))).toBe(false);
+        expect(isTypingTarget(document.body)).toBe(false);
+        expect(isTypingTarget(document)).toBe(false);
+        expect(isTypingTarget(null)).toBe(false);
     });
 });

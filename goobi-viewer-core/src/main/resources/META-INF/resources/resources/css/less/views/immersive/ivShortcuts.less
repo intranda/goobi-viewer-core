@@ -1,0 +1,140 @@
+/* ==============================================================
+   Immersive View: Shortcuts
+   style declarations for viewImmersive.xhtml (keyboard shortcuts modal)
+   ==============================================================*/
+
+// topmost stage layer: above the grid overlay (300) and @immersive-z-overlay (110)
+@immersive-z-shortcuts: 400;
+
+.immersive {
+    // pins the trigger to the bottom of the left rail (flex column)
+    &__shortcuts-btn {
+        margin-top: auto;
+        margin-bottom: @immersive-edge-inset;
+    }
+
+    &__shortcuts {
+        position: absolute;
+        inset: 0;
+        z-index: @immersive-z-shortcuts;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: calc(2 * @immersive-edge-inset);
+        background-color: rgba(0, 0, 0, 0.4);
+
+        // the display: flex above would otherwise override the UA [hidden] rule
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__shortcuts-dialog {
+        .mx-immersive-floating();
+        position: relative;
+        width: 100%;
+        max-width: 480px;
+        max-height: 100%;
+        overflow-y: auto;
+        padding: 20px 24px 24px;
+        border-radius: @immersive-radius-lg;
+        color: @immersive-chrome-fg;
+    }
+
+    &__shortcuts-close {
+        .mx-immersive-icon-button(32px);
+        position: absolute;
+        top: 12px;
+        right: 12px;
+    }
+
+    &__shortcuts-title {
+        margin: 0 0 18px;
+        color: @immersive-chrome-fg;
+        font-size: @fontMedium;
+        font-weight: 700;
+        line-height: 1.3;
+    }
+
+    &__shortcuts-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th,
+        td {
+            padding: 6px 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        thead th {
+            padding-top: 0;
+            color: @immersive-chrome-fg;
+            font-size: @fontSmall;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            opacity: 0.7;
+            border-bottom: 1px solid @immersive-divider;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: @immersive-divider;
+        }
+    }
+
+    &__shortcuts-action {
+        width: 100%;
+        color: @immersive-chrome-fg;
+        font-size: @fontNormal;
+        font-weight: 400;
+    }
+
+    &__shortcuts-keys {
+        color: @immersive-chrome-fg;
+        font-size: @fontNormal;
+        white-space: nowrap;
+
+        // fully replaces Bootstrap's kbd defaults (white on #212529, rem padding)
+        kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 26px;
+            height: 24px;
+            padding: 0 7px;
+            margin: 1px 0;
+            background-color: @immersive-key-bg;
+            border: 1px solid @immersive-key-border-color;
+            border-radius: @immersive-radius;
+            box-shadow: inset 0 -1px 0 @immersive-key-border-color;
+            color: @immersive-chrome-fg;
+            font-size: @fontSmall;
+        }
+    }
+
+    &__shortcuts-hint {
+        margin: 18px 0 0;
+        padding-top: 12px;
+        border-top: 1px solid @immersive-divider;
+        font-size: @fontSmall;
+        opacity: 0.8;
+    }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    .immersive {
+        &__shortcuts-keys {
+            white-space: normal;
+        }
+    }
+}

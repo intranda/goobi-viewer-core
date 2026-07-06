@@ -127,6 +127,20 @@
                         icon="info-circle"
                         svgClass="immersive__tool-icon" />
                 </button>
+                <!-- KEYBOARD SHORTCUTS -->
+                <button
+                    type="button"
+                    class="immersive__tool-btn immersive__shortcuts-btn"
+                    data-immersive-shortcuts-trigger=""
+                    aria-haspopup="dialog"
+                    aria-expanded="false"
+                    aria-controls="immersiveShortcuts"
+                    title="#{msg.immersive__shortcuts}"
+                    aria-label="#{msg.immersive__shortcuts}">
+                    <util:icon
+                        icon="keyboard"
+                        svgClass="immersive__tool-icon" />
+                </button>
             </div>
 
             <!-- TOC PANEL -->
@@ -644,6 +658,118 @@
                     <div
                         id="immersiveThumbnails"
                         class="immersive__grid-mount" />
+                </div>
+            </div>
+
+            <!-- KEYBOARD SHORTCUTS MODAL -->
+            <div
+                class="immersive__shortcuts"
+                id="immersiveShortcuts"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="immersiveShortcutsTitle"
+                hidden="hidden">
+                <div class="immersive__shortcuts-dialog">
+                    <button
+                        type="button"
+                        class="immersive__shortcuts-close"
+                        aria-label="#{msg.closeWindow}">
+                        <util:icon icon="x" />
+                    </button>
+                    <h2
+                        class="immersive__shortcuts-title"
+                        id="immersiveShortcutsTitle">
+                        #{msg.immersive__shortcuts}
+                    </h2>
+                    <table class="immersive__shortcuts-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#{msg.immersive__shortcuts_col_action}</th>
+                                <th scope="col">#{msg.immersive__shortcuts_col_keys}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th
+                                    scope="row"
+                                    class="immersive__shortcuts-action">
+                                    #{msg.immersive__shortcuts_page_prev_next}
+                                </th>
+                                <td class="immersive__shortcuts-keys">
+                                    <kbd>←</kbd>
+                                    <kbd>→</kbd>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th
+                                    scope="row"
+                                    class="immersive__shortcuts-action">
+                                    #{msg.immersive__shortcuts_pan}
+                                </th>
+                                <td class="immersive__shortcuts-keys">
+                                    <kbd>↑</kbd>
+                                    <kbd>↓</kbd>
+                                    <span aria-hidden="true">|</span>
+                                    <kbd>W</kbd>
+                                    <kbd>A</kbd>
+                                    <kbd>S</kbd>
+                                    <kbd>D</kbd>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th
+                                    scope="row"
+                                    class="immersive__shortcuts-action">
+                                    #{msg.immersive__shortcuts_zoom}
+                                </th>
+                                <td class="immersive__shortcuts-keys">
+                                    <kbd>+</kbd>
+                                    <kbd>−</kbd>
+                                    <span aria-hidden="true">|</span>
+                                    <kbd>Shift</kbd>
+                                    <span aria-hidden="true">+</span>
+                                    <kbd>↑</kbd>
+                                    <span aria-hidden="true">/</span>
+                                    <kbd>↓</kbd>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th
+                                    scope="row"
+                                    class="immersive__shortcuts-action">
+                                    #{msg.immersive__shortcuts_reset}
+                                </th>
+                                <td class="immersive__shortcuts-keys">
+                                    <kbd>0</kbd>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th
+                                    scope="row"
+                                    class="immersive__shortcuts-action">
+                                    #{msg.immersive__shortcuts_rotate}
+                                </th>
+                                <td class="immersive__shortcuts-keys">
+                                    <kbd>R</kbd>
+                                    <span aria-hidden="true">/</span>
+                                    <kbd>Shift</kbd>
+                                    <span aria-hidden="true">+</span>
+                                    <kbd>R</kbd>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th
+                                    scope="row"
+                                    class="immersive__shortcuts-action">
+                                    #{msg.immersive__shortcuts_flip}
+                                </th>
+                                <td class="immersive__shortcuts-keys">
+                                    <kbd>F</kbd>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="immersive__shortcuts-hint">#{msg.immersive__shortcuts_focus_hint}</p>
                 </div>
             </div>
         </section>

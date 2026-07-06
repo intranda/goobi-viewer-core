@@ -118,3 +118,16 @@ export function writeThumbSizeStep(storage, step) {
         storage.setItem(THUMB_SIZE_KEY, String(normalizeThumbSizeStep(step)));
     } catch {}
 }
+
+/**
+ * Whether a key-event target sits in a typing context — a form field or a
+ * contenteditable region (also via ancestors) — where single-character
+ * shortcuts like `?` must not fire. Pure + tested.
+ *
+ * @param {EventTarget|null} element  e.g. a keydown event's target
+ * @returns {boolean}
+ */
+export function isTypingTarget(element) {
+    if (!element || typeof element.closest !== 'function') return false;
+    return !!element.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])');
+}
