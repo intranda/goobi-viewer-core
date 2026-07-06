@@ -25,6 +25,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -37,6 +39,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -221,6 +226,65 @@ public class RecordWebArchiveResource {
 
     private String getWebArchiveUrl(String identifier, String filename) {
         return urls.path(ApiUrls.RECORDS_FILES, ApiUrls.RECORDS_FILES_MEDIA).params(identifier, filename).build();
+    }
+
+    /**
+     * Resolves the actual archive URL from a raw {@code MD_WEBARCHIVE_IDENTIFIER} value: if the identifier has a
+     * {@code source} query parameter, that parameter's value is the actual URL; otherwise the identifier itself is used.
+     *
+     * @param rawIdentifier value of the {@code MD_WEBARCHIVE_IDENTIFIER} field
+     * @return the resolved URL, or {@code null} if {@code rawIdentifier} is blank or not a valid URI
+     * @should return identifier unchanged when it has no source param
+     * @should return decoded source param value when present
+     * @should return null for malformed url
+     * @should return null for blank input
+     */
+    static String resolveWebArchiveUrl(String rawIdentifier) {
+        if (StringUtils.isBlank(rawIdentifier)) {
+            return null;
+        }
+        try {
+            URI uri = new URI(rawIdentifier);
+            for (NameValuePair param : URLEncodedUtils.parse(uri, StandardCharsets.UTF_8)) {
+                if ("source".equals(param.getName())) {
+                    return param.getValue();
+                }
+            }
+            return rawIdentifier;
+        } catch (URISyntaxException e) {
+            logger.warn("Could not parse web archive identifier URL '{}': {}", rawIdentifier, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Derives a display name for an external web archive resource from its URL: the last path segment, or the full URL
+     * if it has no path segment or cannot be parsed.
+     *
+     * @param url resolved external web archive URL
+     * @return a display name for the resource
+     * @should return last path segment
+     * @should return last path segment for json manifest urls
+     * @should fall back to the full url when it has no path segment
+     * @should fall back to the full url on malformed input
+     */
+    static String deriveExternalResourceName(String url) {
+        if (StringUtils.isBlank(url)) {
+            return url;
+        }
+        try {
+            String path = new URI(url).getPath();
+            if (StringUtils.isNotBlank(path)) {
+                int lastSlash = path.lastIndexOf('/');
+                String segment = lastSlash >= 0 ? path.substring(lastSlash + 1) : path;
+                if (StringUtils.isNotBlank(segment)) {
+                    return segment;
+                }
+            }
+        } catch (URISyntaxException e) {
+            logger.warn("Could not parse web archive URL '{}' for name derivation: {}", url, e.getMessage());
+        }
+        return url;
     }
 
     private static String getCachedSha256(java.nio.file.Path filePath) throws IOException, NoSuchAlgorithmException {
