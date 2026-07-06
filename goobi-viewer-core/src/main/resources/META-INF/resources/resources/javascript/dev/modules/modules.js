@@ -1176,14 +1176,15 @@
             this.rotation.rotateRight();
         }
 
-        /** Resets rotation and zoom to fit the whole page (whole spread in double mode). */
+        /**
+         * Resets rotation and zoom to fit the whole page (whole spread in double mode).
+         * Always goes through the library's zoom control: it fits the union of the
+         * current row with margin compensation, while raw OSD viewport.goHome() FILLS
+         * the viewport (homeFillsViewer) and would land on a zoomed-in spread.
+         */
         resetView() {
             this.rotation.rotateTo(0);
-            if (this.double) {
-                this.viewer.openseadragon.viewport.goHome(true);
-            } else {
-                this.zoom.goHome();
-            }
+            this.zoom.goHome();
         }
 
         /** Toggles book-spread mode and re-opens at the current position. Returns the new state. */
@@ -2061,38 +2062,40 @@
 
     const THUMB_SIZE_KEY = 'immersive-thumb-size';
 
+    const THUMB_SIZE_MAX = 2;
+
     const THUMB_SIZE_DEFAULT = 1;
 
     /**
-     * Clamps a stored thumbnail-size value to a valid grid step. Accepts numbers
-     * or numeric strings; anything else falls back to the default (medium).
-     * Pure + tested.
+     * Normalizes a stored thumbnail-size value to a valid grid step. Values are
+     * parsed with parseInt, so leading-numeric strings are accepted; anything
+     * else falls back to the default (medium). Pure + tested.
      *
      * @param {*} value
-     * @returns {number} 0 | 1 | 2
+     * @returns {number} integer step between 0 and THUMB_SIZE_MAX
      */
-    function clampThumbSizeStep(value) {
+    function normalizeThumbSizeStep(value) {
         const n = parseInt(value, 10);
-        return n === 0 || n === 1 || n === 2 ? n : THUMB_SIZE_DEFAULT;
+        return Number.isInteger(n) && n >= 0 && n <= THUMB_SIZE_MAX ? n : THUMB_SIZE_DEFAULT;
     }
 
     /**
      * Reads the persisted thumbnail-size step. Falls back to the default when
-     * the storage is unavailable (private mode) or holds an invalid value.
+     * the storage operations throw (private mode) or the value is invalid.
      *
      * @param {Storage} storage  e.g. window.localStorage
-     * @returns {number} 0 | 1 | 2
+     * @returns {number} integer step between 0 and THUMB_SIZE_MAX
      */
     function readThumbSizeStep(storage) {
         try {
-            return clampThumbSizeStep(storage.getItem(THUMB_SIZE_KEY));
-        } catch (e) {
+            return normalizeThumbSizeStep(storage.getItem(THUMB_SIZE_KEY));
+        } catch {
             return THUMB_SIZE_DEFAULT;
         }
     }
 
     /**
-     * Persists the thumbnail-size step; invalid steps are clamped. Storage
+     * Persists the thumbnail-size step; invalid steps are normalized. Storage
      * errors (private mode, quota) are swallowed.
      *
      * @param {Storage} storage
@@ -2100,8 +2103,8 @@
      */
     function writeThumbSizeStep(storage, step) {
         try {
-            storage.setItem(THUMB_SIZE_KEY, String(clampThumbSizeStep(step)));
-        } catch (e) {}
+            storage.setItem(THUMB_SIZE_KEY, String(normalizeThumbSizeStep(step)));
+        } catch {}
     }
 
     window.ShareImageFragment = ShareImageFragment;
@@ -2803,7 +2806,9 @@
 
     /**
      * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
-     * focus handling and keeps its selection on the current page.
+     * focus handling and keeps its selection on the current page. Also wires the
+     * thumbnail-size slider (persisted via localStorage) and a back-to-top button
+     * for the grid scroll container.
      *
      * @param {IvViewer} viewer
      * @param {string} pi
@@ -2813,37 +2818,50 @@
     function setupOverviewGrid(viewer, pi, apiBase) {
         const GRID_LOADER_TIMEOUT_MS = 8000;
         const GRID_TOP_VISIBLE_AFTER_PX = 200;
+        // IIIF size; must cover the largest grid step (230x330 CSS px) on HiDPI
+        const GRID_THUMB_IMAGE_SIZE = '!400,560';
         const gridOverlay = document.getElementById('immersiveGridOverlay');
         const gridLoader = document.getElementById('immersiveGridLoader');
         const gridClose = gridOverlay && gridOverlay.querySelector('.immersive__grid-close');
         const gridTrigger = document.querySelector('[data-immersive-action="overview"]:not(.immersive__grid-close)');
-        const sizeSlider = document.getElementById('immersiveGridSize');
-        const sizeLabels = sizeSlider ? [sizeSlider.dataset.labelSmall, sizeSlider.dataset.labelMedium, sizeSlider.dataset.labelLarge] : [];
-        const applyThumbSize = (step) => {
+        const gridScroll = gridOverlay && gridOverlay.querySelector('.immersive__grid-scroll');
+        const gridTopBtn = gridOverlay && gridOverlay.querySelector('.immersive__grid-top');
+        const gridSizeSlider = document.getElementById('immersiveGridSize');
+        const gridSizeLabels = gridSizeSlider ? [gridSizeSlider.dataset.labelSmall, gridSizeSlider.dataset.labelMedium, gridSizeSlider.dataset.labelLarge] : [];
+        const applyGridThumbSize = (step) => {
             if (gridOverlay) gridOverlay.setAttribute('data-thumb-size', String(step));
-            if (sizeSlider) {
-                sizeSlider.value = String(step);
-                sizeSlider.style.setProperty('--immersive-slider-fill', `${(step / 2) * 100}%`);
-                if (sizeLabels[step]) sizeSlider.setAttribute('aria-valuetext', sizeLabels[step]);
+            if (gridSizeSlider) {
+                gridSizeSlider.value = String(step);
+                gridSizeSlider.style.setProperty('--immersive-slider-fill', `${(step / THUMB_SIZE_MAX) * 100}%`);
+                if (gridSizeLabels[step]) {
+                    gridSizeSlider.setAttribute('aria-valuetext', gridSizeLabels[step]);
+                } else {
+                    gridSizeSlider.removeAttribute('aria-valuetext');
+                }
             }
         };
-        applyThumbSize(readThumbSizeStep(window.localStorage));
-        if (sizeSlider) {
-            sizeSlider.addEventListener('input', () => {
-                const step = clampThumbSizeStep(sizeSlider.value);
-                applyThumbSize(step);
+        applyGridThumbSize(readThumbSizeStep(window.localStorage));
+        if (gridSizeSlider) {
+            gridSizeSlider.addEventListener('input', () => {
+                const step = normalizeThumbSizeStep(gridSizeSlider.value);
+                applyGridThumbSize(step);
                 writeThumbSizeStep(window.localStorage, step);
             });
         }
-        const gridScroll = gridOverlay && gridOverlay.querySelector('.immersive__grid-scroll');
-        const gridTopBtn = gridOverlay && gridOverlay.querySelector('.immersive__grid-top');
         if (gridScroll && gridTopBtn) {
             gridTopBtn.addEventListener('click', () => {
-                gridScroll.scrollTo({ top: 0, behavior: 'smooth' });
+                const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+                gridScroll.scrollTo({ top: 0, behavior });
             });
-            gridScroll.addEventListener('scroll', () => {
-                gridTopBtn.hidden = gridScroll.scrollTop < GRID_TOP_VISIBLE_AFTER_PX;
-            });
+            gridScroll.addEventListener(
+                'scroll',
+                () => {
+                    const hide = gridScroll.scrollTop < GRID_TOP_VISIBLE_AFTER_PX;
+                    if (hide && document.activeElement === gridTopBtn && gridClose) gridClose.focus();
+                    if (gridTopBtn.hidden !== hide) gridTopBtn.hidden = hide;
+                },
+                { passive: true }
+            );
         }
         let gridMounted = false;
         let gridTag = null;
@@ -2894,7 +2912,7 @@
                     source: `${apiBase}/records/${pi}/manifest`,
                     type: 'sequence',
                     actionlistener: gridActions,
-                    imagesize: '!400,560',
+                    imagesize: GRID_THUMB_IMAGE_SIZE,
                     index: currentOrder(viewer),
                 })[0];
                 gridMounted = true;

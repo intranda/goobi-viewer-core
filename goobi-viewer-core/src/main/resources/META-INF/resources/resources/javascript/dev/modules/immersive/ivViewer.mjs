@@ -313,14 +313,15 @@ export default class IvViewer {
         this.rotation.rotateRight();
     }
 
-    /** Resets rotation and zoom to fit the whole page (whole spread in double mode). */
+    /**
+     * Resets rotation and zoom to fit the whole page (whole spread in double mode).
+     * Always goes through the library's zoom control: it fits the union of the
+     * current row with margin compensation, while raw OSD viewport.goHome() FILLS
+     * the viewport (homeFillsViewer) and would land on a zoomed-in spread.
+     */
     resetView() {
         this.rotation.rotateTo(0);
-        if (this.double) {
-            this.viewer.openseadragon.viewport.goHome(true);
-        } else {
-            this.zoom.goHome();
-        }
+        this.zoom.goHome();
     }
 
     /** Toggles book-spread mode and re-opens at the current position. Returns the new state. */

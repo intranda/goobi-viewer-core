@@ -241,6 +241,25 @@ describe('IvViewer page navigation (clamping, no-ops, next/prev)', () => {
         expect(v.toggleDoublePage()).toBe(false);
         expect(v.current).toBe(3);
     });
+
+    test('resetView resets rotation and fits via the library zoom control in single mode', async () => {
+        const v = await newViewer(10);
+        const rotate = jest.spyOn(v.rotation, 'rotateTo');
+        const libraryHome = jest.spyOn(v.zoom, 'goHome');
+        v.resetView();
+        expect(rotate).toHaveBeenCalledWith(0);
+        expect(libraryHome).toHaveBeenCalledTimes(1);
+    });
+
+    test('resetView fits the whole spread via the library zoom control in double mode', async () => {
+        const v = await newViewer(20, 1);
+        v.double = true;
+        const libraryHome = jest.spyOn(v.zoom, 'goHome');
+        const osdHome = jest.spyOn(v.viewer.openseadragon.viewport, 'goHome');
+        v.resetView();
+        expect(libraryHome).toHaveBeenCalledTimes(1);
+        expect(osdHome).not.toHaveBeenCalled();
+    });
 });
 
 describe('IvViewer navigation lock (double-page hang regression)', () => {
