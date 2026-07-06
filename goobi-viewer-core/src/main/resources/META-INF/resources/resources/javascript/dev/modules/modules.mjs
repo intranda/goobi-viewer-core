@@ -2,8 +2,8 @@ import ZoomableImage from './media/zoomableImage.mjs';
 import ShareImageFragment from './media/shareImageFragment.mjs';
 import Voyager3dView from './media/voyager3DViewer.mjs';
 import IvViewer from './immersive/ivViewer.mjs';
-import { loadPageServices, loadPageLabels, loadPageRegions } from './immersive/ivManifestSource.mjs';
-import { buildLineSpans, buildWordSpans, mountTextImageLink, offsetTopWithin } from './immersive/ivTextImageLink.mjs';
+import { loadPageServices, loadPageLabels, loadPageTextLevels, flattenTextLevels } from './immersive/ivManifestSource.mjs';
+import { buildTextLevels, mountTextImageLink, offsetTopWithin } from './immersive/ivTextImageLink.mjs';
 import { search, nextIndex, prevIndex } from './immersive/ivFulltextSearch.mjs';
 import { attachUrlSync, pickActiveTocPageNo, normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX, isTypingTarget } from './immersive/viewerImmersive.mjs';
 
@@ -160,7 +160,6 @@ function initImmersiveViewer(el) {
             const fulltextBtn = document.querySelector('[data-immersive-panel="immersivePanelFulltext"]');
             const fulltextTitleDefault = fulltextBtn ? fulltextBtn.getAttribute('title') : '';
             if (fulltextPanel && fulltextBox) {
-                let granularity = 'line';
                 let fulltextReq = 0;
                 let currentLink = null;
 
@@ -181,38 +180,26 @@ function initImmersiveViewer(el) {
                     if (fulltextLoader) fulltextLoader.hidden = false;
                     fulltextBox.textContent = '';
                     fulltextBox.classList.remove('immersive__fulltext--empty');
-                    let regions = null;
+                    let blocks = null;
                     try {
-                        regions = await loadPageRegions(pi, apiBase, order, granularity);
+                        blocks = await loadPageTextLevels(pi, apiBase, order);
                     } catch {
-                        regions = null;
+                        blocks = null;
                     }
                     if (req !== fulltextReq) return;
                     if (fulltextLoader) fulltextLoader.hidden = true;
-                    if (regions && regions.length) {
-                        const fragment = granularity === 'word' ? buildWordSpans(regions) : buildLineSpans(regions);
-                        fulltextBox.replaceChildren(fragment);
-                        const regionEls = viewer.setTextRegions(regions);
-                        currentLink = mountTextImageLink({ box: fulltextBox, regionEls, scrollContainer: fulltextPanel });
+                    if (blocks && blocks.length) {
+                        fulltextBox.replaceChildren(buildTextLevels(blocks));
+                        const flat = flattenTextLevels(blocks);
+                        const regionEls = viewer.setTextRegions(flat);
+                        const parents = new Map(flat.filter((r) => r.parentId).map((r) => [r.id, r.parentId]));
+                        const revealIds = new Set(flat.filter((r) => r.level !== 'block').map((r) => r.id));
+                        currentLink = mountTextImageLink({ box: fulltextBox, regionEls, parents, scrollContainer: fulltextPanel, revealIds });
                     } else {
                         fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
                         fulltextBox.classList.add('immersive__fulltext--empty');
                     }
                 };
-
-                const granularityBtns = fulltextPanel.querySelectorAll('[data-immersive-granularity]');
-                granularityBtns.forEach((b) => {
-                    b.addEventListener('click', () => {
-                        if (b.disabled) return;
-                        granularity = b.dataset.immersiveGranularity;
-                        granularityBtns.forEach((x) => {
-                            const on = x === b;
-                            x.classList.toggle('immersive__fulltext-granularity-btn--active', on);
-                            x.setAttribute('aria-pressed', String(on));
-                        });
-                        if (fulltextPanel.classList.contains('is-open')) loadFulltext();
-                    });
-                });
 
                 if (fulltextBtn) {
                     fulltextBtn.addEventListener('click', () => {

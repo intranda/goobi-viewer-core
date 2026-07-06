@@ -173,8 +173,11 @@ export default class IvViewer {
     }
 
     /**
-     * Draws OCR line boxes (image pixels) as hoverable, id-tagged overlays and
-     * returns a Map id → overlay element. Regions without a `rect` are skipped.
+     * Draws OCR boxes (image pixels) as hoverable, id-tagged overlays and
+     * returns a Map id → overlay element. A region's optional `level`
+     * ('block' | 'line' | 'word') becomes a class modifier; pass regions in
+     * block → line → word order so words stack on top and win pointer hits.
+     * Regions without a `rect` are skipped.
      */
     setTextRegions(regions) {
         this.clearTextRegions();
@@ -185,7 +188,7 @@ export default class IvViewer {
         (regions || []).forEach((r) => {
             if (!r.rect) return;
             const el = document.createElement('div');
-            el.className = 'immersive__text-region';
+            el.className = r.level ? `immersive__text-region immersive__text-region--${r.level}` : 'immersive__text-region';
             el.dataset.ivRegionId = r.id;
             osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
             map.set(r.id, el);

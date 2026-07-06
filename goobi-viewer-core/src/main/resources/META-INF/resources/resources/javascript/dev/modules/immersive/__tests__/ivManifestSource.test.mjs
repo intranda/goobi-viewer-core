@@ -8,7 +8,9 @@ import {
     parsePageText,
     parsePageLines,
     loadPageLines,
-    loadPageRegions,
+    nestTextLevels,
+    flattenTextLevels,
+    loadPageTextLevels,
     _clearCache,
 } from '../ivManifestSource.mjs';
 
@@ -397,35 +399,145 @@ describe('loadPageLines', () => {
     });
 });
 
-describe('loadPageRegions', () => {
-    test("granularity 'line' delegates to loadPageLines", async () => {
-        const fetchFn = jest.fn().mockResolvedValue(okResponse(LINES_LIST));
-        const regions = await loadPageRegions('PPN1', 'https://h/api', 2, 'line', fetchFn);
-        expect(regions).toEqual(parsePageLines(LINES_LIST));
+// ---------------------------------------------------------------------------
+// nestTextLevels
+// ---------------------------------------------------------------------------
+
+/** Shorthand for a region fixture: id, text and bounding box. */
+function region(id, chars, x, y, w, h) {
+    return { id, chars, rect: x == null ? null : { x, y, w, h } };
+}
+
+describe('nestTextLevels', () => {
+    const BLOCKS = [region('b1', 'Erster Absatz', 0, 0, 100, 100), region('b2', 'Zweiter Absatz', 0, 110, 100, 100)];
+    const LINES = [region('l1', 'Zeile eins', 5, 10, 90, 20), region('l2', 'Zeile zwei', 5, 40, 90, 20), region('l3', 'Zeile drei', 5, 120, 90, 20)];
+    const WORDS = [region('w1', 'Zeile', 6, 12, 30, 16), region('w2', 'eins', 40, 12, 30, 16), region('w3', 'drei', 6, 122, 30, 16)];
+
+    test('nests lines into containing blocks and words into containing lines', () => {
+        const blocks = nestTextLevels({ blocks: BLOCKS, lines: LINES, words: WORDS });
+        expect(blocks.map((b) => b.id)).toEqual(['b1', 'b2']);
+        expect(blocks[0].lines.map((l) => l.id)).toEqual(['l1', 'l2']);
+        expect(blocks[1].lines.map((l) => l.id)).toEqual(['l3']);
+        expect(blocks[0].lines[0].words.map((w) => w.id)).toEqual(['w1', 'w2']);
+        expect(blocks[0].lines[1].words).toEqual([]);
+        expect(blocks[1].lines[0].words.map((w) => w.id)).toEqual(['w3']);
     });
 
-    test("granularity 'word' fetches ?granularity=word and parses regions", async () => {
-        const fetchFn = jest.fn().mockResolvedValue(okResponse(LINES_LIST));
-        const regions = await loadPageRegions('PPN1', 'https://h/api', 2, 'word', fetchFn);
-        expect(fetchFn).toHaveBeenCalledWith('https://h/api/records/PPN1/pages/3/text/?granularity=word');
-        expect(regions).toEqual(parsePageLines(LINES_LIST));
+    test('drops blank words (ALTO spaces) and words outside every line', () => {
+        const words = [region('w1', ' ', 6, 12, 30, 16), region('w2', 'weit-weg', 6, 500, 30, 16), region('w3', 'eins', 40, 12, 30, 16)];
+        const blocks = nestTextLevels({ blocks: BLOCKS, lines: LINES, words });
+        expect(blocks[0].lines[0].words.map((w) => w.id)).toEqual(['w3']);
     });
 
-    test("granularity 'word' returns [] on a non-ok response", async () => {
-        const fetchFn = jest.fn().mockResolvedValue({ ok: false, status: 404 });
-        expect(await loadPageRegions('PPN1', 'https://h/api', 0, 'word', fetchFn)).toEqual([]);
+    test('groups consecutive lines without a containing block into a synthetic block', () => {
+        const lines = [region('l1', 'im Block', 5, 10, 90, 20), region('l2', 'draussen A', 5, 500, 90, 20), region('l3', 'draussen B', 5, 530, 90, 20)];
+        const blocks = nestTextLevels({ blocks: [BLOCKS[0]], lines, words: [] });
+        expect(blocks).toHaveLength(2);
+        expect(blocks[0].id).toBe('b1');
+        expect(blocks[1].id).toBeNull();
+        expect(blocks[1].lines.map((l) => l.id)).toEqual(['l2', 'l3']);
     });
 
-    test("granularity 'word' filters out blank-chars regions (ALTO spaces)", async () => {
-        const list = {
-            resources: [
-                { '@id': 'w1', resource: { chars: 'Hallo' }, on: { selector: { value: 'xywh=1,2,3,4' } } },
-                { '@id': 'sp', resource: { chars: ' ' }, on: { selector: { value: 'xywh=5,6,7,8' } } },
-                { '@id': 'w2', resource: { chars: 'Welt' }, on: { selector: { value: 'xywh=9,10,11,12' } } },
-            ],
-        };
-        const fetchFn = jest.fn().mockResolvedValue(okResponse(list));
-        const regions = await loadPageRegions('PPN1', 'https://h/api', 0, 'word', fetchFn);
-        expect(regions.map((r) => r.id)).toEqual(['w1', 'w2']);
+    test('a line without a rect stays with the previous line block (no split)', () => {
+        const lines = [region('l1', 'Zeile eins', 5, 10, 90, 20), region('l2', 'ohne Box', null), region('l3', 'Zeile zwei', 5, 40, 90, 20)];
+        const blocks = nestTextLevels({ blocks: [BLOCKS[0]], lines, words: [] });
+        expect(blocks).toHaveLength(1);
+        expect(blocks[0].lines.map((l) => l.id)).toEqual(['l1', 'l2', 'l3']);
+    });
+
+    test('without blocks all lines land in one synthetic block', () => {
+        const blocks = nestTextLevels({ blocks: [], lines: LINES, words: [] });
+        expect(blocks).toHaveLength(1);
+        expect(blocks[0].id).toBeNull();
+        expect(blocks[0].lines.map((l) => l.id)).toEqual(['l1', 'l2', 'l3']);
+    });
+
+    test('degenerate blocks (line-granularity fallback of older APIs) are ignored', () => {
+        const blocksLikeLines = LINES.map((l) => ({ ...l, id: `copy-${l.id}` }));
+        const blocks = nestTextLevels({ blocks: blocksLikeLines, lines: LINES, words: [] });
+        expect(blocks).toHaveLength(1);
+        expect(blocks[0].id).toBeNull();
+    });
+
+    test('overlapping blocks: the smaller (more specific) block wins', () => {
+        const blocks = [region('outer', '', 0, 0, 200, 200), region('inner', '', 0, 0, 100, 50)];
+        const lines = [region('l1', 'innen', 5, 10, 90, 20)];
+        const nested = nestTextLevels({ blocks, lines, words: [] });
+        expect(nested).toHaveLength(1);
+        expect(nested[0].id).toBe('inner');
+    });
+
+    test('empty lines input yields no blocks', () => {
+        expect(nestTextLevels({ blocks: BLOCKS, lines: [], words: [] })).toEqual([]);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// flattenTextLevels
+// ---------------------------------------------------------------------------
+
+describe('flattenTextLevels', () => {
+    test('emits blocks, then lines, then words, with parent ids', () => {
+        const nested = nestTextLevels({
+            blocks: [region('b1', '', 0, 0, 100, 100)],
+            lines: [region('l1', 'Zeile', 5, 10, 90, 20)],
+            words: [region('w1', 'Zeile', 6, 12, 30, 16)],
+        });
+        const flat = flattenTextLevels(nested);
+        expect(flat.map((r) => [r.id, r.level, r.parentId])).toEqual([
+            ['b1', 'block', null],
+            ['l1', 'line', 'b1'],
+            ['w1', 'word', 'l1'],
+        ]);
+        expect(flat[0].rect).toEqual({ x: 0, y: 0, w: 100, h: 100 });
+    });
+
+    test('skips synthetic blocks and regions without a rect as overlays', () => {
+        const nested = nestTextLevels({
+            blocks: [],
+            lines: [region('l1', 'Zeile', 5, 10, 90, 20), region('l2', 'ohne Box', null)],
+            words: [],
+        });
+        const flat = flattenTextLevels(nested);
+        expect(flat.map((r) => [r.id, r.level, r.parentId])).toEqual([['l1', 'line', null]]);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// loadPageTextLevels
+// ---------------------------------------------------------------------------
+
+describe('loadPageTextLevels', () => {
+    const LIST_FOR = {
+        '': { resources: [{ '@id': 'l1', resource: { chars: 'Zeile' }, on: { selector: { value: 'xywh=5,10,90,20' } } }] },
+        '?granularity=word': { resources: [{ '@id': 'w1', resource: { chars: 'Zeile' }, on: { selector: { value: 'xywh=6,12,30,16' } } }] },
+        '?granularity=block': { resources: [{ '@id': 'b1', resource: { chars: 'Absatz' }, on: { selector: { value: 'xywh=0,0,100,100' } } }] },
+    };
+
+    test('fetches block, line and word granularity and returns the nested levels', async () => {
+        const fetchFn = jest.fn((url) => Promise.resolve(okResponse(LIST_FOR[url.replace('https://h/api/records/PPN1/pages/3/text/', '')])));
+        const blocks = await loadPageTextLevels('PPN1', 'https://h/api', 2, fetchFn);
+        const urls = fetchFn.mock.calls.map((c) => c[0]).sort();
+        expect(urls).toEqual([
+            'https://h/api/records/PPN1/pages/3/text/',
+            'https://h/api/records/PPN1/pages/3/text/?granularity=block',
+            'https://h/api/records/PPN1/pages/3/text/?granularity=word',
+        ]);
+        expect(blocks).toHaveLength(1);
+        expect(blocks[0].id).toBe('b1');
+        expect(blocks[0].lines[0].id).toBe('l1');
+        expect(blocks[0].lines[0].words[0].id).toBe('w1');
+    });
+
+    test('a failing block or word request degrades gracefully to the remaining levels', async () => {
+        const fetchFn = jest.fn((url) => {
+            if (url.includes('granularity')) return Promise.resolve({ ok: false, status: 500 });
+            return Promise.resolve(okResponse(LIST_FOR['']));
+        });
+        const blocks = await loadPageTextLevels('PPN1', 'https://h/api', 2, fetchFn);
+        expect(blocks).toHaveLength(1);
+        expect(blocks[0].id).toBeNull();
+        expect(blocks[0].lines.map((l) => l.id)).toEqual(['l1']);
+        expect(blocks[0].lines[0].words).toEqual([]);
     });
 });

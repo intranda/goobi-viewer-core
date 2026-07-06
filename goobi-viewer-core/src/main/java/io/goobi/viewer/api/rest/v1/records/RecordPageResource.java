@@ -242,11 +242,11 @@ public class RecordPageResource {
     }
 
     /**
-     * Returns the text content of a page as an IIIF 2 annotation list, at line or word granularity.
+     * Returns the text content of a page as an IIIF 2 annotation list, at block, line or word granularity.
      *
      * @param pageNo page number (1-based)
      * @param format annotation format of the response ('oa' or W3C web annotations)
-     * @param granularity OCR annotation granularity, 'word' or 'line'; unknown values are treated as 'line'
+     * @param granularity OCR annotation granularity, 'word', 'block' or 'line'; unknown values are treated as 'line'
      * @return annotation list containing the page text
      * @throws URISyntaxException
      * @throws DAOException
@@ -267,8 +267,9 @@ public class RecordPageResource {
             @Parameter(
                     description = "annotation format of the response. If it is 'oa' the annotations will be delivered as OpenAnnotations,"
                             + " otherwise as W3C-Webannotations") @QueryParam("format") String format,
-            @Parameter(description = "OCR annotation granularity: 'word' for word-level annotations, 'line' (default) for line-level",
-                    schema = @Schema(allowableValues = { "line", "word" }, defaultValue = "line"))
+            @Parameter(description = "OCR annotation granularity: 'word' for word-level annotations, 'block' for text-block-level,"
+                    + " 'line' (default) for line-level",
+                    schema = @Schema(allowableValues = { "line", "word", "block" }, defaultValue = "line"))
             @QueryParam("granularity") @DefaultValue("line") String granularity)
             throws URISyntaxException, DAOException, PresentationException, IndexUnreachableException, ViewerConfigurationException {
         requireValidPageNo(pageNo);
@@ -288,10 +289,14 @@ public class RecordPageResource {
             StructElement doc = new ManifestBuilder(urls).getDocument(pi);
             PhysicalElement page = builder.getPage(doc, pageNo);
             Canvas2 canvas = builder.generateCanvas(doc.getPi(), page);
-            AltoAnnotationBuilder.Granularity altoGranularity =
-                    AltoAnnotationBuilder.Granularity.WORD.name().equalsIgnoreCase(granularity)
-                            ? AltoAnnotationBuilder.Granularity.WORD
-                            : AltoAnnotationBuilder.Granularity.LINE;
+            AltoAnnotationBuilder.Granularity altoGranularity;
+            if (AltoAnnotationBuilder.Granularity.WORD.name().equalsIgnoreCase(granularity)) {
+                altoGranularity = AltoAnnotationBuilder.Granularity.WORD;
+            } else if (AltoAnnotationBuilder.Granularity.BLOCK.name().equalsIgnoreCase(granularity)) {
+                altoGranularity = AltoAnnotationBuilder.Granularity.BLOCK;
+            } else {
+                altoGranularity = AltoAnnotationBuilder.Granularity.LINE;
+            }
             annotations = builder.addOtherContent(doc, page, canvas, true, altoGranularity);
         } else {
             annotations = new HashMap<>();

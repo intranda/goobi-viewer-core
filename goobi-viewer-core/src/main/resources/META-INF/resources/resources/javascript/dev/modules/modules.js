@@ -1036,8 +1036,11 @@
         }
 
         /**
-         * Draws OCR line boxes (image pixels) as hoverable, id-tagged overlays and
-         * returns a Map id → overlay element. Regions without a `rect` are skipped.
+         * Draws OCR boxes (image pixels) as hoverable, id-tagged overlays and
+         * returns a Map id → overlay element. A region's optional `level`
+         * ('block' | 'line' | 'word') becomes a class modifier; pass regions in
+         * block → line → word order so words stack on top and win pointer hits.
+         * Regions without a `rect` are skipped.
          */
         setTextRegions(regions) {
             this.clearTextRegions();
@@ -1048,7 +1051,7 @@
             (regions || []).forEach((r) => {
                 if (!r.rect) return;
                 const el = document.createElement('div');
-                el.className = 'immersive__text-region';
+                el.className = r.level ? `immersive__text-region immersive__text-region--${r.level}` : 'immersive__text-region';
                 el.dataset.ivRegionId = r.id;
                 osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
                 map.set(r.id, el);
@@ -1615,61 +1618,129 @@
         return parsePageLines(await res.json());
     }
 
-    /**
-     * Fetches the OCR fulltext of a single page as structured lines (chars + box).
-     *
-     * @param {string} pi
-     * @param {string} apiBase
-     * @param {number} order    0-based page order; the endpoint is 1-based, so order + 1
-     * @param {Function} fetchFn
-     * @returns {Promise<{id:string, chars:string, rect:object|null}[]>} lines, or [] on failure
-     */
-    function loadPageLines(pi, apiBase, order, fetchFn = fetch) {
-        return _fetchPageLines(pi, apiBase, order, fetchFn);
+    /** Whether the rect's centre point lies inside `outer`. */
+    function _centerInside(rect, outer) {
+        if (!rect || !outer) return false;
+        const cx = rect.x + rect.w / 2;
+        const cy = rect.y + rect.h / 2;
+        return cx >= outer.x && cx < outer.x + outer.w && cy >= outer.y && cy < outer.y + outer.h;
     }
 
     /**
-     * Granularity dispatch for the hover-linking panel: `'line'` returns the page's
-     * OCR lines, `'word'` fetches `?granularity=word` and drops blank words (ALTO spaces).
-     *
-     * @param {string} pi
-     * @param {string} apiBase
-     * @param {number} order
-     * @param {string} granularity 'line' | 'word'
-     * @param {Function} fetchFn
-     * @returns {Promise<Array>}
+     * The container in `parents` whose rect holds the region's centre; overlapping
+     * containers resolve to the smallest (most specific) one. Null without a match.
      */
-    async function loadPageRegions(pi, apiBase, order, granularity, fetchFn = fetch) {
-        if (granularity === 'word') {
-            const words = await _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=word');
-            return words.filter((r) => (r.chars || '').trim() !== '');
+    function _findParent(region, parents) {
+        let best = null;
+        for (const p of parents) {
+            if (!_centerInside(region.rect, p.rect)) continue;
+            if (!best || p.rect.w * p.rect.h < best.rect.w * best.rect.h) best = p;
         }
-        return loadPageLines(pi, apiBase, order, fetchFn);
+        return best;
     }
 
-    /** OCR line ↔ image region hover linking for the immersive fulltext panel. */
+    /** True when the block list is just the line list again (line fallback of APIs without block support). */
+    function _blocksAreLines(blocks, lines) {
+        if (!blocks.length || blocks.length !== lines.length) return false;
+        return blocks.every((b, i) => {
+            const a = b.rect;
+            const c = lines[i].rect;
+            return (!a && !c) || (a && c && a.x === c.x && a.y === c.y && a.w === c.w && a.h === c.h);
+        });
+    }
+
+    /**
+     * Nests the three flat OCR levels into blocks > lines > words by geometric
+     * containment (centre-inside, smallest container wins). Reading order follows
+     * the line order: consecutive lines sharing an owner form one group, lines
+     * without a containing block collect in synthetic blocks (`id: null`), and a
+     * line without a rect stays with its predecessor. Blank words and words outside
+     * every line are dropped; a degenerate block list that merely mirrors the lines
+     * (line fallback of APIs without block granularity) is ignored. Pure + tested.
+     *
+     * @param {object} levels
+     * @param {{id:string, chars:string, rect:object|null}[]} levels.blocks
+     * @param {{id:string, chars:string, rect:object|null}[]} levels.lines
+     * @param {{id:string, chars:string, rect:object|null}[]} levels.words
+     * @returns {Array<{id:string|null, chars:string, rect:object|null, lines:Array}>}
+     */
+    function nestTextLevels({ blocks = [], lines = [], words = [] }) {
+        const realBlocks = _blocksAreLines(blocks, lines) ? [] : blocks.filter((b) => b.rect);
+        const visibleWords = words.filter((w) => (w.chars || '').trim() !== '');
+
+        const result = [];
+        let currentOwner;
+        let group = null;
+        for (const line of lines) {
+            const owner = line.rect ? _findParent(line, realBlocks) : group ? currentOwner : null;
+            if (!group || owner !== currentOwner) {
+                currentOwner = owner;
+                group = owner ? { ...owner, lines: [] } : { id: null, chars: '', rect: null, lines: [] };
+                result.push(group);
+            }
+            group.lines.push({ ...line, words: [] });
+        }
+
+        const allLines = result.flatMap((b) => b.lines);
+        for (const word of visibleWords) {
+            const line = _findParent(word, allLines);
+            if (line) line.words.push({ ...word });
+        }
+        return result;
+    }
+
+    /**
+     * Flattens nested text levels into overlay descriptors — blocks first, then
+     * lines, then words, so overlays stack with words on top. Each entry carries
+     * its `level` and the `parentId` for cascading highlights; synthetic blocks
+     * and regions without a rect are skipped (nothing to draw). Pure + tested.
+     *
+     * @param {Array} blocks  return value of {@link nestTextLevels}
+     * @returns {{id:string, rect:object, level:string, parentId:string|null}[]}
+     */
+    function flattenTextLevels(blocks) {
+        const flat = [];
+        const push = (region, level, parentId) => {
+            if (region.id && region.rect) flat.push({ id: region.id, rect: region.rect, level, parentId });
+        };
+        (blocks || []).forEach((b) => push(b, 'block', null));
+        (blocks || []).forEach((b) => {
+            const blockId = b.id && b.rect ? b.id : null;
+            b.lines.forEach((l) => push(l, 'line', blockId));
+        });
+        (blocks || []).forEach((b) => {
+            b.lines.forEach((l) => {
+                const lineId = l.id && l.rect ? l.id : null;
+                l.words.forEach((w) => push(w, 'word', lineId));
+            });
+        });
+        return flat;
+    }
+
+    /**
+     * Fetches a page's OCR text at block, line and word granularity in parallel
+     * and nests it via {@link nestTextLevels}. A failing level degrades gracefully
+     * to the remaining ones (older APIs without block support fall back to line
+     * annotations, which the nesting detects and ignores).
+     *
+     * @param {string} pi
+     * @param {string} apiBase
+     * @param {number} order    0-based page order
+     * @param {Function} fetchFn
+     * @returns {Promise<Array>} nested blocks, see {@link nestTextLevels}
+     */
+    async function loadPageTextLevels(pi, apiBase, order, fetchFn = fetch) {
+        const [blocks, lines, words] = await Promise.all([
+            _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=block'),
+            _fetchPageLines(pi, apiBase, order, fetchFn),
+            _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=word'),
+        ]);
+        return nestTextLevels({ blocks, lines, words });
+    }
+
+    /** OCR text ↔ image region hover linking for the immersive fulltext panel (block > line > word). */
 
     const ACTIVE_CLASS = 'is-linked-active';
-
-    /**
-     * Builds the fulltext line spans for the panel: one `<span>` per line, tagged
-     * with `data-iv-region-id` to match its image overlay. Text is set via
-     * `textContent`, so OCR content can never inject markup.
-     *
-     * @param {{id:string, chars:string}[]} lines
-     * @returns {DocumentFragment}
-     */
-    function buildLineSpans(lines) {
-        const frag = document.createDocumentFragment();
-        (lines || []).forEach((line) => {
-            const span = document.createElement('span');
-            span.className = 'immersive__fulltext-line';
-            span.dataset.ivRegionId = line.id;
-            span.textContent = line.chars || '';
-            frag.appendChild(span);
-        });
-        return frag;
-    }
 
     /**
      * Indexes elements by their `data-iv-region-id` (elements without one are skipped).
@@ -1718,22 +1789,30 @@
     }
 
     /**
-     * Wires bidirectional hover highlighting between the panel line spans (inside
-     * `box`) and the image region overlays (`regionEls`) that share the same
-     * `data-iv-region-id`. Hover on either side toggles `is-linked-active` on both.
-     * Deliberately pointer-only: the highlight is a supplementary cue, the text
-     * itself stays fully readable and reachable without it.
+     * Wires bidirectional hover highlighting between the panel text elements
+     * (inside `box`) and the image region overlays (`regionEls`) that share the
+     * same `data-iv-region-id`. Hover on either side toggles `is-linked-active` on
+     * both. On the text side the DOM nesting (block > line > word) already puts
+     * every hovered ancestor into its own mouseenter state, so each element only
+     * toggles its own id; the flat image overlays cascade explicitly through the
+     * `parents` chain instead. Deliberately pointer-only: the highlight is a
+     * supplementary cue, the text itself stays fully readable without it.
      *
      * @param {object} opts
-     * @param {HTMLElement} opts.box fulltext panel element containing the line spans
+     * @param {HTMLElement} opts.box fulltext panel element containing the text elements
      * @param {Map<string, HTMLElement>} opts.regionEls image overlay elements, indexed by id
+     * @param {Map<string, string>} [opts.parents] region id → parent region id; hovering
+     *   an overlay also activates all its ancestors on both sides
      * @param {HTMLElement} [opts.scrollContainer] scrollable panel; when set, hovering an
-     *   image overlay scrolls its line into view if not fully visible
+     *   image overlay scrolls its text into view if not fully visible
+     * @param {Set<string>} [opts.revealIds] overlay ids allowed to trigger that scroll;
+     *   large regions (paragraphs) stay out so grazing them never jumps the panel
      * @returns {{destroy: function():void}}
      */
-    function mountTextImageLink({ box, regionEls, scrollContainer }) {
+    function mountTextImageLink({ box, regionEls, parents, scrollContainer, revealIds }) {
         const spanEls = indexById(box.querySelectorAll('[data-iv-region-id]'));
         const regions = regionEls || new Map();
+        const parentIds = parents || new Map();
         const listeners = [];
 
         const setActive = (id, on) => {
@@ -1741,6 +1820,14 @@
             const overlay = regions.get(id);
             if (span) span.classList.toggle(ACTIVE_CLASS, on);
             if (overlay) overlay.classList.toggle(ACTIVE_CLASS, on);
+        };
+
+        const chain = (id) => {
+            const ids = [];
+            for (let current = id; current != null && !ids.includes(current); current = parentIds.get(current)) {
+                ids.push(current);
+            }
+            return ids;
         };
 
         const revealSpan = (id) => {
@@ -1758,11 +1845,12 @@
         };
 
         const bind = (el, id, isOverlay) => {
+            const ids = isOverlay ? chain(id) : [id];
             const enter = () => {
-                setActive(id, true);
-                if (isOverlay) revealSpan(id);
+                ids.forEach((i) => setActive(i, true));
+                if (isOverlay && (!revealIds || revealIds.has(id))) revealSpan(id);
             };
-            const leave = () => setActive(id, false);
+            const leave = () => ids.forEach((i) => setActive(i, false));
             el.addEventListener('mouseenter', enter);
             el.addEventListener('mouseleave', leave);
             listeners.push([el, enter, leave]);
@@ -1783,80 +1871,42 @@
     }
 
     /**
-     * Groups consecutive word regions into lines by vertical overlap of their boxes
-     * (robust against within-line top variation from ascenders/descenders). Two
-     * consecutive words share a line when their vertical ranges overlap by more than
-     * half the shorter box height; words without a rect stay on the current line.
+     * Builds the combined multi-level panel markup from nested OCR levels: one
+     * `<div>` per text block containing one `<span>` per line, which in turn holds
+     * one `<span>` per word (single spaces between words). Lines without word
+     * geometry render their plain line text instead. Every real region carries
+     * `data-iv-region-id`; synthetic blocks (id null) render as plain wrappers.
+     * All text is set via `textContent`, so OCR content can never inject markup.
      *
-     * @param {{id:string, chars:string, rect:{x:number,y:number,w:number,h:number}|null}[]} regions
-     * @returns {Array<Array<object>>}
-     */
-    function groupWordsIntoLines(regions) {
-        const lines = [];
-        let currentLine = null;
-        let prevTop = null;
-        let prevBottom = null;
-        for (const r of regions || []) {
-            const rect = r && r.rect;
-            const top = rect ? rect.y : null;
-            const bottom = rect ? rect.y + rect.h : null;
-            let newLine;
-            if (currentLine === null) {
-                newLine = true;
-            } else if (top === null || prevTop === null) {
-                newLine = false;
-            } else {
-                const overlap = Math.min(prevBottom, bottom) - Math.max(prevTop, top);
-                const minHeight = Math.min(prevBottom - prevTop, bottom - top);
-                newLine = overlap <= 0.5 * minHeight;
-            }
-            if (newLine) {
-                currentLine = [r];
-                lines.push(currentLine);
-            } else {
-                currentLine.push(r);
-            }
-            if (top !== null) {
-                prevTop = top;
-                prevBottom = bottom;
-            }
-        }
-        return lines;
-    }
-
-    /**
-     * Builds word spans grouped into line blocks (same layout as line mode, but each
-     * word is an individually hoverable `<span data-iv-region-id>`). Blank words
-     * (ALTO spaces) are skipped; a single space separates rendered words.
-     *
-     * @param {{id:string, chars:string, rect:object|null}[]} regions
+     * @param {Array} blocks  nested levels, see ivManifestSource.nestTextLevels
      * @returns {DocumentFragment}
      */
-    function buildWordSpans(regions) {
+    function buildTextLevels(blocks) {
         const frag = document.createDocumentFragment();
-        for (const words of groupWordsIntoLines(regions)) {
-            const line = document.createElement('span');
-            line.className = 'immersive__fulltext-line';
-            let first = true;
-            for (const w of words) {
-                const text = (w && w.chars) || '';
-                if (!text.trim()) {
-                    continue;
+        (blocks || []).forEach((block) => {
+            const blockEl = document.createElement('div');
+            blockEl.className = 'immersive__fulltext-block';
+            if (block.id && block.rect) blockEl.dataset.ivRegionId = block.id;
+            block.lines.forEach((line) => {
+                const lineEl = document.createElement('span');
+                lineEl.className = 'immersive__fulltext-line';
+                if (line.id && line.rect) lineEl.dataset.ivRegionId = line.id;
+                if (line.words.length) {
+                    line.words.forEach((word, i) => {
+                        if (i > 0) lineEl.appendChild(document.createTextNode(' '));
+                        const wordEl = document.createElement('span');
+                        wordEl.className = 'immersive__fulltext-word';
+                        wordEl.dataset.ivRegionId = word.id;
+                        wordEl.textContent = word.chars || '';
+                        lineEl.appendChild(wordEl);
+                    });
+                } else {
+                    lineEl.textContent = line.chars || '';
                 }
-                if (!first) {
-                    line.appendChild(document.createTextNode(' '));
-                }
-                const span = document.createElement('span');
-                span.className = 'immersive__fulltext-word';
-                span.dataset.ivRegionId = w.id;
-                span.textContent = text;
-                line.appendChild(span);
-                first = false;
-            }
-            if (line.childNodes.length) {
-                frag.appendChild(line);
-            }
-        }
+                blockEl.appendChild(lineEl);
+            });
+            frag.appendChild(blockEl);
+        });
         return frag;
     }
 
@@ -2273,7 +2323,6 @@
                 const fulltextBtn = document.querySelector('[data-immersive-panel="immersivePanelFulltext"]');
                 const fulltextTitleDefault = fulltextBtn ? fulltextBtn.getAttribute('title') : '';
                 if (fulltextPanel && fulltextBox) {
-                    let granularity = 'line';
                     let fulltextReq = 0;
                     let currentLink = null;
 
@@ -2294,38 +2343,26 @@
                         if (fulltextLoader) fulltextLoader.hidden = false;
                         fulltextBox.textContent = '';
                         fulltextBox.classList.remove('immersive__fulltext--empty');
-                        let regions = null;
+                        let blocks = null;
                         try {
-                            regions = await loadPageRegions(pi, apiBase, order, granularity);
+                            blocks = await loadPageTextLevels(pi, apiBase, order);
                         } catch {
-                            regions = null;
+                            blocks = null;
                         }
                         if (req !== fulltextReq) return;
                         if (fulltextLoader) fulltextLoader.hidden = true;
-                        if (regions && regions.length) {
-                            const fragment = granularity === 'word' ? buildWordSpans(regions) : buildLineSpans(regions);
-                            fulltextBox.replaceChildren(fragment);
-                            const regionEls = viewer.setTextRegions(regions);
-                            currentLink = mountTextImageLink({ box: fulltextBox, regionEls, scrollContainer: fulltextPanel });
+                        if (blocks && blocks.length) {
+                            fulltextBox.replaceChildren(buildTextLevels(blocks));
+                            const flat = flattenTextLevels(blocks);
+                            const regionEls = viewer.setTextRegions(flat);
+                            const parents = new Map(flat.filter((r) => r.parentId).map((r) => [r.id, r.parentId]));
+                            const revealIds = new Set(flat.filter((r) => r.level !== 'block').map((r) => r.id));
+                            currentLink = mountTextImageLink({ box: fulltextBox, regionEls, parents, scrollContainer: fulltextPanel, revealIds });
                         } else {
                             fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
                             fulltextBox.classList.add('immersive__fulltext--empty');
                         }
                     };
-
-                    const granularityBtns = fulltextPanel.querySelectorAll('[data-immersive-granularity]');
-                    granularityBtns.forEach((b) => {
-                        b.addEventListener('click', () => {
-                            if (b.disabled) return;
-                            granularity = b.dataset.immersiveGranularity;
-                            granularityBtns.forEach((x) => {
-                                const on = x === b;
-                                x.classList.toggle('immersive__fulltext-granularity-btn--active', on);
-                                x.setAttribute('aria-pressed', String(on));
-                            });
-                            if (fulltextPanel.classList.contains('is-open')) loadFulltext();
-                        });
-                    });
 
                     if (fulltextBtn) {
                         fulltextBtn.addEventListener('click', () => {

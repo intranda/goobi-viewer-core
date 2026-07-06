@@ -268,21 +268,122 @@ export function loadPageLines(pi, apiBase, order, fetchFn = fetch) {
     return _fetchPageLines(pi, apiBase, order, fetchFn);
 }
 
+/** Whether the rect's centre point lies inside `outer`. */
+function _centerInside(rect, outer) {
+    if (!rect || !outer) return false;
+    const cx = rect.x + rect.w / 2;
+    const cy = rect.y + rect.h / 2;
+    return cx >= outer.x && cx < outer.x + outer.w && cy >= outer.y && cy < outer.y + outer.h;
+}
+
 /**
- * Granularity dispatch for the hover-linking panel: `'line'` returns the page's
- * OCR lines, `'word'` fetches `?granularity=word` and drops blank words (ALTO spaces).
+ * The container in `parents` whose rect holds the region's centre; overlapping
+ * containers resolve to the smallest (most specific) one. Null without a match.
+ */
+function _findParent(region, parents) {
+    let best = null;
+    for (const p of parents) {
+        if (!_centerInside(region.rect, p.rect)) continue;
+        if (!best || p.rect.w * p.rect.h < best.rect.w * best.rect.h) best = p;
+    }
+    return best;
+}
+
+/** True when the block list is just the line list again (line fallback of APIs without block support). */
+function _blocksAreLines(blocks, lines) {
+    if (!blocks.length || blocks.length !== lines.length) return false;
+    return blocks.every((b, i) => {
+        const a = b.rect;
+        const c = lines[i].rect;
+        return (!a && !c) || (a && c && a.x === c.x && a.y === c.y && a.w === c.w && a.h === c.h);
+    });
+}
+
+/**
+ * Nests the three flat OCR levels into blocks > lines > words by geometric
+ * containment (centre-inside, smallest container wins). Reading order follows
+ * the line order: consecutive lines sharing an owner form one group, lines
+ * without a containing block collect in synthetic blocks (`id: null`), and a
+ * line without a rect stays with its predecessor. Blank words and words outside
+ * every line are dropped; a degenerate block list that merely mirrors the lines
+ * (line fallback of APIs without block granularity) is ignored. Pure + tested.
+ *
+ * @param {object} levels
+ * @param {{id:string, chars:string, rect:object|null}[]} levels.blocks
+ * @param {{id:string, chars:string, rect:object|null}[]} levels.lines
+ * @param {{id:string, chars:string, rect:object|null}[]} levels.words
+ * @returns {Array<{id:string|null, chars:string, rect:object|null, lines:Array}>}
+ */
+export function nestTextLevels({ blocks = [], lines = [], words = [] }) {
+    const realBlocks = _blocksAreLines(blocks, lines) ? [] : blocks.filter((b) => b.rect);
+    const visibleWords = words.filter((w) => (w.chars || '').trim() !== '');
+
+    const result = [];
+    let currentOwner;
+    let group = null;
+    for (const line of lines) {
+        const owner = line.rect ? _findParent(line, realBlocks) : group ? currentOwner : null;
+        if (!group || owner !== currentOwner) {
+            currentOwner = owner;
+            group = owner ? { ...owner, lines: [] } : { id: null, chars: '', rect: null, lines: [] };
+            result.push(group);
+        }
+        group.lines.push({ ...line, words: [] });
+    }
+
+    const allLines = result.flatMap((b) => b.lines);
+    for (const word of visibleWords) {
+        const line = _findParent(word, allLines);
+        if (line) line.words.push({ ...word });
+    }
+    return result;
+}
+
+/**
+ * Flattens nested text levels into overlay descriptors — blocks first, then
+ * lines, then words, so overlays stack with words on top. Each entry carries
+ * its `level` and the `parentId` for cascading highlights; synthetic blocks
+ * and regions without a rect are skipped (nothing to draw). Pure + tested.
+ *
+ * @param {Array} blocks  return value of {@link nestTextLevels}
+ * @returns {{id:string, rect:object, level:string, parentId:string|null}[]}
+ */
+export function flattenTextLevels(blocks) {
+    const flat = [];
+    const push = (region, level, parentId) => {
+        if (region.id && region.rect) flat.push({ id: region.id, rect: region.rect, level, parentId });
+    };
+    (blocks || []).forEach((b) => push(b, 'block', null));
+    (blocks || []).forEach((b) => {
+        const blockId = b.id && b.rect ? b.id : null;
+        b.lines.forEach((l) => push(l, 'line', blockId));
+    });
+    (blocks || []).forEach((b) => {
+        b.lines.forEach((l) => {
+            const lineId = l.id && l.rect ? l.id : null;
+            l.words.forEach((w) => push(w, 'word', lineId));
+        });
+    });
+    return flat;
+}
+
+/**
+ * Fetches a page's OCR text at block, line and word granularity in parallel
+ * and nests it via {@link nestTextLevels}. A failing level degrades gracefully
+ * to the remaining ones (older APIs without block support fall back to line
+ * annotations, which the nesting detects and ignores).
  *
  * @param {string} pi
  * @param {string} apiBase
- * @param {number} order
- * @param {string} granularity 'line' | 'word'
+ * @param {number} order    0-based page order
  * @param {Function} fetchFn
- * @returns {Promise<Array>}
+ * @returns {Promise<Array>} nested blocks, see {@link nestTextLevels}
  */
-export async function loadPageRegions(pi, apiBase, order, granularity, fetchFn = fetch) {
-    if (granularity === 'word') {
-        const words = await _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=word');
-        return words.filter((r) => (r.chars || '').trim() !== '');
-    }
-    return loadPageLines(pi, apiBase, order, fetchFn);
+export async function loadPageTextLevels(pi, apiBase, order, fetchFn = fetch) {
+    const [blocks, lines, words] = await Promise.all([
+        _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=block'),
+        _fetchPageLines(pi, apiBase, order, fetchFn),
+        _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=word'),
+    ]);
+    return nestTextLevels({ blocks, lines, words });
 }

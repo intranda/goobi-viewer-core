@@ -49,13 +49,32 @@
         background-color: @immersive-highlight-bg;
     }
 
+    &__fulltext-block {
+        margin: 0 0 14px;
+        padding-left: 10px;
+        border-left: 3px solid transparent;
+        border-radius: 2px;
+        transition:
+            border-color 0.1s ease,
+            background-color 0.1s ease;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &.is-linked-active {
+            border-left-color: ~'rgb(var(--immersive-ocr-block-rgb))';
+            background-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.08)';
+        }
+    }
+
     &__fulltext-line {
         display: block;
         border-radius: 2px;
         transition: background-color 0.1s ease;
 
         &.is-linked-active {
-            background-color: @immersive-highlight-bg;
+            background-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.16)';
         }
     }
 
@@ -63,8 +82,11 @@
         border-radius: 2px;
         transition: background-color 0.1s ease;
 
+        /* Near-opaque chip with its own ink: a translucent fill over the
+           stacked line/block tints cannot hold AA contrast in the dark theme. */
         &.is-linked-active {
-            background-color: @immersive-highlight-bg;
+            background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.9)';
+            color: var(--immersive-ocr-word-fg);
         }
     }
 
@@ -81,36 +103,73 @@
         }
     }
 
-    &__fulltext-granularity {
-        display: inline-flex;
-        gap: 2px;
-        margin-left: auto;
+    &__text-region--block {
+        border-width: 1px;
+        border-style: dashed;
+        border-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.5)';
+
+        &.is-linked-active {
+            border-color: ~'rgb(var(--immersive-ocr-block-rgb))';
+            background-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.08)';
+        }
     }
 
-    &__fulltext-granularity-btn {
-        background: none;
-        border: 1px solid @immersive-divider;
+    &__text-region--line {
+        border-width: 1px;
+        border-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.25)';
+
+        &.is-linked-active {
+            border-color: ~'rgb(var(--immersive-ocr-line-rgb))';
+            background-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.16)';
+        }
+    }
+
+    &__text-region--word {
+        border-width: 1px;
+
+        &.is-linked-active {
+            border-color: ~'rgb(var(--immersive-ocr-word-rgb))';
+            background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.35)';
+        }
+    }
+
+    &__fulltext-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 14px;
+        margin: 10px 0 12px;
         color: @immersive-chrome-fg;
-        border-radius: 3px;
-        padding: 1px 8px;
         font-size: @fontSmall;
-        cursor: pointer;
+    }
 
-        &:hover,
-        &:active {
-            color: @immersive-chrome-fg;
-        }
+    &__fulltext-legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0;
 
-        &--active,
-        &[aria-pressed='true'] {
-            border-color: @immersive-accent;
-            color: @immersive-accent;
+        &::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border: 1px solid transparent;
+            border-radius: 3px;
         }
+    }
 
-        &[disabled] {
-            opacity: 0.45;
-            cursor: not-allowed;
-        }
+    &__fulltext-legend-item--block::before {
+        border: 1px dashed ~'rgb(var(--immersive-ocr-block-rgb))';
+        background-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.08)';
+    }
+
+    &__fulltext-legend-item--line::before {
+        border-color: ~'rgb(var(--immersive-ocr-line-rgb))';
+        background-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.16)';
+    }
+
+    &__fulltext-legend-item--word::before {
+        border-color: ~'rgb(var(--immersive-ocr-word-rgb))';
+        background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.9)';
     }
 }
 

@@ -296,6 +296,22 @@ class RecordPageResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * {@code granularity=block} must return text-block-level annotations, i.e. at most as many annotations as the line-level response for the same
+     * page.
+     *
+     * @verifies return block annotations with block granularity
+     * @see RecordPageResource#getTextForPage
+     */
+    @Test
+    void getTextForPage_blockGranularity_shouldReturnBlockAnnotations() {
+        int lineCount = countTextAnnotations(PI_WITH_ALTO, PAGENO_WITH_ALTO, "line");
+        int blockCount = countTextAnnotations(PI_WITH_ALTO, PAGENO_WITH_ALTO, "block");
+        assertTrue(blockCount > 0, "Block-level response should contain annotations");
+        assertTrue(blockCount <= lineCount,
+                "Block granularity should return at most as many annotations as line granularity (got " + blockCount + " vs " + lineCount + ")");
+    }
+
+    /**
      * The granularity parameter value must be case-insensitive.
      *
      * @verifies treat granularity value case-insensitively

@@ -1,28 +1,18 @@
 import { jest } from '@jest/globals';
-import { buildLineSpans, indexById, mountTextImageLink, scrollTopToReveal, offsetTopWithin, groupWordsIntoLines, buildWordSpans } from '../ivTextImageLink.mjs';
+import { indexById, mountTextImageLink, scrollTopToReveal, offsetTopWithin, buildTextLevels } from '../ivTextImageLink.mjs';
 
-describe('buildLineSpans', () => {
-    test('one span per line with data-iv-region-id and text set via textContent (escaped)', () => {
-        const frag = buildLineSpans([
-            { id: 'a', chars: 'Hallo' },
-            { id: 'b', chars: '<b>x</b>' },
-        ]);
-        const box = document.createElement('div');
-        box.appendChild(frag);
-        const spans = box.querySelectorAll('span.immersive__fulltext-line');
-        expect(spans).toHaveLength(2);
-        expect(spans[0].dataset.ivRegionId).toBe('a');
-        expect(spans[0].textContent).toBe('Hallo');
-        // OCR text must not become markup:
-        expect(spans[1].textContent).toBe('<b>x</b>');
-        expect(box.querySelector('b')).toBeNull();
+/** Flat line spans as test fixtures (one region per line, no nesting). */
+function lineSpans(lines) {
+    const frag = document.createDocumentFragment();
+    lines.forEach(({ id, chars }) => {
+        const span = document.createElement('span');
+        span.className = 'immersive__fulltext-line';
+        span.dataset.ivRegionId = id;
+        span.textContent = chars;
+        frag.appendChild(span);
     });
-
-    test('returns an empty fragment for [] / null', () => {
-        expect(buildLineSpans([]).childNodes).toHaveLength(0);
-        expect(buildLineSpans(null).childNodes).toHaveLength(0);
-    });
-});
+    return frag;
+}
 
 describe('indexById', () => {
     test('maps elements by data-iv-region-id, skips elements without one', () => {
@@ -39,7 +29,7 @@ describe('mountTextImageLink', () => {
     function setup() {
         const box = document.createElement('div');
         box.appendChild(
-            buildLineSpans([
+            lineSpans([
                 { id: 'a', chars: 'A' },
                 { id: 'b', chars: 'B' },
             ])
@@ -97,7 +87,7 @@ describe('mountTextImageLink', () => {
         Object.defineProperty(scrollContainer, 'scrollHeight', { value: 1000 });
         scrollContainer.scrollTop = 0;
         const box = document.createElement('div');
-        box.appendChild(buildLineSpans([{ id: 'a', chars: 'A' }]));
+        box.appendChild(lineSpans([{ id: 'a', chars: 'A' }]));
         scrollContainer.appendChild(box);
         const spanA = box.querySelector('[data-iv-region-id="a"]');
         Object.defineProperty(spanA, 'offsetTop', { value: spanOffsetTop });
@@ -159,77 +149,185 @@ describe('scrollTopToReveal', () => {
     });
 });
 
-describe('groupWordsIntoLines', () => {
-    const W = (id, y, h) => ({ id, chars: id, rect: { x: 0, y, w: 10, h } });
-    test('groups vertically-overlapping words into one line, splits when no overlap', () => {
-        const out = groupWordsIntoLines([W('a', 100, 40), W('b', 105, 25), W('c', 200, 30)]);
-        expect(out.map((l) => l.map((w) => w.id))).toEqual([['a', 'b'], ['c']]);
+describe('buildTextLevels', () => {
+    const RECT = { x: 0, y: 0, w: 10, h: 10 };
+    const NESTED = [
+        {
+            id: 'b1',
+            chars: '',
+            rect: RECT,
+            lines: [
+                {
+                    id: 'l1',
+                    chars: 'Hallo Welt',
+                    rect: RECT,
+                    words: [
+                        { id: 'w1', chars: 'Hallo', rect: RECT },
+                        { id: 'w2', chars: 'Welt', rect: RECT },
+                    ],
+                },
+                { id: 'l2', chars: 'ohne Woerter', rect: RECT, words: [] },
+            ],
+        },
+        { id: null, chars: '', rect: null, lines: [{ id: 'l3', chars: 'verwaist', rect: RECT, words: [] }] },
+    ];
+
+    test('renders block > line > word with region ids and single-space word joins', () => {
+        const box = document.createElement('div');
+        box.appendChild(buildTextLevels(NESTED));
+        const blocks = box.querySelectorAll('div.immersive__fulltext-block');
+        expect(blocks).toHaveLength(2);
+        expect(blocks[0].dataset.ivRegionId).toBe('b1');
+        const lines = blocks[0].querySelectorAll('span.immersive__fulltext-line');
+        expect(lines).toHaveLength(2);
+        expect(lines[0].dataset.ivRegionId).toBe('l1');
+        expect(lines[0].querySelectorAll('span.immersive__fulltext-word')).toHaveLength(2);
+        expect(lines[0].textContent).toBe('Hallo Welt');
+        expect(lines[1].textContent).toBe('ohne Woerter');
+        expect(lines[1].querySelectorAll('span').length).toBe(0);
     });
-    test('tolerates within-line top variation (ascenders/descenders)', () => {
-        const out = groupWordsIntoLines([W('a', 100, 60), W('b', 118, 40)]);
-        expect(out.map((l) => l.map((w) => w.id))).toEqual([['a', 'b']]);
+
+    test('a synthetic block (id null) renders without a region id', () => {
+        const box = document.createElement('div');
+        box.appendChild(buildTextLevels(NESTED));
+        const blocks = box.querySelectorAll('div.immersive__fulltext-block');
+        expect(blocks[1].dataset.ivRegionId).toBeUndefined();
+        expect(blocks[1].textContent).toBe('verwaist');
     });
-    test('words without rect stay on the current line', () => {
-        const out = groupWordsIntoLines([W('a', 100, 40), { id: 'x', chars: 'x', rect: null }, W('b', 103, 40)]);
-        expect(out.map((l) => l.map((w) => w.id))).toEqual([['a', 'x', 'b']]);
+
+    test('escapes OCR text at every level (no markup injection)', () => {
+        const nested = [{ id: 'b', chars: '', rect: RECT, lines: [{ id: 'l', chars: '<i>x</i>', rect: RECT, words: [{ id: 'w', chars: '<b>y</b>', rect: RECT }] }] }];
+        const box = document.createElement('div');
+        box.appendChild(buildTextLevels(nested));
+        expect(box.querySelector('b, i')).toBeNull();
+        expect(box.querySelector('.immersive__fulltext-word').textContent).toBe('<b>y</b>');
     });
-    test('a leading rect-less word starts the line and the next rect word joins it', () => {
-        const out = groupWordsIntoLines([{ id: 'x', chars: 'x', rect: null }, W('a', 100, 40)]);
-        expect(out.map((l) => l.map((w) => w.id))).toEqual([['x', 'a']]);
-    });
-    test('empty / null → []', () => {
-        expect(groupWordsIntoLines([])).toEqual([]);
-        expect(groupWordsIntoLines(null)).toEqual([]);
+
+    test('empty / null → empty fragment', () => {
+        expect(buildTextLevels([]).childNodes).toHaveLength(0);
+        expect(buildTextLevels(null).childNodes).toHaveLength(0);
     });
 });
 
-describe('buildWordSpans', () => {
-    const W = (id, y, h) => ({ id, chars: id, rect: { x: 0, y, w: 10, h } });
-    test('renders line blocks with inline word spans (matches line layout)', () => {
-        const frag = buildWordSpans([W('a', 100, 40), W('b', 105, 25), W('c', 200, 30)]);
+describe('mountTextImageLink with parent cascade', () => {
+    const enter = (el) => el.dispatchEvent(new Event('mouseenter'));
+    const leave = (el) => el.dispatchEvent(new Event('mouseleave'));
+
+    function setupCascade() {
         const box = document.createElement('div');
-        box.appendChild(frag);
-        const lines = box.querySelectorAll('span.immersive__fulltext-line');
-        expect(lines).toHaveLength(2);
-        const words = box.querySelectorAll('span.immersive__fulltext-word');
-        expect(words).toHaveLength(3);
-        expect(words[0].dataset.ivRegionId).toBe('a');
-        expect(lines[0].textContent).toBe('a b');
-        expect(lines[1].textContent).toBe('c');
-    });
-    test('skips blank-chars words (no empty span, no double space)', () => {
-        const frag = buildWordSpans([
-            { id: 'a', chars: 'a', rect: { x: 0, y: 100, w: 10, h: 40 } },
-            { id: 'sp', chars: '', rect: { x: 0, y: 102, w: 5, h: 40 } },
-            { id: 'b', chars: 'b', rect: { x: 0, y: 103, w: 10, h: 40 } },
+        box.appendChild(
+            buildTextLevels([
+                {
+                    id: 'b1',
+                    chars: '',
+                    rect: { x: 0, y: 0, w: 10, h: 10 },
+                    lines: [{ id: 'l1', chars: 'Hallo', rect: { x: 0, y: 0, w: 10, h: 5 }, words: [{ id: 'w1', chars: 'Hallo', rect: { x: 0, y: 0, w: 5, h: 5 } }] }],
+                },
+            ])
+        );
+        const overlays = new Map(
+            ['b1', 'l1', 'w1'].map((id) => {
+                const el = document.createElement('div');
+                el.dataset.ivRegionId = id;
+                return [id, el];
+            })
+        );
+        const parents = new Map([
+            ['w1', 'l1'],
+            ['l1', 'b1'],
         ]);
-        const box = document.createElement('div');
-        box.appendChild(frag);
-        expect(box.querySelectorAll('span.immersive__fulltext-word')).toHaveLength(2);
-        expect(box.querySelector('span.immersive__fulltext-line').textContent).toBe('a b');
+        const link = mountTextImageLink({ box, regionEls: overlays, parents });
+        const active = (id) => {
+            const span = box.querySelector(`[data-iv-region-id="${id}"]`);
+            return {
+                span: span ? span.classList.contains('is-linked-active') : null,
+                overlay: overlays.get(id).classList.contains('is-linked-active'),
+            };
+        };
+        return { box, overlays, link, active };
+    }
+
+    test('hovering a word overlay activates word, line and block on both sides', () => {
+        const { overlays, active } = setupCascade();
+        enter(overlays.get('w1'));
+        expect(active('w1')).toEqual({ span: true, overlay: true });
+        expect(active('l1')).toEqual({ span: true, overlay: true });
+        expect(active('b1')).toEqual({ span: true, overlay: true });
     });
-    test('drops a line whose words are all blank', () => {
-        const frag = buildWordSpans([
-            W('a', 100, 40),
-            { id: 'sp1', chars: ' ', rect: { x: 0, y: 200, w: 5, h: 40 } },
-            { id: 'sp2', chars: ' ', rect: { x: 10, y: 202, w: 5, h: 40 } },
-            W('b', 300, 40),
+
+    test('leaving a word overlay clears the whole chain', () => {
+        const { overlays, active } = setupCascade();
+        enter(overlays.get('w1'));
+        leave(overlays.get('w1'));
+        expect(active('w1')).toEqual({ span: false, overlay: false });
+        expect(active('l1')).toEqual({ span: false, overlay: false });
+        expect(active('b1')).toEqual({ span: false, overlay: false });
+    });
+
+    test('hovering a line overlay activates line and block but not the word', () => {
+        const { overlays, active } = setupCascade();
+        enter(overlays.get('l1'));
+        expect(active('l1')).toEqual({ span: true, overlay: true });
+        expect(active('b1')).toEqual({ span: true, overlay: true });
+        expect(active('w1')).toEqual({ span: false, overlay: false });
+    });
+
+    test('text-side hover still activates only its own level (DOM nesting adds the rest)', () => {
+        const { box, overlays, active } = setupCascade();
+        enter(box.querySelector('[data-iv-region-id="w1"]'));
+        expect(active('w1')).toEqual({ span: true, overlay: true });
+        expect(overlays.get('l1').classList.contains('is-linked-active')).toBe(false);
+    });
+
+    // jsdom has no layout: stub the metrics the reveal path reads.
+    function setupCascadeWithScroll() {
+        const scrollContainer = document.createElement('div');
+        Object.defineProperty(scrollContainer, 'clientHeight', { value: 200 });
+        Object.defineProperty(scrollContainer, 'scrollHeight', { value: 1000 });
+        scrollContainer.scrollTop = 0;
+        const box = document.createElement('div');
+        box.appendChild(
+            buildTextLevels([
+                {
+                    id: 'b1',
+                    chars: '',
+                    rect: { x: 0, y: 0, w: 10, h: 10 },
+                    lines: [{ id: 'l1', chars: 'Hallo', rect: { x: 0, y: 0, w: 10, h: 5 }, words: [{ id: 'w1', chars: 'Hallo', rect: { x: 0, y: 0, w: 5, h: 5 } }] }],
+                },
+            ])
+        );
+        scrollContainer.appendChild(box);
+        ['b1', 'l1', 'w1'].forEach((id) => {
+            const el = box.querySelector(`[data-iv-region-id="${id}"]`);
+            Object.defineProperty(el, 'offsetTop', { value: 600 });
+            Object.defineProperty(el, 'offsetHeight', { value: 20 });
+            Object.defineProperty(el, 'offsetParent', { value: scrollContainer });
+        });
+        const overlays = new Map(
+            ['b1', 'l1', 'w1'].map((id) => {
+                const el = document.createElement('div');
+                el.dataset.ivRegionId = id;
+                return [id, el];
+            })
+        );
+        const parents = new Map([
+            ['w1', 'l1'],
+            ['l1', 'b1'],
         ]);
-        const box = document.createElement('div');
-        box.appendChild(frag);
-        const lines = box.querySelectorAll('span.immersive__fulltext-line');
-        expect(lines).toHaveLength(2);
-        expect(Array.from(lines).map((l) => l.textContent)).toEqual(['a', 'b']);
+        const revealIds = new Set(['l1', 'w1']);
+        mountTextImageLink({ box, regionEls: overlays, parents, scrollContainer, revealIds });
+        return { scrollContainer, overlays };
+    }
+
+    test('hovering a word overlay scrolls its off-screen span into view', () => {
+        const { scrollContainer, overlays } = setupCascadeWithScroll();
+        enter(overlays.get('w1'));
+        expect(scrollContainer.scrollTop).toBe(510);
     });
-    test('escapes word text (no markup injection)', () => {
-        const frag = buildWordSpans([{ id: 'w', chars: '<b>x</b>', rect: { x: 0, y: 0, w: 1, h: 1 } }]);
-        const box = document.createElement('div');
-        box.appendChild(frag);
-        expect(box.querySelector('b')).toBeNull();
-        expect(box.querySelector('.immersive__fulltext-word').textContent).toBe('<b>x</b>');
-    });
-    test('empty / null → empty fragment', () => {
-        expect(buildWordSpans([]).childNodes).toHaveLength(0);
-        expect(buildWordSpans(null).childNodes).toHaveLength(0);
+
+    test('hovering a block overlay never scrolls (grazing a paragraph must not jump the panel)', () => {
+        const { scrollContainer, overlays } = setupCascadeWithScroll();
+        enter(overlays.get('b1'));
+        expect(scrollContainer.scrollTop).toBe(0);
     });
 });
