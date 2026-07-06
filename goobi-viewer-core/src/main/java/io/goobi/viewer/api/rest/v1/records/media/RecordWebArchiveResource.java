@@ -41,8 +41,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -60,6 +58,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.model.media.webarchives.WebArchiveReader;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -301,12 +300,8 @@ public class RecordWebArchiveResource {
         }
         try {
             URI uri = new URI(rawIdentifier);
-            for (NameValuePair param : URLEncodedUtils.parse(uri, StandardCharsets.UTF_8)) {
-                if ("source".equals(param.getName())) {
-                    return param.getValue();
-                }
-            }
-            return rawIdentifier;
+            String source = WebArchiveReader.extractQueryParamValue(uri, "source");
+            return source != null ? source : rawIdentifier;
         } catch (URISyntaxException e) {
             logger.warn("Could not parse web archive identifier URL '{}': {}", rawIdentifier, e.getMessage());
             return null;
