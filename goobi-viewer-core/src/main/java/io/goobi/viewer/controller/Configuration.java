@@ -169,6 +169,9 @@ public class Configuration extends AbstractConfiguration {
      */
     private final ConcurrentHashMap<String, Optional<String>> facetFieldPropertyCache = new ConcurrentHashMap<>();
 
+    /** Guards the "deprecated flat facet config" ERROR so it is logged at most once per Configuration instance. */
+    private volatile boolean legacyFacetConfigLogged = false;
+
     /**
      * Creates a new Configuration instance.
      *
@@ -3492,12 +3495,50 @@ public class Configuration extends AbstractConfiguration {
      * @return list of matching sub-configurations; empty list if the template is absent
      */
     private List<HierarchicalConfiguration<ImmutableNode>> getFacetFieldConfigsForTemplate(String templateName, String elementName) {
-        List<HierarchicalConfiguration<ImmutableNode>> templates = getLocalConfigurationsAt("search.facets.template");
-        HierarchicalConfiguration<ImmutableNode> template = selectTemplate(templates, templateName, true);
+        HierarchicalConfiguration<ImmutableNode> template = selectTemplate(getFacetTemplateConfigs(), templateName, true);
         if (template == null) {
             return Collections.emptyList();
         }
         return template.configurationsAt(elementName);
+    }
+
+    /**
+     * Returns the {@code <facets><template>} configurations to use. Prefers the local (deployment) config. If the local config has no
+     * {@code <template>} but still uses the deprecated flat {@code <facets><field>} layout, that legacy config is ignored (an ERROR is logged) and
+     * the packaged default configuration from the JAR is used instead.
+     *
+     * @return list of facet template sub-configurations (possibly empty)
+     */
+    private List<HierarchicalConfiguration<ImmutableNode>> getFacetTemplateConfigs() {
+        List<HierarchicalConfiguration<ImmutableNode>> localTemplates = getConfigLocal().configurationsAt("search.facets.template");
+        if (localTemplates != null && !localTemplates.isEmpty()) {
+            return localTemplates;
+        }
+        if (isLocalFacetConfigLegacy()) {
+            warnLegacyFacetConfigOnce();
+        }
+        // Fall back to the packaged default configuration from the JAR.
+        return getConfig().configurationsAt("search.facets.template");
+    }
+
+    /**
+     * @return true if the local config still uses the deprecated flat facet layout ({@code <field>}/{@code <hierarchicalField>}/{@code <geoField>}
+     *         directly under {@code <facets>}) instead of the required {@code <template>} layer
+     */
+    private boolean isLocalFacetConfigLegacy() {
+        HierarchicalConfiguration<ImmutableNode> local = getConfigLocal();
+        return !local.configurationsAt("search.facets.field").isEmpty()
+                || !local.configurationsAt("search.facets.hierarchicalField").isEmpty()
+                || !local.configurationsAt("search.facets.geoField").isEmpty();
+    }
+
+    private void warnLegacyFacetConfigOnce() {
+        if (!legacyFacetConfigLogged) {
+            legacyFacetConfigLogged = true;
+            logger.error("Deprecated <search><facets> configuration without a <template> element found in the local config. "
+                    + "Facet fields must be wrapped in a <template name=\"_DEFAULT\"> element. "
+                    + "Ignoring the local facet configuration and falling back to the default configuration from the JAR.");
+        }
     }
 
     /**
