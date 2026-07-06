@@ -591,7 +591,7 @@ function setupFulltextSearch(viewer, pi, apiBase) {
         const rects = viewer.getCurrentPages().flatMap((o) =>
             hitsOnOrder(o)
                 .filter((h) => h.rect)
-                .map((h) => ({ ...h.rect, active: h === activeHit }))
+                .map((h) => ({ ...h.rect, order: o, active: h === activeHit }))
         );
         viewer.setHighlights(rects);
     };

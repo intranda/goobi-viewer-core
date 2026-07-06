@@ -400,6 +400,28 @@ describe('IvViewer overlays (search highlights + text regions)', () => {
         expect(osd.removeOverlay).toHaveBeenCalledWith(map.get('a'));
     });
 
+    test('double-page: each rect is drawn on the tiled image of its own page (misplaced-highlights regression)', () => {
+        const v = new IvViewer({ element: {}, services: services(6) });
+        v.double = true;
+        v.current = 1; // spread [1, 2]
+        const left = { imageToViewportRectangle: jest.fn((x, y, w, h) => ({ page: 'left', x, y, w, h })) };
+        const right = { imageToViewportRectangle: jest.fn((x, y, w, h) => ({ page: 'right', x, y, w, h })) };
+        const osd = v.viewer.openseadragon;
+        osd.world.getItemAt = (i) => [left, right][i] || null;
+        v.currentItem = left;
+
+        v.setHighlights([
+            { x: 1, y: 1, w: 1, h: 1, order: 1 },
+            { x: 2, y: 2, w: 2, h: 2, order: 2 },
+            { x: 3, y: 3, w: 3, h: 3, order: 5 },
+        ]);
+
+        expect(left.imageToViewportRectangle).toHaveBeenCalledWith(1, 1, 1, 1);
+        expect(right.imageToViewportRectangle).toHaveBeenCalledWith(2, 2, 2, 2);
+        expect(osd.addOverlay).toHaveBeenCalledTimes(2);
+        expect(osd.addOverlay.mock.calls[1][0].location).toEqual({ page: 'right', x: 2, y: 2, w: 2, h: 2 });
+    });
+
     test('without a current item nothing is drawn', () => {
         const v = new IvViewer({ element: {}, services: services(5) });
         v.currentItem = null; // world.getItemAt also returns null

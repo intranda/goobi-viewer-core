@@ -134,17 +134,34 @@ export default class IvViewer {
             .catch((e) => console.error('immersive viewer initial open failed', e));
     }
 
-    /** Draws search-hit rectangles (image pixel coordinates) as overlays on the current image. */
+    /**
+     * TiledImage rendering `order` in the current view, or null if that page is not
+     * shown. In double mode the spread's pages map to world items 0/1 (see _open);
+     * without an `order` the single current item is used.
+     */
+    _itemForOrder(order) {
+        const osd = this.viewer.openseadragon;
+        if (order == null) return this.currentItem || osd.world.getItemAt(0);
+        const idx = this.getCurrentPages().indexOf(order);
+        if (idx === -1) return null;
+        return this.double ? osd.world.getItemAt(idx) : this.currentItem || osd.world.getItemAt(0);
+    }
+
+    /**
+     * Draws search-hit rectangles as overlays. Rect coordinates are image pixels of
+     * the page given by `rect.order`, so spread hits land on the right half of a
+     * double-page view; rects for pages outside the current view are skipped.
+     */
     setHighlights(rects) {
         this.clearHighlights();
         const osd = this.viewer.openseadragon;
-        const item = this.currentItem || osd.world.getItemAt(0);
-        if (!item) return;
-        this._highlights = (rects || []).map((r) => {
+        this._highlights = (rects || []).flatMap((r) => {
+            const item = this._itemForOrder(r.order);
+            if (!item) return [];
             const el = document.createElement('div');
             el.className = r.active ? 'immersive__highlight immersive__highlight--active' : 'immersive__highlight';
             osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
-            return el;
+            return [el];
         });
     }
 
