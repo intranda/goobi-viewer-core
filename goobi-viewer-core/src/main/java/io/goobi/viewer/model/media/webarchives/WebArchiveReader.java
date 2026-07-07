@@ -114,7 +114,9 @@ public class WebArchiveReader {
                     continue;
                 }
                 try {
-                    String seedUrl = extractQueryParamValue(new URI(value), "url");
+                    // The seed URL lives in the URL's fragment (replayweb.page convention: "?source=...#url=..."),
+                    // not its query string.
+                    String seedUrl = extractParamValue(new URI(value).getRawFragment(), "url");
                     if (StringUtils.isNotBlank(seedUrl)) {
                         return seedUrl;
                     }
@@ -127,18 +129,22 @@ public class WebArchiveReader {
     }
 
     /**
-     * Looks up the value of a query parameter on an already-parsed URI.
+     * Looks up the value of a named parameter in a raw {@code &}-delimited parameter string, such as a URI's query or
+     * fragment component.
      *
-     * @param uri URI to inspect
-     * @param paramName name of the query parameter to look up
-     * @return the parameter's decoded value, or {@code null} if it is not present
-     * @should return the value of the named query parameter
-     * @should return null when the named query parameter is absent
-     * @should return null when the uri has no query
+     * @param rawParams raw parameter string, e.g. {@code uri.getRawQuery()} or {@code uri.getRawFragment()}
+     * @param paramName name of the parameter to look up
+     * @return the parameter's decoded value, or {@code null} if {@code rawParams} is {@code null} or has no such parameter
+     * @should return the value of the named param
+     * @should return null when the named param is absent
+     * @should return null when rawParams is null
      * @should find the requested param among several
      */
-    public static String extractQueryParamValue(URI uri, String paramName) {
-        for (NameValuePair param : URLEncodedUtils.parse(uri, StandardCharsets.UTF_8)) {
+    public static String extractParamValue(String rawParams, String paramName) {
+        if (rawParams == null) {
+            return null;
+        }
+        for (NameValuePair param : URLEncodedUtils.parse(rawParams, StandardCharsets.UTF_8)) {
             if (paramName.equals(param.getName())) {
                 return param.getValue();
             }

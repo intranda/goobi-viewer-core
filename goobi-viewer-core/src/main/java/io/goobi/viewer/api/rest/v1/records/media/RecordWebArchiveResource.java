@@ -300,7 +300,7 @@ public class RecordWebArchiveResource {
         }
         try {
             URI uri = new URI(rawIdentifier);
-            String source = WebArchiveReader.extractQueryParamValue(uri, "source");
+            String source = WebArchiveReader.extractParamValue(uri.getRawQuery(), "source");
             return source != null ? source : rawIdentifier;
         } catch (URISyntaxException e) {
             logger.warn("Could not parse web archive identifier URL '{}': {}", rawIdentifier, e.getMessage());

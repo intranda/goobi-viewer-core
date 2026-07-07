@@ -70,7 +70,7 @@ class WebArchiveReaderSeedUrlTest extends AbstractSolrEnabledTest {
 
         SolrDocumentList fallbackDocs = new SolrDocumentList();
         fallbackDocs.add(new SolrDocument(Map.of(SolrConstants.MD_WEBARCHIVE_IDENTIFIER,
-                List.of("https://archive.example.org/replay?url=https://example.org/"))));
+                List.of("https://replayweb.page/?source=https://archive.example.org/replay.json#view=pages&url=https://example.org/"))));
         Mockito.when(mockedIndex.getDocs(ArgumentMatchers.startsWith(FALLBACK_QUERY_PREFIX), ArgumentMatchers.eq(Collections.emptyList())))
                 .thenReturn(fallbackDocs);
 
@@ -87,9 +87,12 @@ class WebArchiveReaderSeedUrlTest extends AbstractSolrEnabledTest {
         Mockito.when(mockedIndex.getDocs(ArgumentMatchers.startsWith(PRIMARY_QUERY_PREFIX), ArgumentMatchers.eq(Collections.emptyList())))
                 .thenReturn(null);
 
+        // Real-world shape (replayweb.page): "source" is a query param, but "url" (the seed URL) is a param
+        // inside the URL fragment (after '#'), not the query string.
         SolrDocumentList fallbackDocs = new SolrDocumentList();
         fallbackDocs.add(new SolrDocument(Map.of(SolrConstants.MD_WEBARCHIVE_IDENTIFIER,
-                List.of("https://archive.example.org/replay?url=https%3A%2F%2Fexample.org%2Fstart"))));
+                List.of("https://replayweb.page/?source=https%3A%2F%2Farchive.example.org%2Freplay.json"
+                        + "#view=pages&url=https%3A%2F%2Fexample.org%2Fstart&ts=20251016100005"))));
         Mockito.when(mockedIndex.getDocs(ArgumentMatchers.startsWith(FALLBACK_QUERY_PREFIX), ArgumentMatchers.eq(Collections.emptyList())))
                 .thenReturn(fallbackDocs);
 
@@ -107,7 +110,7 @@ class WebArchiveReaderSeedUrlTest extends AbstractSolrEnabledTest {
 
         SolrDocumentList fallbackDocs = new SolrDocumentList();
         fallbackDocs.add(new SolrDocument(Map.of(SolrConstants.MD_WEBARCHIVE_IDENTIFIER,
-                List.of("https://archive.example.org/replay?source=https://example.org/x.wacz"))));
+                List.of("https://replayweb.page/?source=https://archive.example.org/replay.json#view=pages"))));
         Mockito.when(mockedIndex.getDocs(ArgumentMatchers.startsWith(FALLBACK_QUERY_PREFIX), ArgumentMatchers.eq(Collections.emptyList())))
                 .thenReturn(fallbackDocs);
 
@@ -125,7 +128,8 @@ class WebArchiveReaderSeedUrlTest extends AbstractSolrEnabledTest {
 
         SolrDocumentList fallbackDocs = new SolrDocumentList();
         fallbackDocs.add(new SolrDocument(Map.of(SolrConstants.MD_WEBARCHIVE_IDENTIFIER,
-                List.of("http://exa mple.org/broken", "https://archive.example.org/replay?url=https://example.org/start"))));
+                List.of("http://exa mple.org/broken",
+                        "https://replayweb.page/?source=https://archive.example.org/replay.json#view=pages&url=https://example.org/start"))));
         Mockito.when(mockedIndex.getDocs(ArgumentMatchers.startsWith(FALLBACK_QUERY_PREFIX), ArgumentMatchers.eq(Collections.emptyList())))
                 .thenReturn(fallbackDocs);
 

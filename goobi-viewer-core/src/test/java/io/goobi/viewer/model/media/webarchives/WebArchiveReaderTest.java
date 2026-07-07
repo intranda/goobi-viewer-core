@@ -24,49 +24,45 @@ package io.goobi.viewer.model.media.webarchives;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.net.URI;
-
 import org.junit.jupiter.api.Test;
 
 class WebArchiveReaderTest {
 
     /**
-     * @verifies return the value of the named query parameter
-     * @see WebArchiveReader#extractQueryParamValue(URI, String)
+     * @verifies return the value of the named param
+     * @see WebArchiveReader#extractParamValue(String, String)
      */
     @Test
-    void extractQueryParamValue_shouldReturnValueOfNamedParam() throws Exception {
-        URI uri = new URI("https://example.org/replay?source=https%3A%2F%2Fexample.org%2Ffile.json&other=1");
-        assertEquals("https://example.org/file.json", WebArchiveReader.extractQueryParamValue(uri, "source"));
+    void extractParamValue_shouldReturnValueOfNamedParam() {
+        assertEquals("https://example.org/file.json",
+                WebArchiveReader.extractParamValue("source=https%3A%2F%2Fexample.org%2Ffile.json&other=1", "source"));
     }
 
     /**
-     * @verifies return null when the named query parameter is absent
-     * @see WebArchiveReader#extractQueryParamValue(URI, String)
+     * @verifies return null when the named param is absent
+     * @see WebArchiveReader#extractParamValue(String, String)
      */
     @Test
-    void extractQueryParamValue_shouldReturnNullWhenParamAbsent() throws Exception {
-        URI uri = new URI("https://example.org/replay?other=1");
-        assertNull(WebArchiveReader.extractQueryParamValue(uri, "source"));
+    void extractParamValue_shouldReturnNullWhenParamAbsent() {
+        assertNull(WebArchiveReader.extractParamValue("other=1", "source"));
     }
 
     /**
-     * @verifies return null when the uri has no query
-     * @see WebArchiveReader#extractQueryParamValue(URI, String)
+     * @verifies return null when rawParams is null
+     * @see WebArchiveReader#extractParamValue(String, String)
      */
     @Test
-    void extractQueryParamValue_shouldReturnNullWhenNoQuery() throws Exception {
-        URI uri = new URI("https://example.org/replay");
-        assertNull(WebArchiveReader.extractQueryParamValue(uri, "source"));
+    void extractParamValue_shouldReturnNullWhenRawParamsIsNull() {
+        assertNull(WebArchiveReader.extractParamValue(null, "source"));
     }
 
     /**
      * @verifies find the requested param among several
-     * @see WebArchiveReader#extractQueryParamValue(URI, String)
+     * @see WebArchiveReader#extractParamValue(String, String)
      */
     @Test
-    void extractQueryParamValue_shouldFindParamAmongSeveral() throws Exception {
-        URI uri = new URI("https://example.org/replay?a=1&url=https%3A%2F%2Fexample.org%2Fstart&b=2");
-        assertEquals("https://example.org/start", WebArchiveReader.extractQueryParamValue(uri, "url"));
+    void extractParamValue_shouldFindParamAmongSeveral() {
+        assertEquals("https://example.org/start",
+                WebArchiveReader.extractParamValue("a=1&url=https%3A%2F%2Fexample.org%2Fstart&b=2", "url"));
     }
 }
