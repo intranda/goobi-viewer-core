@@ -33,6 +33,11 @@
             padding: 14px;
             border: 1px solid @immersive-divider;
             border-radius: @immersive-radius-lg;
+            transition: background-color @immersive-transition;
+
+            &:hover {
+                background-color: @immersive-metadata-hover-bg;
+            }
         }
 
         .metadata__elements .metadata__element-wrapper,
@@ -40,6 +45,10 @@
             margin: 0;
             padding: 0;
             border: 0;
+
+            &:hover {
+                background-color: transparent;
+            }
         }
 
         .metadata__elements-h2,
