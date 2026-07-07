@@ -130,7 +130,7 @@ function mountImageFilters(viewer) {
  * chain entirely; the tag's start/close/isActive/apply are rebased onto a
  * plain active-set so its UI logic (checkboxes, precludes, reset) keeps working.
  */
-function bindImageFiltersRendering(viewer, tag) {
+export function bindImageFiltersRendering(viewer, tag) {
     const image = viewer.viewer;
     const redraw = () => image.openseadragon.forceRedraw();
     const active = new Set();
