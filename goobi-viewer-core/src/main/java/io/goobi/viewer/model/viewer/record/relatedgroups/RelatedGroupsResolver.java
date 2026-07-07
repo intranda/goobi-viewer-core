@@ -95,15 +95,13 @@ public class RelatedGroupsResolver {
             return Collections.emptyList();
         }
 
-        String titleField = StringUtils.defaultIfBlank(config.getSidebarWidgetRelatedGroupsTitleField(), SolrConstants.TITLE);
-        String subtitleField = StringUtils.defaultIfBlank(config.getSidebarWidgetRelatedGroupsSubtitleField(), SolrConstants.PERSON_ONEFIELD);
         String sortField = config.getSidebarWidgetRelatedGroupsSortField();
         String sortOrder = config.getSidebarWidgetRelatedGroupsSortOrder();
         List<StringPair> sortFields = StringUtils.isNotBlank(sortField)
                 ? Collections.singletonList(new StringPair(sortField, StringUtils.defaultIfBlank(sortOrder, "desc")))
                 : null;
 
-        List<String> fields = queryFields(titleField, subtitleField);
+        List<String> fields = queryFields();
 
         List<String> groupPis = collectGroupMembershipPis(topStruct);
         String anchorPi = vm.getAnchorPi();
@@ -124,7 +122,7 @@ public class RelatedGroupsResolver {
 
         List<GroupMemberDetail> results = new ArrayList<>(docs.size());
         for (SolrDocument doc : docs) {
-            GroupMemberDetail detail = buildCard(doc, titleField, subtitleField);
+            GroupMemberDetail detail = buildCard(doc);
             if (detail != null) {
                 results.add(detail);
             }
@@ -133,19 +131,13 @@ public class RelatedGroupsResolver {
     }
 
     /** Solr fl list covering both card display fields and what the ThumbnailHandler reads internally. */
-    private static List<String> queryFields(String titleField, String subtitleField) {
-        List<String> fields = new ArrayList<>(List.of(
+    private static List<String> queryFields() {
+        return new ArrayList<>(List.of(
                 SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
-                SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.MD_YEARPUBLISH,
-                SolrConstants.THUMBNAIL, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT,
-                SolrConstants.DATAREPOSITORY, SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.FILENAME));
-        if (StringUtils.isNotBlank(titleField) && !fields.contains(titleField)) {
-            fields.add(titleField);
-        }
-        if (StringUtils.isNotBlank(subtitleField) && !fields.contains(subtitleField)) {
-            fields.add(subtitleField);
-        }
-        return fields;
+                SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.PERSON_ONEFIELD,
+                SolrConstants.MD_YEARPUBLISH, SolrConstants.THUMBNAIL, SolrConstants.MIMETYPE,
+                SolrConstants.DOCSTRCT, SolrConstants.DATAREPOSITORY,
+                SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.FILENAME));
     }
 
     /** De-duplicated GROUPID_* PIs from the given struct, defensively handling null maps. */
@@ -196,20 +188,20 @@ public class RelatedGroupsResolver {
     }
 
     /** Builds a single card; returns null if the doc is missing a PI (cannot link) or any RuntimeException occurs. */
-    private GroupMemberDetail buildCard(SolrDocument doc, String titleField, String subtitleField) {
+    private GroupMemberDetail buildCard(SolrDocument doc) {
         try {
             String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
             if (StringUtils.isBlank(pi)) {
                 return null;
             }
-            String title = SolrTools.getSingleFieldStringValue(doc, titleField);
-            if (StringUtils.isBlank(title)) {
-                title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL);
-            }
+            String title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL);
             if (StringUtils.isBlank(title)) {
                 title = SolrTools.getSingleFieldStringValue(doc, SolrConstants.TITLE);
             }
-            String subtitle = SolrTools.getSingleFieldStringValue(doc, subtitleField);
+            if (StringUtils.isBlank(title)) {
+                return null;
+            }
+            String subtitle = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PERSON_ONEFIELD);
             String year = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_YEARPUBLISH);
             String thumbnailUrl = resolveThumbnailUrl(doc, pi);
             return new GroupMemberDetail(pi, title, subtitle, year, thumbnailUrl);

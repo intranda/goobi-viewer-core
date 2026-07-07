@@ -1,0 +1,45 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <ui:param
+        name="recommendationsEnabled"
+        value="#{configurationBean.isSidebarWidgetForViewEnabled(navigationHelper.currentView, 'recommendations')}" />
+    <ui:fragment rendered="#{recommendationsEnabled and not empty activeDocumentBean.recommendationsForSection}">
+        <div class="recommendations-section">
+            <h2 class="recommendations-section__heading">#{msg.widget_recommendations__heading}</h2>
+            <div class="recommendations-section__grid">
+                <ui:repeat
+                    var="detail"
+                    value="#{activeDocumentBean.recommendationsForSection}">
+                    <a
+                        href="#{navigationHelper.imageUrl}/#{detail.pi}/1/"
+                        class="recommendations-section__card">
+                        <div class="recommendations-section__card-image">
+                            <h:panelGroup rendered="#{not empty detail.thumbnailUrl}">
+                                <img
+                                    src="#{detail.thumbnailUrl}"
+                                    alt="#{detail.title}"
+                                    data-viewer-thumbnail="thumbnail" />
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{empty detail.thumbnailUrl}">
+                                <img
+                                    src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/image_not_found.png"
+                                    alt="#{detail.title}" />
+                            </h:panelGroup>
+                        </div>
+                        <div class="recommendations-section__card-info">
+                            <span class="recommendations-section__card-title">#{detail.title}</span>
+                            <h:panelGroup rendered="#{not empty detail.yearPublish}">
+                                <span class="recommendations-section__card-year">(#{detail.yearPublish})</span>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{not empty detail.subtitle}">
+                                <span class="recommendations-section__card-creator">#{detail.subtitle}</span>
+                            </h:panelGroup>
+                        </div>
+                    </a>
+                </ui:repeat>
+            </div>
+        </div>
+    </ui:fragment>
+</ui:composition>

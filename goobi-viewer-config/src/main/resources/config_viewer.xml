@@ -538,25 +538,44 @@
         <!-- geo: the field contains geographical coordinates which are displayed on a map -->
         <!-- hierarchical: The field contains hierarchical values, usually a type of digital collection -->
         <facets>
-            <field type="range">YEAR</field>
-            <!-- <field type="range" style="graph">MDNUM_YEARPUBLISH</field> -->
-            <field type="geo" predicate="IsWithin" displayResultsOnMap="true">WKT_COORDS</field>
-            <!-- HINT: We always need a facet for DC, otherwise the facet query when opening collections will not
-                       automatically search in subcollections, too. FACET_DC:foo only, FACET_DC:foo.* is missing.
-                       If you want to hide faceting for DC from the default options, specify it locally and add
-                       the skipInWidget="true" attribute. -->
-            <field type="hierarchical" initialElementNumber="4">DC</field>
-            <field initialElementNumber="3">DOCSTRCT_TOP</field>
-            <field initialElementNumber="3">DOCSTRCT_SUB</field>
-            <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_CREATOR</field>
-            <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_PLACEPUBLISH</field>
-            <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">FULLTEXTAVAILABLE</field> -->
-            <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">BOOL_IMAGEAVAILABLE</field> -->
-            <!-- <field labelField="MD_LABEL">MD_VALUE</field> -->
-            <!-- <field translateLabels="false">MD_OTHERVALUE</field> -->
-            <!-- <field sortOrder="alphabetical" groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_TITLE</field> -->
-            <!-- <field multiValueOperator="OR">MD_LANGUAGE</field> -->
+            <!-- Facet fields are grouped into named <template> blocks (like metadata templates). The "_DEFAULT"
+                 template is the sidebar facet set. Additional named templates can be referenced elsewhere, e.g. by
+                 <quickFilters template="..."/> below. NOTE: the flat <field> layout without a <template> is no longer
+                 supported - fields must be wrapped in a <template>. -->
+            <template name="_DEFAULT">
+                <field type="range">YEAR</field>
+                <!-- <field type="range" style="graph">MDNUM_YEARPUBLISH</field> -->
+                <field type="geo" predicate="IsWithin" displayResultsOnMap="true">WKT_COORDS</field>
+                <!-- HINT: We always need a facet for DC, otherwise the facet query when opening collections will not
+                           automatically search in subcollections, too. FACET_DC:foo only, FACET_DC:foo.* is missing.
+                           If you want to hide faceting for DC from the default options, specify it locally and add
+                           the skipInWidget="true" attribute. -->
+                <field type="hierarchical" initialElementNumber="4">DC</field>
+                <field initialElementNumber="3">DOCSTRCT_TOP</field>
+                <field initialElementNumber="3">DOCSTRCT_SUB</field>
+                <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_CREATOR</field>
+                <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_PLACEPUBLISH</field>
+                <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">FULLTEXTAVAILABLE</field> -->
+                <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">BOOL_IMAGEAVAILABLE</field> -->
+                <!-- <field labelField="MD_LABEL">MD_VALUE</field> -->
+                <!-- <field translateLabels="false">MD_OTHERVALUE</field> -->
+                <!-- <field sortOrder="alphabetical" groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_TITLE</field> -->
+                <!-- <field multiValueOperator="OR">MD_LANGUAGE</field> -->
+            </template>
+            <!-- Example template exposing a subset of fields as quick filters on the simple search field. Reference it
+                 via <quickFilters template="quickfilters"/>. Only type="range" (rendered as a from/to date widget) and
+                 untyped fields (rendered as value dropdowns) are supported here; hierarchical/geo/boolean are skipped.
+            <template name="quickfilters">
+                <field type="range">YEAR</field>
+                <field>MD_CREATOR</field>
+                <field>DOCSTRCT_TOP</field>
+            </template>
+            -->
         </facets>
+
+        <!-- Quick filters shown on the simple search field when the "Search quick filters" CMS component is used.
+             @template names the <facets><template> whose fields are exposed (defaults to _DEFAULT). -->
+        <!-- <quickFilters template="quickfilters" /> -->
 
         <!-- advanced/@enabled: If true, the advanced search is enabled. Default is true. -->
         <advanced enabled="true">
@@ -1720,9 +1739,11 @@
                 <displayWidget name="statistics-usage" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="annotations" />
                 <displayWidget name="record-notes" />
+                <displayWidget name="data-info" />
                 <displayWidget name="downloads" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="citation" collapsible="true" collapsedByDefault="true" />
-                <displayWidget name="related-groups" showDetails="true" />
+                <displayWidget name="related-groups" expanded="false" />
+                <displayWidget name="recommendations" enabled="false" />
                 <displayWidget name="toc" />
                 <displayWidget name="version-history" />
             </view>
@@ -1905,7 +1926,7 @@
                         <icon>nd.svg</icon>
                     </value>
                     <!-- Creative Commons: Public Domain - https://creativecommons.org/publicdomain/mark/1.0/ -->
-                    <value content="Public Domain Mark 1.0" description="COPYRIGHT_DESCRIPTION_LICENSE_PUBLICDOMAINMARK10">
+                    <value content="Public Domain Mark 1.0" description="COPYRIGHT_DESCRIPTION_LICENSE_PUBLICDOMAINMARK10" url="https://creativecommons.org/publicdomain/mark/1.0/deed">
                         <icon>pd.svg</icon>
                     </value>
                     <!-- RightsStatements: InC (In Copyright 1.0) - https://rightsstatements.org/vocab/InC/1.0/ -->
@@ -1975,18 +1996,22 @@
                 <collapseLengthThreshold lowestLevelToTest="2">0</collapseLengthThreshold>
             </widget>
 
-            <!-- widget[@name="related-groups"]: configuration for the related-groups widget and section (controls which sibling volumes / group members are fetched when showDetails="true"). -->
+            <!-- related-groups: sibling volumes and group members (expanded="true" on the displayWidget shows the large section instead of the compact sidebar widget). -->
             <widget name="related-groups">
-                <!-- maxResults: maximum number of related records shown in the content section (under the record). Default is 3. -->
                 <maxResults>3</maxResults>
-                <!-- sortField: solr field used for sorting the related records. Default is SORT_YEARPUBLISH (newest publication year first). -->
                 <sortField>SORT_YEARPUBLISH</sortField>
-                <!-- sortOrder: sort order (asc or desc). Default is desc. -->
                 <sortOrder>desc</sortOrder>
-                <!-- titleField: solr field used as the card title. Default is MD_TITLE. -->
-                <titleField>MD_TITLE</titleField>
-                <!-- subtitleField: solr field used as the card subtitle (e.g. author or subtitle). Default is MD_CREATOR. -->
-                <subtitleField>MD_CREATOR</subtitleField>
+            </widget>
+
+            <!-- recommendations: "You might also like" cards. -->
+            <widget name="recommendations">
+                <maxResults>4</maxResults>
+                <!-- type="identifier": field whose values are PIs of explicitly related works;
+                     no type: fallback field matched against other records by shared value -->
+                <fields>
+                    <field type="identifier">IdentifierRelatedWork</field>
+                    <field>MD_TOPIC</field>
+                </fields>
             </widget>
 
             <!-- OTHER WIDGETS -->
@@ -1995,7 +2020,15 @@
             
             <!-- widget[@name="rss"]/@enabled: If true, the sidebar RSS widget it displayed. Default is true. -->
             <widget name="rss" enabled="true" />
-            
+
+            <!-- widget[@name="data-info"]: Configuration for the data info widget. -->
+            <!-- externalSearch[@url]: Base URL of the external search. The configured field value is appended to the URL. -->
+            <!-- externalSearch[@field]: Field to append to the URL. Possible values: "identifier" (PI, default) or "urn". -->
+            <widget name="data-info">
+                <!-- Configure an external search per installation (the field value is appended to the URL), e.g.:
+                     <externalSearch url="https://your-external-search.example/Search/Results?lookfor=" field="identifier" /> -->
+            </widget>
+
         </widgets>
     </sidebar>
 
@@ -2566,6 +2599,22 @@
         <directory>/opt/digiverso/viewer/config/</directory>
         <directory>/opt/digiverso/indexer/</directory>
     </configEditor>
+
+
+    <!-- logViewer: Configuration for the web-based log viewer in the admin backend.
+         logViewer/initialLines: Number of log lines loaded on initial page open. Default is 500.
+         logViewer/logFiles/logFile/@name: Symbolic name used in the URL (viewer|oai|ics|indexer).
+         logViewer/logFiles/logFile/@path: Absolute path to the log file on the server. -->
+    <logViewer>
+        <initialLines>500</initialLines>
+        <logFiles>
+            <logFile name="viewer" path="/opt/digiverso/logs/viewer.log" />
+            <logFile name="oai" path="/opt/digiverso/logs/oai.log" />
+            <logFile name="ics" path="/opt/digiverso/logs/ics.log" />
+            <logFile name="indexer" path="/opt/digiverso/logs/indexer.log" />
+        </logFiles>
+    </logViewer>
+
 
 
     <!-- proxy/@enabled: If false, the proxy configuration will be ignored; default is false. -->

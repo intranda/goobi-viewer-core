@@ -169,6 +169,12 @@ public class Configuration extends AbstractConfiguration {
      */
     private final ConcurrentHashMap<String, Optional<String>> facetFieldPropertyCache = new ConcurrentHashMap<>();
 
+    /** Guards the "deprecated flat facet config" ERROR so it is logged at most once per Configuration instance. */
+    private volatile boolean legacyFacetConfigLogged = false;
+
+    /** Facet template names already warned about as "not found" (logged once each per Configuration instance). */
+    private final java.util.Set<String> loggedMissingFacetTemplates = ConcurrentHashMap.newKeySet();
+
     /**
      * Creates a new Configuration instance.
      *
@@ -1389,10 +1395,10 @@ public class Configuration extends AbstractConfiguration {
      *
      * @param view Record view name
      * @param widget Widget name
-     * @return true if widget configured to show details; false otherwise; default is false
+     * @return true if widget configured as enabled; false otherwise; default is false
      * @should return correct value
      */
-    public boolean isSidebarWidgetForViewShowDetails(String view, String widget) {
+    public boolean isSidebarWidgetForViewEnabled(String view, String widget) {
         if (StringUtils.isEmpty(view) || StringUtils.isEmpty(widget)) {
             return false;
         }
@@ -1401,7 +1407,31 @@ public class Configuration extends AbstractConfiguration {
         if (viewConfig != null) {
             for (HierarchicalConfiguration<ImmutableNode> widgetConfig : viewConfig.configurationsAt("displayWidget")) {
                 if (widget.equals(widgetConfig.getString(XML_PATH_ATTRIBUTE_NAME))) {
-                    return widgetConfig.getBoolean("[@showDetails]", false);
+                    return widgetConfig.getBoolean("[@enabled]", false);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * @param view Record view name
+     * @param widget Widget name
+     * @return true if widget configured to display its expanded variant; false otherwise; default is false
+     * @should return correct value
+     */
+    public boolean isSidebarWidgetForViewExpanded(String view, String widget) {
+        if (StringUtils.isEmpty(view) || StringUtils.isEmpty(widget)) {
+            return false;
+        }
+
+        HierarchicalConfiguration<ImmutableNode> viewConfig = getSidebarViewConfiguration(view.toLowerCase());
+        if (viewConfig != null) {
+            for (HierarchicalConfiguration<ImmutableNode> widgetConfig : viewConfig.configurationsAt("displayWidget")) {
+                if (widget.equals(widgetConfig.getString(XML_PATH_ATTRIBUTE_NAME))) {
+                    return widgetConfig.getBoolean("[@expanded]", false);
                 }
             }
         }
@@ -1434,19 +1464,57 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * @return solr field used as the card title in the related-groups widget/section; default is MD_TITLE
+     * @return maximum number of recommended records shown in the recommendations section; default is 4
      * @should return correct value
      */
-    public String getSidebarWidgetRelatedGroupsTitleField() {
-        return getSidebarWidgetStringValue("related-groups", "titleField", SolrConstants.TITLE);
+    public int getSidebarWidgetRecommendationsMaxResults() {
+        return getSidebarWidgetIntValue("recommendations", "maxResults", 4);
     }
 
     /**
-     * @return solr field used as the card subtitle in the related-groups widget/section; default is MD_CREATOR
+     * @return fields entries whose type attribute equals "identifier"; defaults to [IdentifierRelatedWork]
      * @should return correct value
      */
-    public String getSidebarWidgetRelatedGroupsSubtitleField() {
-        return getSidebarWidgetStringValue("related-groups", "subtitleField", SolrConstants.PERSON_ONEFIELD);
+    public List<String> getSidebarWidgetRecommendationsIdentifierFields() {
+        List<String> ret = new ArrayList<>();
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("recommendations");
+        if (widgetConfig != null) {
+            for (HierarchicalConfiguration<ImmutableNode> fc : widgetConfig.configurationsAt("fields.field")) {
+                if ("identifier".equals(fc.getString("[@type]"))) {
+                    String value = fc.getString("");
+                    if (value != null && !value.isBlank()) {
+                        ret.add(value);
+                    }
+                }
+            }
+        }
+        if (ret.isEmpty()) {
+            ret.add("IdentifierRelatedWork");
+        }
+        return ret;
+    }
+
+    /**
+     * @return fields entries without a type attribute, used as the content-similarity fallback; defaults to [MD_TOPIC]
+     * @should return correct value
+     */
+    public List<String> getSidebarWidgetRecommendationsFallbackFields() {
+        List<String> ret = new ArrayList<>();
+        HierarchicalConfiguration<ImmutableNode> widgetConfig = getSidebarWidgetConfiguration("recommendations");
+        if (widgetConfig != null) {
+            for (HierarchicalConfiguration<ImmutableNode> fc : widgetConfig.configurationsAt("fields.field")) {
+                if (fc.getString("[@type]") == null) {
+                    String value = fc.getString("");
+                    if (value != null && !value.isBlank()) {
+                        ret.add(value);
+                    }
+                }
+            }
+        }
+        if (ret.isEmpty()) {
+            ret.add("MD_TOPIC");
+        }
+        return ret;
     }
 
     /**
@@ -2609,6 +2677,28 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Returns whether loading ALTO from an external content API is permitted when the local file is missing. Controlled by the
+     * {@code altoFolder[@allowExternalSource]} configuration attribute (default: {@code true}).
+     *
+     * @return {@code true} if external ALTO source resolution is allowed
+     * @should return correct value
+     */
+    public boolean allowExternalAltoUrlResolution() {
+        return getLocalBoolean("altoFolder[@allowExternalSource]", true);
+    }
+
+    /**
+     * Returns whether loading plain full-text from an external content API is permitted when the local file is missing. Controlled by the
+     * {@code fulltextFolder[@allowExternalSource]} configuration attribute (default: {@code true}).
+     *
+     * @return {@code true} if external full-text source resolution is allowed
+     * @should return correct value
+     */
+    public boolean allowExternalFulltextUrlResolution() {
+        return getLocalBoolean("fulltextFolder[@allowExternalSource]", true);
+    }
+
+    /**
      * getAltoCrowdsourcingFolder.
      *
      * @should return correct value
@@ -3394,13 +3484,111 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns a list containing all simple facet fields.
+     * Returns a list containing all simple facet fields of the {@code _DEFAULT} facet template (the sidebar facet set).
      *
      * @should return correct order
      * @return a list of all configured facet field names
      */
     public List<String> getAllFacetFields() {
-        return getLocalList("search.facets.field");
+        return getFacetFieldsForTemplate(StringConstants.DEFAULT_NAME);
+    }
+
+    /**
+     * Returns the {@code <field>} names configured in the named {@code <facets><template>} block. Falls back to the {@code _DEFAULT} template if the
+     * requested template is not present.
+     *
+     * @param templateName name of the facet template to read
+     * @return ordered list of facet field names; empty list if neither the named nor the {@code _DEFAULT} template exist
+     */
+    public List<String> getFacetFieldsForTemplate(String templateName) {
+        List<String> ret = new ArrayList<>();
+        for (HierarchicalConfiguration<ImmutableNode> fieldConfig : getFacetFieldConfigsForTemplate(templateName, "field")) {
+            String field = fieldConfig.getString(".", "");
+            if (StringUtils.isNotBlank(field)) {
+                ret.add(field);
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Returns the {@code <field>}/{@code <hierarchicalField>} (etc.) sub-configurations of the named facet template, selected via
+     * {@link #selectTemplate(List, String, boolean)} with {@code _DEFAULT} fallback.
+     *
+     * @param templateName name of the facet template to read
+     * @param elementName facet element name within the template (e.g. {@code field}, {@code hierarchicalField})
+     * @return list of matching sub-configurations; empty list if the template is absent
+     */
+    private List<HierarchicalConfiguration<ImmutableNode>> getFacetFieldConfigsForTemplate(String templateName, String elementName) {
+        HierarchicalConfiguration<ImmutableNode> template = resolveFacetTemplate(templateName);
+        if (template == null) {
+            return Collections.emptyList();
+        }
+        return template.configurationsAt(elementName);
+    }
+
+    /**
+     * Resolves a {@code <facets><template>} by name, searching the local (deployment) config first and then the packaged default config, so a
+     * template defined in either is found and a local definition wins. If the requested template is not found anywhere, falls back to the
+     * {@code _DEFAULT} template (again local-first) and logs a warning. If the local config has no {@code <template>} at all but still uses the
+     * deprecated flat {@code <facets><field>} layout, that legacy config is ignored and an ERROR is logged.
+     *
+     * @param templateName requested template name
+     * @return the matching template sub-configuration, or null if neither the requested template nor {@code _DEFAULT} exist anywhere
+     */
+    private HierarchicalConfiguration<ImmutableNode> resolveFacetTemplate(String templateName) {
+        List<HierarchicalConfiguration<ImmutableNode>> localTemplates = getConfigLocal().configurationsAt("search.facets.template");
+        List<HierarchicalConfiguration<ImmutableNode>> defaultTemplates = getConfig().configurationsAt("search.facets.template");
+
+        if ((localTemplates == null || localTemplates.isEmpty()) && isLocalFacetConfigLegacy()) {
+            warnLegacyFacetConfigOnce();
+        }
+
+        // Exact match by name: local first, then packaged default.
+        HierarchicalConfiguration<ImmutableNode> template = selectTemplate(localTemplates, templateName, false);
+        if (template == null) {
+            template = selectTemplate(defaultTemplates, templateName, false);
+        }
+        if (template != null) {
+            return template;
+        }
+
+        // Requested template not found anywhere: warn (once per name), then fall back to _DEFAULT (local first).
+        if (!StringConstants.DEFAULT_NAME.equals(templateName)) {
+            warnMissingFacetTemplateOnce(templateName);
+        }
+        template = selectTemplate(localTemplates, StringConstants.DEFAULT_NAME, false);
+        if (template == null) {
+            template = selectTemplate(defaultTemplates, StringConstants.DEFAULT_NAME, false);
+        }
+        return template;
+    }
+
+    private void warnMissingFacetTemplateOnce(String templateName) {
+        if (loggedMissingFacetTemplates.add(templateName)) {
+            logger.warn("Facet template '{}' not found in local or default configuration; falling back to the '{}' template.", templateName,
+                    StringConstants.DEFAULT_NAME);
+        }
+    }
+
+    /**
+     * @return true if the local config still uses the deprecated flat facet layout ({@code <field>}/{@code <hierarchicalField>}/{@code <geoField>}
+     *         directly under {@code <facets>}) instead of the required {@code <template>} layer
+     */
+    private boolean isLocalFacetConfigLegacy() {
+        HierarchicalConfiguration<ImmutableNode> local = getConfigLocal();
+        return !local.configurationsAt("search.facets.field").isEmpty()
+                || !local.configurationsAt("search.facets.hierarchicalField").isEmpty()
+                || !local.configurationsAt("search.facets.geoField").isEmpty();
+    }
+
+    private void warnLegacyFacetConfigOnce() {
+        if (!legacyFacetConfigLogged) {
+            legacyFacetConfigLogged = true;
+            logger.error("Deprecated <search><facets> configuration without a <template> element found in the local config. "
+                    + "Facet fields must be wrapped in a <template name=\"_DEFAULT\"> element. "
+                    + "Ignoring the local facet configuration and falling back to the default configuration from the JAR.");
+        }
     }
 
     /**
@@ -3632,7 +3820,18 @@ public class Configuration extends AbstractConfiguration {
      * @should return correct value
      */
     public boolean isTranslateFacetFieldLabels(String facetField) {
-        String value = getPropertyForFacetField(facetField, "[@translateLabels]", "true");
+        return isTranslateFacetFieldLabels(StringConstants.DEFAULT_NAME, facetField);
+    }
+
+    /**
+     * Template-aware variant of {@link #isTranslateFacetFieldLabels(String)}.
+     *
+     * @param templateName name of the facet template to read
+     * @param facetField facet field name to look up
+     * @return whether facet value labels for the given field should be translated
+     */
+    public boolean isTranslateFacetFieldLabels(String templateName, String facetField) {
+        String value = getPropertyForFacetField(templateName, facetField, "[@translateLabels]", "true");
         return Boolean.parseBoolean(value);
     }
 
@@ -3716,6 +3915,21 @@ public class Configuration extends AbstractConfiguration {
      * @should return default value for blank facet field without populating cache
      */
     String getPropertyForFacetField(String facetField, String property, String defaultValue) {
+        return getPropertyForFacetField(StringConstants.DEFAULT_NAME, facetField, property, defaultValue);
+    }
+
+    /**
+     * Template-aware variant of {@link #getPropertyForFacetField(String, String, String)}. Resolves the property from the {@code <field>} entry
+     * within the named {@code <facets><template>} block, so the same Solr field may carry different attributes in different templates (e.g. the
+     * sidebar {@code _DEFAULT} set vs. a quick-filter set).
+     *
+     * @param templateName name of the facet template to read
+     * @param facetField Facet field
+     * @param property Element or attribute name to check
+     * @param defaultValue Value that is returned if none was found
+     * @return Found value or defaultValue
+     */
+    String getPropertyForFacetField(String templateName, String facetField, String property, String defaultValue) {
         if (StringUtils.isBlank(facetField)) {
             return defaultValue;
         }
@@ -3726,13 +3940,13 @@ public class Configuration extends AbstractConfiguration {
         // ASCII Unit Separator (US, 0x1F): an explicit, non-printable separator that cannot occur
         // in a Solr field name or XML attribute path, so the concatenated cache key is unambiguous
         // even when facetField/property contain spaces or other punctuation.
-        String cacheKey = facetField + '\u001F' + property;
+        String cacheKey = templateName + '\u001F' + facetField + '\u001F' + property;
         // computeIfAbsent collapses the previous get/null-check/put into a single atomic call:
         // it preserves the negative-caching semantics (the resolver may return Optional.empty(), which
         // is stored and short-circuits later lookups) and prevents duplicate resolves when concurrent
         // threads hit the same missing key. S2789 false positive on the prior null-check is gone.
         Optional<String> cached = facetFieldPropertyCache.computeIfAbsent(cacheKey,
-                k -> resolveFacetFieldProperty(facetField, property));
+                k -> resolveFacetFieldProperty(templateName, facetField, property));
         return cached.orElse(defaultValue);
     }
 
@@ -3745,27 +3959,13 @@ public class Configuration extends AbstractConfiguration {
      * @return present {@link Optional} with the XML value if a matching field node exposes this property; empty {@link Optional} otherwise (caller
      *         applies default)
      */
-    private Optional<String> resolveFacetFieldProperty(String facetField, String property) {
+    private Optional<String> resolveFacetFieldProperty(String templateName, String facetField, String property) {
         String facetifiedField = SearchHelper.facetifyField(facetField);
         String untokenized = facetField + SolrConstants.SUFFIX_UNTOKENIZED;
 
-        // Regular fields
-        List<HierarchicalConfiguration<ImmutableNode>> facetFields = getLocalConfigurationsAt("search.facets.field");
-        if (facetFields != null && !facetFields.isEmpty()) {
-            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
-                String nodeText = fieldConfig.getString(".", "");
-                if (nodeText.equals(facetField) || untokenized.equals(nodeText) || nodeText.equals(facetifiedField)) {
-                    String ret = fieldConfig.getString(property);
-                    if (ret != null) {
-                        return Optional.of(ret);
-                    }
-                }
-            }
-        }
-        // Hierarchical fields
-        facetFields = getLocalConfigurationsAt("search.facets.hierarchicalField");
-        if (facetFields != null && !facetFields.isEmpty()) {
-            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : facetFields) {
+        // Regular fields first, then hierarchical fields (legacy element name), both scoped to the selected template
+        for (String elementName : new String[] { "field", "hierarchicalField" }) {
+            for (HierarchicalConfiguration<ImmutableNode> fieldConfig : getFacetFieldConfigsForTemplate(templateName, elementName)) {
                 String nodeText = fieldConfig.getString(".", "");
                 if (nodeText.equals(facetField) || untokenized.equals(nodeText) || nodeText.equals(facetifiedField)) {
                     String ret = fieldConfig.getString(property);
@@ -5155,35 +5355,38 @@ public class Configuration extends AbstractConfiguration {
         return SearchHelper.SEARCH_FILTER_ALL;
     }
 
-    public boolean isQuickFiltersEnabled() {
-        return getLocalBoolean("search.quickFilters[@enabled]", false);
+    /**
+     * Name of the {@code <facets><template>} block whose fields are exposed as quick filters on the simple search field.
+     *
+     * @return the configured template name; {@code _DEFAULT} if not set
+     */
+    public String getQuickFilterTemplateName() {
+        return getLocalString("search.quickFilters[@template]", StringConstants.DEFAULT_NAME);
     }
 
+    /**
+     * Builds the quick filter fields from the facet template named by {@link #getQuickFilterTemplateName()}. Range facet fields become date-range
+     * widgets; regular (untyped) facet fields become dropdowns. Hierarchical, geo and boolean facet fields are not supported as quick filters and
+     * are skipped.
+     *
+     * @return ordered list of quick filter fields
+     */
     public List<QuickFilterField> getQuickFilterFields() {
         List<QuickFilterField> result = new ArrayList<>();
-        List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("search.quickFilters.filter");
-        if (elements == null) {
-            return result;
-        }
-        for (HierarchicalConfiguration<ImmutableNode> element : elements) {
-            String typeStr = element.getString("[@type]", "");
-            String label = element.getString("[@label]", "");
-            String solrField = element.getString("[@solrField]", "");
-            QuickFilterField.Type type = QuickFilterField.Type.fromString(typeStr);
-            if (type == null) {
+        String templateName = getQuickFilterTemplateName();
+        for (String solrField : getFacetFieldsForTemplate(templateName)) {
+            String type = getPropertyForFacetField(templateName, solrField, XML_PATH_ATTRIBUTE_TYPE, "");
+            QuickFilterField.Type qfType;
+            if ("range".equalsIgnoreCase(type)) {
+                qfType = QuickFilterField.Type.DATE_RANGE;
+            } else if (StringUtils.isEmpty(type)) {
+                qfType = QuickFilterField.Type.FACET_DROPDOWN;
+            } else {
+                logger.warn("Quick filter template '{}' field '{}' has unsupported facet type '{}'; skipping.", templateName, solrField, type);
                 continue;
             }
-            QuickFilterField field = new QuickFilterField(type, label, solrField);
-            if (type == QuickFilterField.Type.CHECKBOX_GROUP) {
-                List<HierarchicalConfiguration<ImmutableNode>> valueElements = element.configurationsAt("value");
-                for (HierarchicalConfiguration<ImmutableNode> valueElement : valueElements) {
-                    String valueLabel = valueElement.getString("[@label]", "");
-                    String valueSolrField = valueElement.getString("[@solrField]", "");
-                    boolean defaultSelected = valueElement.getBoolean("[@default]", false);
-                    field.addValue(valueLabel, valueSolrField, defaultSelected);
-                }
-            }
-            result.add(field);
+            // label == Solr field name: the search field translates it via msg[field.label], like the sidebar facet widget
+            result.add(new QuickFilterField(qfType, solrField, solrField));
         }
         return result;
     }
@@ -6055,12 +6258,13 @@ public class Configuration extends AbstractConfiguration {
                 String content = config.getString("[@content]");
                 if (value.equals(content)) {
                     String description = config.getString(XML_PATH_ATTRIBUTE_DESCRIPTION);
+                    String url = config.getString("[@url]", null);
                     String[] icons = config.getStringArray("icon");
                     // Filter out empty strings that Apache Commons Configuration may return when no <icon> elements are present
                     List<String> iconList = icons != null
                             ? Arrays.stream(icons).filter(s -> s != null && !s.isBlank()).collect(Collectors.toList())
                             : new ArrayList<>();
-                    return new CopyrightIndicatorLicense(description, iconList);
+                    return new CopyrightIndicatorLicense(content, description, iconList, url);
                 }
             }
         }
@@ -6075,6 +6279,14 @@ public class Configuration extends AbstractConfiguration {
      */
     public String getCopyrightIndicatorLicenseField() {
         return getSidebarWidgetStringValue("copyright", "license[@field]", null);
+    }
+
+    public String getDataInfoExternalSearchUrl() {
+        return getSidebarWidgetStringValue("data-info", "externalSearch[@url]", null);
+    }
+
+    public String getDataInfoExternalSearchField() {
+        return getSidebarWidgetStringValue("data-info", "externalSearch[@field]", "identifier");
     }
 
     public boolean isDisplaySocialMediaShareLinks() {

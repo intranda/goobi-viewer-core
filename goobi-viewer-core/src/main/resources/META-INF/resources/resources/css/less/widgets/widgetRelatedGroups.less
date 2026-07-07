@@ -45,6 +45,7 @@
    ============================================================== */
 .related-groups-section {
     margin-top: 30px;
+    color: var(--fg-content-box);
 
     &__heading {
         margin: 0 0 20px 0;
@@ -52,6 +53,7 @@
     &__heading-link {
         word-wrap: anywhere;
         text-decoration: underline;
+        color: var(--lk-content-box);
     }
     &__grid {
         display: grid;
@@ -59,8 +61,8 @@
         gap: 20px;
         align-items: start;
         padding: 20px;
-        background: @white;
-        border: 1px solid @middlegray;
+        background: var(--bg-content-box);
+        border: var(--border);
     }
     &__card {
         display: flex;
@@ -83,8 +85,8 @@
         width: 100%;
         aspect-ratio: 140 / 195;
         overflow: hidden;
-        background-color: @neutralgray;
-        border: 1px solid @middlegray;
+        background-color: var(--bg-general);
+        border: var(--border);
 
         img {
             width: 100%;
@@ -101,7 +103,7 @@
         font-size: @fontMedium;
         font-weight: 600;
         line-height: 1.4;
-        color: @black;
+        color: var(--fg-content-box);
         display: -webkit-box;
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
@@ -111,7 +113,7 @@
     &__card-creator {
         font-size: @fontSmall;
         line-height: 1.4;
-        color: @gray;
+        color: var(--lh-content-box);
     }
     &__view-all-wrapper {
         display: flex;
@@ -127,15 +129,17 @@
         text-align: center;
         gap: 8px;
         height: 195px;
-        border: 1px solid @middlegray;
+        border: 1px solid var(--toc-page-border-color);
         background: transparent;
+        color: var(--fg-content-box);
         text-decoration: none;
         transition: background-color 0.15s ease;
 
         &:hover,
         &:focus {
-            background-color: @neutralgray;
+            background-color: var(--bg-hover);
             text-decoration: none;
+            color: var(--fg-content-box);
         }
     }
     &__view-all-icon {
@@ -178,51 +182,4 @@
             height: 100px;
         }
     }
-}
-
-/* DARK MODE OVERRIDES (OS preference + manual toggle).
-   Uses the theme's CSS custom properties (defined in .mx-theme-dark);
-   hex fallbacks ensure sane defaults in themes that don't set them. */
-.mx-related-groups-dark() {
-    .related-groups-section {
-        color: var(--fg-content-box, #e3e4e7);
-
-        &__grid {
-            background: var(--bg-content-box, #253044);
-            border-color: var(--bg-active, #3b4557);
-        }
-        &__heading,
-        &__card-title {
-            color: var(--fg-content-box, #e3e4e7);
-        }
-        &__heading-link {
-            color: var(--lk-content-box, #e3e4e7);
-        }
-        &__card-image {
-            border-color: var(--bg-active, #3b4557);
-        }
-        &__view-all {
-            border-color: var(--bg-active, #3b4557);
-
-            &:hover,
-            &:focus {
-                background-color: var(--bg-hover, #5b6473);
-            }
-        }
-        &__card-creator,
-        &__card-year {
-            color: var(--fg-content-box, #e3e4e7);
-            opacity: 0.7;
-        }
-        &__card-image {
-            background-color: var(--bg-active, #3b4557);
-        }
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    .mx-related-groups-dark();
-}
-.color-theme-dark {
-    .mx-related-groups-dark();
 }

@@ -428,12 +428,14 @@
             </static>
 		</sorting>
 		<facets>
-			<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">DC</hierarchicalField>
-			<field labelField="MD_FIELDLABEL" sortOrder="numerical">YEAR</field>
-			<hierarchicalField labelField="MD_FIRSTNAME" sortOrder="alphabetical">MD_CREATOR</hierarchicalField>
-			<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>
-			<geoField>WKT_COORDS</geoField>
-			<!-- initialElementNumber: sets the initial number of facet elements 
+			<template name="_DEFAULT">
+				<hierarchicalField initialElementNumber="4" priorityValues="collection2;collection1">DC</hierarchicalField>
+				<field labelField="MD_FIELDLABEL" sortOrder="numerical">YEAR</field>
+				<hierarchicalField labelField="MD_FIRSTNAME" sortOrder="alphabetical">MD_CREATOR</hierarchicalField>
+				<field initialElementNumber="16" priorityValues="val1;val2;val3">MD_PLACEPUBLISH</field>
+				<geoField>WKT_COORDS</geoField>
+			</template>
+			<!-- initialElementNumber: sets the initial number of facet elements
 				to be displayed (any field including DC). Default is 20. -->
 			<initialElementNumber>23</initialElementNumber>
 		</facets>

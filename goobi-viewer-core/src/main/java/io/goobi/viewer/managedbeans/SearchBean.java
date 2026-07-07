@@ -246,7 +246,6 @@ public class SearchBean implements SearchInterface, Serializable {
     private String quickFilterDateFrom;
     private String quickFilterDateTo;
     private Map<String, String> quickFilterValues = new HashMap<>();
-    private Map<String, Boolean> quickFilterCheckboxValues = new HashMap<>();
     private boolean quickFiltersOrigin = false;
 
     /**
@@ -429,7 +428,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * do not flow through the active facet system.
      */
     private void mirrorActiveFacetsToQuickFilterDropdowns() {
-        if (!isQuickFiltersEnabled()) {
+        if (!quickFiltersOrigin) {
             return;
         }
         for (QuickFilterField field : getQuickFilterFields()) {
@@ -650,7 +649,6 @@ public class SearchBean implements SearchInterface, Serializable {
         quickFilterDateFrom = null;
         quickFilterDateTo = null;
         quickFilterValues.clear();
-        quickFilterCheckboxValues.clear();
     }
 
     /**
@@ -1129,7 +1127,7 @@ public class SearchBean implements SearchInterface, Serializable {
         }
         sbFilterQuery.append(navigationHelper.getSubThemeDiscriminatorQuerySuffix());
 
-        if (activeSearchType == SearchHelper.SEARCH_TYPE_REGULAR && isQuickFiltersEnabled()) {
+        if (activeSearchType == SearchHelper.SEARCH_TYPE_REGULAR && quickFiltersOrigin) {
             appendQuickFilterQueries(sbFilterQuery);
         }
 
@@ -1163,7 +1161,7 @@ public class SearchBean implements SearchInterface, Serializable {
                     ? SearchHelper.generateAdvancedExpandQuery(advancedSearchQueryGroup, fuzzySearchEnabled)
                     : SearchHelper.generateExpandQuery(
                             SearchHelper.getExpandQueryFieldList(activeSearchType, currentSearchFilter, advancedSearchQueryGroup,
-                                    additionalExpandQueryfields, getSelectedQuickFilterSearchFields()),
+                                    additionalExpandQueryfields),
                             searchTerms, proximitySearchDistance);
             if (StringUtils.isEmpty(expandQuery) && activeSearchType == SearchHelper.SEARCH_TYPE_TERMS) {
                 expandQuery = searchStringInternal;
@@ -1216,8 +1214,6 @@ public class SearchBean implements SearchInterface, Serializable {
                     // Dropdown selections are registered as active facets in searchSimpleWithOrigin(),
                     // which makes them appear in the sidebar facet widget alongside the dropdown UI.
                     break;
-                case CHECKBOX_GROUP:
-                    break;
                 default:
                     break;
             }
@@ -1226,23 +1222,6 @@ public class SearchBean implements SearchInterface, Serializable {
 
     private static boolean isValidYear(String value) {
         return StringUtils.isNotBlank(value) && value.matches("\\d{4}");
-    }
-
-    Set<String> getSelectedQuickFilterSearchFields() {
-        if (!isQuickFiltersEnabled()) {
-            return Collections.emptySet();
-        }
-        Set<String> fields = new HashSet<>();
-        for (QuickFilterField field : getQuickFilterFields()) {
-            if (field.getType() == QuickFilterField.Type.CHECKBOX_GROUP) {
-                for (QuickFilterField.CheckboxValue cv : field.getValues()) {
-                    if (Boolean.TRUE.equals(getQuickFilterCheckboxValues().get(cv.getSolrField()))) {
-                        fields.add(cv.getSolrField());
-                    }
-                }
-            }
-        }
-        return fields;
     }
 
     /**
@@ -1478,7 +1457,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 .withSearchFilter(currentSearchFilter)
                 .withFuzzySearchEnabled(fuzzySearchEnabled)
                 .withSearchTerms(searchTerms)
-                .withQuickFilterFields(getSelectedQuickFilterSearchFields())
                 .build();
 
         QueryResult result = builder.build(inSearchString);
@@ -3583,8 +3561,8 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     @Override
-    public boolean isQuickFiltersEnabled() {
-        return DataManager.getInstance().getConfiguration().isQuickFiltersEnabled();
+    public String getQuickFilterTemplateName() {
+        return DataManager.getInstance().getConfiguration().getQuickFilterTemplateName();
     }
 
     @Override
@@ -3631,24 +3609,6 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public void setQuickFilterValues(Map<String, String> quickFilterValues) {
         this.quickFilterValues = quickFilterValues;
-    }
-
-    @Override
-    public Map<String, Boolean> getQuickFilterCheckboxValues() {
-        if (quickFilterCheckboxValues.isEmpty()) {
-            for (QuickFilterField field : getQuickFilterFields()) {
-                if (field.getType() == QuickFilterField.Type.CHECKBOX_GROUP) {
-                    for (QuickFilterField.CheckboxValue cv : field.getValues()) {
-                        quickFilterCheckboxValues.put(cv.getSolrField(), cv.isDefaultSelected());
-                    }
-                }
-            }
-        }
-        return quickFilterCheckboxValues;
-    }
-
-    public void setQuickFilterCheckboxValues(Map<String, Boolean> quickFilterCheckboxValues) {
-        this.quickFilterCheckboxValues = quickFilterCheckboxValues;
     }
 
 }

@@ -1408,6 +1408,7 @@ public final class AccessConditionUtils {
      * @should require access ticket if user does not satisfy overriding license type
      * @should keep public access ticket path if overriding license type present
      * @should deny public access if restrictive license type does not override
+     * @should fall through to baseline grant if secondary access check invalidates licensee access
      */
     public static AccessPermission checkAccessPermission(List<LicenseType> allLicenseTypes, final Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
@@ -1518,7 +1519,9 @@ public final class AccessConditionUtils {
                                 conditions -> ipRange.canSatisfyAllAccessConditions(conditions, privilegeName, null)));
                         access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, ipRange,
                                 client.orElse(null));
-                        return access;
+                        if (access.isGranted()) {
+                            return access;
+                        }
                     }
                 }
             }
@@ -1531,7 +1534,9 @@ public final class AccessConditionUtils {
                 access.setAccessTicketRequired(isAccessTicketRequiredForLicensee(relevantLicenseTypes, privilegeName,
                         conditions -> user.canSatisfyAllAccessConditions(conditions, privilegeName, null)));
                 access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
-                return access;
+                if (access.isGranted()) {
+                    return access;
+                }
             }
         }
 
@@ -1545,7 +1550,9 @@ public final class AccessConditionUtils {
                     access.setAccessTicketRequired(isAccessTicketRequiredForLicensee(relevantLicenseTypes, privilegeName,
                             conditions -> clientApplication.canSatisfyAllAccessConditions(conditions, privilegeName, null)));
                     access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
-                    return access;
+                    if (access.isGranted()) {
+                        return access;
+                    }
                 }
             }
             //check if access condition match for all clients
@@ -1556,7 +1563,9 @@ public final class AccessConditionUtils {
                     access.setAccessTicketRequired(isAccessTicketRequiredForLicensee(relevantLicenseTypes, privilegeName,
                             conditions -> allClients.canSatisfyAllAccessConditions(conditions, privilegeName, null)));
                     access.checkSecondaryAccessRequirement(useAccessConditions, privilegeName, user, useIpRange, client.orElse(null));
-                    return access;
+                    if (access.isGranted()) {
+                        return access;
+                    }
                 }
             }
         }

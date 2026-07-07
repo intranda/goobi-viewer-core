@@ -7,7 +7,8 @@
     <div
         id="quickFiltersPanel"
         class="search-quick-filters"
-        data-quickfilter-panel="true">
+        data-quickfilter-panel="true"
+        data-quickfilter-template="#{search.quickFilterTemplateName}">
         <div class="search-quick-filters__fields-area">
             <div class="search-quick-filters__row">
                 <ui:repeat
@@ -99,7 +100,7 @@
                     value="#{search.quickFilterFields}"
                     var="field"
                     varStatus="status">
-                    <ui:fragment rendered="#{status.index ge 3 and field.type ne 'CHECKBOX_GROUP'}">
+                    <ui:fragment rendered="#{status.index ge 3}">
                         <div
                             class="search-quick-filters__field"
                             data-quickfilter-field="true">
@@ -142,25 +143,37 @@
         </div>
 
         <div class="search-quick-filters__bottom-row">
-            <ui:repeat
-                value="#{search.quickFilterFields}"
-                var="field">
-                <ui:fragment rendered="#{field.type eq 'CHECKBOX_GROUP'}">
-                    <div class="search-quick-filters__checkbox-group">
-                        <span class="search-quick-filters__field-label">#{msg[field.label]}</span>
-                        <ui:repeat
-                            value="#{field.values}"
-                            var="cbValue">
-                            <label class="search-quick-filters__checkbox">
-                                <h:selectBooleanCheckbox
-                                    value="#{search.quickFilterCheckboxValues[cbValue.solrField]}"
-                                    pt:data-quickfilter-checkbox="#{cbValue.solrField}" />
-                                <span>#{msg[cbValue.label]}</span>
-                            </label>
-                        </ui:repeat>
+            <!-- Search scope: which Solr fields the query targets (replaces the former checkbox group). -->
+            <ui:fragment rendered="#{search.searchFilters.size() gt 1}">
+                <div class="search-quick-filters__search-scope search-standard__filter-select">
+                    <span class="search-quick-filters__field-label">#{msg.limitSearch}</span>
+                    <h:inputHidden
+                        id="quickFilterSearchFilterString"
+                        value="#{search.currentSearchFilterString}"
+                        pt:data-value="hiddenSearchFilterString" />
+                    <div class="custom-control custom-control--select">
+                        <select aria-label="#{msg.limitSearch}">
+                            <ui:repeat
+                                var="filter"
+                                value="#{search.searchFilters}">
+                                <option
+                                    name="searchStandardFilter"
+                                    pt:name="searchStandardFilter"
+                                    value="#{filter.label}"
+                                    selected="#{filter.label eq search.currentSearchFilterString ? 'true' : null}">
+                                    #{msg[filter.label]}
+                                </option>
+                            </ui:repeat>
+                        </select>
                     </div>
-                </ui:fragment>
-            </ui:repeat>
+                    <script>
+                        $('.search-quick-filters__search-scope select').on('change', function () {
+                            var currValue = $('option:selected', this).val();
+                            $("[data-value='hiddenSearchFilterString']").val(currValue).change();
+                        });
+                    </script>
+                </div>
+            </ui:fragment>
 
             <!-- Reset link hidden; redundant with the status bar reset outside the panel -->
             <div

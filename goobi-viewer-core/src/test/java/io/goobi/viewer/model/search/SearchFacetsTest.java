@@ -398,7 +398,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals("FIELD2:b", result.get(1));
         Assertions.assertEquals("YEAR:[c TO d] AND YEAR:[e TO f]", result.get(2));
 
-        DataManager.getInstance().getConfiguration().overrideValue("search.facets.field(1)[@multiValueOperator]", "OR");
+        DataManager.getInstance().getConfiguration().overrideValue("search.facets.template(0).field(1)[@multiValueOperator]", "OR");
         Assertions.assertEquals("OR", DataManager.getInstance().getConfiguration().getMultiValueOperatorForField("YEAR"));
 
         result = facets.generateSimpleFacetFilterQueries(true);

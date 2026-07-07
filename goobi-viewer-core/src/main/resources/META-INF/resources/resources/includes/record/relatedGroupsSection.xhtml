@@ -5,10 +5,10 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <ui:param
-        name="showDetails"
-        value="#{configurationBean.isSidebarWidgetForViewShowDetails(navigationHelper.currentView, 'related-groups')}" />
+        name="expanded"
+        value="#{configurationBean.isSidebarWidgetForViewExpanded(navigationHelper.currentView, 'related-groups')}" />
     <ui:fragment
-        rendered="#{showDetails and not empty activeDocumentBean.groupMembershipDetailsForSection and (activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild)}">
+        rendered="#{expanded and not empty activeDocumentBean.groupMembershipDetailsForSection and (activeDocumentBean.viewManager.topStructElement.groupMember or activeDocumentBean.viewManager.topStructElement.anchorChild)}">
         <ui:param
             name="anchorReady"
             value="#{activeDocumentBean.viewManager.topStructElement.anchorChild and not empty activeDocumentBean.viewManager.anchorPi and not empty activeDocumentBean.viewManager.anchorStructElement}" />

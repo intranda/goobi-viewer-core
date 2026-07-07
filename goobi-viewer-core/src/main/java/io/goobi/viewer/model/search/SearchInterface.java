@@ -198,20 +198,18 @@ public interface SearchInterface {
      */
     public boolean isExplicitSearchPerformed();
 
-    public boolean isQuickFiltersEnabled();
-
     public boolean isQuickFiltersOrigin();
     public void setQuickFiltersOrigin(boolean quickFiltersOrigin);
 
     public List<QuickFilterField> getQuickFilterFields();
+
+    public String getQuickFilterTemplateName();
 
     public String getQuickFilterDateFrom();
     public void setQuickFilterDateFrom(String quickFilterDateFrom);
     public String getQuickFilterDateTo();
     public void setQuickFilterDateTo(String quickFilterDateTo);
     public Map<String, String> getQuickFilterValues();
-
-    public Map<String, Boolean> getQuickFilterCheckboxValues();
 
     /**
      * Get total number of hits of the last search.

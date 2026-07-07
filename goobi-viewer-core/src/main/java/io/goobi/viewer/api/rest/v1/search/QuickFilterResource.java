@@ -48,6 +48,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -77,7 +78,10 @@ public class QuickFilterResource {
             String field,
             @Parameter(description = "Language tag for label translation (e.g. de, en). Defaults to current session locale.")
             @QueryParam("lang")
-            String lang) {
+            String lang,
+            @Parameter(description = "Facet template name whose field config to use for translation (defaults to _DEFAULT).")
+            @QueryParam("template")
+            String template) {
         if (StringUtils.isBlank(field)) {
             return Response.status(Response.Status.BAD_REQUEST).entity("{\"error\":\"Missing 'field' parameter\"}").build();
         }
@@ -96,7 +100,8 @@ public class QuickFilterResource {
                 return Response.ok(Collections.emptyMap()).build();
             }
 
-            boolean translate = DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(field);
+            String templateName = StringUtils.isNotBlank(template) ? template : StringConstants.DEFAULT_NAME;
+            boolean translate = DataManager.getInstance().getConfiguration().isTranslateFacetFieldLabels(templateName, field);
             Map<String, List<FacetValueEntry>> grouped = new TreeMap<>();
 
             for (Count count : solrFacetField.getValues()) {

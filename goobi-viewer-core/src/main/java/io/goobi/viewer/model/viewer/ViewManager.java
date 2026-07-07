@@ -4249,7 +4249,7 @@ public class ViewManager implements Serializable {
             }
             // Default
             if (copyrightIndicatorLicense == null) {
-                copyrightIndicatorLicense = new CopyrightIndicatorLicense("", Collections.emptyList());
+                copyrightIndicatorLicense = new CopyrightIndicatorLicense("", "", Collections.emptyList(), null);
             }
         }
 

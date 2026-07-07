@@ -113,6 +113,11 @@
                         <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />
                     </ui:fragment>
 
+                    <!-- WIDGET DATA INFO -->
+                    <ui:fragment rendered="#{widgetName == 'data-info'}">
+                        <widgetComponent:widget_dataInfo id="widgetDataInfo" />
+                    </ui:fragment>
+
                     <!-- WIDGET RELATED GROUPS -->
                     <ui:fragment rendered="#{widgetName == 'related-groups'}">
                         <widgetComponent:widget_relatedGroups />

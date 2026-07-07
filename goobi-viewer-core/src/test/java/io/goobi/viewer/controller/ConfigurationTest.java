@@ -70,6 +70,7 @@ import io.goobi.viewer.model.metadata.MetadataView;
 import io.goobi.viewer.model.metadata.MetadataView.MetadataViewLocation;
 import io.goobi.viewer.model.misc.EmailRecipient;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
+import io.goobi.viewer.model.search.QuickFilterField;
 import io.goobi.viewer.model.search.SearchFilter;
 import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.search.SearchSortingOption;
@@ -1923,11 +1924,12 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSidebarWidgetsForView_shouldReturnCorrectValues() {
         List<String> result = DataManager.getInstance().getConfiguration().getSidebarWidgetsForView("object");
-        assertEquals(4, result.size());
+        assertEquals(5, result.size());
         assertEquals("views", result.get(0));
         assertEquals("copyright", result.get(1));
         assertEquals("search-in-current-item", result.get(2));
         assertEquals("related-groups", result.get(3));
+        assertEquals("recommendations", result.get(4));
     }
 
     /**
@@ -1962,14 +1964,25 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isSidebarWidgetForViewShowDetails(String,String)
+     * @see Configuration#isSidebarWidgetForViewEnabled(String,String)
      * @verifies return correct value
      */
     @Test
-    void isSidebarWidgetForViewShowDetails_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "related-groups"));
-        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "copyright"));
-        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewShowDetails("object", "nonexistent"));
+    void isSidebarWidgetForViewEnabled_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewEnabled("object", "recommendations"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewEnabled("object", "related-groups"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewEnabled("object", "nonexistent"));
+    }
+
+    /**
+     * @see Configuration#isSidebarWidgetForViewExpanded(String,String)
+     * @verifies return correct value
+     */
+    @Test
+    void isSidebarWidgetForViewExpanded_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewExpanded("object", "related-groups"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewExpanded("object", "recommendations"));
+        assertFalse(DataManager.getInstance().getConfiguration().isSidebarWidgetForViewExpanded("object", "nonexistent"));
     }
 
     /**
@@ -1999,22 +2012,19 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("asc", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSortOrder());
     }
 
-    /**
-     * @see Configuration#getSidebarWidgetRelatedGroupsTitleField()
-     * @verifies return correct value
-     */
     @Test
-    void getSidebarWidgetRelatedGroupsTitleField_shouldReturnCorrectValue() {
-        assertEquals("LABEL", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsTitleField());
+    void getSidebarWidgetRecommendationsMaxResults_shouldReturnCorrectValue() {
+        assertEquals(6, DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsMaxResults());
     }
 
-    /**
-     * @see Configuration#getSidebarWidgetRelatedGroupsSubtitleField()
-     * @verifies return correct value
-     */
     @Test
-    void getSidebarWidgetRelatedGroupsSubtitleField_shouldReturnCorrectValue() {
-        assertEquals("MD_AUTHOR", DataManager.getInstance().getConfiguration().getSidebarWidgetRelatedGroupsSubtitleField());
+    void getSidebarWidgetRecommendationsIdentifierFields_shouldReturnCorrectValue() {
+        assertEquals(List.of("MD_RELATEDWORK"), DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsIdentifierFields());
+    }
+
+    @Test
+    void getSidebarWidgetRecommendationsFallbackFields_shouldReturnCorrectValue() {
+        assertEquals(List.of("MD_TOPIC", "DC"), DataManager.getInstance().getConfiguration().getSidebarWidgetRecommendationsFallbackFields());
     }
 
     /**
@@ -2032,6 +2042,54 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("WKT_COORDS", result.get(4));
         assertEquals("MD_PERSON", result.get(5));
         assertEquals("BOOL_HASIMAGES", result.get(6));
+    }
+
+    /**
+     * @see Configuration#getFacetFieldsForTemplate(String)
+     * @verifies return fields of named template
+     */
+    @Test
+    void getFacetFieldsForTemplate_shouldReturnNamedTemplateFields() {
+        List<String> result = DataManager.getInstance().getConfiguration().getFacetFieldsForTemplate("quickfilters");
+        assertEquals(3, result.size());
+        assertEquals("YEAR", result.get(0));
+        assertEquals("MD_CREATOR", result.get(1));
+        assertEquals("MD_PLACEPUBLISH", result.get(2));
+    }
+
+    /**
+     * @see Configuration#getFacetFieldsForTemplate(String)
+     * @verifies fall back to default template if name not found
+     */
+    @Test
+    void getFacetFieldsForTemplate_shouldFallBackToDefaultTemplate() {
+        List<String> result = DataManager.getInstance().getConfiguration().getFacetFieldsForTemplate("doesNotExist");
+        assertEquals(7, result.size());
+        assertEquals("DC", result.get(0));
+    }
+
+    /**
+     * @see Configuration#getQuickFilterTemplateName()
+     * @see Configuration#getQuickFilterTemplateName()
+     */
+    @Test
+    void getQuickFilterTemplateName_shouldReturnConfiguredName() {
+        assertEquals("quickfilters", DataManager.getInstance().getConfiguration().getQuickFilterTemplateName());
+    }
+
+    /**
+     * @see Configuration#getQuickFilterFields()
+     * @verifies map facet types to quick filter types
+     */
+    @Test
+    void getQuickFilterFields_shouldMapFacetTypesToQuickFilterTypes() {
+        List<QuickFilterField> result = DataManager.getInstance().getConfiguration().getQuickFilterFields();
+        assertEquals(3, result.size());
+        assertEquals("YEAR", result.get(0).getSolrField());
+        assertEquals(QuickFilterField.Type.DATE_RANGE, result.get(0).getType());
+        assertEquals("MD_CREATOR", result.get(1).getSolrField());
+        assertEquals(QuickFilterField.Type.FACET_DROPDOWN, result.get(1).getType());
+        assertEquals(QuickFilterField.Type.FACET_DROPDOWN, result.get(2).getType());
     }
 
     /**
@@ -2362,6 +2420,16 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#allowExternalAltoUrlResolution()
+     * @verifies return correct value
+     */
+    @Test
+    void allowExternalAltoUrlResolution_shouldReturnCorrectValue() {
+        // allowExternalSource not set in test config -> default true
+        assertTrue(DataManager.getInstance().getConfiguration().allowExternalAltoUrlResolution());
+    }
+
+    /**
      * @see Configuration#getAltoCrowdsourcingFolder()
      * @verifies return correct value
      */
@@ -2377,6 +2445,16 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getFulltextFolder_shouldReturnCorrectValue() {
         assertEquals("fulltext", DataManager.getInstance().getConfiguration().getFulltextFolder());
+    }
+
+    /**
+     * @see Configuration#allowExternalFulltextUrlResolution()
+     * @verifies return correct value
+     */
+    @Test
+    void allowExternalFulltextUrlResolution_shouldReturnCorrectValue() {
+        // allowExternalSource not set in test config -> default true
+        assertTrue(DataManager.getInstance().getConfiguration().allowExternalFulltextUrlResolution());
     }
 
     /**
