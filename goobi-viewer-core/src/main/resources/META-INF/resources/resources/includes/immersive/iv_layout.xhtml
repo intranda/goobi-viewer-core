@@ -891,4 +891,15 @@
             </popover>
         </ui:fragment>
     </div>
+
+    <script type="text/javascript">
+        viewerJS.normdata.init({
+            path: '#{request.contextPath}',
+            lang: {
+                popoverTitle: '#{msg.normdataPopoverTitle}',
+                popoverClose: '#{msg.normdataPopoverClose}',
+                showNormdata: '#{msg.normdataExpand}',
+            },
+        });
+    </script>
 </ui:composition>

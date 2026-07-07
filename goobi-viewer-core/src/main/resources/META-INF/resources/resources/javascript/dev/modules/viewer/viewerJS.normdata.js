@@ -28,6 +28,7 @@ var viewerJS = (function (viewer) {
     'use strict';
 
     var _debug = false;
+    var _initialized = false;
     var _data = null;
     var _dataURL = '';
     var _data = '';
@@ -83,6 +84,11 @@ var viewerJS = (function (viewer) {
 
             // hide close icons
             $('.closeAllPopovers').hide();
+
+            if (_initialized) {
+                return;
+            }
+            _initialized = true;
 
             if (_debug) {
                 console.log('(default) selector:' + _defaults.linkSelector);
