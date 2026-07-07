@@ -18,6 +18,7 @@ import {
     panelIdForKeyEvent,
     isMacPlatform,
     macKeyLabel,
+    stageMargins,
 } from '../viewerImmersive.mjs';
 
 // ---------------------------------------------------------------------------
@@ -287,6 +288,18 @@ describe('isMacPlatform', function () {
         expect(isMacPlatform('Linux x86_64')).toBe(false);
         expect(isMacPlatform('')).toBe(false);
         expect(isMacPlatform(undefined)).toBe(false);
+    });
+});
+
+describe('stageMargins', function () {
+    test('reserves the full desktop chrome above 768px', function () {
+        expect(stageMargins(1280)).toEqual({ top: 64, bottom: 72, left: 64, right: 64 });
+        expect(stageMargins(769)).toEqual({ top: 64, bottom: 72, left: 64, right: 64 });
+    });
+
+    test('shrinks the chrome margins on small viewports so the page uses the screen', function () {
+        expect(stageMargins(768)).toEqual({ top: 56, bottom: 60, left: 16, right: 16 });
+        expect(stageMargins(390)).toEqual({ top: 56, bottom: 60, left: 16, right: 16 });
     });
 });
 

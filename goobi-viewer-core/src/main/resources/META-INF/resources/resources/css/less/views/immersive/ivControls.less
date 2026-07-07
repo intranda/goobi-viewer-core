@@ -102,6 +102,14 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+    .immersive--panel-open .immersive__toolbar--right {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .immersive__toolbar--right {
+        transition: opacity 0.2s ease;
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

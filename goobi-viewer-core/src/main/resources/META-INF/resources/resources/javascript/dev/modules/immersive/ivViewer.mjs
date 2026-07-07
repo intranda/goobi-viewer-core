@@ -1,4 +1,5 @@
 import { computeSpread, residentPages } from './ivImageWindow.mjs';
+import { stageMargins } from './viewerImmersive.mjs';
 
 /** Minimal dependency-free event emitter (rxjs-compatible `subscribe` shape). */
 export class Emitter {
@@ -110,7 +111,7 @@ export default class IvViewer {
         this.viewer = new ImageView.Image({
             element: opts.element,
             fittingMode: 'fixed',
-            margins: { top: 64, bottom: 72, left: 64, right: 64 },
+            margins: stageMargins(window.innerWidth),
             zoom: { enabled: true, max: opts.maxZoom },
             sequence: { ...SEQUENCE_DEFAULTS },
             navigator: { enabled: false },

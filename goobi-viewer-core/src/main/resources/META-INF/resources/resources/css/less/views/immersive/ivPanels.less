@@ -116,4 +116,21 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
+    .immersive__viewer {
+        --immersive-panel-width: calc(100% - @immersive-rail-width);
+    }
+
+    .immersive__panel {
+        max-width: none;
+    }
+
+    .immersive--panel-open .immersive__panel-resize-handle {
+        display: none;
+    }
+}
+
+@media (hover: none) {
+    .immersive--panel-open .immersive__panel-resize-handle {
+        display: none;
+    }
 }

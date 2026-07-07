@@ -45,6 +45,8 @@
         align-items: center;
         gap: 2px;
         height: 40px;
+        max-width: calc(100% - (2 * @immersive-edge-inset));
+        overflow-x: auto;
         padding: 0 4px;
         .mx-immersive-floating();
         transform: translateX(-50%);
@@ -90,4 +92,25 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
+    .immersive {
+        &__bottombar {
+            height: 36px;
+            padding: 0 2px;
+        }
+
+        &__bottombar-group + &__bottombar-group {
+            padding-left: 2px;
+        }
+
+        &__bar-btn {
+            width: 28px;
+            height: 28px;
+        }
+
+        &__page-indicator {
+            min-width: 3.2em;
+            padding: 0 2px;
+            font-size: @fontSmall;
+        }
+    }
 }

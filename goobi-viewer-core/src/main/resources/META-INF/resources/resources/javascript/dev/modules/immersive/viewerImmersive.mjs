@@ -153,6 +153,22 @@ export function panelIdForKeyEvent({ altKey, ctrlKey, metaKey, code }) {
 }
 
 /**
+ * OSD viewport margins that keep the fitted page clear of the floating chrome.
+ * Desktop reserves generous side margins; small viewports shrink them so the
+ * page actually uses the screen (bars stay clear via the top/bottom values:
+ * title pill 36px + inset, bottom bar 36-40px + inset). Pure + tested.
+ *
+ * @param {number} viewportWidth  window.innerWidth at viewer construction
+ * @returns {{top:number, bottom:number, left:number, right:number}}
+ */
+export function stageMargins(viewportWidth) {
+    if (viewportWidth <= 768) {
+        return { top: 56, bottom: 60, left: 16, right: 16 };
+    }
+    return { top: 64, bottom: 72, left: 64, right: 64 };
+}
+
+/**
  * Whether a platform string names an Apple platform, where modifier keys are
  * conventionally shown as symbols (⌥, ⇧) instead of their PC names.
  * Pure + tested.
