@@ -156,6 +156,26 @@ describe('IvViewer construction', () => {
         expect(v.prev).toHaveBeenCalledTimes(1);
         expect(other.preventDefaultAction).toBeUndefined();
     });
+
+    test("'0' resets like the reset button (OSD's raw goHome would FILL the viewport instead of fitting)", () => {
+        const v = new IvViewer({ element: {}, services: services(5) });
+        v.resetView = jest.fn();
+        const handler = v.viewer.openseadragon._handlers['canvas-key'];
+
+        const zero = { originalEvent: { key: '0', preventDefault: jest.fn() } };
+        handler(zero);
+        expect(v.resetView).toHaveBeenCalledTimes(1);
+        expect(zero.preventDefaultAction).toBe(true);
+        expect(zero.originalEvent.preventDefault).toHaveBeenCalled();
+    });
+
+    test('resetView emits onReset so UI add-ons (image filters) can reset with it', () => {
+        const v = new IvViewer({ element: {}, services: services(5) });
+        const reset = jest.fn();
+        v.onReset.subscribe(reset);
+        v.resetView();
+        expect(reset).toHaveBeenCalledTimes(1);
+    });
 });
 
 describe('IvViewer page navigation (clamping, no-ops, next/prev)', () => {

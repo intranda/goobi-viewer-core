@@ -968,6 +968,7 @@
             this.onPageChange = new Emitter();
             this.onLoaded = new Emitter();
             this.onOpen = new Emitter();
+            this.onReset = new Emitter();
 
             this.viewer = new ImageView.Image({
                 element: opts.element,
@@ -985,6 +986,7 @@
                 const key = e.originalEvent.key;
                 if (key === 'ArrowRight') this.next();
                 else if (key === 'ArrowLeft') this.prev();
+                else if (key === '0') this.resetView();
                 else return;
                 e.preventDefaultAction = true;
                 e.originalEvent.preventDefault();
@@ -1185,10 +1187,12 @@
          * Always goes through the library's zoom control: it fits the union of the
          * current row with margin compensation, while raw OSD viewport.goHome() FILLS
          * the viewport (homeFillsViewer) and would land on a zoomed-in spread.
+         * Emits `onReset` so UI add-ons (image filters) can reset along with the view.
          */
         resetView() {
             this.rotation.rotateTo(0);
             this.zoom.goHome();
+            this.onReset.emit();
         }
 
         /** Toggles book-spread mode and re-opens at the current position. Returns the new state. */
@@ -3339,7 +3343,11 @@
     function mountImageFilters(viewer) {
         if (!document.querySelector('imageFilters') || !window.immersiveFilterConfig) return false;
         const [tag] = riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
-        if (tag) bindImageFiltersRendering(viewer, tag);
+        if (tag) {
+            bindImageFiltersRendering(viewer, tag);
+            // "Reset view" (button and '0' key) clears the image filters as well.
+            viewer.onReset.subscribe(() => tag.resetAll());
+        }
         return true;
     }
 

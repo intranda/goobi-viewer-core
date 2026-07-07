@@ -1135,7 +1135,11 @@ function setupImmersivePopoverA11y() {
 function mountImageFilters(viewer) {
     if (!document.querySelector('imageFilters') || !window.immersiveFilterConfig) return false;
     const [tag] = riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
-    if (tag) bindImageFiltersRendering(viewer, tag);
+    if (tag) {
+        bindImageFiltersRendering(viewer, tag);
+        // "Reset view" (button and '0' key) clears the image filters as well.
+        viewer.onReset.subscribe(() => tag.resetAll());
+    }
     return true;
 }
 
