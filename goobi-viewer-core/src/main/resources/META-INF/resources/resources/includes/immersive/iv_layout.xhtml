@@ -91,7 +91,7 @@
                             svgClass="immersive__tool-icon" />
                     </button>
                     <!-- FULLTEXT -->
-                    <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
+                    <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
                         <button
                             type="button"
                             class="immersive__tool-btn"
@@ -288,7 +288,7 @@
                 </div>
             </aside>
             <!-- FULLTEXT PANEL -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.topStructElement.fulltextAvailable}">
+            <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
                 <aside
                     id="immersivePanelFulltext"
                     class="immersive__panel immersive__panel--left immersive__panel--fulltext"
