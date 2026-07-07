@@ -63,7 +63,7 @@
 		<httpcore.version>4.4.16</httpcore.version>
 		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 		<jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
-		<jackson.version>2.21.4</jackson.version>
+		<jackson.version>2.21.5</jackson.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20260522</json.version>
