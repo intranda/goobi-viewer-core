@@ -29,13 +29,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -111,8 +109,9 @@ public class AdminBean implements Serializable {
     private User currentUser = null;
     private UserGroup currentUserGroup = null;
     private Role currentRole = null;
-    /** List of UserRoles to persist or delete. */
-    private Map<UserRole, String> dirtyUserRoles = new HashMap<>();
+    /** Ordered lists of pending membership changes, applied on save. */
+    private final List<UserRole> userRolesToSave = new ArrayList<>();
+    private final List<UserRole> userRolesToDelete = new ArrayList<>();
     private UserRole currentUserRole = null;
     private IpRange currentIpRange = null;
     private TranslationGroup currentTranslationGroup = null;
@@ -541,7 +540,8 @@ public class AdminBean implements Serializable {
      * resetDirtyUserRolesAction.
      */
     public void resetDirtyUserRolesAction() {
-        dirtyUserRoles.clear();
+        userRolesToSave.clear();
+        userRolesToDelete.clear();
         // Reset working list in the user group object
         if (currentUserGroup != null) {
             currentUserGroup.setMemberships(null);
@@ -549,7 +549,7 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Adds currentUserRole to the map of UserRoles to be processed, marked as to save.
+     * Adds currentUserRole to the list of UserRoles to be saved.
      *
      * @throws io.goobi.viewer.exceptions.DAOException
      * @should add user if not yet in group
@@ -569,14 +569,18 @@ public class AdminBean implements Serializable {
 
         if (currentUserGroup != null && !currentUserGroup.getMemberships().contains(currentUserRole)) {
             logger.trace("adding user");
-            currentUserGroup.getMemberships().add(currentUserRole);
-            dirtyUserRoles.put(currentUserRole, "save");
+            UserRole userRole = currentUserRole;
+            currentUserGroup.getMemberships().add(userRole);
+            // If this role was queued for deletion, adding it back cancels that; otherwise queue it for saving.
+            if (!userRolesToDelete.removeIf(r -> r == userRole)) {
+                userRolesToSave.add(userRole);
+            }
         }
         resetCurrentUserRoleAction();
     }
 
     /**
-     * Adds currentUserRole to the map of UserRoles to be processed, marked as to delete.
+     * Adds the given UserRole to the list of UserRoles to be deleted.
      *
      * @param userRole membership entry to mark for deletion
      * @throws io.goobi.viewer.exceptions.DAOException if any.
@@ -585,7 +589,11 @@ public class AdminBean implements Serializable {
         logger.trace("deleteUserRoleAction: {}", userRole);
         if (currentUserGroup != null && currentUserGroup.getMemberships().contains(userRole)) {
             currentUserGroup.getMemberships().remove(userRole);
-            dirtyUserRoles.put(userRole, "delete");
+            // If this role was only queued for saving (never persisted), removing it is a net no-op;
+            // otherwise queue it for deletion.
+            if (!userRolesToSave.removeIf(r -> r == userRole)) {
+                userRolesToDelete.add(userRole);
+            }
         }
     }
 
@@ -597,65 +605,48 @@ public class AdminBean implements Serializable {
      * @should multiple roles added on new group
      */
     public void updateUserRoles() throws DAOException {
-        logger.trace("updateUserRoles: {}", dirtyUserRoles.size());
-        if (dirtyUserRoles.isEmpty()) {
+        logger.trace("updateUserRoles: {} to save, {} to delete", userRolesToSave.size(), userRolesToDelete.size());
+        if (userRolesToSave.isEmpty() && userRolesToDelete.isEmpty()) {
             return;
         }
 
         try {
-            //the userRoles don't match the keys of dirtyUserRoles after saving (dirtyUserRoles.get(userRole) returns null for the second entry),
-            //so dirty status for each user role is matched by the user behind the userGroup
-            Map<User, String> dirtyUsers = dirtyUserRoles.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().getUser(), e -> e.getValue()));
-            for (Entry<User, String> entry : dirtyUsers.entrySet()) {
-                String dirty = entry.getValue();
-                UserRole userRole = dirtyUserRoles.keySet().stream().filter(r -> r.getUser().equals(entry.getKey())).findFirst().orElse(null);
-                if (userRole == null) {
-                    logger.warn("userRole not found");
-                    return;
+            for (UserRole userRole : userRolesToSave) {
+                logger.trace("Saving UserRole: {}", userRole);
+                // If the user group is not yet persisted, add it to DB first
+                if (userRole.getUserGroup() != null && userRole.getUserGroup().getId() == null) {
+                    logger.trace("adding new user group: {}", userRole.getUserGroup());
+                    if (!DataManager.getInstance().getDao().addUserGroup(userRole.getUserGroup())) {
+                        logger.error("Could not save UserRole: {}", userRole);
+                        Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
+                        continue;
+                    }
                 }
-
-                switch (dirty) {
-                    case "save":
-                        logger.trace("Saving UserRole: {}", userRole);
-                        // If this the user group is not yet persisted, add it to DB first
-                        if (userRole.getUserGroup() != null && userRole.getUserGroup().getId() == null) {
-                            logger.trace("adding new user group: {}", userRole.getUserGroup());
-                            if (!DataManager.getInstance().getDao().addUserGroup(userRole.getUserGroup())) {
-                                logger.error("Could not save UserRole: {}", userRole);
-                                Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
-                                continue;
-                            }
-                        }
-                        if (userRole.getId() != null) {
-                            // existing
-                            if (DataManager.getInstance().getDao().updateUserRole(userRole)) {
-                                Messages.info("userGroup_membershipUpdateSuccess");
-                            } else {
-                                Messages.error("userGroup_membershipUpdateFailure");
-                            }
-                        } else {
-                            // new
-                            if (DataManager.getInstance().getDao().addUserRole(userRole)) {
-                                Messages.info("userGroup_memberAddSuccess");
-                            } else {
-                                Messages.error("userGroup_memberAddFailure");
-                            }
-                        }
-                        break;
-                    case "delete":
-                        logger.trace("Deleting UserRole: {}", userRole);
-                        if (userRole.getId() != null) {
-                            if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
-                                Messages.info(StringConstants.MSG_ADMIN_DELETED_SUCCESSFULLY);
-                            } else {
-                                Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
-                            }
-                        }
-                        break;
-                    default:
-                        logger.warn("Unknown action: {}", dirtyUserRoles.get(userRole));
+                if (userRole.getId() != null) {
+                    // existing
+                    if (DataManager.getInstance().getDao().updateUserRole(userRole)) {
+                        Messages.info("userGroup_membershipUpdateSuccess");
+                    } else {
+                        Messages.error("userGroup_membershipUpdateFailure");
+                    }
+                } else {
+                    // new
+                    if (DataManager.getInstance().getDao().addUserRole(userRole)) {
+                        Messages.info("userGroup_memberAddSuccess");
+                    } else {
+                        Messages.error("userGroup_memberAddFailure");
+                    }
                 }
-
+            }
+            for (UserRole userRole : userRolesToDelete) {
+                logger.trace("Deleting UserRole: {}", userRole);
+                if (userRole.getId() != null) {
+                    if (DataManager.getInstance().getDao().deleteUserRole(userRole)) {
+                        Messages.info(StringConstants.MSG_ADMIN_DELETED_SUCCESSFULLY);
+                    } else {
+                        Messages.error(StringConstants.MSG_ADMIN_DELETE_FAILURE);
+                    }
+                }
             }
         } finally {
             resetDirtyUserRolesAction();
@@ -832,7 +823,11 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException
      */
     public void setCurrentUserGroupId(Long id) throws DAOException {
-        this.currentUserGroup = DataManager.getInstance().getDao().getUserGroup(id);
+        // PrettyFaces injects this path parameter on every request, including postbacks. Reloading on a postback
+        // would discard the transient membership edits, so only fetch when switching to a different group.
+        if (currentUserGroup == null || !Objects.equals(currentUserGroup.getId(), id)) {
+            this.currentUserGroup = DataManager.getInstance().getDao().getUserGroup(id);
+        }
     }
 
     /**
@@ -855,11 +850,16 @@ public class AdminBean implements Serializable {
 
     /**
      * Getter for unit tests.
-     * 
-     * 
      */
-    Map<UserRole, String> getDirtyUserRoles() {
-        return dirtyUserRoles;
+    List<UserRole> getUserRolesToSave() {
+        return userRolesToSave;
+    }
+
+    /**
+     * Getter for unit tests.
+     */
+    List<UserRole> getUserRolesToDelete() {
+        return userRolesToDelete;
     }
 
     /**
