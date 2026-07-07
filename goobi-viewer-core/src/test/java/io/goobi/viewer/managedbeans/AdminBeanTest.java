@@ -187,7 +187,7 @@ class AdminBeanTest extends AbstractDatabaseEnabledTest {
         bean.addUserRoleAction();
         Assertions.assertTrue(group.getMembers().contains(user));
 
-        Assertions.assertTrue(bean.getDirtyUserRoles().containsKey(userRole));
+        Assertions.assertTrue(bean.getUserRolesToSave().contains(userRole));
         bean.updateUserRoles();
         Assertions.assertFalse(DataManager.getInstance().getDao().getUserRoles(group, user, role).isEmpty());
     }
@@ -218,9 +218,9 @@ class AdminBeanTest extends AbstractDatabaseEnabledTest {
         bean.setCurrentUserRole(ur2);
         bean.addUserRoleAction();
 
-        assertEquals(2, bean.getDirtyUserRoles().size());
-        assertEquals("save", bean.getDirtyUserRoles().get(ur1));
-        assertEquals("save", bean.getDirtyUserRoles().get(ur2));
+        assertEquals(2, bean.getUserRolesToSave().size());
+        assertTrue(bean.getUserRolesToSave().contains(ur1));
+        assertTrue(bean.getUserRolesToSave().contains(ur2));
 
         bean.saveUserGroupAction();
 
@@ -229,6 +229,83 @@ class AdminBeanTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, loadedGroup.getMemberships().size());
         assertTrue(loadedGroup.getMemberships().contains(ur1));
         assertTrue(loadedGroup.getMemberships().contains(ur2));
+    }
+
+    /**
+     * @see AdminBean#deleteUserRoleAction(UserRole)
+     * @verifies keep a pending added member when removing another member
+     */
+    @Test
+    void deleteUserRoleAction_shouldKeepAddedMemberWhenRemovingAnother() throws Exception {
+        UserGroup group = DataManager.getInstance().getDao().getUserGroup(1);
+        Assertions.assertNotNull(group);
+
+        User userA = DataManager.getInstance().getDao().getUser(3);
+        User userB = DataManager.getInstance().getDao().getUser(2);
+        Role role = DataManager.getInstance().getDao().getRole("member");
+
+        AdminBean bean = new AdminBean();
+        bean.init();
+        bean.setCurrentUserGroup(group);
+
+        // Group 1 already contains userB as a persisted member
+        assertTrue(group.getMembers().contains(userB));
+
+        // Add userA to the temporary list
+        UserRole membershipA = new UserRole(group, userA, role);
+        bean.setCurrentUserRole(membershipA);
+        bean.addUserRoleAction();
+        assertTrue(group.getMembers().contains(userA));
+
+        // Remove userB from the temporary list
+        UserRole membershipB = group.getMemberships().stream().filter(r -> userB.equals(r.getUser())).findFirst().orElse(null);
+        Assertions.assertNotNull(membershipB);
+        bean.deleteUserRoleAction(membershipB);
+
+        // userA must still be present after removing userB
+        assertTrue(group.getMembers().contains(userA));
+        Assertions.assertFalse(group.getMembers().contains(userB));
+        assertTrue(bean.getUserRolesToSave().contains(membershipA));
+        assertTrue(bean.getUserRolesToDelete().contains(membershipB));
+
+        assertDoesNotThrow(() -> bean.updateUserRoles());
+
+        UserGroup reloaded = DataManager.getInstance().getDao().getUserGroup(1);
+        assertTrue(reloaded.getMembers().contains(userA));
+        Assertions.assertFalse(reloaded.getMembers().contains(userB));
+    }
+
+    /**
+     * @see AdminBean#deleteUserRoleAction(UserRole)
+     * @verifies cancel out adding and then removing the same unpersisted member
+     */
+    @Test
+    void deleteUserRoleAction_shouldCancelOutAddThenRemoveOfSameMember() throws Exception {
+        User owner = DataManager.getInstance().getDao().getUser(1);
+        User userA = DataManager.getInstance().getDao().getUser(2);
+        Role role = DataManager.getInstance().getDao().getRole("member");
+
+        UserGroup group = new UserGroup();
+        group.setName("addRemoveNoop");
+        group.setOwner(owner);
+
+        AdminBean bean = new AdminBean();
+        bean.init();
+        bean.setCurrentUserGroup(group);
+
+        UserRole membershipA = new UserRole(group, userA, role);
+        bean.setCurrentUserRole(membershipA);
+        bean.addUserRoleAction();
+        assertTrue(group.getMembers().contains(userA));
+        assertEquals(1, bean.getUserRolesToSave().size());
+
+        // Remove the just-added, unpersisted member again
+        bean.deleteUserRoleAction(membershipA);
+        assertTrue(bean.getUserRolesToSave().isEmpty());
+        assertTrue(bean.getUserRolesToDelete().isEmpty());
+        Assertions.assertFalse(group.getMembers().contains(userA));
+
+        assertDoesNotThrow(() -> bean.updateUserRoles());
     }
 
     /**
