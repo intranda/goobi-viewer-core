@@ -664,7 +664,9 @@
                 aria-modal="true"
                 aria-labelledby="immersiveShortcutsTitle"
                 hidden="hidden">
-                <div class="immersive__shortcuts-dialog">
+                <div
+                    class="immersive__shortcuts-dialog"
+                    tabindex="0">
                     <button
                         type="button"
                         class="immersive__shortcuts-close"
@@ -699,13 +701,47 @@
                                 <th
                                     scope="row"
                                     class="immersive__shortcuts-action">
-                                    #{msg.immersive__shortcuts_panels}
+                                    #{msg.toc}
                                 </th>
                                 <td class="immersive__shortcuts-keys">
                                     <kbd data-key="alt">Alt</kbd>
                                     <span aria-hidden="true">+</span>
                                     <kbd>1</kbd>
-                                    <span aria-hidden="true">…</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th
+                                    scope="row"
+                                    class="immersive__shortcuts-action">
+                                    #{msg.fulltext}
+                                </th>
+                                <td class="immersive__shortcuts-keys">
+                                    <kbd data-key="alt">Alt</kbd>
+                                    <span aria-hidden="true">+</span>
+                                    <kbd>2</kbd>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th
+                                    scope="row"
+                                    class="immersive__shortcuts-action">
+                                    #{msg.search}
+                                </th>
+                                <td class="immersive__shortcuts-keys">
+                                    <kbd data-key="alt">Alt</kbd>
+                                    <span aria-hidden="true">+</span>
+                                    <kbd>3</kbd>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th
+                                    scope="row"
+                                    class="immersive__shortcuts-action">
+                                    #{msg.metadata}
+                                </th>
+                                <td class="immersive__shortcuts-keys">
+                                    <kbd data-key="alt">Alt</kbd>
+                                    <span aria-hidden="true">+</span>
                                     <kbd>4</kbd>
                                 </td>
                             </tr>

@@ -165,17 +165,19 @@ export function isMacPlatform(platform) {
 }
 
 /**
- * Mac display variant of a modifier key: the Apple symbol for the keycap and
- * the spoken name for assistive technology. Null for keys that read the same
- * on every platform. Pure + tested.
+ * Mac display variant of a modifier key: the Apple symbol plus the key name
+ * for the keycap (a bare ⇧ reads like an arrow key next to real ↑/↓ caps),
+ * and the spoken name for assistive technology. Symbol and name stay separate
+ * so the keycap can flex-center the symbol glyph independently of the text
+ * baseline. Null for keys that read the same on every platform. Pure + tested.
  *
  * @param {string} key  lowercase modifier name from a `data-key` attribute
- * @returns {{text:string, label:string}|null}
+ * @returns {{symbol:string, name:string, label:string}|null}
  */
 export function macKeyLabel(key) {
     const labels = {
-        alt: { text: '⌥', label: 'Option' },
-        shift: { text: '⇧', label: 'Shift' },
+        alt: { symbol: '⌥', name: 'Option', label: 'Option' },
+        shift: { symbol: '⇧', name: 'Shift', label: 'Shift' },
     };
     return labels[key] || null;
 }

@@ -291,9 +291,9 @@ describe('isMacPlatform', function () {
 });
 
 describe('macKeyLabel', function () {
-    test('maps modifier names to their Mac symbol plus accessible name', function () {
-        expect(macKeyLabel('alt')).toEqual({ text: '⌥', label: 'Option' });
-        expect(macKeyLabel('shift')).toEqual({ text: '⇧', label: 'Shift' });
+    test('maps modifier names to Mac symbol plus key name (a bare ⇧ reads like an arrow) and accessible name', function () {
+        expect(macKeyLabel('alt')).toEqual({ symbol: '⌥', name: 'Option', label: 'Option' });
+        expect(macKeyLabel('shift')).toEqual({ symbol: '⇧', name: 'Shift', label: 'Shift' });
     });
 
     test('returns null for keys without a Mac-specific label', function () {

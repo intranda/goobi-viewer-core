@@ -118,7 +118,7 @@ function initImmersiveViewer(el) {
             closePanels(true);
         }
     });
-    // Alt+1-4 toggles the rail panels; 
+    // Alt+1-4 toggles the rail panels;
     document.addEventListener('keydown', (e) => {
         const panelId = panelIdForKeyEvent(e);
         if (!panelId) return;
@@ -885,11 +885,16 @@ function setupShortcutsModal(closePanels) {
     const trigger = document.querySelector('[data-immersive-shortcuts-trigger]');
     if (!overlay || !trigger) return;
     // On Apple platforms modifiers are conventionally shown as symbols (⌥, ⇧);
+    // the accessible name keeps the spoken key name. The symbol gets its own
+    // span so the flex keycap centers the glyph instead of baseline-aligning it.
     if (isMacPlatform(navigator.userAgentData?.platform ?? navigator.platform)) {
         overlay.querySelectorAll('kbd[data-key]').forEach((kbd) => {
             const mac = macKeyLabel(kbd.dataset.key);
             if (!mac) return;
-            kbd.textContent = mac.text;
+            const symbol = document.createElement('span');
+            symbol.className = 'immersive__shortcuts-key-symbol';
+            symbol.textContent = mac.symbol;
+            kbd.replaceChildren(symbol, document.createTextNode(mac.name));
             kbd.setAttribute('aria-label', mac.label);
         });
     }
@@ -931,7 +936,9 @@ function setupShortcutsModal(closePanels) {
             overlay.removeEventListener('keydown', trapHandler);
             trapHandler = null;
         }
-        const restore = opener || trigger;
+        // A '?'-opened dialog has no focused opener (activeElement is <body>);
+        // falling back to the trigger keeps keyboard users at a sensible spot.
+        const restore = opener && opener !== document.body ? opener : trigger;
         opener = null;
         if (restore && typeof restore.focus === 'function') restore.focus();
     };
