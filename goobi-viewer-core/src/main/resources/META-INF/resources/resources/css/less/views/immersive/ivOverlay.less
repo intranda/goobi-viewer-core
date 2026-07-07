@@ -59,7 +59,7 @@
         }
     }
 
-    &__title-trigger--static {
+    &__title-trigger-static {
         cursor: default;
         pointer-events: none;
 
@@ -72,7 +72,7 @@
         }
     }
 
-    &--panel-open {
+    &.-panel-open {
         .immersive__overlay-top {
             opacity: 0;
         }
@@ -81,7 +81,7 @@
         .immersive__page-dropdown {
             pointer-events: none;
         }
-        .immersive__chevron--left {
+        .immersive__chevron-left {
             opacity: 0;
             pointer-events: none;
         }
@@ -182,7 +182,7 @@
 
         &:hover,
         &:active,
-        &--active {
+        &.-active {
             background-color: @immersive-chrome-hover-bg;
             color: @immersive-chrome-fg;
         }
@@ -193,7 +193,7 @@
         color: @immersive-accent;
         font-variant-numeric: tabular-nums;
 
-        .immersive__page-dropdown-item--active & {
+        .immersive__page-dropdown-item.-active & {
             font-weight: bold;
         }
     }

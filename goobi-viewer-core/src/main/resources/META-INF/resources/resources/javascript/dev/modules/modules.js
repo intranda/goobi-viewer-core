@@ -1273,7 +1273,7 @@
                 const item = this._itemForOrder(r.order);
                 if (!item) return [];
                 const el = document.createElement('div');
-                el.className = r.active ? 'immersive__highlight immersive__highlight--active' : 'immersive__highlight';
+                el.className = r.active ? 'immersive__highlight -active' : 'immersive__highlight';
                 osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
                 return [el];
             });
@@ -1302,7 +1302,7 @@
             (regions || []).forEach((r) => {
                 if (!r.rect) return;
                 const el = document.createElement('div');
-                el.className = r.level ? `immersive__text-region immersive__text-region--${r.level}` : 'immersive__text-region';
+                el.className = r.level ? `immersive__text-region immersive__text-region-${r.level}` : 'immersive__text-region';
                 el.dataset.ivRegionId = r.id;
                 osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
                 map.set(r.id, el);
@@ -2216,24 +2216,24 @@
      */
     function setupPanels(immersiveRoot, keys) {
         const panelButtons = document.querySelectorAll('[data-immersive-panel]');
-        document.querySelectorAll('.immersive__panel--left').forEach((p) => (p.inert = true));
+        document.querySelectorAll('.immersive__panel-left').forEach((p) => (p.inert = true));
         const syncPanelOpenFlag = () => {
             if (immersiveRoot) {
-                immersiveRoot.classList.toggle('immersive--panel-open', !!document.querySelector('.immersive__panel--left.is-open'));
+                immersiveRoot.classList.toggle('-panel-open', !!document.querySelector('.immersive__panel-left.is-open'));
             }
         };
         const closeHooks = [];
         let activePanelBtn = null;
         const closePanels = (restoreFocus = false) => {
             closeHooks.forEach((hook) => hook());
-            const closedAny = !!document.querySelector('.immersive__panel--left.is-open');
-            document.querySelectorAll('.immersive__panel--left.is-open').forEach((p) => {
+            const closedAny = !!document.querySelector('.immersive__panel-left.is-open');
+            document.querySelectorAll('.immersive__panel-left.is-open').forEach((p) => {
                 p.classList.remove('is-open');
                 p.setAttribute('aria-hidden', 'true');
                 p.inert = true;
             });
             panelButtons.forEach((b) => {
-                b.classList.remove('immersive__tool-btn--active');
+                b.classList.remove('-active');
                 b.setAttribute('aria-expanded', 'false');
             });
             syncPanelOpenFlag();
@@ -2251,7 +2251,7 @@
                     panel.classList.add('is-open');
                     panel.setAttribute('aria-hidden', 'false');
                     panel.inert = false;
-                    btn.classList.add('immersive__tool-btn--active');
+                    btn.classList.add('-active');
                     btn.setAttribute('aria-expanded', 'true');
                     activePanelBtn = btn;
                     syncPanelOpenFlag();
@@ -2274,7 +2274,7 @@
         const overlayOpen = () => !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden])');
         keys.register(40, (e) => {
             if (e.key === 'Escape') {
-                if (!document.querySelector('.immersive__panel--left.is-open')) return false;
+                if (!document.querySelector('.immersive__panel-left.is-open')) return false;
                 closePanels(true);
                 return true;
             }
@@ -2323,7 +2323,7 @@
         handle.addEventListener('pointerdown', (e) => {
             e.preventDefault();
             handle.setPointerCapture(e.pointerId);
-            immersiveRoot.classList.add('immersive--resizing');
+            immersiveRoot.classList.add('-resizing');
             const viewerLeft = immersiveViewer.getBoundingClientRect().left;
             const widthAt = (ev) => clamp(ev.clientX - viewerLeft - RAIL_WIDTH);
             const onMove = (ev) => applyWidth(widthAt(ev));
@@ -2331,7 +2331,7 @@
                 handle.releasePointerCapture(e.pointerId);
                 handle.removeEventListener('pointermove', onMove);
                 handle.removeEventListener('pointerup', onUp);
-                immersiveRoot.classList.remove('immersive--resizing');
+                immersiveRoot.classList.remove('-resizing');
                 try {
                     localStorage.setItem(WIDTH_KEY, String(Math.round(widthAt(ev))));
                 } catch {}
@@ -2350,7 +2350,7 @@
             tocToggle.hidden = false;
             const reflectTocToggle = () => {
                 const collapsed = !!tocContainer.querySelector('.widget-toc__element--hidden');
-                tocToggle.classList.toggle('immersive__toc-collapse--collapsed', collapsed);
+                tocToggle.classList.toggle('-collapsed', collapsed);
                 tocToggle.setAttribute('aria-expanded', String(!collapsed));
                 const label = collapsed ? tocToggle.dataset.labelExpand : tocToggle.dataset.labelCollapse;
                 tocToggle.setAttribute('aria-label', label);
@@ -2506,7 +2506,7 @@
         const focusables = () =>
             Array.from(overlay.querySelectorAll('a[href],button,input,[tabindex]:not([tabindex="-1"])')).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
         const otherOverlayOpen = () =>
-            !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel--left.is-open, .popover.show');
+            !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel-left.is-open, .popover.show');
         const openShortcuts = () => {
             if (!overlay.hidden || otherOverlayOpen()) return;
             opener = document.activeElement;
@@ -2611,7 +2611,7 @@
                 clearFulltextLink();
                 if (fulltextLoader) fulltextLoader.hidden = false;
                 fulltextBox.textContent = '';
-                fulltextBox.classList.remove('immersive__fulltext--empty');
+                fulltextBox.classList.remove('-empty');
                 let blocks = null;
                 try {
                     blocks = await loadPageTextLevels(pi, apiBase, order);
@@ -2629,7 +2629,7 @@
                     currentLink = mountTextImageLink({ box: fulltextBox, regionEls, parents, scrollContainer: fulltextPanel, revealIds });
                 } else {
                     fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
-                    fulltextBox.classList.add('immersive__fulltext--empty');
+                    fulltextBox.classList.add('-empty');
                 }
             };
 
@@ -2646,7 +2646,7 @@
         const updateFulltextAvail = () => {
             if (!fulltextBtn) return;
             const doublePage = !!(viewer.isDoublePage && viewer.isDoublePage());
-            fulltextBtn.classList.toggle('immersive__tool-btn--disabled', doublePage);
+            fulltextBtn.classList.toggle('-disabled', doublePage);
             fulltextBtn.setAttribute('aria-disabled', String(doublePage));
             fulltextBtn.setAttribute('tabindex', doublePage ? '-1' : '0');
             const title = (doublePage && fulltextBtn.dataset.labelDisabled) || fulltextTitleDefault;
@@ -2833,7 +2833,7 @@
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'immersive__results-item' + (i === searchState.activeIndex ? ' immersive__results-item--active' : '');
+                btn.className = 'immersive__results-item' + (i === searchState.activeIndex ? ' -active' : '');
                 const page = document.createElement('span');
                 page.className = 'immersive__results-page';
                 page.textContent = h.page;
@@ -2943,7 +2943,7 @@
         const input = document.getElementById('immersivePageInput');
         if (!trigger || !dropdown || !list) return;
         if (total < 2) {
-            trigger.classList.add('immersive__title-trigger--static');
+            trigger.classList.add('immersive__title-trigger-static');
             // no dropdown for single-page records: drop the popup semantics announced by the markup
             trigger.removeAttribute('aria-haspopup');
             trigger.removeAttribute('aria-expanded');
@@ -2982,7 +2982,7 @@
             let rovingSet = false;
             items.forEach((btn) => {
                 const on = current.includes(Number(btn.dataset.order));
-                btn.classList.toggle('immersive__page-dropdown-item--active', on);
+                btn.classList.toggle('-active', on);
                 btn.setAttribute('aria-selected', on ? 'true' : 'false');
                 btn.tabIndex = on && !rovingSet ? 0 : -1;
                 if (on) rovingSet = true;
@@ -3015,7 +3015,7 @@
             dropdown.hidden = false;
             trigger.setAttribute('aria-expanded', 'true');
             document.addEventListener('pointerdown', onOutside, true);
-            const active = list.querySelector('.immersive__page-dropdown-item--active');
+            const active = list.querySelector('.-active');
             if (active) {
                 list.scrollTop = Math.max(0, active.offsetTop - list.offsetTop - (list.clientHeight - active.clientHeight) / 2);
             }
@@ -3307,7 +3307,7 @@
                 else if (action === 'double-page') {
                     const on = viewer.toggleDoublePage();
                     btn.setAttribute('aria-pressed', String(on));
-                    btn.classList.toggle('immersive__tool-btn--active', on);
+                    btn.classList.toggle('-active', on);
                     document.querySelector('.immersive__viewer')?.classList.toggle('is-double-page', on);
                     updateFulltextAvail();
                 }

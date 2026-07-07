@@ -14,24 +14,24 @@ import { pickActiveTocPageNo, panelIdForKeyEvent } from './viewerImmersive.mjs';
  */
 export function setupPanels(immersiveRoot, keys) {
     const panelButtons = document.querySelectorAll('[data-immersive-panel]');
-    document.querySelectorAll('.immersive__panel--left').forEach((p) => (p.inert = true));
+    document.querySelectorAll('.immersive__panel-left').forEach((p) => (p.inert = true));
     const syncPanelOpenFlag = () => {
         if (immersiveRoot) {
-            immersiveRoot.classList.toggle('immersive--panel-open', !!document.querySelector('.immersive__panel--left.is-open'));
+            immersiveRoot.classList.toggle('-panel-open', !!document.querySelector('.immersive__panel-left.is-open'));
         }
     };
     const closeHooks = [];
     let activePanelBtn = null;
     const closePanels = (restoreFocus = false) => {
         closeHooks.forEach((hook) => hook());
-        const closedAny = !!document.querySelector('.immersive__panel--left.is-open');
-        document.querySelectorAll('.immersive__panel--left.is-open').forEach((p) => {
+        const closedAny = !!document.querySelector('.immersive__panel-left.is-open');
+        document.querySelectorAll('.immersive__panel-left.is-open').forEach((p) => {
             p.classList.remove('is-open');
             p.setAttribute('aria-hidden', 'true');
             p.inert = true;
         });
         panelButtons.forEach((b) => {
-            b.classList.remove('immersive__tool-btn--active');
+            b.classList.remove('-active');
             b.setAttribute('aria-expanded', 'false');
         });
         syncPanelOpenFlag();
@@ -49,7 +49,7 @@ export function setupPanels(immersiveRoot, keys) {
                 panel.classList.add('is-open');
                 panel.setAttribute('aria-hidden', 'false');
                 panel.inert = false;
-                btn.classList.add('immersive__tool-btn--active');
+                btn.classList.add('-active');
                 btn.setAttribute('aria-expanded', 'true');
                 activePanelBtn = btn;
                 syncPanelOpenFlag();
@@ -72,7 +72,7 @@ export function setupPanels(immersiveRoot, keys) {
     const overlayOpen = () => !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden])');
     keys.register(40, (e) => {
         if (e.key === 'Escape') {
-            if (!document.querySelector('.immersive__panel--left.is-open')) return false;
+            if (!document.querySelector('.immersive__panel-left.is-open')) return false;
             closePanels(true);
             return true;
         }
@@ -121,7 +121,7 @@ export function setupPanelResize(immersiveRoot) {
     handle.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         handle.setPointerCapture(e.pointerId);
-        immersiveRoot.classList.add('immersive--resizing');
+        immersiveRoot.classList.add('-resizing');
         const viewerLeft = immersiveViewer.getBoundingClientRect().left;
         const widthAt = (ev) => clamp(ev.clientX - viewerLeft - RAIL_WIDTH);
         const onMove = (ev) => applyWidth(widthAt(ev));
@@ -129,7 +129,7 @@ export function setupPanelResize(immersiveRoot) {
             handle.releasePointerCapture(e.pointerId);
             handle.removeEventListener('pointermove', onMove);
             handle.removeEventListener('pointerup', onUp);
-            immersiveRoot.classList.remove('immersive--resizing');
+            immersiveRoot.classList.remove('-resizing');
             try {
                 localStorage.setItem(WIDTH_KEY, String(Math.round(widthAt(ev))));
             } catch {}
@@ -148,7 +148,7 @@ export function setupTocCollapseToggle() {
         tocToggle.hidden = false;
         const reflectTocToggle = () => {
             const collapsed = !!tocContainer.querySelector('.widget-toc__element--hidden');
-            tocToggle.classList.toggle('immersive__toc-collapse--collapsed', collapsed);
+            tocToggle.classList.toggle('-collapsed', collapsed);
             tocToggle.setAttribute('aria-expanded', String(!collapsed));
             const label = collapsed ? tocToggle.dataset.labelExpand : tocToggle.dataset.labelCollapse;
             tocToggle.setAttribute('aria-label', label);

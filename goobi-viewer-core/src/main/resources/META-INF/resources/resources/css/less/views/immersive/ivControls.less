@@ -13,7 +13,7 @@
         gap: 2px;
         padding: 4px;
 
-        &--left {
+        &-left {
             top: 0;
             bottom: 0;
             left: 0;
@@ -32,7 +32,7 @@
             }
         }
 
-        &--right {
+        &-right {
             top: @immersive-edge-inset;
             right: @immersive-edge-inset;
             .mx-immersive-floating();
@@ -52,7 +52,7 @@
         }
     }
 
-    &__toolbar-group--grow {
+    &__toolbar-group-grow {
         flex: 1;
     }
 
@@ -68,7 +68,7 @@
         .mx-immersive-icon-button();
     }
 
-    &__tool-btn--active,
+    &__tool-btn.-active,
     &__tool-btn[aria-pressed='true'] {
         background-color: ~'rgba(var(--immersive-accent-rgb), 0.16)';
         color: @immersive-accent;
@@ -80,7 +80,7 @@
         }
     }
 
-    &__tool-btn--disabled {
+    &__tool-btn.-disabled {
         opacity: 0.35;
         cursor: not-allowed;
 
@@ -88,6 +88,36 @@
             background-color: transparent;
             color: @immersive-chrome-fg;
         }
+    }
+
+    &__btn-toc {
+    }
+
+    &__btn-fulltext {
+    }
+
+    &__btn-search {
+    }
+
+    &__btn-metadata {
+    }
+
+    &__btn-download {
+    }
+
+    &__btn-share {
+    }
+
+    &__btn-cite {
+    }
+
+    &__btn-double-page {
+    }
+
+    &__btn-overview {
+    }
+
+    &__btn-fullscreen {
     }
 
     &__tool-icon {
@@ -102,12 +132,12 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    .immersive--panel-open .immersive__toolbar--right {
+    .immersive.-panel-open .immersive__toolbar-right {
         opacity: 0;
         pointer-events: none;
     }
 
-    .immersive__toolbar--right {
+    .immersive__toolbar-right {
         transition: opacity 0.2s ease;
     }
 }

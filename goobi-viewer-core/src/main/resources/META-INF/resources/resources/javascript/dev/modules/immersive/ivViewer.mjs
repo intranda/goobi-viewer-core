@@ -163,7 +163,7 @@ export default class IvViewer {
             const item = this._itemForOrder(r.order);
             if (!item) return [];
             const el = document.createElement('div');
-            el.className = r.active ? 'immersive__highlight immersive__highlight--active' : 'immersive__highlight';
+            el.className = r.active ? 'immersive__highlight -active' : 'immersive__highlight';
             osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
             return [el];
         });
@@ -192,7 +192,7 @@ export default class IvViewer {
         (regions || []).forEach((r) => {
             if (!r.rect) return;
             const el = document.createElement('div');
-            el.className = r.level ? `immersive__text-region immersive__text-region--${r.level}` : 'immersive__text-region';
+            el.className = r.level ? `immersive__text-region immersive__text-region-${r.level}` : 'immersive__text-region';
             el.dataset.ivRegionId = r.id;
             osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
             map.set(r.id, el);

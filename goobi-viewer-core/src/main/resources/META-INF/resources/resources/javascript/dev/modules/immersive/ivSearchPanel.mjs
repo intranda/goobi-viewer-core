@@ -47,7 +47,7 @@ export function setupFulltextSearch(viewer, pi, apiBase) {
             const li = document.createElement('li');
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'immersive__results-item' + (i === searchState.activeIndex ? ' immersive__results-item--active' : '');
+            btn.className = 'immersive__results-item' + (i === searchState.activeIndex ? ' -active' : '');
             const page = document.createElement('span');
             page.className = 'immersive__results-page';
             page.textContent = h.page;

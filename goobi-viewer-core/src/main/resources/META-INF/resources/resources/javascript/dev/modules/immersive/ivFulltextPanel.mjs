@@ -43,7 +43,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels) {
             clearFulltextLink();
             if (fulltextLoader) fulltextLoader.hidden = false;
             fulltextBox.textContent = '';
-            fulltextBox.classList.remove('immersive__fulltext--empty');
+            fulltextBox.classList.remove('-empty');
             let blocks = null;
             try {
                 blocks = await loadPageTextLevels(pi, apiBase, order);
@@ -61,7 +61,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels) {
                 currentLink = mountTextImageLink({ box: fulltextBox, regionEls, parents, scrollContainer: fulltextPanel, revealIds });
             } else {
                 fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
-                fulltextBox.classList.add('immersive__fulltext--empty');
+                fulltextBox.classList.add('-empty');
             }
         };
 
@@ -78,7 +78,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels) {
     const updateFulltextAvail = () => {
         if (!fulltextBtn) return;
         const doublePage = !!(viewer.isDoublePage && viewer.isDoublePage());
-        fulltextBtn.classList.toggle('immersive__tool-btn--disabled', doublePage);
+        fulltextBtn.classList.toggle('-disabled', doublePage);
         fulltextBtn.setAttribute('aria-disabled', String(doublePage));
         fulltextBtn.setAttribute('tabindex', doublePage ? '-1' : '0');
         const title = (doublePage && fulltextBtn.dataset.labelDisabled) || fulltextTitleDefault;

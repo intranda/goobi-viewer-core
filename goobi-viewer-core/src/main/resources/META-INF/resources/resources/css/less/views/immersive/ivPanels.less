@@ -23,7 +23,7 @@
         box-shadow: @immersive-panel-shadow;
         transition: transform 0.25s ease;
 
-        &--left {
+        &-left {
             left: @immersive-rail-width;
             transform: translateX(calc(-100% - @immersive-rail-width));
 
@@ -124,13 +124,13 @@
         max-width: none;
     }
 
-    .immersive--panel-open .immersive__panel-resize-handle {
+    .immersive.-panel-open .immersive__panel-resize-handle {
         display: none;
     }
 }
 
 @media (hover: none) {
-    .immersive--panel-open .immersive__panel-resize-handle {
+    .immersive.-panel-open .immersive__panel-resize-handle {
         display: none;
     }
 }

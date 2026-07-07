@@ -13,9 +13,9 @@ function mountMarkup() {
             <button data-immersive-panel="immersivePanelMenu" aria-expanded="false"></button>
             <button data-immersive-panel="immersivePanelSearch" aria-expanded="false"></button>
             <button data-immersive-panel="immersivePanelMetadata" aria-expanded="false" aria-disabled="true"></button>
-            <aside id="immersivePanelMenu" class="immersive__panel immersive__panel--left" aria-hidden="true"></aside>
-            <aside id="immersivePanelSearch" class="immersive__panel immersive__panel--left" aria-hidden="true"></aside>
-            <aside id="immersivePanelMetadata" class="immersive__panel immersive__panel--left" aria-hidden="true"></aside>
+            <aside id="immersivePanelMenu" class="immersive__panel immersive__panel-left" aria-hidden="true"></aside>
+            <aside id="immersivePanelSearch" class="immersive__panel immersive__panel-left" aria-hidden="true"></aside>
+            <aside id="immersivePanelMetadata" class="immersive__panel immersive__panel-left" aria-hidden="true"></aside>
         </div>`;
     const root = document.querySelector('.immersive');
     const keys = createKeyDispatcher();
@@ -40,7 +40,7 @@ describe('setupPanels', () => {
         expect(panel('immersivePanelMenu').getAttribute('aria-hidden')).toBe('false');
         expect(panel('immersivePanelMenu').inert).toBe(false);
         expect(btn('immersivePanelMenu').getAttribute('aria-expanded')).toBe('true');
-        expect(root.classList.contains('immersive--panel-open')).toBe(true);
+        expect(root.classList.contains('-panel-open')).toBe(true);
     });
 
     test('clicking another button switches panels; clicking the same button closes', () => {
@@ -51,7 +51,7 @@ describe('setupPanels', () => {
         expect(panel('immersivePanelSearch').classList.contains('is-open')).toBe(true);
         btn('immersivePanelSearch').click();
         expect(panel('immersivePanelSearch').classList.contains('is-open')).toBe(false);
-        expect(root.classList.contains('immersive--panel-open')).toBe(false);
+        expect(root.classList.contains('-panel-open')).toBe(false);
     });
 
     test('an aria-disabled button is a no-op', () => {

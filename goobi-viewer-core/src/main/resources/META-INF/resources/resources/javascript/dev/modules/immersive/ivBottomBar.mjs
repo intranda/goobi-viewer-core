@@ -57,7 +57,7 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
             else if (action === 'double-page') {
                 const on = viewer.toggleDoublePage();
                 btn.setAttribute('aria-pressed', String(on));
-                btn.classList.toggle('immersive__tool-btn--active', on);
+                btn.classList.toggle('-active', on);
                 document.querySelector('.immersive__viewer')?.classList.toggle('is-double-page', on);
                 updateFulltextAvail();
             }

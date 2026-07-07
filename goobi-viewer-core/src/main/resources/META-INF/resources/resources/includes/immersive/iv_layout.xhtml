@@ -61,7 +61,7 @@
             </div>
 
             <!-- LEFT TOOLBAR -->
-            <div class="immersive__toolbar immersive__toolbar--left">
+            <div class="immersive__toolbar immersive__toolbar-left">
                 <!-- BACK TO SEARCH RESULTS -->
                 <ui:fragment rendered="#{searchBean.hitsCount > 0}">
                     <div class="immersive__toolbar-group">
@@ -76,11 +76,11 @@
                         </a>
                     </div>
                 </ui:fragment>
-                <div class="immersive__toolbar-group immersive__toolbar-group--grow">
+                <div class="immersive__toolbar-group immersive__toolbar-group-grow">
                     <!-- TOC -->
                     <button
                         type="button"
-                        class="immersive__tool-btn"
+                        class="immersive__tool-btn immersive__btn-toc"
                         data-immersive-panel="immersivePanelMenu"
                         aria-controls="immersivePanelMenu"
                         aria-expanded="false"
@@ -94,7 +94,7 @@
                     <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
                         <button
                             type="button"
-                            class="immersive__tool-btn"
+                            class="immersive__tool-btn immersive__btn-fulltext"
                             data-immersive-panel="immersivePanelFulltext"
                             data-label-disabled="#{msg.fulltextOnlySinglePage}"
                             aria-controls="immersivePanelFulltext"
@@ -109,7 +109,7 @@
                     <!-- SEARCH -->
                     <button
                         type="button"
-                        class="immersive__tool-btn"
+                        class="immersive__tool-btn immersive__btn-search"
                         data-immersive-panel="immersivePanelSearch"
                         aria-controls="immersivePanelSearch"
                         aria-expanded="false"
@@ -122,7 +122,7 @@
                     <!-- METADATA -->
                     <button
                         type="button"
-                        class="immersive__tool-btn"
+                        class="immersive__tool-btn immersive__btn-metadata"
                         data-immersive-panel="immersivePanelMetadata"
                         aria-controls="immersivePanelMetadata"
                         aria-expanded="false"
@@ -152,7 +152,7 @@
             <!-- TOC PANEL -->
             <aside
                 id="immersivePanelMenu"
-                class="immersive__panel immersive__panel--left immersive__panel--menu"
+                class="immersive__panel immersive__panel-left immersive__panel-menu"
                 aria-label="#{msg.toc}"
                 aria-hidden="true"
                 inert="inert">
@@ -169,10 +169,10 @@
                         hidden="hidden">
                         <util:icon
                             icon="square-rounded-minus"
-                            svgClass="immersive__toc-collapse-icon immersive__toc-collapse-icon--collapse" />
+                            svgClass="immersive__toc-collapse-icon immersive__toc-collapse-icon-collapse" />
                         <util:icon
                             icon="square-rounded-plus"
-                            svgClass="immersive__toc-collapse-icon immersive__toc-collapse-icon--expand" />
+                            svgClass="immersive__toc-collapse-icon immersive__toc-collapse-icon-expand" />
                     </button>
                 </div>
                 <widgetComponent:widget_toc />
@@ -180,7 +180,7 @@
             <!-- METADATA PANEL -->
             <aside
                 id="immersivePanelMetadata"
-                class="immersive__panel immersive__panel--left immersive__panel--metadata"
+                class="immersive__panel immersive__panel-left immersive__panel-metadata"
                 aria-label="#{msg.metadata}"
                 aria-hidden="true"
                 inert="inert">
@@ -239,7 +239,7 @@
             <!-- SEARCH PANEL -->
             <aside
                 id="immersivePanelSearch"
-                class="immersive__panel immersive__panel--left"
+                class="immersive__panel immersive__panel-left"
                 aria-label="#{msg.search}"
                 aria-hidden="true"
                 inert="inert">
@@ -291,7 +291,7 @@
             <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
                 <aside
                     id="immersivePanelFulltext"
-                    class="immersive__panel immersive__panel--left immersive__panel--fulltext"
+                    class="immersive__panel immersive__panel-left immersive__panel-fulltext"
                     aria-label="#{msg.fulltext}"
                     aria-hidden="true"
                     inert="inert">
@@ -302,9 +302,9 @@
                         class="immersive__fulltext-legend"
                         title="#{msg.fulltext__granularity_label}">
                         <dt class="sr-only">#{msg.fulltext__granularity_label}</dt>
-                        <dd class="immersive__fulltext-legend-item immersive__fulltext-legend-item--block">#{msg.fulltext__granularity_block}</dd>
-                        <dd class="immersive__fulltext-legend-item immersive__fulltext-legend-item--line">#{msg.fulltext__granularity_line}</dd>
-                        <dd class="immersive__fulltext-legend-item immersive__fulltext-legend-item--word">#{msg.fulltext__granularity_word}</dd>
+                        <dd class="immersive__fulltext-legend-item immersive__fulltext-legend-item-block">#{msg.fulltext__granularity_block}</dd>
+                        <dd class="immersive__fulltext-legend-item immersive__fulltext-legend-item-line">#{msg.fulltext__granularity_line}</dd>
+                        <dd class="immersive__fulltext-legend-item immersive__fulltext-legend-item-word">#{msg.fulltext__granularity_word}</dd>
                     </dl>
                     <div
                         class="immersive__fulltext-loader"
@@ -355,7 +355,7 @@
             <!-- PAGE-TURN CHEVRONS -->
             <button
                 type="button"
-                class="immersive__chevron immersive__chevron--left"
+                class="immersive__chevron immersive__chevron-left"
                 data-immersive-page="prev"
                 aria-label="#{msg.prevImage}">
                 <util:icon
@@ -364,7 +364,7 @@
             </button>
             <button
                 type="button"
-                class="immersive__chevron immersive__chevron--right"
+                class="immersive__chevron immersive__chevron-right"
                 data-immersive-page="next"
                 aria-label="#{msg.nextImage}">
                 <util:icon
@@ -373,7 +373,7 @@
             </button>
 
             <!-- RIGHT TOOLBAR -->
-            <div class="immersive__toolbar immersive__toolbar--right">
+            <div class="immersive__toolbar immersive__toolbar-right">
                 <!-- ACTIONS -->
                 <h:panelGroup
                     layout="block"
@@ -382,7 +382,7 @@
                     <!-- DOWNLOAD PDF -->
                     <ui:fragment rendered="#{activeDocumentBean.accessPermissionPdf}">
                         <a
-                            class="immersive__tool-btn"
+                            class="immersive__tool-btn immersive__btn-download"
                             href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
                             target="_blank"
                             rel="noopener"
@@ -397,7 +397,7 @@
                     <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
                         <button
                             type="button"
-                            class="immersive__tool-btn"
+                            class="immersive__tool-btn immersive__btn-share"
                             data-popover-element="#immersiveSharePopover"
                             data-popover-placement="left"
                             data-popover-dismiss="click-outside"
@@ -415,7 +415,7 @@
                     <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
                         <button
                             type="button"
-                            class="immersive__tool-btn"
+                            class="immersive__tool-btn immersive__btn-cite"
                             data-popover-element="#immersiveCitationPopover"
                             data-popover-placement="left"
                             data-popover-dismiss="click-outside"
@@ -439,7 +439,7 @@
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
                         <button
                             type="button"
-                            class="immersive__tool-btn"
+                            class="immersive__tool-btn immersive__btn-double-page"
                             data-immersive-action="double-page"
                             aria-pressed="false"
                             title="#{msg.doublePageView}"
@@ -453,7 +453,7 @@
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
                         <button
                             type="button"
-                            class="immersive__tool-btn"
+                            class="immersive__tool-btn immersive__btn-overview"
                             data-immersive-action="overview"
                             aria-haspopup="dialog"
                             aria-expanded="false"
@@ -467,7 +467,7 @@
                     <!-- FULLSCREEN -->
                     <button
                         type="button"
-                        class="immersive__tool-btn"
+                        class="immersive__tool-btn immersive__btn-fullscreen"
                         data-immersive-action="fullscreen"
                         data-label-enter="#{msg.fullscreen_enter}"
                         data-label-exit="#{msg.fullscreen_exit}"
@@ -624,7 +624,7 @@
                     </label>
                     <util:icon
                         icon="photo"
-                        svgClass="immersive__grid-size-icon immersive__grid-size-icon--small" />
+                        svgClass="immersive__grid-size-icon immersive__grid-size-icon-small" />
                     <input
                         type="range"
                         id="immersiveGridSize"
@@ -638,7 +638,7 @@
                         data-label-large="#{msg.label__size_large}" />
                     <util:icon
                         icon="photo"
-                        svgClass="immersive__grid-size-icon immersive__grid-size-icon--large" />
+                        svgClass="immersive__grid-size-icon immersive__grid-size-icon-large" />
                 </div>
                 <div class="immersive__grid-scroll">
                     <div

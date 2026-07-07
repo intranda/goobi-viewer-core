@@ -39,7 +39,7 @@ export function setupShortcutsModal(closePanels, keys) {
     const focusables = () =>
         Array.from(overlay.querySelectorAll('a[href],button,input,[tabindex]:not([tabindex="-1"])')).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
     const otherOverlayOpen = () =>
-        !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel--left.is-open, .popover.show');
+        !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel-left.is-open, .popover.show');
     const openShortcuts = () => {
         if (!overlay.hidden || otherOverlayOpen()) return;
         opener = document.activeElement;

@@ -54,7 +54,7 @@ describe('setupShortcutsModal', () => {
     test("'?' while another immersive overlay is open does not open the modal", () => {
         const { keys, overlay } = mountMarkup();
         const panel = document.createElement('aside');
-        panel.className = 'immersive__panel--left is-open';
+        panel.className = 'immersive__panel-left is-open';
         document.body.appendChild(panel);
         expect(keys.handleEvent(question())).toBe(false);
         expect(overlay.hidden).toBe(true);

@@ -42,7 +42,7 @@ describe('setupPageDropdown', () => {
     test('single-page records get a static trigger without popup semantics', () => {
         const { trigger, list } = mountMarkup();
         setupPageDropdown(fakeViewer(1), [''], createKeyDispatcher());
-        expect(trigger.classList.contains('immersive__title-trigger--static')).toBe(true);
+        expect(trigger.classList.contains('immersive__title-trigger-static')).toBe(true);
         expect(trigger.hasAttribute('aria-haspopup')).toBe(false);
         expect(trigger.hasAttribute('aria-controls')).toBe(false);
         expect(list.children).toHaveLength(0);

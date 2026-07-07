@@ -18,7 +18,7 @@ export function setupPageDropdown(viewer, labels, keys) {
     const input = document.getElementById('immersivePageInput');
     if (!trigger || !dropdown || !list) return;
     if (total < 2) {
-        trigger.classList.add('immersive__title-trigger--static');
+        trigger.classList.add('immersive__title-trigger-static');
         // no dropdown for single-page records: drop the popup semantics announced by the markup
         trigger.removeAttribute('aria-haspopup');
         trigger.removeAttribute('aria-expanded');
@@ -57,7 +57,7 @@ export function setupPageDropdown(viewer, labels, keys) {
         let rovingSet = false;
         items.forEach((btn) => {
             const on = current.includes(Number(btn.dataset.order));
-            btn.classList.toggle('immersive__page-dropdown-item--active', on);
+            btn.classList.toggle('-active', on);
             btn.setAttribute('aria-selected', on ? 'true' : 'false');
             btn.tabIndex = on && !rovingSet ? 0 : -1;
             if (on) rovingSet = true;
@@ -90,7 +90,7 @@ export function setupPageDropdown(viewer, labels, keys) {
         dropdown.hidden = false;
         trigger.setAttribute('aria-expanded', 'true');
         document.addEventListener('pointerdown', onOutside, true);
-        const active = list.querySelector('.immersive__page-dropdown-item--active');
+        const active = list.querySelector('.-active');
         if (active) {
             list.scrollTop = Math.max(0, active.offsetTop - list.offsetTop - (list.clientHeight - active.clientHeight) / 2);
         }
