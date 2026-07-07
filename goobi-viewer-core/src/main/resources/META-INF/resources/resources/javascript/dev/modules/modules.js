@@ -967,6 +967,7 @@
             this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
             this.onPageChange = new Emitter();
             this.onLoaded = new Emitter();
+            this.onOpen = new Emitter();
 
             this.viewer = new ImageView.Image({
                 element: opts.element,
@@ -1363,7 +1364,9 @@
         /**
          * Loads the page(s) for `order` via the library (a single page, or a columns:2
          * spread in double mode) and captures the single-page fit anchor. Used for the
-         * initial open, mode toggles and every double-page spread change.
+         * initial open, mode toggles and every double-page spread change. Emits
+         * `onOpen` once the library has settled, so consumers bound to the library's
+         * per-load event pipeline (image filters) can re-attach.
          */
         _open(order) {
             const pages = this.double ? computeSpread(order, this.total) : [order];
@@ -1379,6 +1382,7 @@
                 }
                 this._preloaded.clear();
                 this._emit();
+                this.onOpen.emit(this.current);
             });
         }
 
@@ -3334,8 +3338,58 @@
      */
     function mountImageFilters(viewer) {
         if (!document.querySelector('imageFilters') || !window.immersiveFilterConfig) return false;
-        riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
+        const [tag] = riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
+        if (tag) bindImageFiltersRendering(viewer, tag);
         return true;
+    }
+
+    /**
+     * Replaces the library's per-filter event subscriptions with one direct OSD
+     * handler that applies every active filter exactly once per drawn frame.
+     *
+     * The library re-runs its observable wiring on every load() (each double-page
+     * toggle) and stacks another 'update-viewport' forwarder onto the SAME
+     * OpenSeadragon instance without ever tearing the old ones down, so a filter
+     * subscribed through that chain runs N+1 times per frame after N reopens and
+     * compounds its own output onto the already-filtered canvas (contrast^N).
+     * Applying the filter methods ourselves from a single handler sidesteps the
+     * chain entirely; the tag's start/close/isActive/apply are rebased onto a
+     * plain active-set so its UI logic (checkboxes, precludes, reset) keeps working.
+     */
+    function bindImageFiltersRendering(viewer, tag) {
+        const image = viewer.viewer;
+        const redraw = () => image.openseadragon.forceRedraw();
+        const active = new Set();
+        (tag.filters || []).forEach((filter) => {
+            filter.start = () => {
+                active.add(filter);
+                redraw();
+            };
+            filter.close = () => {
+                active.delete(filter);
+                redraw();
+            };
+            filter.isActive = () => active.has(filter);
+            filter.apply = redraw;
+        });
+        const renderFilters = () => {
+            if (!active.size) return;
+            const context = image.getCanvasContext();
+            if (!context) return;
+            let data = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+            active.forEach((filter) => {
+                data = filter.filterMethod(data) || data;
+            });
+            context.putImageData(data, 0, 0);
+        };
+        let boundOsd = null;
+        const attach = () => {
+            if (!image.openseadragon || boundOsd === image.openseadragon) return;
+            boundOsd = image.openseadragon;
+            boundOsd.addHandler('update-viewport', renderFilters);
+        };
+        attach();
+        viewer.onOpen.subscribe(attach);
     }
 
     /** Toggles native browser fullscreen on the immersive viewer hero (Esc exits). */

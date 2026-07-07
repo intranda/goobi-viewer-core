@@ -502,3 +502,45 @@ describe('IvViewer preloading', () => {
         expect(osd.world.removeItem).toHaveBeenCalledWith(itemB);
     });
 });
+
+describe('IvViewer onOpen (library reload signal for filter re-sync)', () => {
+    beforeEach(() => {
+        mockImageView();
+        jest.spyOn(IvViewer.prototype, '_refreshPreload').mockImplementation(() => {});
+        // jsdom has no fetch; the info.json warm-up is irrelevant here
+        jest.spyOn(IvViewer.prototype, '_prefetchAround').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+        delete global.ImageView;
+    });
+
+    test('emits after the initial open and after every double-page reopen', async () => {
+        const v = new IvViewer({ element: {}, services: services(6), startOrder: 0, navWatchdogMs: 10 });
+        const opened = jest.fn();
+        v.onOpen.subscribe(opened);
+        await flush();
+        expect(opened).toHaveBeenCalledTimes(1);
+
+        v.toggleDoublePage();
+        await flush();
+        expect(opened).toHaveBeenCalledTimes(2);
+
+        v.toggleDoublePage();
+        await flush();
+        expect(opened).toHaveBeenCalledTimes(3);
+    });
+
+    test('does not emit for single-page crossfade navigation (no library reload)', async () => {
+        const v = new IvViewer({ element: {}, services: services(6), startOrder: 0, navWatchdogMs: 10 });
+        const opened = jest.fn();
+        v.onOpen.subscribe(opened);
+        await flush();
+        expect(opened).toHaveBeenCalledTimes(1);
+
+        v.goToPage(1);
+        await new Promise((resolve) => setTimeout(resolve, 30));
+        expect(opened).toHaveBeenCalledTimes(1);
+    });
+});

@@ -104,6 +104,7 @@ export default class IvViewer {
         this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
         this.onPageChange = new Emitter();
         this.onLoaded = new Emitter();
+        this.onOpen = new Emitter();
 
         this.viewer = new ImageView.Image({
             element: opts.element,
@@ -500,7 +501,9 @@ export default class IvViewer {
     /**
      * Loads the page(s) for `order` via the library (a single page, or a columns:2
      * spread in double mode) and captures the single-page fit anchor. Used for the
-     * initial open, mode toggles and every double-page spread change.
+     * initial open, mode toggles and every double-page spread change. Emits
+     * `onOpen` once the library has settled, so consumers bound to the library's
+     * per-load event pipeline (image filters) can re-attach.
      */
     _open(order) {
         const pages = this.double ? computeSpread(order, this.total) : [order];
@@ -516,6 +519,7 @@ export default class IvViewer {
             }
             this._preloaded.clear();
             this._emit();
+            this.onOpen.emit(this.current);
         });
     }
 
