@@ -135,9 +135,21 @@ function initImmersiveViewer(el) {
     setupImmersivePopoverA11y();
     setupShortcutsModal(closePanels);
 
+    // Stage loading indicator (same pattern as the thumbnail grid): hidden once
+    // the first tile has been painted, with a timeout and init-failure fallback.
+    const stageLoader = document.getElementById('immersiveStageLoader');
+    let stageLoaderDone = false;
+    const hideStageLoader = () => {
+        if (stageLoaderDone) return;
+        stageLoaderDone = true;
+        if (stageLoader) stageLoader.hidden = true;
+    };
+    setTimeout(hideStageLoader, STAGE_LOADER_TIMEOUT_MS);
+
     loadPageServices(pi, apiBase)
         .then((services) => {
             const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
+            viewer.viewer.openseadragon.addOnceHandler('tile-loaded', hideStageLoader);
             window.ivViewer = viewer;
             attachUrlSync(viewer, pi);
             bindImageFiltersMount(viewer);
@@ -301,8 +313,14 @@ function initImmersiveViewer(el) {
 
             setupTocSync(viewer);
         })
-        .catch((e) => console.error('immersive viewer init failed', e));
+        .catch((e) => {
+            hideStageLoader();
+            console.error('immersive viewer init failed', e);
+        });
 }
+
+/** Hides the stage loading indicator at the latest after this, even without a painted tile. */
+const STAGE_LOADER_TIMEOUT_MS = 8000;
 
 /** First visible page as 0-based order (the leading page of a double-page spread). */
 function currentOrder(viewer) {

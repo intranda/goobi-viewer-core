@@ -28,13 +28,23 @@
         width: 100%;
         height: 100%;
 
-        /* The theme's keyboard-focus rule (body.using-keyboard :focus-visible)
-           lifts any focused element to z-index 9999 (!important); on the
-           stage-filling OSD canvas that buries every floating bar until focus
-           moves on. Mirroring its body context outranks it; the ring stays. */
         .openseadragon-canvas:focus-visible,
         body.using-keyboard & .openseadragon-canvas:focus-visible {
             z-index: 1 !important;
+        }
+    }
+
+    &__stage-loader {
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+
+        &[hidden] {
+            display: none;
         }
     }
 

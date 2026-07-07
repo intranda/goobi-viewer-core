@@ -14,6 +14,20 @@
         data-start-order="#{activeDocumentBean.viewManager.currentImageOrder - 1}"
         data-max-zoom="#{activeDocumentBean.viewManager.currentPage.getMaxImageZoom(navigationHelper.currentPageType)}" />
 
+    <!-- Server-rendered so it also covers the time before the scripts run;
+         modules.mjs hides it once the first tile has been painted. -->
+    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+        <div
+            id="immersiveStageLoader"
+            class="immersive__stage-loader"
+            role="status">
+            <img
+                src="#{request.contextPath}/resources/images/infinity_loader.svg"
+                class="ajax-loader__animated-image"
+                alt="" />
+        </div>
+    </ui:fragment>
+
     <!-- provides the global ImageView (OpenSeadragon) used by IvViewer -->
     <script
         type="text/javascript"
