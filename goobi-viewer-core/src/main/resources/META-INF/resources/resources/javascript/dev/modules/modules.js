@@ -2170,6 +2170,54 @@
         return !!element.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])');
     }
 
+    /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-4 map onto this. */
+    const PANEL_SHORTCUT_IDS = ['immersivePanelMenu', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata'];
+
+    /**
+     * The rail panel an Alt+digit shortcut toggles: Alt+1-4 address the panels in
+     * toolbar order (TOC, fulltext, search, metadata). Matches on `code`, not
+     * `key`, because macOS Option+digit produces characters ('¡', '™', …); bare
+     * digits are deliberately no shortcut (WCAG 2.1.4 discourages printable
+     * single-character shortcuts) and Ctrl/Cmd combinations stay with the browser.
+     * Pure + tested.
+     *
+     * @param {{altKey:boolean, ctrlKey:boolean, metaKey:boolean, code:string}} event
+     * @returns {string|null} panel element id, or null
+     */
+    function panelIdForKeyEvent({ altKey, ctrlKey, metaKey, code }) {
+        if (!altKey || ctrlKey || metaKey) return null;
+        const index = ['Digit1', 'Digit2', 'Digit3', 'Digit4'].indexOf(code);
+        return index === -1 ? null : PANEL_SHORTCUT_IDS[index];
+    }
+
+    /**
+     * Whether a platform string names an Apple platform, where modifier keys are
+     * conventionally shown as symbols (⌥, ⇧) instead of their PC names.
+     * Pure + tested.
+     *
+     * @param {string} [platform]  navigator.userAgentData?.platform or navigator.platform
+     * @returns {boolean}
+     */
+    function isMacPlatform(platform) {
+        return /mac|iphone|ipad|ipod/i.test(platform || '');
+    }
+
+    /**
+     * Mac display variant of a modifier key: the Apple symbol for the keycap and
+     * the spoken name for assistive technology. Null for keys that read the same
+     * on every platform. Pure + tested.
+     *
+     * @param {string} key  lowercase modifier name from a `data-key` attribute
+     * @returns {{text:string, label:string}|null}
+     */
+    function macKeyLabel(key) {
+        const labels = {
+            alt: { text: '⌥', label: 'Option' },
+            shift: { text: '⇧', label: 'Shift' },
+        };
+        return labels[key] || null;
+    }
+
     window.ShareImageFragment = ShareImageFragment;
 
     window.zoomableImageLoaded = new rxjs.Subject();
@@ -2269,6 +2317,16 @@
             if (document.querySelector('.immersive__panel--left.is-open')) {
                 closePanels(true);
             }
+        });
+        // Alt+1-4 toggles the rail panels;
+        document.addEventListener('keydown', (e) => {
+            const panelId = panelIdForKeyEvent(e);
+            if (!panelId) return;
+            if (document.querySelector('#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden])')) return;
+            const btn = document.querySelector(`[data-immersive-panel="${panelId}"]`);
+            if (!btn) return;
+            e.preventDefault();
+            btn.click();
         });
 
         setupPanelResize(immersiveRoot);
@@ -3024,6 +3082,15 @@
         const overlay = document.getElementById('immersiveShortcuts');
         const trigger = document.querySelector('[data-immersive-shortcuts-trigger]');
         if (!overlay || !trigger) return;
+        // On Apple platforms modifiers are conventionally shown as symbols (⌥, ⇧);
+        if (isMacPlatform(navigator.userAgentData?.platform ?? navigator.platform)) {
+            overlay.querySelectorAll('kbd[data-key]').forEach((kbd) => {
+                const mac = macKeyLabel(kbd.dataset.key);
+                if (!mac) return;
+                kbd.textContent = mac.text;
+                kbd.setAttribute('aria-label', mac.label);
+            });
+        }
         const dialog = overlay.querySelector('.immersive__shortcuts-dialog');
         const closeBtn = overlay.querySelector('.immersive__shortcuts-close');
         let opener = null;

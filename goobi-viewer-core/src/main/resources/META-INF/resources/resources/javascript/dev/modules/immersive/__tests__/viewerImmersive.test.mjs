@@ -15,6 +15,9 @@ import {
     writeThumbSizeStep,
     THUMB_SIZE_KEY,
     isTypingTarget,
+    panelIdForKeyEvent,
+    isMacPlatform,
+    macKeyLabel,
 } from '../viewerImmersive.mjs';
 
 // ---------------------------------------------------------------------------
@@ -232,5 +235,70 @@ describe('isTypingTarget', function () {
         expect(isTypingTarget(document.body)).toBe(false);
         expect(isTypingTarget(document)).toBe(false);
         expect(isTypingTarget(null)).toBe(false);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// panelIdForKeyEvent
+// ---------------------------------------------------------------------------
+
+describe('panelIdForKeyEvent', function () {
+    const altDigit = (code) => ({ altKey: true, ctrlKey: false, metaKey: false, code });
+
+    test('maps Alt+1-4 to the rail panels in toolbar order (TOC, fulltext, search, metadata)', function () {
+        expect(panelIdForKeyEvent(altDigit('Digit1'))).toBe('immersivePanelMenu');
+        expect(panelIdForKeyEvent(altDigit('Digit2'))).toBe('immersivePanelFulltext');
+        expect(panelIdForKeyEvent(altDigit('Digit3'))).toBe('immersivePanelSearch');
+        expect(panelIdForKeyEvent(altDigit('Digit4'))).toBe('immersivePanelMetadata');
+    });
+
+    test('bare digits are no shortcut (WCAG 2.1.4: no printable single-character shortcuts)', function () {
+        expect(panelIdForKeyEvent({ altKey: false, ctrlKey: false, metaKey: false, code: 'Digit1' })).toBeNull();
+    });
+
+    test('Ctrl/Cmd combinations stay with the browser (tab switching)', function () {
+        expect(panelIdForKeyEvent({ altKey: true, ctrlKey: true, metaKey: false, code: 'Digit1' })).toBeNull();
+        expect(panelIdForKeyEvent({ altKey: true, ctrlKey: false, metaKey: true, code: 'Digit1' })).toBeNull();
+    });
+
+    test('numpad digits and other codes are ignored (Alt+numpad types characters on Windows)', function () {
+        expect(panelIdForKeyEvent(altDigit('Numpad1'))).toBeNull();
+        expect(panelIdForKeyEvent(altDigit('Digit5'))).toBeNull();
+        expect(panelIdForKeyEvent(altDigit('KeyA'))).toBeNull();
+        expect(panelIdForKeyEvent(altDigit(undefined))).toBeNull();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// isMacPlatform / macKeyLabel
+// ---------------------------------------------------------------------------
+
+describe('isMacPlatform', function () {
+    test('true for Apple platforms (macOS, iPadOS/iOS hardware keyboards)', function () {
+        expect(isMacPlatform('MacIntel')).toBe(true);
+        expect(isMacPlatform('macOS')).toBe(true);
+        expect(isMacPlatform('iPad')).toBe(true);
+        expect(isMacPlatform('iPhone')).toBe(true);
+    });
+
+    test('false for Windows, Linux and unknown values', function () {
+        expect(isMacPlatform('Win32')).toBe(false);
+        expect(isMacPlatform('Windows')).toBe(false);
+        expect(isMacPlatform('Linux x86_64')).toBe(false);
+        expect(isMacPlatform('')).toBe(false);
+        expect(isMacPlatform(undefined)).toBe(false);
+    });
+});
+
+describe('macKeyLabel', function () {
+    test('maps modifier names to their Mac symbol plus accessible name', function () {
+        expect(macKeyLabel('alt')).toEqual({ text: '⌥', label: 'Option' });
+        expect(macKeyLabel('shift')).toEqual({ text: '⇧', label: 'Shift' });
+    });
+
+    test('returns null for keys without a Mac-specific label', function () {
+        expect(macKeyLabel('r')).toBeNull();
+        expect(macKeyLabel('')).toBeNull();
+        expect(macKeyLabel(undefined)).toBeNull();
     });
 });

@@ -5,7 +5,18 @@ import IvViewer from './immersive/ivViewer.mjs';
 import { loadPageServices, loadPageLabels, loadPageTextLevels, flattenTextLevels } from './immersive/ivManifestSource.mjs';
 import { buildTextLevels, mountTextImageLink, offsetTopWithin } from './immersive/ivTextImageLink.mjs';
 import { search, nextIndex, prevIndex } from './immersive/ivFulltextSearch.mjs';
-import { attachUrlSync, pickActiveTocPageNo, normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX, isTypingTarget } from './immersive/viewerImmersive.mjs';
+import {
+    attachUrlSync,
+    pickActiveTocPageNo,
+    normalizeThumbSizeStep,
+    readThumbSizeStep,
+    writeThumbSizeStep,
+    THUMB_SIZE_MAX,
+    isTypingTarget,
+    panelIdForKeyEvent,
+    isMacPlatform,
+    macKeyLabel,
+} from './immersive/viewerImmersive.mjs';
 
 window.ShareImageFragment = ShareImageFragment;
 
@@ -106,6 +117,16 @@ function initImmersiveViewer(el) {
         if (document.querySelector('.immersive__panel--left.is-open')) {
             closePanels(true);
         }
+    });
+    // Alt+1-4 toggles the rail panels; 
+    document.addEventListener('keydown', (e) => {
+        const panelId = panelIdForKeyEvent(e);
+        if (!panelId) return;
+        if (document.querySelector('#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden])')) return;
+        const btn = document.querySelector(`[data-immersive-panel="${panelId}"]`);
+        if (!btn) return;
+        e.preventDefault();
+        btn.click();
     });
 
     setupPanelResize(immersiveRoot);
@@ -863,6 +884,15 @@ function setupShortcutsModal(closePanels) {
     const overlay = document.getElementById('immersiveShortcuts');
     const trigger = document.querySelector('[data-immersive-shortcuts-trigger]');
     if (!overlay || !trigger) return;
+    // On Apple platforms modifiers are conventionally shown as symbols (⌥, ⇧);
+    if (isMacPlatform(navigator.userAgentData?.platform ?? navigator.platform)) {
+        overlay.querySelectorAll('kbd[data-key]').forEach((kbd) => {
+            const mac = macKeyLabel(kbd.dataset.key);
+            if (!mac) return;
+            kbd.textContent = mac.text;
+            kbd.setAttribute('aria-label', mac.label);
+        });
+    }
     const dialog = overlay.querySelector('.immersive__shortcuts-dialog');
     const closeBtn = overlay.querySelector('.immersive__shortcuts-close');
     let opener = null;
