@@ -1402,6 +1402,9 @@ public final class SearchHelper {
                 }
                 String searchTerm = SearchHelper.removeTruncation(term);
                 searchTerm = StringTools.removeQuotations(searchTerm);
+                // Un-escape Solr-escaped characters (e.g. "\-" -> "-") so the term matches the
+                // unescaped fulltext; extraction keeps the escaped form for the Solr expand query.
+                searchTerm = searchTerm.replaceAll("\\\\(.)", "$1");
                 // logger.trace("term: {}", searchTerm); //NOSONAR Debug
                 // Stopwords do not get pre-filtered out when doing a phrase search
                 if (searchTerm.contains(" ")) {
@@ -1634,6 +1637,9 @@ public final class SearchHelper {
                 continue;
             }
             term = SearchHelper.removeTruncation(term);
+            // Un-escape Solr-escaped characters (e.g. "\-" -> "-") so the term matches the
+            // unescaped metadata value; extraction keeps the escaped form for the Solr expand query.
+            term = term.replaceAll("\\\\(.)", "$1");
             String normalizedPhrase = normalizeString(phrase);
             String normalizedTerm = normalizeString(term);
             if (contains(normalizedPhrase, normalizedTerm, fuzzyTerm.getMaxDistance())) {

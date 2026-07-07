@@ -1403,6 +1403,20 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#applyHighlightingToPhrase(String, Set<String>)
+     * @verifies highlight terms containing escaped special characters
+     */
+    @Test
+    void applyHighlightingToPhrase_shouldHighlightTermsContainingEscapedSpecialCharacters() {
+        String phrase = "David Ben-Gurion";
+        String expected = "David " + SearchHelper.PLACEHOLDER_HIGHLIGHTING_START + "Ben-Gurion" + SearchHelper.PLACEHOLDER_HIGHLIGHTING_END;
+        // Advanced search emits quoted phrases with Solr-escaped hyphens, e.g. "ben\-gurion"
+        Assertions.assertEquals(expected, SearchHelper.applyHighlightingToPhrase(phrase, new HashSet<>(List.of("\"ben\\-gurion\""))));
+        // Regular search emits the bare term; must keep working
+        Assertions.assertEquals(expected, SearchHelper.applyHighlightingToPhrase(phrase, new HashSet<>(List.of("ben-gurion"))));
+    }
+
+    /**
      * @see SearchHelper#applyHighlightingToPhrase(String,Set)
      * @verifies skip single character terms
      */
