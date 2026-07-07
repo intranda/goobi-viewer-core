@@ -153,6 +153,18 @@ export function panelIdForKeyEvent({ altKey, ctrlKey, metaKey, code }) {
 }
 
 /**
+ * First visible page as 0-based order (the leading page of a double-page
+ * spread), 0 when the viewer has no pages yet. Pure + tested.
+ *
+ * @param {{getCurrentPages?: Function}} viewer
+ * @returns {number}
+ */
+export function currentOrder(viewer) {
+    const pages = viewer.getCurrentPages ? viewer.getCurrentPages() : [];
+    return pages.length ? pages[0] : 0;
+}
+
+/**
  * OSD viewport margins that keep the fitted page clear of the floating chrome.
  * Desktop reserves generous side margins; small viewports shrink them so the
  * page actually uses the screen (bars stay clear via the top/bottom values:

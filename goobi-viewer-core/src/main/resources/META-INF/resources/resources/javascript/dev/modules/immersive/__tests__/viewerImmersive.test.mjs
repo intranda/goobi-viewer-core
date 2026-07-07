@@ -19,6 +19,7 @@ import {
     isMacPlatform,
     macKeyLabel,
     stageMargins,
+    currentOrder,
 } from '../viewerImmersive.mjs';
 
 // ---------------------------------------------------------------------------
@@ -288,6 +289,15 @@ describe('isMacPlatform', function () {
         expect(isMacPlatform('Linux x86_64')).toBe(false);
         expect(isMacPlatform('')).toBe(false);
         expect(isMacPlatform(undefined)).toBe(false);
+    });
+});
+
+describe('currentOrder', function () {
+    test('returns the leading visible page and 0 without pages', function () {
+        expect(currentOrder({ getCurrentPages: () => [4, 5] })).toBe(4);
+        expect(currentOrder({ getCurrentPages: () => [7] })).toBe(7);
+        expect(currentOrder({ getCurrentPages: () => [] })).toBe(0);
+        expect(currentOrder({})).toBe(0);
     });
 });
 
