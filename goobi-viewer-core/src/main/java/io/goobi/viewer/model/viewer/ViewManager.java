@@ -2967,6 +2967,12 @@ public class ViewManager implements Serializable {
         return webArchiveSeedUrl;
     }
 
+    public boolean isWebArchive() {
+        return this.getMediaType().isWebArchive()
+                || StringUtils.isNotBlank(this.topStructElement.getMetadataValue(SolrConstants.MD_WEBARCHIVE_IDENTIFIER));
+
+    }
+
     public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {
         // Lazy cache: the ALTO page count is immutable for a given record within a session,
         // so repeated calls (e.g. from isAltoAvailableForWork and FileType.getTypesForRecord)
