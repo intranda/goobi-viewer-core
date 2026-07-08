@@ -25,6 +25,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.model.urlresolution.ViewHistory;
+import io.goobi.viewer.model.urlresolution.ViewerPath;
+import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -33,29 +41,20 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.exceptions.DAOException;
-import io.goobi.viewer.model.urlresolution.ViewHistory;
-import io.goobi.viewer.model.urlresolution.ViewerPath;
-import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 
 /**
  * Filters for redirecting prettified calls to cmsPages.
  *
- * <p>Forwarding is handled by {@link jakarta.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user
- * doesn't change, but the internal handling of the request is according to the forwarded url
- * 'prettified' in this context refers to calling CMSPages by either their 'alternative url' or the url of the static page they replace.
- * This filter needs to be placed in the filter chain before the {@link org.ocpsoft.rewrite.servlet.RewriteFilter} because the RewriteFilter (former
- * PrettyFilter) needs to handle the actual CMSPage mapping (the PrettyFilter won't handle the request if it has been called already for this request,
- * despite the forward)
- * This filter also stores the called url to the session map using
- * {@link io.goobi.viewer.model.urlresolution.ViewHistory#setCurrentView(ViewerPath, HttpSession)}. This is essential to leaving a view to return to a
- * previous view (for example when leaving the reading mode)
+ * <p>
+ * Forwarding is handled by {@link jakarta.servlet.RequestDispatcher#forward(ServletRequest, ServletResponse)}, so the url displayed to the user
+ * doesn't change, but the internal handling of the request is according to the forwarded url 'prettified' in this context refers to calling CMSPages
+ * by either their 'alternative url' or the url of the static page they replace. This filter needs to be placed in the filter chain before the
+ * {@link org.ocpsoft.rewrite.servlet.RewriteFilter} because the RewriteFilter (former PrettyFilter) needs to handle the actual CMSPage mapping (the
+ * PrettyFilter won't handle the request if it has been called already for this request, despite the forward) This filter also stores the called url
+ * to the session map using {@link io.goobi.viewer.model.urlresolution.ViewHistory#setCurrentView(ViewerPath, HttpSession)}. This is essential to
+ * leaving a view to return to a previous view (for example when leaving the reading mode)
  */
 public class UrlRedirectFilter implements Filter {
 
@@ -64,8 +63,8 @@ public class UrlRedirectFilter implements Filter {
     /**
      * {@inheritDoc}
      *
-     * <p>Redirects prettified calls to cmsPages (either using alternative url or static url of a cmsPage) to the actual page url (The cmsPage
-     * pretty-url
+     * <p>
+     * Redirects prettified calls to cmsPages (either using alternative url or static url of a cmsPage) to the actual page url (The cmsPage pretty-url
      * that is) Also stores the actually requested path in the current http session using {@link ViewHistory#setCurrentView(ViewerPath, HttpSession)}
      */
     @Override
@@ -77,6 +76,9 @@ public class UrlRedirectFilter implements Filter {
             // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
             // will point to the prefetched page rather than the actual current page
             if (isPrefetchingRequest(httpRequest)) {
+                HttpServletResponse httpResponse = (HttpServletResponse) response;
+                httpResponse.setHeader("Cache-Control", "no-store");
+                httpResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 return;
             }
 
