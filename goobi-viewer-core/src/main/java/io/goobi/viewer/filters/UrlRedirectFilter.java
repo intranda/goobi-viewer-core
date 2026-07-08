@@ -83,12 +83,15 @@ public class UrlRedirectFilter implements Filter {
             // Important: If prefetching requests are not refused here, the status of the backend beans (ActiveDocumentBean in particular)
             // will point to the prefetched page rather than the actual current page
             if (isPrefetchingRequest(httpRequest)) {
+                HttpServletResponse httpResponse = (HttpServletResponse) response;
+                httpResponse.setHeader("Cache-Control", "no-store");
+                httpResponse.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 return;
             }
 
             Optional<ViewerPath> currentPath = ViewerPathBuilder.createPath(httpRequest);
             if (currentPath.isPresent()) {
-                logger.trace("currentPath: {}", currentPath.get());
+                // logger.trace("currentPath: {}", currentPath.get());
 
                 ViewHistory.setCurrentView(currentPath.get(), httpRequest.getSession());
                 if (!ViewerPathBuilder.startsWith(currentPath.get().getPagePath(), "cms") && currentPath.get().getCmsPage() != null) {
