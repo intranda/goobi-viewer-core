@@ -36,6 +36,44 @@
     }
 }
 
+/* ICON GRID VARIANT */
+.collection-icon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    &__tile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 325px;
+        max-width: 100%;
+        min-height: 278px;
+        padding: 30px 25px;
+        background-color: @lightgray;
+        text-align: center;
+        text-decoration: none;
+        &:hover,
+        &:focus-visible {
+            text-decoration: none;
+            background-color: @middlegray;
+        }
+    }
+    &__image {
+        max-width: 120px;
+        max-height: 90px;
+        margin-bottom: 25px;
+        object-fit: contain;
+    }
+    &__label {
+        font-size: @fontNormal;
+        font-weight: 600;
+        line-height: 26px;
+        color: @black;
+    }
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }

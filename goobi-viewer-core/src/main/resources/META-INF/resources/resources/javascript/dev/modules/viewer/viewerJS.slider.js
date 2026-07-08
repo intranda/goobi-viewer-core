@@ -219,6 +219,48 @@ var viewerJS = (function (viewer) {
                     },
                 },
             ],
+            [
+                'cover-row',
+                {
+                    maxSlides: 20,
+                    timeout: 10000, //ms
+                    imageHeight: 600,
+                    swiperConfig: {
+                        direction: 'horizontal',
+                        loop: false,
+                        slidesPerView: 'auto',
+                        spaceBetween: 20,
+                        watchOverflow: true,
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                        pagination: {
+                            type: 'progressbar',
+                        },
+                        on: {
+                            afterInit: function (swiper) {
+                                swiper.el.querySelectorAll('img').forEach(function (img) {
+                                    if (!img.complete) {
+                                        img.addEventListener(
+                                            'load',
+                                            function () {
+                                                swiper.update();
+                                            },
+                                            { once: true }
+                                        );
+                                    }
+                                });
+                            },
+                        },
+                        a11y: {
+                            enabled: true,
+                            prevSlideMessage: 'Previous slide',
+                            nextSlideMessage: 'Next slide',
+                        },
+                    },
+                },
+            ],
         ]),
         init: function () {
             if (_debug) console.log('loading slider ', this);

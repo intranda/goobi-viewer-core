@@ -16,6 +16,12 @@
         grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 30px;
     }
+    &__logo-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
 }
 .grid-tile {
     padding: 3px;
@@ -43,6 +49,38 @@
         font-size: @fontNormal;
         line-height: 21px;
         font-weight: 600;
+    }
+}
+
+/* LOGO TILE VARIANT */
+.logo-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 325px;
+    max-width: 100%;
+    min-height: 278px;
+    padding: 30px 25px;
+    background-color: @lightgray;
+    text-align: center;
+    text-decoration: none;
+    &:hover,
+    &:focus-visible {
+        text-decoration: none;
+        background-color: @middlegray;
+    }
+    &__image {
+        max-width: 165px;
+        max-height: 75px;
+        margin-bottom: 30px;
+        object-fit: contain;
+    }
+    &__text {
+        font-size: @fontNormal;
+        font-weight: 600;
+        line-height: 26px;
+        color: @black;
     }
 }
 

@@ -27,24 +27,46 @@
                 </ui:fragment>
 
                 <!-- STATIC GRID -->
-                <div class="tpl-static-grid__grid">
-                    <ui:repeat
-                        var="mediaItem"
-                        value="#{cc.attrs.component.getContent('grid').mediaItems}">
-                        <a
-                            aria-label="#{msg.a11y__open_link_to}: #{mediaItem.label.getValueOrFallback(navigationHelper.locale)}"
-                            href="#{empty mediaItem.link ? '#' : mediaItem.link }"
-                            class="grid-tile">
-                            <div class="grid-tile__title">
-                                <span class="grid-tile__text">#{mediaItem.label.getValueOrFallback(navigationHelper.locale)}</span>
-                            </div>
-                            <div
-                                class="grid-tile__image"
-                                style="background-image: url('#{mediaItem.image.id}')"
-                                title="#{mediaItem.altText}" />
-                        </a>
-                    </ui:repeat>
-                </div>
+                <ui:fragment rendered="#{!cc.attrs.logoTiles}">
+                    <div class="tpl-static-grid__grid">
+                        <ui:repeat
+                            var="mediaItem"
+                            value="#{cc.attrs.component.getContent('grid').mediaItems}">
+                            <a
+                                aria-label="#{msg.a11y__open_link_to}: #{mediaItem.label.getValueOrFallback(navigationHelper.locale)}"
+                                href="#{empty mediaItem.link ? '#' : mediaItem.link }"
+                                class="grid-tile">
+                                <div class="grid-tile__title">
+                                    <span class="grid-tile__text">#{mediaItem.label.getValueOrFallback(navigationHelper.locale)}</span>
+                                </div>
+                                <div
+                                    class="grid-tile__image"
+                                    style="background-image: url('#{mediaItem.image.id}')"
+                                    title="#{mediaItem.altText}" />
+                            </a>
+                        </ui:repeat>
+                    </div>
+                </ui:fragment>
+
+                <!-- LOGO TILES -->
+                <ui:fragment rendered="#{cc.attrs.logoTiles}">
+                    <div class="tpl-static-grid__logo-grid">
+                        <ui:repeat
+                            var="mediaItem"
+                            value="#{cc.attrs.component.getContent('grid').mediaItems}">
+                            <a
+                                aria-label="#{msg.a11y__open_link_to}: #{mediaItem.label.getValueOrFallback(navigationHelper.locale)}"
+                                href="#{empty mediaItem.link ? '#' : mediaItem.link }"
+                                class="logo-tile">
+                                <img
+                                    class="logo-tile__image"
+                                    src="#{mediaItem.image.id}"
+                                    alt="#{mediaItem.altText}" />
+                                <span class="logo-tile__text">#{mediaItem.label.getValueOrFallback(navigationHelper.locale)}</span>
+                            </a>
+                        </ui:repeat>
+                    </div>
+                </ui:fragment>
             </div>
         </ui:fragment>
     </composite:implementation>
