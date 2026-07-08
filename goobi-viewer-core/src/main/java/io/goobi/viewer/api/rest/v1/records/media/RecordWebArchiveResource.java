@@ -46,6 +46,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -84,8 +85,8 @@ public class RecordWebArchiveResource {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     /** Cache: absolute path → (lastModifiedMillis, sha256hex) to avoid rehashing large files on every request. */
-    private static final ConcurrentHashMap<String, long[]> hashTimestampCache = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<String, String> hashValueCache = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, long[]> HASH_TIMESTAMP_CACHE = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, String> HASH_VALUE_CACHE = new ConcurrentHashMap<>();
 
     private final String pi;
 
@@ -104,6 +105,21 @@ public class RecordWebArchiveResource {
         servletRequest.setAttribute("pi", pi);
     }
 
+    /**
+     * Returns the replay JSON for this record's web archives, preferring locally indexed WACZ/WARC files and falling back to externally referenced
+     * archives via {@code MD_WEBARCHIVE_IDENTIFIER}.
+     *
+     * @return replay JSON, a redirect to a single external JSON manifest, or {@code 404} if no archive is found
+     * @throws IndexUnreachableException if the Solr index cannot be reached
+     * @throws PresentationException if the Solr query fails
+     * @should return local replay json when local archive docs exist
+     * @should return 404 when neither local nor external archive docs are found
+     * @should return replay json with one external resource per identifier when multiple identifiers are found
+     * @should return replay json with a single external resource when exactly one identifier is found and it is not a json url
+     * @should redirect to the resolved url when exactly one external identifier is found and it resolves to a json url
+     * @should redirect to the decoded source query parameter value when the identifier url has one and it resolves to a json url
+     * @should return 404 when a matching document is found but every identifier fails to parse
+     */
     @GET
     @Path("/webarchives.json")
     @Produces("application/json")
@@ -152,7 +168,9 @@ public class RecordWebArchiveResource {
                     size = Files.size(filePath);
                     hash = getCachedSha256(filePath);
                 }
-            } catch (Exception e) {
+                // Catch only the concrete checked exceptions the path/size/hash pipeline declares; a failure here is
+                // non-fatal (the resource is still listed, just without hash/size).
+            } catch (IOException | NoSuchAlgorithmException | PresentationException | IndexUnreachableException e) {
                 logger.warn("Could not compute hash/size for web archive {}: {}", filename, e.getMessage());
             }
             resources.add(new WebArchiveResource(filename, url, hash, size));
@@ -215,7 +233,23 @@ public class RecordWebArchiveResource {
         return json;
     }
 
-    private static void extractSeedPages(java.nio.file.Path waczPath, String waczFilename, List<WebArchivePage> pages) {
+    /**
+     * Reads the seed pages from the {@code pages/pages.jsonl} entry of a WACZ file and appends them to {@code pages}. The first line (the JSONL
+     * header) is skipped; only entries that are marked {@code seed:true} or have {@code depth:0} are included.
+     *
+     * <p>
+     * Package-private so it can be unit-tested directly against a WACZ file.
+     *
+     * @param waczPath path to the WACZ file
+     * @param waczFilename filename stored on each produced page
+     * @param pages list the extracted pages are appended to
+     * @should skip the header line
+     * @should add a seed page
+     * @should add a depth zero page
+     * @should skip a page that is neither seed nor depth zero
+     * @should extract page fields from the json line
+     */
+    static void extractSeedPages(java.nio.file.Path waczPath, String waczFilename, List<WebArchivePage> pages) {
         try (ZipFile zip = new ZipFile(waczPath.toFile())) {
             ZipEntry entry = zip.getEntry("pages/pages.jsonl");
             if (entry == null) {
@@ -269,12 +303,13 @@ public class RecordWebArchiveResource {
                         page.setIsSeed(true);
                         page.setFilename(waczFilename);
                         pages.add(page);
-                    } catch (Exception e) {
+                        // A single malformed JSON line must not abort parsing of the remaining lines
+                    } catch (JsonProcessingException e) {
                         logger.warn("Could not parse page entry in {}: {}", waczFilename, e.getMessage());
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Could not read seed pages from {}: {}", waczFilename, e.getMessage());
         }
     }
@@ -341,13 +376,13 @@ public class RecordWebArchiveResource {
     private static String getCachedSha256(java.nio.file.Path filePath) throws IOException, NoSuchAlgorithmException {
         String key = filePath.toAbsolutePath().toString();
         long lastModified = Files.getLastModifiedTime(filePath).toMillis();
-        long[] cached = hashTimestampCache.get(key);
+        long[] cached = HASH_TIMESTAMP_CACHE.get(key);
         if (cached != null && cached[0] == lastModified) {
-            return hashValueCache.get(key);
+            return HASH_VALUE_CACHE.get(key);
         }
         String hash = computeSha256(filePath);
-        hashTimestampCache.put(key, new long[] { lastModified });
-        hashValueCache.put(key, hash);
+        HASH_TIMESTAMP_CACHE.put(key, new long[] { lastModified });
+        HASH_VALUE_CACHE.put(key, hash);
         return hash;
     }
 

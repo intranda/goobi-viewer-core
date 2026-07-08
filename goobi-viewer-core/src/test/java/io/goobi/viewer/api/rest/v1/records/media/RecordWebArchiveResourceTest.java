@@ -23,10 +23,37 @@ package io.goobi.viewer.api.rest.v1.records.media;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import io.goobi.viewer.api.rest.model.webarchives.WebArchivePage;
 
 class RecordWebArchiveResourceTest {
+
+    @TempDir
+    private Path tempDir;
+
+    /** Writes a minimal WACZ (zip) file with the given lines as {@code pages/pages.jsonl} and returns its path. */
+    private Path writeWacz(String... lines) throws IOException {
+        Path wacz = tempDir.resolve("test.wacz");
+        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(wacz))) {
+            zos.putNextEntry(new ZipEntry("pages/pages.jsonl"));
+            zos.write(String.join("\n", lines).getBytes(StandardCharsets.UTF_8));
+            zos.closeEntry();
+        }
+        return wacz;
+    }
 
     /**
      * @verifies return identifier unchanged when it has no source param
@@ -103,5 +130,90 @@ class RecordWebArchiveResourceTest {
     void deriveExternalResourceName_shouldFallBackToFullUrlOnMalformedUrl() {
         String url = "http://exa mple.org/broken";
         assertEquals(url, RecordWebArchiveResource.deriveExternalResourceName(url));
+    }
+
+    /**
+     * @verifies skip the header line
+     * @see RecordWebArchiveResource#extractSeedPages(Path, String, List)
+     */
+    @Test
+    void extractSeedPages_shouldSkipHeaderLine() throws Exception {
+        // First line looks like a seed but is the JSONL header and must be skipped; only the real seed line survives
+        Path wacz = writeWacz(
+                "{\"url\":\"HEADER\",\"seed\":true}",
+                "{\"url\":\"https://example.org/real\",\"seed\":true}");
+        List<WebArchivePage> pages = new ArrayList<>();
+        RecordWebArchiveResource.extractSeedPages(wacz, "test.wacz", pages);
+        assertEquals(1, pages.size());
+        assertEquals("https://example.org/real", pages.get(0).getUrl());
+    }
+
+    /**
+     * @verifies add a seed page
+     * @see RecordWebArchiveResource#extractSeedPages(Path, String, List)
+     */
+    @Test
+    void extractSeedPages_shouldAddSeedPage() throws Exception {
+        Path wacz = writeWacz(
+                "{\"format\":\"json-pages-1.0\"}",
+                "{\"url\":\"https://example.org/\",\"seed\":true}");
+        List<WebArchivePage> pages = new ArrayList<>();
+        RecordWebArchiveResource.extractSeedPages(wacz, "test.wacz", pages);
+        assertEquals(1, pages.size());
+        assertTrue(pages.get(0).getIsSeed());
+        assertEquals("test.wacz", pages.get(0).getFilename());
+    }
+
+    /**
+     * @verifies add a depth zero page
+     * @see RecordWebArchiveResource#extractSeedPages(Path, String, List)
+     */
+    @Test
+    void extractSeedPages_shouldAddDepthZeroPage() throws Exception {
+        Path wacz = writeWacz(
+                "{\"format\":\"json-pages-1.0\"}",
+                "{\"url\":\"https://example.org/p\",\"depth\":0}");
+        List<WebArchivePage> pages = new ArrayList<>();
+        RecordWebArchiveResource.extractSeedPages(wacz, "test.wacz", pages);
+        assertEquals(1, pages.size());
+        assertEquals(0, pages.get(0).getDepth());
+    }
+
+    /**
+     * @verifies skip a page that is neither seed nor depth zero
+     * @see RecordWebArchiveResource#extractSeedPages(Path, String, List)
+     */
+    @Test
+    void extractSeedPages_shouldSkipPageThatIsNeitherSeedNorDepthZero() throws Exception {
+        Path wacz = writeWacz(
+                "{\"format\":\"json-pages-1.0\"}",
+                "{\"url\":\"https://example.org/deep\",\"depth\":3}");
+        List<WebArchivePage> pages = new ArrayList<>();
+        RecordWebArchiveResource.extractSeedPages(wacz, "test.wacz", pages);
+        assertTrue(pages.isEmpty());
+    }
+
+    /**
+     * @verifies extract page fields from the json line
+     * @see RecordWebArchiveResource#extractSeedPages(Path, String, List)
+     */
+    @Test
+    void extractSeedPages_shouldExtractPageFieldsFromJsonLine() throws Exception {
+        Path wacz = writeWacz(
+                "{\"format\":\"json-pages-1.0\"}",
+                "{\"id\":\"abc\",\"url\":\"https://example.org/\",\"title\":\"Home\",\"ts\":\"20251016100005\","
+                        + "\"loadState\":4,\"status\":200,\"mime\":\"text/html\",\"depth\":0,\"seed\":true}");
+        List<WebArchivePage> pages = new ArrayList<>();
+        RecordWebArchiveResource.extractSeedPages(wacz, "test.wacz", pages);
+        assertEquals(1, pages.size());
+        WebArchivePage page = pages.get(0);
+        assertEquals("abc", page.getId());
+        assertEquals("https://example.org/", page.getUrl());
+        assertEquals("Home", page.getTitle());
+        assertEquals("20251016100005", page.getTs());
+        assertEquals(4, page.getLoadState());
+        assertEquals(200, page.getStatus());
+        assertEquals("text/html", page.getMime());
+        assertEquals(0, page.getDepth());
     }
 }

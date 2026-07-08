@@ -49,7 +49,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 
-public class WebArchiveReader {
+public final class WebArchiveReader {
 
     private static final Logger logger = LogManager.getLogger(WebArchiveReader.class);
 
@@ -58,8 +58,22 @@ public class WebArchiveReader {
 
     /**
      * Returns the seed URL from the first WACZ file indexed for the given PI, or an empty string if no seed page is found.
+     *
+     * <p>
+     * If local WACZ files are indexed, their {@code pages/pages.jsonl} is read for the first {@code seed:true} URL. Only when no local archive
+     * documents exist does this fall back to the {@code url} parameter of an external {@code MD_WEBARCHIVE_IDENTIFIER}.
+     *
+     * @param pi persistent identifier of the record
+     * @return the resolved seed URL, or {@code ""} if none is found or the lookup fails
+     * @should not use the external fallback when local archive docs exist
+     * @should return the url param value from the fallback identifier when no local docs exist
+     * @should return empty string when the fallback identifier has no url param
+     * @should skip a malformed fallback identifier and use the next one
+     * @should return empty string when neither the local nor the fallback query find anything
      */
     public static String getSeedUrl(String pi) {
+        // Catch only the checked exceptions the query/file-read pipeline declares; a missing FILENAME field is guarded
+        // explicitly below rather than swallowed as a blanket RuntimeException.
         try {
             var docs = DataManager.getInstance()
                     .getSearchIndex()
@@ -67,7 +81,12 @@ public class WebArchiveReader {
                             Collections.emptyList());
             if (docs != null && !docs.isEmpty()) {
                 for (SolrDocument doc : docs) {
-                    String filename = doc.getFieldValue(SolrConstants.FILENAME).toString();
+                    // Guard against docs without a FILENAME value so the lookup degrades to "" instead of throwing an NPE
+                    Object filenameValue = doc.getFieldValue(SolrConstants.FILENAME);
+                    if (filenameValue == null) {
+                        continue;
+                    }
+                    String filename = filenameValue.toString();
                     Path waczPath = DataFileTools.getDataFilePath(pi,
                             DataManager.getInstance().getConfiguration().getMediaFolder(), null, filename);
                     if (Files.isRegularFile(waczPath)) {
@@ -82,7 +101,7 @@ public class WebArchiveReader {
 
             return findExternalSeedUrl(pi);
 
-        } catch (Exception e) {
+        } catch (IOException | IndexUnreachableException | PresentationException e) {
             logger.warn("Could not read seed URL from web archive for PI {}: {}", pi, e.getMessage());
             return "";
         }
