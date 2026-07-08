@@ -69,6 +69,9 @@ public class NERTag {
         }
 
         public boolean matches(String label) {
+            if (StringUtils.isBlank(label)) {
+                return false;
+            }
             return this.labels.contains(label.trim().toLowerCase());
         }
     }

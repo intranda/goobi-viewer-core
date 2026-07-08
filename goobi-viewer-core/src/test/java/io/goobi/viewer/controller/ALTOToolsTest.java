@@ -185,6 +185,29 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
+     * Regression guard: filtering NER tags by a concrete type must not throw when the ALTO
+     * document contains a {@code NamedEntityTag} without a {@code TYPE} attribute (i.e.
+     * {@code tag.getType()} is null). Previously {@code NERTag.Type.matches(null)} threw a
+     * NullPointerException, which surfaced as an HTTP 500 in the NER faceting widget as soon
+     * as any entity type filter was applied (the unfiltered case short-circuited via
+     * {@code type == null} and never called {@code matches}).
+     *
+     * @see ALTOTools#getNERTags(String, String, NERTag.Type)
+     * @verifies not fail on named entity tag without type when filtering by type
+     */
+    @Test
+    void getNERTags_shouldNotFailOnTypelessTagWhenFilteringByType() throws Exception {
+        File file = new File("src/test/resources/data/alto_ner_typeless.xml");
+        Assertions.assertTrue(file.isFile());
+        String text = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        Assertions.assertNotNull(text);
+        List<TagCount> tags = ALTOTools.getNERTags(text, StringTools.DEFAULT_ENCODING, NERTag.Type.PERSON);
+        // Only the typed PERSON tag is returned; the type-less tag is skipped, not an exception.
+        Assertions.assertEquals(1, tags.size(), tags.toString());
+        Assertions.assertEquals("TEUBNER", tags.get(0).getValue());
+    }
+
+    /**
      * @verifies return non empty text from valid alto file
      */
     @Test
