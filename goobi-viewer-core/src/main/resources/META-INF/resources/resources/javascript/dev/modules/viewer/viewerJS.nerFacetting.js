@@ -170,7 +170,7 @@ var viewerJS = (function (viewer) {
                 /**
                  * Event if overview tab is clicked.
                  */
-                $(_defaults.overviewTrigger).on('click', function () {
+                $(_defaults.overviewTrigger).off('click.nerFacetting').on('click.nerFacetting', function () {
                     // show loader
                     $(_defaults.loader).show();
 
@@ -220,7 +220,7 @@ var viewerJS = (function (viewer) {
                 /**
                  * Event if section tab is clicked.
                  */
-                $(_defaults.sectionTrigger).on('click', function () {
+                $(_defaults.sectionTrigger).off('click.nerFacetting').on('click.nerFacetting', function () {
                     // show loader
                     $(_defaults.loader).show();
 
@@ -260,7 +260,7 @@ var viewerJS = (function (viewer) {
                 /**
                  * Event if select menu changes.
                  */
-                $(_defaults.setTagRange).on('change', function () {
+                $(_defaults.setTagRange).off('change.nerFacetting').on('change.nerFacetting', function () {
                     var currVal = $(this).val();
                     _currentNerType = sessionStorage.getItem('currentNerType');
 
@@ -325,7 +325,7 @@ var viewerJS = (function (viewer) {
                 /**
                  * Event if facetting icons are clicked.
                  */
-                $(_defaults.facettingTrigger).on('click', function () {
+                $(_defaults.facettingTrigger).off('click.nerFacetting').on('click.nerFacetting', function () {
                     var currType = $(this).attr('data-type');
 
                     // show loader
