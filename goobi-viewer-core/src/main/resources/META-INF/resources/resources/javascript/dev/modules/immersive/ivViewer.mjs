@@ -125,10 +125,11 @@ export default class IvViewer {
             if (key === 'ArrowRight') this.next();
             else if (key === 'ArrowLeft') this.prev();
             else if (key === '0') this.resetView();
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
-                e.preventDefaultAction = true;
-                e.originalEvent.preventDefault();
-            }
+            // Horizontal arrows are handled by custom navigation — block OSD's pan.
+            // Vertical arrows must NOT block OSD so the image still pans up/down.
+            // All four arrows suppress native page scroll.
+            if (['ArrowLeft', 'ArrowRight'].includes(key)) e.preventDefaultAction = true;
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) e.originalEvent.preventDefault();
         });
 
         this._open(this.current)
