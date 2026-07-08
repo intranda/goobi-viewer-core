@@ -265,14 +265,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- used for mvn versions:display-dependency-updates -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>versions-maven-plugin</artifactId>
-				<configuration>
-					<rulesUri>file://${basedir}/version-number-rules.xml</rulesUri>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.owasp</groupId>
 				<artifactId>dependency-check-maven</artifactId>

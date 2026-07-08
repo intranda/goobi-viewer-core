@@ -94,23 +94,23 @@
 		<normdataimporter.version>2.1.4</normdataimporter.version>
 
 		<!-- other libraries -->
-		<activemq.version>6.2.6</activemq.version>
+		<activemq.version>6.2.7</activemq.version>
 		<angus-mail.version>2.0.5</angus-mail.version>
 		<citationstyles.version>26.2</citationstyles.version>
 		<citeproc-java.version>3.5.0</citeproc-java.version>
 		<commons-collections4.version>4.5.0</commons-collections4.version>
-        <commons-net.version>3.13.0</commons-net.version>
+		<commons-net.version>3.13.0</commons-net.version>
 		<commons-text.version>1.15.0</commons-text.version>
 		<cron-expression-descriptor.version>1.2.10</cron-expression-descriptor.version>
-		<dbunit.version>3.0.0</dbunit.version>
+		<dbunit.version>3.2.0</dbunit.version>
 		<eclipselink.version>4.0.9</eclipselink.version>
 		<h2.version>2.4.240</h2.version>
 		<httpmime.version>4.5.14</httpmime.version>
 		<icu.version>78.3</icu.version>
-        <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
+		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
 		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
-		<jakarta.faces.version>4.1.7</jakarta.faces.version>
+		<jakarta.faces.version>4.1.9</jakarta.faces.version>
 		<jakarta.inject.version>2.0.1</jakarta.inject.version>
 		<jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
 		<jakarta.jstl.version>3.0.2</jakarta.jstl.version>
@@ -121,25 +121,25 @@
 		<jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
 		<java-jwt.version>4.5.2</java-jwt.version>
 		<jwks-rsa.version>0.24.1</jwks-rsa.version>
-		<jaxen.version>2.0.1</jaxen.version>
-		<jaxb-runtime.version>4.0.7</jaxb-runtime.version>
-		<jersey.version>3.1.11</jersey.version>
+		<jaxen.version>2.0.6</jaxen.version>
+		<jaxb-runtime.version>4.0.9</jaxb-runtime.version>
+		<jersey.version>3.1.12</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<jsoup.version>1.22.2</jsoup.version>
-        <mariadb-java-client.version>3.5.8</mariadb-java-client.version>
+		<mariadb-java-client.version>3.5.9</mariadb-java-client.version>
 		<mockito.version>5.23.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
-		<mockserver.version>5.15.0</mockserver.version>
-		<omnifaces.version>4.7.9</omnifaces.version>
+		<mockserver.version>7.0.0</mockserver.version>
+		<omnifaces.version>4.7.10</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.5.1</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>
 		<quartz.version>2.5.2</quartz.version>
 		<reflections.version>0.10.2</reflections.version>
 		<rome.version>2.1.0</rome.version>
-		<spring.version>6.2.18</spring.version>
+		<spring.version>6.2.19</spring.version>
 		<slf4j.version>2.0.18</slf4j.version>
-        <swagger.version>2.2.50</swagger.version>
+		<swagger.version>2.2.52</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.7.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>

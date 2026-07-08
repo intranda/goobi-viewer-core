@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -105,7 +106,7 @@ public class UserGroup extends AbstractLicensee implements Serializable {
             return false;
         }
         UserGroup other = (UserGroup) obj;
-        if (id != other.id) {
+        if (!Objects.equals(id, other.id)) {
             return false;
         }
         if (name == null) {
