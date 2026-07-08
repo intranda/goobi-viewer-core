@@ -258,6 +258,35 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
+     * Regression guard for the label-duplication bug: a named entity that spans multiple ALTO
+     * String words (e.g. the person "B. G. TEUBNER" split into "B.", "G.", "TEUBNER", all with
+     * TAGREFS="Tag0" and a shared LABEL) must render one inline button per word using each
+     * word's own content, not one button per word repeating the full entity label.
+     *
+     * @see NamedEntityEnricher#enrich(String, de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.LineElement)
+     * @verifies use the word content as button text
+     */
+    @Test
+    void enrich_shouldUseTheWordContentAsButtonText() throws Exception {
+        File file = new File("src/test/resources/data/alto_ner_multiword.xml");
+        Assertions.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        String text = ALTOTools.getFulltext(alto, StringTools.DEFAULT_ENCODING, false);
+        Assertions.assertNotNull(text);
+
+        // Each word of the multi-word entity becomes its own button showing its own content.
+        Assertions.assertTrue(text.contains(">B.</button>"), text);
+        Assertions.assertTrue(text.contains(">G.</button>"), text);
+        Assertions.assertTrue(text.contains(">TEUBNER</button>"), text);
+        // The full entity label must not be repeated as button text.
+        Assertions.assertFalse(text.contains(">B. G. TEUBNER</button>"), text);
+
+        // Three words of the person entity plus the single-word location entity.
+        int buttonCount = StringUtils.countMatches(text, "view-fulltext__entity-action-button");
+        Assertions.assertEquals(4, buttonCount, "Expected 4 word-level entity buttons, found " + buttonCount + ": " + text);
+    }
+
+    /**
      * @verifies find fuzzy terms
      */
     @Test

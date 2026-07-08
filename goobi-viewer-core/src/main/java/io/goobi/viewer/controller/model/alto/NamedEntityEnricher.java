@@ -25,8 +25,6 @@ package io.goobi.viewer.controller.model.alto;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.LineElement;
@@ -51,15 +49,19 @@ public class NamedEntityEnricher implements TextEnricher {
 
     /**
      * Wraps every word that references a named-entity tag in an interactive HTML button.
-     * Previously bounded to one enrichment per page-render by a dead {@code MAX_ENRICHMENTS}
-     * limit (silently produced only a single button regardless of how many entities the
-     * page contained); the limit has been removed so all referencing words are enriched.
+     * Each referenced word becomes its own inline button whose visible text is the word's
+     * own {@code content}; the styling (see {@code .view-fulltext__entity-action-button})
+     * renders adjacent word-buttons as a single underlined phrase. The tag's normalized
+     * {@code LABEL} is intentionally not used as the button text (it would repeat the whole
+     * entity label on every word of a multi-word entity); the label and authority data
+     * remain reachable through the entity popover.
      *
-     * @param content the textual content of the word being enriched
+     * @param content the textual content of the word being enriched, used as the button text
      * @param element the ALTO line element whose word content is being processed
      * @return the enriched HTML button markup if the element is referenced by at least one
      *         named-entity tag, otherwise the unchanged {@code content} string
      * @should enrich every word that references a named entity tag
+     * @should use the word content as button text
      */
     @Override
     public String enrich(String content, LineElement element) {
@@ -73,7 +75,6 @@ public class NamedEntityEnricher implements TextEnricher {
         for (Tag tag : referencingTags) {
             String tagRef = Optional.ofNullable(tag.getId()).orElse("");
             String tagType = Optional.ofNullable(tag.getType()).map(String::toLowerCase).orElse("");
-            String tagLabel = StringUtils.isNotBlank(tag.getLabel()) ? tag.getLabel() : content;
             String tagUri = Optional.ofNullable(tag.getUri()).orElse("");
 
             String tagRestUri = TAG_RESTURI_TEMPATE.replace("{restUri}", this.restUri).replace("{tagUri}", tagUri);
@@ -85,7 +86,7 @@ public class NamedEntityEnricher implements TextEnricher {
                     .replace("{tagType}", tagType)
                     .replace("{tagRestUri}", tagRestUri)
                     .replace("{tagSearchUri}", tagSearchUri)
-                    .replace("{tagLabel}", tagLabel);
+                    .replace("{tagLabel}", content);
 
             sb.append(enriched);
         }
