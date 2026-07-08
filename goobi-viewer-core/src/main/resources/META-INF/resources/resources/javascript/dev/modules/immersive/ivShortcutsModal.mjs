@@ -1,6 +1,7 @@
 /** Keyboard-shortcuts help modal with platform-specific modifier keycaps. */
 
 import { isTypingTarget, isMacPlatform, macKeyLabel } from './viewerImmersive.mjs';
+import { createFocusTrap } from './ivA11y.mjs';
 
 /**
  * Keyboard-shortcuts help modal: opened via the rail button or the `?` key,
@@ -36,8 +37,6 @@ export function setupShortcutsModal(closePanels, keys) {
     const closeBtn = overlay.querySelector('.immersive__shortcuts-close');
     let opener = null;
     let trapHandler = null;
-    const focusables = () =>
-        Array.from(overlay.querySelectorAll('a[href],button,input,[tabindex]:not([tabindex="-1"])')).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
     const otherOverlayOpen = () =>
         !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel-left.is-open, .popover.show');
     const openShortcuts = () => {
@@ -45,20 +44,7 @@ export function setupShortcutsModal(closePanels, keys) {
         opener = document.activeElement;
         overlay.hidden = false;
         trigger.setAttribute('aria-expanded', 'true');
-        trapHandler = (e) => {
-            if (e.key !== 'Tab') return;
-            const f = focusables();
-            if (!f.length) return;
-            const first = f[0];
-            const last = f[f.length - 1];
-            if (e.shiftKey && document.activeElement === first) {
-                e.preventDefault();
-                last.focus();
-            } else if (!e.shiftKey && document.activeElement === last) {
-                e.preventDefault();
-                first.focus();
-            }
-        };
+        trapHandler = createFocusTrap(overlay);
         overlay.addEventListener('keydown', trapHandler);
         if (closeBtn) closeBtn.focus();
     };

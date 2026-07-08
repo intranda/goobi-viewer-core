@@ -133,7 +133,7 @@ export function isTypingTarget(element) {
 }
 
 /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-4 map onto this. */
-const PANEL_SHORTCUT_IDS = ['immersivePanelMenu', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata'];
+const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata'];
 
 /**
  * The rail panel an Alt+digit shortcut toggles: Alt+1-4 address the panels in

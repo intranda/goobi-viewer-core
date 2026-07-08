@@ -29,7 +29,9 @@ export function createKeyDispatcher() {
         },
         /** Binds the single keydown listener. */
         attach(target) {
-            target.addEventListener('keydown', (e) => this.handleEvent(e));
+            target.addEventListener('keydown', (e) => {
+                if (this.handleEvent(e)) e.preventDefault();
+            });
         },
     };
 }

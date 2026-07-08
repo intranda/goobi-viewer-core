@@ -65,11 +65,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels) {
             }
         };
 
-        if (fulltextBtn) {
-            fulltextBtn.addEventListener('click', () => {
-                if (fulltextPanel.classList.contains('is-open')) loadFulltext();
-            });
-        }
+        fulltextPanel.addEventListener('immersive:panel-open', loadFulltext);
         viewer.onPageChange.subscribe(() => {
             if (fulltextPanel.classList.contains('is-open')) loadFulltext();
         });
@@ -77,7 +73,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels) {
 
     const updateFulltextAvail = () => {
         if (!fulltextBtn) return;
-        const doublePage = !!(viewer.isDoublePage && viewer.isDoublePage());
+        const doublePage = viewer.isDoublePage();
         fulltextBtn.classList.toggle('-disabled', doublePage);
         fulltextBtn.setAttribute('aria-disabled', String(doublePage));
         fulltextBtn.setAttribute('tabindex', doublePage ? '-1' : '0');

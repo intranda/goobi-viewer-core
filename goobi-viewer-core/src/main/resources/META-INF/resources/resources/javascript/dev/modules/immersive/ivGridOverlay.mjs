@@ -1,6 +1,7 @@
 /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
 
 import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX, currentOrder } from './viewerImmersive.mjs';
+import { createFocusTrap } from './ivA11y.mjs';
 
 /**
  * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
@@ -67,8 +68,6 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
     let gridTag = null;
     let gridOpener = null;
     let gridTrapHandler = null;
-    const gridFocusables = () =>
-        Array.from(gridOverlay.querySelectorAll('a[href],button,input,[tabindex]:not([tabindex="-1"])')).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
     const gridActions = new rxjs.Subject();
     gridActions.subscribe((e) => {
         if (e && e.action === 'clickImage' && typeof e.value === 'number') {
@@ -92,20 +91,7 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
         gridOverlay.setAttribute('aria-modal', 'true');
         const gridLabel = gridTrigger && gridTrigger.getAttribute('aria-label');
         if (gridLabel) gridOverlay.setAttribute('aria-label', gridLabel);
-        gridTrapHandler = (e) => {
-            if (e.key !== 'Tab') return;
-            const f = gridFocusables();
-            if (!f.length) return;
-            const first = f[0];
-            const last = f[f.length - 1];
-            if (e.shiftKey && document.activeElement === first) {
-                e.preventDefault();
-                last.focus();
-            } else if (!e.shiftKey && document.activeElement === last) {
-                e.preventDefault();
-                first.focus();
-            }
-        };
+        gridTrapHandler = createFocusTrap(gridOverlay);
         gridOverlay.addEventListener('keydown', gridTrapHandler);
         if (!gridMounted) {
             gridTag = riot.mount('#immersiveThumbnails', 'thumbnails', {

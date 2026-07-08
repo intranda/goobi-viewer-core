@@ -1034,7 +1034,7 @@
     }
 
     /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-4 map onto this. */
-    const PANEL_SHORTCUT_IDS = ['immersivePanelMenu', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata'];
+    const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata'];
 
     /**
      * The rail panel an Alt+digit shortcut toggles: Alt+1-4 address the panels in
@@ -1235,9 +1235,10 @@
                 if (key === 'ArrowRight') this.next();
                 else if (key === 'ArrowLeft') this.prev();
                 else if (key === '0') this.resetView();
-                else return;
-                e.preventDefaultAction = true;
-                e.originalEvent.preventDefault();
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+                    e.preventDefaultAction = true;
+                    e.originalEvent.preventDefault();
+                }
             });
 
             this._open(this.current)
@@ -1524,8 +1525,7 @@
 
         /** Keeps the adjacent pages (±1) preloaded and evicts the rest (single-page path). */
         _refreshPreload() {
-            const resident = () => residentPages(this.current, this.total, { double: this.double });
-            const keep = new Set(resident());
+            const keep = new Set(residentPages(this.current, this.total, { double: this.double }));
             for (const order of keep) {
                 if (order === this.current) continue;
                 if (!this._preloaded.has(order)) {
@@ -1579,7 +1579,6 @@
             overlay.width = src.width;
             overlay.height = src.height;
             overlay.className = 'immersive__xfade';
-            overlay.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;';
             try {
                 overlay.getContext('2d').drawImage(src, 0, 0);
             } catch {
@@ -2025,7 +2024,9 @@
             },
             /** Binds the single keydown listener. */
             attach(target) {
-                target.addEventListener('keydown', (e) => this.handleEvent(e));
+                target.addEventListener('keydown', (e) => {
+                    if (this.handleEvent(e)) e.preventDefault();
+                });
             },
         };
     }
@@ -2255,13 +2256,18 @@
                     btn.setAttribute('aria-expanded', 'true');
                     activePanelBtn = btn;
                     syncPanelOpenFlag();
+                    panel.dispatchEvent(new CustomEvent('immersive:panel-open', { bubbles: false }));
                     // Scroll via offset math, not scrollIntoView, so the page itself never moves.
                     const active = panel.querySelector('.widget-toc__element.active');
                     if (active) {
                         panel.scrollTop = Math.max(0, offsetTopWithin(active, panel) - panel.clientHeight / 2);
                     }
-                    const focusTarget = Array.from(panel.querySelectorAll('input, a[href], button')).find((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
+                    const isMetadataPanel = panel.id === 'immersivePanelMetadata';
+                    const focusTarget = isMetadataPanel
+                        ? panel.querySelector('.immersive__panel-title')
+                        : Array.from(panel.querySelectorAll('input, a[href], button')).find((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
                     if (focusTarget) {
+                        if (!focusTarget.hasAttribute('tabindex')) focusTarget.setAttribute('tabindex', '-1');
                         focusTarget.focus({ preventScroll: true });
                     } else {
                         if (!panel.hasAttribute('tabindex')) panel.setAttribute('tabindex', '-1');
@@ -2341,9 +2347,21 @@
         });
     }
 
+    /**
+     * Single entry point for all TOC-panel wiring. Looks up the panel once and
+     * bails early when it is not in the DOM (conditional server-render).
+     *
+     * @param {IvViewer} viewer
+     */
+    function setupToc(viewer) {
+        const tocPanel = document.getElementById('immersivePanelToc');
+        if (!tocPanel) return;
+        setupTocCollapseToggle(tocPanel);
+        setupTocSync(viewer, tocPanel);
+    }
+
     /** Wires the "collapse all / expand all" toggle on the server-rendered TOC tree (shown only when the TOC nests). */
-    function setupTocCollapseToggle() {
-        const tocPanel = document.getElementById('immersivePanelMenu');
+    function setupTocCollapseToggle(tocPanel = document.getElementById('immersivePanelToc')) {
         const tocContainer = document.getElementById('widgetToc');
         const tocToggle = tocPanel && tocPanel.querySelector('[data-immersive-toc-toggle]');
         if (tocContainer && tocToggle && tocContainer.querySelector(".widget-toc__element[data-level='2']")) {
@@ -2410,12 +2428,12 @@
      * currently visible page(s).
      *
      * @param {IvViewer} viewer
+     * @param {HTMLElement} [tocPanel]
      */
-    function setupTocSync(viewer) {
-        const menuPanel = document.getElementById('immersivePanelMenu');
-        if (!menuPanel) return;
+    function setupTocSync(viewer, tocPanel = document.getElementById('immersivePanelToc')) {
+        if (!tocPanel) return;
         const tocEntries = () =>
-            Array.from(menuPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
+            Array.from(tocPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
                 .filter((el) => el.dataset.level !== '0') // skip the hidden record root
                 .map((el) => ({ el, no: Number(el.dataset.pageNo) }))
                 .filter((x) => Number.isFinite(x.no) && x.no >= 1);
@@ -2423,17 +2441,17 @@
         const setTocActive = (el) => {
             if (el && el.dataset.iddoc && window.viewerJS && viewerJS.widgetToc) {
                 viewerJS.widgetToc.setActive(el.dataset.iddoc.replace('iddoc_', ''));
-                if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
+                if (tocPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
                 return;
             }
-            menuPanel.querySelectorAll('.widget-toc__element.active, .widget-toc__element-link.active').forEach((x) => x.classList.remove('active'));
+            tocPanel.querySelectorAll('.widget-toc__element.active, .widget-toc__element-link.active').forEach((x) => x.classList.remove('active'));
             if (el) {
                 el.classList.add('active');
-                if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
+                if (tocPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
             }
         };
 
-        menuPanel.addEventListener('click', (e) => {
+        tocPanel.addEventListener('click', (e) => {
             const link = e.target.closest('.widget-toc__element-link a');
             if (!link) return;
             const element = link.closest('.widget-toc__element');
@@ -2448,7 +2466,7 @@
             const entries = tocEntries();
             const pages = viewer.getCurrentPages().map((p) => p + 1);
             if (!entries.length || !pages.length) return;
-            const active = menuPanel.querySelector('.widget-toc__element.active[data-page-no]');
+            const active = tocPanel.querySelector('.widget-toc__element.active[data-page-no]');
             const activeNo = active ? Number(active.dataset.pageNo) : null;
             const targetNo = pickActiveTocPageNo(
                 entries.map((x) => x.no),
@@ -2464,6 +2482,38 @@
         };
         viewer.onPageChange.subscribe(syncTocActive);
         syncTocActive();
+    }
+
+    /** Shared accessibility utilities for the immersive view. */
+
+    const FOCUSABLE_QUERY = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
+
+    /**
+     * Returns a keydown handler that traps Tab focus within `container`: reaching
+     * the last focusable element wraps to the first, and Shift+Tab at the first
+     * wraps to the last. Attach with addEventListener and detach when the dialog
+     * closes to avoid stacking handlers.
+     *
+     * @param {HTMLElement} container  the modal or overlay element
+     * @returns {function(KeyboardEvent):void}
+     */
+    function createFocusTrap(container) {
+        return function trapFocus(e) {
+            if (e.key !== 'Tab') return;
+            const f = Array.from(container.querySelectorAll(FOCUSABLE_QUERY)).filter(
+                (n) => !n.hidden && !n.disabled && n.offsetParent !== null
+            );
+            if (!f.length) return;
+            const first = f[0];
+            const last = f[f.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        };
     }
 
     /** Keyboard-shortcuts help modal with platform-specific modifier keycaps. */
@@ -2503,8 +2553,6 @@
         const closeBtn = overlay.querySelector('.immersive__shortcuts-close');
         let opener = null;
         let trapHandler = null;
-        const focusables = () =>
-            Array.from(overlay.querySelectorAll('a[href],button,input,[tabindex]:not([tabindex="-1"])')).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
         const otherOverlayOpen = () =>
             !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel-left.is-open, .popover.show');
         const openShortcuts = () => {
@@ -2512,20 +2560,7 @@
             opener = document.activeElement;
             overlay.hidden = false;
             trigger.setAttribute('aria-expanded', 'true');
-            trapHandler = (e) => {
-                if (e.key !== 'Tab') return;
-                const f = focusables();
-                if (!f.length) return;
-                const first = f[0];
-                const last = f[f.length - 1];
-                if (e.shiftKey && document.activeElement === first) {
-                    e.preventDefault();
-                    last.focus();
-                } else if (!e.shiftKey && document.activeElement === last) {
-                    e.preventDefault();
-                    first.focus();
-                }
-            };
+            trapHandler = createFocusTrap(overlay);
             overlay.addEventListener('keydown', trapHandler);
             if (closeBtn) closeBtn.focus();
         };
@@ -2633,11 +2668,7 @@
                 }
             };
 
-            if (fulltextBtn) {
-                fulltextBtn.addEventListener('click', () => {
-                    if (fulltextPanel.classList.contains('is-open')) loadFulltext();
-                });
-            }
+            fulltextPanel.addEventListener('immersive:panel-open', loadFulltext);
             viewer.onPageChange.subscribe(() => {
                 if (fulltextPanel.classList.contains('is-open')) loadFulltext();
             });
@@ -2645,7 +2676,7 @@
 
         const updateFulltextAvail = () => {
             if (!fulltextBtn) return;
-            const doublePage = !!(viewer.isDoublePage && viewer.isDoublePage());
+            const doublePage = viewer.isDoublePage();
             fulltextBtn.classList.toggle('-disabled', doublePage);
             fulltextBtn.setAttribute('aria-disabled', String(doublePage));
             fulltextBtn.setAttribute('tabindex', doublePage ? '-1' : '0');
@@ -2821,7 +2852,7 @@
                     ? `${searchState.activeIndex + 1} / ${searchState.hits.length}`
                     : (searchState.term && resultsBox.dataset.labelEmpty) || '';
             }
-            resultsList.innerHTML = '';
+            resultsList.replaceChildren();
             if (searchState.term && !searchState.hits.length) {
                 const empty = document.createElement('li');
                 empty.className = 'immersive__results-empty';
@@ -3156,8 +3187,6 @@
         let gridTag = null;
         let gridOpener = null;
         let gridTrapHandler = null;
-        const gridFocusables = () =>
-            Array.from(gridOverlay.querySelectorAll('a[href],button,input,[tabindex]:not([tabindex="-1"])')).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
         const gridActions = new rxjs.Subject();
         gridActions.subscribe((e) => {
             if (e && e.action === 'clickImage' && typeof e.value === 'number') {
@@ -3181,20 +3210,7 @@
             gridOverlay.setAttribute('aria-modal', 'true');
             const gridLabel = gridTrigger && gridTrigger.getAttribute('aria-label');
             if (gridLabel) gridOverlay.setAttribute('aria-label', gridLabel);
-            gridTrapHandler = (e) => {
-                if (e.key !== 'Tab') return;
-                const f = gridFocusables();
-                if (!f.length) return;
-                const first = f[0];
-                const last = f[f.length - 1];
-                if (e.shiftKey && document.activeElement === first) {
-                    e.preventDefault();
-                    last.focus();
-                } else if (!e.shiftKey && document.activeElement === last) {
-                    e.preventDefault();
-                    first.focus();
-                }
-            };
+            gridTrapHandler = createFocusTrap(gridOverlay);
             gridOverlay.addEventListener('keydown', gridTrapHandler);
             if (!gridMounted) {
                 gridTag = riot.mount('#immersiveThumbnails', 'thumbnails', {
@@ -3316,6 +3332,16 @@
 
         const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
         document.addEventListener('fullscreenchange', () => {
+            const osd = viewer.viewer.openseadragon;
+            let done = false;
+            const doReset = () => {
+                if (done) return;
+                done = true;
+                osd.removeHandler('resize', doReset);
+                requestAnimationFrame(() => viewer.resetView());
+            };
+            osd.addHandler('resize', doReset);
+            setTimeout(doReset, 300);
             if (fullscreenBtn) {
                 fullscreenBtn.setAttribute('aria-pressed', String(!!document.fullscreenElement));
                 const exitLabel = fullscreenBtn.dataset.labelExit;
@@ -3326,6 +3352,12 @@
                     fullscreenBtn.setAttribute('title', label);
                 }
             }
+            // Bootstrap popovers portal into document.body by default, which puts them
+            // outside the fullscreen element — the browser clips everything outside it,
+            // so the popover becomes invisible. Workaround: re-home each popover's
+            // container to the fullscreen root while fullscreen is active and restore it
+            // on exit. Uses Bootstrap's internal `inst.config` object directly because
+            // there is no public API for changing the container after construction.
             document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
                 const $trigger = window.$ && window.$(trigger);
                 const inst = $trigger && $trigger.data('bs.popover');
@@ -3548,7 +3580,6 @@
         keys.attach(document);
         const panels = setupPanels(immersiveRoot, keys);
         setupPanelResize(immersiveRoot);
-        setupTocCollapseToggle();
         setupMetadataToggle();
         setupImmersivePopoverA11y();
         setupShortcutsModal(panels.closePanels, keys);
@@ -3568,7 +3599,6 @@
             .then((services) => {
                 const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
                 viewer.viewer.openseadragon.addOnceHandler('tile-loaded', hideStageLoader);
-                window.ivViewer = viewer;
                 attachUrlSync(viewer, pi);
                 bindImageFiltersMount(viewer);
 
@@ -3576,11 +3606,11 @@
                     .then((labels) => setupPageDropdown(viewer, labels, keys))
                     .catch((e) => console.warn('immersive page labels failed', e));
 
+                setupToc(viewer);
                 setupFulltextSearch(viewer, pi, apiBase);
                 const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels);
                 const toggleGrid = setupOverviewGrid(viewer, pi, apiBase, keys);
                 setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail });
-                setupTocSync(viewer);
             })
             .catch((e) => {
                 hideStageLoader();

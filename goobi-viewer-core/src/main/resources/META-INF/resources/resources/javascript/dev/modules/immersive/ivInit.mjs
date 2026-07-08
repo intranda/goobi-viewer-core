@@ -4,7 +4,7 @@ import IvViewer from './ivViewer.mjs';
 import { loadPageServices, loadPageLabels } from './ivManifestSource.mjs';
 import { attachUrlSync } from './viewerImmersive.mjs';
 import { createKeyDispatcher } from './ivKeys.mjs';
-import { setupPanels, setupPanelResize, setupTocCollapseToggle, setupMetadataToggle, setupTocSync } from './ivPanelsWiring.mjs';
+import { setupPanels, setupPanelResize, setupToc, setupMetadataToggle } from './ivPanelsWiring.mjs';
 import { setupShortcutsModal } from './ivShortcutsModal.mjs';
 import { setupFulltextPanel } from './ivFulltextPanel.mjs';
 import { setupFulltextSearch } from './ivSearchPanel.mjs';
@@ -35,7 +35,6 @@ export function initImmersiveViewer(el) {
     keys.attach(document);
     const panels = setupPanels(immersiveRoot, keys);
     setupPanelResize(immersiveRoot);
-    setupTocCollapseToggle();
     setupMetadataToggle();
     setupImmersivePopoverA11y();
     setupShortcutsModal(panels.closePanels, keys);
@@ -55,7 +54,6 @@ export function initImmersiveViewer(el) {
         .then((services) => {
             const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
             viewer.viewer.openseadragon.addOnceHandler('tile-loaded', hideStageLoader);
-            window.ivViewer = viewer;
             attachUrlSync(viewer, pi);
             bindImageFiltersMount(viewer);
 
@@ -63,11 +61,11 @@ export function initImmersiveViewer(el) {
                 .then((labels) => setupPageDropdown(viewer, labels, keys))
                 .catch((e) => console.warn('immersive page labels failed', e));
 
+            setupToc(viewer);
             setupFulltextSearch(viewer, pi, apiBase);
             const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels);
             const toggleGrid = setupOverviewGrid(viewer, pi, apiBase, keys);
             setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail });
-            setupTocSync(viewer);
         })
         .catch((e) => {
             hideStageLoader();

@@ -53,13 +53,18 @@ export function setupPanels(immersiveRoot, keys) {
                 btn.setAttribute('aria-expanded', 'true');
                 activePanelBtn = btn;
                 syncPanelOpenFlag();
+                panel.dispatchEvent(new CustomEvent('immersive:panel-open', { bubbles: false }));
                 // Scroll via offset math, not scrollIntoView, so the page itself never moves.
                 const active = panel.querySelector('.widget-toc__element.active');
                 if (active) {
                     panel.scrollTop = Math.max(0, offsetTopWithin(active, panel) - panel.clientHeight / 2);
                 }
-                const focusTarget = Array.from(panel.querySelectorAll('input, a[href], button')).find((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
+                const isMetadataPanel = panel.id === 'immersivePanelMetadata';
+                const focusTarget = isMetadataPanel
+                    ? panel.querySelector('.immersive__panel-title')
+                    : Array.from(panel.querySelectorAll('input, a[href], button')).find((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
                 if (focusTarget) {
+                    if (!focusTarget.hasAttribute('tabindex')) focusTarget.setAttribute('tabindex', '-1');
                     focusTarget.focus({ preventScroll: true });
                 } else {
                     if (!panel.hasAttribute('tabindex')) panel.setAttribute('tabindex', '-1');
@@ -139,9 +144,21 @@ export function setupPanelResize(immersiveRoot) {
     });
 }
 
+/**
+ * Single entry point for all TOC-panel wiring. Looks up the panel once and
+ * bails early when it is not in the DOM (conditional server-render).
+ *
+ * @param {IvViewer} viewer
+ */
+export function setupToc(viewer) {
+    const tocPanel = document.getElementById('immersivePanelToc');
+    if (!tocPanel) return;
+    setupTocCollapseToggle(tocPanel);
+    setupTocSync(viewer, tocPanel);
+}
+
 /** Wires the "collapse all / expand all" toggle on the server-rendered TOC tree (shown only when the TOC nests). */
-export function setupTocCollapseToggle() {
-    const tocPanel = document.getElementById('immersivePanelMenu');
+export function setupTocCollapseToggle(tocPanel = document.getElementById('immersivePanelToc')) {
     const tocContainer = document.getElementById('widgetToc');
     const tocToggle = tocPanel && tocPanel.querySelector('[data-immersive-toc-toggle]');
     if (tocContainer && tocToggle && tocContainer.querySelector(".widget-toc__element[data-level='2']")) {
@@ -208,12 +225,12 @@ export function setupMetadataToggle() {
  * currently visible page(s).
  *
  * @param {IvViewer} viewer
+ * @param {HTMLElement} [tocPanel]
  */
-export function setupTocSync(viewer) {
-    const menuPanel = document.getElementById('immersivePanelMenu');
-    if (!menuPanel) return;
+export function setupTocSync(viewer, tocPanel = document.getElementById('immersivePanelToc')) {
+    if (!tocPanel) return;
     const tocEntries = () =>
-        Array.from(menuPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
+        Array.from(tocPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
             .filter((el) => el.dataset.level !== '0') // skip the hidden record root
             .map((el) => ({ el, no: Number(el.dataset.pageNo) }))
             .filter((x) => Number.isFinite(x.no) && x.no >= 1);
@@ -221,17 +238,17 @@ export function setupTocSync(viewer) {
     const setTocActive = (el) => {
         if (el && el.dataset.iddoc && window.viewerJS && viewerJS.widgetToc) {
             viewerJS.widgetToc.setActive(el.dataset.iddoc.replace('iddoc_', ''));
-            if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
+            if (tocPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
             return;
         }
-        menuPanel.querySelectorAll('.widget-toc__element.active, .widget-toc__element-link.active').forEach((x) => x.classList.remove('active'));
+        tocPanel.querySelectorAll('.widget-toc__element.active, .widget-toc__element-link.active').forEach((x) => x.classList.remove('active'));
         if (el) {
             el.classList.add('active');
-            if (menuPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
+            if (tocPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
         }
     };
 
-    menuPanel.addEventListener('click', (e) => {
+    tocPanel.addEventListener('click', (e) => {
         const link = e.target.closest('.widget-toc__element-link a');
         if (!link) return;
         const element = link.closest('.widget-toc__element');
@@ -246,7 +263,7 @@ export function setupTocSync(viewer) {
         const entries = tocEntries();
         const pages = viewer.getCurrentPages().map((p) => p + 1);
         if (!entries.length || !pages.length) return;
-        const active = menuPanel.querySelector('.widget-toc__element.active[data-page-no]');
+        const active = tocPanel.querySelector('.widget-toc__element.active[data-page-no]');
         const activeNo = active ? Number(active.dataset.pageNo) : null;
         const targetNo = pickActiveTocPageNo(
             entries.map((x) => x.no),

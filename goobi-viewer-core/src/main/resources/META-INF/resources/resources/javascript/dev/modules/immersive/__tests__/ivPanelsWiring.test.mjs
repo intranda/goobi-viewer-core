@@ -10,10 +10,10 @@ import { createKeyDispatcher } from '../ivKeys.mjs';
 function mountMarkup() {
     document.body.innerHTML = `
         <div class="immersive">
-            <button data-immersive-panel="immersivePanelMenu" aria-expanded="false"></button>
+            <button data-immersive-panel="immersivePanelToc" aria-expanded="false"></button>
             <button data-immersive-panel="immersivePanelSearch" aria-expanded="false"></button>
             <button data-immersive-panel="immersivePanelMetadata" aria-expanded="false" aria-disabled="true"></button>
-            <aside id="immersivePanelMenu" class="immersive__panel immersive__panel-left" aria-hidden="true"></aside>
+            <aside id="immersivePanelToc" class="immersive__panel immersive__panel-left" aria-hidden="true"></aside>
             <aside id="immersivePanelSearch" class="immersive__panel immersive__panel-left" aria-hidden="true"></aside>
             <aside id="immersivePanelMetadata" class="immersive__panel immersive__panel-left" aria-hidden="true"></aside>
         </div>`;
@@ -34,20 +34,20 @@ describe('setupPanels', () => {
 
     test('clicking a rail button opens its panel with full ARIA/inert bookkeeping', () => {
         const { root, btn, panel } = mountMarkup();
-        expect(panel('immersivePanelMenu').inert).toBe(true);
-        btn('immersivePanelMenu').click();
-        expect(panel('immersivePanelMenu').classList.contains('is-open')).toBe(true);
-        expect(panel('immersivePanelMenu').getAttribute('aria-hidden')).toBe('false');
-        expect(panel('immersivePanelMenu').inert).toBe(false);
-        expect(btn('immersivePanelMenu').getAttribute('aria-expanded')).toBe('true');
+        expect(panel('immersivePanelToc').inert).toBe(true);
+        btn('immersivePanelToc').click();
+        expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(true);
+        expect(panel('immersivePanelToc').getAttribute('aria-hidden')).toBe('false');
+        expect(panel('immersivePanelToc').inert).toBe(false);
+        expect(btn('immersivePanelToc').getAttribute('aria-expanded')).toBe('true');
         expect(root.classList.contains('-panel-open')).toBe(true);
     });
 
     test('clicking another button switches panels; clicking the same button closes', () => {
         const { root, btn, panel } = mountMarkup();
-        btn('immersivePanelMenu').click();
+        btn('immersivePanelToc').click();
         btn('immersivePanelSearch').click();
-        expect(panel('immersivePanelMenu').classList.contains('is-open')).toBe(false);
+        expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(false);
         expect(panel('immersivePanelSearch').classList.contains('is-open')).toBe(true);
         btn('immersivePanelSearch').click();
         expect(panel('immersivePanelSearch').classList.contains('is-open')).toBe(false);
@@ -64,17 +64,17 @@ describe('setupPanels', () => {
         const { panels, btn } = mountMarkup();
         const hook = jest.fn();
         panels.registerCloseHook(hook);
-        btn('immersivePanelMenu').click(); // opening closes first -> hook runs
+        btn('immersivePanelToc').click(); // opening closes first -> hook runs
         panels.closePanels();
         expect(hook).toHaveBeenCalledTimes(2);
     });
 
     test('Escape via the dispatcher closes the open panel and restores focus to its button', () => {
         const { keys, btn, panel } = mountMarkup();
-        btn('immersivePanelMenu').click();
+        btn('immersivePanelToc').click();
         expect(keys.handleEvent({ key: 'Escape' })).toBe(true);
-        expect(panel('immersivePanelMenu').classList.contains('is-open')).toBe(false);
-        expect(document.activeElement).toBe(btn('immersivePanelMenu'));
+        expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(false);
+        expect(document.activeElement).toBe(btn('immersivePanelToc'));
     });
 
     test('Escape without an open panel is not consumed (falls through the dispatcher)', () => {
@@ -87,9 +87,9 @@ describe('setupPanels', () => {
         const e = altDigit('Digit1');
         expect(keys.handleEvent(e)).toBe(true);
         expect(e.preventDefault).toHaveBeenCalled();
-        expect(panel('immersivePanelMenu').classList.contains('is-open')).toBe(true);
+        expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(true);
         keys.handleEvent(altDigit('Digit3'));
-        expect(panel('immersivePanelMenu').classList.contains('is-open')).toBe(false);
+        expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(false);
         expect(panel('immersivePanelSearch').classList.contains('is-open')).toBe(true);
         keys.handleEvent(altDigit('Digit3'));
         expect(panel('immersivePanelSearch').classList.contains('is-open')).toBe(false);
@@ -101,6 +101,6 @@ describe('setupPanels', () => {
         grid.id = 'immersiveGridOverlay';
         document.body.appendChild(grid);
         expect(keys.handleEvent(altDigit('Digit1'))).toBe(false);
-        expect(panel('immersivePanelMenu').classList.contains('is-open')).toBe(false);
+        expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(false);
     });
 });

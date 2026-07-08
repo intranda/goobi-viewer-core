@@ -66,6 +66,16 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
 
     const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
     document.addEventListener('fullscreenchange', () => {
+        const osd = viewer.viewer.openseadragon;
+        let done = false;
+        const doReset = () => {
+            if (done) return;
+            done = true;
+            osd.removeHandler('resize', doReset);
+            requestAnimationFrame(() => viewer.resetView());
+        };
+        osd.addHandler('resize', doReset);
+        setTimeout(doReset, 300);
         if (fullscreenBtn) {
             fullscreenBtn.setAttribute('aria-pressed', String(!!document.fullscreenElement));
             const exitLabel = fullscreenBtn.dataset.labelExit;
@@ -76,6 +86,12 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
                 fullscreenBtn.setAttribute('title', label);
             }
         }
+        // Bootstrap popovers portal into document.body by default, which puts them
+        // outside the fullscreen element — the browser clips everything outside it,
+        // so the popover becomes invisible. Workaround: re-home each popover's
+        // container to the fullscreen root while fullscreen is active and restore it
+        // on exit. Uses Bootstrap's internal `inst.config` object directly because
+        // there is no public API for changing the container after construction.
         document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
             const $trigger = window.$ && window.$(trigger);
             const inst = $trigger && $trigger.data('bs.popover');

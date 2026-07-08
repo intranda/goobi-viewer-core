@@ -35,7 +35,7 @@ export function setupFulltextSearch(viewer, pi, apiBase) {
                 ? `${searchState.activeIndex + 1} / ${searchState.hits.length}`
                 : (searchState.term && resultsBox.dataset.labelEmpty) || '';
         }
-        resultsList.innerHTML = '';
+        resultsList.replaceChildren();
         if (searchState.term && !searchState.hits.length) {
             const empty = document.createElement('li');
             empty.className = 'immersive__results-empty';

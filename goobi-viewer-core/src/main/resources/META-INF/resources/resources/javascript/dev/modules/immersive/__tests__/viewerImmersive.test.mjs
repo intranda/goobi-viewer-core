@@ -248,7 +248,7 @@ describe('panelIdForKeyEvent', function () {
     const altDigit = (code) => ({ altKey: true, ctrlKey: false, metaKey: false, code });
 
     test('maps Alt+1-4 to the rail panels in toolbar order (TOC, fulltext, search, metadata)', function () {
-        expect(panelIdForKeyEvent(altDigit('Digit1'))).toBe('immersivePanelMenu');
+        expect(panelIdForKeyEvent(altDigit('Digit1'))).toBe('immersivePanelToc');
         expect(panelIdForKeyEvent(altDigit('Digit2'))).toBe('immersivePanelFulltext');
         expect(panelIdForKeyEvent(altDigit('Digit3'))).toBe('immersivePanelSearch');
         expect(panelIdForKeyEvent(altDigit('Digit4'))).toBe('immersivePanelMetadata');

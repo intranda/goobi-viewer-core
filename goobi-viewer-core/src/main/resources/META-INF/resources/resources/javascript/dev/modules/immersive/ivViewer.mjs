@@ -125,9 +125,10 @@ export default class IvViewer {
             if (key === 'ArrowRight') this.next();
             else if (key === 'ArrowLeft') this.prev();
             else if (key === '0') this.resetView();
-            else return;
-            e.preventDefaultAction = true;
-            e.originalEvent.preventDefault();
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+                e.preventDefaultAction = true;
+                e.originalEvent.preventDefault();
+            }
         });
 
         this._open(this.current)
@@ -414,8 +415,7 @@ export default class IvViewer {
 
     /** Keeps the adjacent pages (±1) preloaded and evicts the rest (single-page path). */
     _refreshPreload() {
-        const resident = () => residentPages(this.current, this.total, { double: this.double });
-        const keep = new Set(resident());
+        const keep = new Set(residentPages(this.current, this.total, { double: this.double }));
         for (const order of keep) {
             if (order === this.current) continue;
             if (!this._preloaded.has(order)) {
@@ -469,7 +469,6 @@ export default class IvViewer {
         overlay.width = src.width;
         overlay.height = src.height;
         overlay.className = 'immersive__xfade';
-        overlay.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;';
         try {
             overlay.getContext('2d').drawImage(src, 0, 0);
         } catch {
