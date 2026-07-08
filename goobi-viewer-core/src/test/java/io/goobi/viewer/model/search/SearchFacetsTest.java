@@ -510,6 +510,57 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies parse exclusion marker correctly
+     */
+    @Test
+    void parseFacetString_shouldParseExclusionMarkerCorrectly() {
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString(FacetItem.EXCLUDE_PREFIX + "DC:a;;DC:b;;", facetItems, null);
+        Assertions.assertEquals(2, facetItems.size());
+        Assertions.assertTrue(facetItems.get(0).isExcluded());
+        Assertions.assertEquals("DC", facetItems.get(0).getField());
+        Assertions.assertEquals("a", facetItems.get(0).getValue());
+        Assertions.assertFalse(facetItems.get(1).isExcluded());
+    }
+
+    /**
+     * @see SearchFacets#setActiveFacetString(String)
+     * @verifies preserve exclusion marker through round trip
+     */
+    @Test
+    void setActiveFacetString_shouldPreserveExclusionMarkerThroughRoundTrip() {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString(FacetItem.EXCLUDE_PREFIX + "DC:a;;");
+        Assertions.assertEquals(1, facets.getActiveFacets().size());
+        Assertions.assertTrue(facets.getActiveFacets().get(0).isExcluded());
+        Assertions.assertTrue(facets.getActiveFacetStringPrefix(null, false).contains(FacetItem.EXCLUDE_PREFIX + "DC:a"));
+    }
+
+    /**
+     * @see SearchFacets#generateHierarchicalFacetFilterQuery()
+     * @verifies negate excluded item and add positive base when all excluded
+     */
+    @Test
+    void generateHierarchicalFacetFilterQuery_shouldNegateExcludedItemAndAddPositiveBaseWhenAllExcluded() {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString(FacetItem.EXCLUDE_PREFIX + "DC:a;;");
+        Assertions.assertEquals("*:* AND -(FACET_DC:\"a\" OR FACET_DC:a.*)", facets.generateHierarchicalFacetFilterQuery());
+    }
+
+    /**
+     * @see SearchFacets#generateHierarchicalFacetFilterQuery()
+     * @verifies not add positive base when include and exclude are mixed
+     */
+    @Test
+    void generateHierarchicalFacetFilterQuery_shouldNotAddPositiveBaseWhenIncludeAndExcludeAreMixed() {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString("DC:a;;" + FacetItem.EXCLUDE_PREFIX + "DC:b;;");
+        Assertions.assertEquals("(FACET_DC:\"a\" OR FACET_DC:a.*) AND -(FACET_DC:\"b\" OR FACET_DC:b.*)",
+                facets.generateHierarchicalFacetFilterQuery());
+    }
+
+    /**
      * @see SearchFacets#isHasWrongLanguageCode(String,String)
      * @verifies return true if language code different
      */

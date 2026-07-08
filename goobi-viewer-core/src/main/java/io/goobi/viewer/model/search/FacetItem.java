@@ -56,6 +56,9 @@ public class FacetItem implements Serializable, IFacetItem {
 
     private static final Logger logger = LogManager.getLogger(FacetItem.class);
 
+    /** Marker prepended to a serialized facet link to denote an exclusion (negated) facet. */
+    public static final String EXCLUDE_PREFIX = "!";
+
     private FacetType type = FacetType.STANDARD;
     private String field;
     private String value;
@@ -65,6 +68,7 @@ public class FacetItem implements Serializable, IFacetItem {
     private long count;
     private boolean group;
     private final boolean hierarchial;
+    private boolean excluded = false;
 
     /**
      * Constructor that doesn't parse the link; for testing purposes.
@@ -134,6 +138,7 @@ public class FacetItem implements Serializable, IFacetItem {
         int result = 1;
         result = prime * result + ((field == null) ? 0 : field.hashCode());
         result = prime * result + ((link == null) ? 0 : link.hashCode());
+        result = prime * result + (excluded ? 1231 : 1237);
         return result;
     }
 
@@ -163,7 +168,7 @@ public class FacetItem implements Serializable, IFacetItem {
         } else if (!link.equals(other.link)) {
             return false;
         }
-        return true;
+        return excluded == other.excluded;
     }
 
     /**
@@ -387,6 +392,24 @@ public class FacetItem implements Serializable, IFacetItem {
      */
     @Override
     public String getQueryEscapedLink() {
+        return negateIfExcluded(buildPositiveQueryEscapedLink());
+    }
+
+    /**
+     * Wraps a positive filter query in a Solr negation if this facet is an exclusion facet.
+     *
+     * @param positiveQuery the positive (non-negated) filter query
+     * @return the negated query (e.g. {@code -(FIELD:value)}) if excluded, otherwise the unchanged input
+     */
+    private String negateIfExcluded(String positiveQuery) {
+        if (!excluded || StringUtils.isEmpty(positiveQuery)) {
+            return positiveQuery;
+        }
+        // Already a parenthesized group (e.g. hierarchical): just prefix '-'; otherwise wrap in '-(...)'.
+        return positiveQuery.startsWith("(") ? "-" + positiveQuery : "-(" + positiveQuery + ")";
+    }
+
+    private String buildPositiveQueryEscapedLink() {
         String f = SearchHelper.facetifyField(this.field);
         String escapedValue = getEscapedValue(value);
         if (hierarchial) {
@@ -578,7 +601,7 @@ public class FacetItem implements Serializable, IFacetItem {
      */
     @Override
     public String getLink() {
-        return link;
+        return excluded ? EXCLUDE_PREFIX + link : link;
     }
 
     /**
@@ -589,11 +612,18 @@ public class FacetItem implements Serializable, IFacetItem {
     @Override
     public void setLink(String link) {
         // TODO move logic out of the setter
-        int colonIndex = link.indexOf(':');
+        // An exclusion (negated) facet is serialized with a leading marker, e.g. "!DC:value". Detect and strip
+        // it here so that field/value/label stay clean; getLink() re-emits the marker for round-tripping.
+        String useLink = link;
+        this.excluded = useLink.startsWith(EXCLUDE_PREFIX);
+        if (this.excluded) {
+            useLink = useLink.substring(EXCLUDE_PREFIX.length());
+        }
+        int colonIndex = useLink.indexOf(':');
         if (colonIndex == -1) {
             throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ").append(link).toString());
         }
-        this.link = link;
+        this.link = useLink;
         if (this.link.endsWith(";;")) {
             this.link = this.link.substring(0, this.link.length() - 2);
         }
@@ -698,6 +728,16 @@ public class FacetItem implements Serializable, IFacetItem {
     @Override
     public boolean isBooleanType() {
         return DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(field);
+    }
+
+    @Override
+    public boolean isExcluded() {
+        return excluded;
+    }
+
+    @Override
+    public void setExcluded(boolean excluded) {
+        this.excluded = excluded;
     }
 
     public String toString() {

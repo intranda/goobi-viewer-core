@@ -190,12 +190,17 @@
                                             <c:forEach
                                                 items="#{searchBean.facets.getActiveFacetsForField(field.key)}"
                                                 var="facet">
-                                                <li class="widget-search-facets__list-item active">
+                                                <li class="widget-search-facets__list-item active #{facet.excluded ? '-excluded' : ''}">
                                                     <h:commandLink
                                                         styleClass="widget-search-facets__list-item-link -active"
                                                         action="#{searchBean.removeFacetAction(facet.link)}"
                                                         title="#{msg.removeFacet}">
                                                         <div class="widget-search-facets__list-item-link-inner">
+                                                            <!-- EXCLUSION (NOT) INDICATOR -->
+                                                            <ui:fragment rendered="#{facet.excluded}">
+                                                                <div class="widget-search-facets__list-item-exclude"
+                                                                    title="#{msg.searchOperator_NOT}">#{msg.searchOperator_NOT}</div>
+                                                            </ui:fragment>
                                                             <div class="widget-search-facets__list-item-label">#{facet.translatedLabel}</div>
                                                             <div class="widget-search-facets__list-item-icon">
                                                                 <util:icon
@@ -211,7 +216,7 @@
                                                             value="top" />
                                                         <f:passThroughAttribute
                                                             name="aria-label"
-                                                            value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                            value="#{facet.excluded ? msg.searchOperator_NOT.concat(' ') : ''}#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
                                                     </h:commandLink>
                                                 </li>
                                             </c:forEach>

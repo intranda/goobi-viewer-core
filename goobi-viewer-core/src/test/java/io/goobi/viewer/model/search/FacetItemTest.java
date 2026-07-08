@@ -341,4 +341,49 @@ class FacetItemTest extends AbstractTest {
         Assertions.assertEquals(2, facetItems.get(1).getCount());
         Assertions.assertEquals("Montana, Tony", facetItems.get(2).getValue());
     }
+
+    /**
+     * @see FacetItem#setLink(String)
+     * @verifies detect exclusion marker and keep field and value clean
+     */
+    @Test
+    void setLink_shouldDetectExclusionMarkerAndKeepFieldAndValueClean() {
+        IFacetItem item = new FacetItem(FacetItem.EXCLUDE_PREFIX + "DC:foo", true);
+        Assertions.assertTrue(item.isExcluded());
+        Assertions.assertEquals("DC", item.getField());
+        Assertions.assertEquals("foo", item.getValue());
+        // getLink() must re-emit the marker so the exclusion round-trips through the facet string/URL
+        Assertions.assertEquals(FacetItem.EXCLUDE_PREFIX + "DC:foo", item.getLink());
+    }
+
+    /**
+     * @see FacetItem#getLink()
+     * @verifies not add exclusion marker for a regular facet item
+     */
+    @Test
+    void getLink_shouldNotAddExclusionMarkerForARegularFacetItem() {
+        IFacetItem item = new FacetItem("DC:foo", true);
+        Assertions.assertFalse(item.isExcluded());
+        Assertions.assertEquals("DC:foo", item.getLink());
+    }
+
+    /**
+     * @see FacetItem#getQueryEscapedLink()
+     * @verifies negate a non hierarchical exclusion facet item
+     */
+    @Test
+    void getQueryEscapedLink_shouldNegateANonHierarchicalExclusionFacetItem() {
+        IFacetItem item = new FacetItem(FacetItem.EXCLUDE_PREFIX + "FIELD:value", false);
+        Assertions.assertEquals("-(FIELD:value)", item.getQueryEscapedLink());
+    }
+
+    /**
+     * @see FacetItem#getQueryEscapedLink()
+     * @verifies negate a hierarchical exclusion facet item
+     */
+    @Test
+    void getQueryEscapedLink_shouldNegateAHierarchicalExclusionFacetItem() {
+        IFacetItem item = new FacetItem(FacetItem.EXCLUDE_PREFIX + "FIELD:value", true);
+        Assertions.assertEquals("-(FIELD:value OR FIELD:value.*)", item.getQueryEscapedLink());
+    }
 }

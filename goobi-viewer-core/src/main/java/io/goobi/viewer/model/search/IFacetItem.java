@@ -71,6 +71,16 @@ public interface IFacetItem {
     IFacetItem setGroup(boolean group);
 
     boolean isHierarchial();
-    
+
     boolean isBooleanType();
+
+    /**
+     * @return true if this facet excludes (negates) matching documents instead of including them
+     */
+    boolean isExcluded();
+
+    /**
+     * @param excluded true to make this facet exclude (negate) matching documents
+     */
+    void setExcluded(boolean excluded);
 }

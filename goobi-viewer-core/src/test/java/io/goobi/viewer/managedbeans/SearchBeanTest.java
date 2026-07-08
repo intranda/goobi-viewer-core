@@ -53,6 +53,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.AdvancedSearchOrigin;
+import io.goobi.viewer.model.search.FacetItem;
+import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -541,6 +543,30 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
                 searchBean.getFacets().getActiveFacetString());
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
+     * @verifies add hierarchical NOT item as an exclusion facet
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldAddHierarchicalNOTItemAsExclusionFacet() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
+
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setOperator(SearchItemOperator.NOT);
+        item.setField(SolrConstants.DC);
+        item.setValue("foo");
+        Assertions.assertTrue(item.isHierarchical());
+
+        searchBean.generateAdvancedSearchMainQuery();
+
+        // The NOT operator must produce an excluded (negated) facet, serialized with the exclusion marker
+        assertEquals(URLEncoder.encode(FacetItem.EXCLUDE_PREFIX + SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
+                searchBean.getFacets().getActiveFacetString());
+        List<IFacetItem> activeFacets = searchBean.getFacets().getActiveFacets();
+        Assertions.assertEquals(1, activeFacets.size());
+        Assertions.assertTrue(activeFacets.get(0).isExcluded());
     }
 
     /**

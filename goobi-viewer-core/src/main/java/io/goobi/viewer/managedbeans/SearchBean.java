@@ -845,6 +845,11 @@ public class SearchBean implements SearchInterface, Serializable {
                         continue;
                     }
 
+                    // A NOT operator turns the hierarchical item into an exclusion facet. The marker is encoded
+                    // into the serialized link (e.g. "!DC:value") so the resulting FacetItem is parsed as excluded
+                    // and produces a negative filter query, while include/exclude of the same value stay distinct.
+                    String exclusionMarker = SearchItemOperator.NOT.equals(line.getOperator()) ? FacetItem.EXCLUDE_PREFIX : "";
+
                     // Skip identical hierarchical items
 
                     // Find existing facet items that can be re-purposed for the existing facets
@@ -858,8 +863,8 @@ public class SearchBean implements SearchInterface, Serializable {
                             // logger.trace("facet item already handled: {}", facetItem.getLink()); //NOSONAR Debug
                             continue;
                         }
-                        if (!usedFieldValuePairs.contains(item.getField() + ":" + item.getValue())) {
-                            facetItem.setLink(item.getField() + ":" + item.getValue());
+                        if (!usedFieldValuePairs.contains(exclusionMarker + item.getField() + ":" + item.getValue())) {
+                            facetItem.setLink(exclusionMarker + item.getField() + ":" + item.getValue());
                             usedFieldValuePairs.add(facetItem.getLink());
                             // logger.trace("reuse facet item: {}", facetItem); //NOSONAR Debug
                             skipQueryItem = true;
@@ -869,7 +874,8 @@ public class SearchBean implements SearchInterface, Serializable {
 
                     if (!skipQueryItem) {
                         String itemQuery =
-                                new StringBuilder().append(item.getField()).append(':').append(item.getValue().trim()).toString();
+                                new StringBuilder().append(exclusionMarker).append(item.getField()).append(':').append(item.getValue().trim())
+                                        .toString();
                         // logger.trace("item query: {}", itemQuery); //NOSONAR Debug
 
                         // Check whether this combination already exists and skip, if that's the case

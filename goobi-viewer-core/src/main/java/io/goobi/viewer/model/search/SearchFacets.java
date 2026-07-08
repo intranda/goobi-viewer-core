@@ -154,6 +154,7 @@ public class SearchFacets implements Serializable {
 
         StringBuilder sbQuery = new StringBuilder();
         int count = 0;
+        boolean hasPositive = false;
         for (IFacetItem facetItem : getActiveFacetsCopy()) {
             if (!facetItem.isHierarchial()) {
                 continue;
@@ -162,6 +163,12 @@ public class SearchFacets implements Serializable {
                 sbQuery.append(SolrConstants.SOLR_QUERY_AND);
             }
             String field = SearchHelper.facetifyField(facetItem.getField());
+            // Exclusion facet: negate the whole hierarchical group so matching documents are removed.
+            if (facetItem.isExcluded()) {
+                sbQuery.append('-');
+            } else {
+                hasPositive = true;
+            }
             sbQuery.append('(')
                     .append(field)
                     .append(':')
@@ -172,6 +179,12 @@ public class SearchFacets implements Serializable {
                     .append(facetItem.getValue())
                     .append(".*)");
             count++;
+        }
+
+        // A purely negative filter query matches nothing in Solr; prepend a positive base so the
+        // exclusions are subtracted from the full result set instead.
+        if (count > 0 && !hasPositive) {
+            sbQuery.insert(0, "*:*" + SolrConstants.SOLR_QUERY_AND);
         }
 
         return sbQuery.toString();
@@ -196,6 +209,9 @@ public class SearchFacets implements Serializable {
 
         List<String> ret = new ArrayList<>();
         Map<String, StringBuilder> queries = LinkedHashMap.newLinkedHashMap(activeFacets.size());
+        // Track per field whether any positive (non-excluded) clause was added, so a field group
+        // consisting solely of exclusions can be given a positive base (a purely negative query matches nothing).
+        Map<String, Boolean> fieldHasPositive = new HashMap<>(activeFacets.size());
 
         for (IFacetItem facetItem : getActiveFacetsCopy()) {
             if (facetItem.isHierarchial() || facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)
@@ -211,11 +227,16 @@ public class SearchFacets implements Serializable {
                 }
             }
             sbQuery.append(facetItem.getQueryEscapedLink());
+            fieldHasPositive.merge(facetItem.getField(), !facetItem.isExcluded(), Boolean::logicalOr);
         }
 
         for (Entry<String, StringBuilder> entry : queries.entrySet()) {
-            ret.add(entry.getValue().toString());
-            logger.trace("Added facet: {}", entry.getValue());
+            StringBuilder sbQuery = entry.getValue();
+            if (Boolean.FALSE.equals(fieldHasPositive.get(entry.getKey()))) {
+                sbQuery.insert(0, "*:*" + SolrConstants.SOLR_QUERY_AND);
+            }
+            ret.add(sbQuery.toString());
+            logger.trace("Added facet: {}", sbQuery);
         }
 
         return ret;
@@ -620,19 +641,26 @@ public class SearchFacets implements Serializable {
                 continue;
             }
 
+            // An exclusion (negated) facet is serialized with a leading marker, e.g. "!DC:value". Strip it for
+            // field/value derivation; the FacetItem re-detects the marker from its link and sets its excluded flag.
+            boolean itemExcluded = facetLink.startsWith(FacetItem.EXCLUDE_PREFIX);
+            if (itemExcluded) {
+                facetLink = facetLink.substring(FacetItem.EXCLUDE_PREFIX.length());
+            }
             if (!facetLink.contains(":")) {
                 facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
             }
             String facetField = facetLink.substring(0, facetLink.indexOf(":"));
             if (DataManager.getInstance().getConfiguration().getGeoFacetFields().contains(facetField)) {
+                // Geo facets do not support exclusion; ignore any marker.
                 GeoFacetItem item = new GeoFacetItem(facetField);
                 item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
                 facetItems.add(item);
             } else {
                 // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
                 String label = labelMap != null && labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
-                facetItems.add(
-                        new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
+                String itemLink = itemExcluded ? FacetItem.EXCLUDE_PREFIX + facetLink : facetLink;
+                facetItems.add(new FacetItem(itemLink, label, isFieldHierarchical(facetField)));
             }
         }
     }

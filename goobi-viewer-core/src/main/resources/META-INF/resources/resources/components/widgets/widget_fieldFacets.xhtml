@@ -70,12 +70,17 @@
                                 <ui:repeat
                                     value="#{searchBean.facets.getActiveFacetsForField(field)}"
                                     var="facet">
-                                    <li class="active">
+                                    <li class="active #{facet.excluded ? '-excluded' : ''}">
                                         <h:commandLink
                                             action="#{searchBean.removeFacetAction(facet.link)}"
                                             title="#{msg.removeFacet}">
                                             <div class="row">
-                                                <div class="col-11">#{facet.translatedLabel}</div>
+                                                <div class="col-11">
+                                                    <ui:fragment rendered="#{facet.excluded}">
+                                                        <span class="widget-search-facets__list-item-exclude">#{msg.searchOperator_NOT}</span>
+                                                    </ui:fragment>
+                                                    #{facet.translatedLabel}
+                                                </div>
                                                 <div class="col-1">
                                                     <util:icon
                                                         icon="x"
@@ -90,7 +95,7 @@
                                                 value="top" />
                                             <f:passThroughAttribute
                                                 name="aria-label"
-                                                value="#{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                value="#{facet.excluded ? msg.searchOperator_NOT.concat(' ') : ''}#{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
                                         </h:commandLink>
                                     </li>
                                 </ui:repeat>

@@ -224,6 +224,17 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     @Override
+    public boolean isExcluded() {
+        // Geo facets are never used as exclusion facets.
+        return false;
+    }
+
+    @Override
+    public void setExcluded(boolean excluded) {
+        // NOOP: geo facets do not support exclusion.
+    }
+
+    @Override
     public String getLink() {
         return getFacetQuery();
     }
