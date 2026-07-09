@@ -33,6 +33,8 @@ public interface IFacetItem {
     String getEscapedLink();
 
     String getUrlEscapedLink();
+
+    String getExcludeUrlEscapedLink();
     
     FacetType getType();
 

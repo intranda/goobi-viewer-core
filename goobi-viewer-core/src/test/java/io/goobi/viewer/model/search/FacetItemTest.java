@@ -386,4 +386,21 @@ class FacetItemTest extends AbstractTest {
         IFacetItem item = new FacetItem(FacetItem.EXCLUDE_PREFIX + "FIELD:value", true);
         Assertions.assertEquals("-(FIELD:value OR FIELD:value.*)", item.getQueryEscapedLink());
     }
+
+    /**
+     * @see FacetItem#getExcludeUrlEscapedLink()
+     * @verifies prepend url encoded exclusion marker
+     */
+    @Test
+    void getExcludeUrlEscapedLink_shouldPrependUrlEncodedExclusionMarker() {
+        IFacetItem item = new FacetItem("DC:foo", true);
+        String excludeLink = item.getExcludeUrlEscapedLink();
+        // The marker '!' is URL-encoded to %21; decoding must yield an excluded FacetItem for "DC:foo"
+        Assertions.assertTrue(excludeLink.startsWith("%21"), "expected leading %21 marker but was: " + excludeLink);
+        String decoded = java.net.URLDecoder.decode(excludeLink, java.nio.charset.StandardCharsets.UTF_8);
+        IFacetItem roundTrip = new FacetItem(decoded, true);
+        Assertions.assertTrue(roundTrip.isExcluded());
+        Assertions.assertEquals("DC", roundTrip.getField());
+        Assertions.assertEquals("foo", roundTrip.getValue());
+    }
 }

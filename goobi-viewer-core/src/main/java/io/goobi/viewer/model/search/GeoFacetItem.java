@@ -182,6 +182,12 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     @Override
+    public String getExcludeUrlEscapedLink() {
+        // Geo facets do not support exclusion; return the regular drill-down link.
+        return getUrlEscapedLink();
+    }
+
+    @Override
     public FacetType getType() {
         return FacetType.GEO;
     }

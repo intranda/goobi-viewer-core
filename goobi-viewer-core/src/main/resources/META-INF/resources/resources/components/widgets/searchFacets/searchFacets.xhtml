@@ -226,14 +226,26 @@
                                                 value="#{searchBean.facets.getLimitedFacetListForField(field.key)}"
                                                 var="facet">
                                                 <li class="widget-search-facets__list-item">
+                                                    <!-- POSITIVE (INCLUDE) SELECTION -->
                                                     <h:outputLink
                                                         styleClass="widget-search-facets__list-item-link"
                                                         value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/#{navigationHelper.subThemeQueryParam}">
+                                                        <span class="widget-search-facets__list-item-include" aria-hidden="true">+</span>
                                                         <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>
                                                         <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
                                                         <f:passThroughAttribute
                                                             name="aria-label"
                                                             value="#{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                    </h:outputLink>
+                                                    <!-- NEGATIVE (EXCLUDE) SELECTION -->
+                                                    <h:outputLink
+                                                        styleClass="widget-search-facets__list-item-exclude-link"
+                                                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.excludeUrlEscapedLink}/#{navigationHelper.subThemeQueryParam}"
+                                                        title="#{msg.searchOperator_NOT}: #{facet.translatedLabel}">
+                                                        <span class="widget-search-facets__list-item-exclude" aria-hidden="true">&#8722;</span>
+                                                        <f:passThroughAttribute
+                                                            name="aria-label"
+                                                            value="#{msg.searchOperator_NOT} #{msg[field.key.concat('_DD')]}: #{facet.translatedLabel}" />
                                                     </h:outputLink>
                                                 </li>
                                             </ui:repeat>

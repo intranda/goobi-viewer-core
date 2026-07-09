@@ -508,7 +508,22 @@ public class FacetItem implements Serializable, IFacetItem {
         }
     }
 
-    
+    /**
+     * URL escaped link that adds the exclusion marker, for building "exclude this value" drill-down links.
+     *
+     * @return the URL-encoded facet link prefixed with {@link #EXCLUDE_PREFIX} (e.g. "!FIELD:value")
+     */
+    @Override
+    public String getExcludeUrlEscapedLink() {
+        String ret = BeanUtils.escapeCriticalUrlChracters(EXCLUDE_PREFIX + link);
+        try {
+            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return ret;
+        }
+    }
+
+
     @Override
     public FacetType getType() {
         return type;

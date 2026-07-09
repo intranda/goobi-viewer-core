@@ -105,12 +105,24 @@
                                     value="#{searchBean.getFieldFacetValues(field, cc.attrs.widget.numEntries, cc.attrs.widget.getCombinedFilterQuery(cmsBean.currentPage))}"
                                     var="facet">
                                     <li>
+                                        <!-- POSITIVE (INCLUDE) SELECTION -->
                                         <h:outputLink
                                             value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/-/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.urlEscapedLink}/">
+                                            <span class="widget-search-facets__list-item-include" aria-hidden="true">+</span>
                                             #{msg[facet.label]} (#{facet.count})
                                             <f:passThroughAttribute
                                                 name="aria-label"
                                                 value="#{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
+                                        </h:outputLink>
+                                        <!-- NEGATIVE (EXCLUDE) SELECTION -->
+                                        <h:outputLink
+                                            styleClass="widget-search-facets__list-item-exclude-link"
+                                            value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/-/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.excludeUrlEscapedLink}/"
+                                            title="#{msg.searchOperator_NOT}: #{facet.translatedLabel}">
+                                            <span class="widget-search-facets__list-item-exclude" aria-hidden="true">&#8722;</span>
+                                            <f:passThroughAttribute
+                                                name="aria-label"
+                                                value="#{msg.searchOperator_NOT} #{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
                                         </h:outputLink>
                                     </li>
                                 </ui:repeat>
