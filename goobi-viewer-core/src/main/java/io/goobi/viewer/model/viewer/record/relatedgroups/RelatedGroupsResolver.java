@@ -39,6 +39,7 @@ import io.goobi.viewer.managedbeans.ImageDeliveryBean;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
@@ -115,7 +116,11 @@ public class RelatedGroupsResolver {
             return Collections.emptyList();
         }
 
-        SolrDocumentList docs = searchWithSortFallback(query, maxResults, sortFields, fields);
+        // Enforce listing access control; without this suffix the related-groups section would expose
+        // metadata of access-restricted records. Wrap the OR-clauses in a required group so the appended
+        // +(ACCESSCONDITION...) suffix constrains the whole query.
+        String filteredQuery = "+(" + query + ")" + SearchHelper.getAllSuffixes();
+        SolrDocumentList docs = searchWithSortFallback(filteredQuery, maxResults, sortFields, fields);
         if (docs == null || docs.isEmpty()) {
             return Collections.emptyList();
         }
@@ -233,9 +238,12 @@ public class RelatedGroupsResolver {
      */
     private String findFallbackThumbnailUrl(String pi) {
         String escapedPi = ClientUtils.escapeQueryChars(pi);
-        String fallbackQuery = "(" + SolrConstants.PI_ANCHOR + ":" + escapedPi
+        // Wrap in a required group and append the access-control suffix so a restricted member cannot
+        // leak its thumbnail for an otherwise permitted series/anchor record.
+        String fallbackQuery = "+((" + SolrConstants.PI_ANCHOR + ":" + escapedPi
                 + " OR " + GROUPID_SERIES + ":" + escapedPi + ")"
-                + " AND " + SolrConstants.THUMBNAIL + ":*";
+                + " AND " + SolrConstants.THUMBNAIL + ":*)"
+                + SearchHelper.getAllSuffixes();
         try {
             SolrDocumentList fallbackDocs = DataManager.getInstance().getSearchIndex()
                     .search(fallbackQuery, 1, null,
