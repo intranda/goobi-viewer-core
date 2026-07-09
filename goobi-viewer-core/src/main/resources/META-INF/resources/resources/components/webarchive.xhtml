@@ -30,7 +30,7 @@
                         <ui:fragment rendered="#{not empty cc.attrs.logo}">
                             <a href="#{request.contextPath}/">
                                 <img
-                                    src='#{adminThemesBean.getLogo("/images/template/svgs/zlb_logo_color.svg", 200, 120)}'
+                                    src='#{cc.attrs.logo}'
                                     alt="#{adminThemesBean.getThemeLabel(configurationBean.name)} Logo" />
                             </a>
                         </ui:fragment>
