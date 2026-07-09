@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.faces.model.SelectItem;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.model.security.LicenseType;
 
 class AdminLicenseBeanTest extends AbstractDatabaseEnabledTest {
 
@@ -46,5 +48,46 @@ class AdminLicenseBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(2, items.size());
         Assertions.assertEquals(1, ((SelectItemGroup) items.get(0)).getSelectItems().length);
         Assertions.assertEquals(5, ((SelectItemGroup) items.get(1)).getSelectItems().length);
+    }
+
+    /**
+     * @see AdminLicenseBean#createsOverrideCycle(LicenseType, List)
+     * @verifies detect reciprocal override cycle
+     */
+    @Test
+    void createsOverrideCycle_shouldDetectReciprocalCycle() {
+        LicenseType a = new LicenseType();
+        a.setName("A");
+        LicenseType b = new LicenseType();
+        b.setName("B");
+        a.getOverriddenLicenseTypes().add(b);
+        b.getOverriddenLicenseTypes().add(a);
+        Assertions.assertTrue(AdminLicenseBean.createsOverrideCycle(a, Arrays.asList(a, b)));
+    }
+
+    /**
+     * @see AdminLicenseBean#createsOverrideCycle(LicenseType, List)
+     * @verifies detect self override cycle
+     */
+    @Test
+    void createsOverrideCycle_shouldDetectSelfCycle() {
+        LicenseType a = new LicenseType();
+        a.setName("A");
+        a.getOverriddenLicenseTypes().add(a);
+        Assertions.assertTrue(AdminLicenseBean.createsOverrideCycle(a, Arrays.asList(a)));
+    }
+
+    /**
+     * @see AdminLicenseBean#createsOverrideCycle(LicenseType, List)
+     * @verifies return false for acyclic overrides
+     */
+    @Test
+    void createsOverrideCycle_shouldReturnFalseForAcyclicOverrides() {
+        LicenseType a = new LicenseType();
+        a.setName("A");
+        LicenseType b = new LicenseType();
+        b.setName("B");
+        a.getOverriddenLicenseTypes().add(b);
+        Assertions.assertFalse(AdminLicenseBean.createsOverrideCycle(a, Arrays.asList(a, b)));
     }
 }

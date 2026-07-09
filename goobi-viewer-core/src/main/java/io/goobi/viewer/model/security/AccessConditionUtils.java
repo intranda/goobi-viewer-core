@@ -1409,6 +1409,8 @@ public final class AccessConditionUtils {
      * @should keep public access ticket path if overriding license type present
      * @should deny public access if restrictive license type does not override
      * @should fall through to baseline grant if secondary access check invalidates licensee access
+     * @should deny anonymous access on reciprocal override cycle
+     * @should not require access ticket for overriding user when overridden type grants by default
      */
     public static AccessPermission checkAccessPermission(List<LicenseType> allLicenseTypes, final Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
@@ -1445,6 +1447,10 @@ public final class AccessConditionUtils {
 
         // If all relevant license types allow the requested privilege by default, allow access
         boolean licenseTypeAllowsPriv = true;
+        // Tracks whether at least one non-overriding relevant license type grants the privilege by default. The public
+        // baseline grant below requires this, so a cyclic/reciprocal override (where every relevant type is an overriding
+        // type and thus skipped by the deny check) cannot leave licenseTypeAllowsPriv=true and fail open to anonymous callers.
+        boolean baselineGrantsPriv = false;
         boolean accessTicketRequired = false;
         boolean redirect = false;
         String redirectUrl = null;
@@ -1479,16 +1485,21 @@ public final class AccessConditionUtils {
             if (licenseType.isAccessTicketRequired()) {
                 accessTicketRequired = true;
             }
-            if (!overridingConditionNames.contains(licenseType.getName()) && !licenseType.getPrivileges().contains(privilegeName)
-                    && !licenseType.isOpenAccess() && !licenseType.isRestrictionsExpired(query)) {
-                logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR Debug
-                licenseTypeAllowsPriv = false;
+            if (!overridingConditionNames.contains(licenseType.getName())) {
+                if (licenseType.getPrivileges().contains(privilegeName) || licenseType.isOpenAccess()
+                        || licenseType.isRestrictionsExpired(query)) {
+                    // A non-overriding type that grants the privilege by default establishes the public baseline.
+                    baselineGrantsPriv = true;
+                } else {
+                    logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR Debug
+                    licenseTypeAllowsPriv = false;
+                }
             }
         }
         // If every relevant license type allows the privilege by default and there are no overriding license types, grant
         // access immediately. When overriding types are present, the public grant is deferred until after the licensee-specific
         // checks below, so that a licensee matching an overriding type can receive a reduced (e.g. ticket-free) permission.
-        if (licenseTypeAllowsPriv && !hasOverridingLicenseTypes) {
+        if (licenseTypeAllowsPriv && baselineGrantsPriv && !hasOverridingLicenseTypes) {
             // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName); //NOSONAR Debug
             return AccessPermission.granted()
                     .setRedirect(redirect)
@@ -1570,10 +1581,11 @@ public final class AccessConditionUtils {
             }
         }
 
-        // General-public baseline grant: reached when no licensee-specific route matched. When the overridden license type(s)
-        // grant the privilege by default (possibly gated by an access ticket), the general public retains that access even
-        // though an overriding license type is also present on the record.
-        if (licenseTypeAllowsPriv) {
+        // General-public baseline grant: reached when no licensee-specific route matched. When a non-overriding license type
+        // grants the privilege by default (possibly gated by an access ticket), the general public retains that access even
+        // though an overriding license type is also present on the record. Requires baselineGrantsPriv so a cyclic override
+        // configuration (no non-overriding type establishes a baseline) fails closed instead of open.
+        if (licenseTypeAllowsPriv && baselineGrantsPriv) {
             return AccessPermission.granted()
                     .setRedirect(redirect)
                     .setRedirectUrl(redirectUrl)
