@@ -48,23 +48,27 @@
 
                     <!-- ICON GRID -->
                     <ui:fragment rendered="#{cc.attrs.iconGrid}">
-                        <div class="collection-icon-grid">
+                        <ul class="collection-icon-grid">
                             <ui:repeat
                                 var="browseDcElement"
                                 value="#{collection.visibleDcElements}">
-                                <a
-                                    class="collection-icon-grid__tile"
-                                    href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}">
-                                    <img
-                                        class="collection-icon-grid__image"
-                                        src="#{browseDcElement.info.iconURI}"
-                                        alt=""
-                                        data-viewer-thumbnail="thumbnail"
-                                        data-viewer-access-denied-url="#{browseDcElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
-                                    <span class="collection-icon-grid__label">#{msg[browseDcElement.label]}</span>
-                                </a>
+                                <li class="collection-icon-grid__item">
+                                    <a
+                                        class="collection-icon-grid__tile"
+                                        href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}">
+                                        <ui:fragment rendered="#{browseDcElement.hasIcon()}">
+                                            <img
+                                                class="collection-icon-grid__image"
+                                                src="#{browseDcElement.info.iconURI}"
+                                                alt=""
+                                                data-viewer-thumbnail="thumbnail"
+                                                data-viewer-access-denied-url="#{browseDcElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+                                        </ui:fragment>
+                                        <span class="collection-icon-grid__label">#{msg[browseDcElement.label]}</span>
+                                    </a>
+                                </li>
                             </ui:repeat>
-                        </div>
+                        </ul>
                     </ui:fragment>
                 </div>
             </div>
