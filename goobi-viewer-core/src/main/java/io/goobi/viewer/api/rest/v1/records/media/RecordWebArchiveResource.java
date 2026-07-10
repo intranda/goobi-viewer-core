@@ -121,7 +121,7 @@ public class RecordWebArchiveResource {
      * @should return 404 when a matching document is found but every identifier fails to parse
      */
     @GET
-    @Path("/webarchives.json")
+    @Path(ApiUrls.RECORDS_WEBARCHIVE)
     @Produces("application/json")
     @Operation(tags = { "records" }, summary = "Get json containing all webarchive resources")
     public Response getWebarchiveJson() throws IndexUnreachableException, PresentationException {
@@ -183,8 +183,8 @@ public class RecordWebArchiveResource {
     }
 
     /**
-     * Finds all external web archive URLs referenced via {@code MD_WEBARCHIVE_IDENTIFIER} on the document matching
-     * {@code PI:<pi>}, resolving each raw identifier via {@link #resolveWebArchiveUrl(String)}.
+     * Finds all external web archive URLs referenced via {@code MD_WEBARCHIVE_IDENTIFIER} on the document matching {@code PI:<pi>}, resolving each
+     * raw identifier via {@link #resolveWebArchiveUrl(String)}.
      *
      * @param search Solr search index to query
      * @return resolved URLs; empty if no matching document is found or none of its identifiers could be resolved
@@ -319,8 +319,8 @@ public class RecordWebArchiveResource {
     }
 
     /**
-     * Resolves the actual archive URL from a raw {@code MD_WEBARCHIVE_IDENTIFIER} value: if the identifier has a
-     * {@code source} query parameter, that parameter's value is the actual URL; otherwise the identifier itself is used.
+     * Resolves the actual archive URL from a raw {@code MD_WEBARCHIVE_IDENTIFIER} value: if the identifier has a {@code source} query parameter, that
+     * parameter's value is the actual URL; otherwise the identifier itself is used.
      *
      * @param rawIdentifier value of the {@code MD_WEBARCHIVE_IDENTIFIER} field
      * @return the resolved URL, or {@code null} if {@code rawIdentifier} is blank or not a valid URI
@@ -344,8 +344,8 @@ public class RecordWebArchiveResource {
     }
 
     /**
-     * Derives a display name for an external web archive resource from its URL: the last path segment, or the full URL
-     * if it has no path segment or cannot be parsed.
+     * Derives a display name for an external web archive resource from its URL: the last path segment, or the full URL if it has no path segment or
+     * cannot be parsed.
      *
      * @param url resolved external web archive URL
      * @return a display name for the resource

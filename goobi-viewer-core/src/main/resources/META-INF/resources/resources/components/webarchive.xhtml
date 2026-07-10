@@ -10,7 +10,7 @@
         <composite:attribute
             name="archiveUrl"
             required="false"
-            default="#{request.contextPath}/api/v1/records/#{activeDocumentBean.viewManager.pi}/webarchives.json" />
+            default="#{activeDocumentBean.viewManager.webarchiveUrl}" />
         <composite:attribute
             name="startPageUrl"
             required="false"
@@ -45,11 +45,6 @@
                 </div>
             </div>
 
-            <!--                                  <replay-web-page -->
-            <!--      					            embed="full" -->
-            <!--      					            replayBase="#{request.contextPath}/resources/javascript/libs/replaywebpage/" -->
-            <!--      					            url="https://www.gedenktafeln-in-berlin.de/" -->
-            <!--      					            source="https://app.browsertrix.com/api/orgs/e77cf10b-dfc8-4c14-811c-24bb338bdf10/collections/312ab30f-5a13-46a9-81a3-e9a43c3e40bf/public/replay.json" /> -->
             <replay-web-page
                 embed="full"
                 noMediaDownload="true"

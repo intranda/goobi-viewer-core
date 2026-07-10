@@ -114,7 +114,7 @@ public class MimeType {
     }
 
     public boolean isMediaType() {
-        return isAllowsImageView() || isAudio() || isVideo() || isSandboxedHtml() || is3DModel();
+        return isAllowsImageView() || isAudio() || isVideo() || isSandboxedHtml() || is3DModel() || isWebArchive();
     }
 
     @Override

@@ -489,7 +489,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         MimeType mimeType = new MimeType(this.mimeType);
         hasImages = !isAnchor() && !isGroup() && (mimeType.isImage() || structElement.isHasImages());
         hasMedia = !hasImages && !isAnchor() && !isGroup()
-                && (mimeType.isAudio() || mimeType.isVideo() || mimeType.isSandboxedHtml() || mimeType.is3DModel());
+                && (mimeType.isAudio() || mimeType.isVideo() || mimeType.isSandboxedHtml() || mimeType.is3DModel() || mimeType.isWebArchive());
         hasMeiFile = StringUtils.isNotEmpty(structElement.getMetadataValue(SolrConstants.FILENAME_MEI));
         hasTeiFiles = structElement.getMetadataFields().keySet().stream().filter(k -> k.startsWith(SolrConstants.FILENAME_TEI)).count() > 0;
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
@@ -1146,10 +1146,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * Returns the number of volumes contained in this anchor record. The value is computed live (a Solr count of the
-     * anchor's volumes) rather than read from the stored NUMVOLUMES field, so the figure shown in search hits is current
-     * even if the anchor has not yet been re-indexed after a volume was added or removed. The result is cached per
-     * BrowseElement instance. Non-anchor elements always return 0.
+     * Returns the number of volumes contained in this anchor record. The value is computed live (a Solr count of the anchor's volumes) rather than
+     * read from the stored NUMVOLUMES field, so the figure shown in search hits is current even if the anchor has not yet been re-indexed after a
+     * volume was added or removed. The result is cached per BrowseElement instance. Non-anchor elements always return 0.
      *
      * @return the number of volumes contained in this anchor record
      */

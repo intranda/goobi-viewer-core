@@ -38,6 +38,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -4470,6 +4471,16 @@ public class ViewManager implements Serializable {
         } else {
             return Collections.emptyMap();
         }
+
+    }
+
+    public URI getWebarchiveUrl() {
+
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_WEBARCHIVE).params(this.pi).buildURI())
+                .orElse(null);
 
     }
 }
