@@ -319,9 +319,8 @@ public class RecordWebArchiveResource {
     }
 
     /**
-     * <<<<<<< Upstream, based on branch 'feature_webarchives' of git@gitea.intranda.com:goobi-viewer/goobi-viewer-core.git Resolves the actual
-     * archive URL from a raw {@code MD_WEBARCHIVE_IDENTIFIER} value: if the identifier has a {@code source} query parameter, that parameter's value
-     * is the actual URL; otherwise the identifier itself is used.
+     * Resolves the actual archive URL from a raw {@code MD_WEBARCHIVE_IDENTIFIER} value: if the identifier has a {@code source} query parameter, that
+     * parameter's value is the actual URL; otherwise the identifier itself is used.
      *
      * @param rawIdentifier value of the {@code MD_WEBARCHIVE_IDENTIFIER} field
      * @return the resolved URL, or {@code null} if {@code rawIdentifier} is blank or not a valid URI
@@ -346,7 +345,7 @@ public class RecordWebArchiveResource {
 
     /**
      * Derives a display name for an external web archive resource from its URL: the last path segment, or the full URL if it has no path segment or
-     * cannot be parsed. >>>>>>> 5c87d7a feat: add web archive URL resolution and name-derivation helpers
+     * cannot be parsed.
      *
      * @param url resolved external web archive URL
      * @return a display name for the resource
