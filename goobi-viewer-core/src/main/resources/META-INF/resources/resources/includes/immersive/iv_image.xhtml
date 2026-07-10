@@ -1,6 +1,7 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:jsf="http://xmlns.jcp.org/jsf">
     <!-- modules.mjs (IvViewer) reads these data attributes and drives navigation
          client-side; data-start-order is the 0-based canvas index (JSF order is 1-based). -->
@@ -12,7 +13,41 @@
         data-pi="#{activeDocumentBean.viewManager.pi}"
         data-api-base="#{request.contextPath}/api/v1"
         data-start-order="#{activeDocumentBean.viewManager.currentImageOrder - 1}"
-        data-max-zoom="#{activeDocumentBean.viewManager.currentPage.getMaxImageZoom(navigationHelper.currentPageType)}" />
+        data-max-zoom="#{activeDocumentBean.viewManager.currentPage.getMaxImageZoom(navigationHelper.currentPageType)}"
+        data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}"
+        data-msg-denied="#{msg.errHttp403Msg}" />
+
+    <!-- Access-denied placeholder (image + rich text) for the record's restricted
+         condition, resolved once server-side (independent of the entry page). Rendered
+         whenever the record has image-restricted pages. The image is the admin-configured
+         one if set, otherwise the bundled fallback -> a placeholder image always shows.
+         Hidden; modules.mjs clones it into the per-page denied overlay and reuses its
+         image for restricted grid thumbnails. -->
+    <ui:fragment rendered="#{activeDocumentBean.viewManager.isRecordImageAccessRestricted()}">
+        <div
+            id="immersiveDeniedContent"
+            hidden="hidden">
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.getRecordAccessDeniedImageUrl(navigationHelper.locale) != null}">
+                <img
+                    class="immersive__page-denied-img"
+                    src="#{activeDocumentBean.viewManager.getRecordAccessDeniedImageUrl(navigationHelper.locale)}"
+                    alt="#{msg.errHttp403Msg}" />
+            </ui:fragment>
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.getRecordAccessDeniedImageUrl(navigationHelper.locale) == null}">
+                <img
+                    class="immersive__page-denied-img"
+                    src="#{request.contextPath}/resources/images/access_denied.png"
+                    alt="#{msg.errHttp403Msg}" />
+            </ui:fragment>
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.getRecordAccessDeniedText(navigationHelper.locale) != null}">
+                <div class="immersive__page-denied-text">
+                    <h:outputText
+                        escape="false"
+                        value="#{activeDocumentBean.viewManager.getRecordAccessDeniedText(navigationHelper.locale)}" />
+                </div>
+            </ui:fragment>
+        </div>
+    </ui:fragment>
 
     <!-- Server-rendered so it also covers the time before the scripts run;
          modules.mjs hides it once the first tile has been painted. -->
@@ -25,6 +60,37 @@
                 src="#{request.contextPath}/resources/images/infinity_loader.svg"
                 class="ajax-loader__animated-image"
                 alt="" />
+        </div>
+    </ui:fragment>
+
+    <!-- No VIEW_IMAGES: a native placeholder on the stage instead of an empty frame.
+         Shows the admin-configured access-denied image if set, otherwise the bundled
+         fallback image, plus the admin-configured text. No hardcoded icon. -->
+    <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+        <div
+            class="immersive__image-denied"
+            role="status">
+            <div class="immersive__image-denied-inner">
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) != null}">
+                    <img
+                        class="immersive__image-denied-img"
+                        src="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale)}"
+                        alt="#{msg.errHttp403Msg}" />
+                </ui:fragment>
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedImageUrl(navigationHelper.locale) == null}">
+                    <img
+                        class="immersive__image-denied-img"
+                        src="#{request.contextPath}/resources/images/access_denied.png"
+                        alt="#{msg.errHttp403Msg}" />
+                </ui:fragment>
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale) != null}">
+                    <div class="immersive__image-denied-text">
+                        <h:outputText
+                            escape="false"
+                            value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForImage(navigationHelper.locale)}" />
+                    </div>
+                </ui:fragment>
+            </div>
         </div>
     </ui:fragment>
 

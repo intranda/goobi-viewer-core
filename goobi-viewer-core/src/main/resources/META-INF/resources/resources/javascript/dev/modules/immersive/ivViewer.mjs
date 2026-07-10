@@ -93,6 +93,10 @@ export default class IvViewer {
         this.services = opts.services;
         this.total = opts.services.length;
         this.current = Math.max(0, Math.min(opts.startOrder ?? 0, this.total - 1));
+        this.allowZoom = opts.allowZoom !== false;
+        // Per-page "image restricted" flags (auth service present -> tiles 403).
+        this.restricted = Array.isArray(opts.restricted) ? opts.restricted : [];
+        this.deniedText = opts.deniedText || '';
         this.double = false;
         this.currentItem = null;
         this._anchor = null;
@@ -120,16 +124,40 @@ export default class IvViewer {
         this.zoom = new ImageView.Controls.Zoom(this.viewer);
         this.rotation = new ImageView.Controls.Rotation(this.viewer);
 
+        // Without ZOOM_IMAGES the image server caps resolution anyway; disable the
+        // interactive zoom gestures so the viewer stays at the fitted page.
+        if (!this.allowZoom) {
+            const osd = this.viewer.openseadragon;
+            osd.zoomPerScroll = 1;
+            osd.zoomPerClick = 1;
+            ['gestureSettingsMouse', 'gestureSettingsTouch', 'gestureSettingsPen', 'gestureSettingsUnknown'].forEach((k) => {
+                const g = osd[k];
+                if (g) {
+                    g.scrollToZoom = false;
+                    g.clickToZoom = false;
+                    g.dblClickToZoom = false;
+                    g.pinchToZoom = false;
+                }
+            });
+        }
+
         this.viewer.openseadragon.addHandler('canvas-key', (e) => {
             const key = e.originalEvent.key;
             if (key === 'ArrowRight') this.next();
             else if (key === 'ArrowLeft') this.prev();
-            else if (key === '0') this.resetView();
+            else if (key === '0') {
+                // Block OSD's built-in '0' → goHome (raw FILL) so our fitted resetView is not overwritten.
+                this.resetView();
+                e.preventDefaultAction = true;
+                e.originalEvent.preventDefault();
+            }
             // Horizontal arrows are handled by custom navigation — block OSD's pan.
             // Vertical arrows must NOT block OSD so the image still pans up/down.
             // All four arrows suppress native page scroll.
             if (['ArrowLeft', 'ArrowRight'].includes(key)) e.preventDefaultAction = true;
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) e.originalEvent.preventDefault();
+            // Block OSD's built-in keyboard zoom when zooming is not permitted.
+            if (!this.allowZoom && ['-', '_', '+', '='].includes(key)) e.preventDefaultAction = true;
         });
 
         this._open(this.current)
@@ -307,10 +335,12 @@ export default class IvViewer {
     }
 
     zoomIn() {
+        if (!this.allowZoom) return;
         this.zoom.zoomBy(ZOOM_STEP);
     }
 
     zoomOut() {
+        if (!this.allowZoom) return;
         this.zoom.zoomBy(1 / ZOOM_STEP);
     }
 
@@ -355,6 +385,15 @@ export default class IvViewer {
         this._withNavLock(async () => {
             const previous = this.currentItem;
             this.current = target;
+            // Restricted page: skip the doomed tile load (it would 403 and _acquire
+            // would reject, never emitting); drop the previous page and show the overlay.
+            if (this.isPageRestricted(target)) {
+                if (previous) this.viewer.openseadragon.world.removeItem(previous);
+                this.currentItem = null;
+                this._emit();
+                this._refreshPreload();
+                return;
+            }
             const item = await this._acquire(target, this._anchor);
             this._preloaded.delete(target);
             await this._whenContent(item);
@@ -419,6 +458,7 @@ export default class IvViewer {
         const keep = new Set(residentPages(this.current, this.total, { double: this.double }));
         for (const order of keep) {
             if (order === this.current) continue;
+            if (this.isPageRestricted(order)) continue; // tiles would 403; don't prefetch
             if (!this._preloaded.has(order)) {
                 this._acquire(order, this._anchor);
             }
@@ -499,6 +539,7 @@ export default class IvViewer {
         const osd = this.viewer.openseadragon;
         for (const p of new Set(neighbours)) {
             if (p < 0 || p >= this.total || here.includes(p)) continue;
+            if (this.isPageRestricted(p)) continue; // tiles would 403; don't prewarm
             osd.addTiledImage({ tileSource: toTileSource(this.services[p]), opacity: 0, preload: true });
         }
     }
@@ -514,25 +555,28 @@ export default class IvViewer {
         const pages = this.double ? computeSpread(order, this.total) : [order];
         this.viewer.config.sequence.columns = pages.length;
         const sources = pages.map((p) => toTileSource(this.services[p]));
-        const loaded = this.viewer.load(sources, 0);
-        this._prefetchAround(pages[pages.length - 1]);
-        return loaded.then(() => {
+        // Runs on load success AND failure: a restricted page's tiles 403 so load()
+        // rejects — still emit + sync the overlay instead of leaving a blank, stuck stage.
+        const settle = () => {
             const world = this.viewer.openseadragon.world;
-            this.currentItem = world.getItemAt(0);
+            this.currentItem = world.getItemCount() > 0 ? world.getItemAt(0) : null;
             if (!this.double && this.currentItem) {
                 this._anchor = _heightBand(this.currentItem.getBounds());
             }
             this._preloaded.clear();
             this._emit();
             this.onOpen.emit(this.current);
-        });
+        };
+        const loaded = this.viewer.load(sources, 0);
+        this._prefetchAround(pages[pages.length - 1]);
+        return loaded.then(settle, settle);
     }
 
     /** Warms neighbour info.json in the browser cache so the next load is faster. */
     _prefetchAround(order) {
         for (let d = 1; d <= PREFETCH_RADIUS; d++) {
             for (const o of [order - d, order + d]) {
-                if (o >= 0 && o < this.total) {
+                if (o >= 0 && o < this.total && !this.isPageRestricted(o)) {
                     fetch(toTileSource(this.services[o])).catch(() => {});
                 }
             }
@@ -540,6 +584,51 @@ export default class IvViewer {
     }
 
     _emit() {
+        this._syncAccessOverlay();
         this.onPageChange.emit(this.current);
+    }
+
+    /** True when the page at `order` carries a server auth service (image not viewable). */
+    isPageRestricted(order) {
+        return this.restricted[order] === true;
+    }
+
+    /**
+     * Shows/hides the access-denied overlay when any displayed page is image-restricted.
+     * Purely cosmetic — the tiles 403 server-side (no leak); this just replaces the blank
+     * canvas. Toggled from _emit as a thin layer, not woven into the load/crossfade paths.
+     */
+    _syncAccessOverlay() {
+        const host = this.viewer.element;
+        if (!host) return;
+        const denied = this.getCurrentPages().some((o) => this.isPageRestricted(o));
+        let overlay = this._accessOverlay;
+        if (!denied) {
+            if (overlay) overlay.hidden = true;
+            return;
+        }
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'immersive__page-denied';
+            overlay.setAttribute('role', 'status');
+            const inner = document.createElement('div');
+            inner.className = 'immersive__page-denied-inner';
+            // Prefer the server-rendered, admin-configured placeholder (image + rich text
+            // of the record's restricted condition); fall back to the generic message.
+            const template = document.getElementById('immersiveDeniedContent');
+            if (template && template.children.length) {
+                for (const child of template.children) inner.appendChild(child.cloneNode(true));
+            } else {
+                const text = document.createElement('span');
+                text.className = 'immersive__page-denied-text';
+                text.textContent = this.deniedText;
+                inner.appendChild(text);
+            }
+            overlay.appendChild(inner);
+            if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+            host.appendChild(overlay);
+            this._accessOverlay = overlay;
+        }
+        overlay.hidden = false;
     }
 }

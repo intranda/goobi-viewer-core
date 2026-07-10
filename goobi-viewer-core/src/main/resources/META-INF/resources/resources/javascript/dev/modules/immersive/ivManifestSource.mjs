@@ -52,13 +52,37 @@ function _resolveCanvasLabel(label, lang) {
 }
 
 /**
- * Extracts ordered `{id, label}` entries from a manifest's canvases (v2 sequences/
- * canvases or v3 items). Canvases without a resolvable image-service id are skipped
- * entirely, so service URLs and page labels stay index-aligned.
+ * Detects whether an image-service carries a IIIF authentication/probe service,
+ * which the server attaches only when the current user may not view the image
+ * (see SequenceBuilder). Its presence is the server-authoritative per-page
+ * "image restricted" signal.
+ *
+ * @param {object|Array} service the image resource's `service` value
+ * @returns {boolean} true when a nested auth/probe service is present
+ */
+function _serviceIsRestricted(service) {
+    const entry = Array.isArray(service) ? service[0] : service;
+    if (!entry || typeof entry !== 'object') return false;
+    const nested = entry.service;
+    const list = Array.isArray(nested) ? nested : nested ? [nested] : [];
+    return list.some((s) => {
+        if (!s || typeof s !== 'object') return false;
+        const type = String(s.type || s['@type'] || '');
+        const profile = String(s.profile || '');
+        const context = String(s['@context'] || '');
+        return /auth/i.test(type) || /auth/i.test(profile) || /\/auth\//i.test(context);
+    });
+}
+
+/**
+ * Extracts ordered `{id, label, restricted}` entries from a manifest's canvases
+ * (v2 sequences/canvases or v3 items). Canvases without a resolvable image-service
+ * id are skipped entirely, so service URLs, page labels and access flags stay
+ * index-aligned.
  *
  * @param {object} manifest
  * @param {string} [lang] preferred label language
- * @returns {Array<{id: string, label: string}>}
+ * @returns {Array<{id: string, label: string, restricted: boolean}>}
  */
 function _parseManifestCanvasEntries(manifest, lang) {
     if (!manifest || typeof manifest !== 'object') return [];
@@ -70,8 +94,11 @@ function _parseManifestCanvasEntries(manifest, lang) {
         const entries = [];
         for (const canvas of canvases) {
             try {
-                const id = _resolveServiceId(canvas.images[0].resource.service, '@id', 'id');
-                if (id !== null) entries.push({ id, label: _resolveCanvasLabel(canvas.label, lang) });
+                const service = canvas.images[0].resource.service;
+                const id = _resolveServiceId(service, '@id', 'id');
+                if (id !== null) {
+                    entries.push({ id, label: _resolveCanvasLabel(canvas.label, lang), restricted: _serviceIsRestricted(service) });
+                }
             } catch {}
         }
         return entries;
@@ -81,8 +108,11 @@ function _parseManifestCanvasEntries(manifest, lang) {
         const entries = [];
         for (const canvas of manifest.items) {
             try {
-                const id = _resolveServiceId(canvas.items[0].items[0].body.service, 'id', '@id');
-                if (id !== null) entries.push({ id, label: _resolveCanvasLabel(canvas.label, lang) });
+                const service = canvas.items[0].items[0].body.service;
+                const id = _resolveServiceId(service, 'id', '@id');
+                if (id !== null) {
+                    entries.push({ id, label: _resolveCanvasLabel(canvas.label, lang), restricted: _serviceIsRestricted(service) });
+                }
             } catch {}
         }
         return entries;
@@ -112,6 +142,18 @@ export function parseManifestImageServices(manifest) {
  */
 export function parseManifestPageLabels(manifest, lang) {
     return _parseManifestCanvasEntries(manifest, lang).map((e) => e.label);
+}
+
+/**
+ * Extracts the ordered per-page "image restricted" flags, index-aligned with
+ * {@link parseManifestImageServices}. true means the page carries an auth service
+ * (the user may not view the image); its tiles will 403.
+ *
+ * @param {object} manifest parsed IIIF Presentation manifest
+ * @returns {boolean[]}
+ */
+export function parseManifestPageAccess(manifest) {
+    return _parseManifestCanvasEntries(manifest).map((e) => e.restricted);
 }
 
 /**
@@ -170,6 +212,19 @@ export function loadPageServices(pi, apiBase, fetchFn = fetch) {
  */
 export function loadPageLabels(pi, apiBase, fetchFn = fetch, lang) {
     return loadManifest(pi, apiBase, fetchFn).then((manifest) => parseManifestPageLabels(manifest, lang));
+}
+
+/**
+ * Returns the ordered per-page "image restricted" flags for all pages,
+ * index-aligned with {@link loadPageServices}. Shares the memoized manifest fetch.
+ *
+ * @param {string} pi        Goobi viewer record identifier
+ * @param {string} apiBase   base URL of the REST API (no trailing slash)
+ * @param {Function} fetchFn fetch-compatible function (injectable for tests)
+ * @returns {Promise<boolean[]>}
+ */
+export function loadPageAccess(pi, apiBase, fetchFn = fetch) {
+    return loadManifest(pi, apiBase, fetchFn).then(parseManifestPageAccess);
 }
 
 /** Clears the module-level manifest cache. Test use only. */

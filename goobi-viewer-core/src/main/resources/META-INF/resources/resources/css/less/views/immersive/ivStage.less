@@ -52,6 +52,65 @@
         }
     }
 
+    &__image-denied {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        text-align: center;
+        color: @immersive-canvas-fg;
+    }
+
+    &__image-denied-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        max-width: 420px;
+    }
+
+    &__image-denied-text {
+        font-size: @fontLarge;
+    }
+
+    &__page-denied {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        text-align: center;
+        background-color: @immersive-canvas-bg;
+        color: @immersive-canvas-fg;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__page-denied-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        max-width: 480px;
+    }
+
+    &__page-denied-img {
+        max-width: 200px;
+        max-height: 45vh;
+        height: auto;
+    }
+
+    &__page-denied-text {
+        font-size: @fontLarge;
+        opacity: 0.85;
+    }
+
     &__xfade {
         position: absolute;
         inset: 0;

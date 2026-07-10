@@ -66,7 +66,11 @@ function mockImageView() {
                     removeOverlay: jest.fn(),
                     world: { getItemAt: () => null, removeItem: jest.fn(), getItemCount: () => 0 },
                     viewport: { goHome() {} },
-                    drawer: { canvas: null }, // -> _snapshotOverlay() returns null (no DOM needed)
+                    drawer: { canvas: null },
+                    zoomPerScroll: 1.2,
+                    zoomPerClick: 2,
+                    gestureSettingsMouse: { scrollToZoom: true, clickToZoom: true, dblClickToZoom: true, pinchToZoom: true },
+                    gestureSettingsTouch: { scrollToZoom: true, clickToZoom: true, dblClickToZoom: true, pinchToZoom: true },
                 };
             }
             load() {
@@ -175,6 +179,49 @@ describe('IvViewer construction', () => {
         v.onReset.subscribe(reset);
         v.resetView();
         expect(reset).toHaveBeenCalledTimes(1);
+    });
+
+    test('allowZoom defaults to true and keeps zoomIn/zoomOut active', () => {
+        const v = new IvViewer({ element: {}, services: services(5) });
+        expect(v.allowZoom).toBe(true);
+        const zoomBy = jest.spyOn(v.zoom, 'zoomBy');
+        v.zoomIn();
+        v.zoomOut();
+        expect(zoomBy).toHaveBeenCalledTimes(2);
+    });
+
+    test('allowZoom:false makes zoomIn/zoomOut no-ops and disables OSD zoom gestures', () => {
+        const v = new IvViewer({ element: {}, services: services(5), allowZoom: false });
+        const zoomBy = jest.spyOn(v.zoom, 'zoomBy');
+        v.zoomIn();
+        v.zoomOut();
+        expect(zoomBy).not.toHaveBeenCalled();
+
+        const osd = v.viewer.openseadragon;
+        expect(osd.zoomPerScroll).toBe(1);
+        expect(osd.zoomPerClick).toBe(1);
+        for (const g of [osd.gestureSettingsMouse, osd.gestureSettingsTouch]) {
+            expect(g.scrollToZoom).toBe(false);
+            expect(g.clickToZoom).toBe(false);
+            expect(g.dblClickToZoom).toBe(false);
+            expect(g.pinchToZoom).toBe(false);
+        }
+    });
+
+    test('allowZoom:false blocks OSD keyboard zoom keys but leaves them alone when zoom is allowed', () => {
+        const denied = new IvViewer({ element: {}, services: services(5), allowZoom: false });
+        const deniedHandler = denied.viewer.openseadragon._handlers['canvas-key'];
+        for (const key of ['-', '_', '+', '=']) {
+            const e = { originalEvent: { key, preventDefault: jest.fn() } };
+            deniedHandler(e);
+            expect(e.preventDefaultAction).toBe(true);
+        }
+
+        const allowed = new IvViewer({ element: {}, services: services(5) });
+        const allowedHandler = allowed.viewer.openseadragon._handlers['canvas-key'];
+        const e = { originalEvent: { key: '-', preventDefault: jest.fn() } };
+        allowedHandler(e);
+        expect(e.preventDefaultAction).toBeUndefined();
     });
 });
 
@@ -562,5 +609,129 @@ describe('IvViewer onOpen (library reload signal for filter re-sync)', () => {
         v.goToPage(1);
         await new Promise((resolve) => setTimeout(resolve, 30));
         expect(opened).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe('IvViewer access overlay (mixed page rights)', () => {
+    beforeEach(() => {
+        mockImageView();
+        jest.spyOn(IvViewer.prototype, '_open').mockImplementation(function () {
+            return new Promise((resolve) => resolve());
+        });
+        jest.spyOn(IvViewer.prototype, '_refreshPreload').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+        delete global.ImageView;
+    });
+
+    const restrictedViewer = (restricted, startOrder = 0) =>
+        new IvViewer({ element: document.createElement('div'), services: services(restricted.length), startOrder, restricted, deniedText: 'Kein Zugriff' });
+
+    test('isPageRestricted reflects the per-page flags', () => {
+        const v = restrictedViewer([false, true, false]);
+        expect(v.isPageRestricted(0)).toBe(false);
+        expect(v.isPageRestricted(1)).toBe(true);
+        expect(v.isPageRestricted(2)).toBe(false);
+    });
+
+    test('shows the denied overlay when the current page is restricted, hides it otherwise', () => {
+        const v = restrictedViewer([false, true, false], 1);
+        v._emit();
+        const overlay = v.viewer.element.querySelector('.immersive__page-denied');
+        expect(overlay).not.toBeNull();
+        expect(overlay.hidden).toBe(false);
+        expect(overlay.querySelector('.immersive__page-denied-text').textContent).toBe('Kein Zugriff');
+
+        v.current = 0;
+        v._emit();
+        expect(v.viewer.element.querySelector('.immersive__page-denied').hidden).toBe(true);
+    });
+
+    test('a free record never creates the overlay element', () => {
+        const v = restrictedViewer([false, false, false], 0);
+        v._emit();
+        expect(v.viewer.element.querySelector('.immersive__page-denied')).toBeNull();
+    });
+
+    test('overlay clones the admin-configured denied template (image + text) when present', () => {
+        const template = document.createElement('div');
+        template.id = 'immersiveDeniedContent';
+        template.innerHTML = '<img class="immersive__page-denied-img" src="/custom/denied.png" alt="x" /><div class="immersive__page-denied-text">Gesperrt (Lizenz)</div>';
+        document.body.appendChild(template);
+        try {
+            const v = restrictedViewer([false, true], 1);
+            v._emit();
+            const overlay = v.viewer.element.querySelector('.immersive__page-denied');
+            expect(overlay.querySelector('.immersive__page-denied-img').getAttribute('src')).toBe('/custom/denied.png');
+            expect(overlay.querySelector('.immersive__page-denied-text').textContent).toBe('Gesperrt (Lizenz)');
+        } finally {
+            template.remove();
+        }
+    });
+
+    test('double mode: the overlay shows when any page of the spread is restricted', () => {
+        const v = restrictedViewer([false, false, true, false], 0);
+        v.double = true;
+        v.current = 2; // spread contains the restricted page
+        v._emit();
+        const overlay = v.viewer.element.querySelector('.immersive__page-denied');
+        expect(overlay).not.toBeNull();
+        expect(overlay.hidden).toBe(false);
+    });
+
+    test('missing restricted data defaults to unrestricted (no overlay)', () => {
+        const v = new IvViewer({ element: document.createElement('div'), services: services(3) });
+        v._emit();
+        expect(v.viewer.element.querySelector('.immersive__page-denied')).toBeNull();
+        expect(v.isPageRestricted(0)).toBe(false);
+    });
+});
+
+describe('IvViewer restricted-page navigation (tile-load reject fix)', () => {
+    afterEach(() => {
+        jest.restoreAllMocks();
+        delete global.ImageView;
+    });
+
+    test('_open still emits + shows the overlay when the tile load REJECTS (restricted entry)', async () => {
+        mockImageView();
+        // Restricted page tiles 403 -> library load() rejects.
+        global.ImageView.Image.prototype.load = () => Promise.reject(new Error('403'));
+        jest.spyOn(IvViewer.prototype, '_refreshPreload').mockImplementation(() => {});
+        jest.spyOn(IvViewer.prototype, '_prefetchAround').mockImplementation(() => {}); // no fetch in jsdom
+
+        const v = new IvViewer({ element: document.createElement('div'), services: services(3), startOrder: 0, restricted: [true, false, false], deniedText: 'Kein Zugriff' });
+        const opened = jest.fn();
+        v.onOpen.subscribe(opened);
+        await flush();
+        await flush();
+
+        expect(opened).toHaveBeenCalledWith(0);
+        expect(v.currentItem).toBeNull();
+        const overlay = v.viewer.element.querySelector('.immersive__page-denied');
+        expect(overlay).not.toBeNull();
+        expect(overlay.hidden).toBe(false);
+    });
+
+    test('_crossfadeTo short-circuits a restricted target: no tile acquire, overlay shown', async () => {
+        mockImageView();
+        jest.spyOn(IvViewer.prototype, '_open').mockResolvedValue();
+        jest.spyOn(IvViewer.prototype, '_refreshPreload').mockImplementation(() => {});
+        const acquire = jest.spyOn(IvViewer.prototype, '_acquire');
+
+        const v = new IvViewer({ element: document.createElement('div'), services: services(3), startOrder: 0, restricted: [false, true, false], deniedText: 'Kein Zugriff' });
+        await flush();
+
+        v.goToPage(1);
+        await flush();
+        await flush();
+
+        expect(v.current).toBe(1);
+        expect(acquire).not.toHaveBeenCalled();
+        const overlay = v.viewer.element.querySelector('.immersive__page-denied');
+        expect(overlay).not.toBeNull();
+        expect(overlay.hidden).toBe(false);
     });
 });

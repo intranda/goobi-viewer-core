@@ -111,7 +111,25 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
                 if (gridLoader) gridLoader.hidden = true;
             };
             const thumbsMount = document.getElementById('immersiveThumbnails');
-            if (thumbsMount) thumbsMount.addEventListener('load', hideGridLoader, { capture: true, once: true });
+            if (thumbsMount) {
+                thumbsMount.addEventListener('load', hideGridLoader, { capture: true, once: true });
+                // Restricted pages' thumbnails 403; swap the broken <img> for the denied
+                // template's image (admin-configured, else the bundled fallback asset).
+                const templateImg = document.querySelector('#immersiveDeniedContent .immersive__page-denied-img');
+                const deniedThumb = (templateImg && templateImg.getAttribute('src')) || `${apiBase.replace(/\/api\/v1\/?$/, '')}/resources/images/access_denied.png`;
+                thumbsMount.addEventListener(
+                    'error',
+                    (e) => {
+                        const t = e.target;
+                        if (t && t.tagName === 'IMG' && !t.dataset.ivDenied) {
+                            t.dataset.ivDenied = '1'; // guard: the placeholder load must not re-trigger
+                            t.classList.add('immersive__grid-thumb--denied');
+                            t.src = deniedThumb;
+                        }
+                    },
+                    { capture: true }
+                );
+            }
             gridLoaderTimer = setTimeout(hideGridLoader, GRID_LOADER_TIMEOUT_MS);
         } else {
             syncGridSelection();

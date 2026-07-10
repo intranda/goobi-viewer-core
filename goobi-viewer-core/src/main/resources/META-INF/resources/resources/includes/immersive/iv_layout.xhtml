@@ -13,50 +13,60 @@
             <!-- HEADER OVERLAY -->
             <div class="immersive__overlay-top">
                 <div class="immersive__title">
-                    <button
-                        type="button"
-                        class="immersive__title-trigger"
-                        data-immersive-title-trigger=""
-                        aria-haspopup="dialog"
-                        aria-expanded="false"
-                        aria-controls="immersivePageDropdown"
-                        title="#{msg.aria_label__select_page}">
-                        <util:icon
-                            icon="book"
-                            svgClass="immersive__title-icon" />
-                        <span class="immersive__title-text">#{activeDocumentBean.titleBarLabel}</span>
-                        <span
-                            class="immersive__title-page"
-                            id="immersiveTitlePage" />
-                        <util:icon
-                            icon="chevron-down"
-                            svgClass="immersive__title-caret" />
-                    </button>
-                    <div
-                        class="immersive__page-dropdown"
-                        id="immersivePageDropdown"
-                        role="dialog"
-                        aria-label="#{msg.aria_label__select_page}"
-                        hidden="hidden">
-                        <div class="immersive__page-dropdown-jump">
-                            <label
-                                class="immersive__page-dropdown-label"
-                                for="immersivePageInput">
-                                #{msg.aria__label_pagination_goto}
-                            </label>
-                            <input
-                                type="number"
-                                min="1"
-                                id="immersivePageInput"
-                                class="immersive__page-dropdown-input"
-                                inputmode="numeric"
-                                autocomplete="off" />
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                        <button
+                            type="button"
+                            class="immersive__title-trigger"
+                            data-immersive-title-trigger=""
+                            aria-haspopup="dialog"
+                            aria-expanded="false"
+                            aria-controls="immersivePageDropdown"
+                            title="#{msg.aria_label__select_page}">
+                            <util:icon
+                                icon="book"
+                                svgClass="immersive__title-icon" />
+                            <span class="immersive__title-text">#{activeDocumentBean.titleBarLabel}</span>
+                            <span
+                                class="immersive__title-page"
+                                id="immersiveTitlePage" />
+                            <util:icon
+                                icon="chevron-down"
+                                svgClass="immersive__title-caret" />
+                        </button>
+                        <div
+                            class="immersive__page-dropdown"
+                            id="immersivePageDropdown"
+                            role="dialog"
+                            aria-label="#{msg.aria_label__select_page}"
+                            hidden="hidden">
+                            <div class="immersive__page-dropdown-jump">
+                                <label
+                                    class="immersive__page-dropdown-label"
+                                    for="immersivePageInput">
+                                    #{msg.aria__label_pagination_goto}
+                                </label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    id="immersivePageInput"
+                                    class="immersive__page-dropdown-input"
+                                    inputmode="numeric"
+                                    autocomplete="off" />
+                            </div>
+                            <ul
+                                class="immersive__page-dropdown-list"
+                                id="immersivePageList"
+                                role="listbox" />
                         </div>
-                        <ul
-                            class="immersive__page-dropdown-list"
-                            id="immersivePageList"
-                            role="listbox" />
-                    </div>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                        <span class="immersive__title-trigger immersive__title-trigger-static">
+                            <util:icon
+                                icon="book"
+                                svgClass="immersive__title-icon" />
+                            <span class="immersive__title-text">#{activeDocumentBean.titleBarLabel}</span>
+                        </span>
+                    </ui:fragment>
                 </div>
             </div>
 
@@ -78,7 +88,7 @@
                 </ui:fragment>
                 <div class="immersive__toolbar-group immersive__toolbar-group-grow">
                     <!-- TOC -->
-                    <ui:fragment rendered="#{activeDocumentBean.toc.hasChildren}">
+                    <ui:fragment rendered="#{activeDocumentBean.toc.hasChildren and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
                         <button
                             type="button"
                             class="immersive__tool-btn immersive__btn-toc"
@@ -93,7 +103,8 @@
                         </button>
                     </ui:fragment>
                     <!-- FULLTEXT -->
-                    <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
+                    <ui:fragment
+                        rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}') and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
                         <button
                             type="button"
                             class="immersive__tool-btn immersive__btn-fulltext"
@@ -109,18 +120,20 @@
                         </button>
                     </ui:fragment>
                     <!-- SEARCH -->
-                    <button
-                        type="button"
-                        class="immersive__tool-btn immersive__btn-search"
-                        data-immersive-panel="immersivePanelSearch"
-                        aria-controls="immersivePanelSearch"
-                        aria-expanded="false"
-                        title="#{msg.search}"
-                        aria-label="#{msg.search}">
-                        <util:icon
-                            icon="search"
-                            svgClass="immersive__tool-icon" />
-                    </button>
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                        <button
+                            type="button"
+                            class="immersive__tool-btn immersive__btn-search"
+                            data-immersive-panel="immersivePanelSearch"
+                            aria-controls="immersivePanelSearch"
+                            aria-expanded="false"
+                            title="#{msg.search}"
+                            aria-label="#{msg.search}">
+                            <util:icon
+                                icon="search"
+                                svgClass="immersive__tool-icon" />
+                        </button>
+                    </ui:fragment>
                     <!-- METADATA -->
                     <button
                         type="button"
@@ -253,46 +266,48 @@
                 <ui:fragment rendered="#{not displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
                     <p class="immersive__search-hint">#{msg.immersive__search_hint_no_fulltext}</p>
                 </ui:fragment>
-                <widgetComponent:widget_searchInCurrentItem />
-                <div
-                    id="immersiveSearchResults"
-                    class="immersive__results"
-                    data-label-empty="#{msg.hitsZero}"
-                    data-label-reset="#{msg.searchList_resetCurrentSearch}"
-                    hidden="hidden">
-                    <div class="immersive__results-head">
-                        <span
-                            class="immersive__results-count"
-                            id="immersiveHitCounter"
-                            aria-live="polite"
-                            aria-atomic="true" />
-                        <span class="immersive__results-nav">
-                            <button
-                                type="button"
-                                class="immersive__results-nav-btn"
-                                data-immersive-hit="prev"
-                                title="#{msg.previousHit}"
-                                aria-label="#{msg.previousHit}">
-                                <util:icon
-                                    icon="chevron-left"
-                                    svgClass="immersive__results-nav-icon" />
-                            </button>
-                            <button
-                                type="button"
-                                class="immersive__results-nav-btn"
-                                data-immersive-hit="next"
-                                title="#{msg.nextHit}"
-                                aria-label="#{msg.nextHit}">
-                                <util:icon
-                                    icon="chevron-right"
-                                    svgClass="immersive__results-nav-icon" />
-                            </button>
-                        </span>
+                <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
+                    <widgetComponent:widget_searchInCurrentItem />
+                    <div
+                        id="immersiveSearchResults"
+                        class="immersive__results"
+                        data-label-empty="#{msg.hitsZero}"
+                        data-label-reset="#{msg.searchList_resetCurrentSearch}"
+                        hidden="hidden">
+                        <div class="immersive__results-head">
+                            <span
+                                class="immersive__results-count"
+                                id="immersiveHitCounter"
+                                aria-live="polite"
+                                aria-atomic="true" />
+                            <span class="immersive__results-nav">
+                                <button
+                                    type="button"
+                                    class="immersive__results-nav-btn"
+                                    data-immersive-hit="prev"
+                                    title="#{msg.previousHit}"
+                                    aria-label="#{msg.previousHit}">
+                                    <util:icon
+                                        icon="chevron-left"
+                                        svgClass="immersive__results-nav-icon" />
+                                </button>
+                                <button
+                                    type="button"
+                                    class="immersive__results-nav-btn"
+                                    data-immersive-hit="next"
+                                    title="#{msg.nextHit}"
+                                    aria-label="#{msg.nextHit}">
+                                    <util:icon
+                                        icon="chevron-right"
+                                        svgClass="immersive__results-nav-icon" />
+                                </button>
+                            </span>
+                        </div>
+                        <ul
+                            class="immersive__results-list"
+                            id="immersiveResultsList" />
                     </div>
-                    <ul
-                        class="immersive__results-list"
-                        id="immersiveResultsList" />
-                </div>
+                </ui:fragment>
             </aside>
             <!-- FULLTEXT PANEL -->
             <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
@@ -360,24 +375,26 @@
             </div>
 
             <!-- PAGE-TURN CHEVRONS -->
-            <button
-                type="button"
-                class="immersive__chevron immersive__chevron-left"
-                data-immersive-page="prev"
-                aria-label="#{msg.prevImage}">
-                <util:icon
-                    icon="chevron-left"
-                    svgClass="immersive__chevron-icon" />
-            </button>
-            <button
-                type="button"
-                class="immersive__chevron immersive__chevron-right"
-                data-immersive-page="next"
-                aria-label="#{msg.nextImage}">
-                <util:icon
-                    icon="chevron-right"
-                    svgClass="immersive__chevron-icon" />
-            </button>
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                <button
+                    type="button"
+                    class="immersive__chevron immersive__chevron-left"
+                    data-immersive-page="prev"
+                    aria-label="#{msg.prevImage}">
+                    <util:icon
+                        icon="chevron-left"
+                        svgClass="immersive__chevron-icon" />
+                </button>
+                <button
+                    type="button"
+                    class="immersive__chevron immersive__chevron-right"
+                    data-immersive-page="next"
+                    aria-label="#{msg.nextImage}">
+                    <util:icon
+                        icon="chevron-right"
+                        svgClass="immersive__chevron-icon" />
+                </button>
+            </ui:fragment>
 
             <!-- RIGHT TOOLBAR -->
             <div class="immersive__toolbar immersive__toolbar-right">
@@ -441,7 +458,8 @@
                 <!-- VIEWS -->
                 <h:panelGroup
                     layout="block"
-                    styleClass="immersive__toolbar-group">
+                    styleClass="immersive__toolbar-group"
+                    rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
                     <!-- DOUBLE PAGE -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
                         <button
@@ -489,117 +507,121 @@
             </div>
 
             <!-- BOTTOM BAR -->
-            <div class="immersive__bottombar">
-                <!-- NAVIGATION -->
-                <div class="immersive__bottombar-group">
-                    <button
-                        type="button"
-                        class="immersive__bar-btn"
-                        data-immersive-page="prev"
-                        title="#{msg.prevImage}"
-                        aria-label="#{msg.prevImage}">
-                        <util:icon
-                            icon="chevron-left"
-                            svgClass="immersive__bar-icon" />
-                    </button>
-                    <span
-                        class="immersive__page-indicator"
-                        id="immersivePageIndicator"
-                        aria-live="polite"
-                        aria-atomic="true">
-                        #{activeDocumentBean.viewManager.currentImageOrder}
-                    </span>
-                    <button
-                        type="button"
-                        class="immersive__bar-btn"
-                        data-immersive-page="next"
-                        title="#{msg.nextImage}"
-                        aria-label="#{msg.nextImage}">
-                        <util:icon
-                            icon="chevron-right"
-                            svgClass="immersive__bar-icon" />
-                    </button>
-                </div>
-                <!-- ZOOM -->
-                <div class="immersive__bottombar-group">
-                    <button
-                        type="button"
-                        class="immersive__bar-btn"
-                        data-immersive-action="zoom-in"
-                        title="#{msg.zoomIn}"
-                        aria-label="#{msg.zoomIn}">
-                        <util:icon
-                            icon="plus"
-                            svgClass="immersive__bar-icon" />
-                    </button>
-                    <button
-                        type="button"
-                        class="immersive__bar-btn"
-                        data-immersive-action="zoom-out"
-                        title="#{msg.zoomOut}"
-                        aria-label="#{msg.zoomOut}">
-                        <util:icon
-                            icon="minus"
-                            svgClass="immersive__bar-icon" />
-                    </button>
-                </div>
-                <!-- ROTATE -->
-                <div class="immersive__bottombar-group">
-                    <button
-                        type="button"
-                        class="immersive__bar-btn"
-                        data-immersive-action="rotate-left"
-                        title="#{msg.rotateLeft}"
-                        aria-label="#{msg.rotateLeft}">
-                        <util:icon
-                            icon="rotate"
-                            svgClass="immersive__bar-icon" />
-                    </button>
-                    <button
-                        type="button"
-                        class="immersive__bar-btn"
-                        data-immersive-action="rotate-right"
-                        title="#{msg.rotateRight}"
-                        aria-label="#{msg.rotateRight}">
-                        <util:icon
-                            icon="rotate-clockwise"
-                            svgClass="immersive__bar-icon" />
-                    </button>
-                </div>
-                <!-- RESET -->
-                <div class="immersive__bottombar-group">
-                    <button
-                        type="button"
-                        class="immersive__bar-btn"
-                        data-immersive-action="reset"
-                        title="#{msg.resetImage}"
-                        aria-label="#{msg.resetImage}">
-                        <util:icon
-                            icon="restore"
-                            svgClass="immersive__bar-icon" />
-                    </button>
-                </div>
-                <!-- FILTER -->
-                <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                <div class="immersive__bottombar">
+                    <!-- NAVIGATION -->
                     <div class="immersive__bottombar-group">
                         <button
                             type="button"
                             class="immersive__bar-btn"
-                            data-popover-element="#immersiveFilterPopover"
-                            data-popover-placement="top"
-                            data-popover-dismiss="click-outside"
-                            aria-haspopup="dialog"
-                            aria-expanded="false"
-                            aria-controls="immersiveFilterPopover"
-                            title="#{msg.label__image_filter_toolkit}"
-                            aria-label="#{msg.label__image_filter_toolkit}">
+                            data-immersive-page="prev"
+                            title="#{msg.prevImage}"
+                            aria-label="#{msg.prevImage}">
                             <util:icon
-                                icon="adjustments"
+                                icon="chevron-left"
+                                svgClass="immersive__bar-icon" />
+                        </button>
+                        <span
+                            class="immersive__page-indicator"
+                            id="immersivePageIndicator"
+                            aria-live="polite"
+                            aria-atomic="true">
+                            #{activeDocumentBean.viewManager.currentImageOrder}
+                        </span>
+                        <button
+                            type="button"
+                            class="immersive__bar-btn"
+                            data-immersive-page="next"
+                            title="#{msg.nextImage}"
+                            aria-label="#{msg.nextImage}">
+                            <util:icon
+                                icon="chevron-right"
                                 svgClass="immersive__bar-icon" />
                         </button>
                     </div>
-                </ui:fragment>
-            </div>
+                    <!-- ZOOM -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
+                        <div class="immersive__bottombar-group">
+                            <button
+                                type="button"
+                                class="immersive__bar-btn"
+                                data-immersive-action="zoom-in"
+                                title="#{msg.zoomIn}"
+                                aria-label="#{msg.zoomIn}">
+                                <util:icon
+                                    icon="plus"
+                                    svgClass="immersive__bar-icon" />
+                            </button>
+                            <button
+                                type="button"
+                                class="immersive__bar-btn"
+                                data-immersive-action="zoom-out"
+                                title="#{msg.zoomOut}"
+                                aria-label="#{msg.zoomOut}">
+                                <util:icon
+                                    icon="minus"
+                                    svgClass="immersive__bar-icon" />
+                            </button>
+                        </div>
+                    </ui:fragment>
+                    <!-- ROTATE -->
+                    <div class="immersive__bottombar-group">
+                        <button
+                            type="button"
+                            class="immersive__bar-btn"
+                            data-immersive-action="rotate-left"
+                            title="#{msg.rotateLeft}"
+                            aria-label="#{msg.rotateLeft}">
+                            <util:icon
+                                icon="rotate"
+                                svgClass="immersive__bar-icon" />
+                        </button>
+                        <button
+                            type="button"
+                            class="immersive__bar-btn"
+                            data-immersive-action="rotate-right"
+                            title="#{msg.rotateRight}"
+                            aria-label="#{msg.rotateRight}">
+                            <util:icon
+                                icon="rotate-clockwise"
+                                svgClass="immersive__bar-icon" />
+                        </button>
+                    </div>
+                    <!-- RESET -->
+                    <div class="immersive__bottombar-group">
+                        <button
+                            type="button"
+                            class="immersive__bar-btn"
+                            data-immersive-action="reset"
+                            title="#{msg.resetImage}"
+                            aria-label="#{msg.resetImage}">
+                            <util:icon
+                                icon="restore"
+                                svgClass="immersive__bar-icon" />
+                        </button>
+                    </div>
+                    <!-- FILTER -->
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
+                        <div class="immersive__bottombar-group">
+                            <button
+                                type="button"
+                                class="immersive__bar-btn"
+                                data-popover-element="#immersiveFilterPopover"
+                                data-popover-placement="top"
+                                data-popover-dismiss="click-outside"
+                                aria-haspopup="dialog"
+                                aria-expanded="false"
+                                aria-controls="immersiveFilterPopover"
+                                title="#{msg.label__image_filter_toolkit}"
+                                aria-label="#{msg.label__image_filter_toolkit}">
+                                <util:icon
+                                    icon="adjustments"
+                                    svgClass="immersive__bar-icon" />
+                            </button>
+                        </div>
+                    </ui:fragment>
+                </div>
+            </ui:fragment>
 
             <!-- OVERVIEW GRID -->
             <div

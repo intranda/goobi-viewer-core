@@ -5,6 +5,8 @@ import {
     loadPageText,
     parseManifestImageServices,
     parseManifestPageLabels,
+    parseManifestPageAccess,
+    loadPageAccess,
     parsePageText,
     parsePageLines,
     loadPageLines,
@@ -288,6 +290,67 @@ describe('loadPageLabels', () => {
         const fetchFn = jest.fn().mockResolvedValue(okResponse(v3));
 
         expect(await loadPageLabels('PPN1', 'https://h/api', fetchFn, 'de')).toEqual(['Seite 5']);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// parseManifestPageAccess — per-page "image restricted" flags (auth service)
+// ---------------------------------------------------------------------------
+
+// The server attaches a nested auth/probe service to a page's image service only
+// when the current user may not view it (see SequenceBuilder).
+const authService = (id) => ({
+    '@id': id,
+    service: [{ '@context': 'http://iiif.io/api/auth/2/context.json', id: 'https://h/auth/probe/', type: 'AuthProbeService2' }],
+});
+
+describe('parseManifestPageAccess', function () {
+    test('v2: flags pages that carry a nested auth service, index-aligned with services', function () {
+        const manifest = {
+            sequences: [
+                {
+                    canvases: [
+                        { images: [{ resource: { service: { '@id': 'https://h/1' } } }] },
+                        { images: [{ resource: { service: authService('https://h/2') } }] },
+                        { images: [{ resource: { service: { '@id': 'https://h/3' } } }] },
+                    ],
+                },
+            ],
+        };
+        expect(parseManifestPageAccess(manifest)).toEqual([false, true, false]);
+        // index alignment with the service list is the contract IvViewer relies on
+        expect(parseManifestImageServices(manifest)).toEqual(['https://h/1', 'https://h/2', 'https://h/3']);
+    });
+
+    test('v3: detects the auth service on the body service', function () {
+        const manifest = {
+            items: [{ items: [{ items: [{ body: { service: { id: 'https://h3/1' } } }] }] }, { items: [{ items: [{ body: { service: authService('https://h3/2') } }] }] }],
+        };
+        expect(parseManifestPageAccess(manifest)).toEqual([false, true]);
+    });
+
+    test('an all-open manifest yields all-false', function () {
+        expect(parseManifestPageAccess(V2)).toEqual([false, false]);
+    });
+
+    test('empty/invalid manifests yield an empty array', function () {
+        expect(parseManifestPageAccess({})).toEqual([]);
+        expect(parseManifestPageAccess(null)).toEqual([]);
+    });
+
+    test('loadPageAccess shares the memoized manifest with loadPageServices (one request)', async () => {
+        const manifest = {
+            sequences: [
+                {
+                    canvases: [{ images: [{ resource: { service: { '@id': 'https://h/1' } } }] }, { images: [{ resource: { service: authService('https://h/2') } }] }],
+                },
+            ],
+        };
+        const fetchFn = jest.fn().mockResolvedValue(okResponse(manifest));
+        const [services, access] = await Promise.all([loadPageServices('PPN9', 'https://h/api', fetchFn), loadPageAccess('PPN9', 'https://h/api', fetchFn)]);
+        expect(services).toEqual(['https://h/1', 'https://h/2']);
+        expect(access).toEqual([false, true]);
+        expect(fetchFn).toHaveBeenCalledTimes(1);
     });
 });
 

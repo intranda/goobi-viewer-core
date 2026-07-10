@@ -22,8 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.voyager3dView = new Voyager3dView();
 
-    const immersiveEl = document.querySelector('[data-immersive-image]');
-    if (immersiveEl) {
-        initImmersiveViewer(immersiveEl);
+    // Wire the immersive chrome whenever the view is present; the image viewer
+    // itself is only built when the user has VIEW_IMAGES (see ivInit).
+    const immersiveRoot = document.querySelector('.immersive');
+    if (immersiveRoot) {
+        initImmersiveViewer(immersiveRoot);
     }
 });

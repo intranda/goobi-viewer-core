@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -88,6 +89,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.FileTools;
+import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.controller.JsonTools;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.ProcessDataResolver;
@@ -130,6 +132,7 @@ import io.goobi.viewer.model.metadata.MetadataValue;
 import io.goobi.viewer.model.resources.download.ExternalResourceUrlService;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.CopyrightIndicatorLicense;
 import io.goobi.viewer.model.security.CopyrightIndicatorStatus;
@@ -220,6 +223,9 @@ public class ViewManager implements Serializable {
     private volatile Boolean allowUserComments = null;
     /** True if an access ticket is required before anything in this record may be viewed.. Value is set during the access permission check. */
     private boolean recordAccessTicketRequired = false;
+    /** Memoized record-level VIEW_IMAGES permission (carries the admin-configured access-denied placeholder); resolved lazily once per render. */
+    private AccessPermission recordViewImagesAccess = null;
+    private boolean recordViewImagesAccessResolved = false;
     private List<StructElementStub> docHierarchy = null;
     private String mimeType = null;
     private Boolean filesOnly = null;
@@ -2384,6 +2390,64 @@ public class ViewManager implements Serializable {
         } catch (RecordNotFoundException e) {
             return false;
         }
+    }
+
+    /**
+     * Record-level VIEW_IMAGES permission, carrying the admin-configured placeholder (image + text) of the record's access condition when denied.
+     * Resolved independent of the current page so the immersive view can show the configured placeholder on pages the user may not view even when it
+     * entered on a viewable page. Returns a granted permission for open records (no placeholder), or null only when the record cannot be resolved.
+     *
+     * @return the {@link AccessPermission} (denied ones carry placeholder info), or null if the record is not found
+     */
+    private AccessPermission getRecordViewImagesAccessPermission() throws IndexUnreachableException, DAOException {
+        // Memoized for this ViewManager's lifetime (mirrors PhysicalElement.getAccessPermission): the XHTML resolves the image URL + text separately
+        // and via rendered conditions, which would otherwise repeat the Solr/DB access check several times.
+        if (!recordViewImagesAccessResolved) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            try {
+                recordViewImagesAccess =
+                        AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(getPi(), null, IPrivilegeHolder.PRIV_VIEW_IMAGES, request);
+            } catch (RecordNotFoundException e) {
+                recordViewImagesAccess = null;
+            }
+            recordViewImagesAccessResolved = true;
+        }
+        return recordViewImagesAccess;
+    }
+
+    /**
+     * @param locale locale for selecting the localized placeholder
+     * @return the admin-configured access-denied image URL for the record's restricted condition, or null if none is configured
+     */
+    public String getRecordAccessDeniedImageUrl(Locale locale) throws IndexUnreachableException, DAOException {
+        if (locale == null) {
+            return null;
+        }
+        return PhysicalElement.getAccessDeniedUrl(getRecordViewImagesAccessPermission(), locale);
+    }
+
+    /**
+     * @param locale locale for selecting the localized placeholder
+     * @return the admin-configured access-denied description text (sanitized rich text) for the record's restricted condition, or null if none
+     */
+    public String getRecordAccessDeniedText(Locale locale) throws IndexUnreachableException, DAOException {
+        AccessPermission accessPermission = getRecordViewImagesAccessPermission();
+        if (accessPermission != null && accessPermission.getAccessDeniedPlaceholderInfo() != null && locale != null) {
+            AccessDeniedInfoConfig info = accessPermission.getAccessDeniedPlaceholderInfo().get(locale.getLanguage());
+            if (info != null && StringUtils.isNotEmpty(info.getDescription())) {
+                return HtmlSanitizer.cleanRichText(info.getDescription());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return true when the record denies VIEW_IMAGES (i.e. has image-restricted pages), so the immersive view renders the access-denied placeholder
+     *         (admin image + text, or the bundled fallback image) for pages the user may not view
+     */
+    public boolean isRecordImageAccessRestricted() throws IndexUnreachableException, DAOException {
+        AccessPermission accessPermission = getRecordViewImagesAccessPermission();
+        return accessPermission != null && !accessPermission.isGranted();
     }
 
     /**

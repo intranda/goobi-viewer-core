@@ -54,11 +54,14 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.OpenAnnotationBuilder;
 import io.goobi.viewer.model.iiif.search.model.AnnotationResultList;
 import io.goobi.viewer.model.iiif.search.model.SearchTermList;
 import io.goobi.viewer.model.iiif.search.parser.AbstractSearchParser;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -289,7 +292,7 @@ public class IIIFSearchBuilder {
         long mostHits = 0;
         long total = 0;
         if (StringUtils.isNotBlank(query)) {
-            if (motivation.isEmpty() || motivation.contains(Motivation.PAINTING)) {
+            if ((motivation.isEmpty() || motivation.contains(Motivation.PAINTING)) && isFulltextAccessGranted()) {
                 AnnotationResultList fulltextAnnotations = searchFulltext(query, pi, getFirstHitIndex(getPage()), getHitsPerPage());
                 resultList.add(fulltextAnnotations);
                 mostHits = Math.max(mostHits, fulltextAnnotations.getNumHits());
@@ -583,7 +586,26 @@ public class IIIFSearchBuilder {
     }
 
     /**
-     * 
+     * Checks whether the current request is allowed to view the fulltext of the searched record. Fulltext search hits expose OCR content, so the
+     * search-within endpoint must honour the same VIEW_FULLTEXT privilege as the per-page text endpoint. Errors are treated as denied.
+     *
+     * @return true if VIEW_FULLTEXT is granted for {@link #pi}, false otherwise
+     * @throws IndexUnreachableException
+     */
+    private boolean isFulltextAccessGranted() throws IndexUnreachableException {
+        try {
+            return AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, request)
+                    .isGranted();
+        } catch (RecordNotFoundException e) {
+            return false;
+        } catch (DAOException e) {
+            logger.error("Error checking fulltext access permission for {}", pi, e);
+            return false;
+        }
+    }
+
+    /**
+     *
      * @param query Solr query
      * @param pi Record identifier
      * @param firstIndex Result offset

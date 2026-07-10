@@ -63,11 +63,7 @@
                 borderColor: styles['borderTopColor'],
                 fillColor: styles['background-color'],
             });
-            let activeStyles = viewerJS.helper.getCss('page-area focus', [
-                'borderTopColor',
-                'borderTopWidth',
-                'background-color',
-            ]);
+            let activeStyles = viewerJS.helper.getCss('page-area focus', ['borderTopColor', 'borderTopWidth', 'background-color']);
             ({
                 borderWidth: parseInt(activeStyles['borderTopWidth']),
                 borderColor: activeStyles['borderTopColor'],
@@ -125,12 +121,12 @@
             window.history.replaceState(null, '', url.toString());
         }
 
-        drawActiveAreas(activeAreas, imageView) { 
+        drawActiveAreas(activeAreas, imageView) {
             let areasOnCanvas = [];
             activeAreas.forEach((activeArea, index) => {
                 const area = this.drawArea(activeArea, index, imageView);
                 areasOnCanvas.push(area?.overlay?.bounds);
-    			console.log("add active area ", area, areasOnCanvas);
+                console.log('add active area ', area, areasOnCanvas);
                 let scrollPosition = window.sessionStorage.getItem('scrollPosition');
                 $(document).scrollTop(parseInt(scrollPosition));
                 window.sessionStorage.removeItem('scrollPosition');
@@ -166,9 +162,9 @@
         }
 
         drawArea(area, shapeIndex, image, clickToLeave) {
-    		let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-    		let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
-    		let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
+            let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+            let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
+            let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
             let $area = $('#pageAreaFrame_' + area.logId + '_' + shapeIndex);
             let $label = $('#pageAreaLabel_' + area.logId + '_' + shapeIndex);
             let overlayId = area.logId + '_' + shapeIndex;
@@ -189,7 +185,7 @@
                 () => $(area.tooltip.element).addClass('hover'),
                 () => $(area.tooltip.element).removeClass('hover')
             );
-    		return area;
+            return area;
         }
     }
 
@@ -231,7 +227,7 @@
                 showNavigator: 'imageShowNavigator',
                 allowDownload: 'allowDownload',
                 allowZoom: 'allowZoom',
-    			maxZoom: 'maxZoom'
+                maxZoom: 'maxZoom',
             },
             data: {
                 footerHeight: 'height',
@@ -252,12 +248,8 @@
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
                 this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
-                this.leftMarginElement = document.querySelector(
-                    _config.elementSelectors.data.leftMarginElement
-                )?.textContent;
-                this.rightMarginElement = document.querySelector(
-                    _config.elementSelectors.data.rightMarginElement
-                )?.textContent;
+                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
@@ -270,9 +262,7 @@
 
                 this.tileSources = createTileSource();
 
-                this.tileSourceIdToOrder = Object.fromEntries(
-                    Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
-                );
+                this.tileSourceIdToOrder = Object.fromEntries(Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order]));
 
                 if (this.viewMode == 'sequence') {
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
@@ -290,7 +280,7 @@
                                 showTooltip: element.dataset[_config.datasets.data.showTooltip],
                                 highlightClassName: 'focus',
                                 highlightOnHover: true,
-                            }); 
+                            });
                             this.overlayGroups.push(overlays);
                         } catch (e) {
                             console.error('Error parsing coords string ', coordsString, e);
@@ -312,9 +302,7 @@
                 const viewerRight = this.viewer.element.offsetLeft + this.viewer.element.offsetWidth;
                 const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
                 const margins = {
-                    left:
-                        (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) +
-                        (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
                     right: sidebarRightLeft ? viewerRight - sidebarRightLeft : 0,
                     top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
                 };
@@ -444,12 +432,8 @@
         if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
             zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
         }
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateLeft)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateRight)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateLeft).forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateRight).forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
         document.querySelectorAll(_config.elementSelectors.controls.reset).forEach((button) =>
             button.addEventListener('click', (e) => {
                 rotation.rotateTo(0);
@@ -463,42 +447,38 @@
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
             margins: {
-                bottom: Number(
-                    document.querySelector(_config.elementSelectors.data.footer)?.dataset[
-                        _config.datasets.data.footerHeight
-                    ]
-                ),
+                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight]),
             },
             zoom: {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
-    			max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
+                max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
             },
             sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
             navigator: {
                 enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
-    			position: "BOTTOM_RIGHT"
+                position: 'BOTTOM_RIGHT',
             },
         };
     }
 
     function getSequenceSettings(viewMode) {
         let columns;
-    	switch ((viewMode || '').toLowerCase()) {
+        switch ((viewMode || '').toLowerCase()) {
             case 'double':
                 columns = 2;
-    			break;
+                break;
             case 'sequence':
             case 'single':
             default:
-               columns = 1;
+                columns = 1;
         }
-    	return {
-    		columns: columns,
-    		useWindowing: true,
-    		windowSize: _sequenceWindowSize,
-    		windowExpandThreshold: _expandThreshold,
-    		windowExpandSize: _expandBatchSize
-    	}
+        return {
+            columns: columns,
+            useWindowing: true,
+            windowSize: _sequenceWindowSize,
+            windowExpandThreshold: _expandThreshold,
+            windowExpandSize: _expandBatchSize,
+        };
     }
 
     function getFittingMode(pageType) {
@@ -564,11 +544,7 @@
 
             // init area select
             try {
-                let styles = viewerJS.helper.getCss('image-fragment', [
-                    'borderTopColor',
-                    'borderTopWidth',
-                    'background-color',
-                ]);
+                let styles = viewerJS.helper.getCss('image-fragment', ['borderTopColor', 'borderTopWidth', 'background-color']);
                 var fragmentSelectConfig = {
                     removeOldAreas: true,
                     drawCondition: (event) => this.active && this.fragmentSelect?.currentOverlay == undefined,
@@ -597,8 +573,7 @@
             if (this.fragmentSelect) {
                 this.fragmentSelect.finishedHook.subscribe((area) => {
                     var areaString = this.getAreaString(area);
-                    var pageUrl =
-                        window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
+                    var pageUrl = window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
                     console.log('set area data ', pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
@@ -613,14 +588,7 @@
 
         getAreaString(area) {
             if (area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {
-                var areaString =
-                    area.x.toFixed(0) +
-                    ',' +
-                    area.y.toFixed(0) +
-                    ',' +
-                    area.width.toFixed(0) +
-                    ',' +
-                    area.height.toFixed(0);
+                var areaString = area.x.toFixed(0) + ',' + area.y.toFixed(0) + ',' + area.width.toFixed(0) + ',' + area.height.toFixed(0);
                 return areaString;
             } else {
                 return 'full';
@@ -701,10 +669,7 @@
         }
 
         toggleImageShare($panel) {
-            if (
-                $panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') &&
-                $panel.hasClass('in')
-            ) {
+            if ($panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') && $panel.hasClass('in')) {
                 this.startFragmentSelect();
             }
         }
@@ -727,8 +692,7 @@
             this.container = document.querySelector(this.config.container);
             // console.log('init voyager3d', this);
             if (this.isVisible()) {
-                this.loaded = this.initView().then(() => {
-                });
+                this.loaded = this.initView().then(() => {});
             }
         }
 
@@ -1203,6 +1167,10 @@
             this.services = opts.services;
             this.total = opts.services.length;
             this.current = Math.max(0, Math.min(opts.startOrder ?? 0, this.total - 1));
+            this.allowZoom = opts.allowZoom !== false;
+            // Per-page "image restricted" flags (auth service present -> tiles 403).
+            this.restricted = Array.isArray(opts.restricted) ? opts.restricted : [];
+            this.deniedText = opts.deniedText || '';
             this.double = false;
             this.currentItem = null;
             this._anchor = null;
@@ -1230,16 +1198,40 @@
             this.zoom = new ImageView.Controls.Zoom(this.viewer);
             this.rotation = new ImageView.Controls.Rotation(this.viewer);
 
+            // Without ZOOM_IMAGES the image server caps resolution anyway; disable the
+            // interactive zoom gestures so the viewer stays at the fitted page.
+            if (!this.allowZoom) {
+                const osd = this.viewer.openseadragon;
+                osd.zoomPerScroll = 1;
+                osd.zoomPerClick = 1;
+                ['gestureSettingsMouse', 'gestureSettingsTouch', 'gestureSettingsPen', 'gestureSettingsUnknown'].forEach((k) => {
+                    const g = osd[k];
+                    if (g) {
+                        g.scrollToZoom = false;
+                        g.clickToZoom = false;
+                        g.dblClickToZoom = false;
+                        g.pinchToZoom = false;
+                    }
+                });
+            }
+
             this.viewer.openseadragon.addHandler('canvas-key', (e) => {
                 const key = e.originalEvent.key;
                 if (key === 'ArrowRight') this.next();
                 else if (key === 'ArrowLeft') this.prev();
-                else if (key === '0') this.resetView();
+                else if (key === '0') {
+                    // Block OSD's built-in '0' → goHome (raw FILL) so our fitted resetView is not overwritten.
+                    this.resetView();
+                    e.preventDefaultAction = true;
+                    e.originalEvent.preventDefault();
+                }
                 // Horizontal arrows are handled by custom navigation — block OSD's pan.
                 // Vertical arrows must NOT block OSD so the image still pans up/down.
                 // All four arrows suppress native page scroll.
                 if (['ArrowLeft', 'ArrowRight'].includes(key)) e.preventDefaultAction = true;
                 if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) e.originalEvent.preventDefault();
+                // Block OSD's built-in keyboard zoom when zooming is not permitted.
+                if (!this.allowZoom && ['-', '_', '+', '='].includes(key)) e.preventDefaultAction = true;
             });
 
             this._open(this.current)
@@ -1417,10 +1409,12 @@
         }
 
         zoomIn() {
+            if (!this.allowZoom) return;
             this.zoom.zoomBy(ZOOM_STEP);
         }
 
         zoomOut() {
+            if (!this.allowZoom) return;
             this.zoom.zoomBy(1 / ZOOM_STEP);
         }
 
@@ -1465,6 +1459,15 @@
             this._withNavLock(async () => {
                 const previous = this.currentItem;
                 this.current = target;
+                // Restricted page: skip the doomed tile load (it would 403 and _acquire
+                // would reject, never emitting); drop the previous page and show the overlay.
+                if (this.isPageRestricted(target)) {
+                    if (previous) this.viewer.openseadragon.world.removeItem(previous);
+                    this.currentItem = null;
+                    this._emit();
+                    this._refreshPreload();
+                    return;
+                }
                 const item = await this._acquire(target, this._anchor);
                 this._preloaded.delete(target);
                 await this._whenContent(item);
@@ -1529,6 +1532,7 @@
             const keep = new Set(residentPages(this.current, this.total, { double: this.double }));
             for (const order of keep) {
                 if (order === this.current) continue;
+                if (this.isPageRestricted(order)) continue; // tiles would 403; don't prefetch
                 if (!this._preloaded.has(order)) {
                     this._acquire(order, this._anchor);
                 }
@@ -1609,6 +1613,7 @@
             const osd = this.viewer.openseadragon;
             for (const p of new Set(neighbours)) {
                 if (p < 0 || p >= this.total || here.includes(p)) continue;
+                if (this.isPageRestricted(p)) continue; // tiles would 403; don't prewarm
                 osd.addTiledImage({ tileSource: toTileSource(this.services[p]), opacity: 0, preload: true });
             }
         }
@@ -1624,25 +1629,28 @@
             const pages = this.double ? computeSpread(order, this.total) : [order];
             this.viewer.config.sequence.columns = pages.length;
             const sources = pages.map((p) => toTileSource(this.services[p]));
-            const loaded = this.viewer.load(sources, 0);
-            this._prefetchAround(pages[pages.length - 1]);
-            return loaded.then(() => {
+            // Runs on load success AND failure: a restricted page's tiles 403 so load()
+            // rejects — still emit + sync the overlay instead of leaving a blank, stuck stage.
+            const settle = () => {
                 const world = this.viewer.openseadragon.world;
-                this.currentItem = world.getItemAt(0);
+                this.currentItem = world.getItemCount() > 0 ? world.getItemAt(0) : null;
                 if (!this.double && this.currentItem) {
                     this._anchor = _heightBand(this.currentItem.getBounds());
                 }
                 this._preloaded.clear();
                 this._emit();
                 this.onOpen.emit(this.current);
-            });
+            };
+            const loaded = this.viewer.load(sources, 0);
+            this._prefetchAround(pages[pages.length - 1]);
+            return loaded.then(settle, settle);
         }
 
         /** Warms neighbour info.json in the browser cache so the next load is faster. */
         _prefetchAround(order) {
             for (let d = 1; d <= PREFETCH_RADIUS; d++) {
                 for (const o of [order - d, order + d]) {
-                    if (o >= 0 && o < this.total) {
+                    if (o >= 0 && o < this.total && !this.isPageRestricted(o)) {
                         fetch(toTileSource(this.services[o])).catch(() => {});
                     }
                 }
@@ -1650,7 +1658,52 @@
         }
 
         _emit() {
+            this._syncAccessOverlay();
             this.onPageChange.emit(this.current);
+        }
+
+        /** True when the page at `order` carries a server auth service (image not viewable). */
+        isPageRestricted(order) {
+            return this.restricted[order] === true;
+        }
+
+        /**
+         * Shows/hides the access-denied overlay when any displayed page is image-restricted.
+         * Purely cosmetic — the tiles 403 server-side (no leak); this just replaces the blank
+         * canvas. Toggled from _emit as a thin layer, not woven into the load/crossfade paths.
+         */
+        _syncAccessOverlay() {
+            const host = this.viewer.element;
+            if (!host) return;
+            const denied = this.getCurrentPages().some((o) => this.isPageRestricted(o));
+            let overlay = this._accessOverlay;
+            if (!denied) {
+                if (overlay) overlay.hidden = true;
+                return;
+            }
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'immersive__page-denied';
+                overlay.setAttribute('role', 'status');
+                const inner = document.createElement('div');
+                inner.className = 'immersive__page-denied-inner';
+                // Prefer the server-rendered, admin-configured placeholder (image + rich text
+                // of the record's restricted condition); fall back to the generic message.
+                const template = document.getElementById('immersiveDeniedContent');
+                if (template && template.children.length) {
+                    for (const child of template.children) inner.appendChild(child.cloneNode(true));
+                } else {
+                    const text = document.createElement('span');
+                    text.className = 'immersive__page-denied-text';
+                    text.textContent = this.deniedText;
+                    inner.appendChild(text);
+                }
+                overlay.appendChild(inner);
+                if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+                host.appendChild(overlay);
+                this._accessOverlay = overlay;
+            }
+            overlay.hidden = false;
         }
     }
 
@@ -1708,13 +1761,37 @@
     }
 
     /**
-     * Extracts ordered `{id, label}` entries from a manifest's canvases (v2 sequences/
-     * canvases or v3 items). Canvases without a resolvable image-service id are skipped
-     * entirely, so service URLs and page labels stay index-aligned.
+     * Detects whether an image-service carries a IIIF authentication/probe service,
+     * which the server attaches only when the current user may not view the image
+     * (see SequenceBuilder). Its presence is the server-authoritative per-page
+     * "image restricted" signal.
+     *
+     * @param {object|Array} service the image resource's `service` value
+     * @returns {boolean} true when a nested auth/probe service is present
+     */
+    function _serviceIsRestricted(service) {
+        const entry = Array.isArray(service) ? service[0] : service;
+        if (!entry || typeof entry !== 'object') return false;
+        const nested = entry.service;
+        const list = Array.isArray(nested) ? nested : nested ? [nested] : [];
+        return list.some((s) => {
+            if (!s || typeof s !== 'object') return false;
+            const type = String(s.type || s['@type'] || '');
+            const profile = String(s.profile || '');
+            const context = String(s['@context'] || '');
+            return /auth/i.test(type) || /auth/i.test(profile) || /\/auth\//i.test(context);
+        });
+    }
+
+    /**
+     * Extracts ordered `{id, label, restricted}` entries from a manifest's canvases
+     * (v2 sequences/canvases or v3 items). Canvases without a resolvable image-service
+     * id are skipped entirely, so service URLs, page labels and access flags stay
+     * index-aligned.
      *
      * @param {object} manifest
      * @param {string} [lang] preferred label language
-     * @returns {Array<{id: string, label: string}>}
+     * @returns {Array<{id: string, label: string, restricted: boolean}>}
      */
     function _parseManifestCanvasEntries(manifest, lang) {
         if (!manifest || typeof manifest !== 'object') return [];
@@ -1726,8 +1803,11 @@
             const entries = [];
             for (const canvas of canvases) {
                 try {
-                    const id = _resolveServiceId(canvas.images[0].resource.service, '@id', 'id');
-                    if (id !== null) entries.push({ id, label: _resolveCanvasLabel(canvas.label, lang) });
+                    const service = canvas.images[0].resource.service;
+                    const id = _resolveServiceId(service, '@id', 'id');
+                    if (id !== null) {
+                        entries.push({ id, label: _resolveCanvasLabel(canvas.label, lang), restricted: _serviceIsRestricted(service) });
+                    }
                 } catch {}
             }
             return entries;
@@ -1737,8 +1817,11 @@
             const entries = [];
             for (const canvas of manifest.items) {
                 try {
-                    const id = _resolveServiceId(canvas.items[0].items[0].body.service, 'id', '@id');
-                    if (id !== null) entries.push({ id, label: _resolveCanvasLabel(canvas.label, lang) });
+                    const service = canvas.items[0].items[0].body.service;
+                    const id = _resolveServiceId(service, 'id', '@id');
+                    if (id !== null) {
+                        entries.push({ id, label: _resolveCanvasLabel(canvas.label, lang), restricted: _serviceIsRestricted(service) });
+                    }
                 } catch {}
             }
             return entries;
@@ -1768,6 +1851,18 @@
      */
     function parseManifestPageLabels(manifest, lang) {
         return _parseManifestCanvasEntries(manifest, lang).map((e) => e.label);
+    }
+
+    /**
+     * Extracts the ordered per-page "image restricted" flags, index-aligned with
+     * {@link parseManifestImageServices}. true means the page carries an auth service
+     * (the user may not view the image); its tiles will 403.
+     *
+     * @param {object} manifest parsed IIIF Presentation manifest
+     * @returns {boolean[]}
+     */
+    function parseManifestPageAccess(manifest) {
+        return _parseManifestCanvasEntries(manifest).map((e) => e.restricted);
     }
 
     /**
@@ -1826,6 +1921,19 @@
      */
     function loadPageLabels(pi, apiBase, fetchFn = fetch, lang) {
         return loadManifest(pi, apiBase, fetchFn).then((manifest) => parseManifestPageLabels(manifest, lang));
+    }
+
+    /**
+     * Returns the ordered per-page "image restricted" flags for all pages,
+     * index-aligned with {@link loadPageServices}. Shares the memoized manifest fetch.
+     *
+     * @param {string} pi        Goobi viewer record identifier
+     * @param {string} apiBase   base URL of the REST API (no trailing slash)
+     * @param {Function} fetchFn fetch-compatible function (injectable for tests)
+     * @returns {Promise<boolean[]>}
+     */
+    function loadPageAccess(pi, apiBase, fetchFn = fetch) {
+        return loadManifest(pi, apiBase, fetchFn).then(parseManifestPageAccess);
     }
 
     function _parseXywh(on) {
@@ -2206,7 +2314,6 @@
 
     /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
 
-
     /**
      * Wires the rail buttons to their left panels (open/close with ARIA + inert
      * bookkeeping) and registers the panel keyboard shortcuts on the dispatcher:
@@ -2501,9 +2608,7 @@
     function createFocusTrap(container) {
         return function trapFocus(e) {
             if (e.key !== 'Tab') return;
-            const f = Array.from(container.querySelectorAll(FOCUSABLE_QUERY)).filter(
-                (n) => !n.hidden && !n.disabled && n.offsetParent !== null
-            );
+            const f = Array.from(container.querySelectorAll(FOCUSABLE_QUERY)).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
             if (!f.length) return;
             const first = f[0];
             const last = f[f.length - 1];
@@ -2518,7 +2623,6 @@
     }
 
     /** Keyboard-shortcuts help modal with platform-specific modifier keycaps. */
-
 
     /**
      * Keyboard-shortcuts help modal: opened via the rail button or the `?` key,
@@ -2606,7 +2710,6 @@
     }
 
     /** Fulltext panel wiring: combined block/line/word text with image hover linking. */
-
 
     /**
      * Wires the fulltext panel: loads the nested OCR levels for the visible page,
@@ -2818,7 +2921,6 @@
     }
 
     /** Search panel wiring: in-work IIIF content search with hit list and highlights. */
-
 
     /**
      * Wires the in-place IIIF content search: result list in the left panel,
@@ -3122,7 +3224,6 @@
 
     /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
 
-
     /**
      * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
      * focus handling and keeps its selection on the current page. Also wires the
@@ -3231,7 +3332,25 @@
                     if (gridLoader) gridLoader.hidden = true;
                 };
                 const thumbsMount = document.getElementById('immersiveThumbnails');
-                if (thumbsMount) thumbsMount.addEventListener('load', hideGridLoader, { capture: true, once: true });
+                if (thumbsMount) {
+                    thumbsMount.addEventListener('load', hideGridLoader, { capture: true, once: true });
+                    // Restricted pages' thumbnails 403; swap the broken <img> for the denied
+                    // template's image (admin-configured, else the bundled fallback asset).
+                    const templateImg = document.querySelector('#immersiveDeniedContent .immersive__page-denied-img');
+                    const deniedThumb = (templateImg && templateImg.getAttribute('src')) || `${apiBase.replace(/\/api\/v1\/?$/, '')}/resources/images/access_denied.png`;
+                    thumbsMount.addEventListener(
+                        'error',
+                        (e) => {
+                            const t = e.target;
+                            if (t && t.tagName === 'IMG' && !t.dataset.ivDenied) {
+                                t.dataset.ivDenied = '1'; // guard: the placeholder load must not re-trigger
+                                t.classList.add('immersive__grid-thumb--denied');
+                                t.src = deniedThumb;
+                            }
+                        },
+                        { capture: true }
+                    );
+                }
                 gridLoaderTimer = setTimeout(hideGridLoader, GRID_LOADER_TIMEOUT_MS);
             } else {
                 syncGridSelection();
@@ -3558,25 +3677,22 @@
 
     /** Immersive view bootstrap: engine construction plus the UI wiring modules. */
 
-
     /** Hides the stage loading indicator at the latest after this, even without a painted tile. */
     const STAGE_LOADER_TIMEOUT_MS = 8000;
 
     /**
-     * Bootstraps the immersive image viewer: fetches the IIIF manifest, instantiates
-     * the engine, and attaches the wiring modules. Keyboard shortcuts run through
-     * one dispatcher whose priorities define the overlay precedence: shortcuts
-     * modal (10) → grid overlay (20) → page dropdown (30) → panels (40).
+     * Bootstraps the immersive view. The chrome (panels, keyboard dispatcher,
+     * shortcuts modal, metadata fold) is wired whenever the view is present, even
+     * without VIEW_IMAGES. The image engine and its dependent wiring (bottom bar,
+     * grid, fulltext, search, page dropdown, TOC sync) are only built when the
+     * server rendered the [data-immersive-image] mount, i.e. the user may view the
+     * images. Keyboard shortcuts run through one dispatcher whose priorities define
+     * the overlay precedence: shortcuts modal (10) → grid overlay (20) → page
+     * dropdown (30) → panels (40).
      *
-     * @param {HTMLElement} el  the [data-immersive-image] mount element
+     * @param {HTMLElement} immersiveRoot  the .immersive root element
      */
-    function initImmersiveViewer(el) {
-        const pi = el.dataset.pi;
-        const apiBase = el.dataset.apiBase;
-        const startOrder = Number(el.dataset.startOrder) || 0;
-        const maxZoom = el.dataset.maxZoom ? parseInt(el.dataset.maxZoom, 10) : undefined;
-        const immersiveRoot = el.closest('.immersive');
-
+    function initImmersiveViewer(immersiveRoot) {
         const keys = createKeyDispatcher();
         keys.attach(document);
         const panels = setupPanels(immersiveRoot, keys);
@@ -3584,6 +3700,18 @@
         setupMetadataToggle();
         setupImmersivePopoverA11y();
         setupShortcutsModal(panels.closePanels, keys);
+
+        // No VIEW_IMAGES: the stage shows a server-rendered access-denied placeholder
+        // and the image-dependent chrome is not rendered, so there is no viewer to build.
+        const el = immersiveRoot.querySelector('[data-immersive-image]');
+        if (!el) return;
+
+        const pi = el.dataset.pi;
+        const apiBase = el.dataset.apiBase;
+        const startOrder = Number(el.dataset.startOrder) || 0;
+        const maxZoom = el.dataset.maxZoom ? parseInt(el.dataset.maxZoom, 10) : undefined;
+        // Server-rendered VIEW/ZOOM_IMAGES privilege; absent attribute defaults to allowed.
+        const allowZoom = el.dataset.allowZoom !== 'false';
 
         // Stage loading indicator (same pattern as the thumbnail grid): hidden once
         // the first tile has been painted, with a timeout and init-failure fallback.
@@ -3596,10 +3724,16 @@
         };
         setTimeout(hideStageLoader, STAGE_LOADER_TIMEOUT_MS);
 
-        loadPageServices(pi, apiBase)
-            .then((services) => {
-                const viewer = new IvViewer({ element: el, services, startOrder, maxZoom });
+        const deniedText = el.dataset.msgDenied || '';
+
+        // Services and per-page access share the memoized manifest fetch (one request).
+        Promise.all([loadPageServices(pi, apiBase), loadPageAccess(pi, apiBase)])
+            .then(([services, restricted]) => {
+                const viewer = new IvViewer({ element: el, services, startOrder, maxZoom, allowZoom, restricted, deniedText });
                 viewer.viewer.openseadragon.addOnceHandler('tile-loaded', hideStageLoader);
+                // A restricted entry page never fires tile-loaded (tiles 403); onOpen fires
+                // once the (failed) load settles, so the loader is not left spinning.
+                viewer.onOpen.subscribe(hideStageLoader);
                 attachUrlSync(viewer, pi);
                 bindImageFiltersMount(viewer);
 
@@ -3638,10 +3772,11 @@
 
         window.voyager3dView = new Voyager3dView();
 
-        const immersiveEl = document.querySelector('[data-immersive-image]');
-        if (immersiveEl) {
-            initImmersiveViewer(immersiveEl);
+        // Wire the immersive chrome whenever the view is present; the image viewer
+        // itself is only built when the user has VIEW_IMAGES (see ivInit).
+        const immersiveRoot = document.querySelector('.immersive');
+        if (immersiveRoot) {
+            initImmersiveViewer(immersiveRoot);
         }
     });
-
 })();

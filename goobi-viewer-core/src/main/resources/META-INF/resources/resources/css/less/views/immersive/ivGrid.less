@@ -72,6 +72,11 @@
             box-shadow: @immersive-thumb-shadow-hover;
         }
 
+        .thumbnails-image.immersive__grid-thumb--denied {
+            object-fit: contain;
+            opacity: 0.85;
+        }
+
         .thumbnails-image-overlay {
             position: absolute;
             bottom: 0;
@@ -221,7 +226,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(var(--immersive-grid-col), 1fr));
         gap: 26px 20px;
-        max-width: 100%; 
+        max-width: 100%;
         margin: 0 auto;
     }
 
