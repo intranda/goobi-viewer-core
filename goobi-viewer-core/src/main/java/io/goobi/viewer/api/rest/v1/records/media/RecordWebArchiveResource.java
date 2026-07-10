@@ -51,6 +51,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.api.rest.bindings.AccessRightsBinding;
 import io.goobi.viewer.api.rest.model.webarchives.ReplayJson;
 import io.goobi.viewer.api.rest.model.webarchives.WebArchivePage;
 import io.goobi.viewer.api.rest.model.webarchives.WebArchiveResource;
@@ -61,6 +62,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.media.webarchives.WebArchiveReader;
 import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
@@ -77,7 +79,14 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
+/**
+ * This endpoint delivers a json file to list webarchive resources
+ * 
+ * It is restricted by PRIV_VIEW_IMAGES instead of a dedicated webarchives privilege, since a distinction is not neccessary. Perspectively, all media
+ * content should be handled with the same privilege
+ */
 @Path(ApiUrls.RECORDS_RECORD)
+@AccessRightsBinding({ IPrivilegeHolder.PRIV_VIEW_IMAGES })
 public class RecordWebArchiveResource {
 
     private static final Logger logger = LogManager.getLogger(RecordWebArchiveResource.class);

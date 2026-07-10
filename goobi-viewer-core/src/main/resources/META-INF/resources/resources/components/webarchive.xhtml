@@ -45,12 +45,16 @@
                 </div>
             </div>
 
-            <replay-web-page
-                embed="full"
-                noMediaDownload="true"
-                url="#{cc.attrs.startPageUrl}"
-                replayBase="#{request.contextPath}/resources/javascript/libs/replaywebpage/"
-                source="#{cc.attrs.archiveUrl}" />
+            <!--  Webarchives are restricted by PRIV_VIEW_IMAGES instead of a dedicated webarchives privilege, since a distinction is not neccessary. 
+			      Perspectively, all media content should be handled with the same privilege -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.isAccessPermission('VIEW_IMAGES')}">
+                <replay-web-page
+                    embed="full"
+                    noMediaDownload="true"
+                    url="#{cc.attrs.startPageUrl}"
+                    replayBase="#{request.contextPath}/resources/javascript/libs/replaywebpage/"
+                    source="#{cc.attrs.archiveUrl}" />
+            </ui:fragment>
         </div>
     </composite:implementation>
 </ui:composition>
