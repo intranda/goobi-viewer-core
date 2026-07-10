@@ -238,8 +238,7 @@ public class CMSPageListContent extends CMSContent implements CMSCategoryHolder 
     }
 
     /**
-     * @
-     *   Getter for the field <code>nestedPagesCount</code>.
+     * Getter for the field <code>nestedPagesCount</code>.
      *
      * @return a int.
      */

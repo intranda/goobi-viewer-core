@@ -49,7 +49,6 @@ import jakarta.ws.rs.core.Response;
 class RecordWebArchiveResourceApiTest extends AbstractRestApiTest {
 
     private static final String PI = "PPN743674162";
-    private static final String PI_NOT_FOUND = "PI_DOES_NOT_EXIST_WEBARCHIVE";
 
     private static final String PRIMARY_QUERY_PREFIX = "+PI_TOPSTRUCT:" + PI + " +DOCTYPE:PAGE +MIMETYPE:application/warc";
     private static final String FALLBACK_QUERY_PREFIX = "+PI:" + PI + " +MD_WEBARCHIVE_IDENTIFIER:*";
@@ -95,8 +94,17 @@ class RecordWebArchiveResourceApiTest extends AbstractRestApiTest {
      * @see RecordWebArchiveResource#getWebarchiveJson()
      */
     @Test
-    void getWebarchiveJson_shouldReturn404WhenNoLocalOrExternalDocsFound() {
-        try (Response response = target(webarchiveJsonUrl(PI_NOT_FOUND)).request().accept(MediaType.APPLICATION_JSON).get()) {
+    void getWebarchiveJson_shouldReturn404WhenNoLocalOrExternalDocsFound() throws Exception {
+        // Use an accessible record and stub both the primary and fallback queries to return no docs. Since the
+        // resource is now guarded by @AccessRightsBinding(PRIV_VIEW_IMAGES), a non-existent PI would be rejected with
+        // 403 by the access filter before the method runs; using an accessible PI lets the request pass the filter so
+        // the method's own "no docs found" 404 branch is actually exercised.
+        Mockito.when(mockedIndex.getDocs(ArgumentMatchers.startsWith(PRIMARY_QUERY_PREFIX), ArgumentMatchers.eq(Collections.emptyList())))
+                .thenReturn(new SolrDocumentList());
+        Mockito.when(mockedIndex.getDocs(ArgumentMatchers.startsWith(FALLBACK_QUERY_PREFIX), ArgumentMatchers.eq(Collections.emptyList())))
+                .thenReturn(new SolrDocumentList());
+
+        try (Response response = target(webarchiveJsonUrl(PI)).request().accept(MediaType.APPLICATION_JSON).get()) {
             assertEquals(404, response.getStatus());
         }
     }
