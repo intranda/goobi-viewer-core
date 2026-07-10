@@ -108,8 +108,8 @@ public final class WebArchiveReader {
     }
 
     /**
-     * Finds the seed URL among {@code MD_WEBARCHIVE_IDENTIFIER} values on the document matching {@code PI:<pi>}: the
-     * first non-blank {@code url} query parameter value among them, or {@code ""} if none is found.
+     * Finds the seed URL among {@code MD_WEBARCHIVE_IDENTIFIER} values on the document matching {@code PI:<pi>}: the first non-blank {@code url}
+     * query parameter value among them, or {@code ""} if none is found.
      *
      * @param pi persistent identifier of the record
      * @return the resolved seed URL, or {@code ""} if no matching document or usable identifier is found
@@ -148,8 +148,7 @@ public final class WebArchiveReader {
     }
 
     /**
-     * Looks up the value of a named parameter in a raw {@code &}-delimited parameter string, such as a URI's query or
-     * fragment component.
+     * Looks up the value of a named parameter in a raw {@code &}-delimited parameter string, such as a URI's query or fragment component.
      *
      * @param rawParams raw parameter string, e.g. {@code uri.getRawQuery()} or {@code uri.getRawFragment()}
      * @param paramName name of the parameter to look up
