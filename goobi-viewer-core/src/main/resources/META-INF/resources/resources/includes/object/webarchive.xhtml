@@ -8,27 +8,11 @@
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-    <!-- VIEW VIDEO -->
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:util="http://goobi.io/util">
+    <!-- VIEW WEBARCHIVE -->
 
     <script src="#{request.contextPath}/resources/javascript/libs/replaywebpage/ui.js" />
-
-    <style>
-        .replay-overlay {
-    		  position: fixed;
-			  left: 0;
-			  top: 0;
-			  width: 100vw;
-			  height: 100vh;
-			  z-index: 1001;
-    	}
-    	.replay-overlay__header {
-		  height: 0;
-		}
-		.overlay-plain .close {
-			top: 10px;
-		}
-    </style>
 
     <div
         id="webarchiveContainer"
@@ -36,24 +20,28 @@
         data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
         <!-- WEBARCHIVE -->
         <div
-            class="metadata-custom__wrapper"
+            class="view-object__webarchive-wrapper"
             data-access="#{activeDocumentBean.viewManager.isAccessPermission('VIEW_IMAGES')}"
             jsf:id="webArchiveArea"
             rendered="#{activeDocumentBean.viewManager.webArchive and activeDocumentBean.viewManager.isAccessPermission('VIEW_IMAGES')}">
-            <div class="metadata-custom__webarchive-inner">
+            <div class="view-object__webarchive-inner">
                 <button
-                    class="btn btn--full"
-                    id="overlayButton">
-                    #{msg.show}
+                    type="button"
+                    id="overlayButton"
+                    class="view-object__webarchive-preview">
+                    <span class="view-object__webarchive-preview-overlay" />
+                    <img
+                        src="#{imageDelivery.thumbs.getThumbnailUrl(activeDocumentBean.viewManager.pi, 1200,1200)}"
+                        alt="" />
+                    <span class="view-object__webarchive-preview-hover-text">#{msg.action__open_web_archive}</span>
+                    <span class="view-object__webarchive-preview-hover-icon">
+                        <util:icon icon="arrows-maximize" />
+                    </span>
                 </button>
-
-                <div class="representative-image">
-                    <img src="#{imageDelivery.thumbs.getThumbnailUrl(activeDocumentBean.viewManager.pi, 400,400)}" />
-                </div>
             </div>
 
             <div
-                class="test-wrapper"
+                class="view-object__webarchive-overlay-content"
                 data-overlay="content"
                 data-overlay-trigger="overlayButton"
                 data-overlay-fullscreen="true">

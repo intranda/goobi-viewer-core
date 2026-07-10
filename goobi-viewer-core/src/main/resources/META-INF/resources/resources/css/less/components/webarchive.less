@@ -1,0 +1,40 @@
+/* ==============================================================
+   Webarchive
+   style declarations for webarchive.xhtml
+   ==============================================================*/
+/* REPLAY OVERLAY */
+/* BLOCK */
+.replay-overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1001;
+
+    /* ELEMENT */
+    &__header {
+        height: 0;
+    }
+}
+
+/* close button position inside the fullscreen replay overlay */
+.overlay-plain:has(.replay-overlay) .close {
+    top: 10px;
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+}

@@ -160,6 +160,91 @@
         border-top: 0;
         padding: 10px;
     }
+
+    /* WEBARCHIVE */
+    &__webarchive-preview {
+        position: relative;
+        display: block;
+        width: 100%;
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        &:hover,
+        &:focus-visible {
+            .view-object__webarchive-preview-overlay {
+                opacity: 1;
+            }
+
+            .view-object__webarchive-preview-hover-icon {
+                right: 50%;
+                bottom: calc(~'49% - 20px');
+                transform: translate(50%, 50%);
+                background: transparent;
+            }
+
+            .view-object__webarchive-preview-hover-text {
+                right: 50%;
+                bottom: 55%;
+                transform: translate(50%, 50%);
+                opacity: 1;
+            }
+        }
+    }
+
+    &__webarchive-preview-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        transition: all 0.3s ease;
+        opacity: 0;
+    }
+
+    &__webarchive-preview-hover-icon {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        padding: 8px;
+        background: rgba(0, 0, 0, 0.6);
+        transform: translate(0%, 0%);
+        transition: all 0.3s ease;
+        color: @white;
+
+        .icon-wrapper {
+            display: block;
+            line-height: 0;
+        }
+
+        .icon-wrapper > svg {
+            width: 3.2rem;
+            height: 3.2rem;
+            color: inherit;
+        }
+    }
+
+    &__webarchive-preview-hover-text {
+        position: absolute;
+        transform: translate(50%, 50%);
+        right: 50%;
+        bottom: 70%;
+        transition: all 0.3s ease;
+        font-weight: 700;
+        color: @white;
+        opacity: 0;
+        width: 100%;
+        text-align: center;
+    }
     // METADATA BELOW IMAGE ON OBJECT PAGE - ONLY VISIBLE WITH CONFIGURATION
     &__metadata {
         position: relative;
