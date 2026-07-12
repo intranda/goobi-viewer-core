@@ -3,7 +3,7 @@
 import IvViewer from './ivViewer.mjs';
 import { loadPageServices, loadPageLabels, loadPageAccess } from './ivManifestSource.mjs';
 import { attachUrlSync } from './viewerImmersive.mjs';
-import { createKeyDispatcher } from './ivKeys.mjs';
+import { createKeyDispatcher, registerViewerNavKeys } from './ivKeys.mjs';
 import { setupPanels, setupPanelResize, setupToc, setupMetadataToggle } from './ivPanelsWiring.mjs';
 import { setupShortcutsModal } from './ivShortcutsModal.mjs';
 import { setupFulltextPanel } from './ivFulltextPanel.mjs';
@@ -72,6 +72,7 @@ export function initImmersiveViewer(immersiveRoot) {
             viewer.onOpen.subscribe(hideStageLoader);
             attachUrlSync(viewer, pi);
             bindImageFiltersMount(viewer);
+            registerViewerNavKeys(keys, viewer, el);
 
             loadPageLabels(pi, apiBase, fetch, document.documentElement.lang)
                 .then((labels) => setupPageDropdown(viewer, labels, keys))
