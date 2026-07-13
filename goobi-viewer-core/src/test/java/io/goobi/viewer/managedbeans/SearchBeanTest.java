@@ -1354,6 +1354,33 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies not set advancedSearchOrigin when pi is blank
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     */
+    @Test
+    void searchInRecord_shouldNotSetAdvancedSearchOriginWhenPiIsBlank() {
+        try (MockedStatic<BeanUtils> mockedBeanUtils = mockStatic(BeanUtils.class)) {
+            mockedBeanUtils.when(BeanUtils::getLocale).thenReturn(Locale.ENGLISH);
+            searchBean.resetAdvancedSearchParameters();
+
+            ActiveDocumentBean adb = mock(ActiveDocumentBean.class);
+            ViewManager vm = mock(ViewManager.class);
+            StructElement se = mock(StructElement.class);
+            when(adb.getViewManager()).thenReturn(vm);
+            when(vm.getTopStructElement()).thenReturn(se);
+            when(se.getLabel()).thenReturn("Test Record");
+            when(se.getDocStructType()).thenReturn("Monograph");
+            mockedBeanUtils.when(BeanUtils::getActiveDocumentBean).thenReturn(adb);
+
+            // A crawler hitting the search-in-record action without a loaded record supplies a null PI;
+            // the resulting origin has no target URL, so the bean must not expose it (would throw on render)
+            searchBean.searchInRecord("PI_TOPSTRUCT", null, null, null);
+
+            Assertions.assertNull(searchBean.getAdvancedSearchOrigin());
+        }
+    }
+
+    /**
      * @verifies set advancedSearchOrigin from cms page when current page is a cms page
      * @see SearchBean#executeSearch()
      */
@@ -1375,6 +1402,27 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(origin);
         Assertions.assertEquals(42L, origin.getCmsPageId());
         Assertions.assertTrue(origin.isCmsPageOrigin());
+    }
+
+    /**
+     * @verifies not set advancedSearchOrigin when cms page id is null
+     * @see SearchBean#executeSearch()
+     */
+    @Test
+    void executeSearch_shouldNotSetAdvancedSearchOriginWhenCmsPageIdIsNull() throws Exception {
+        // A transient CMS page (id == null) cannot yield a resolvable back-link, so no origin must be recorded
+        CMSPage page = new CMSPage();
+
+        NavigationHelper navHelper = mock(NavigationHelper.class);
+        when(navHelper.isCmsPage()).thenReturn(true);
+        when(navHelper.getCurrentCMSPage()).thenReturn(page);
+        when(navHelper.getSubThemeDiscriminatorQuerySuffix()).thenReturn("");
+        when(navHelper.getLocale()).thenReturn(Locale.ENGLISH);
+        searchBean.setNavigationHelper(navHelper);
+
+        searchBean.executeSearch();
+
+        Assertions.assertNull(searchBean.getAdvancedSearchOrigin());
     }
 
     /**
