@@ -291,7 +291,11 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         if (this.uiComponent == null && this.jsfComponent != null && this.jsfComponent.exists()) {
             DynamicContentBuilder builder = new DynamicContentBuilder();
             this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-            this.uiComponent.setId("cms_" + FilenameUtils.getBaseName(this.templateFilename) + "_" + Optional.ofNullable(this.order).orElse(0));
+            // Use a suffix that is unique per page and stable across postbacks. The order value alone is not
+            // guaranteed to be unique (no DB constraint, and it is re-assigned during rendering), which caused
+            // colliding client ids (e.g. two "cms_headerslider_2" components) and an IllegalStateException in
+            // JSF's checkIdUniqueness when saving the view. See getUniqueComponentIdSuffix() for details.
+            this.uiComponent.setId("cms_" + FilenameUtils.getBaseName(this.templateFilename) + "_" + getUniqueComponentIdSuffix());
             Map<String, Object> attributes = new HashMap<>();
             for (CMSComponentAttribute attribute : this.getAttributes().values()) {
                 attributes.put(attribute.getName(), attribute.isBooleanValue() ? attribute.getBooleanValue() : attribute.getValue());
@@ -300,6 +304,33 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
             UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, attributes);
         }
         return uiComponent;
+    }
+
+    /**
+     * Builds the suffix appended to this component's JSF client id. The suffix must be unique among all
+     * components rendered on the same page and stable across postbacks, otherwise JSF's
+     * {@code Util.checkIdUniqueness} aborts view state saving with an {@link IllegalStateException}.
+     *
+     * <p>The {@code order} value alone is insufficient: two components of the same template can share an
+     * order (there is no uniqueness constraint on {@code component_order}, and the order is re-assigned
+     * during rendering, e.g. in {@link io.goobi.viewer.model.cms.pages.CMSPage#getGroupedPageViewComponents()}).
+     * We therefore prepend the persistent component's database id (a unique primary key) when the component
+     * has been persisted. The order is kept in the suffix so that multiple group-copies of the same
+     * persistent component (which share a database id but receive distinct order values) still get distinct
+     * ids. Transient, not-yet-persisted components fall back to the order only.</p>
+     *
+     * @return unique, stable id suffix for this component
+     * @should append persistent component id when persisted
+     * @should return order only when not persisted
+     * @should produce distinct suffixes for components sharing an order
+     */
+    String getUniqueComponentIdSuffix() {
+        int orderValue = Optional.ofNullable(this.order).orElse(0);
+        Long persistentId = Optional.ofNullable(this.persistentComponent).map(PersistentCMSComponent::getId).orElse(null);
+        if (persistentId != null) {
+            return persistentId + "_" + orderValue;
+        }
+        return Integer.toString(orderValue);
     }
 
     /**
