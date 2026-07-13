@@ -38,6 +38,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -125,6 +126,7 @@ import io.goobi.viewer.model.citation.CitationList;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
 import io.goobi.viewer.model.job.download.DownloadOption;
+import io.goobi.viewer.model.media.webarchives.WebArchiveReader;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
 import io.goobi.viewer.model.metadata.Metadata;
 import io.goobi.viewer.model.metadata.MetadataTools;
@@ -208,6 +210,10 @@ public class ViewManager implements Serializable {
     /** Table of contents object. Volatile so that the post-lock write in ActiveDocumentBean.update() is immediately visible to all threads. */
     private volatile TOC toc; //NOSONAR S3077: set once post-lock, safe publication
 
+    /**
+     * @deprecated image rotation is done solely in browser frontend
+     */
+    @Deprecated(since = "26.06")
     private int rotate = 0;
     private int zoomSlider;
     private int currentImageOrder = -1;
@@ -228,6 +234,7 @@ public class ViewManager implements Serializable {
     private boolean recordViewImagesAccessResolved = false;
     private List<StructElementStub> docHierarchy = null;
     private String mimeType = null;
+    private String webArchiveSeedUrl = null;
     private Boolean filesOnly = null;
     private String opacUrl = null;
     private String contextObject = null;
@@ -1057,7 +1064,9 @@ public class ViewManager implements Serializable {
      * @return a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated directly use {@link PhysicalElement#getImageWidth()} instead
      */
+    @Deprecated(since = "26.06")
     public int getCurrentWidth() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage != null) {
@@ -1075,7 +1084,9 @@ public class ViewManager implements Serializable {
      * @return a int.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @deprecated directly use {@link PhysicalElement#getImageHeight()} instead
      */
+    @Deprecated(since = "26.06")
     public int getCurrentHeight() throws IndexUnreachableException, DAOException {
         PhysicalElement currentPage = getCurrentPage();
         if (currentPage != null) {
@@ -1163,7 +1174,9 @@ public class ViewManager implements Serializable {
      *
      * @should decrement rotation by 90 degrees and wrap from 0 to 270
      * @return null (JSF navigation outcome; rotation is applied as a side effect)
+     * @deprecated image rotation is done solely in browser frontend
      */
+    @Deprecated(since = "26.06")
     public String rotateLeft() {
         rotate -= 90;
         if (rotate < 0) {
@@ -1182,7 +1195,9 @@ public class ViewManager implements Serializable {
      *
      * @should increment rotation by 90 degrees and wrap from 270 to 0
      * @return null (JSF navigation outcome; rotation is applied as a side effect)
+     * @deprecated image rotation is done solely in browser frontend
      */
+    @Deprecated(since = "26.06")
     public String rotateRight() {
         rotate += 90;
         if (rotate == 360) {
@@ -1198,7 +1213,9 @@ public class ViewManager implements Serializable {
      *
      * @should reset rotation
      * @return null (JSF navigation outcome; rotation is reset to 0 as a side effect)
+     * @deprecated image rotation is done solely in browser frontend
      */
+    @Deprecated(since = "26.06")
     public String resetImage() {
         this.rotate = 0;
         logger.trace("resetImage: {}", rotate);
@@ -3004,6 +3021,23 @@ public class ViewManager implements Serializable {
         return new MimeType(getMimeType());
     }
 
+    /**
+     * Returns the seed URL (first page with seed=true) from the first web archive (WACZ) file of this record, or an empty string if none is found.
+     * Result is cached after first call.
+     */
+    public String getWebArchiveSeedUrl() {
+        if (webArchiveSeedUrl == null) {
+            webArchiveSeedUrl = WebArchiveReader.getSeedUrl(pi);
+        }
+        return webArchiveSeedUrl;
+    }
+
+    public boolean isWebArchive() {
+        return this.getMediaType().isWebArchive()
+                || StringUtils.isNotBlank(this.topStructElement.getMetadataValue(SolrConstants.MD_WEBARCHIVE_IDENTIFIER));
+
+    }
+
     public Long getPageCountWithAlto() throws IndexUnreachableException, PresentationException {
         // Lazy cache: the ALTO page count is immutable for a given record within a session,
         // so repeated calls (e.g. from isAltoAvailableForWork and FileType.getTypesForRecord)
@@ -3059,7 +3093,9 @@ public class ViewManager implements Serializable {
      * getCurrentRotate.
      *
      * @return a int.
+     * @deprecated image rotation is done solely in browser frontend
      */
+    @Deprecated(since = "26.06")
     public int getCurrentRotate() {
         return rotate;
     }
@@ -4499,6 +4535,16 @@ public class ViewManager implements Serializable {
         } else {
             return Collections.emptyMap();
         }
+
+    }
+
+    public URI getWebarchiveUrl() {
+
+        return DataManager.getInstance()
+                .getRestApiManager()
+                .getContentApiManager()
+                .map(urls -> urls.path(ApiUrls.RECORDS_RECORD, ApiUrls.RECORDS_WEBARCHIVE).params(this.pi).buildURI())
+                .orElse(null);
 
     }
 }

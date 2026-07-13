@@ -47,6 +47,11 @@ RUN --mount=type=bind,source=goobi-viewer-config/docker,target=/tmp/patches,read
     patch --output=${CATALINA_HOME}/conf/server.xml.template ${CATALINA_HOME}/conf/server.xml < /tmp/patches/server.xml.patch && \
     patch --output=${CATALINA_HOME}/conf/context.xml.template ${CATALINA_HOME}/conf/context.xml < /tmp/patches/context.xml.patch
 
+RUN grep -qxF 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' ${CATALINA_HOME}/conf/logging.properties || echo 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' >> ${CATALINA_HOME}/conf/logging.properties && \
+    grep -qxF 'org.apache.tomcat.util.net.NioEndpoint.level = OFF' ${CATALINA_HOME}/conf/logging.properties || echo 'org.apache.tomcat.util.net.NioEndpoint.level = OFF' >> ${CATALINA_HOME}/conf/logging.properties && \
+    grep -qxF 'org.apache.tomcat.websocket.level = OFF' ${CATALINA_HOME}/conf/logging.properties || echo 'org.apache.tomcat.websocket.level = OFF' >> ${CATALINA_HOME}/conf/logging.properties && \
+    grep -qxF 'org.glassfish.jersey.server.level = OFF' ${CATALINA_HOME}/conf/logging.properties || echo 'org.glassfish.jersey.server.level = OFF' >> ${CATALINA_HOME}/conf/logging.properties
+
 COPY --from=build-stage /viewer-exploded/ ${CATALINA_HOME}/webapps/viewer/
 
 COPY goobi-viewer-config/docker/run.sh /

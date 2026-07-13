@@ -308,61 +308,61 @@
                                             #{msg.button__save}
                                         </button>
                                     </div>
-
-                                    <h:panelGroup id="mediaSelectPanel0">
-                                        <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
-                                            <div class="admin-cms-media-select-overlay">
-                                                <!-- SELECT MEDIA ITEM OVERLAY -->
-                                                <div class="admin-cms-media__select-overlay" />
-
-                                                <!-- SELECT MEDIA ITEM -->
-                                                <div class="admin-cms-media__select">
-                                                    <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
-                                                        <ui:param
-                                                            name="mediaDisplayPanel"
-                                                            value="mediaGroup0" />
-                                                        <ui:param
-                                                            name="fileTypes"
-                                                            value="#{cmsMediaBean.getImageTypes()}" />
-                                                        <ui:param
-                                                            name="fileTypeValidator"
-                                                            value="#{cmsMediaBean.getImageFilter()}" />
-                                                        <ui:param
-                                                            name="index"
-                                                            value="0" />
-                                                    </ui:include>
-                                                </div>
-                                            </div>
-                                        </ui:fragment>
-                                    </h:panelGroup>
-
-                                    <h:panelGroup id="mediaSelectPanel1">
-                                        <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
-                                            <div class="admin-cms-media-select-overlay">
-                                                <!-- SELECT MEDIA ITEM OVERLAY -->
-                                                <div class="admin-cms-media__select-overlay" />
-
-                                                <!-- SELECT MEDIA ITEM -->
-                                                <div class="admin-cms-media__select">
-                                                    <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
-                                                        <ui:param
-                                                            name="mediaDisplayPanel"
-                                                            value="mediaGroup1" />
-                                                        <ui:param
-                                                            name="fileTypes"
-                                                            value="#{cmsMediaBean.getImageTypes()}" />
-                                                        <ui:param
-                                                            name="fileTypeValidator"
-                                                            value="#{cmsMediaBean.getImageFilter()}" />
-                                                        <ui:param
-                                                            name="index"
-                                                            value="1" />
-                                                    </ui:include>
-                                                </div>
-                                            </div>
-                                        </ui:fragment>
-                                    </h:panelGroup>
                                 </h:form>
+
+                                <h:panelGroup id="mediaSelectPanel0">
+                                    <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+                                        <div class="admin-cms-media-select-overlay">
+                                            <!-- SELECT MEDIA ITEM OVERLAY -->
+                                            <div class="admin-cms-media__select-overlay" />
+
+                                            <!-- SELECT MEDIA ITEM -->
+                                            <div class="admin-cms-media__select">
+                                                <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                                    <ui:param
+                                                        name="mediaDisplayPanel"
+                                                        value="mediaGroup0" />
+                                                    <ui:param
+                                                        name="fileTypes"
+                                                        value="#{cmsMediaBean.getImageTypes()}" />
+                                                    <ui:param
+                                                        name="fileTypeValidator"
+                                                        value="#{cmsMediaBean.getImageFilter()}" />
+                                                    <ui:param
+                                                        name="index"
+                                                        value="0" />
+                                                </ui:include>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                </h:panelGroup>
+
+                                <h:panelGroup id="mediaSelectPanel1">
+                                    <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+                                        <div class="admin-cms-media-select-overlay">
+                                            <!-- SELECT MEDIA ITEM OVERLAY -->
+                                            <div class="admin-cms-media__select-overlay" />
+
+                                            <!-- SELECT MEDIA ITEM -->
+                                            <div class="admin-cms-media__select">
+                                                <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                                    <ui:param
+                                                        name="mediaDisplayPanel"
+                                                        value="mediaGroup1" />
+                                                    <ui:param
+                                                        name="fileTypes"
+                                                        value="#{cmsMediaBean.getImageTypes()}" />
+                                                    <ui:param
+                                                        name="fileTypeValidator"
+                                                        value="#{cmsMediaBean.getImageFilter()}" />
+                                                    <ui:param
+                                                        name="index"
+                                                        value="1" />
+                                                </ui:include>
+                                            </div>
+                                        </div>
+                                    </ui:fragment>
+                                </h:panelGroup>
                             </div>
 
                             <!-- SIDEBAR: HINTS -->

@@ -135,7 +135,7 @@ done
 
 echo "Updating file ownership..."
 # this will cause less disk access than `chown -R`
-find "${CATALINA_HOME}" /opt/digiverso/goobi/ /opt/digiverso/logs/ \! -user user \( -exec chown user:user '{}' + -o -true \)
+find "${CATALINA_HOME}" /opt/digiverso/viewer/ /opt/digiverso/logs/ \! -user user \( -exec chown user:user '{}' + -o -true \)
 
 # No initial user password given
 if [[ -z "${VIEWER_USERPASS-}" ]]; then

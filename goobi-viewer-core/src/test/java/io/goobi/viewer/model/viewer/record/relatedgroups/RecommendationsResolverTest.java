@@ -15,6 +15,7 @@ import java.util.Random;
 
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -24,6 +25,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
@@ -31,12 +33,16 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 
 class RecommendationsResolverTest {
 
+    /** Sentinel access-control suffix returned by the mocked {@link SearchHelper#getAllSuffixes()}. */
+    private static final String ACCESS_SUFFIX = " +(ACCESSCONDITION:\"OPENACCESS\")";
+
     private SolrSearchIndex searchIndex;
     private Configuration config;
     private DataManager dataManager;
     private ImageDeliveryBean imageDelivery;
     private ViewManager viewManager;
     private StructElement topStruct;
+    private MockedStatic<SearchHelper> searchHelperStatic;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -59,6 +65,18 @@ class RecommendationsResolverTest {
         when(topStruct.getPi()).thenReturn("PI_CURRENT");
         viewManager = mock(ViewManager.class);
         when(viewManager.getTopStructElement()).thenReturn(topStruct);
+
+        // Isolate the access-control suffix from request/session state; the resolver appends its return
+        // value to every Solr query it builds.
+        searchHelperStatic = mockStatic(SearchHelper.class);
+        searchHelperStatic.when(() -> SearchHelper.getAllSuffixes()).thenReturn(ACCESS_SUFFIX);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (searchHelperStatic != null) {
+            searchHelperStatic.close();
+        }
     }
 
     private static SolrDocument doc(String pi, String title) {
@@ -102,6 +120,8 @@ class RecommendationsResolverTest {
             String query = queryCaptor.getValue();
             assertTrue(query.contains("PI:(AC13373468)"), query);
             assertTrue(query.contains("-PI:PI_CURRENT"), query);
+            // Security: the access-control suffix must be appended to the query
+            assertTrue(query.contains("ACCESSCONDITION"), query);
         }
     }
 
@@ -119,6 +139,8 @@ class RecommendationsResolverTest {
             ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
             org.mockito.Mockito.verify(searchIndex).search(queryCaptor.capture(), anyInt(), any(), anyList());
             assertTrue(queryCaptor.getValue().contains("MD_TOPIC:\"Arbeitsmarkt\""), queryCaptor.getValue());
+            // Security: the access-control suffix must be appended to the query
+            assertTrue(queryCaptor.getValue().contains("ACCESSCONDITION"), queryCaptor.getValue());
         }
     }
 
@@ -150,6 +172,16 @@ class RecommendationsResolverTest {
             List<GroupMemberDetail> result = new RecommendationsResolver(imageDelivery, new Random(1L)).resolve(viewManager);
             assertEquals(4, result.size());
             assertEquals("PI_A", result.get(0).getPi());
+
+            // Security: every query (incl. the collection-fill query) must carry the access-control suffix
+            ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
+            org.mockito.Mockito.verify(searchIndex, org.mockito.Mockito.atLeastOnce())
+                    .search(queryCaptor.capture(), anyInt(), any(), anyList());
+            for (String query : queryCaptor.getAllValues()) {
+                assertTrue(query.contains("ACCESSCONDITION"), query);
+            }
+            assertTrue(queryCaptor.getAllValues().stream().anyMatch(q -> q.contains(SolrConstants.DC + ":")),
+                    "Expected a collection-fill query on " + SolrConstants.DC);
         }
     }
 }

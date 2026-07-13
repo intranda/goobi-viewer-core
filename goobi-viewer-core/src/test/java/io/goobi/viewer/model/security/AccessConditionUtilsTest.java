@@ -318,6 +318,29 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * Two license types that reciprocally override each other are both treated as overriding types and thus skipped by the
+     * default-privilege check. This must not leave the public baseline grant enabled: an anonymous caller must be denied
+     * (fail closed), not granted access to a restricted record.
+     *
+     * @verifies deny anonymous access on reciprocal override cycle
+     */
+    @Test
+    void checkAccessPermission_shouldDenyAnonymousAccessOnReciprocalOverrideCycle() throws Exception {
+        // Both types are restrictive (no privilege by default, not open access) and override each other.
+        LicenseType a = new LicenseType();
+        a.setName("A");
+        LicenseType b = new LicenseType();
+        b.setName("B");
+        a.getOverriddenLicenseTypes().add(b);
+        b.getOverriddenLicenseTypes().add(a);
+
+        Set<String> recordAccessConditions = new HashSet<>(Arrays.asList("A", "B"));
+        AccessPermission access = AccessConditionUtils.checkAccessPermission(Arrays.asList(a, b), recordAccessConditions,
+                IPrivilegeHolder.PRIV_LIST, null, null, Optional.empty(), null);
+        assertFalse(access.isGranted());
+    }
+
+    /**
      * When overriding license types are present AND a user satisfies access conditions but the returned AccessPermission
      * carries a secondary requirement that fails, the baseline public grant must still fire.
      *
@@ -354,6 +377,38 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         // Secondary check fails (sessionUser != secondaryUser), but the baseline grant fires
         // because type "A" allows the privilege by default
         assertTrue(access.isGranted());
+    }
+
+    /**
+     * When the overridden type "A" both grants the privilege by default and requires an access ticket, a user that satisfies
+     * the overriding type "B" must still be granted access <b>without</b> a ticket. The licensee route is evaluated before the
+     * public baseline grant, so the ticket suppression takes effect for the privileged user.
+     *
+     * @verifies not require access ticket for overriding user when overridden type grants by default
+     */
+    @Test
+    void checkAccessPermission_shouldNotRequireAccessTicketForOverridingUserWhenOverriddenTypeGrantsByDefault() throws Exception {
+        LicenseType a = new LicenseType();
+        a.setName("A");
+        a.getPrivileges().add(IPrivilegeHolder.PRIV_VIEW_IMAGES);
+        a.setAccessTicketRequired(true);
+        LicenseType b = new LicenseType();
+        b.setName("B");
+        b.getOverriddenLicenseTypes().add(a);
+
+        // User that holds a (ticket-free) license for the overriding type "B" only
+        User user = new User() {
+            @Override
+            public AccessPermission canSatisfyAllAccessConditions(Set<String> conditions, String privilegeName, String pi) {
+                return conditions.contains("B") ? AccessPermission.granted() : AccessPermission.denied();
+            }
+        };
+
+        Set<String> recordAccessConditions = new HashSet<>(Arrays.asList("A", "B"));
+        AccessPermission access = AccessConditionUtils.checkAccessPermission(Arrays.asList(a, b), recordAccessConditions,
+                IPrivilegeHolder.PRIV_VIEW_IMAGES, user, null, Optional.empty(), null);
+        assertTrue(access.isGranted());
+        assertFalse(access.isAccessTicketRequired());
     }
 
     /**

@@ -18,4 +18,11 @@
             </jsfComponent>
         </item>
     </content>
+
+    <attribute
+        name="logoTiles"
+        label="cms__component_attribute__logo_tiles"
+        type="toggle">
+        <value label="cms_component__logo_tiles_button">true</value>
+    </attribute>
 </component>

@@ -352,6 +352,8 @@ public final class SolrConstants {
     public static final String BOOL_WKT_COORDS = "BOOL_WKT_COORDS";
     /** Constant <code>MD_ANNOTATION_ID="MD_ANNOTATION_ID"</code>. */
     public static final String MD_ANNOTATION_ID = "MD_ANNOTATION_ID";
+    /** Constant <code>MD_WEBARCHIVE_IDENTIFIER="MD_WEBARCHIVE_IDENTIFIER"</code>. */
+    public static final String MD_WEBARCHIVE_IDENTIFIER = "MD_WEBARCHIVE_IDENTIFIER";
 
     public static final String SORT_RANDOM = "RANDOM";
     public static final String SORT_RELEVANCE = "RELEVANCE";

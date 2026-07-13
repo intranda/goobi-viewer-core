@@ -586,6 +586,10 @@ public final class FileTools {
                 case "mei":
                     mimeType = "application/mei+xml";
                     break;
+                case "warc":
+                case "wacz":
+                    mimeType = "application/warc";
+                    break;
                 default:
                     // use a default value, if file extension is not mapped
                     mimeType = "image/tiff";

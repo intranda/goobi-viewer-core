@@ -1,0 +1,52 @@
+/* ==============================================================
+   CMS Component "Section Header"
+   ==============================================================*/
+/* SECTION HEADER */
+/* BLOCK */
+.cms-section-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin: 40px 0 45px 0;
+    text-align: center;
+    /* ELEMENT */
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 74px;
+        height: 74px;
+        border-radius: 50%;
+        background-color: @white;
+        box-shadow: 0 2px 12px fade(@black, 8%);
+        .icon-svg {
+            width: 34px;
+            height: 34px;
+            color: @gray;
+        }
+    }
+    &__heading {
+        margin: 0;
+        font-size: (@fontXLarge * 2);
+        font-weight: 700;
+        line-height: 1.3;
+        letter-spacing: -0.02em;
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+}

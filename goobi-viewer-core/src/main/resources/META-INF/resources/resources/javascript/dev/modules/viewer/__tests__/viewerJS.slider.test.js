@@ -11,8 +11,8 @@ const viewerJS = require('../viewerJS.slider.js');
 const slider = viewerJS.slider;
 
 describe('built-in styles', () => {
-    test('the registry has the seven canonical built-in styles', () => {
-        const expected = ['base', 'full-width', '3-slides-pagination', '3-slides-pagination-nav', 'fade-effect-auto-play', 'centered-mode', 'vertical-auto-play'];
+    test('the registry has the eight canonical built-in styles', () => {
+        const expected = ['base', 'full-width', '3-slides-pagination', '3-slides-pagination-nav', 'fade-effect-auto-play', 'centered-mode', 'vertical-auto-play', 'cover-row'];
         for (const name of expected) {
             expect(slider.styles.has(name)).toBe(true);
         }
@@ -23,6 +23,40 @@ describe('built-in styles', () => {
         expect(base.maxSlides).toBe(20);
         expect(base.imageWidth).toBe(800);
         expect(base.swiperConfig.direction).toBe('horizontal');
+    });
+
+    test('the "cover-row" style renders fixed-height slides at natural width', () => {
+        const cfg = slider.styles.get('cover-row');
+        expect(cfg.imageHeight).toBe(600);
+        expect(cfg.imageWidth).toBeUndefined();
+        expect(cfg.swiperConfig.slidesPerView).toBe('auto');
+        expect(cfg.swiperConfig.navigation).toEqual({ nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' });
+        expect(cfg.swiperConfig.pagination).toEqual({ type: 'progressbar' });
+    });
+
+    test('the "cover-row" progressbar uses the default snap-based fill (no progress override)', () => {
+        const cfg = slider.styles.get('cover-row');
+        expect(cfg.swiperConfig.on.progress).toBeUndefined();
+    });
+
+    test('the "cover-row" style re-measures once lazy images arrive (cold cache would lock the slider)', () => {
+        const cfg = slider.styles.get('cover-row');
+        const listeners = [];
+        const pendingImg = { complete: false, addEventListener: (ev, cb) => listeners.push(cb) };
+        const loadedImg = {
+            complete: true,
+            addEventListener: () => {
+                throw new Error('loaded images must not get listeners');
+            },
+        };
+        const swiper = {
+            update: jest.fn(),
+            el: { querySelectorAll: () => [pendingImg, loadedImg] },
+        };
+        cfg.swiperConfig.on.afterInit(swiper);
+        expect(swiper.update).not.toHaveBeenCalled();
+        listeners.forEach((cb) => cb());
+        expect(swiper.update).toHaveBeenCalled();
     });
 });
 

@@ -16,4 +16,11 @@
             </jsfComponent>
         </item>
     </content>
+
+    <attribute
+        name="iconGrid"
+        label="cms__component_attribute__icon_grid"
+        type="toggle">
+        <value label="cms_component__icon_grid_button">true</value>
+    </attribute>
 </component>

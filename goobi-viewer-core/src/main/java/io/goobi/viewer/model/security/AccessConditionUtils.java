@@ -271,8 +271,11 @@ public final class AccessConditionUtils {
             case "glb":
             case "pdf":
             case "epub":
+            case "warc":
+            case "wacz":
                 sbQuery.append(" +").append(useFileField).append(":\"").append(simpleFileName).append('"');
                 break;
+
             default:
                 // Escape whitespaces etc. for wildcard searches
                 sbQuery.append(" +").append(useFileField).append(':').append(ClientUtils.escapeQueryChars(simpleFileName)).append(".*");
@@ -779,14 +782,14 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Checks whether the current user has the given access permissions for every LOGID of the record with the
-     * given identifier, evaluating multiple privileges in a single Solr roundtrip.
+     * Checks whether the current user has the given access permissions for every LOGID of the record with the given identifier, evaluating multiple
+     * privileges in a single Solr roundtrip.
      *
-     * <p>The Solr index is queried <strong>once</strong> for all DOCSTRCT documents of the given identifier;
-     * the returned access conditions are then evaluated in-memory for each requested privilege. Per-privilege
-     * results are stored in the session cache using the same key scheme as
-     * {@link #checkAccessPermissionByIdentiferForAllLogids(String, String, HttpServletRequest)}, so subsequent
-     * calls (single or batched) for any of the privileges hit the cache.
+     * <p>
+     * The Solr index is queried <strong>once</strong> for all DOCSTRCT documents of the given identifier; the returned access conditions are then
+     * evaluated in-memory for each requested privilege. Per-privilege results are stored in the session cache using the same key scheme as
+     * {@link #checkAccessPermissionByIdentiferForAllLogids(String, String, HttpServletRequest)}, so subsequent calls (single or batched) for any of
+     * the privileges hit the cache.
      *
      * @param identifier persistent identifier of the record
      * @param privilegeNames set of access privilege names to verify; an empty or null set returns an empty map
@@ -825,16 +828,16 @@ public final class AccessConditionUtils {
     /**
      * Checks access permissions for a set of identifiers and a set of privileges in one Solr roundtrip.
      *
-     * <p>Issues a single Solr query (or a chunked sequence for large identifier sets) using the
-     * <code>terms</code> query parser to fetch access conditions for all docstructs of all given identifiers,
-     * then evaluates each requested privilege in-memory per identifier. Per-identifier per-privilege results
-     * are stored in the session cache under the same key scheme as the legacy single-PI methods.
+     * <p>
+     * Issues a single Solr query (or a chunked sequence for large identifier sets) using the <code>terms</code> query parser to fetch access
+     * conditions for all docstructs of all given identifiers, then evaluates each requested privilege in-memory per identifier. Per-identifier
+     * per-privilege results are stored in the session cache under the same key scheme as the legacy single-PI methods.
      *
-     * <p><strong>Moving-Wall semantics:</strong> the inner <code>checkAccessPermission</code> receives a
-     * per-identifier query string of the form <code>+PI_TOPSTRUCT:"&lt;id&gt;" +DOCTYPE:DOCSTRCT</code>,
-     * reconstructed inside the doc loop, so that <code>LicenseType.isRestrictionsExpired</code> sees the
-     * same cache key as the legacy single-PI methods would have produced. The cross-PI <code>terms</code>
-     * string is used only for the outer Solr fetch.
+     * <p>
+     * <strong>Moving-Wall semantics:</strong> the inner <code>checkAccessPermission</code> receives a per-identifier query string of the form
+     * <code>+PI_TOPSTRUCT:"&lt;id&gt;" +DOCTYPE:DOCSTRCT</code>, reconstructed inside the doc loop, so that
+     * <code>LicenseType.isRestrictionsExpired</code> sees the same cache key as the legacy single-PI methods would have produced. The cross-PI
+     * <code>terms</code> string is used only for the outer Solr fetch.
      *
      * @param identifiers persistent identifiers of records; null or empty returns an empty map
      * @param privilegeNames access privilege names to verify; null or empty returns an empty map
@@ -947,8 +950,10 @@ public final class AccessConditionUtils {
                     String remoteAddress = NetTools.getIpAddress(request);
                     Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
                     for (String privilege : uncachedForThisPi) {
-                        ret.get(pi).get(privilege).put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions,
-                                privilege, user, remoteAddress, client, perIdentifierQuery));
+                        ret.get(pi)
+                                .get(privilege)
+                                .put(logid, checkAccessPermission(nonOpenAccessLicenseTypes, requiredAccessConditions,
+                                        privilege, user, remoteAddress, client, perIdentifierQuery));
                     }
                 }
             } catch (PresentationException e) {
@@ -968,23 +973,26 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Builds the Solr fetch query using the terms query parser for a chunk of identifiers.
-     * Comma-separated values; PI_TOPSTRUCT values do not contain commas, so no escaping needed.
-     * Caller must guarantee a non-empty {@code identifiers} collection — an empty terms list would yield
-     * a syntactically invalid Solr query.
+     * Builds the Solr fetch query using the terms query parser for a chunk of identifiers. Comma-separated values; PI_TOPSTRUCT values do not contain
+     * commas, so no escaping needed. Caller must guarantee a non-empty {@code identifiers} collection — an empty terms list would yield a
+     * syntactically invalid Solr query.
      */
     private static String buildTermsPermissionQuery(Collection<String> identifiers) {
         return new StringBuilder()
-                .append("+{!terms f=").append(SolrConstants.PI_TOPSTRUCT).append('}')
+                .append("+{!terms f=")
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append('}')
                 .append(String.join(",", identifiers))
-                .append(" +").append(SolrConstants.DOCTYPE).append(':').append(DocType.DOCSTRCT.name())
+                .append(" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.DOCSTRCT.name())
                 .toString();
     }
 
     /**
-     * Builds the legacy per-identifier query string used as the cache key for LicenseType.isRestrictionsExpired
-     * and as the basis for moving-wall hit-count checks. Format must match the legacy single-PI methods byte-for-byte.
-     * Package-private so tests can verify the format directly.
+     * Builds the legacy per-identifier query string used as the cache key for LicenseType.isRestrictionsExpired and as the basis for moving-wall
+     * hit-count checks. Format must match the legacy single-PI methods byte-for-byte. Package-private so tests can verify the format directly.
      */
     static String buildSinglePiPermissionQuery(String identifier) {
         return new StringBuilder().append('+')
@@ -1409,6 +1417,8 @@ public final class AccessConditionUtils {
      * @should keep public access ticket path if overriding license type present
      * @should deny public access if restrictive license type does not override
      * @should fall through to baseline grant if secondary access check invalidates licensee access
+     * @should deny anonymous access on reciprocal override cycle
+     * @should not require access ticket for overriding user when overridden type grants by default
      */
     public static AccessPermission checkAccessPermission(List<LicenseType> allLicenseTypes, final Set<String> requiredAccessConditions,
             String privilegeName, User user, String remoteAddress, Optional<ClientApplication> client, String query)
@@ -1445,6 +1455,10 @@ public final class AccessConditionUtils {
 
         // If all relevant license types allow the requested privilege by default, allow access
         boolean licenseTypeAllowsPriv = true;
+        // Tracks whether at least one non-overriding relevant license type grants the privilege by default. The public
+        // baseline grant below requires this, so a cyclic/reciprocal override (where every relevant type is an overriding
+        // type and thus skipped by the deny check) cannot leave licenseTypeAllowsPriv=true and fail open to anonymous callers.
+        boolean baselineGrantsPriv = false;
         boolean accessTicketRequired = false;
         boolean redirect = false;
         String redirectUrl = null;
@@ -1479,16 +1493,21 @@ public final class AccessConditionUtils {
             if (licenseType.isAccessTicketRequired()) {
                 accessTicketRequired = true;
             }
-            if (!overridingConditionNames.contains(licenseType.getName()) && !licenseType.getPrivileges().contains(privilegeName)
-                    && !licenseType.isOpenAccess() && !licenseType.isRestrictionsExpired(query)) {
-                logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR Debug
-                licenseTypeAllowsPriv = false;
+            if (!overridingConditionNames.contains(licenseType.getName())) {
+                if (licenseType.getPrivileges().contains(privilegeName) || licenseType.isOpenAccess()
+                        || licenseType.isRestrictionsExpired(query)) {
+                    // A non-overriding type that grants the privilege by default establishes the public baseline.
+                    baselineGrantsPriv = true;
+                } else {
+                    logger.trace("LicenseType '{}' doesn't allow the action '{}' by default.", licenseType.getName(), privilegeName); //NOSONAR Debug
+                    licenseTypeAllowsPriv = false;
+                }
             }
         }
         // If every relevant license type allows the privilege by default and there are no overriding license types, grant
         // access immediately. When overriding types are present, the public grant is deferred until after the licensee-specific
         // checks below, so that a licensee matching an overriding type can receive a reduced (e.g. ticket-free) permission.
-        if (licenseTypeAllowsPriv && !hasOverridingLicenseTypes) {
+        if (licenseTypeAllowsPriv && baselineGrantsPriv && !hasOverridingLicenseTypes) {
             // logger.trace("Privilege '{}' is allowed by default in all license types.", privilegeName); //NOSONAR Debug
             return AccessPermission.granted()
                     .setRedirect(redirect)
@@ -1570,10 +1589,11 @@ public final class AccessConditionUtils {
             }
         }
 
-        // General-public baseline grant: reached when no licensee-specific route matched. When the overridden license type(s)
-        // grant the privilege by default (possibly gated by an access ticket), the general public retains that access even
-        // though an overriding license type is also present on the record.
-        if (licenseTypeAllowsPriv) {
+        // General-public baseline grant: reached when no licensee-specific route matched. When a non-overriding license type
+        // grants the privilege by default (possibly gated by an access ticket), the general public retains that access even
+        // though an overriding license type is also present on the record. Requires baselineGrantsPriv so a cyclic override
+        // configuration (no non-overriding type establishes a baseline) fails closed instead of open.
+        if (licenseTypeAllowsPriv && baselineGrantsPriv) {
             return AccessPermission.granted()
                     .setRedirect(redirect)
                     .setRedirectUrl(redirectUrl)

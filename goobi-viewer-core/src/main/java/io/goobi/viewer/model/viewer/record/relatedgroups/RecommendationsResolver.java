@@ -39,6 +39,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.ImageDeliveryBean;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.solr.SolrConstants;
@@ -242,7 +243,12 @@ public class RecommendationsResolver {
         if (StringUtils.isBlank(query) || rows <= 0) {
             return new ArrayList<>();
         }
-        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, rows, null, fields);
+        // Enforce listing access control; without this suffix the recommendations section would expose
+        // metadata of access-restricted records (identifier, content-similarity and collection-fill queries
+        // all run through here). Wrap the query in a required group so the +(ACCESSCONDITION...) suffix binds.
+        String filteredQuery = "+(" + query + ")" + SearchHelper.getAllSuffixes();
+        logger.trace("Recommendations query: {}", filteredQuery);
+        SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(filteredQuery, rows, null, fields);
         if (docs == null || docs.isEmpty()) {
             return new ArrayList<>();
         }

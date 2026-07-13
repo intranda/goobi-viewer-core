@@ -1,0 +1,33 @@
+<alto xmlns="http://www.loc.gov/standards/alto/ns-v4#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v4# http://www.loc.gov/standards/alto/v4/alto-4-2.xsd" SCHEMAVERSION="4.2">
+  <Description>
+    <MeasurementUnit>pixel</MeasurementUnit>
+    <sourceImageInformation>
+      <fileName>00000002.png</fileName>
+    </sourceImageInformation>
+  </Description>
+  <Styles/>
+  <Tags>
+    <NamedEntityTag ID="Tag0" TYPE="person" LABEL="B. G. TEUBNER" URI="https://d-nb.info/gnd/118756559"/>
+    <NamedEntityTag ID="Tag1" TYPE="location" LABEL="LEIPZIG." URI="https://d-nb.info/gnd/4035206-7"/>
+    <LayoutTag ID="layouttag-paragraph" LABEL="paragraph"/>
+  </Tags>
+  <Layout>
+    <Page ID="None" PHYSICAL_IMG_NR="0" WIDTH="2514" HEIGHT="3650">
+      <PrintSpace VPOS="0" HPOS="0" WIDTH="2514" HEIGHT="3650">
+        <TextBlock ID="r2" VPOS="392" HPOS="814" WIDTH="1398" HEIGHT="96" TAGREFS="layouttag-paragraph">
+          <TextLine ID="r2_l1" VPOS="410" HPOS="832" WIDTH="1378" HEIGHT="74">
+            <String ID="r2_l1_w1" VPOS="410" HPOS="832" WIDTH="74" HEIGHT="74" CONTENT="B." TAGREFS="Tag0"/>
+            <SP/>
+            <String ID="r2_l1_w2" VPOS="410" HPOS="960" WIDTH="86" HEIGHT="74" CONTENT="G." TAGREFS="Tag0"/>
+            <SP/>
+            <String ID="r2_l1_w3" VPOS="410" HPOS="1086" WIDTH="500" HEIGHT="74" CONTENT="TEUBNER" TAGREFS="Tag0"/>
+            <SP/>
+            <String ID="r2_l1_w4" VPOS="410" HPOS="1636" WIDTH="82" HEIGHT="74" CONTENT="IN"/>
+            <SP/>
+            <String ID="r2_l1_w5" VPOS="410" HPOS="1780" WIDTH="430" HEIGHT="74" CONTENT="LEIPZIG." TAGREFS="Tag1"/>
+          </TextLine>
+        </TextBlock>
+      </PrintSpace>
+    </Page>
+  </Layout>
+</alto>

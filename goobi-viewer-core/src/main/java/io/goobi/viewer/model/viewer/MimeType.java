@@ -96,6 +96,10 @@ public class MimeType {
         return this.name.equals("application/pdf");
     }
 
+    public boolean isWebArchive() {
+        return this.name.equals("application/warc");
+    }
+
     public boolean isEpub() {
         //return getType().equals("application") && Arrays.contains(getSubTypes(), "epub"); //alt implementation
         return this.name.equals("application/epub+zip") || this.name.equals("application/epub");
@@ -110,7 +114,7 @@ public class MimeType {
     }
 
     public boolean isMediaType() {
-        return isAllowsImageView() || isAudio() || isVideo() || isSandboxedHtml() || is3DModel();
+        return isAllowsImageView() || isAudio() || isVideo() || isSandboxedHtml() || is3DModel() || isWebArchive();
     }
 
     @Override

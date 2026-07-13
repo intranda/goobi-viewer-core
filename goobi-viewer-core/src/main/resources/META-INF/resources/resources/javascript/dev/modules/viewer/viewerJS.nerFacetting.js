@@ -170,232 +170,240 @@ var viewerJS = (function (viewer) {
                 /**
                  * Event if overview tab is clicked.
                  */
-                $(_defaults.overviewTrigger).on('click', function () {
-                    // show loader
-                    $(_defaults.loader).show();
+                $(_defaults.overviewTrigger)
+                    .off('click.nerFacetting')
+                    .on('click.nerFacetting', function () {
+                        // show loader
+                        $(_defaults.loader).show();
 
-                    // resets
-                    $(_defaults.setTagRange).find('option').attr('selected', false);
+                        // resets
+                        $(_defaults.setTagRange).find('option').attr('selected', false);
 
-                    if (_defaults.currentPage === 'nerfacetting') {
-                        $(_defaults.setTagRangeOverview).find('option[value="1"]').prop('selected', true);
-                        sessionStorage.setItem('currentNerPageRange', '1');
-                    } else {
-                        $(_defaults.setTagRangeOverview).find('option[value="10"]').prop('selected', true);
-                        sessionStorage.setItem('currentNerPageRange', '10');
-                    }
-                    _currentNerPageRange = sessionStorage.getItem('currentNerPageRange');
-
-                    sessionStorage.setItem('currentNerType', '-');
-                    _currentNerType = sessionStorage.getItem('currentNerType');
-
-                    _resetFacettingIcons();
-
-                    // check if tab is active
-                    if ($(this).parent().hasClass('active')) {
-                        console.info('Overview is already active.');
-                    } else {
                         if (_defaults.currentPage === 'nerfacetting') {
-                            _apiCall = _getAllTagsOfARange(1, '-');
+                            $(_defaults.setTagRangeOverview).find('option[value="1"]').prop('selected', true);
+                            sessionStorage.setItem('currentNerPageRange', '1');
                         } else {
-                            _apiCall = _getAllTagsOfARange(10, '-');
+                            $(_defaults.setTagRangeOverview).find('option[value="10"]').prop('selected', true);
+                            sessionStorage.setItem('currentNerPageRange', '10');
                         }
+                        _currentNerPageRange = sessionStorage.getItem('currentNerPageRange');
 
-                        _promise = viewer.helper.getRemoteData(_apiCall);
+                        sessionStorage.setItem('currentNerType', '-');
+                        _currentNerType = sessionStorage.getItem('currentNerType');
 
-                        _promise
-                            .then(function (json) {
-                                _json = json;
-                                _renderOverview(_json);
-                            })
-                            .then(null, function (error) {
-                                $('.facetting-content')
-                                    .empty()
-                                    .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
-                                console.error('ERROR: viewer.nerFacetting.init - ', error);
-                            });
-                    }
-                });
+                        _resetFacettingIcons();
+
+                        // check if tab is active
+                        if ($(this).parent().hasClass('active')) {
+                            console.info('Overview is already active.');
+                        } else {
+                            if (_defaults.currentPage === 'nerfacetting') {
+                                _apiCall = _getAllTagsOfARange(1, '-');
+                            } else {
+                                _apiCall = _getAllTagsOfARange(10, '-');
+                            }
+
+                            _promise = viewer.helper.getRemoteData(_apiCall);
+
+                            _promise
+                                .then(function (json) {
+                                    _json = json;
+                                    _renderOverview(_json);
+                                })
+                                .then(null, function (error) {
+                                    $('.facetting-content')
+                                        .empty()
+                                        .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
+                                    console.error('ERROR: viewer.nerFacetting.init - ', error);
+                                });
+                        }
+                    });
 
                 /**
                  * Event if section tab is clicked.
                  */
-                $(_defaults.sectionTrigger).on('click', function () {
-                    // show loader
-                    $(_defaults.loader).show();
+                $(_defaults.sectionTrigger)
+                    .off('click.nerFacetting')
+                    .on('click.nerFacetting', function () {
+                        // show loader
+                        $(_defaults.loader).show();
 
-                    // reset select menu
-                    $(_defaults.setTagRange).find('option').attr('selected', false);
+                        // reset select menu
+                        $(_defaults.setTagRange).find('option').attr('selected', false);
 
-                    if (_defaults.currentPage === 'nerfacetting') {
-                        $(_defaults.setTagRangeSection).find('option[value="5"]').prop('selected', true);
-                    } else {
-                        $(_defaults.setTagRangeSection).find('option[value="10"]').prop('selected', true);
-                    }
+                        if (_defaults.currentPage === 'nerfacetting') {
+                            $(_defaults.setTagRangeSection).find('option[value="5"]').prop('selected', true);
+                        } else {
+                            $(_defaults.setTagRangeSection).find('option[value="10"]').prop('selected', true);
+                        }
 
-                    // reset facetting
-                    _resetFacettingIcons();
+                        // reset facetting
+                        _resetFacettingIcons();
 
-                    // set local storage value
-                    if (_defaults.currentPage === 'nerfacetting') {
-                        sessionStorage.setItem('currentNerPageRange', 5);
-                    } else {
-                        sessionStorage.setItem('currentNerPageRange', 10);
-                    }
-                    _currentNerPageRange = sessionStorage.getItem('currentNerPageRange');
-                    sessionStorage.setItem('currentNerType', '-');
-                    _currentNerType = sessionStorage.getItem('currentNerType');
+                        // set local storage value
+                        if (_defaults.currentPage === 'nerfacetting') {
+                            sessionStorage.setItem('currentNerPageRange', 5);
+                        } else {
+                            sessionStorage.setItem('currentNerPageRange', 10);
+                        }
+                        _currentNerPageRange = sessionStorage.getItem('currentNerPageRange');
+                        sessionStorage.setItem('currentNerType', '-');
+                        _currentNerType = sessionStorage.getItem('currentNerType');
 
-                    // check if tab is active
-                    if ($(this).parent().hasClass('active')) {
-                        console.info('Section is already active.');
-                    } else {
-                        _renderSection();
+                        // check if tab is active
+                        if ($(this).parent().hasClass('active')) {
+                            console.info('Section is already active.');
+                        } else {
+                            _renderSection();
 
-                        // reset section stripe
-                        $(_defaults.sliderSectionStripe).css('top', '0px');
-                    }
-                });
+                            // reset section stripe
+                            $(_defaults.sliderSectionStripe).css('top', '0px');
+                        }
+                    });
 
                 /**
                  * Event if select menu changes.
                  */
-                $(_defaults.setTagRange).on('change', function () {
-                    var currVal = $(this).val();
-                    _currentNerType = sessionStorage.getItem('currentNerType');
+                $(_defaults.setTagRange)
+                    .off('change.nerFacetting')
+                    .on('change.nerFacetting', function () {
+                        var currVal = $(this).val();
+                        _currentNerType = sessionStorage.getItem('currentNerType');
 
-                    // show loader
-                    $(_defaults.loader).show();
+                        // show loader
+                        $(_defaults.loader).show();
 
-                    // save current value in local storage
-                    sessionStorage.setItem('currentNerPageRange', currVal);
-                    _currentNerPageRange = sessionStorage.getItem('currentNerPageRange');
-
-                    // render overview
-                    if ($(this).hasClass('overview')) {
-                        if (_currentNerType === null || _currentNerType === '') {
-                            _currentNerType = '-';
-                        }
-                        _apiCall = _getAllTagsOfARange(currVal, _currentNerType);
-
-                        _promise = viewer.helper.getRemoteData(_apiCall);
-
-                        _promise
-                            .then(function (json) {
-                                _json = json;
-
-                                // check if data is not empty
-                                if (_json !== null || _json !== 'undefinded') {
-                                    _renderOverview(_json);
-                                } else {
-                                    _html = viewer.helper.renderAlert('alert-danger', _defaults.msg.noJSON + '<br /><br />URL: ' + _apiCall, true);
-                                    $(_defaults.overviewContent).html(_html);
-                                }
-                            })
-                            .then(null, function (error) {
-                                $('.facetting-content')
-                                    .empty()
-                                    .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
-                                console.error('ERROR: viewer.nerFacetting.init - ', error);
-                            });
-                    }
-                    // render section
-                    else {
-                        // setup values
+                        // save current value in local storage
                         sessionStorage.setItem('currentNerPageRange', currVal);
                         _currentNerPageRange = sessionStorage.getItem('currentNerPageRange');
 
-                        _renderSection();
+                        // render overview
+                        if ($(this).hasClass('overview')) {
+                            if (_currentNerType === null || _currentNerType === '') {
+                                _currentNerType = '-';
+                            }
+                            _apiCall = _getAllTagsOfARange(currVal, _currentNerType);
 
-                        // reset section stripe
-                        if (_currentNerPageRange > _pageCount) {
-                            $(_defaults.sliderSectionStripe).css({
-                                top: '0px',
-                                height: '600px',
-                            });
-                        } else {
-                            $(_defaults.sliderSectionStripe).css({
-                                top: '0px',
-                                height: '100px',
-                            });
+                            _promise = viewer.helper.getRemoteData(_apiCall);
+
+                            _promise
+                                .then(function (json) {
+                                    _json = json;
+
+                                    // check if data is not empty
+                                    if (_json !== null || _json !== 'undefinded') {
+                                        _renderOverview(_json);
+                                    } else {
+                                        _html = viewer.helper.renderAlert('alert-danger', _defaults.msg.noJSON + '<br /><br />URL: ' + _apiCall, true);
+                                        $(_defaults.overviewContent).html(_html);
+                                    }
+                                })
+                                .then(null, function (error) {
+                                    $('.facetting-content')
+                                        .empty()
+                                        .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
+                                    console.error('ERROR: viewer.nerFacetting.init - ', error);
+                                });
                         }
-                    }
-                });
+                        // render section
+                        else {
+                            // setup values
+                            sessionStorage.setItem('currentNerPageRange', currVal);
+                            _currentNerPageRange = sessionStorage.getItem('currentNerPageRange');
+
+                            _renderSection();
+
+                            // reset section stripe
+                            if (_currentNerPageRange > _pageCount) {
+                                $(_defaults.sliderSectionStripe).css({
+                                    top: '0px',
+                                    height: '600px',
+                                });
+                            } else {
+                                $(_defaults.sliderSectionStripe).css({
+                                    top: '0px',
+                                    height: '100px',
+                                });
+                            }
+                        }
+                    });
 
                 /**
                  * Event if facetting icons are clicked.
                  */
-                $(_defaults.facettingTrigger).on('click', function () {
-                    var currType = $(this).attr('data-type');
+                $(_defaults.facettingTrigger)
+                    .off('click.nerFacetting')
+                    .on('click.nerFacetting', function () {
+                        var currType = $(this).attr('data-type');
 
-                    // show loader
-                    $(_defaults.loader).show();
+                        // show loader
+                        $(_defaults.loader).show();
 
-                    // set values
-                    sessionStorage.setItem('currentNerType', currType);
-                    _currentNerType = sessionStorage.getItem('currentNerType');
+                        // set values
+                        sessionStorage.setItem('currentNerType', currType);
+                        _currentNerType = sessionStorage.getItem('currentNerType');
 
-                    if (_defaults.currentPage === 'nerfacetting') {
-                        if (_currentNerPageRange == null || _currentNerPageRange === '') {
-                            _currentNerPageRange = sessionStorage.setItem('currentNerPageRange', 1);
+                        if (_defaults.currentPage === 'nerfacetting') {
+                            if (_currentNerPageRange == null || _currentNerPageRange === '') {
+                                _currentNerPageRange = sessionStorage.setItem('currentNerPageRange', 1);
+                            }
+                        } else {
+                            if (_currentNerPageRange == null || _currentNerPageRange === '') {
+                                _currentNerPageRange = sessionStorage.setItem('currentNerPageRange', 10);
+                            }
                         }
-                    } else {
-                        if (_currentNerPageRange == null || _currentNerPageRange === '') {
-                            _currentNerPageRange = sessionStorage.setItem('currentNerPageRange', 10);
+                        _currentNerPageRange = sessionStorage.getItem('currentNerPageRange');
+
+                        // activate icons
+                        $('.facetting-trigger').removeClass('active');
+                        $(this).addClass('active');
+                        $('.reset-filter').show();
+
+                        // filter overview
+                        if ($(this).parent().parent().parent().attr('id') === 'overview') {
+                            // setup data
+                            _apiCall = _getAllTagsOfARange(_currentNerPageRange, _currentNerType);
+
+                            _promise = viewer.helper.getRemoteData(_apiCall);
+
+                            _promise
+                                .then(function (json) {
+                                    _json = json;
+
+                                    _renderOverview(_json);
+
+                                    // hide select all
+                                    if ($(this).parent().hasClass('reset-filter')) {
+                                        $(this).parent().hide();
+                                    }
+                                    // set icons to active if "all" is selected
+                                    if (_currentNerType === '-') {
+                                        $('.facetting-trigger').addClass('active');
+                                    }
+                                })
+                                .then(null, function (error) {
+                                    $('.facetting-content')
+                                        .empty()
+                                        .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
+                                    console.error('ERROR: viewer.nerFacetting.init - ', error);
+                                });
                         }
-                    }
-                    _currentNerPageRange = sessionStorage.getItem('currentNerPageRange');
+                        // filter section
+                        else {
+                            _renderSection();
 
-                    // activate icons
-                    $('.facetting-trigger').removeClass('active');
-                    $(this).addClass('active');
-                    $('.reset-filter').show();
-
-                    // filter overview
-                    if ($(this).parent().parent().parent().attr('id') === 'overview') {
-                        // setup data
-                        _apiCall = _getAllTagsOfARange(_currentNerPageRange, _currentNerType);
-
-                        _promise = viewer.helper.getRemoteData(_apiCall);
-
-                        _promise
-                            .then(function (json) {
-                                _json = json;
-
-                                _renderOverview(_json);
-
-                                // hide select all
-                                if ($(this).parent().hasClass('reset-filter')) {
-                                    $(this).parent().hide();
-                                }
-                                // set icons to active if "all" is selected
-                                if (_currentNerType === '-') {
-                                    $('.facetting-trigger').addClass('active');
-                                }
-                            })
-                            .then(null, function (error) {
-                                $('.facetting-content')
-                                    .empty()
-                                    .append(viewer.helper.renderAlert('alert-danger', '<strong>Status: </strong>' + error.status + ' ' + error.statusText, false));
-                                console.error('ERROR: viewer.nerFacetting.init - ', error);
-                            });
-                    }
-                    // filter section
-                    else {
-                        _renderSection();
-
-                        // hide select all
-                        if ($(this).parent().hasClass('reset-filter')) {
-                            $(this).parent().hide();
+                            // hide select all
+                            if ($(this).parent().hasClass('reset-filter')) {
+                                $(this).parent().hide();
+                            }
+                            // set icons to active if "all" is selected
+                            if (_currentNerType === '-') {
+                                $('.facetting-trigger').addClass('active');
+                            }
+                            // reset section stripe
+                            $(_defaults.sliderSectionStripe).css('top', '0px');
                         }
-                        // set icons to active if "all" is selected
-                        if (_currentNerType === '-') {
-                            $('.facetting-trigger').addClass('active');
-                        }
-                        // reset section stripe
-                        $(_defaults.sliderSectionStripe).css('top', '0px');
-                    }
-                });
+                    });
             } else {
                 $('.facetting-content')
                     .empty()

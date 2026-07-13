@@ -133,3 +133,57 @@
     &__description {
     }
 }
+
+/* COVER ROW */
+.slider-cover-row {
+    &__container {
+    }
+    &__wrapper {
+    }
+    &__slide {
+        width: auto;
+    }
+    &__link {
+        position: relative;
+        display: block;
+    }
+    &__header {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        font-size: @fontLarge;
+        text-align: center;
+        color: @white;
+        background-color: fade(@black, 75%);
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    &__link:hover &__header,
+    &__link:focus-visible &__header {
+        opacity: 1;
+    }
+    &__image {
+        display: block;
+        width: auto;
+        height: 300px;
+    }
+    &__description {
+        display: none;
+    }
+}
+
+.slider-navigation-wrapper-cover-row {
+    .swiper-button-next,
+    .swiper-button-prev {
+        &.swiper-button-disabled {
+            pointer-events: all;
+        }
+    }
+}

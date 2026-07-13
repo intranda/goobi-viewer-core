@@ -58,6 +58,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
+import io.goobi.viewer.api.rest.model.MediaDeliveryService;
 import io.goobi.viewer.api.rest.model.MediaResourceHelper;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.controller.Configuration;
@@ -347,6 +348,17 @@ public class RecordFileResource {
                 }
             }
         }
+        String lowerFilename = path.getFileName().toString().toLowerCase();
+        if (lowerFilename.endsWith(".wacz") || lowerFilename.endsWith(".warc") || lowerFilename.endsWith(".warc.gz")) {
+            String archiveMimeType = mimeType != null ? mimeType : "application/octet-stream";
+            try {
+                new MediaDeliveryService().processRequest(servletRequest, servletResponse, path.toAbsolutePath().toString(), archiveMimeType);
+            } catch (IOException e) {
+                throw new ContentNotFoundException("Error reading web archive: " + filename);
+            }
+            return null;
+        }
+
         StreamingOutput so = out -> {
             try (InputStream in = FileTools.openRejectingSymlinks(path)) {
                 IOUtils.copy(in, out);

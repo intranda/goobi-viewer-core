@@ -36,9 +36,40 @@
                 id="templateCollectionTiled"
                 class="tpl-collection-tiled content-component content-component__collection.tiled -width-100 #{cc.attrs.hideOnScreenSizes} #{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} #{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''} #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
                 <div class="tpl-collection-tiled__wrapper">
-                    <viewerComponent:collectionViewTiled
-                        id="collection"
-                        collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection').content, request.getParameter('collection'))}" />
+                    <ui:param
+                        name="collection"
+                        value="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection').content, request.getParameter('collection'))}" />
+                    <!-- CLASSIC TILES -->
+                    <ui:fragment rendered="#{!cc.attrs.iconGrid}">
+                        <viewerComponent:collectionViewTiled
+                            id="collection"
+                            collection="#{collectionViewBean.getCollection(cc.attrs.component.getContentItem('collection').content, request.getParameter('collection'))}" />
+                    </ui:fragment>
+
+                    <!-- ICON GRID -->
+                    <ui:fragment rendered="#{cc.attrs.iconGrid}">
+                        <ul class="collection-icon-grid">
+                            <ui:repeat
+                                var="browseDcElement"
+                                value="#{collection.visibleDcElements}">
+                                <li class="collection-icon-grid__item">
+                                    <a
+                                        class="collection-icon-grid__tile"
+                                        href="#{collection.getCollectionUrl(browseDcElement, !browseDcElement.hasSubelements)}">
+                                        <ui:fragment rendered="#{browseDcElement.hasIcon()}">
+                                            <img
+                                                class="collection-icon-grid__image"
+                                                src="#{browseDcElement.info.iconURI}"
+                                                alt=""
+                                                data-viewer-thumbnail="thumbnail"
+                                                data-viewer-access-denied-url="#{browseDcElement.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
+                                        </ui:fragment>
+                                        <span class="collection-icon-grid__label">#{msg[browseDcElement.label]}</span>
+                                    </a>
+                                </li>
+                            </ui:repeat>
+                        </ul>
+                    </ui:fragment>
                 </div>
             </div>
         </ui:fragment>

@@ -160,6 +160,13 @@
                         </ui:fragment>
                     </h:panelGroup>
 
+                    <!-- VIEW WEBARCHIVE -->
+                    <h:panelGroup rendered="#{activeDocumentBean.viewManager.webArchive}">
+                        <ui:insert name="viewWebarchive">
+                            <ui:include src="/resources/includes/object/webarchive.xhtml" />
+                        </ui:insert>
+                    </h:panelGroup>
+
                     <!-- TODO -->
                     <!-- VIEW TEXT -->
                     <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.sandboxedHtml}">
@@ -169,7 +176,9 @@
                     </h:panelGroup>
 
                     <!-- PAGINATOR -->
-                    <h:panelGroup id="paginatorGroup">
+                    <h:panelGroup
+                        id="paginatorGroup"
+                        rendered="#{not activeDocumentBean.viewManager.webArchive}">
                         <div id="simplePaginator" />
                         <script>
                             $(document).ready(() => {

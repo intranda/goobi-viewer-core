@@ -24,13 +24,17 @@ package io.goobi.viewer.managedbeans;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -304,6 +308,14 @@ public class AdminLicenseBean implements Serializable {
             }
         }
 
+        // Reject configurations where the license type's overrides form a cycle back to itself. A reciprocal/cyclic override
+        // has no well-defined public baseline; it is rejected here rather than allowed to reach the access check.
+        if (createsOverrideCycle(currentLicenseType)) {
+            logger.warn("Rejected license type '{}': overridden licenses form a cycle.", currentLicenseType.getName());
+            Messages.error("admin__license_override_cycle_error");
+            return currentLicenseType.getId() != null ? "pretty:adminLicenseEdit" : "pretty:adminLicenseNew";
+        }
+
         if (currentLicenseType.getId() != null) {
             if (DataManager.getInstance().getDao().updateLicenseType(currentLicenseType)) {
                 logger.trace("License type '{}' updated successfully", currentLicenseType.getName());
@@ -322,6 +334,70 @@ public class AdminLicenseBean implements Serializable {
         }
 
         return URL_PRETTY_ADMINLICENSES;
+    }
+
+    /**
+     * Checks whether the proposed overridden license types of the given license type create an override cycle that returns
+     * to the type itself (including it overriding itself). {@link LicenseType#equals(Object)}/{@code hashCode} are name-based,
+     * so the graph is keyed by license type name.
+     *
+     * @param start the license type being saved, with its proposed {@code overriddenLicenseTypes}
+     * @return true if saving would create a cyclic override configuration
+     * @throws DAOException if the license types cannot be loaded
+     */
+    boolean createsOverrideCycle(LicenseType start) throws DAOException {
+        return createsOverrideCycle(start, DataManager.getInstance().getDao().getAllLicenseTypes());
+    }
+
+    /**
+     * Detects whether {@code start}'s proposed overridden license types create an override cycle that returns to
+     * {@code start} (including a self-override), given the full set of license types. Exposed as a static, list-taking
+     * method so the graph traversal can be unit-tested without a DAO.
+     *
+     * @param start the license type being saved, with its proposed {@code overriddenLicenseTypes}
+     * @param allLicenseTypes all persisted license types (the edges for {@code start} are taken from {@code start} itself)
+     * @return true if saving would create a cyclic override configuration
+     * @should detect reciprocal override cycle
+     * @should detect self override cycle
+     * @should return false for acyclic overrides
+     */
+    static boolean createsOverrideCycle(LicenseType start, List<LicenseType> allLicenseTypes) {
+        String startName = start.getName();
+        if (startName == null) {
+            return false;
+        }
+        // Build the override graph (license type name -> names it overrides), then substitute the proposed edges of the
+        // type being saved (which may not be persisted yet, or may differ from its persisted state).
+        Map<String, Set<String>> graph = new HashMap<>();
+        for (LicenseType licenseType : allLicenseTypes) {
+            graph.put(licenseType.getName(), overriddenNames(licenseType));
+        }
+        graph.put(startName, overriddenNames(start));
+
+        // A cycle through the saved type exists if, following override edges from its proposed targets, we can reach it again.
+        Deque<String> stack = new ArrayDeque<>(graph.get(startName));
+        Set<String> visited = new HashSet<>();
+        while (!stack.isEmpty()) {
+            String current = stack.pop();
+            if (startName.equals(current)) {
+                return true;
+            }
+            if (visited.add(current)) {
+                Set<String> next = graph.get(current);
+                if (next != null) {
+                    stack.addAll(next);
+                }
+            }
+        }
+        return false;
+    }
+
+    private static Set<String> overriddenNames(LicenseType licenseType) {
+        Set<String> names = new HashSet<>(licenseType.getOverriddenLicenseTypes().size());
+        for (LicenseType overridden : licenseType.getOverriddenLicenseTypes()) {
+            names.add(overridden.getName());
+        }
+        return names;
     }
 
     /**

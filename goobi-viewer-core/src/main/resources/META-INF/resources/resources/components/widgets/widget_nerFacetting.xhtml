@@ -278,7 +278,10 @@
     },
 };
 
-viewerJS.nerFacetting.init(nerFacettingConfig);
+// NOTE: do not call viewerJS.nerFacetting.init() here. Initialization is handled centrally
+// in viewerJS.js (the "#widgetNerFacetting" block), which also sets nerFacettingConfig.sidebarRight.
+// Calling init() here as well bound every handler twice, causing duplicate NER tag requests and
+// an inconsistent filter-icon state (see refs #28162).
                 </script>
             </div>
         </h:panelGroup>

@@ -94,6 +94,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_IMAGE = "/representative";
     public static final String RECORDS_IMAGE_INFO = "/representative/info.json";
     public static final String RECORDS_IMAGE_IIIF = "/representative/{region}/{size}/{rotation}/{quality}.{format}";
+    public static final String RECORDS_WEBARCHIVE = "/webarchives.json";
 
     public static final String RECORDS_CALENDAR = "/records/{pi}/calendar";
     public static final String RECORDS_CALENDAR_YEAR = "/{year}";

@@ -1,0 +1,63 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:util="http://goobi.io/util">
+    <!-- VIEW WEBARCHIVE -->
+
+    <script src="#{request.contextPath}/resources/javascript/libs/replaywebpage/ui.js" />
+
+    <div
+        id="webarchiveContainer"
+        class="view-object__webarchive"
+        data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
+        <!-- WEBARCHIVE -->
+        <!--  Webarchives are restricted by PRIV_VIEW_IMAGES instead of a dedicated webarchives privilege, since a distinction is not neccessary. 
+	          Perspectively, all media content should be handled with the same privilege -->
+        <div
+            class="view-object__webarchive-wrapper"
+            data-access="#{activeDocumentBean.viewManager.isAccessPermission('VIEW_IMAGES')}"
+            jsf:id="webArchiveArea"
+            rendered="#{activeDocumentBean.viewManager.webArchive and activeDocumentBean.viewManager.isAccessPermission('VIEW_IMAGES')}">
+            <div class="view-object__webarchive-inner">
+                <button
+                    type="button"
+                    id="overlayButton"
+                    class="view-object__webarchive-preview">
+                    <span class="view-object__webarchive-preview-overlay" />
+                    <img
+                        src="#{imageDelivery.thumbs.getThumbnailUrl(activeDocumentBean.viewManager.pi, 1200,1200)}"
+                        alt="" />
+                    <span class="view-object__webarchive-preview-hover-text">#{msg.action__open_web_archive}</span>
+                    <span class="view-object__webarchive-preview-hover-icon">
+                        <util:icon icon="arrows-maximize" />
+                    </span>
+                </button>
+            </div>
+
+            <div
+                class="view-object__webarchive-overlay-content"
+                data-overlay="content"
+                data-overlay-trigger="overlayButton"
+                data-overlay-fullscreen="true">
+                <viewerComponent:webarchive logo="#{adminThemesBean.getLogo('/images/goobi_logo.svg', 200, 120)}" />
+            </div>
+        </div>
+
+        <!-- ACCESS DENIED DESCRIPTION TEXT -->
+        <h:panelGroup
+            styleClass="view-object__access-denied-text"
+            rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionObject and activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForVideo(navigationHelper.locale) != null}">
+            <h:outputText
+                escape="false"
+                value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForVideo(navigationHelper.locale)}" />
+        </h:panelGroup>
+    </div>
+</ui:composition>

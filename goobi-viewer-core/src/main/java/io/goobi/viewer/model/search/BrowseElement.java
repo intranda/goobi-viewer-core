@@ -43,23 +43,21 @@ import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.servlet.http.HttpServletRequest;
-
-import de.undercouch.citeproc.CSL;
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
+import de.undercouch.citeproc.CSL;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.HtmlSanitizer;
+import io.goobi.viewer.controller.ProcessDataResolver;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.IIIFUrlHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
-import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.controller.ProcessDataResolver;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -97,6 +95,7 @@ import io.goobi.viewer.model.viewer.StructElementStub;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Representation of a search hit.
@@ -490,7 +489,7 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         MimeType mimeType = new MimeType(this.mimeType);
         hasImages = !isAnchor() && !isGroup() && (mimeType.isImage() || structElement.isHasImages());
         hasMedia = !hasImages && !isAnchor() && !isGroup()
-                && (mimeType.isAudio() || mimeType.isVideo() || mimeType.isSandboxedHtml() || mimeType.is3DModel());
+                && (mimeType.isAudio() || mimeType.isVideo() || mimeType.isSandboxedHtml() || mimeType.is3DModel() || mimeType.isWebArchive());
         hasMeiFile = StringUtils.isNotEmpty(structElement.getMetadataValue(SolrConstants.FILENAME_MEI));
         hasTeiFiles = structElement.getMetadataFields().keySet().stream().filter(k -> k.startsWith(SolrConstants.FILENAME_TEI)).count() > 0;
         this.recordLanguages = structElement.getMetadataValues(SolrConstants.LANGUAGE);
@@ -911,7 +910,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return imageNo;
     }
 
-    
     public void setImageNo(int imageNo) {
         this.imageNo = imageNo;
     }
@@ -958,7 +956,9 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     private String resolveDefaultCitationLinkUrl() {
-        CitationLink defaultLink = DataManager.getInstance().getConfiguration().getSidebarWidgetCitationCitationLinks()
+        CitationLink defaultLink = DataManager.getInstance()
+                .getConfiguration()
+                .getSidebarWidgetCitationCitationLinks()
                 .stream()
                 .filter(CitationLink::isDefaultLink)
                 .findFirst()
@@ -991,7 +991,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return pattern.replace("{value}", value);
     }
 
-
     public List<EventElement> getEvents() {
         return events;
     }
@@ -1015,9 +1014,8 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
     }
 
     /**
-     * Returns a relevant full-text fragment for displaying in the search hit box, sanitized to
-     * the snippet profile (only {@code <mark class="…">} survives, all other tags and attributes
-     * are stripped).
+     * Returns a relevant full-text fragment for displaying in the search hit box, sanitized to the snippet profile (only {@code <mark class="…">}
+     * survives, all other tags and attributes are stripped).
      *
      * @return Full-text fragment sans any line breaks; only Solr-highlight markup is preserved
      * @should remove any line breaks
@@ -1079,22 +1077,18 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return DocType.ARCHIVE.equals(docType);
     }
 
-    
     public boolean isCmsPage() {
         return cmsPage;
     }
 
-    
     public void setCmsPage(boolean cmsPage) {
         this.cmsPage = cmsPage;
     }
 
-    
     public boolean isWork() {
         return work;
     }
 
-    
     public void setWork(boolean work) {
         this.work = work;
     }
@@ -1135,12 +1129,10 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         this.hasImages = hasImages;
     }
 
-    
     public boolean isHasTeiFiles() {
         return hasTeiFiles;
     }
 
-    
     public void setHasTeiFiles(boolean hasTeiFiles) {
         this.hasTeiFiles = hasTeiFiles;
     }
@@ -1150,14 +1142,13 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
      * @return true if either criterion for thumbnail display is fulfilled; false otherwise
      */
     public boolean isShowThumbnail() {
-        return hasImages || hasMedia || isAnchor() || isGroup() || cmsPage || hasMeiFile;
+        return StringUtils.isNotBlank(thumbnailUrl) || hasImages || hasMedia || isAnchor() || isGroup() || cmsPage || hasMeiFile;
     }
 
     /**
-     * Returns the number of volumes contained in this anchor record. The value is computed live (a Solr count of the
-     * anchor's volumes) rather than read from the stored NUMVOLUMES field, so the figure shown in search hits is current
-     * even if the anchor has not yet been re-indexed after a volume was added or removed. The result is cached per
-     * BrowseElement instance. Non-anchor elements always return 0.
+     * Returns the number of volumes contained in this anchor record. The value is computed live (a Solr count of the anchor's volumes) rather than
+     * read from the stored NUMVOLUMES field, so the figure shown in search hits is current even if the anchor has not yet been re-indexed after a
+     * volume was added or removed. The result is cached per BrowseElement instance. Non-anchor elements always return 0.
      *
      * @return the number of volumes contained in this anchor record
      */
@@ -1341,7 +1332,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return sb.toString();
     }
 
-    
     public String getRisExport() {
         return risExport;
     }
@@ -1450,7 +1440,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return Collections.emptyList();
     }
 
-    
     public Set<String> getExistingMetadataFields() {
         return existingMetadataFields;
     }
@@ -1498,12 +1487,10 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return dataRepository;
     }
 
-    
     public AccessPermission getAccessPermissionThumbnail() {
         return accessPermissionThumbnail;
     }
 
-    
     public void setAccessPermissionThumbnail(AccessPermission accessPermissionThumbnail) {
         this.accessPermissionThumbnail = accessPermissionThumbnail;
     }
@@ -1691,7 +1678,6 @@ public class BrowseElement implements IAccessDeniedThumbnailOutput, Serializable
         return logId;
     }
 
-    
     public void setLogId(String logId) {
         this.logId = logId;
     }

@@ -36,16 +36,70 @@
     }
 }
 
+/* ICON GRID VARIANT */
+.collection-icon-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    &__item {
+        display: contents;
+    }
+    &__tile {
+        height: 220px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        padding: 30px 25px;
+        background-color: @lightgray;
+        text-align: center;
+        text-decoration: none;
+        &:hover,
+        &:focus-visible {
+            text-decoration: none;
+            background-color: @middlegray;
+        }
+    }
+    &__image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        object-position: center;
+        overflow: hidden;
+        display: flex;
+    }
+    &__label {
+        font-size: @fontNormal;
+        font-weight: 600;
+        line-height: 26px;
+        color: @black;
+        word-wrap: anywhere;
+    }
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
+    .collection-icon-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+    .collection-icon-grid {
+        &__tile {
+            height: 180px;
+        }
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

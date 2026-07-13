@@ -149,7 +149,7 @@ public abstract class DownloadJob {
                     body = body.replace("{4}", getType().toUpperCase());
                     try {
                         body = body.replace("{2}", DateTools.format(getExirationTime(), DateTools.FORMATTERISO8601DATE, false));
-                        body = body.replace("{3}", DateTools.format(getExirationTime(), DateTools.FORMATTERISO8601DATE, false));
+                        body = body.replace("{3}", DateTools.format(getExirationTime(), DateTools.FORMATTERISO8601TIME, false));
                     } catch (IOException e) {
                         //cannot replace expiration date since file time could not be accessed
                         body = body.replace("{2}", "?");
