@@ -21,44 +21,110 @@
  */
 package io.goobi.viewer.model.export;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 /**
- * Describes one configurable XSLT-based search export format as defined in
- * {@code config_viewer.xml} under {@code <search><export><format>}.
+ * Describes one configurable search export format as defined in {@code config_viewer.xml} under
+ * {@code <export><format>}.
  *
- * <p>Each instance holds the format's unique name, enable flag, XSLT file name,
- * HTTP content type and file extension. New export formats can be added at runtime
- * by simply adding another {@code <format>} element and dropping the corresponding
- * XSLT stylesheet into the config or classpath directory.
+ * <p>Two kinds of format are supported, distinguished by the presence of the {@code xslt} attribute:
+ * <ul>
+ *   <li><b>XSLT-based</b> (e.g. ris/endnote/bibtex): carries {@code xslt}, {@code contentType} and
+ *       {@code fileExtension} attributes; the export is produced by applying the stylesheet to the
+ *       Solr result XML.</li>
+ *   <li><b>Java field-mapped</b> (e.g. excel/csv): carries a list of {@code <field>} child elements
+ *       naming the Solr fields to export as columns; the export is produced by a built-in Java
+ *       handler keyed by the format {@code name}.</li>
+ * </ul>
  *
  * <p>Example configuration:
  * <pre>{@code
  * <format name="bibtex" enabled="true" xslt="solr2bibtex.xsl"
  *         contentType="text/plain" fileExtension="bib" />
+ * <format name="csv" enabled="true">
+ *     <field>PI_TOPSTRUCT</field>
+ *     <field>MD_TITLE</field>
+ * </format>
  * }</pre>
  */
 public class ExportFormat {
+
+    /** HTTP content type for XLSX (Excel) downloads. */
+    public static final String CONTENT_TYPE_XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    /** HTTP content type for CSV downloads. */
+    public static final String CONTENT_TYPE_CSV = "text/csv";
 
     private final String name;
     private final boolean enabled;
     private final String xslt;
     private final String contentType;
     private final String fileExtension;
+    private final List<ExportFieldConfiguration> fields;
 
     /**
-     * Creates a new export format descriptor.
+     * Creates a new export format descriptor. For Java field-mapped formats (no {@code xslt}) the
+     * {@code contentType} and {@code fileExtension} are derived from the format {@code name} when not
+     * explicitly configured.
      *
-     * @param name unique format identifier used in the REST path (e.g. "bibtex")
+     * @param name unique format identifier used in the REST path (e.g. "bibtex", "csv")
      * @param enabled whether this format is currently active
-     * @param xslt file name of the XSLT stylesheet (e.g. "solr2bibtex.xsl")
-     * @param contentType HTTP content type for the response (e.g. "text/plain")
-     * @param fileExtension file extension for the download file (e.g. "bib")
+     * @param xslt file name of the XSLT stylesheet (e.g. "solr2bibtex.xsl"), or blank for Java formats
+     * @param contentType HTTP content type for the response; may be blank to use a name-based default
+     * @param fileExtension file extension for the download file; may be blank to use a name-based default
+     * @param fields Solr field columns for Java field-mapped formats (may be null/empty for XSLT formats)
      */
-    public ExportFormat(String name, boolean enabled, String xslt, String contentType, String fileExtension) {
+    public ExportFormat(String name, boolean enabled, String xslt, String contentType, String fileExtension,
+            List<ExportFieldConfiguration> fields) {
         this.name = name;
         this.enabled = enabled;
         this.xslt = xslt;
-        this.contentType = contentType;
-        this.fileExtension = fileExtension;
+        this.fields = (fields != null) ? fields : new ArrayList<>();
+
+        boolean xsltBased = StringUtils.isNotBlank(xslt);
+        this.contentType = StringUtils.isNotBlank(contentType) ? contentType : defaultContentType(name, xsltBased);
+        this.fileExtension = StringUtils.isNotBlank(fileExtension) ? fileExtension : defaultFileExtension(name, xsltBased);
+    }
+
+    private static String defaultContentType(String name, boolean xsltBased) {
+        if (!xsltBased) {
+            if ("excel".equals(name)) {
+                return CONTENT_TYPE_XLSX;
+            }
+            if ("csv".equals(name)) {
+                return CONTENT_TYPE_CSV;
+            }
+        }
+        return "text/plain";
+    }
+
+    private static String defaultFileExtension(String name, boolean xsltBased) {
+        if (!xsltBased) {
+            if ("excel".equals(name)) {
+                return "xlsx";
+            }
+            if ("csv".equals(name)) {
+                return "csv";
+            }
+        }
+        return "txt";
+    }
+
+    /**
+     * @return true if this format is produced by an XSLT stylesheet, false if it is a Java field-mapped format
+     */
+    public boolean isXsltBased() {
+        return StringUtils.isNotBlank(xslt);
+    }
+
+    /**
+     * @return the configured Solr field columns for Java field-mapped formats; empty for XSLT formats
+     */
+    public List<ExportFieldConfiguration> getFields() {
+        return Collections.unmodifiableList(fields);
     }
 
     /**

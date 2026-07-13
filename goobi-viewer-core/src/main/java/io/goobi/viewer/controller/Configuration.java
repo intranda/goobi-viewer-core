@@ -5630,10 +5630,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns all XSLT-based export format definitions configured under {@code <search><export><format>} in {@code config_viewer.xml}.
+     * Returns all export format definitions configured under {@code <export><format>} in {@code config_viewer.xml}. Both XSLT-based formats
+     * (with an {@code xslt} attribute) and Java field-mapped formats (with {@code <field>} children, e.g. excel/csv) are returned.
      *
      * @return list of configured export formats (may be empty, never null)
      * @should return all configured formats
+     * @should read field columns for java based formats
      */
     public List<ExportFormat> getSearchExportFormats() {
         List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt("search.export.format");
@@ -5643,9 +5645,28 @@ public class Configuration extends AbstractConfiguration {
             if (StringUtils.isNotBlank(name)) {
                 boolean enabled = node.getBoolean("[@enabled]", false);
                 String xslt = node.getString("[@xslt]", "");
-                String contentType = node.getString("[@contentType]", "text/plain");
-                String fileExtension = node.getString("[@fileExtension]", "txt");
-                ret.add(new ExportFormat(name, enabled, xslt, contentType, fileExtension));
+                String contentType = node.getString("[@contentType]", "");
+                String fileExtension = node.getString("[@fileExtension]", "");
+                ret.add(new ExportFormat(name, enabled, xslt, contentType, fileExtension, parseExportFields(node)));
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Reads the {@code <field>} child elements of a single {@code <format>} node into a list of {@link ExportFieldConfiguration}s.
+     *
+     * @param node the {@code <format>} configuration node
+     * @return the configured field columns (may be empty, never null)
+     */
+    private static List<ExportFieldConfiguration> parseExportFields(HierarchicalConfiguration<ImmutableNode> node) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldNodes = node.configurationsAt("field");
+        List<ExportFieldConfiguration> ret = new ArrayList<>(fieldNodes.size());
+        for (HierarchicalConfiguration<ImmutableNode> fieldNode : fieldNodes) {
+            String field = fieldNode.getString(".", "");
+            if (StringUtils.isNotBlank(field)) {
+                String label = fieldNode.getString(XML_PATH_ATTRIBUTE_LABEL);
+                ret.add(new ExportFieldConfiguration(field).setLabel(label));
             }
         }
         return ret;
@@ -5674,7 +5695,7 @@ public class Configuration extends AbstractConfiguration {
      * @return true if Excel export of search results is enabled, false otherwise
      */
     public boolean isSearchExcelExportEnabled() {
-        return getLocalBoolean("search.export.excel[@enabled]", false);
+        return getSearchExportFormat("excel").isPresent();
     }
 
     /**
@@ -5684,30 +5705,41 @@ public class Configuration extends AbstractConfiguration {
      * @return a list of configured export field definitions for the Excel search export
      */
     public List<ExportFieldConfiguration> getSearchExcelExportFields() {
-        return getExportConfigurations("search.export.excel.field");
+        return getExportFormatFields("excel");
     }
 
     /**
+     * isSearchCsvExportEnabled.
      *
-     * @param path XPath expression for the config elements
-     * @return the list of configured export field configurations at the given path
+     * @should return correct value
+     * @return true if CSV export of search results is enabled, false otherwise
      */
-    List<ExportFieldConfiguration> getExportConfigurations(String path) {
-        if (path == null) {
-            return new ArrayList<>();
-        }
+    public boolean isSearchCsvExportEnabled() {
+        return getSearchExportFormat("csv").isPresent();
+    }
 
-        List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt(path);
-        List<ExportFieldConfiguration> ret = new ArrayList<>(nodes.size());
-        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
-            String field = node.getString(".", "");
-            if (StringUtils.isNotBlank(field)) {
-                String label = node.getString(XML_PATH_ATTRIBUTE_LABEL);
-                ret.add(new ExportFieldConfiguration(field).setLabel(label));
-            }
-        }
+    /**
+     * getSearchCsvExportFields.
+     *
+     * @should return all values
+     * @return a list of configured export field definitions for the CSV search export
+     */
+    public List<ExportFieldConfiguration> getSearchCsvExportFields() {
+        return getExportFormatFields("csv");
+    }
 
-        return ret;
+    /**
+     * Returns the configured field columns of the Java field-mapped export format with the given name, regardless of whether it is enabled.
+     *
+     * @param name the format name (e.g. "excel", "csv")
+     * @return the configured field columns (may be empty, never null)
+     */
+    private List<ExportFieldConfiguration> getExportFormatFields(String name) {
+        return getSearchExportFormats().stream()
+                .filter(f -> name.equals(f.getName()))
+                .findFirst()
+                .map(ExportFormat::getFields)
+                .orElseGet(ArrayList::new);
     }
 
     /**

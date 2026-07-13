@@ -671,10 +671,23 @@
             <versionLabelField>MD_VERSIONLABEL</versionLabelField>
         </versioning>
 
-        <!-- Search export settings -->
+        <!-- Search export settings. Each <format> element defines one export type available in the
+             search result export dropdown, served via the REST URL /api/v1/search/export/{name}.
+
+             Two kinds of format are supported:
+               * Java field-mapped formats (e.g. excel, csv): list the Solr fields to export as
+                 columns via <field> child elements. One <field> per column.
+               * XSLT-based formats (e.g. ris, endnote, bibtex): reference an XSLT stylesheet that
+                 transforms the Solr result XML. Attributes:
+                   name          - unique identifier, used in the REST URL: /api/v1/search/export/{name}
+                   enabled       - whether this format is available (default: false)
+                   xslt          - XSLT stylesheet file name (resolved from config dir, then classpath)
+                   contentType   - HTTP Content-Type for the response
+                   fileExtension - file extension for the Content-Disposition header
+             To add a new XSLT format, add a <format> element here and drop the XSLT file into the
+             viewer config directory or the classpath under resources/xsl/. -->
         <export>
-            <!-- excel/@enabled: if true, an Excel export is enabled. XSLX files are generated. Default is false. -->
-            <excel enabled="false">
+            <format name="excel" enabled="false">
                 <!-- field: Solr fields to put into the export sheet. One element per field. -->
                 <field>PI_TOPSTRUCT</field>
                 <field>LABEL</field>
@@ -682,21 +695,21 @@
                 <field>DOCSTRCT_SUB</field>
                 <field>DOCTYPE</field>
                 <field>ORDER</field>
-            </excel>
-            <!-- DEPRECATED ris/@enabled: If true, RIS text file export of search hits will be available in the search options. Default is false. -->
-            <ris enabled="false" />
-            <!-- XSLT-based export formats. Each <format> element defines one export type.
-                 To add a new format, add a <format> element here and drop the XSLT file
-                 into the viewer config directory or the classpath under resources/xsl/.
-                 Attributes:
-                   name          - unique identifier, used in the REST URL: /api/v1/search/export/{name}
-                   enabled       - whether this format is available (default: false)
-                   xslt          - XSLT stylesheet file name (resolved from config dir, then classpath)
-                   contentType   - HTTP Content-Type for the response
-                   fileExtension - file extension for the Content-Disposition header -->
+            </format>
+            <format name="csv" enabled="false">
+                <!-- field: Solr fields to put into the export file. One element per field. -->
+                <field>PI_TOPSTRUCT</field>
+                <field>LABEL</field>
+                <field>DOCSTRCT_TOP</field>
+                <field>DOCSTRCT_SUB</field>
+                <field>DOCTYPE</field>
+                <field>ORDER</field>
+            </format>
             <format name="ris"     enabled="false" xslt="solr2ris.xsl"     contentType="text/plain"      fileExtension="ris" />
             <format name="endnote" enabled="false" xslt="solr2endnote.xsl" contentType="application/xml" fileExtension="xml" />
             <format name="bibtex"  enabled="false" xslt="solr2bibtex.xsl"  contentType="text/plain"      fileExtension="bib" />
+            <!-- DEPRECATED ris/@enabled: legacy per-record RIS citation string embedded in search hits. Default is false. -->
+            <ris enabled="false" />
         </export>
 
         <!-- useFacetsAsExpandQuery/@enabled: If true, currently active facets will be used to build the expand query to produce child hits,

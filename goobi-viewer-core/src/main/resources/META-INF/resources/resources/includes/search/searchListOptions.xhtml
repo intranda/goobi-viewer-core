@@ -54,40 +54,7 @@
                 <viewerComponent:searchSaveDialog prependId="false" />
             </ui:fragment>
 
-            <!-- SEARCH EXPORT (EXCEL) -->
-            <ui:fragment rendered="#{configurationBean.searchExcelExportEnabled}">
-                <div class="search-list__excel-export">
-                    <h:form
-                        id="slExportSearchForm"
-                        prependId="false">
-                        <h:commandLink
-                            id="excelDownloadButton"
-                            styleClass="btn btn--icon search-list__option-button excel-export-trigger"
-                            action="#{searchBean.exportSearchAsExcelAction()}"
-                            title="#{msg.searchExportExcel}">
-                            <util:icon
-                                icon="table-down"
-                                svgClass="icon" />
-                            <f:passThroughAttribute
-                                name="data-toggle"
-                                value="tooltip" />
-                            <f:passThroughAttribute
-                                name="data-placement"
-                                value="top" />
-                            <f:passThroughAttribute
-                                name="aria-label"
-                                value="#{msg.searchExportExcel}" />
-                        </h:commandLink>
-
-                        <span class="excel-export-loader">
-                            #{msg.searchExportExcelLoading}
-                            <img
-                                src="#{request.contextPath}/resources/images/ajax_preloader.gif"
-                                alt="Excel Export Loader" />
-                        </span>
-                    </h:form>
-                </div>
-            </ui:fragment>
+            <!-- Excel export is now a configured <format name="excel"> and appears in the export dropdown below. -->
 
             <!-- EXPORT OPTIONS DROPDOWN -->
             <ui:fragment rendered="#{not empty configurationBean.enabledSearchExportFormats}">

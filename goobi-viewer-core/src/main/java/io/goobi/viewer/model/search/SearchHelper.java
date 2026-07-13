@@ -23,6 +23,7 @@ package io.goobi.viewer.model.search;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Writer;
 import java.security.SecureRandom;
 import java.text.Collator;
 import java.text.Normalizer;
@@ -67,6 +68,10 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.params.ExpandParams;
 import org.jsoup.Jsoup;
+
+import com.fasterxml.jackson.databind.SequenceWriter;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DamerauLevenshtein;
@@ -1270,6 +1275,28 @@ public final class SearchHelper {
         } else {
             logger.warn("No HttpServletRequest found, cannot set filter query.");
         }
+    }
+
+    /**
+     * Computes the personal access-filter suffix for the given privilege and request <b>freshly</b>, i.e. without reading or writing the
+     * session-cached suffix (which only ever holds the {@link IPrivilegeHolder#PRIV_LIST} suffix). Use this to constrain a query by an
+     * additional privilege such as {@link IPrivilegeHolder#PRIV_DOWNLOAD_METADATA} on top of the standard listing filter.
+     *
+     * @param request current HTTP servlet request (may be null)
+     * @param privilege privilege to check
+     * @return the Solr filter suffix restricting results to records the caller may access for the privilege (never null)
+     * @throws IndexUnreachableException if the Solr index is unreachable
+     * @throws PresentationException if the access condition query cannot be built
+     * @throws DAOException if license types cannot be loaded
+     */
+    public static String getPersonalFilterQuerySuffixForPrivilege(HttpServletRequest request, String privilege)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        User user = (User) Optional.ofNullable(request)
+                .map(HttpServletRequest::getSession)
+                .map(session -> session.getAttribute("user"))
+                .orElse(null);
+        return getPersonalFilterQuerySuffix(DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes(),
+                user, NetTools.getIpAddress(request), ClientApplicationManager.getClientFromRequest(request), privilege);
     }
 
     /**
@@ -3677,6 +3704,83 @@ public final class SearchHelper {
                 }
             }
         }
+    }
+
+    /**
+     * Exports the given search results as CSV, one row per record. Columns are the fields configured under
+     * {@code <export><format name="csv">}. Mirrors {@link #exportSearchAsExcel} but writes RFC-4180 CSV via Jackson.
+     *
+     * @param writer output writer to receive the CSV
+     * @param finalQuery Complete query with suffixes.
+     * @param exportQuery Query constructed from the user's input, without any secret suffixes.
+     * @param sortFields list of sort field/direction pairs
+     * @param filterQueries Solr filter query strings
+     * @param params additional Solr query parameters
+     * @param searchTerms map of field names to sets of search terms for highlighting
+     * @param locale language locale for column header translation
+     * @param proximitySearchDistance word distance for proximity search
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
+     * @throws java.io.IOException if writing the CSV fails
+     * @should create csv with header row and one row per record
+     * @should escape values containing separators and quotes
+     */
+    public static void exportSearchAsCsv(Writer writer, String finalQuery, String exportQuery, List<StringPair> sortFields,
+            List<String> filterQueries, Map<String, String> params, Map<String, Set<String>> searchTerms, Locale locale,
+            int proximitySearchDistance)
+            throws IndexUnreachableException, DAOException, PresentationException, ViewerConfigurationException, IOException {
+        if (writer == null) {
+            throw new IllegalArgumentException("writer may not be null");
+        }
+
+        List<ExportFieldConfiguration> exportFields = DataManager.getInstance().getConfiguration().getSearchCsvExportFields();
+        List<String> exportFieldNames = new ArrayList<>(exportFields.size());
+        CsvSchema.Builder schemaBuilder = CsvSchema.builder();
+        for (ExportFieldConfiguration field : exportFields) {
+            exportFieldNames.add(field.getField());
+            // Header cell uses the translated field label, matching the Excel export
+            schemaBuilder.addColumn(ViewerResourceBundle.getTranslation(field.getField(), locale));
+        }
+        CsvSchema schema = schemaBuilder.setUseHeader(true).build();
+
+        CsvMapper mapper = new CsvMapper();
+        try (SequenceWriter sequenceWriter = mapper.writer(schema).writeValues(writer)) {
+            long totalHits = DataManager.getInstance().getSearchIndex().getHitCount(finalQuery, filterQueries);
+            int batchSize = 100;
+            for (long first = 0; first < totalHits; first += batchSize) {
+                logger.trace("Fetching search hits {}-{} out of {}", first, first + batchSize - 1, totalHits);
+                List<SearchHit> batch =
+                        searchWithAggregation(finalQuery, (int) first, batchSize, sortFields, null, filterQueries, params, searchTerms,
+                                exportFieldNames, Configuration.METADATA_LIST_TYPE_SEARCH_HIT, locale, false, proximitySearchDistance);
+                for (SearchHit hit : batch) {
+                    List<String> csvRow = new ArrayList<>(exportFields.size());
+                    for (ExportFieldConfiguration field : exportFields) {
+                        String value = hit.getExportMetadata().get(field.getField());
+                        csvRow.add(guardCsvInjection(value != null ? value : ""));
+                    }
+                    sequenceWriter.write(csvRow);
+                }
+            }
+        }
+    }
+
+    /**
+     * Guards against CSV/formula injection by prefixing a value with a single quote when it starts with a character that spreadsheet
+     * applications may interpret as the beginning of a formula.
+     *
+     * @param value the raw cell value (never null)
+     * @return the value, prefixed with {@code '} if it begins with a risky character
+     */
+    private static String guardCsvInjection(String value) {
+        if (!value.isEmpty()) {
+            char first = value.charAt(0);
+            if (first == '=' || first == '+' || first == '-' || first == '@' || first == '\t' || first == '\r') {
+                return "'" + value;
+            }
+        }
+        return value;
     }
 
     /**
