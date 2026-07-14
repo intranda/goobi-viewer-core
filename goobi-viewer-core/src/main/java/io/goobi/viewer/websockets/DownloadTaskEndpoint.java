@@ -95,8 +95,9 @@ public class DownloadTaskEndpoint {
 
         this.httpSession = http;
         this.session = session;
-        this.storageBean = BeanUtils.getPersistentStorageBean();
-        this.queueManager = this.storageBean.getMessageBroker();
+        if (this.storageBean == null) {
+            this.setStorageBean(BeanUtils.getPersistentStorageBean());
+        }
     }
 
     void setSession(Session session) {
