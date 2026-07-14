@@ -429,9 +429,10 @@ public class RecordFileResource {
     public Response getDownloadedResource(
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,
             @Parameter(description = "file path relative to the download directory") @PathParam("path") String path)
-            throws PresentationException, IndexUnreachableException, ContentNotFoundException, IllegalRequestException {
+            throws PresentationException, IndexUnreachableException, ContentNotFoundException, IllegalRequestException, DAOException,
+            RecordNotFoundException, ServiceNotAllowedException {
 
-        //TODO: check access conditions for some download action
+        checkExternalResourceAccessConditions();
 
         Path downloadFolder = DataFileTools.getDataFolder(pi, DataManager.getInstance().getConfiguration().getDownloadFolder("resource"));
         Path taskFolder = downloadFolder.resolve(taskId);
@@ -474,6 +475,25 @@ public class RecordFileResource {
         }
         if (!access) {
             throw new ServiceNotAllowedException("Access to fulltext file '" + pi + "/" + filename + "' not allowed");
+        }
+    }
+
+    /**
+     * Throw an AccessDenied error if the request doesn't satisfy the access conditions for downloading externally sourced resource files.
+     * Mirrors {@link io.goobi.viewer.model.viewer.ViewManager#isAccessPermissionExternalResources()}.
+     *
+     * @throws ServiceNotAllowedException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws RecordNotFoundException
+     */
+    private void checkExternalResourceAccessConditions()
+            throws ServiceNotAllowedException, IndexUnreachableException, DAOException, RecordNotFoundException {
+        boolean access = AccessConditionUtils
+                .checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, servletRequest)
+                .isGranted();
+        if (!access) {
+            throw new ServiceNotAllowedException("Access to external resource downloads for record '" + pi + "' not allowed");
         }
     }
 
