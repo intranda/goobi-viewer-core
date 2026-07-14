@@ -1201,6 +1201,29 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertFalse(facets.isDisplayFacetExpandLink("MD_PLACEPUBLISH"));
     }
 
+    // ====================== getAllFacetFields / getGeoFacetFields tests ======================
+
+    /**
+     * @see SearchFacets#getAllFacetFields()
+     * @verifies return all configured facet fields in configuration order
+     */
+    @Test
+    void getAllFacetFields_shouldReturnAllConfiguredFacetFieldsInConfigurationOrder() {
+        SearchFacets facets = new SearchFacets();
+        List<String> result = facets.getAllFacetFields();
+        assertEquals(List.of("DC", "YEAR", "MD_CREATOR", "MD_PLACEPUBLISH", "WKT_COORDS", "MD_PERSON", "BOOL_HASIMAGES"), result);
+    }
+
+    /**
+     * @see SearchFacets#getGeoFacetFields()
+     * @verifies return all geo facet fields
+     */
+    @Test
+    void getGeoFacetFields_shouldReturnAllGeoFacetFields() {
+        SearchFacets facets = new SearchFacets();
+        assertEquals(List.of("WKT_COORDS"), facets.getGeoFacetFields());
+    }
+
     // ====================== getAllAvailableFacets tests ======================
 
     /**

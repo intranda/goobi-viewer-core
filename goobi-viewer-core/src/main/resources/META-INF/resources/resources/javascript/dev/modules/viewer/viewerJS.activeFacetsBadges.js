@@ -1,0 +1,76 @@
+/**
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information. - http://www.intranda.com -
+ * http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms
+ * of the GNU General Public License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this
+ * program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Module that limits the active facets badge list to a maximum number of rows
+ * and offers a "+N more" button revealing the hidden rest. The button label
+ * template comes from the data-more-label attribute ({0} = hidden count).
+ *
+ * @version 26.07
+ * @module viewerJS.activeFacetsBadges
+ */
+var viewerJS = (function (viewer) {
+    'use strict';
+
+    var _defaults = {
+        wrapperSelector: '[data-badges="activeFacets"]',
+        badgeSelector: '[data-badge="facet"]',
+        moreButtonClass: 'active-facets-badges__more',
+        hiddenClass: '-overflow',
+        maxRows: 2,
+    };
+
+    viewer.activeFacetsBadges = {
+        init: function (config) {
+            var settings = Object.assign({}, _defaults, config);
+            document.querySelectorAll(settings.wrapperSelector).forEach(function (wrapper) {
+                _applyOverflow(wrapper, settings);
+            });
+        },
+    };
+
+    function _applyOverflow(wrapper, settings) {
+        if (wrapper.querySelector('.' + settings.moreButtonClass)) {
+            return;
+        }
+        var badges = Array.from(wrapper.querySelectorAll(settings.badgeSelector));
+        var rowTops = Array.from(new Set(badges.map((badge) => badge.offsetTop))).sort((a, b) => a - b);
+        if (rowTops.length <= settings.maxRows) {
+            return;
+        }
+
+        var cutoff = rowTops[settings.maxRows];
+        var hiddenBadges = badges.filter((badge) => badge.offsetTop >= cutoff);
+        hiddenBadges.forEach((badge) => badge.classList.add(settings.hiddenClass));
+
+        var moreButton = document.createElement('button');
+        moreButton.type = 'button';
+        moreButton.className = settings.moreButtonClass;
+        moreButton.textContent = (wrapper.dataset.moreLabel || '+{0}').replace('{0}', hiddenBadges.length);
+        moreButton.addEventListener('click', function () {
+            hiddenBadges.forEach((badge) => badge.classList.remove(settings.hiddenClass));
+            moreButton.remove();
+        });
+        wrapper.appendChild(moreButton);
+    }
+
+    return viewer;
+})(viewerJS || {});
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

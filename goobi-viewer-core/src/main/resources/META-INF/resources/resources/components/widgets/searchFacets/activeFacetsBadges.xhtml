@@ -1,0 +1,86 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:util="http://goobi.io/util">
+    <!-- INTERFACE OPTIONS -->
+    <composite:interface>
+        <!-- Display mode of the surrounding facets component: "widgets" renders the badges as an
+             own widget box, "combined" renders them as a bare badge strip inside the container. -->
+        <composite:attribute
+            name="mode"
+            type="java.lang.String"
+            required="false"
+            default="widgets" />
+    </composite:interface>
+
+    <!-- COMPONENT CONTENT -->
+    <composite:implementation>
+        <h:panelGroup
+            layout="block"
+            styleClass="active-facets-badges #{cc.attrs.mode eq 'combined' ? '' : 'widget widget-active-facets'}"
+            rendered="#{not empty searchBean.facets.activeFacets}">
+            <ui:fragment rendered="#{cc.attrs.mode ne 'combined'}">
+                <div class="widget__topbar widget-active-facets__topbar">
+                    <h2 class="widget__title widget-active-facets__title">#{msg.search__active_facets__title}</h2>
+                    <!-- icon-only reset, the label slides in on hover/focus -->
+                    <h:outputLink
+                        styleClass="widget-active-facets__reset"
+                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/-/#{navigationHelper.subThemeQueryParam}"
+                        title="#{msg.search__combined_facets__reset_all}">
+                        <util:icon
+                            icon="x"
+                            svgClass="widget-active-facets__reset-icon" />
+                        <span class="widget-active-facets__reset-label">#{msg.search__combined_facets__reset_all}</span>
+                    </h:outputLink>
+                </div>
+            </ui:fragment>
+            <h:form styleClass="#{cc.attrs.mode eq 'combined' ? '' : 'widget__body widget-active-facets__body'}">
+                <div
+                    class="active-facets-badges__list"
+                    data-badges="activeFacets"
+                    data-more-label="#{msg.search__active_facets__more}">
+                    <c:forEach
+                        items="#{searchBean.facets.activeFacets}"
+                        var="facet">
+                        <h:commandLink
+                            styleClass="active-facets-badges__badge #{facet.excluded ? '-excluded' : ''}"
+                            action="#{searchBean.removeFacetAction(facet.link)}"
+                            title="#{msg.removeFacet}">
+                            <f:passThroughAttribute
+                                name="data-badge"
+                                value="facet" />
+                            <ui:fragment rendered="#{facet.excluded}">
+                                <span class="sr-only">#{msg.search__active_facets__excluded}:</span>
+                            </ui:fragment>
+                            <c:if test="#{searchBean.facets.geoFacetFields.contains(facet.field) or not empty facet.value2}">
+                                <span class="active-facets-badges__badge-field">#{msg[facet.field]}:</span>
+                            </c:if>
+                            <span class="active-facets-badges__badge-label">
+                                <c:choose>
+                                    <c:when test="#{searchBean.facets.geoFacetFields.contains(facet.field)}">#{msg.search__active_facets__geo}</c:when>
+                                    <c:when test="#{not empty facet.value2}">
+                                        #{facet.value} &#8211; #{facet.value2}
+                                    </c:when>
+                                    <c:otherwise>#{facet.translatedLabel}</c:otherwise>
+                                </c:choose>
+                            </span>
+                            <span class="sr-only">(#{msg.removeFacet})</span>
+                            <span
+                                class="active-facets-badges__badge-remove"
+                                aria-hidden="true">
+                                <util:icon
+                                    icon="x"
+                                    svgClass="active-facets-badges__badge-remove-icon" />
+                            </span>
+                        </h:commandLink>
+                    </c:forEach>
+                </div>
+            </h:form>
+            <script>viewerJS.activeFacetsBadges.init();</script>
+        </h:panelGroup>
+    </composite:implementation>
+</ui:composition>

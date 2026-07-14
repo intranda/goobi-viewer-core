@@ -1095,7 +1095,25 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
+     *
+     * @return All configured facet field names in configuration order, including range and geo fields
+     * @should return all configured facet fields in configuration order
+     */
+    public List<String> getAllFacetFields() {
+        return DataManager.getInstance().getConfiguration().getAllFacetFields();
+    }
+
+    /**
+     *
+     * @return All facet field names of the type "geo"
+     * @should return all geo facet fields
+     */
+    public List<String> getGeoFacetFields() {
+        return DataManager.getInstance().getConfiguration().getGeoFacetFields();
+    }
+
+    /**
+     *
      * @return All facet field names of the type "range"
      */
     public List<String> getAllRangeFacetFields() {

@@ -1,0 +1,93 @@
+/* ==============================================================
+   Widget Combined Facets
+   Style declarations for the "combined" display mode of
+   widget_searchFacets.xhtml (one connected filter container)
+   ==============================================================*/
+
+/* BLOCK */
+.combined-facets {
+    position: relative;
+    padding: 20px;
+    color: var(--combined-facets-color);
+    background: var(--combined-facets-background);
+    border-radius: var(--combined-facets-radius);
+
+    /* ELEMENTS */
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    &__title {
+        margin: 0;
+        padding: 0;
+        font-size: @fontXLarge;
+        font-weight: 400;
+        color: var(--combined-facets-color);
+    }
+
+    &__reset {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: @fontMedium;
+        font-weight: 600;
+        color: var(--combined-facets-accent);
+
+        &:hover,
+        &:focus {
+            color: var(--combined-facets-accent);
+            text-decoration: underline;
+        }
+    }
+
+    /* BADGE STRIP */
+    .active-facets-badges {
+        margin-bottom: 12px;
+    }
+
+    /* SECTIONS: flatten the widget boxes of the sub components into sections */
+    .widget {
+        margin: 0;
+        padding: 11px 0;
+        background: transparent;
+        border: 0;
+        border-top: 1px solid var(--combined-facets-divider);
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .widget__topbar {
+        min-height: 0;
+        padding: 0;
+        background: transparent;
+        border: 0;
+    }
+
+    .widget__title {
+        padding: 0;
+        font-size: @fontNormal;
+        font-weight: 600;
+        color: var(--combined-facets-color);
+    }
+
+    .widget__body {
+        padding: 6px 0 0;
+        background: transparent;
+    }
+}
+
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+@media screen and (max-width: @xSmallBreakpoint) {
+}

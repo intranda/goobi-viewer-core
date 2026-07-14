@@ -35,23 +35,120 @@
         gap: 5px;
     }
     &__list-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 5px;
         padding: 0;
         padding-inline-end: 5px;
-    }
-    &__list-item-link {
-        &.-active {
-            padding: 3px;
-            font-weight: 600;
+        line-height: 1.5;
+
+        /* row hover slides the controls in as outlines;
+           enter: expand the width first, fade in at the end (no half-revealed box visible) */
+        &:hover,
+        &:focus-within {
+            .widget-search-facets__list-item-control {
+                width: 16px;
+                border-width: 1px;
+                opacity: 1;
+                transition:
+                    width 0.15s ease-in-out,
+                    margin 0.15s ease-in-out,
+                    opacity 0.05s linear 0.12s,
+                    background-color 0.15s ease-in-out;
+
+                &.-include {
+                    margin-inline-end: 5px;
+                }
+            }
+        }
+
+        &.-active,
+        &.-excluded {
+            .widget-search-facets__list-item-label {
+                font-weight: 600;
+            }
         }
     }
-    &__list-item-link-inner {
+    /* nested under the list item to win over the generic ".widget__body a { display: block }" rule */
+    &__list-item &__list-item-link {
         display: flex;
-        gap: 5px;
-        justify-content: space-between;
+        align-items: flex-start;
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: visible;
+
+        /* hovering/focusing the include link itself fills the control to preview the selection */
+        &:hover,
+        &:focus {
+            text-decoration: none;
+
+            .widget-search-facets__list-item-control.-include {
+                color: var(--facet-control-active-fg);
+                background: var(--facet-control-active);
+                border-color: var(--facet-control-active);
+            }
+        }
     }
-    &__list-item-link-active {
+    /* label + count share one text flow: wrapped lines keep the hanging indent */
+    &__list-item-text {
+        flex: 1 1 auto;
+        min-width: 0;
     }
-    &__list-item-icon {
+    &__list-item-count {
+        white-space: nowrap;
+    }
+    &__list-item &__list-item-control-link {
+        display: inline-flex;
+        flex: 0 0 auto;
+        overflow: visible;
+    }
+    /* INCLUDE/EXCLUDE CONTROLS: zero width until row hover/focus (no default indent), filled when set */
+    &__list-item-control {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 0;
+        height: 16px;
+        overflow: hidden;
+        color: var(--facet-control-color);
+        border: 0 solid var(--facet-control-border);
+        border-radius: 3px;
+        opacity: 0;
+        /* leave: fade out instantly, then collapse the width (no half-revealed box visible) */
+        transition:
+            width 0.15s ease-in-out 0.05s,
+            margin 0.15s ease-in-out 0.05s,
+            opacity 0.05s linear,
+            background-color 0.15s ease-in-out;
+
+        &.-set {
+            width: 16px;
+            border-width: 1px;
+            opacity: 1;
+            color: var(--facet-control-active-fg);
+            background: var(--facet-control-active);
+            border-color: var(--facet-control-active);
+
+            &.-include {
+                margin-inline-end: 5px;
+            }
+        }
+    }
+    /* hovering/focusing the exclude control itself fills it to preview the exclusion */
+    &__list-item-control-link {
+        &:hover,
+        &:focus {
+            .widget-search-facets__list-item-control {
+                color: var(--facet-control-active-fg);
+                background: var(--facet-control-active);
+                border-color: var(--facet-control-active);
+            }
+        }
+    }
+    &__list-item-control-icon {
+        width: 12px;
+        height: 12px;
     }
     /* FILTER */
     &__filter {
@@ -202,6 +299,16 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+    /* no hover on touch devices: include/exclude controls are always visible */
+    .widget-search-facets__list-item-control {
+        width: 16px;
+        border-width: 1px;
+        opacity: 1;
+
+        &.-include {
+            margin-inline-end: 5px;
+        }
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
