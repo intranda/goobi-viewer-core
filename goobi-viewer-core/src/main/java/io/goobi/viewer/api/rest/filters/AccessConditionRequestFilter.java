@@ -23,6 +23,7 @@ package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -119,6 +120,9 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
             throws ServiceNotAllowedException {
         // logger.trace("filterForAccessConditions: {}", request.getSession().getId()); //NOSONAR Debug
         String contentFileName = StringTools.decodeUrl(inContentFileName);
+        if (contentFileName.endsWith(FilenameUtils.EXTENSION_SEPARATOR_STR)) {
+            contentFileName = contentFileName.substring(0, contentFileName.length() - FilenameUtils.EXTENSION_SEPARATOR_STR.length());
+        }
         boolean access = false;
         try {
             if (FilterTools.isThumbnail(request)) {
