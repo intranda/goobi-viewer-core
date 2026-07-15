@@ -3704,6 +3704,18 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     *
+     * @return the configured display style for the search facets sidebar; either "widgets" (default) or "combined"
+     * @should return correct value
+     * @should return widgets if value empty
+     * @should return widgets if value invalid
+     */
+    public String getFacetsStyle() {
+        String style = getLocalString("search.facets[@style]", "widgets");
+        return "combined".equals(style) ? "combined" : "widgets";
+    }
+
+    /**
      * getGeoFacetFields.
      *
      * @return a list of configured geo-type facet field names

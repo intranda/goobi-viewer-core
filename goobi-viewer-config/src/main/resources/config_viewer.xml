@@ -530,6 +530,9 @@
         </sorting>
 
         <!-- facets: Contains a list of fields that are available for faceting in a search result list -->
+        <!-- The <facets> element may have a 'style' attribute which selects the sidebar display mode: -->
+        <!-- 'widgets' (default): each facet field is rendered as an individual widget box -->
+        <!-- 'combined': all facets are rendered as sections of one connected filter container, e.g. <facets style="combined"> -->
         <!-- each facets.field element may have a 'type' attribute which determines how the data is interpreted and displayed -->
         <!-- Allowed values for 'type' are -->
         <!-- range: the values of this field are interpreted as dates within a timeline or some other number range. -->

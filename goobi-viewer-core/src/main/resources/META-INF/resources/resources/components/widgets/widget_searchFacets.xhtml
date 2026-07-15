@@ -23,14 +23,13 @@
             required="false"
             default="#{null}" />
         <!-- Display mode: "widgets" renders the classic individual widget boxes, "combined" renders
-             all facets as sections of one connected filter container. Themes select the mode globally
-             by setting the request attribute "facetsDisplayMode" in their template.html:
-             <c:set var="facetsDisplayMode" value="combined" scope="request" /> -->
+             all facets as sections of one connected filter container. Configured globally via
+             <facets style="widgets|combined"> in config_viewer.xml. -->
         <composite:attribute
             name="mode"
             type="java.lang.String"
             required="false"
-            default="#{empty requestScope.facetsDisplayMode ? 'widgets' : requestScope.facetsDisplayMode}" />
+            default="#{configurationBean.facetsStyle}" />
     </composite:interface>
 
     <composite:implementation>
@@ -77,6 +76,9 @@
                             </c:when>
                         </c:choose>
                     </c:forEach>
+                    <ui:fragment rendered="#{cc.attrs.mode eq 'combined'}">
+                        <script>viewerJS.combinedFacets.init();</script>
+                    </ui:fragment>
                 </div>
             </h:panelGroup>
 
