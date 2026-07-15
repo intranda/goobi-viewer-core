@@ -1,11 +1,3 @@
-/**
- * Unit tests for viewerJS.activeFacetsBadges.
- *
- * The module collapses the active facets badge list to a maximum number of
- * rows and appends a "+N more" button for the hidden rest. Row detection is
- * based on offsetTop, which jsdom always reports as 0 — the tests therefore
- * mock offsetTop per badge to simulate line wrapping.
- */
 const viewerJS = require('../viewerJS.activeFacetsBadges.js');
 
 function setupDom(badgeOffsets, moreLabel) {
@@ -16,6 +8,7 @@ function setupDom(badgeOffsets, moreLabel) {
         badgeOffsets.map(() => '<a data-badge="facet" class="badge">chip</a>').join('') +
         '</div>';
     const badges = document.querySelectorAll('[data-badge="facet"]');
+    // jsdom reports offsetTop as 0: mock it per badge to simulate row wrapping
     badges.forEach((badge, i) => {
         Object.defineProperty(badge, 'offsetTop', { value: badgeOffsets[i], configurable: true });
     });

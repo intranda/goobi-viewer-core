@@ -12,7 +12,6 @@
     background: var(--combined-facets-background);
     border-radius: var(--combined-facets-radius);
 
-    /* the badge chips sit on the tinted container surface: remap their tokens locally */
     --active-facets-badge-background: var(--combined-facets-box);
     --active-facets-badge-color: var(--combined-facets-accent);
     --active-facets-badge-border: transparent;
@@ -40,17 +39,46 @@
     &__reset {
         display: inline-flex;
         align-items: center;
-        gap: 2px;
+        flex: 0 0 auto;
         font-size: @fontMedium;
         font-weight: 600;
         letter-spacing: 0.04em;
         color: var(--combined-facets-accent);
+        text-decoration: none;
+
+        /* the label slides in from zero width: collapse the icon-text default gap */
+        .icon-text {
+            gap: 0;
+        }
 
         &:hover,
         &:focus {
             color: var(--combined-facets-accent);
-            text-decoration: underline;
+            text-decoration: none;
+
+            .combined-facets__reset-label {
+                max-width: 200px;
+                margin-inline-start: 4px;
+                opacity: 1;
+            }
         }
+    }
+
+    &__reset-icon-svg {
+        display: block;
+        width: 16px;
+        height: 16px;
+    }
+
+    &__reset-label {
+        max-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        opacity: 0;
+        transition:
+            max-width 0.2s ease-in-out,
+            opacity 0.15s ease-in-out,
+            margin 0.2s ease-in-out;
     }
 
     /* BADGE STRIP */
@@ -70,7 +98,6 @@
         font-weight: 600;
     }
 
-    /* remove control is a permanently filled accent circle, as on the mockup chips */
     .active-facets-badges__badge-remove {
         width: 16px;
         height: 16px;
@@ -78,12 +105,12 @@
         background: var(--active-facets-badge-color);
     }
 
-    .active-facets-badges__badge-remove-icon {
+    .active-facets-badges__badge-remove-icon-svg {
         width: 10px;
         height: 10px;
     }
 
-    /* SECTIONS: flatten the widget boxes of the sub components into sections */
+    /* SECTIONS */
     .widget {
         margin: 0;
         padding: 11px 0;
@@ -94,8 +121,6 @@
         box-shadow: none;
     }
 
-    /* the head is a grid (title | filter toggle | section chevron) so the icons sit
-       top right while the filter input opens as a full-width second row */
     .widget__topbar {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto auto;
@@ -107,8 +132,7 @@
         border: 0;
     }
 
-    /* SECTION COLLAPSE: chevron at the far right of each group head;
-       arrow up = section open (as on the mockup), down = collapsed */
+    /* SECTION COLLAPSE */
     .widget-search-facets__section-toggle {
         display: flex;
         align-items: center;
@@ -133,7 +157,6 @@
             transform: rotate(0deg);
         }
 
-        /* only the head row stays visible */
         > *:not(.widget__topbar) {
             display: none;
         }
@@ -165,7 +188,7 @@
         color: var(--combined-facets-muted);
     }
 
-    /* VALUE LISTS: plain rows instead of the boxed scroll area */
+    /* VALUE LISTS */
     .widget-search-facets__collection ul {
         max-height: none;
         overflow: visible;
@@ -184,8 +207,7 @@
         }
     }
 
-    /* FILTER: the magnifier button in the group head toggles the input row (JS adds .in);
-       display: contents lifts button and input into the topbar grid */
+    /* FILTER */
     .widget-search-facets__filter {
         display: contents;
         pointer-events: auto;
@@ -217,7 +239,6 @@
         }
     }
 
-    /* decorative magnifier inside the opened input (placed in the same grid cell) */
     .widget-search-facets__filter input.in + .widget-search-facets__filter-icon {
         display: flex;
     }
@@ -253,9 +274,11 @@
         height: 24px;
     }
 
-    /* focus-visible instead of focus: a mouse click must not leave a sticky accent state */
+    /* focus-visible only (no sticky click state); the radius sits in the base state
+       so the closing background fade keeps round corners */
     .widget-search-facets__filter .widget-search-facets__filter-button {
         color: var(--combined-facets-muted);
+        border-radius: 4px;
 
         &:hover,
         &:focus-visible {
@@ -263,13 +286,11 @@
         }
     }
 
-    /* open filter: the toggle keeps a filled active state until it is clicked again */
     .widget-search-facets__filter input.in ~ .widget-search-facets__filter-button,
     .widget-search-facets__filter input.in ~ .widget-search-facets__filter-button:hover,
     .widget-search-facets__filter input.in ~ .widget-search-facets__filter-button:focus {
         color: var(--combined-facets-accent-contrast);
         background: var(--combined-facets-accent);
-        border-radius: 4px;
     }
 
     /* currentColor defeats the theme's generic topbar icon color */
@@ -279,7 +300,7 @@
         color: currentColor;
     }
 
-    /* BOOLEAN FACETS: plain surface chips on the tinted container */
+    /* BOOLEAN FACETS */
     .widget-search-facets__boolean .widget-search-facets__boolean-button {
         color: var(--combined-facets-color);
         background: var(--combined-facets-box);
@@ -299,7 +320,7 @@
         }
     }
 
-    /* EXPAND/COLLAPSE: accent text link ("show all") instead of the centered chevron */
+    /* EXPAND/COLLAPSE */
     .widget-search-facets__collapse {
         justify-content: flex-start;
         margin-top: 8px;
@@ -338,8 +359,7 @@
         display: inline;
     }
 
-    /* section head action buttons (chronology reset, geo actions) follow the quiet scheme;
-       currentColor defeats the theme's generic topbar icon color */
+    /* currentColor defeats the theme's generic topbar icon color */
     .widget-chronology-slider__action-reset-button,
     .widget-geofacetting__actions button {
         color: var(--combined-facets-muted);
@@ -365,7 +385,7 @@
         color: currentColor;
     }
 
-    /* CHRONOLOGY SECTION: thin accent track with round handles, quiet range labels */
+    /* CHRONOLOGY SECTION */
     /* double class keeps the specificity above the theme's content-box backgrounds */
     .widget-chronology-slider__item.chronology-slider-start,
     .widget-chronology-slider__item.chronology-slider-end,

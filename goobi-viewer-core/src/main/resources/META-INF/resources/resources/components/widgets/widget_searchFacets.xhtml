@@ -1,13 +1,9 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:facelets="http://io.goobi.viewer"
     xmlns:util="http://goobi.io/util"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:searchFacetsComponent="http://xmlns.jcp.org/jsf/composite/components/widgets/searchFacets">
@@ -22,9 +18,6 @@
             type="io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement"
             required="false"
             default="#{null}" />
-        <!-- Display mode: "widgets" renders the classic individual widget boxes, "combined" renders
-             all facets as sections of one connected filter container. Configured globally via
-             <facets style="widgets|combined"> in config_viewer.xml. -->
         <composite:attribute
             name="mode"
             type="java.lang.String"
@@ -37,23 +30,27 @@
             <h:panelGroup rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() != null}">
                 <div
                     id="searchListFacetsWrapper"
-                    class="widget-search-facets #{cc.attrs.mode eq 'combined' ? 'combined-facets' : ''}">
+                    class="widget-search-facets #{cc.attrs.mode eq 'combined' ? 'combined-facets' : ''}"
+                    data-filter-persistent="#{cc.attrs.mode eq 'combined'}">
                     <ui:fragment rendered="#{cc.attrs.mode eq 'combined'}">
                         <div class="combined-facets__head">
                             <h2 class="combined-facets__title">#{msg.search__combined_facets__title}</h2>
                             <h:outputLink
                                 styleClass="combined-facets__reset"
                                 rendered="#{not empty searchBean.facets.activeFacets}"
-                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/-/#{navigationHelper.subThemeQueryParam}">
+                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/-/#{navigationHelper.subThemeQueryParam}"
+                                title="#{msg.search__combined_facets__reset_all}">
                                 <util:icon-text
                                     icon="x"
-                                    text="#{msg.search__combined_facets__reset_all}" />
+                                    iconSvgClass="combined-facets__reset-icon-svg"
+                                    text="#{msg.search__combined_facets__reset_all}"
+                                    textClass="combined-facets__reset-label" />
                             </h:outputLink>
                         </div>
                     </ui:fragment>
-                    <searchFacetsComponent:activeFacetsBadges mode="#{cc.attrs.mode}" />
-                    <!-- All facets render in the order configured in <facets><template>; range and geo
-                         fields are dispatched to their section components at their configured position. -->
+                    <searchFacetsComponent:activeFacetsBadges
+                        mode="#{cc.attrs.mode}"
+                        cmsPage="#{cc.attrs.cmsPage}" />
                     <c:forEach
                         var="facetField"
                         items="#{searchBean.facets.allFacetFields}"

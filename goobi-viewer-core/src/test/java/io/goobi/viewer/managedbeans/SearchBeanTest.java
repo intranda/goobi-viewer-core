@@ -561,7 +561,6 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         searchBean.generateAdvancedSearchMainQuery();
 
-        // The NOT operator must produce an excluded (negated) facet, serialized with the exclusion marker
         assertEquals(URLEncoder.encode(FacetItem.EXCLUDE_PREFIX + SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
                 searchBean.getFacets().getActiveFacetString());
         List<IFacetItem> activeFacets = searchBean.getFacets().getActiveFacets();

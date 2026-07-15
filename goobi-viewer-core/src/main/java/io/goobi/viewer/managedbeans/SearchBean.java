@@ -812,6 +812,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should not add more facets if field value combo already in current facets
      * @should not replace obsolete facets with duplicates
      * @should remove facets that are not matched among query items
+     * @should add hierarchical NOT item as an exclusion facet
      */
     String generateAdvancedSearchMainQuery() {
         logger.trace("generateAdvancedSearchMainQuery");
@@ -845,9 +846,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         continue;
                     }
 
-                    // A NOT operator turns the hierarchical item into an exclusion facet. The marker is encoded
-                    // into the serialized link (e.g. "!DC:value") so the resulting FacetItem is parsed as excluded
-                    // and produces a negative filter query, while include/exclude of the same value stay distinct.
                     String exclusionMarker = SearchItemOperator.NOT.equals(line.getOperator()) ? FacetItem.EXCLUDE_PREFIX : "";
 
                     // Skip identical hierarchical items

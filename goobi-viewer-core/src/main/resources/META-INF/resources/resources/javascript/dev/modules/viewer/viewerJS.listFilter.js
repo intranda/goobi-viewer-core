@@ -17,7 +17,8 @@
  * program. If not, see <http://www.gnu.org/licenses/>.
  *
  * Allows filtering a list of text entries with the content of an input element. Takes the selector of the input and one pointing to all
- * elements to filter. If the input element is not empty, hide all list elements which don't start with the input element value
+ * elements to filter. If the input element is not empty, hide all list elements which don't start with the input element value.
+ * With config.persistent the filter only reacts to its dedicated toggle button.
  *
  * @version 3.4.0
  * @module viewerJS.listFilter
@@ -58,11 +59,9 @@ var viewerJS = (function (viewer) {
         });
 
         this.config.header.on('click', (event) => {
-            console.log('clicked on heading');
             event.stopImmediatePropagation();
 
-            // combined facets mode: the filter is toggled by its dedicated button only
-            if (this.config.input.closest('.combined-facets').length) {
+            if (this.config.persistent) {
                 return;
             }
 
@@ -85,8 +84,7 @@ var viewerJS = (function (viewer) {
 
         // reset filter on body click
         $('body').on('click', (event) => {
-            // combined facets mode: the filter stays open until its button is clicked again
-            if (this.config.input.closest('.combined-facets').length) {
+            if (this.config.persistent) {
                 return;
             }
             if ($('.widget-search-facets__filter-input').hasClass('in')) {
@@ -174,7 +172,6 @@ var viewerJS = (function (viewer) {
     return viewer;
 })(viewerJS || {}, jQuery);
 
-// CommonJS export for Jest. No-op in the browser where `module` is undefined.
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = viewerJS;
 }

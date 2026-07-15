@@ -452,6 +452,8 @@ var viewerJS = (function () {
                 header: $(this).find('[data-heading="searchFacetFilter"]'),
                 input: $(this).find('[data-input="searchFacetFilter"]'),
                 elements: $(this).find('li'),
+                // containers can declare their filters persistent via data attribute
+                persistent: $(this).closest('[data-filter-persistent="true"]').length > 0,
             };
 
             var filter = new viewerJS.listFilter(filterConfig);

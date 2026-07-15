@@ -1,12 +1,15 @@
-/**
- * Unit tests for viewerJS.combinedFacets.
- *
- * The module wires the section toggle chevrons of the combined facets
- * container: clicking a toggle collapses or expands its section, updates
- * aria-expanded and persists the collapsed sections in sessionStorage so
- * the state survives the page reloads caused by facet clicks.
- */
 const viewerJS = require('../viewerJS.combinedFacets.js');
+
+// jsfAjax stub: captures the handler so tests can simulate ajax re-renders
+let _ajaxHandler = null;
+viewerJS.jsfAjax = {
+    success: {
+        subscribe: jest.fn(function (handler) {
+            _ajaxHandler = handler;
+            return { unsubscribe: jest.fn() };
+        }),
+    },
+};
 
 function sectionMarkup(field) {
     return (
@@ -82,5 +85,46 @@ describe('viewerJS.combinedFacets', function () {
         getToggle('FIELD_A').click();
         expect(resizeListener).toHaveBeenCalledTimes(1);
         window.removeEventListener('resize', resizeListener);
+    });
+
+    test('should not toggle twice when init runs twice (idempotent binding)', function () {
+        setupDom();
+        viewerJS.combinedFacets.init();
+        viewerJS.combinedFacets.init();
+        getToggle('FIELD_A').click();
+        expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(true);
+    });
+
+    test('should subscribe to the jsfAjax success stream only once', function () {
+        setupDom();
+        viewerJS.combinedFacets.init();
+        viewerJS.combinedFacets.init();
+        expect(viewerJS.jsfAjax.success.subscribe).toHaveBeenCalledTimes(1);
+    });
+
+    test('should rebind the toggle and restore collapsed state after an ajax section re-render', function () {
+        setupDom();
+        viewerJS.combinedFacets.init();
+        getToggle('FIELD_A').click();
+
+        // simulate the f:ajax re-render of section A
+        getSection('FIELD_A').outerHTML = sectionMarkup('FIELD_A');
+        const ajaxSource = document.createElement('button');
+        ajaxSource.setAttribute('data-collapse-link', 'collapse-link-0');
+        _ajaxHandler({ source: ajaxSource });
+
+        expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(true);
+        expect(getToggle('FIELD_A').getAttribute('aria-expanded')).toBe('false');
+        getToggle('FIELD_A').click();
+        expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(false);
+    });
+
+    test('should ignore ajax events without a collapse link source', function () {
+        setupDom();
+        viewerJS.combinedFacets.init();
+        expect(function () {
+            _ajaxHandler({});
+            _ajaxHandler({ source: document.createElement('div') });
+        }).not.toThrow();
     });
 });

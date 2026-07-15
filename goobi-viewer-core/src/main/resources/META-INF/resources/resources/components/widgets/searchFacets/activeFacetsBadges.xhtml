@@ -8,13 +8,16 @@
     xmlns:util="http://goobi.io/util">
     <!-- INTERFACE OPTIONS -->
     <composite:interface>
-        <!-- Display mode of the surrounding facets component: "widgets" renders the badges as an
-             own widget box, "combined" renders them as a bare badge strip inside the container. -->
         <composite:attribute
             name="mode"
             type="java.lang.String"
             required="false"
             default="widgets" />
+        <composite:attribute
+            name="cmsPage"
+            type="io.goobi.viewer.model.cms.pages.CMSPage"
+            required="false"
+            default="#{null}" />
     </composite:interface>
 
     <!-- COMPONENT CONTENT -->
@@ -26,15 +29,15 @@
             <ui:fragment rendered="#{cc.attrs.mode ne 'combined'}">
                 <div class="widget__topbar widget-active-facets__topbar">
                     <h2 class="widget__title widget-active-facets__title">#{msg.search__active_facets__title}</h2>
-                    <!-- icon-only reset, the label slides in on hover/focus -->
                     <h:outputLink
                         styleClass="widget-active-facets__reset"
                         value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/-/#{navigationHelper.subThemeQueryParam}"
                         title="#{msg.search__combined_facets__reset_all}">
-                        <util:icon
+                        <util:icon-text
                             icon="x"
-                            svgClass="widget-active-facets__reset-icon" />
-                        <span class="widget-active-facets__reset-label">#{msg.search__combined_facets__reset_all}</span>
+                            iconSvgClass="widget-active-facets__reset-icon-svg"
+                            text="#{msg.search__combined_facets__reset_all}"
+                            textClass="widget-active-facets__reset-label" />
                     </h:outputLink>
                 </div>
             </ui:fragment>
@@ -74,7 +77,7 @@
                                 aria-hidden="true">
                                 <util:icon
                                     icon="x"
-                                    svgClass="active-facets-badges__badge-remove-icon" />
+                                    svgClass="active-facets-badges__badge-remove-icon-svg" />
                             </span>
                         </h:commandLink>
                     </c:forEach>

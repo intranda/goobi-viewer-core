@@ -1,8 +1,6 @@
 /* ==============================================================
    Widget Active Facets
-   Style declarations for the active facets badge list
-   (searchFacets/activeFacetsBadges.xhtml) — rendered as own
-   widget box in widgets mode, as bare strip in combined mode
+   Style declarations for searchFacets/activeFacetsBadges.xhtml
    ==============================================================*/
 
 /* BLOCK */
@@ -85,7 +83,7 @@
             color 0.1s ease-in;
     }
 
-    &__badge-remove-icon {
+    &__badge-remove-icon-svg {
         display: block;
         width: 13px;
         height: 13px;
@@ -110,7 +108,7 @@
     }
 }
 
-/* WIDGET EMBEDDING: reset action in the widget topbar (combined mode uses the container head instead) */
+/* WIDGET EMBEDDING */
 .widget-active-facets {
     &__topbar {
         display: flex;
@@ -126,6 +124,11 @@
         color: var(--widget-icon-color-topbar);
         text-decoration: none;
 
+        /* the label slides in from zero width: collapse the icon-text default gap */
+        .icon-text {
+            gap: 0;
+        }
+
         &:hover,
         &:focus {
             color: var(--widget-icon-color-topbar);
@@ -139,7 +142,7 @@
         }
     }
 
-    &__reset-icon {
+    &__reset-icon-svg {
         display: block;
         width: 16px;
         height: 16px;

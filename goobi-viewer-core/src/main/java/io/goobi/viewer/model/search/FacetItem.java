@@ -389,6 +389,8 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should return unchanged range query link for a range facet item
      * @return the Solr filter query string for this facet item, with field and value properly escaped
      * @should return unchanged f i e l d value link for a non hierarchical facet item
+     * @should negate a non hierarchical exclusion facet item
+     * @should negate a hierarchical exclusion facet item
      */
     @Override
     public String getQueryEscapedLink() {
@@ -405,7 +407,6 @@ public class FacetItem implements Serializable, IFacetItem {
         if (!excluded || StringUtils.isEmpty(positiveQuery)) {
             return positiveQuery;
         }
-        // Already a parenthesized group (e.g. hierarchical): just prefix '-'; otherwise wrap in '-(...)'.
         return positiveQuery.startsWith("(") ? "-" + positiveQuery : "-(" + positiveQuery + ")";
     }
 
@@ -512,6 +513,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * URL escaped link that adds the exclusion marker, for building "exclude this value" drill-down links.
      *
      * @return the URL-encoded facet link prefixed with {@link #EXCLUDE_PREFIX} (e.g. "!FIELD:value")
+     * @should prepend url encoded exclusion marker
      */
     @Override
     public String getExcludeUrlEscapedLink() {
@@ -522,7 +524,6 @@ public class FacetItem implements Serializable, IFacetItem {
             return ret;
         }
     }
-
 
     @Override
     public FacetType getType() {
@@ -613,6 +614,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * Getter for the field <code>link</code>.
      *
      * @return the colon-separated field:value string used as the facet link
+     * @should not add exclusion marker for a regular facet item
      */
     @Override
     public String getLink() {
@@ -623,12 +625,11 @@ public class FacetItem implements Serializable, IFacetItem {
      * Setter for the field <code>link</code>.
      *
      * @param link the colon-separated field:value string used as the facet link
+     * @should detect exclusion marker and keep field and value clean
      */
     @Override
     public void setLink(String link) {
         // TODO move logic out of the setter
-        // An exclusion (negated) facet is serialized with a leading marker, e.g. "!DC:value". Detect and strip
-        // it here so that field/value/label stay clean; getLink() re-emits the marker for round-tripping.
         String useLink = link;
         this.excluded = useLink.startsWith(EXCLUDE_PREFIX);
         if (this.excluded) {

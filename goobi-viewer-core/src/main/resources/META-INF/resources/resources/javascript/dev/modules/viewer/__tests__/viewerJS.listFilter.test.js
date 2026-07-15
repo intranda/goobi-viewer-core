@@ -1,15 +1,4 @@
-/**
- * Unit tests for viewerJS.listFilter.
- *
- * The constructor wires several jQuery click/keyup handlers and calls
- * enable() which subscribes to an rxjs.fromEvent(input, 'input')
- * observable. We provide a minimal `global.rxjs` stub that captures
- * the subscriber so we can drive the filter behavior directly.
- */
-
-// rxjs stub: fromEvent → an object whose .pipe().subscribe(handler) is
-// stored. Calling the stored handler from a test re-enacts a debounced
-// input event, without us actually waiting 200ms.
+// rxjs stub: captures the subscriber so tests can trigger the debounced input handler directly
 let _filterSubscriber = null;
 global.rxjs = {
     fromEvent: function (target, eventName) {
@@ -91,7 +80,6 @@ describe('listFilter.filter', () => {
         _filterSubscriber();
 
         const items = document.querySelectorAll('.filter-element');
-        // "Apple" (display 'none' or empty), "Banana" hidden, "Apricot" visible.
         const visibleByText = (text) => Array.from(items).find((li) => li.textContent.trim() === text).style.display;
         expect(visibleByText('Apricot')).not.toBe('none');
         expect(visibleByText('Banana')).toBe('none');
@@ -108,10 +96,8 @@ describe('listFilter.filter', () => {
 
     test('shows all elements when the input is empty', () => {
         const lf = makeListFilter();
-        // First filter to "ap" (hides Banana).
         $('#filter-input').val('ap');
         _filterSubscriber();
-        // Then clear the value and re-filter.
         $('#filter-input').val('');
         _filterSubscriber();
         document.querySelectorAll('.filter-element').forEach((li) => {
@@ -134,7 +120,6 @@ describe('listFilter.resetFilters', () => {
     test('shows all elements again on reset', () => {
         const lf = makeListFilter();
         $('#filter-input').addClass('in').val('apple');
-        // Hide one to verify resetFilters re-shows it.
         $('.filter-element').eq(1).hide();
         lf.resetFilters();
         document.querySelectorAll('.filter-element').forEach((li) => {
@@ -144,9 +129,8 @@ describe('listFilter.resetFilters', () => {
 
     test('is a no-op when the input is not active (.in class missing)', () => {
         const lf = makeListFilter();
-        $('#filter-input').val('whatever'); // value present but no .in class
+        $('#filter-input').val('whatever');
         lf.resetFilters();
-        // Value should remain untouched — resetFilters guards on .in.
         expect($('#filter-input').val()).toBe('whatever');
     });
 });
@@ -154,7 +138,6 @@ describe('listFilter.resetFilters', () => {
 describe('listFilter inputToggle click', () => {
     test('clicking the toggle adds .in to the input and resets prior filters', () => {
         const lf = makeListFilter();
-        // Pre-condition: input is not active.
         expect($('#filter-input').hasClass('in')).toBe(false);
 
         $('#input-toggle').trigger('click');
@@ -163,19 +146,25 @@ describe('listFilter inputToggle click', () => {
     });
 });
 
-describe('listFilter in combined facets mode', () => {
-    function makeCombinedListFilter() {
+describe('listFilter header click (default mode)', () => {
+    test('toggles the filter input', () => {
+        makeListFilter();
+        $('#filter-header').trigger('click');
+        expect($('#filter-input').hasClass('in')).toBe(true);
+    });
+});
+
+describe('listFilter with persistent flag (e.g. combined facets sidebar)', () => {
+    function makePersistentListFilter() {
         document.body.innerHTML = `
-            <div class="combined-facets">
-                <div id="wrapper">
-                    <input id="filter-input" class="widget-search-facets__filter-input" type="text" />
-                    <button id="input-toggle">T</button>
-                    <h3 id="filter-header">Header</h3>
-                    <ul>
-                        <li class="filter-element"><a>Apple</a></li>
-                        <li class="filter-element"><a>Banana</a></li>
-                    </ul>
-                </div>
+            <div id="wrapper">
+                <input id="filter-input" class="widget-search-facets__filter-input" type="text" />
+                <button id="input-toggle">T</button>
+                <h3 id="filter-header">Header</h3>
+                <ul>
+                    <li class="filter-element"><a>Apple</a></li>
+                    <li class="filter-element"><a>Banana</a></li>
+                </ul>
             </div>
             <div id="outside">outside</div>`;
 
@@ -185,17 +174,18 @@ describe('listFilter in combined facets mode', () => {
             inputToggle: $('#input-toggle'),
             header: $('#filter-header'),
             elements: $('.filter-element'),
+            persistent: true,
         });
     }
 
     test('header click does not toggle the filter input', () => {
-        makeCombinedListFilter();
+        makePersistentListFilter();
         $('#filter-header').trigger('click');
         expect($('#filter-input').hasClass('in')).toBe(false);
     });
 
     test('clicks outside the sidebar do not close an open filter input', () => {
-        makeCombinedListFilter();
+        makePersistentListFilter();
         $('#input-toggle').trigger('click');
         expect($('#filter-input').hasClass('in')).toBe(true);
         $('#outside').trigger('click');

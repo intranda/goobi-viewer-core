@@ -34,8 +34,11 @@ public interface IFacetItem {
 
     String getUrlEscapedLink();
 
+    /**
+     * @return the URL-encoded facet link prefixed with the exclusion marker, for building "exclude this value" links
+     */
     String getExcludeUrlEscapedLink();
-    
+
     FacetType getType();
 
     String getField();

@@ -16,11 +16,8 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Module that wires the section toggle chevrons of the combined facets
- * container: clicking a toggle collapses or expands its facet section,
- * updates aria-expanded and persists the collapsed sections in
- * sessionStorage so the state survives the page reloads caused by
- * facet clicks.
+ * Section toggles of the combined facets container: collapse/expand state is
+ * persisted in sessionStorage and re-initialized after f:ajax section re-renders.
  *
  * @version 26.07
  * @module viewerJS.combinedFacets
@@ -35,30 +32,47 @@ var viewerJS = (function (viewer) {
         storageKey: 'viewerJS.combinedFacets.collapsedSections',
     };
 
+    var _ajaxSubscription = null;
+
     viewer.combinedFacets = {
         init: function (config) {
             var settings = Object.assign({}, _defaults, config);
-            var collapsedSections = _readState(settings);
-            document.querySelectorAll(settings.toggleSelector).forEach(function (toggle) {
-                var section = toggle.closest(settings.sectionSelector);
-                if (!section) {
-                    return;
-                }
-                if (collapsedSections.indexOf(toggle.dataset.sectionToggle) > -1) {
-                    _setCollapsed(toggle, section, true, settings);
-                }
-                toggle.addEventListener('click', function () {
-                    var collapse = !section.classList.contains(settings.collapsedClass);
-                    _setCollapsed(toggle, section, collapse, settings);
-                    _persist(toggle.dataset.sectionToggle, collapse, settings);
-                    if (!collapse) {
-                        // sections may contain maps or sliders that need a relayout after expanding
-                        window.dispatchEvent(new Event('resize'));
+            _initSections(settings);
+            if (!_ajaxSubscription && typeof viewer.jsfAjax !== 'undefined') {
+                _ajaxSubscription = viewer.jsfAjax.success.subscribe(function (event) {
+                    if (event.source && event.source.getAttribute && event.source.getAttribute('data-collapse-link')) {
+                        _initSections(settings);
                     }
                 });
-            });
+            }
         },
     };
+
+    function _initSections(settings) {
+        var collapsedSections = _readState(settings);
+        document.querySelectorAll(settings.toggleSelector).forEach(function (toggle) {
+            var section = toggle.closest(settings.sectionSelector);
+            if (!section) {
+                return;
+            }
+            if (collapsedSections.indexOf(toggle.dataset.sectionToggle) > -1) {
+                _setCollapsed(toggle, section, true, settings);
+            }
+            if (toggle.dataset.sectionToggleBound) {
+                return;
+            }
+            toggle.dataset.sectionToggleBound = 'true';
+            toggle.addEventListener('click', function () {
+                var collapse = !section.classList.contains(settings.collapsedClass);
+                _setCollapsed(toggle, section, collapse, settings);
+                _persist(toggle.dataset.sectionToggle, collapse, settings);
+                if (!collapse) {
+                    // sections may contain maps or sliders that need a relayout after expanding
+                    window.dispatchEvent(new Event('resize'));
+                }
+            });
+        });
+    }
 
     function _setCollapsed(toggle, section, collapsed, settings) {
         section.classList.toggle(settings.collapsedClass, collapsed);

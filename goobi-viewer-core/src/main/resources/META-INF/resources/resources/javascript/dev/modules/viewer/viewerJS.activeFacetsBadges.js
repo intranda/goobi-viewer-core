@@ -16,9 +16,8 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Module that limits the active facets badge list to a maximum number of rows
- * and offers a "+N more" button revealing the hidden rest. The button label
- * template comes from the data-more-label attribute ({0} = hidden count).
+ * Limits the active facets badge list to a maximum number of rows; a "+N more"
+ * button ({0} = hidden count, template from data-more-label) reveals the rest.
  *
  * @version 26.07
  * @module viewerJS.activeFacetsBadges

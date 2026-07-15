@@ -67,7 +67,7 @@
                                 </button>
                             </div>
                         </ui:fragment>
-                        <!-- SECTION COLLAPSE (combined mode only, hidden as widget) -->
+                        <!-- SECTION COLLAPSE -->
                         <button
                             type="button"
                             class="btn btn--clean widget-search-facets__section-toggle"
@@ -195,7 +195,7 @@
                             </ui:fragment>
 
                             <ul class="widget-search-facets__list">
-                                <!-- ACTIVE VALUES: filled state control, click removes the facet -->
+                                <!-- ACTIVE FACETS -->
                                 <c:forEach
                                     items="#{searchBean.facets.getActiveFacetsForField(cc.attrs.field)}"
                                     var="facet">
@@ -210,7 +210,7 @@
                                                     aria-hidden="true">
                                                     <util:icon
                                                         icon="plus"
-                                                        svgClass="widget-search-facets__list-item-control-icon" />
+                                                        svgClass="widget-search-facets__list-item-control-icon-svg" />
                                                 </span>
                                             </ui:fragment>
                                             <span class="widget-search-facets__list-item-text">
@@ -222,7 +222,7 @@
                                                     aria-hidden="true">
                                                     <util:icon
                                                         icon="minus"
-                                                        svgClass="widget-search-facets__list-item-control-icon" />
+                                                        svgClass="widget-search-facets__list-item-control-icon-svg" />
                                                 </span>
                                             </ui:fragment>
                                             <f:passThroughAttribute
@@ -243,7 +243,7 @@
                                     value="#{searchBean.facets.getLimitedFacetListForField(cc.attrs.field)}"
                                     var="facet">
                                     <li class="widget-search-facets__list-item">
-                                        <!-- POSITIVE (INCLUDE) SELECTION: whole link applies the facet, control shows on row hover/focus -->
+                                        <!-- POSITIVE (INCLUDE) SELECTION -->
                                         <h:outputLink
                                             styleClass="widget-search-facets__list-item-link"
                                             value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/#{navigationHelper.subThemeQueryParam}">
@@ -252,7 +252,7 @@
                                                 aria-hidden="true">
                                                 <util:icon
                                                     icon="plus"
-                                                    svgClass="widget-search-facets__list-item-control-icon" />
+                                                    svgClass="widget-search-facets__list-item-control-icon-svg" />
                                             </span>
                                             <span class="widget-search-facets__list-item-text">
                                                 <span class="widget-search-facets__list-item-label">#{facet.translatedLabel}</span>
@@ -262,7 +262,7 @@
                                                 name="aria-label"
                                                 value="#{msg[cc.attrs.field.concat('_DD')]}: #{facet.translatedLabel}" />
                                         </h:outputLink>
-                                        <!-- NEGATIVE (EXCLUDE) SELECTION: own focusable control on the right -->
+                                        <!-- NEGATIVE (EXCLUDE) SELECTION -->
                                         <h:outputLink
                                             styleClass="widget-search-facets__list-item-control-link"
                                             value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.excludeUrlEscapedLink}/#{navigationHelper.subThemeQueryParam}"
@@ -272,7 +272,7 @@
                                                 aria-hidden="true">
                                                 <util:icon
                                                     icon="minus"
-                                                    svgClass="widget-search-facets__list-item-control-icon" />
+                                                    svgClass="widget-search-facets__list-item-control-icon-svg" />
                                             </span>
                                             <f:passThroughAttribute
                                                 name="aria-label"

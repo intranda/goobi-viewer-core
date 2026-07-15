@@ -42,8 +42,6 @@
         padding-inline-end: 5px;
         line-height: 1.5;
 
-        /* row hover slides the controls in as outlines;
-           enter: expand the width first, fade in at the end (no half-revealed box visible) */
         &:hover,
         &:focus-within {
             .widget-search-facets__list-item-control {
@@ -77,7 +75,6 @@
         min-width: 0;
         overflow: visible;
 
-        /* hovering/focusing the include link itself fills the control to preview the selection */
         &:hover,
         &:focus {
             text-decoration: none;
@@ -89,7 +86,6 @@
             }
         }
     }
-    /* label + count share one text flow: wrapped lines keep the hanging indent */
     &__list-item-text {
         flex: 1 1 auto;
         min-width: 0;
@@ -102,7 +98,7 @@
         flex: 0 0 auto;
         overflow: visible;
     }
-    /* INCLUDE/EXCLUDE CONTROLS: zero width until row hover/focus (no default indent), filled when set */
+    /* INCLUDE/EXCLUDE CONTROLS */
     &__list-item-control {
         display: inline-flex;
         align-items: center;
@@ -115,7 +111,7 @@
         border: 0 solid var(--facet-control-border);
         border-radius: 3px;
         opacity: 0;
-        /* leave: fade out instantly, then collapse the width (no half-revealed box visible) */
+        /* opacity is delayed against width so no half-revealed box shows */
         transition:
             width 0.15s ease-in-out 0.05s,
             margin 0.15s ease-in-out 0.05s,
@@ -135,7 +131,6 @@
             }
         }
     }
-    /* hovering/focusing the exclude control itself fills it to preview the exclusion */
     &__list-item-control-link {
         &:hover,
         &:focus {
@@ -146,7 +141,7 @@
             }
         }
     }
-    &__list-item-control-icon {
+    &__list-item-control-icon-svg {
         width: 12px;
         height: 12px;
     }
@@ -251,7 +246,7 @@
     &__collapse-chevron-svg {
         color: @widget-icon-color-expand;
     }
-    /* combined-mode-only parts: section toggle, expand/collapse label and the filter row icon */
+    /* combined-mode-only parts, hidden in widgets mode */
     &__collapse-alt-icon,
     &__collapse-label,
     &__filter-icon,

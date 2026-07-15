@@ -146,6 +146,8 @@ public class SearchFacets implements Serializable {
      * @return Generated Solr query
      * @should generate query correctly
      * @should return null if facet list is empty
+     * @should negate excluded item and add positive base when all excluded
+     * @should not add positive base when include and exclude are mixed
      */
     String generateHierarchicalFacetFilterQuery() {
         if (activeFacets.isEmpty()) {
@@ -163,7 +165,6 @@ public class SearchFacets implements Serializable {
                 sbQuery.append(SolrConstants.SOLR_QUERY_AND);
             }
             String field = SearchHelper.facetifyField(facetItem.getField());
-            // Exclusion facet: negate the whole hierarchical group so matching documents are removed.
             if (facetItem.isExcluded()) {
                 sbQuery.append('-');
             } else {
@@ -181,8 +182,7 @@ public class SearchFacets implements Serializable {
             count++;
         }
 
-        // A purely negative filter query matches nothing in Solr; prepend a positive base so the
-        // exclusions are subtracted from the full result set instead.
+        // a purely negative filter query matches nothing in Solr
         if (count > 0 && !hasPositive) {
             sbQuery.insert(0, "*:*" + SolrConstants.SOLR_QUERY_AND);
         }
@@ -209,8 +209,7 @@ public class SearchFacets implements Serializable {
 
         List<String> ret = new ArrayList<>();
         Map<String, StringBuilder> queries = LinkedHashMap.newLinkedHashMap(activeFacets.size());
-        // Track per field whether any positive (non-excluded) clause was added, so a field group
-        // consisting solely of exclusions can be given a positive base (a purely negative query matches nothing).
+        // a purely negative filter query matches nothing in Solr
         Map<String, Boolean> fieldHasPositive = new HashMap<>(activeFacets.size());
 
         for (IFacetItem facetItem : getActiveFacetsCopy()) {
@@ -582,6 +581,7 @@ public class SearchFacets implements Serializable {
      * @param activeFacetString SSV-encoded string of active facet field:value pairs
      * @should create FacetItems from all links
      * @should decode slashes and backslashes
+     * @should preserve exclusion marker through round trip
      */
     public void setActiveFacetString(String activeFacetString) {
         synchronized (lock) {
@@ -604,6 +604,7 @@ public class SearchFacets implements Serializable {
      * @should create multiple items from multiple instances of same field
      * @should skip value pairs if field or value missing
      * @should skip facet links with leading semicolon caused by triple separators in URL
+     * @should parse exclusion marker correctly
      */
     static void parseFacetString(final String facetString, final List<IFacetItem> facetItems, final Map<String, String> labelMap) {
         if (facetItems == null) {
@@ -641,8 +642,6 @@ public class SearchFacets implements Serializable {
                 continue;
             }
 
-            // An exclusion (negated) facet is serialized with a leading marker, e.g. "!DC:value". Strip it for
-            // field/value derivation; the FacetItem re-detects the marker from its link and sets its excluded flag.
             boolean itemExcluded = facetLink.startsWith(FacetItem.EXCLUDE_PREFIX);
             if (itemExcluded) {
                 facetLink = facetLink.substring(FacetItem.EXCLUDE_PREFIX.length());
@@ -652,7 +651,7 @@ public class SearchFacets implements Serializable {
             }
             String facetField = facetLink.substring(0, facetLink.indexOf(":"));
             if (DataManager.getInstance().getConfiguration().getGeoFacetFields().contains(facetField)) {
-                // Geo facets do not support exclusion; ignore any marker.
+                // geo facets do not support exclusion: the marker is ignored
                 GeoFacetItem item = new GeoFacetItem(facetField);
                 item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
                 facetItems.add(item);
