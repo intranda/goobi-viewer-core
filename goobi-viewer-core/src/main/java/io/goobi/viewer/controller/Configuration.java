@@ -5190,13 +5190,6 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("search.quickFilters[@enabled]", false);
     }
 
-    /**
-     * Builds the quick filter fields from the facet template named by {@link #getQuickFilterTemplateName()}. Range facet fields become date-range
-     * widgets; regular (untyped) facet fields become dropdowns. Hierarchical, geo and boolean facet fields are not supported as quick filters and are
-     * skipped.
-     *
-     * @return ordered list of quick filter fields
-     */
     public List<QuickFilterField> getQuickFilterFields() {
         List<QuickFilterField> result = new ArrayList<>();
         List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("search.quickFilters.filter");
