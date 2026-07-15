@@ -29,9 +29,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -61,6 +68,7 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -87,6 +95,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 public class SearchResultResource {
 
     private static final Logger logger = LogManager.getLogger(SearchResultResource.class);
+
+    /** Shared daemon thread pool used to generate exports off the request thread, with a bounded timeout. */
+    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r, "search-export");
+        t.setDaemon(true);
+        return t;
+    });
 
     @Context
     private HttpServletRequest servletRequest;
@@ -198,6 +213,7 @@ public class SearchResultResource {
             description = "The requested export format is disabled, or the caller may not download metadata for the matching records")
     @ApiResponse(responseCode = "404", description = "The requested export format is not configured")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable or export generation error")
+    @ApiResponse(responseCode = "503", description = "Export generation timed out")
     @AccessConditionBinding
     public Response getSearchResultsAsFormat(
             @Parameter(description = "Export format name as configured in config_viewer.xml") @PathParam("format") String format,
@@ -206,7 +222,9 @@ public class SearchResultResource {
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
             @Parameter(description = "Maximum word distance for proximity search") @QueryParam("proximitySearchDistance")
                     @DefaultValue("0") int proximitySearchDistance,
-            @Parameter(description = "Maximum number of results (XSLT formats only)") @QueryParam("rows") @DefaultValue("100") int rows) {
+            @Parameter(description = "Maximum number of results (XSLT formats only)") @QueryParam("rows") @DefaultValue("100") int rows,
+            @Parameter(description = "Record identifier used as the download file name base (single-hit exports)")
+                    @QueryParam("identifier") @DefaultValue("") String identifier) {
 
         // Look up the format in all configured formats (including disabled ones) for proper error reporting
         Optional<ExportFormat> match = DataManager.getInstance().getConfiguration().getSearchExportFormats().stream()
@@ -227,13 +245,31 @@ public class SearchResultResource {
             if (denied != null) {
                 return denied;
             }
-            return exportFormat.isXsltBased()
-                    ? buildXsltExport(exportFormat, query, activeFacetString, rows)
-                    : buildFieldMappedExport(exportFormat, query, sortString, activeFacetString, proximitySearchDistance);
-        } catch (PresentationException | IndexUnreachableException | DAOException | ViewerConfigurationException
-                | ParserConfigurationException | TransformerException | IOException e) {
-            logger.error("Error building export for format '{}'", format, e);
+        } catch (PresentationException | IndexUnreachableException | DAOException e) {
+            logger.error("Error preparing export for format '{}'", format, e);
             return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Export generation error").build();
+        }
+
+        // Generate on a background thread with a timeout, mirroring the old bean's async download behaviour.
+        // This uses a plain executor (not servlet/JAX-RS async), so it does not call request.startAsync() and
+        // therefore does not require the servlet filter chain to support asynchronous processing.
+        int timeoutSeconds = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout();
+        String fileNameBase = exportFileNameBase(identifier);
+        Future<Response> future = EXECUTOR.submit(() -> exportFormat.isXsltBased()
+                ? buildXsltExport(exportFormat, query, activeFacetString, rows, fileNameBase)
+                : buildFieldMappedExport(exportFormat, query, sortString, activeFacetString, proximitySearchDistance, fileNameBase));
+        try {
+            return future.get(timeoutSeconds, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            logger.warn("Export generation for format '{}' timed out after {}s", format, timeoutSeconds);
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity("Export timed out").build();
+        } catch (ExecutionException e) {
+            logger.error("Error building export for format '{}'", format, e.getCause());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Export generation error").build();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return Response.status(Status.SERVICE_UNAVAILABLE).entity("Export interrupted").build();
         }
     }
 
@@ -284,13 +320,14 @@ public class SearchResultResource {
      * @param query the Solr search query string
      * @param activeFacetString the active facet filter string
      * @param rows maximum number of documents to include
+     * @param fileNameBase base name for the download file (without extension)
      * @return a ready {@link Response} carrying the transformed content
      */
-    private Response buildXsltExport(ExportFormat exportFormat, String query, String activeFacetString, int rows)
+    private Response buildXsltExport(ExportFormat exportFormat, String query, String activeFacetString, int rows, String fileNameBase)
             throws PresentationException, IndexUnreachableException, DAOException, ParserConfigurationException, TransformerException {
         SolrDocumentList docs = executeSolrQuery(query, activeFacetString, rows);
         String result = XsltSearchExport.transform(docs, exportFormat.getXslt());
-        return attachment(Response.ok(result, exportFormat.getContentType()), exportFormat);
+        return attachment(Response.ok(result, exportFormat.getContentType()), exportFormat, fileNameBase);
     }
 
     /**
@@ -302,10 +339,11 @@ public class SearchResultResource {
      * @param sortString the sort order string
      * @param activeFacetString the active facet filter string
      * @param proximitySearchDistance maximum word distance for proximity search
+     * @param fileNameBase base name for the download file (without extension)
      * @return a ready {@link Response} carrying the export bytes
      */
     private Response buildFieldMappedExport(ExportFormat exportFormat, String query, String sortString, String activeFacetString,
-            int proximitySearchDistance)
+            int proximitySearchDistance, String fileNameBase)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, IOException {
         String currentQuery = SearchHelper.prepareQuery(query);
         // Pass the servlet request so the access-condition filter suffix is resolved from the caller's
@@ -334,7 +372,7 @@ public class SearchResultResource {
             return Response.status(Status.NOT_IMPLEMENTED).entity("No handler for export format: " + exportFormat.getName()).build();
         }
 
-        return attachment(Response.ok(content, exportFormat.getContentType()), exportFormat);
+        return attachment(Response.ok(content, exportFormat.getContentType()), exportFormat, fileNameBase);
     }
 
     /**
@@ -342,11 +380,27 @@ public class SearchResultResource {
      *
      * @param builder the response builder to decorate
      * @param exportFormat the export format providing the file extension
+     * @param fileNameBase base name for the download file (without timestamp or extension)
      * @return the built {@link Response}
      */
-    private static Response attachment(Response.ResponseBuilder builder, ExportFormat exportFormat) {
-        return builder.header("Content-Disposition", "attachment; filename=\"search_export." + exportFormat.getFileExtension() + "\"")
-                .build();
+    private static Response attachment(Response.ResponseBuilder builder, ExportFormat exportFormat, String fileNameBase) {
+        String fileName = fileNameBase + "_" + LocalDateTime.now().format(DateTools.FORMATTERFILENAME) + "." + exportFormat.getFileExtension();
+        return builder.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"").build();
+    }
+
+    /**
+     * Determines the download file-name base. When an identifier is supplied (single-hit exports) it is sanitised to safe file-name
+     * characters and used; otherwise the generic {@code "search_export"} base is used (whole-list exports).
+     *
+     * @param identifier the record identifier passed by the caller, or blank
+     * @return the file-name base (without timestamp or extension)
+     */
+    private static String exportFileNameBase(String identifier) {
+        if (StringUtils.isBlank(identifier)) {
+            return "search_export";
+        }
+        String sanitized = identifier.trim().replaceAll("[^A-Za-z0-9_.-]", "_");
+        return StringUtils.isBlank(sanitized) ? "search_export" : sanitized;
     }
 
     /**

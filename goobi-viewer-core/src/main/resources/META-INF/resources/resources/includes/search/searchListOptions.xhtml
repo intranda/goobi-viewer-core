@@ -58,7 +58,10 @@
 
             <!-- EXPORT OPTIONS DROPDOWN -->
             <ui:fragment rendered="#{not empty configurationBean.enabledSearchExportFormats}">
-            <div class="dropdown search-list__export-dropdown-wrapper">
+            <div class="dropdown search-list__export-dropdown-wrapper"
+                data-msg-timeout="#{msg.download_timeout}"
+                data-msg-error="#{msg.download_internal_error}"
+                data-msg-denied="#{msg.search_export__access_denied}">
                 <button
                     class="btn btn--clean dropdown-toggle search-list__option-button search-list__export-dropdown-toggle"
                     type="button"
@@ -69,6 +72,12 @@
                         icon="file-export"
                         svgClass="icon" />
                 </button>
+
+                <!-- Loading indicator shown while an export is being generated (see inline script below) -->
+                <span class="search-list__export-loader d-none" aria-live="polite">
+                    <img src="#{request.contextPath}/resources/images/ajax_preloader.gif" alt="" />
+                    #{msg.search_export__generating}
+                </span>
 
                 <div class="dropdown-menu search-list__export-dropdown">
                     <!-- SEARCH EXPORT (XSLT formats: RIS, Endnote, BibTeX, …) -->

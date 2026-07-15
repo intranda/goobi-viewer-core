@@ -267,7 +267,7 @@
                             value="#{configurationBean.enabledSearchExportFormats}">
                             <a
                                 class="dropdown-item search-list__hit-export-dropdown-link"
-                                href="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}?query=PI:&quot;#{browseElement.pi}&quot;"
+                                href="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}?query=PI:&quot;#{browseElement.pi}&quot;&amp;identifier=#{browseElement.pi}"
                                 target="_blank">
                                 #{msg['search_export__'.concat(exportFormat.name)]}
                             </a>
