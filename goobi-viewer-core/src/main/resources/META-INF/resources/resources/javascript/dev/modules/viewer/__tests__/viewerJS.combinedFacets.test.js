@@ -18,9 +18,10 @@ function sectionMarkup(field) {
         '<h2>' +
         field +
         '</h2>' +
+        '<button class="filter-toggle">F</button>' +
         '<button data-section-toggle="' +
         field +
-        '" aria-expanded="true"></button>' +
+        '" aria-expanded="true"><span class="toggle-icon">v</span></button>' +
         '</div>' +
         '<div class="widget__body">values</div>' +
         '</div>'
@@ -52,6 +53,64 @@ describe('viewerJS.combinedFacets', function () {
         expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(true);
         expect(getToggle('FIELD_A').getAttribute('aria-expanded')).toBe('false');
         expect(getSection('FIELD_B').classList.contains('-section-collapsed')).toBe(false);
+    });
+
+    test('should toggle the section when clicking anywhere on the topbar, e.g. the heading', function () {
+        setupDom();
+        viewerJS.combinedFacets.init();
+        getSection('FIELD_A').querySelector('h2').click();
+        expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(true);
+        expect(getToggle('FIELD_A').getAttribute('aria-expanded')).toBe('false');
+        getSection('FIELD_A').querySelector('.widget__topbar').click();
+        expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(false);
+        expect(getToggle('FIELD_A').getAttribute('aria-expanded')).toBe('true');
+    });
+
+    test('should toggle the section when clicking the icon inside the toggle button', function () {
+        setupDom();
+        viewerJS.combinedFacets.init();
+        getToggle('FIELD_A')
+            .querySelector('.toggle-icon')
+            .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(true);
+    });
+
+    test('should push a stickyElements refresh after toggling so hc-sticky recalculates', function () {
+        setupDom();
+        viewerJS.stickyElements = { refresh: { next: jest.fn() } };
+        viewerJS.combinedFacets.init();
+        getToggle('FIELD_A').click();
+        expect(viewerJS.stickyElements.refresh.next).toHaveBeenCalledTimes(1);
+        getSection('FIELD_A').querySelector('h2').click();
+        expect(viewerJS.stickyElements.refresh.next).toHaveBeenCalledTimes(2);
+        delete viewerJS.stickyElements;
+    });
+
+    test('should toggle without error when stickyElements is not present', function () {
+        setupDom();
+        viewerJS.combinedFacets.init();
+        expect(function () {
+            getToggle('FIELD_A').click();
+        }).not.toThrow();
+        expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(true);
+    });
+
+    test('should not toggle the section when clicking other controls in the topbar', function () {
+        setupDom();
+        viewerJS.combinedFacets.init();
+        getSection('FIELD_A').querySelector('.filter-toggle').click();
+        expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(false);
+    });
+
+    test('should keep working when a toggle has no surrounding topbar', function () {
+        document.body.innerHTML =
+            '<div class="combined-facets"><div class="widget">' +
+            '<button data-section-toggle="FIELD_C" aria-expanded="true"></button>' +
+            '<div class="widget__body">values</div>' +
+            '</div></div>';
+        viewerJS.combinedFacets.init();
+        getToggle('FIELD_C').click();
+        expect(getSection('FIELD_C').classList.contains('-section-collapsed')).toBe(true);
     });
 
     test('should expand a collapsed section again on second click', function () {

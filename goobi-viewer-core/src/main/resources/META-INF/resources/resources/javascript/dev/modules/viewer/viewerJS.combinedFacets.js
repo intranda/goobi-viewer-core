@@ -27,6 +27,7 @@ var viewerJS = (function (viewer) {
 
     var _defaults = {
         toggleSelector: '[data-section-toggle]',
+        topbarSelector: '.widget__topbar',
         sectionSelector: '.widget',
         collapsedClass: '-section-collapsed',
         storageKey: 'viewerJS.combinedFacets.collapsedSections',
@@ -58,14 +59,22 @@ var viewerJS = (function (viewer) {
             if (collapsedSections.indexOf(toggle.dataset.sectionToggle) > -1) {
                 _setCollapsed(toggle, section, true, settings);
             }
-            if (toggle.dataset.sectionToggleBound) {
+            var clickTarget = toggle.closest(settings.topbarSelector) || toggle;
+            if (clickTarget.dataset.sectionToggleBound) {
                 return;
             }
-            toggle.dataset.sectionToggleBound = 'true';
-            toggle.addEventListener('click', function () {
+            clickTarget.dataset.sectionToggleBound = 'true';
+            clickTarget.addEventListener('click', function (event) {
+                var control = event.target.closest('a, button, input, select, textarea, label');
+                if (control && control !== toggle && !toggle.contains(control)) {
+                    return;
+                }
                 var collapse = !section.classList.contains(settings.collapsedClass);
                 _setCollapsed(toggle, section, collapse, settings);
                 _persist(toggle.dataset.sectionToggle, collapse, settings);
+                if (viewer.stickyElements) {
+                    viewer.stickyElements.refresh.next();
+                }
                 if (!collapse) {
                     // sections may contain maps or sliders that need a relayout after expanding
                     window.dispatchEvent(new Event('resize'));

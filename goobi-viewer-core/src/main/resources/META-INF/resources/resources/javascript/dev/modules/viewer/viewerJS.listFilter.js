@@ -59,11 +59,11 @@ var viewerJS = (function (viewer) {
         });
 
         this.config.header.on('click', (event) => {
-            event.stopImmediatePropagation();
-
             if (this.config.persistent) {
                 return;
             }
+
+            event.stopImmediatePropagation();
 
             var $input = this.config.input;
 

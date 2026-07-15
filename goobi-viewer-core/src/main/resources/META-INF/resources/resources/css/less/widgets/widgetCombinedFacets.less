@@ -7,17 +7,13 @@
 /* BLOCK */
 .combined-facets {
     position: relative;
-    padding: 20px;
+    padding: 24px;
+    overflow-anchor: none;
     color: var(--combined-facets-color);
     background: var(--combined-facets-background);
     border-radius: var(--combined-facets-radius);
 
-    --active-facets-badge-background: var(--combined-facets-box);
-    --active-facets-badge-color: var(--combined-facets-accent);
-    --active-facets-badge-border: transparent;
-    --active-facets-badge-muted: var(--combined-facets-muted);
-    --active-facets-badge-radius: var(--combined-facets-radius);
-    --active-facets-badge-contrast: var(--combined-facets-accent-contrast);
+    --active-facets-badge-more-color: var(--combined-facets-accent);
 
     /* ELEMENTS */
     &__head {
@@ -25,7 +21,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 16px;
     }
 
     &__title {
@@ -46,7 +42,6 @@
         color: var(--combined-facets-accent);
         text-decoration: none;
 
-        /* the label slides in from zero width: collapse the icon-text default gap */
         .icon-text {
             gap: 0;
         }
@@ -83,7 +78,7 @@
 
     /* BADGE STRIP */
     .active-facets-badges {
-        margin-bottom: 12px;
+        margin-bottom: 16px;
     }
 
     .active-facets-badges__list {
@@ -91,11 +86,22 @@
     }
 
     .active-facets-badges__list .active-facets-badges__badge {
+        --active-facets-badge-background: var(--combined-facets-badge-background);
+        --active-facets-badge-color: var(--combined-facets-badge-color);
+        --active-facets-badge-border: var(--combined-facets-badge-border);
+        --active-facets-badge-muted: var(--combined-facets-badge-muted);
+        --active-facets-badge-radius: var(--combined-facets-radius);
+        --active-facets-badge-contrast: var(--combined-facets-badge-contrast);
         height: 24px;
         padding: 0 4px 0 7px;
         gap: 4px;
         font-size: @fontSmall;
         font-weight: 600;
+
+        &:hover,
+        &:focus {
+            --active-facets-badge-background: var(--combined-facets-badge-background-hover);
+        }
     }
 
     .active-facets-badges__badge-remove {
@@ -113,7 +119,7 @@
     /* SECTIONS */
     .widget {
         margin: 0;
-        padding: 11px 0;
+        padding: 16px 0;
         background: transparent;
         border: 0;
         border-top: 1px solid var(--combined-facets-divider);
@@ -130,6 +136,8 @@
         overflow: visible;
         background: transparent;
         border: 0;
+        cursor: pointer;
+        user-select: none;
     }
 
     /* SECTION COLLAPSE */
@@ -178,7 +186,7 @@
     }
 
     .widget__body {
-        padding: 8px 0 0;
+        padding: 12px 0 0;
         background: transparent;
         border: 0;
     }
@@ -190,12 +198,15 @@
 
     /* VALUE LISTS */
     .widget-search-facets__collection ul {
-        max-height: none;
-        overflow: visible;
+        max-height: 400px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--combined-facets-scrollbar) transparent;
     }
 
     .widget-search-facets__list {
-        gap: 8px;
+        gap: 10px;
     }
 
     .widget-search-facets__list-item .widget-search-facets__list-item-link {
@@ -228,6 +239,8 @@
         background: var(--combined-facets-box);
         border: 0;
         border-radius: var(--combined-facets-radius);
+        cursor: text;
+        user-select: text;
 
         &::placeholder {
             color: var(--combined-facets-muted);
@@ -401,6 +414,10 @@
 
     .widget-chronology-slider__slider {
         height: 4px;
+        /* the handles are left-aligned to their value (margin: 0), so the right one
+           extends one handle width past the track end — without this margin the
+           widget's overflow: hidden clips it (sections have no side padding here) */
+        margin-right: 5px;
         border-radius: 4px;
         background-color: color-mix(in srgb, var(--combined-facets-color) 15%, transparent);
 
