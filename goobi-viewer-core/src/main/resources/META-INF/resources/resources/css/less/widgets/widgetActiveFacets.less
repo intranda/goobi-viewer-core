@@ -16,6 +16,11 @@
         list-style: none;
     }
 
+    &.widget-active-facets &__list {
+        flex-direction: row;
+        gap: 6px;
+    }
+
     &__list-item {
         display: inline-flex;
         max-width: 100%;
@@ -25,7 +30,6 @@
         }
     }
 
-    /* nested under the list to win over the generic ".widget__body a { display: block }" rule */
     &__list &__badge {
         display: inline-flex;
         align-items: center;
@@ -133,7 +137,6 @@
         color: var(--widget-icon-color-topbar);
         text-decoration: none;
 
-        /* the label slides in from zero width: collapse the icon-text default gap */
         .icon-text {
             gap: 0;
         }
@@ -177,6 +180,12 @@
 }
 
 @media screen and (max-width: @smallBreakpoint) {
+    .widget-active-facets__reset:hover .widget-active-facets__reset-label,
+    .widget-active-facets__reset:focus .widget-active-facets__reset-label {
+        max-width: 0;
+        margin-inline-start: 0;
+        opacity: 0;
+    }
 }
 
 @media screen and (max-width: @xSmallBreakpoint) {

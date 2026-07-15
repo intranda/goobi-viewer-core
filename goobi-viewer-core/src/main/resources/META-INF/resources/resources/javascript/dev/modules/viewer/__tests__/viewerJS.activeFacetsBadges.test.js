@@ -79,6 +79,41 @@ describe('viewerJS.activeFacetsBadges', function () {
         expect(wrapper.querySelectorAll('li:empty').length).toBe(0);
     });
 
+    test('should recalculate on resize: reveal everything when the rows now fit', function () {
+        jest.useFakeTimers();
+        const wrapper = setupDom([0, 24, 48]);
+        viewerJS.activeFacetsBadges.init();
+        expect(wrapper.querySelector('.active-facets-badges__more')).not.toBeNull();
+
+        wrapper.querySelectorAll('[data-badge="facet"]').forEach((badge) => {
+            Object.defineProperty(badge, 'offsetTop', { value: 0, configurable: true });
+        });
+        window.dispatchEvent(new Event('resize'));
+        jest.advanceTimersByTime(400);
+
+        expect(wrapper.querySelectorAll('.-overflow').length).toBe(0);
+        expect(wrapper.querySelector('.active-facets-badges__more')).toBeNull();
+        jest.useRealTimers();
+    });
+
+    test('should recalculate on resize: collapse again when rows no longer fit', function () {
+        jest.useFakeTimers();
+        const wrapper = setupDom([0, 0, 0]);
+        viewerJS.activeFacetsBadges.init();
+        expect(wrapper.querySelector('.active-facets-badges__more')).toBeNull();
+
+        const offsets = [0, 24, 48];
+        wrapper.querySelectorAll('[data-badge="facet"]').forEach((badge, i) => {
+            Object.defineProperty(badge, 'offsetTop', { value: offsets[i], configurable: true });
+        });
+        window.dispatchEvent(new Event('resize'));
+        jest.advanceTimersByTime(400);
+
+        expect(wrapper.querySelectorAll('.-overflow').length).toBe(1);
+        expect(wrapper.querySelector('.active-facets-badges__more').textContent).toBe('+1 weitere');
+        jest.useRealTimers();
+    });
+
     test('should not add a second button when init runs twice', function () {
         const wrapper = setupDom([0, 24, 48]);
         viewerJS.activeFacetsBadges.init();

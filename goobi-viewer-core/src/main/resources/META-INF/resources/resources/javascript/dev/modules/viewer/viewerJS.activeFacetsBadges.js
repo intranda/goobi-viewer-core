@@ -31,16 +31,48 @@ var viewerJS = (function (viewer) {
         moreButtonClass: 'active-facets-badges__more',
         hiddenClass: '-overflow',
         maxRows: 2,
+        resizeDebounce: 200,
     };
+
+    var _resizeBound = false;
+    var _resizeTimer = null;
+    var _lastSettings = null;
 
     viewer.activeFacetsBadges = {
         init: function (config) {
             var settings = Object.assign({}, _defaults, config);
+            _lastSettings = settings;
             document.querySelectorAll(settings.wrapperSelector).forEach(function (wrapper) {
                 _applyOverflow(wrapper, settings);
             });
+            if (!_resizeBound) {
+                _resizeBound = true;
+                window.addEventListener('resize', _onResize);
+            }
         },
     };
+
+    // row assignments are measured once via offsetTop, so they go stale when the
+    // available width changes (rotation, drawer, window resize): reset and reapply
+    function _onResize() {
+        window.clearTimeout(_resizeTimer);
+        _resizeTimer = window.setTimeout(function () {
+            document.querySelectorAll(_lastSettings.wrapperSelector).forEach(function (wrapper) {
+                _resetOverflow(wrapper, _lastSettings);
+                _applyOverflow(wrapper, _lastSettings);
+            });
+        }, _lastSettings.resizeDebounce);
+    }
+
+    function _resetOverflow(wrapper, settings) {
+        var moreButton = wrapper.querySelector('.' + settings.moreButtonClass);
+        if (moreButton) {
+            (moreButton.parentElement.tagName === 'LI' ? moreButton.parentElement : moreButton).remove();
+        }
+        wrapper.querySelectorAll('.' + settings.hiddenClass).forEach(function (el) {
+            el.classList.remove(settings.hiddenClass);
+        });
+    }
 
     function _applyOverflow(wrapper, settings) {
         if (wrapper.querySelector('.' + settings.moreButtonClass)) {
@@ -68,7 +100,6 @@ var viewerJS = (function (viewer) {
         }
         moreButton.addEventListener('click', function () {
             hiddenBadges.forEach((badge) => _rowElement(badge).classList.remove(settings.hiddenClass));
-            // the button removes itself while focused: hand focus to the first revealed badge
             hiddenBadges[0].focus();
             mount.remove();
         });

@@ -412,12 +412,14 @@
         color: var(--combined-facets-muted);
     }
 
+    .widget-chronology-slider {
+        overflow: visible;
+    }
+
     .widget-chronology-slider__slider {
         height: 4px;
-        /* the handles are left-aligned to their value (margin: 0), so the right one
-           extends one handle width past the track end — without this margin the
-           widget's overflow: hidden clips it (sections have no side padding here) */
-        margin-right: 5px;
+        /* keep the overhanging right handle clear of the container edge */
+        margin-inline-end: 5px;
         border-radius: 4px;
         background-color: color-mix(in srgb, var(--combined-facets-color) 15%, transparent);
 
@@ -453,10 +455,26 @@
 }
 
 @media screen and (max-width: @mediumBreakpoint) {
+    .combined-facets {
+        padding: 16px;
+    }
 }
 
 @media screen and (max-width: @smallBreakpoint) {
+    .combined-facets__reset:hover .combined-facets__reset-label,
+    .combined-facets__reset:focus .combined-facets__reset-label {
+        max-width: 0;
+        margin-inline-start: 0;
+        opacity: 0;
+    }
+
+    .combined-facets .widget-search-facets__collection ul {
+        max-height: min(320px, 45vh);
+    }
 }
 
 @media screen and (max-width: @xSmallBreakpoint) {
+    .combined-facets {
+        padding: 12px;
+    }
 }
