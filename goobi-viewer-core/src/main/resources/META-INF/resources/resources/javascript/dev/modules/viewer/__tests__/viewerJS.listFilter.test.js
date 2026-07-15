@@ -162,3 +162,43 @@ describe('listFilter inputToggle click', () => {
         expect($('#filter-input').hasClass('in')).toBe(true);
     });
 });
+
+describe('listFilter in combined facets mode', () => {
+    function makeCombinedListFilter() {
+        document.body.innerHTML = `
+            <div class="combined-facets">
+                <div id="wrapper">
+                    <input id="filter-input" class="widget-search-facets__filter-input" type="text" />
+                    <button id="input-toggle">T</button>
+                    <h3 id="filter-header">Header</h3>
+                    <ul>
+                        <li class="filter-element"><a>Apple</a></li>
+                        <li class="filter-element"><a>Banana</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="outside">outside</div>`;
+
+        return new viewerJS.listFilter({
+            wrapper: '#wrapper',
+            input: $('#filter-input'),
+            inputToggle: $('#input-toggle'),
+            header: $('#filter-header'),
+            elements: $('.filter-element'),
+        });
+    }
+
+    test('header click does not toggle the filter input', () => {
+        makeCombinedListFilter();
+        $('#filter-header').trigger('click');
+        expect($('#filter-input').hasClass('in')).toBe(false);
+    });
+
+    test('clicks outside the sidebar do not close an open filter input', () => {
+        makeCombinedListFilter();
+        $('#input-toggle').trigger('click');
+        expect($('#filter-input').hasClass('in')).toBe(true);
+        $('#outside').trigger('click');
+        expect($('#filter-input').hasClass('in')).toBe(true);
+    });
+});

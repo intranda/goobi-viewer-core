@@ -61,6 +61,11 @@ var viewerJS = (function (viewer) {
             console.log('clicked on heading');
             event.stopImmediatePropagation();
 
+            // combined facets mode: the filter is toggled by its dedicated button only
+            if (this.config.input.closest('.combined-facets').length) {
+                return;
+            }
+
             var $input = this.config.input;
 
             this.resetFilters();
@@ -80,6 +85,10 @@ var viewerJS = (function (viewer) {
 
         // reset filter on body click
         $('body').on('click', (event) => {
+            // combined facets mode: the filter stays open until its button is clicked again
+            if (this.config.input.closest('.combined-facets').length) {
+                return;
+            }
             if ($('.widget-search-facets__filter-input').hasClass('in')) {
                 if (event.target.id == 'searchListFacetsWrapper' || $(event.target).closest('#searchListFacetsWrapper').length) {
                     return;

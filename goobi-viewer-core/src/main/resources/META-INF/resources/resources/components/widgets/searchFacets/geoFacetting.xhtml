@@ -19,6 +19,17 @@
                 <div class="widget widget-geofacetting">
                     <div class="widget__topbar widget-geofacetting__topbar">
                         <h2 class="widget__title widget-geofacetting__title">#{msg.widget_geofacetting__label}</h2>
+                        <!-- SECTION COLLAPSE (combined mode only, hidden as widget) -->
+                        <button
+                            type="button"
+                            class="btn btn--clean widget-search-facets__section-toggle"
+                            data-section-toggle="geoFacetting"
+                            aria-expanded="true"
+                            aria-label="#{msg.widget_geofacetting__label}">
+                            <util:icon
+                                icon="chevron-down"
+                                svgClass="widget-search-facets__section-toggle-icon-svg" />
+                        </button>
                         <div class="widget-geofacetting__item widget-geofacetting__actions">
                             <button
                                 type="button"
