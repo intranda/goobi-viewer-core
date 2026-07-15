@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -123,6 +124,7 @@ public class PdfHandler {
         if (se != null && StringUtils.isNotBlank(se.getLogid())) {
             sb.append(paramSep.getChar()).append("divID=").append(se.getLogid());
         }
+        sb.append(paramSep.getChar()).append("usePdfSource=").append(DataManager.getInstance().getConfiguration().isUsePdfSourceForPagePdfs());
 
         return sb.toString();
     }
@@ -218,7 +220,6 @@ public class PdfHandler {
         return sb.toString();
     }
 
-    
     public WatermarkHandler getWatermarkHandler() {
         return watermarkHandler;
     }
