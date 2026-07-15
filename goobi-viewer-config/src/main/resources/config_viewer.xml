@@ -254,7 +254,8 @@
         <metadataPdfEnabled>true</metadataPdfEnabled>
 
         <!-- pagePdfEnabled: if true, a special icon allows PDF download of single pages in the image view. Default is false. -->
-        <pagePdfEnabled>true</pagePdfEnabled>
+        <!-- usePdfSource determins whether the download of single page PDFs may use prerendered PDF files from the /pdf folder. If this switch is false, all single page PDF downloads are created directly from the image file -->
+        <pagePdfEnabled usePdfSource="true">true</pagePdfEnabled>
 
         <!-- downloadFolder: Folder for generated download files -->
         <downloadFolder>/opt/digiverso/viewer/download_pdf</downloadFolder>

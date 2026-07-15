@@ -4063,6 +4063,15 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * Allow single page PDF downloads to use prerendered page PDFs
+     * 
+     * @return true if prerendered PDFs may be used for single page PDF download. If false, the PDF is always generated from the image file
+     */
+    public boolean isUsePdfSourceForPagePdfs() {
+        return getLocalBoolean("pdf.pagePdfEnabled[@usePdfSource]", true);
+    }
+
+    /**
      * isDocHierarchyPdfEnabled.
      *
      * @should return correct value
@@ -5181,6 +5190,13 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("search.quickFilters[@enabled]", false);
     }
 
+    /**
+     * Builds the quick filter fields from the facet template named by {@link #getQuickFilterTemplateName()}. Range facet fields become date-range
+     * widgets; regular (untyped) facet fields become dropdowns. Hierarchical, geo and boolean facet fields are not supported as quick filters and are
+     * skipped.
+     *
+     * @return ordered list of quick filter fields
+     */
     public List<QuickFilterField> getQuickFilterFields() {
         List<QuickFilterField> result = new ArrayList<>();
         List<HierarchicalConfiguration<ImmutableNode>> elements = getLocalConfigurationsAt("search.quickFilters.filter");
