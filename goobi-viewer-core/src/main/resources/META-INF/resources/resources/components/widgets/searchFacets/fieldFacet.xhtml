@@ -22,6 +22,11 @@
             type="io.goobi.viewer.model.cms.pages.CMSPage"
             required="false"
             default="#{null}" />
+        <composite:attribute
+            name="headingLevel"
+            type="java.lang.String"
+            required="false"
+            default="2" />
     </composite:interface>
 
     <composite:implementation>
@@ -37,7 +42,8 @@
                     <div class="widget__topbar widget-search-facets__topbar">
                         <h2
                             class="widget__title widget-search-facets__title"
-                            data-heading="searchFacetFilter">
+                            data-heading="searchFacetFilter"
+                            aria-level="#{cc.attrs.headingLevel}">
                             #{msg[cc.attrs.field.concat('_DD')]}
                         </h2>
                         <!-- FILTER FACETS -->
@@ -60,11 +66,17 @@
                                     type="button"
                                     class="btn btn--clean widget-search-facets__filter-button"
                                     data-toggle="searchFacetFilter"
+                                    aria-expanded="false"
                                     aria-label="#{msg.placeholder__filter_search_results}">
                                     <util:icon
                                         icon="search"
                                         svgClass="widget__topbar-icon-svg widget-search-facets__topbar-icon-svg" />
                                 </button>
+                                <span
+                                    class="sr-only"
+                                    role="status"
+                                    data-filter-status=""
+                                    data-filter-status-label="#{msg.search__facets_filter_matches}" />
                             </div>
                         </ui:fragment>
                         <!-- SECTION COLLAPSE -->
@@ -260,7 +272,7 @@
                                             </span>
                                             <f:passThroughAttribute
                                                 name="aria-label"
-                                                value="#{msg[cc.attrs.field.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                value="#{msg[cc.attrs.field.concat('_DD')]}: #{facet.translatedLabel} (#{facet.count})" />
                                         </h:outputLink>
                                         <!-- NEGATIVE (EXCLUDE) SELECTION -->
                                         <h:outputLink

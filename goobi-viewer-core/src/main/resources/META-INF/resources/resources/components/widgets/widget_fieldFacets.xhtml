@@ -55,11 +55,17 @@
                                         type="button"
                                         class="btn btn--clean widget-search-facets__filter-button"
                                         data-toggle="searchFacetFilter"
+                                        aria-expanded="false"
                                         aria-label="#{msg.placeholder__filter_search_results}">
                                         <util:icon
                                             icon="search"
                                             svgClass="widget__topbar-icon-svg widget-search-facets__topbar-icon-svg" />
                                     </button>
+                                    <span
+                                        class="sr-only"
+                                        role="status"
+                                        data-filter-status=""
+                                        data-filter-status-label="#{msg.search__facets_filter_matches}" />
                                 </div>
                             </ui:fragment>
                         </div>
@@ -108,18 +114,26 @@
                                         <!-- POSITIVE (INCLUDE) SELECTION -->
                                         <h:outputLink
                                             value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/-/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.urlEscapedLink}/">
-                                            <span class="widget-search-facets__list-item-include" aria-hidden="true">+</span>
+                                            <span
+                                                class="widget-search-facets__list-item-include"
+                                                aria-hidden="true">
+                                                +
+                                            </span>
                                             #{msg[facet.label]} (#{facet.count})
                                             <f:passThroughAttribute
                                                 name="aria-label"
-                                                value="#{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                value="#{msg[field.concat('_DD')]}: #{facet.translatedLabel} (#{facet.count})" />
                                         </h:outputLink>
                                         <!-- NEGATIVE (EXCLUDE) SELECTION -->
                                         <h:outputLink
                                             styleClass="widget-search-facets__list-item-exclude-link"
                                             value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/-/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.excludeUrlEscapedLink}/"
                                             title="#{msg.searchOperator_NOT}: #{facet.translatedLabel}">
-                                            <span class="widget-search-facets__list-item-exclude" aria-hidden="true">&#8722;</span>
+                                            <span
+                                                class="widget-search-facets__list-item-exclude"
+                                                aria-hidden="true">
+                                                &#8722;
+                                            </span>
                                             <f:passThroughAttribute
                                                 name="aria-label"
                                                 value="#{msg.searchOperator_NOT} #{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />

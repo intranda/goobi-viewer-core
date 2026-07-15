@@ -11,6 +11,18 @@
         flex-wrap: wrap;
         align-items: center;
         gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    &__list-item {
+        display: inline-flex;
+        max-width: 100%;
+
+        &.-overflow {
+            display: none;
+        }
     }
 
     /* nested under the list to win over the generic ".widget__body a { display: block }" rule */
@@ -50,10 +62,6 @@
         &.-excluded .active-facets-badges__badge-label {
             text-decoration: line-through;
             text-decoration-thickness: 2px;
-        }
-
-        &.-overflow {
-            display: none;
         }
     }
 

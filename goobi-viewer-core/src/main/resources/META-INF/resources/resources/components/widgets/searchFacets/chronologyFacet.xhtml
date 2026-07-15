@@ -20,6 +20,11 @@
             type="io.goobi.viewer.model.cms.pages.CMSPage"
             required="false"
             default="#{null}" />
+        <composite:attribute
+            name="headingLevel"
+            type="java.lang.String"
+            required="false"
+            default="2" />
     </composite:interface>
 
     <!-- COMPONENT CONTENT -->
@@ -33,7 +38,11 @@
             <div class="widget widget-chronology-slider">
                 <div class="widget__topbar widget-chronology-slider__topbar">
                     <div class="widget-chronology-slider__item chronology-slider-label">
-                        <h2 class="widget__title widget-chronology-slider__title">#{msg.widgetChronology_label}: #{msg[cc.attrs.field]}</h2>
+                        <h2
+                            class="widget__title widget-chronology-slider__title"
+                            aria-level="#{cc.attrs.headingLevel}">
+                            #{msg.widgetChronology_label}: #{msg[cc.attrs.field]}
+                        </h2>
                     </div>
                     <div class="widget-chronology-slider__item chronology-slider-actions">
                         <div

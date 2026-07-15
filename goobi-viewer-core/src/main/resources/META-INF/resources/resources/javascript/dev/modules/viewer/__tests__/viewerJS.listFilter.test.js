@@ -27,6 +27,7 @@ function makeListFilter() {
         <div id="wrapper">
             <input id="filter-input" type="text" />
             <button id="input-toggle">T</button>
+            <span id="filter-status" role="status" data-filter-status="" data-filter-status-label="{0} sichtbar"></span>
             <h3 id="filter-header">Header</h3>
             <ul>
                 <li class="filter-element"><a>Apple</a></li>
@@ -151,6 +152,66 @@ describe('listFilter header click (default mode)', () => {
         makeListFilter();
         $('#filter-header').trigger('click');
         expect($('#filter-input').hasClass('in')).toBe(true);
+    });
+});
+
+describe('listFilter aria-expanded on the input toggle', () => {
+    test('reflects the closed state after construction', () => {
+        makeListFilter();
+        expect($('#input-toggle').attr('aria-expanded')).toBe('false');
+    });
+
+    test('switches to true when the toggle opens the input and back to false on the second click', () => {
+        makeListFilter();
+        $('#input-toggle').trigger('click');
+        expect($('#input-toggle').attr('aria-expanded')).toBe('true');
+        $('#input-toggle').trigger('click');
+        expect($('#input-toggle').attr('aria-expanded')).toBe('false');
+    });
+
+    test('switches to false when the filter is reset (e.g. via Escape)', () => {
+        const lf = makeListFilter();
+        $('#input-toggle').trigger('click');
+        lf.resetFilters();
+        expect($('#input-toggle').attr('aria-expanded')).toBe('false');
+    });
+
+    test('stays in sync when the header toggles the input in default mode', () => {
+        makeListFilter();
+        $('#filter-header').trigger('click');
+        expect($('#input-toggle').attr('aria-expanded')).toBe('true');
+    });
+});
+
+describe('listFilter status announcement', () => {
+    test('announces the number of visible entries after filtering', () => {
+        makeListFilter();
+        $('#filter-input').val('ap');
+        _filterSubscriber();
+        expect(document.getElementById('filter-status').textContent).toBe('2 sichtbar');
+    });
+
+    test('announces zero matches', () => {
+        makeListFilter();
+        $('#filter-input').val('zzz');
+        _filterSubscriber();
+        expect(document.getElementById('filter-status').textContent).toBe('0 sichtbar');
+    });
+
+    test('clears the announcement when the input is emptied', () => {
+        makeListFilter();
+        $('#filter-input').val('ap');
+        _filterSubscriber();
+        $('#filter-input').val('');
+        _filterSubscriber();
+        expect(document.getElementById('filter-status').textContent).toBe('');
+    });
+
+    test('does not fail when no status element is present', () => {
+        makeListFilter();
+        document.getElementById('filter-status').remove();
+        $('#filter-input').val('ap');
+        expect(() => _filterSubscriber()).not.toThrow();
     });
 });
 

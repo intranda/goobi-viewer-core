@@ -60,16 +60,20 @@
                                 <searchFacetsComponent:chronologyFacet
                                     field="#{facetField}"
                                     index="#{facetStatus.index}"
-                                    cmsPage="#{cc.attrs.cmsPage}" />
+                                    cmsPage="#{cc.attrs.cmsPage}"
+                                    headingLevel="#{cc.attrs.mode eq 'combined' ? '3' : '2'}" />
                             </c:when>
                             <c:when test="#{searchBean.facets.geoFacetFields.contains(facetField)}">
-                                <searchFacetsComponent:geoFacetting cmsPage="#{cc.attrs.cmsPage}" />
+                                <searchFacetsComponent:geoFacetting
+                                    cmsPage="#{cc.attrs.cmsPage}"
+                                    headingLevel="#{cc.attrs.mode eq 'combined' ? '3' : '2'}" />
                             </c:when>
                             <c:when test="#{searchBean.facets.allAvailableFacets.containsKey(facetField)}">
                                 <searchFacetsComponent:fieldFacet
                                     field="#{facetField}"
                                     index="#{facetStatus.index}"
-                                    cmsPage="#{cc.attrs.cmsPage}" />
+                                    cmsPage="#{cc.attrs.cmsPage}"
+                                    headingLevel="#{cc.attrs.mode eq 'combined' ? '3' : '2'}" />
                             </c:when>
                         </c:choose>
                     </c:forEach>

@@ -54,17 +54,29 @@ var viewerJS = (function (viewer) {
 
         var cutoff = rowTops[settings.maxRows];
         var hiddenBadges = badges.filter((badge) => badge.offsetTop >= cutoff);
-        hiddenBadges.forEach((badge) => badge.classList.add(settings.hiddenClass));
+        hiddenBadges.forEach((badge) => _rowElement(badge).classList.add(settings.hiddenClass));
 
         var moreButton = document.createElement('button');
         moreButton.type = 'button';
         moreButton.className = settings.moreButtonClass;
         moreButton.textContent = (wrapper.dataset.moreLabel || '+{0}').replace('{0}', hiddenBadges.length);
+        var mount = moreButton;
+        if (wrapper.tagName === 'UL' || wrapper.tagName === 'OL') {
+            mount = document.createElement('li');
+            mount.className = 'active-facets-badges__list-item';
+            mount.appendChild(moreButton);
+        }
         moreButton.addEventListener('click', function () {
-            hiddenBadges.forEach((badge) => badge.classList.remove(settings.hiddenClass));
-            moreButton.remove();
+            hiddenBadges.forEach((badge) => _rowElement(badge).classList.remove(settings.hiddenClass));
+            // the button removes itself while focused: hand focus to the first revealed badge
+            hiddenBadges[0].focus();
+            mount.remove();
         });
-        wrapper.appendChild(moreButton);
+        wrapper.appendChild(mount);
+    }
+
+    function _rowElement(badge) {
+        return badge.closest('li') || badge;
     }
 
     return viewer;

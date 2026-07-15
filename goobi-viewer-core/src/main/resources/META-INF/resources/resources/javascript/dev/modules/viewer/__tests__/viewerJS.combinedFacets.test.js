@@ -178,6 +178,20 @@ describe('viewerJS.combinedFacets', function () {
         expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(false);
     });
 
+    test('should move focus to the re-rendered collapse link after an ajax re-render', function () {
+        setupDom();
+        const section = getSection('FIELD_A');
+        section.querySelector('.widget__body').innerHTML = '<button data-collapse-link="collapse-link-0">Alle anzeigen</button>';
+        viewerJS.combinedFacets.init();
+
+        // simulate the f:ajax re-render: old button is replaced by a new one with the same marker
+        const oldButton = section.querySelector('[data-collapse-link]');
+        section.querySelector('.widget__body').innerHTML = '<button data-collapse-link="collapse-link-0">Weniger anzeigen</button>';
+        _ajaxHandler({ source: oldButton });
+
+        expect(document.activeElement).toBe(section.querySelector('[data-collapse-link]'));
+    });
+
     test('should ignore ajax events without a collapse link source', function () {
         setupDom();
         viewerJS.combinedFacets.init();

@@ -43,6 +43,10 @@ var viewerJS = (function (viewer) {
                 _ajaxSubscription = viewer.jsfAjax.success.subscribe(function (event) {
                     if (event.source && event.source.getAttribute && event.source.getAttribute('data-collapse-link')) {
                         _initSections(settings);
+                        var successor = document.querySelector('[data-collapse-link="' + event.source.getAttribute('data-collapse-link') + '"]');
+                        if (successor) {
+                            successor.focus();
+                        }
                     }
                 });
             }
