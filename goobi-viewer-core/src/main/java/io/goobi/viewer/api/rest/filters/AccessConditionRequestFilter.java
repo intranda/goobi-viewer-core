@@ -120,7 +120,7 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
             throws ServiceNotAllowedException {
         // logger.trace("filterForAccessConditions: {}", request.getSession().getId()); //NOSONAR Debug
         String contentFileName = StringTools.decodeUrl(inContentFileName);
-        if (contentFileName.endsWith(FilenameUtils.EXTENSION_SEPARATOR_STR)) {
+        if (StringUtils.isNotBlank(contentFileName) && contentFileName.endsWith(FilenameUtils.EXTENSION_SEPARATOR_STR)) {
             contentFileName = contentFileName.substring(0, contentFileName.length() - FilenameUtils.EXTENSION_SEPARATOR_STR.length());
         }
         boolean access = false;
