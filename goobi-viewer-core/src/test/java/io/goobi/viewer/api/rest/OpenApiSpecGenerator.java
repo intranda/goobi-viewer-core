@@ -107,15 +107,19 @@ public final class OpenApiSpecGenerator {
      * Build-time entry point that generates OpenAPI specifications for all API versions offline
      * (without a servlet container) so they can be validated in CI. For each version (v1, v2),
      * builds the spec, fails fast if paths are empty (via {@link #requireNonEmptyPaths}),
-     * and writes the result as JSON to {@code target/openapi/openapi-v{1,2}.json} for downstream
+     * and writes the result as JSON to {@code &lt;outputDir&gt;/openapi-v{1,2}.json} for downstream
      * validation (e.g., by Spectral).
      *
-     * @param args unused
+     * @param args optional single argument: the output directory. Must be passed as an absolute
+     *             path (e.g. Maven's {@code ${project.build.directory}/openapi}) because exec:java
+     *             runs in-process and a relative path would resolve against the JVM working
+     *             directory (the reactor root in a multi-module build), not the module. Falls back
+     *             to {@code target/openapi} when absent.
      * @throws OpenApiConfigurationException on scanner/configuration errors
      * @throws IOException on write errors
      */
     public static void main(String[] args) throws OpenApiConfigurationException, IOException {
-        Path outDir = Paths.get("target", "openapi");
+        Path outDir = args.length > 0 && !args[0].isBlank() ? Paths.get(args[0]) : Paths.get("target", "openapi");
         Files.createDirectories(outDir);
         for (String version : new String[] { "v1", "v2" }) {
             OpenAPI openApi = buildOpenApi(version);

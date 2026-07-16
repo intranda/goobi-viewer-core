@@ -1162,6 +1162,13 @@
 							<skip>${skipOpenApiValidation}</skip>
 							<classpathScope>test</classpathScope>
 							<mainClass>io.goobi.viewer.api.rest.OpenApiSpecGenerator</mainClass>
+							<!-- Absolute output dir: exec:java runs in-process, so a relative path would
+							     resolve against the JVM working directory (the reactor root in a
+							     multi-module build), not this module. Must match the (module-relative)
+							     path the Spectral npm script reads (target/openapi). -->
+							<arguments>
+								<argument>${project.build.directory}/openapi</argument>
+							</arguments>
 						</configuration>
 					</execution>
 				</executions>
