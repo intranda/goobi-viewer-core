@@ -32,7 +32,7 @@ RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula selec
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
 	rm -rf ${CATALINA_HOME}/webapps/*
 
-RUN ["/bin/bash", "-c", "mkdir -p /opt/digiverso/{config/bin,indexer,logs,viewer/{abbyy,cmdi,deleted_mets,hotfolder,media,orig_lido,orig_denkxweb,ccess,ugc,alto,cms_media,error_mets,mix,pdf,tei,mei,updated_mets,cache,config,fulltext,indexed_lido,indexed_mets,indexed_ead,indexed_statistics,oai/token,ptif,themes,wc,bin}}"]
+RUN ["/bin/bash", "-c", "mkdir -p /opt/digiverso/{logs,viewer/{abbyy,cmdi,deleted_mets,hotfolder,media,orig_lido,orig_denkxweb,ccess,ugc,alto,cms_media,error_mets,mix,pdf,tei,mei,updated_mets,cache,config,fulltext,indexed_lido,indexed_mets,indexed_ead,indexed_statistics,oai/token,ptif,themes,wc,bin}}"]
 RUN ["/bin/bash", "-c", "mkdir -p /viewer-template/{config,oai}" ]
 RUN mkdir -p ${CATALINA_HOME}/conf/Catalina/localhost/ && mkdir -p ${CATALINA_HOME}/webapps/viewer
 
