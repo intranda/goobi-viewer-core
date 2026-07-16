@@ -67,6 +67,7 @@ public class GenerateCollectionArchivesMessageHandler implements MessageHandler<
             return MessageStatus.FINISH;
         }
 
+        logger.info("Collection archive dispatch started.");
         CollectionArchiveService service = new CollectionArchiveService(config);
         int enqueued = 0;
         try {
@@ -84,6 +85,7 @@ public class GenerateCollectionArchivesMessageHandler implements MessageHandler<
             return MessageStatus.ERROR;
         }
 
+        logger.info("Collection archive dispatch finished: enqueued {} worker job(s).", enqueued);
         message.getProperties().put("result", "Enqueued %s collection archive job(s)".formatted(enqueued));
         return MessageStatus.FINISH;
     }
