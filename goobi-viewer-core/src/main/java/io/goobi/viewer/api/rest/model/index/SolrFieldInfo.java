@@ -57,7 +57,9 @@ public class SolrFieldInfo {
     @Schema(description = "Indicates whether this field is configured as 'stored' (value is readable) in the Solr schema")
     private boolean stored = true;
 
-    @Schema(description = "Field name translation for available languages", example = "en: Title, de: Titel")
+    // Example must be a valid JSON object literal matching the Map<String, String> type, otherwise
+    // Swagger/OpenAPI validators flag a type mismatch against the inferred "object" schema.
+    @Schema(description = "Field name translation for available languages", example = "{\"en\": \"Title\", \"de\": \"Titel\"}")
     @JsonInclude(Include.NON_NULL)
     private Map<String, String> translations = null;
 

@@ -210,7 +210,6 @@ public class RecordPagesResource {
     @ApiResponse(responseCode = "404", description = "Record or page not found")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
-            @Parameter(description = "Page numer (1-based") @PathParam("pageNo") Integer pageNo,
             @Parameter(
                     description = "Build mode for manifest to select type of resources to include."
                             + " Default is 'iiif' which returns the full IIIF manifest with all resources."
