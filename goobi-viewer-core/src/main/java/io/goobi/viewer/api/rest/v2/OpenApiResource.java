@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -93,7 +94,22 @@ public class OpenApiResource {
                 .readAllResources(false);
 
         Reader reader = new Reader(oasConfig);
-        return reader.read(Stream.of(
+        return reader.read(getResourceClasses());
+
+    }
+
+    /**
+     * Returns the resource classes published by the v2 API.
+     *
+     * <p>Exposed as the single source of truth for the v2 resource set so the build-time
+     * {@code OpenApiSpecGenerator} produces a spec identical to what this resource serves at
+     * runtime, instead of duplicating (and risking drift from) the class list.</p>
+     *
+     * @return set of the nine v2 resource classes
+     * @should expose exactly the nine published v2 resource classes
+     */
+    public static Set<Class<?>> getResourceClasses() {
+        return Stream.of(
                 CMSMediaImageResource3.class,
                 CollectionsResource.class,
                 ExternalImageResource.class,
@@ -102,8 +118,7 @@ public class OpenApiResource {
                 RecordFilesResource.class,
                 RecordPagesResource.class,
                 RecordResource.class,
-                RecordSectionsResource.class).collect(Collectors.toSet()));
-
+                RecordSectionsResource.class).collect(Collectors.toSet());
     }
 
     private static List<String> getApiUrls() {

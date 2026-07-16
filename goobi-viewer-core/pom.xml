@@ -43,6 +43,9 @@
 		    to ${skipTests}, so CI's `-DskipTests=false` runs both.
 		-->
 		<skipJsTests>${skipTests}</skipJsTests>
+		<!-- Gates offline OpenAPI generation + Spectral validation. Defaults to the JS-test
+		     gate so it runs in CI (-DskipTests=false) and is skipped in default local builds. -->
+		<skipOpenApiValidation>${skipJsTests}</skipOpenApiValidation>
 		<frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
 		<frontend.node.version>v22.13.1</frontend.node.version>
 		<skipDependencyCheck>true</skipDependencyCheck>
@@ -909,6 +912,11 @@
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-annotations</ignoredUsedUndeclaredDependency>
 								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-models</ignoredUsedUndeclaredDependency>
 
+								<!-- io.swagger.v3.core.util.Json used by the build-time OpenApiSpecGenerator (test sources);
+								     the analyzer reports the non-jakarta coordinate (known jakarta/non-jakarta swap), so ignore both -->
+								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-core-jakarta</ignoredUsedUndeclaredDependency>
+								<ignoredUsedUndeclaredDependency>io.swagger.core.v3:swagger-core</ignoredUsedUndeclaredDependency>
+
 								<ignoredUsedUndeclaredDependency>org.glassfish.hk2.external:jakarta.inject</ignoredUsedUndeclaredDependency>
 								
 								<ignoredUsedUndeclaredDependency>de.intranda.digiverso.convert:epubconvert:jar:1.1.0-SNAPSHOT</ignoredUsedUndeclaredDependency>
@@ -1111,6 +1119,41 @@
 							<skipTests>${skipJsTests}</skipTests>
 						</configuration>
 					</execution>
+					<execution>
+						<id>spectral-openapi</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<phase>verify</phase>
+						<configuration>
+							<!-- Validate the generated OpenAPI specs (Task 3 output) with Spectral.
+							     Own skip flag overrides the plugin-level skipJsTests so it can be
+							     disabled independently, but enabling it still requires the JS tests
+							     (node/npm-install) to run, i.e. -DskipTests=false. -->
+							<arguments>run lint:openapi</arguments>
+							<skip>${skipOpenApiValidation}</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.6.3</version>
+				<executions>
+					<execution>
+						<id>generate-openapi-spec</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<skip>${skipOpenApiValidation}</skip>
+							<classpathScope>test</classpathScope>
+							<mainClass>io.goobi.viewer.api.rest.OpenApiSpecGenerator</mainClass>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 
@@ -1138,6 +1181,8 @@
 						     ever live outside the /dev/ tree. -->
 						<exclude>**/__tests__/**</exclude>
 						<exclude>**/*.test.js</exclude>
+						<!-- Build-only offline OpenAPI generator: must not ship in the -tests.jar. -->
+						<exclude>**/api/rest/OpenApiSpecGenerator.class</exclude>
 					</excludes>
 
 				</configuration>
