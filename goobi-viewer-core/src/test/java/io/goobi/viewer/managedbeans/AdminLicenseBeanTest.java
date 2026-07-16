@@ -71,6 +71,18 @@ class AdminLicenseBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see AdminLicenseBean#getNumRecordsWithAccessCondition(String)
+     * @verifies still count records whose access condition is only on a grouped metadata field
+     */
+    @Test
+    void getNumRecordsWithAccessCondition_shouldStillCountRecordsWithMetadataOnlyAccessCondition() throws Exception {
+        AdminLicenseBean bean = new AdminLicenseBean();
+        // "RESTRICTED" is carried by grouped metadata (and event) documents; the aggregation join must still resolve
+        // these to their top-level record via PI_TOPSTRUCT, otherwise metadata-only records would drop out (see #26795).
+        Assertions.assertTrue(bean.getNumRecordsWithAccessCondition("RESTRICTED") >= 1);
+    }
+
+    /**
      * @see AdminLicenseBean#createsOverrideCycle(LicenseType, List)
      * @verifies detect reciprocal override cycle
      */
