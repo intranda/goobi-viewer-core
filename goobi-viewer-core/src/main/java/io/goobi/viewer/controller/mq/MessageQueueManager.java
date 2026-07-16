@@ -117,7 +117,9 @@ public class MessageQueueManager {
     public static final String QUEUE_NAME_VIEWER = "viewer";
     public static final String QUEUE_NAME_PDF = "pdf";
     public static final String QUEUE_NAME_FRONTEND = "frontend";
-    public static final List<String> QUEUE_NAMES = List.of(QUEUE_NAME_VIEWER, QUEUE_NAME_PDF, QUEUE_NAME_FRONTEND);
+    /** Dedicated queue for per-collection BagIt archive generation, isolated so long-running builds cannot starve the other queues. */
+    public static final String QUEUE_NAME_ARCHIVES = "archives";
+    public static final List<String> QUEUE_NAMES = List.of(QUEUE_NAME_VIEWER, QUEUE_NAME_PDF, QUEUE_NAME_FRONTEND, QUEUE_NAME_ARCHIVES);
 
     private static final Logger logger = LogManager.getLogger(MessageQueueManager.class);
 
@@ -200,6 +202,7 @@ public class MessageQueueManager {
             return switch (type) {
                 case TaskType.PRERENDER_PDF -> QUEUE_NAME_PDF;
                 case TaskType.DOWNLOAD_EXTERNAL_RESOURCE -> QUEUE_NAME_FRONTEND;
+                case TaskType.GENERATE_COLLECTION_ARCHIVES, TaskType.GENERATE_COLLECTION_ARCHIVE -> QUEUE_NAME_ARCHIVES;
                 default -> QUEUE_NAME_VIEWER;
             };
         } catch (NullPointerException | IllegalArgumentException e) {

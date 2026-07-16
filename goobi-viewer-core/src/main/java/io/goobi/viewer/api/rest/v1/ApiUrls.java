@@ -152,6 +152,8 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
     public static final String COLLECTIONS_CONTENTASSIST = "/contentassist";
+    public static final String COLLECTIONS_ARCHIVE = "/collections/{field}/{collection}/archive";
+    public static final String COLLECTIONS_ARCHIVE_DOWNLOAD = "/download";
 
     public static final String DOWNLOADS = "/downloads";
     public static final String DOWNLOADS_EPUB = "/epub";

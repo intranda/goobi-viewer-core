@@ -36,6 +36,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -79,6 +80,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.cms.Highlight;
+import io.goobi.viewer.model.archive.ArchiveContentType;
+import io.goobi.viewer.model.archive.CollectionArchiveConfig;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.ITaskType;
@@ -5686,6 +5689,114 @@ public class Configuration extends AbstractConfiguration {
         return getSearchExportFormats().stream()
                 .filter(f -> name.equals(f.getName()) && f.isEnabled())
                 .findFirst();
+    }
+
+    /**
+     * Whether the per-collection BagIt archive generation feature is enabled at all.
+     *
+     * @should return correct value
+     * @return true if {@code <collectionArchives enabled="true">}, false otherwise (also the default)
+     */
+    public boolean isCollectionArchivesEnabled() {
+        return getLocalBoolean("collectionArchives[@enabled]", false);
+    }
+
+    /**
+     * Name of the folder (below {@code viewerHome}) in which generated per-collection BagIt archives are stored.
+     *
+     * @should return correct value
+     * @return the configured storage folder name; defaults to {@code collection_archives}
+     */
+    public String getCollectionArchivesFolder() {
+        return getLocalString("collectionArchives.storageFolder", "collection_archives");
+    }
+
+    /**
+     * Whether archives are also generated for sub-collections. When false (the default) only top-level collections get an archive.
+     *
+     * @should return correct value
+     * @return true if sub-collection archives should be generated
+     */
+    public boolean isCollectionArchivesIncludeSubcollections() {
+        return getLocalBoolean("collectionArchives.includeSubcollections", false);
+    }
+
+    /**
+     * Returns the collection Solr fields for which a {@code <collectionArchives><default field="…">} block is configured.
+     *
+     * @return list of configured archive collection fields; falls back to {@link #getConfiguredCollectionFields()} when none are configured
+     */
+    public List<String> getConfiguredArchiveCollectionFields() {
+        List<String> list = getLocalList("collectionArchives.default[@field]");
+        if (list == null || list.isEmpty()) {
+            return getConfiguredCollectionFields();
+        }
+        return list;
+    }
+
+    /**
+     * Returns the effective set of enabled archive content types for a single collection, resolving the {@code <default>} block for the
+     * given field and merging the matching {@code <collection name="…" field="…">} sparse override on top of it.
+     *
+     * @param field the collection Solr field (e.g. {@code DC}); may not be null
+     * @param collectionName the collection name; when null or with no matching override, the pure default is returned
+     * @return the resolved configuration; never null (an empty enabled-type set means "no archive for this collection")
+     * @should return default configuration when no override exists
+     * @should merge override onto default
+     */
+    public CollectionArchiveConfig getCollectionArchiveConfig(String field, String collectionName) {
+        HierarchicalConfiguration<ImmutableNode> defaultNode = getArchiveConfigurationNode("collectionArchives.default", field, null);
+        EnumSet<ArchiveContentType> enabled = EnumSet.noneOf(ArchiveContentType.class);
+        if (defaultNode != null) {
+            for (ArchiveContentType type : ArchiveContentType.values()) {
+                if (defaultNode.getBoolean(type.getConfigKey(), false)) {
+                    enabled.add(type);
+                }
+            }
+        }
+        if (collectionName == null) {
+            return new CollectionArchiveConfig(field, null, enabled);
+        }
+        // Sparse override: a per-collection block only changes the toggles it actually contains. A present toggle set to false disables a
+        // default-enabled type; an omitted toggle is inherited from the default.
+        HierarchicalConfiguration<ImmutableNode> overrideNode =
+                getArchiveConfigurationNode("collectionArchives.collection", field, collectionName);
+        if (overrideNode != null) {
+            for (ArchiveContentType type : ArchiveContentType.values()) {
+                if (overrideNode.containsKey(type.getConfigKey())) {
+                    if (overrideNode.getBoolean(type.getConfigKey(), false)) {
+                        enabled.add(type);
+                    } else {
+                        enabled.remove(type);
+                    }
+                }
+            }
+        }
+        return new CollectionArchiveConfig(field, collectionName, enabled);
+    }
+
+    /**
+     * Finds a {@code <collectionArchives>} sub-node matching the given field and (optionally) collection name.
+     *
+     * @param path the base config path ({@code collectionArchives.default} or {@code collectionArchives.collection})
+     * @param field the required {@code [@field]} value
+     * @param collectionName the required {@code [@name]} value, or null to match by field only
+     * @return the matching node, or null if none matches
+     */
+    private HierarchicalConfiguration<ImmutableNode> getArchiveConfigurationNode(String path, String field, String collectionName) {
+        List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt(path);
+        if (nodes == null) {
+            return null;
+        }
+        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
+            if (!field.equals(node.getString("[@field]"))) {
+                continue;
+            }
+            if (collectionName == null || collectionName.equals(node.getString("[@name]"))) {
+                return node;
+            }
+        }
+        return null;
     }
 
     /**

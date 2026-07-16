@@ -102,6 +102,18 @@
                                                 </a>
                                             </div>
                                         </h:panelGroup>
+
+                                        <!-- COLLECTION ARCHIVE DOWNLOAD (logged-in users only) -->
+                                        <h:panelGroup
+                                            rendered="#{userBean.loggedIn and collectionArchiveBean.isAvailable(browseDcElement)}">
+                                            <div class="collection__archive-download">
+                                                <a
+                                                    href="#{collectionArchiveBean.getDownloadUrl(browseDcElement)}"
+                                                    title="#{msg[browseDcElement.label]}: #{msg.collectionArchive_download}">
+                                                    <util:icon icon="download" />
+                                                </a>
+                                            </div>
+                                        </h:panelGroup>
                                     </div>
 
                                     <!-- DESCRIPTION -->

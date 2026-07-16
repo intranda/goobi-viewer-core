@@ -64,7 +64,11 @@ public enum TaskType implements ITaskType {
     /** Check the pdf-download folder and delete all pdf files which are not locked and last accessed 15 days ago. */
     PURGE_EXPIRED_DOWNLOAD_PDFS("0 0 3 * * ?"),
     /** Create a centered Voyager SVX scene file for a GLTF/GLB 3D object if none exists yet. */
-    CENTER_3D_OBJECT("");
+    CENTER_3D_OBJECT(""),
+    /** Scheduled dispatcher: fan out one {@link #GENERATE_COLLECTION_ARCHIVE} message per top-level collection. */
+    GENERATE_COLLECTION_ARCHIVES("0 30 2 * * ?"),
+    /** Worker: (re)generate the BagIt archive for a single collection if its content changed. */
+    GENERATE_COLLECTION_ARCHIVE("");
 
     private final String defaultCronExpression;
 

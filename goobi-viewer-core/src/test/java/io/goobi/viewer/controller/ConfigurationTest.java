@@ -56,6 +56,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
+import io.goobi.viewer.model.archive.ArchiveContentType;
+import io.goobi.viewer.model.archive.CollectionArchiveConfig;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -3062,6 +3064,59 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(ris.isXsltBased());
         assertTrue(ris.getFields().isEmpty());
         assertEquals("solr2ris.xsl", ris.getXslt());
+    }
+
+    /**
+     * @see Configuration#isCollectionArchivesEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    void isCollectionArchivesEnabled_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isCollectionArchivesEnabled());
+    }
+
+    /**
+     * @see Configuration#getCollectionArchivesFolder()
+     * @verifies return correct value
+     */
+    @Test
+    void getCollectionArchivesFolder_shouldReturnCorrectValue() {
+        assertEquals("archives_test", DataManager.getInstance().getConfiguration().getCollectionArchivesFolder());
+    }
+
+    /**
+     * @see Configuration#isCollectionArchivesIncludeSubcollections()
+     * @verifies return correct value
+     */
+    @Test
+    void isCollectionArchivesIncludeSubcollections_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isCollectionArchivesIncludeSubcollections());
+    }
+
+    /**
+     * @see Configuration#getCollectionArchiveConfig(String, String)
+     * @verifies return default configuration when no override exists
+     */
+    @Test
+    void getCollectionArchiveConfig_shouldReturnDefaultConfigurationWhenNoOverrideExists() {
+        CollectionArchiveConfig config = DataManager.getInstance().getConfiguration().getCollectionArchiveConfig("DC", null);
+        assertEquals(Set.of(ArchiveContentType.METADATA_SOURCE, ArchiveContentType.IMAGES), config.getEnabledTypes());
+
+        // A collection without its own override block resolves to the pure default
+        CollectionArchiveConfig unknown = DataManager.getInstance().getConfiguration().getCollectionArchiveConfig("DC", "unknown");
+        assertEquals(Set.of(ArchiveContentType.METADATA_SOURCE, ArchiveContentType.IMAGES), unknown.getEnabledTypes());
+    }
+
+    /**
+     * @see Configuration#getCollectionArchiveConfig(String, String)
+     * @verifies merge override onto default
+     */
+    @Test
+    void getCollectionArchiveConfig_shouldMergeOverrideOntoDefault() {
+        // "bla" adds ALTO fulltexts and explicitly disables images; metadata is inherited from the default
+        CollectionArchiveConfig config = DataManager.getInstance().getConfiguration().getCollectionArchiveConfig("DC", "bla");
+        assertEquals(Set.of(ArchiveContentType.METADATA_SOURCE, ArchiveContentType.FULLTEXT_ALTO), config.getEnabledTypes());
+        assertFalse(config.isEnabled(ArchiveContentType.IMAGES));
     }
 
     /**

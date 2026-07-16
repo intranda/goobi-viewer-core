@@ -680,8 +680,23 @@
             
         <!-- true if opening a collection containing only a single work should redirect to that work -->
         <redirectToWork>false</redirectToWork>
-    
+
 	</collections>
+
+	<!-- ##### PER-COLLECTION BAGIT ARCHIVE CONFIGURATION ##### -->
+	<collectionArchives enabled="true">
+		<storageFolder>archives_test</storageFolder>
+		<includeSubcollections>true</includeSubcollections>
+		<default field="DC">
+			<metadataSourceFormats>true</metadataSourceFormats>
+			<images>true</images>
+		</default>
+		<!-- sparse override: adds ALTO fulltexts, disables images; metadata is inherited -->
+		<collection name="bla" field="DC">
+			<fulltextAlto>true</fulltextAlto>
+			<images>false</images>
+		</collection>
+	</collectionArchives>
 
 	<metadata>
 		<!-- metadataView: whitelist with metadata fields, that are displayed 
