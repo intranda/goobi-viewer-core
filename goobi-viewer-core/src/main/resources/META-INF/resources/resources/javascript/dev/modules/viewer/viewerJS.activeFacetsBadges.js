@@ -19,7 +19,7 @@
  * Limits the active facets badge list to a maximum number of rows; a "+N more"
  * button ({0} = hidden count, template from data-more-label) reveals the rest.
  *
- * @version 26.07
+ * @version 26.06
  * @module viewerJS.activeFacetsBadges
  */
 var viewerJS = (function (viewer) {
@@ -36,6 +36,8 @@ var viewerJS = (function (viewer) {
 
     var _resizeBound = false;
     var _resizeTimer = null;
+    // the resize recalculation uses the settings of the latest init() call for all
+    // wrappers; per-wrapper configs are not supported
     var _lastSettings = null;
 
     viewer.activeFacetsBadges = {

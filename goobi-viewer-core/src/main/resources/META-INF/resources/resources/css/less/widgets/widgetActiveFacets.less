@@ -1,6 +1,6 @@
 /* ==============================================================
    Widget Active Facets
-   Style declarations for searchFacets/activeFacetsBadges.xhtml
+   style declarations for searchFacets/activeFacetsBadges.xhtml
    ==============================================================*/
 
 /* BLOCK */
@@ -36,7 +36,8 @@
         gap: 6px;
         max-width: 100%;
         height: 28px;
-        padding: 0 6px 0 12px;
+        padding-block: 0;
+        padding-inline: 12px 6px;
         font-size: @fontMedium;
         font-weight: 500;
         line-height: normal;
@@ -54,7 +55,7 @@
             --active-facets-badge-background: var(--active-facets-badge-background-hover);
             color: var(--active-facets-badge-color);
             border-color: var(--active-facets-badge-color);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+            box-shadow: var(--active-facets-badge-shadow-hover);
             text-decoration: none;
 
             .active-facets-badges__badge-remove {
@@ -173,12 +174,15 @@
     }
 }
 
+/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
 
+/* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
 }
 
+/* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
     .widget-active-facets__reset:hover .widget-active-facets__reset-label,
     .widget-active-facets__reset:focus .widget-active-facets__reset-label {
@@ -188,5 +192,6 @@
     }
 }
 
+/* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
 }

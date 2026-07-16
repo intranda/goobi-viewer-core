@@ -19,7 +19,7 @@
  * Section toggles of the combined facets container: collapse/expand state is
  * persisted in sessionStorage and re-initialized after f:ajax section re-renders.
  *
- * @version 26.07
+ * @version 26.06
  * @module viewerJS.combinedFacets
  */
 var viewerJS = (function (viewer) {
@@ -40,10 +40,13 @@ var viewerJS = (function (viewer) {
             var settings = Object.assign({}, _defaults, config);
             _initSections(settings);
             if (!_ajaxSubscription && typeof viewer.jsfAjax !== 'undefined') {
+                // viewerJS.js re-runs initFacetsFilters on the same trigger; this subscription
+                // only restores the section state and focus of the re-rendered widget
                 _ajaxSubscription = viewer.jsfAjax.success.subscribe(function (event) {
-                    if (event.source && event.source.getAttribute && event.source.getAttribute('data-collapse-link')) {
+                    var collapseLink = event.source && event.source.getAttribute && event.source.getAttribute('data-collapse-link');
+                    if (collapseLink) {
                         _initSections(settings);
-                        var successor = document.querySelector('[data-collapse-link="' + event.source.getAttribute('data-collapse-link') + '"]');
+                        var successor = document.querySelector('[data-collapse-link="' + collapseLink + '"]');
                         if (successor) {
                             successor.focus();
                         }

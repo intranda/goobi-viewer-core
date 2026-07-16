@@ -31,7 +31,7 @@
                     <h2 class="widget__title widget-active-facets__title">#{msg.search__active_facets__title}</h2>
                     <h:outputLink
                         styleClass="widget-active-facets__reset"
-                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeResultGroupName}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/-/#{navigationHelper.subThemeQueryParam}"
+                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/-/#{navigationHelper.subThemeQueryParam}"
                         title="#{msg.search__combined_facets__reset_all}">
                         <util:icon-text
                             icon="x"

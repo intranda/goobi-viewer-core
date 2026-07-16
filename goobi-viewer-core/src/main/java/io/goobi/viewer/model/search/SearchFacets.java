@@ -605,6 +605,7 @@ public class SearchFacets implements Serializable {
      * @should skip value pairs if field or value missing
      * @should skip facet links with leading semicolon caused by triple separators in URL
      * @should parse exclusion marker correctly
+     * @should skip invalid facet links carrying an exclusion marker
      */
     static void parseFacetString(final String facetString, final List<IFacetItem> facetItems, final Map<String, String> labelMap) {
         if (facetItems == null) {
@@ -627,6 +628,12 @@ public class SearchFacets implements Serializable {
         String[] facetStringSplit = useFacetString.split(";;");
         for (final String fl : facetStringSplit) {
             String facetLink = fl != null ? fl.trim() : "";
+            // Strip the exclusion marker before validating so that invalid links hiding behind
+            // the marker (e.g. '!:foo') are caught by the guard below
+            boolean itemExcluded = facetLink.startsWith(FacetItem.EXCLUDE_PREFIX);
+            if (itemExcluded) {
+                facetLink = facetLink.substring(FacetItem.EXCLUDE_PREFIX.length());
+            }
             // Skip empty, undefined, or structurally invalid links. Also skip links with a
             // leading ';', which occur when a bot-crawled URL contains triple separators
             // (';;;') — splitting on ';;' leaves one leftover ';' at the start of the next
@@ -642,10 +649,6 @@ public class SearchFacets implements Serializable {
                 continue;
             }
 
-            boolean itemExcluded = facetLink.startsWith(FacetItem.EXCLUDE_PREFIX);
-            if (itemExcluded) {
-                facetLink = facetLink.substring(FacetItem.EXCLUDE_PREFIX.length());
-            }
             if (!facetLink.contains(":")) {
                 facetLink = new StringBuilder(SolrConstants.DC).append(':').append(facetLink).toString();
             }

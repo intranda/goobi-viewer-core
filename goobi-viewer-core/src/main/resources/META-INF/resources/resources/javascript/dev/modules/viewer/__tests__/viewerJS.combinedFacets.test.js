@@ -154,11 +154,14 @@ describe('viewerJS.combinedFacets', function () {
         expect(getSection('FIELD_A').classList.contains('-section-collapsed')).toBe(true);
     });
 
-    test('should subscribe to the jsfAjax success stream only once', function () {
+    test('should subscribe to the jsfAjax success stream only once across repeated inits', function () {
         setupDom();
         viewerJS.combinedFacets.init();
+        expect(_ajaxHandler).not.toBeNull();
+        viewerJS.jsfAjax.success.subscribe.mockClear();
         viewerJS.combinedFacets.init();
-        expect(viewerJS.jsfAjax.success.subscribe).toHaveBeenCalledTimes(1);
+        viewerJS.combinedFacets.init();
+        expect(viewerJS.jsfAjax.success.subscribe).not.toHaveBeenCalled();
     });
 
     test('should rebind the toggle and restore collapsed state after an ajax section re-render', function () {

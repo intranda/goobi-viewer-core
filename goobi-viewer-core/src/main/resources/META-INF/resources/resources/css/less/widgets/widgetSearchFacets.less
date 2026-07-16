@@ -68,14 +68,6 @@
         }
     }
 
-    &__list-item-exclude-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 24px;
-        min-height: 24px;
-    }
-
     /* nested under the list item to win over the generic ".widget__body a { display: block }" rule */
     &__list-item &__list-item-link {
         display: flex;
@@ -118,7 +110,7 @@
         overflow: hidden;
         color: var(--facet-control-color);
         border: 0 solid var(--facet-control-border);
-        border-radius: 3px;
+        border-radius: var(--facet-control-radius);
         opacity: 0;
         /* opacity is delayed against width so no half-revealed box shows */
         transition:
@@ -262,6 +254,8 @@
     &__section-toggle {
         display: none;
     }
+    /* hidden without JS in BOTH modes: viewerJS.listFilter's enable() reveals the
+       wrapper via jQuery .show() when a value filter is configured */
     &__filter {
         display: none;
     }

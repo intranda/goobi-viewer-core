@@ -6,14 +6,14 @@
 
 /* BLOCK */
 .combined-facets {
+    --active-facets-badge-more-color: var(--combined-facets-accent);
+
     position: relative;
     padding: 24px;
     overflow-anchor: none;
     color: var(--combined-facets-color);
     background: var(--combined-facets-background);
     border-radius: var(--combined-facets-radius);
-
-    --active-facets-badge-more-color: var(--combined-facets-accent);
 
     /* ELEMENTS */
     &__head {
@@ -85,7 +85,7 @@
         gap: 5px;
     }
 
-    .active-facets-badges__list .active-facets-badges__badge {
+    .active-facets-badges__badge {
         --active-facets-badge-background: var(--combined-facets-badge-background);
         --active-facets-badge-color: var(--combined-facets-badge-color);
         --active-facets-badge-border: var(--combined-facets-badge-border);
@@ -93,7 +93,8 @@
         --active-facets-badge-radius: var(--combined-facets-radius);
         --active-facets-badge-contrast: var(--combined-facets-badge-contrast);
         height: 24px;
-        padding: 0 4px 0 7px;
+        padding-block: 0;
+        padding-inline: 7px 4px;
         gap: 4px;
         font-size: @fontSmall;
         font-weight: 600;
@@ -160,7 +161,7 @@
         transition: transform 0.15s ease-in-out;
     }
 
-    .-section-collapsed {
+    .widget.-section-collapsed {
         .widget-search-facets__section-toggle-icon-svg {
             transform: rotate(0deg);
         }
@@ -196,10 +197,8 @@
         color: var(--combined-facets-muted);
     }
 
-    /* VALUE LISTS */
+    /* VALUE LISTS (the 400px height cap comes from the widgets-mode base rule) */
     .widget-search-facets__collection ul {
-        max-height: 400px;
-        overflow-y: auto;
         overscroll-behavior: contain;
         scrollbar-width: thin;
         scrollbar-color: var(--combined-facets-scrollbar) transparent;
@@ -451,15 +450,18 @@
     }
 }
 
+/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
 
+/* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
     .combined-facets {
         padding: 16px;
     }
 }
 
+/* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
     .combined-facets__reset:hover .combined-facets__reset-label,
     .combined-facets__reset:focus .combined-facets__reset-label {
@@ -473,6 +475,7 @@
     }
 }
 
+/* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
     .combined-facets {
         padding: 12px;

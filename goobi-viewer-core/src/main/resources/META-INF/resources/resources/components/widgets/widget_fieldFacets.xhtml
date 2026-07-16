@@ -3,14 +3,9 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:facelets="http://io.goobi.viewer"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
             name="widget"
@@ -46,7 +41,6 @@
                                     data-wrapper="searchFacetFilter">
                                     <input
                                         type="text"
-                                        id="collectionFieldFacetsFilter_#{status.index}"
                                         class="widget-search-facets__filter-input -no-outline"
                                         placeholder="#{msg.placeholder__filter_search_results}"
                                         aria-label="#{msg.placeholder__filter_search_results}"
@@ -65,13 +59,13 @@
                                         class="sr-only"
                                         role="status"
                                         data-filter-status=""
-                                        data-filter-status-label="#{msg.search__facets_filter_matches}" />
+                                        data-filter-status-label="#{msg.search__facets__filter_matches}" />
                                 </div>
                             </ui:fragment>
                         </div>
 
                         <div class="widget__body widget-search-facets__body">
-                            <ul>
+                            <ul class="widget-search-facets__list">
                                 <!-- ACTIVE FACETS -->
                                 <ui:repeat
                                     value="#{searchBean.facets.getActiveFacetsForField(field)}"
@@ -110,33 +104,41 @@
                                 <ui:repeat
                                     value="#{searchBean.getFieldFacetValues(field, cc.attrs.widget.numEntries, cc.attrs.widget.getCombinedFilterQuery(cmsBean.currentPage))}"
                                     var="facet">
-                                    <li>
+                                    <li class="widget-search-facets__list-item">
                                         <!-- POSITIVE (INCLUDE) SELECTION -->
                                         <h:outputLink
+                                            styleClass="widget-search-facets__list-item-link"
                                             value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/-/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.urlEscapedLink}/">
                                             <span
-                                                class="widget-search-facets__list-item-include"
+                                                class="widget-search-facets__list-item-control -include"
                                                 aria-hidden="true">
-                                                +
+                                                <util:icon
+                                                    icon="plus"
+                                                    svgClass="widget-search-facets__list-item-control-icon-svg" />
                                             </span>
-                                            #{msg[facet.label]} (#{facet.count})
+                                            <span class="widget-search-facets__list-item-text">
+                                                <span class="widget-search-facets__list-item-label">#{msg[facet.label]}</span>
+                                                <span class="widget-search-facets__list-item-count">(#{facet.count})</span>
+                                            </span>
                                             <f:passThroughAttribute
                                                 name="aria-label"
-                                                value="#{msg[field.concat('_DD')]}: #{facet.translatedLabel} (#{facet.count})" />
+                                                value="#{msg[field.concat('_DD')]}: #{msg[facet.label]} (#{facet.count})" />
                                         </h:outputLink>
                                         <!-- NEGATIVE (EXCLUDE) SELECTION -->
                                         <h:outputLink
-                                            styleClass="widget-search-facets__list-item-exclude-link"
+                                            styleClass="widget-search-facets__list-item-control-link"
                                             value="#{navigationHelper.getSearchUrl(0,cmsBean.currentPage)}/-/#{empty cc.attrs.widget.filterQuery ? '-' : cc.attrs.widget.filterQuery}/1/-/#{facet.excludeUrlEscapedLink}/"
-                                            title="#{msg.searchOperator_NOT}: #{facet.translatedLabel}">
+                                            title="#{msg.searchOperator_NOT}: #{msg[facet.label]}">
                                             <span
-                                                class="widget-search-facets__list-item-exclude"
+                                                class="widget-search-facets__list-item-control -exclude"
                                                 aria-hidden="true">
-                                                &#8722;
+                                                <util:icon
+                                                    icon="minus"
+                                                    svgClass="widget-search-facets__list-item-control-icon-svg" />
                                             </span>
                                             <f:passThroughAttribute
                                                 name="aria-label"
-                                                value="#{msg.searchOperator_NOT} #{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                value="#{msg.searchOperator_NOT} #{msg[field.concat('_DD')]}: #{msg[facet.label]}" />
                                         </h:outputLink>
                                     </li>
                                 </ui:repeat>
@@ -145,14 +147,6 @@
                     </div>
                 </h:form>
             </div>
-
-            <h:panelGroup rendered="#{searchBean.facets.allAvailableFacets.entrySet().toArray() == null}">
-                <div
-                    id="widgetSearchHelp"
-                    class="widget-searchhelp">
-                    <viewerComponent:searchHelpText />
-                </div>
-            </h:panelGroup>
         </ui:fragment>
     </composite:implementation>
 </ui:composition>

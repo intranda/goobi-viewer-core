@@ -16,11 +16,6 @@
             type="java.lang.Integer"
             required="true" />
         <composite:attribute
-            name="cmsPage"
-            type="io.goobi.viewer.model.cms.pages.CMSPage"
-            required="false"
-            default="#{null}" />
-        <composite:attribute
             name="headingLevel"
             type="java.lang.String"
             required="false"
@@ -97,25 +92,24 @@
 
                 <script>
                     // chronologySlider.tag and chronologyGraph.tag for widget chronology
+                    (() => {
+                        let values = #{searchBean.facets.getValueRangeAsJsonMap(cc.attrs.field)};
+                        let valueMap = new Map(Object.entries(values));
 
-                            (() => {
-                            let values = #{searchBean.facets.getValueRangeAsJsonMap(cc.attrs.field)};
-                        	let valueMap = new Map(Object.entries(values));
+                        let graphType = "#{searchBean.facets.getRangeFacetStyle(cc.attrs.field)}";
+                        graphType = graphType ? graphType : "slider";
 
-                        	let graphType = "#{searchBean.facets.getRangeFacetStyle(cc.attrs.field)}";
-                        	graphType = graphType ? graphType : "slider";
-
-                           riot.mount("#chronoSlider_#{cc.attrs.index}", "chronology"+graphType, {
-                           	datamap: valueMap,
-                           	msg: {
-                           		enterYearStart: "#{msg.widgetChronology__year_start}",
-                           		enterYearEnd: "#{msg.widgetChronology__year_end}",
-                           		ok: "#{msg.ok}",
-                           		hits: "#{msg.hits}",
-                           		description: '#{msg[configurationBean.getFacetFieldDescriptionKey(cc.attrs.field)]}',
-                           	}
-                           })
-                       })();
+                        riot.mount("#chronoSlider_#{cc.attrs.index}", "chronology" + graphType, {
+                            datamap: valueMap,
+                            msg: {
+                                enterYearStart: "#{msg.widgetChronology__year_start}",
+                                enterYearEnd: "#{msg.widgetChronology__year_end}",
+                                ok: "#{msg.ok}",
+                                hits: "#{msg.hits}",
+                                description: '#{msg[configurationBean.getFacetFieldDescriptionKey(cc.attrs.field)]}',
+                            },
+                        });
+                    })();
                 </script>
             </div>
         </ui:fragment>

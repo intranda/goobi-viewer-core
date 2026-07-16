@@ -525,6 +525,22 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies skip invalid facet links carrying an exclusion marker
+     */
+    @Test
+    void parseFacetString_shouldSkipInvalidFacetLinksCarryingAnExclusionMarker() {
+        // The exclusion marker must be stripped before the invalid-link guard runs, otherwise
+        // links like "!:foo" pass the guard and produce items with an empty field name.
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString(FacetItem.EXCLUDE_PREFIX + ":foo;;" + FacetItem.EXCLUDE_PREFIX + ";DC:a;;"
+                + FacetItem.EXCLUDE_PREFIX + ";;MD_FIELD:value;;", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_FIELD", facetItems.get(0).getField());
+        Assertions.assertEquals("value", facetItems.get(0).getValue());
+    }
+
+    /**
      * @see SearchFacets#setActiveFacetString(String)
      * @verifies preserve exclusion marker through round trip
      */
