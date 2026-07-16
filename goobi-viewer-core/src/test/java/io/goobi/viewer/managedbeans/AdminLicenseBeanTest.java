@@ -30,10 +30,12 @@ import jakarta.faces.model.SelectItemGroup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.AbstractDatabaseEnabledTest;
+import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.LicenseType;
 
-class AdminLicenseBeanTest extends AbstractDatabaseEnabledTest {
+class AdminLicenseBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
     /**
      * @see AdminLicenseBean#getGroupedLicenseTypeSelectItems()
@@ -48,6 +50,24 @@ class AdminLicenseBeanTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(2, items.size());
         Assertions.assertEquals(1, ((SelectItemGroup) items.get(0)).getSelectItems().length);
         Assertions.assertEquals(5, ((SelectItemGroup) items.get(1)).getSelectItems().length);
+    }
+
+    /**
+     * @see AdminLicenseBean#getNumRecordsWithAccessCondition(String)
+     * @verifies count aggregated records rather than raw documents
+     */
+    @Test
+    void getNumRecordsWithAccessCondition_shouldCountAggregatedRecordsRatherThanRawDocuments() throws Exception {
+        AdminLicenseBean bean = new AdminLicenseBean();
+        // Access condition "1907" is carried by several Solr documents that belong to fewer top-level records.
+        // The count must reflect records (as the search link does), not the raw number of matching documents.
+        long recordCount = bean.getNumRecordsWithAccessCondition("1907");
+        long rawDocumentCount = DataManager.getInstance()
+                .getSearchIndex()
+                .getHitCount(SearchHelper.getQueryForAccessCondition("1907", false));
+        Assertions.assertTrue(recordCount >= 1, "Expected at least one record, but was " + recordCount);
+        Assertions.assertTrue(recordCount < rawDocumentCount,
+                "Expected aggregated record count (" + recordCount + ") to be smaller than raw document count (" + rawDocumentCount + ")");
     }
 
     /**
