@@ -55,7 +55,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -79,7 +78,6 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
-import io.goobi.viewer.model.export.ExcelExport;
 import io.goobi.viewer.model.export.RISExport;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -2698,142 +2696,6 @@ public class SearchBean implements SearchInterface, Serializable {
             this.downloadReady = null;
         }
         return "";
-    }
-
-    /**
-     * exportSearchAsExcelAction.
-     *
-     * @return an empty string after initiating the Excel export response
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public String exportSearchAsExcelAction() throws IndexUnreachableException {
-        logger.trace("exportSearchAsExcelAction");
-        final FacesContext facesContext = FacesContext.getCurrentInstance();
-
-        String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
-        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-        Locale locale = navigationHelper.getLocale();
-        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
-
-        BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
-            if (!facesContext.getResponseComplete()) {
-                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, proximitySearchDistance, locale)) {
-                    if (wb == null) {
-                        job.setError("Failed to create excel sheet");
-                    } else if (Thread.interrupted()) {
-                        job.setError("Execution cancelled");
-                    } else {
-                        Callable<Boolean> download = new Callable<Boolean>() {
-
-                            @Override
-                            public Boolean call() {
-                                ExcelExport export = new ExcelExport();
-                                try {
-                                    logger.debug("Writing Excel...");
-                                    export.setWorkbook(wb);
-                                    return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
-                                } catch (IOException e) {
-                                    logger.error(e.getMessage(), e);
-                                    return false;
-                                } finally {
-                                    facesContext.responseComplete();
-                                    try {
-                                        export.close();
-                                    } catch (IOException e) {
-                                        logger.error(e.getMessage());
-                                    }
-                                }
-                            }
-                        };
-
-                        downloadComplete = new FutureTask<>(download);
-                        EXECUTOR.submit(downloadComplete);
-                        downloadComplete.get(timeout, TimeUnit.SECONDS);
-                    }
-                } catch (TimeoutException e) {
-                    job.setError("Timeout for excel download");
-                } catch (InterruptedException e) {
-                    job.setError("Timeout for excel download");
-                    Thread.currentThread().interrupt();
-                } catch (ExecutionException | ViewerConfigurationException e) {
-                    logger.error(e.getMessage(), e);
-                    job.setError("Failed to create excel sheet");
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            } else {
-                job.setError("Response is already committed");
-            }
-        };
-
-        try {
-            Task excelCreationJob = new Task(new TaskParameter(TaskType.SEARCH_EXCEL_EXPORT), task);
-            Long jobId = DataManager.getInstance().getRestApiJobManager().addTask(excelCreationJob);
-            Future<?> ready = DataManager.getInstance()
-                    .getRestApiJobManager()
-                    .triggerTaskInThread(jobId, (HttpServletRequest) facesContext.getExternalContext().getRequest());
-            ready.get(timeout, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            logger.debug("Download interrupted");
-            Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
-            logger.debug("Download execution error", e);
-            Messages.error("download_internal_error");
-        } catch (TimeoutException e) {
-            logger.debug("Downloadtimed out");
-            Messages.error("download_timeout");
-        } finally {
-            if (downloadReady != null && !downloadReady.isDone()) {
-                downloadReady.cancel(true);
-            }
-            if (downloadComplete != null && !downloadComplete.isDone()) {
-                downloadComplete.cancel(true);
-            }
-            this.downloadComplete = null;
-            this.downloadReady = null;
-        }
-        return "";
-    }
-
-    /**
-     * @param facesContext Current JSF FacesContext for writing the response
-     * @param finalQuery Complete query with suffixes.
-     * @param exportQuery Query constructed from the user's input, without any secret suffixes.
-     * @param proximitySearchDistance Maximum word distance for proximity searches
-     * @param locale Locale used for formatting exported cell values
-     * @return {@link SXSSFWorkbook}
-     * @throws InterruptedException
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
-     */
-    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, int proximitySearchDistance,
-            Locale locale) throws InterruptedException, ViewerConfigurationException {
-        try {
-            String termQuery = null;
-            if (searchTerms != null) {
-                termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
-            }
-            Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
-            SXSSFWorkbook wb = new SXSSFWorkbook(25); //NOSONAR try-with-resources in the calling method
-            SearchHelper.exportSearchAsExcel(wb, finalQuery, exportQuery, currentSearch.getAllSortFields(), facets.generateFacetFilterQueries(true),
-                    params, searchTerms, locale, proximitySearchDistance);
-            if (Thread.interrupted()) {
-                throw new InterruptedException();
-            }
-            facesContext.getExternalContext().responseReset();
-            facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            facesContext.getExternalContext()
-                    .setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                            + LocalDateTime.now().format(DateTools.FORMATTERFILENAME)
-                            + ".xlsx\"");
-            return wb;
-        } catch (IndexUnreachableException | DAOException | PresentationException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return null;
     }
 
     /**

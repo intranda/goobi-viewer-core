@@ -137,7 +137,7 @@ public class RecordWebArchiveResource {
 
         SolrSearchIndex search = DataManager.getInstance().getSearchIndex();
         String query = "+PI_TOPSTRUCT:%s +DOCTYPE:PAGE +MIMETYPE:application/warc".formatted(this.pi);
-        String filteredQuery = query + SearchHelper.getAllSuffixes(servletRequest, true, true);
+        String filteredQuery = query + SearchHelper.getAllSuffixes(servletRequest, false, false);
 
         SolrDocumentList docs = search.getDocs(filteredQuery, Collections.emptyList());
 

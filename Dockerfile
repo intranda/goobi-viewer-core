@@ -44,7 +44,7 @@ COPY goobi-viewer-config/docker/disable_dev_options.patch /viewer-template/
 COPY goobi-viewer-config/docker/insert_theme_preresource.patch.template /viewer-template/
 
 RUN --mount=type=bind,source=goobi-viewer-config/docker,target=/tmp/patches,readonly \
-    patch --output=${CATALINA_HOME}/conf/server.xml.template ${CATALINA_HOME}/conf/server.xml < /tmp/patches/server.xml.patch && \
+    patch ${CATALINA_HOME}/conf/server.xml < /tmp/patches/server.xml.patch && \
     patch --output=${CATALINA_HOME}/conf/context.xml.template ${CATALINA_HOME}/conf/context.xml < /tmp/patches/context.xml.patch
 
 RUN grep -qxF 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' ${CATALINA_HOME}/conf/logging.properties || echo 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' >> ${CATALINA_HOME}/conf/logging.properties && \

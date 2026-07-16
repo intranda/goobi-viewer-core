@@ -81,7 +81,6 @@ mkdir -p /opt/digiverso/{config/bin,indexer,logs,viewer/{abbyy,cmdi,deleted_mets
 
 echo "Setting database configuration from environment..."
 envsubst "\$DB_HOST \$DB_PORT \$DB_NAME \$DB_USER \$DB_PASSWORD" <"${CATALINA_HOME}/conf/viewer.xml.template" > "${CATALINA_HOME}/conf/Catalina/localhost/${WEBAPP_NAME}.xml"
-envsubst "\$VIEWER_DOMAIN" <"${CATALINA_HOME}/conf/server.xml.template" >"${CATALINA_HOME}/conf/server.xml"
 envsubst "\$TOMCAT_SAMESITECOOKIES" </tmp/context.xml.template >"${CATALINA_HOME}/conf/context.xml"
 
 if ! [[ -v SOLR_URL ]]; then

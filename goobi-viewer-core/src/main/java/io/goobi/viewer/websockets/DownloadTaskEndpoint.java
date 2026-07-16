@@ -60,7 +60,6 @@ import io.goobi.viewer.model.job.download.ExternalFilesDownloadJob;
 import io.goobi.viewer.model.job.mq.DownloadExternalResourceHandler;
 import io.goobi.viewer.model.resources.download.ExternalResourceUrlService;
 import io.goobi.viewer.model.resources.download.ResourceDownload;
-import io.goobi.viewer.model.security.user.User;
 import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
@@ -93,15 +92,12 @@ public class DownloadTaskEndpoint {
             return;
         }
         HttpSession http = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        User user = WebSocketTools.requireUser(http, session);
-        if (user == null) {
-            return;
-        }
 
         this.httpSession = http;
         this.session = session;
-        this.storageBean = BeanUtils.getPersistentStorageBean();
-        this.queueManager = this.storageBean.getMessageBroker();
+        if (this.storageBean == null) {
+            this.setStorageBean(BeanUtils.getPersistentStorageBean());
+        }
     }
 
     void setSession(Session session) {

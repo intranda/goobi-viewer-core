@@ -54,84 +54,65 @@
                 <viewerComponent:searchSaveDialog prependId="false" />
             </ui:fragment>
 
-            <!-- SEARCH EXPORT (EXCEL) -->
-            <ui:fragment rendered="#{configurationBean.searchExcelExportEnabled}">
-                <div class="search-list__excel-export">
-                    <h:form
-                        id="slExportSearchForm"
-                        prependId="false">
-                        <h:commandLink
-                            id="excelDownloadButton"
-                            styleClass="btn btn--icon search-list__option-button excel-export-trigger"
-                            action="#{searchBean.exportSearchAsExcelAction()}"
-                            title="#{msg.searchExportExcel}">
-                            <util:icon
-                                icon="table-down"
-                                svgClass="icon" />
-                            <f:passThroughAttribute
-                                name="data-toggle"
-                                value="tooltip" />
-                            <f:passThroughAttribute
-                                name="data-placement"
-                                value="top" />
-                            <f:passThroughAttribute
-                                name="aria-label"
-                                value="#{msg.searchExportExcel}" />
-                        </h:commandLink>
-
-                        <span class="excel-export-loader">
-                            #{msg.searchExportExcelLoading}
-                            <img
-                                src="#{request.contextPath}/resources/images/ajax_preloader.gif"
-                                alt="Excel Export Loader" />
-                        </span>
-                    </h:form>
-                </div>
-            </ui:fragment>
+            <!-- Excel export is now a configured <format name="excel"> and appears in the export dropdown below. -->
 
             <!-- EXPORT OPTIONS DROPDOWN -->
             <ui:fragment rendered="#{not empty configurationBean.enabledSearchExportFormats}">
-            <div class="dropdown search-list__export-dropdown-wrapper">
-                <button
-                    class="btn btn--clean dropdown-toggle search-list__option-button search-list__export-dropdown-toggle"
-                    type="button"
-                    data-toggle="dropdown"
-                    aria-expanded="false"
-                    title="#{msg.search_export__list_export_action_tooltip}">
-                    <util:icon
-                        icon="file-export"
-                        svgClass="icon" />
-                </button>
+                <div
+                    class="dropdown search-list__export-dropdown-wrapper"
+                    data-msg-timeout="#{msg.download_timeout}"
+                    data-msg-error="#{msg.download_internal_error}"
+                    data-msg-denied="#{msg.search_export__access_denied}">
+                    <button
+                        class="btn btn--clean dropdown-toggle search-list__option-button search-list__export-dropdown-toggle"
+                        type="button"
+                        data-toggle="dropdown"
+                        aria-expanded="false"
+                        title="#{msg.search_export__list_export_action_tooltip}">
+                        <util:icon
+                            icon="file-export"
+                            svgClass="icon" />
+                    </button>
 
-                <div class="dropdown-menu search-list__export-dropdown">
-                    <!-- SEARCH EXPORT (XSLT formats: RIS, Endnote, BibTeX, …) -->
-                    <h6 class="search-list__export-dropdown-heading">#{msg.search_export__list_dropdown_heading}</h6>
-                    <ui:repeat
-                        value="#{configurationBean.enabledSearchExportFormats}"
-                        var="exportFormat">
-                        <h:outputLink
-                            value="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}"
-                            styleClass="dropdown-item search-list__export-dropdown-link"
-                            title="#{msg['search_export_'.concat(exportFormat.name)]}">
-                            <f:param
-                                name="query"
-                                value="#{search.searchString}" />
-                            <f:param
-                                name="activeFacetString"
-                                value="#{search.facets.activeFacetString}" />
-                            <f:param
-                                name="sortString"
-                                value="#{search.sortString}" />
-                            <!-- 	                        <f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
-                            <!-- 	                        <f:passThroughAttribute name="data-placement" value="top" /> -->
-                            <f:passThroughAttribute
-                                name="aria-label"
-                                value="#{msg['search_export_'.concat(exportFormat.name)]}" />
-                            <span>#{msg['search_export__'.concat(exportFormat.name)]}</span>
-                        </h:outputLink>
-                    </ui:repeat>
+                    <!-- Loading indicator shown while an export is being generated (see inline script below) -->
+                    <span
+                        class="search-list__export-loader d-none"
+                        aria-live="polite">
+                        <img
+                            src="#{request.contextPath}/resources/images/ajax_preloader.gif"
+                            alt="" />
+                        #{msg.search_export__generating}
+                    </span>
+
+                    <div class="dropdown-menu search-list__export-dropdown">
+                        <!-- SEARCH EXPORT (XSLT formats: RIS, Endnote, BibTeX, …) -->
+                        <h6 class="search-list__export-dropdown-heading">#{msg.search_export__list_dropdown_heading}</h6>
+                        <ui:repeat
+                            value="#{configurationBean.enabledSearchExportFormats}"
+                            var="exportFormat">
+                            <h:outputLink
+                                value="#{request.contextPath}/api/v1/search/export/#{exportFormat.name}"
+                                styleClass="dropdown-item search-list__export-dropdown-link"
+                                title="#{msg['search_export_'.concat(exportFormat.name)]}">
+                                <f:param
+                                    name="query"
+                                    value="#{search.searchString}" />
+                                <f:param
+                                    name="activeFacetString"
+                                    value="#{search.facets.activeFacetString}" />
+                                <f:param
+                                    name="sortString"
+                                    value="#{search.sortString}" />
+                                <!-- 	                        <f:passThroughAttribute name="data-toggle" value="tooltip" /> -->
+                                <!-- 	                        <f:passThroughAttribute name="data-placement" value="top" /> -->
+                                <f:passThroughAttribute
+                                    name="aria-label"
+                                    value="#{msg['search_export_'.concat(exportFormat.name)]}" />
+                                <span>#{msg['search_export__'.concat(exportFormat.name)]}</span>
+                            </h:outputLink>
+                        </ui:repeat>
+                    </div>
                 </div>
-            </div>
             </ui:fragment>
 
             <!-- SEARCHLIST VIEWS -->

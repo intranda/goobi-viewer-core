@@ -57,6 +57,7 @@ import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
+import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.maps.GeoMapMarker;
 import io.goobi.viewer.model.maps.GeomapItemFilter;
@@ -3036,6 +3037,60 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void isSearchExcelExportEnabled_shouldReturnCorrectValue() {
         assertTrue(DataManager.getInstance().getConfiguration().isSearchExcelExportEnabled());
+    }
+
+    /**
+     * @see Configuration#getSearchCsvExportFields()
+     * @verifies return all values
+     */
+    @Test
+    void getSearchCsvExportFields_shouldReturnAllValues() {
+        List<ExportFieldConfiguration> result = DataManager.getInstance().getConfiguration().getSearchCsvExportFields();
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(SolrConstants.PI, result.get(0).getField());
+        assertEquals(SolrConstants.LABEL, result.get(1).getField());
+    }
+
+    /**
+     * @see Configuration#isSearchCsvExportEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    void isSearchCsvExportEnabled_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isSearchCsvExportEnabled());
+    }
+
+    /**
+     * @see Configuration#getSearchExportFormats()
+     * @verifies return all configured formats
+     */
+    @Test
+    void getSearchExportFormats_shouldReturnAllConfiguredFormats() {
+        List<ExportFormat> formats = DataManager.getInstance().getConfiguration().getSearchExportFormats();
+        assertNotNull(formats);
+        assertEquals(3, formats.size());
+        assertEquals("excel", formats.get(0).getName());
+        assertEquals("csv", formats.get(1).getName());
+        assertEquals("ris", formats.get(2).getName());
+    }
+
+    /**
+     * @see Configuration#getSearchExportFormats()
+     * @verifies read field columns for java based formats
+     */
+    @Test
+    void getSearchExportFormats_shouldReadFieldColumnsForJavaBasedFormats() {
+        List<ExportFormat> formats = DataManager.getInstance().getConfiguration().getSearchExportFormats();
+        ExportFormat excel = formats.stream().filter(f -> "excel".equals(f.getName())).findFirst().orElseThrow();
+        assertFalse(excel.isXsltBased());
+        assertEquals(2, excel.getFields().size());
+        assertEquals(SolrConstants.PI, excel.getFields().get(0).getField());
+
+        ExportFormat ris = formats.stream().filter(f -> "ris".equals(f.getName())).findFirst().orElseThrow();
+        assertTrue(ris.isXsltBased());
+        assertTrue(ris.getFields().isEmpty());
+        assertEquals("solr2ris.xsl", ris.getXslt());
     }
 
     /**
