@@ -25,7 +25,7 @@
                 <div
                     class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'} #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
                     <!-- Display search hit number -->
-                    <h3>
+                    <h2 class="search-list__hit-title-heading">
                         <a
                             class="search-list__hit-title-link"
                             href="#{navigationHelper.applicationUrl}#{browseElement.url}"
@@ -43,7 +43,7 @@
                                 value="#{msg[browseElement.labelShort]}"
                                 escape="false" />
                         </a>
-                    </h3>
+                    </h2> 
                 </div>
             </div>
 

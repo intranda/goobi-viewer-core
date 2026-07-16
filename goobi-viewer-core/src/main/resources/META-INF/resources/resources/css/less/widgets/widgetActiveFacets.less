@@ -24,10 +24,6 @@
     &__list-item {
         display: inline-flex;
         max-width: 100%;
-
-        &.-overflow {
-            display: none;
-        }
     }
 
     &__list &__badge {
@@ -101,24 +97,6 @@
         display: block;
         width: 13px;
         height: 13px;
-    }
-
-    &__more {
-        display: inline-flex;
-        align-items: center;
-        height: 28px;
-        padding: 0 8px;
-        border: 0;
-        background: none;
-        font-size: @fontSmall;
-        font-weight: 600;
-        color: var(--active-facets-badge-more-color);
-        cursor: pointer;
-
-        &:hover,
-        &:focus {
-            text-decoration: underline;
-        }
     }
 }
 

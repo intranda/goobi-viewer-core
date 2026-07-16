@@ -54,8 +54,8 @@
                     opacity 0.05s linear 0.12s,
                     background-color 0.15s ease-in-out;
 
-                &.-include {
-                    margin-inline-end: 5px;
+                &.-include { 
+                    margin-inline-end: 8px;
                 }
             }
         }
@@ -304,7 +304,11 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    /* no hover on touch devices: include/exclude controls are always visible */
+}
+
+/* no hover capability (touch devices, regardless of viewport width):
+   include/exclude controls are always visible instead of hover-revealed */
+@media (hover: none) {
     .widget-search-facets__list-item-control {
         width: 16px;
         border-width: 1px;

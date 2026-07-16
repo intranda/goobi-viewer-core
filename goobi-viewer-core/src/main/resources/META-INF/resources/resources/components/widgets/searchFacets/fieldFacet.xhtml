@@ -45,7 +45,7 @@
                         <h2
                             class="widget__title widget-search-facets__title"
                             data-heading="searchFacetFilter"
-                            aria-level="#{cc.attrs.headingLevel}">
+                            aria-level="#{cc.attrs.headingLevel}"> 
                             #{msg[cc.attrs.field.concat('_DD')]}
                         </h2>
                         <!-- FILTER FACETS -->
@@ -277,21 +277,34 @@
                                                 value="#{msg[cc.attrs.field.concat('_DD')]}: #{facet.translatedLabel} (#{facet.count})" />
                                         </h:outputLink>
                                         <!-- NEGATIVE (EXCLUDE) SELECTION -->
-                                        <h:outputLink
-                                            styleClass="widget-search-facets__list-item-control-link"
-                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.excludeUrlEscapedLink}/#{navigationHelper.subThemeQueryParam}"
-                                            title="#{msg.searchOperator_NOT}: #{facet.translatedLabel}">
-                                            <span
-                                                class="widget-search-facets__list-item-control -exclude"
-                                                aria-hidden="true">
-                                                <util:icon
-                                                    icon="minus"
-                                                    svgClass="widget-search-facets__list-item-control-icon-svg" />
-                                            </span>
-                                            <f:passThroughAttribute
-                                                name="aria-label"
-                                                value="#{msg.searchOperator_NOT} #{msg[cc.attrs.field.concat('_DD')]}: #{facet.translatedLabel}" />
-                                        </h:outputLink>
+                                        <!-- excluding a value shared by all current hits would yield an empty result set -->
+                                        <ui:fragment rendered="#{facet.count lt searchBean.hitsCount}">
+                                            <h:outputLink
+                                                styleClass="widget-search-facets__list-item-control-link"
+                                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.excludeUrlEscapedLink}/#{navigationHelper.subThemeQueryParam}"
+                                                title="#{msg.searchOperator_NOT}: #{facet.translatedLabel}">
+                                                <span
+                                                    class="widget-search-facets__list-item-control -exclude"
+                                                    aria-hidden="true">
+                                                    <util:icon
+                                                        icon="minus"
+                                                        svgClass="widget-search-facets__list-item-control-icon-svg" />
+                                                </span>
+                                                <f:passThroughAttribute
+                                                    name="aria-label"
+                                                    value="#{msg.searchOperator_NOT} #{msg[cc.attrs.field.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                <f:passThroughAttribute
+                                                    name="data-toggle"
+                                                    value="tooltip" />
+                                                <f:passThroughAttribute
+                                                    name="data-placement"
+                                                    value="top" />
+                                                <!-- tooltip only repeats the aria-label: keep it visual-only -->
+                                                <f:passThroughAttribute
+                                                    name="data-tooltip-muted"
+                                                    value="true" />
+                                            </h:outputLink>
+                                        </ui:fragment>
                                     </li>
                                 </ui:repeat>
                             </ul>

@@ -447,23 +447,24 @@
     }
     &__hit-title {
         position: relative;
-        h3 {
-            padding-bottom: 0.5rem;
-            margin: 0;
-            word-wrap: anywhere;
-        }
+		.search-list__hit-title    
         &.-noThumbnail {
             padding-right: 2.4rem;
-        }
+        } 
         &.-hitNumber {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
-            h3 {
+            .search-list__hit-title-heading {
                 padding-bottom: 0;
             }
         }
     }
+	&__hit-title-heading {
+		padding-bottom: 0.5rem;
+		margin: 0;
+		word-wrap: anywhere;
+	}
     &__hit-title-link {
         display: block;
     }
