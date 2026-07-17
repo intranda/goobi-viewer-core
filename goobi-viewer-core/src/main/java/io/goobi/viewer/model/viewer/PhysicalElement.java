@@ -992,7 +992,7 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
-            String text = ALTOTools.getFulltext(altoText, altoCharset, false);
+            String text = ALTOTools.getFulltextHtml(altoText, altoCharset);
             if (StringUtils.isNotEmpty(text)) {
                 // Sanitize the ALTO-produced HTML (which carries NamedEntityEnricher button
                 // markup) through the dedicated allowlist that permits only the <button> tag

@@ -1011,4 +1011,38 @@ class HtmlSanitizerTest {
         assertTrue(output.contains("Europa"), output);
         assertTrue(output.contains("in vielen Punkten"), output);
     }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies preserve alto layout markup
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldPreserveAltoLayoutMarkup() {
+        String input = "<div class=\"alto-fulltext\"><div class=\"alto-fulltext__page\">"
+                + "<aside class=\"alto-fulltext__margin alto-fulltext__margin--left\">"
+                + "<p class=\"alto-block alto-annotation alto-annotation--jacob-grimm\" data-author=\"gr_jacob_grimm\""
+                + " title=\"Jacob Grimm\">cf. Adelung</p></aside>"
+                + "<div class=\"alto-fulltext__main\"><p class=\"alto-block\">Es war ein "
+                + "<span class=\"alto-tag alto-tag--underline\">buch</span> gefunden</p></div></div></div>";
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities(input);
+        assertTrue(output.contains("<div class=\"alto-fulltext\""), output);
+        assertTrue(output.contains("<aside class=\"alto-fulltext__margin alto-fulltext__margin--left\""), output);
+        assertTrue(output.contains("data-author=\"gr_jacob_grimm\""), output);
+        assertTrue(output.contains("title=\"Jacob Grimm\""), output);
+        assertTrue(output.contains("<span class=\"alto-tag alto-tag--underline\""), output);
+        assertTrue(output.contains("cf. Adelung"), output);
+        assertTrue(output.contains("gefunden"), output);
+    }
+
+    /**
+     * @see HtmlSanitizer#cleanFulltextWithNamedEntities(String)
+     * @verifies strip style attribute on span
+     */
+    @Test
+    void cleanFulltextWithNamedEntities_shouldStripStyleAttributeOnSpan() {
+        String output = HtmlSanitizer.cleanFulltextWithNamedEntities(
+                "<span class=\"alto-tag\" style=\"position:fixed;top:0\">x</span>");
+        assertFalse(output.contains("style"), output);
+        assertTrue(output.contains("<span class=\"alto-tag\""), output);
+    }
 }

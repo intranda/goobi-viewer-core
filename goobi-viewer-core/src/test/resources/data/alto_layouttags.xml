@@ -1,0 +1,715 @@
+<?xml version='1.0' encoding='utf-8'?>
+<alto xmlns="http://www.loc.gov/standards/alto/ns-v4#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v4# http://www.loc.gov/standards/alto/alto-v4.xsd">
+	<Description>
+		<MeasurementUnit>pixel</MeasurementUnit>
+	</Description>
+	<Styles/>
+	<Tags>
+		<LayoutTag ID="RT-1" LABEL="gr_printed"/>
+		<LayoutTag ID="RT-2" LABEL="gr_unterstrichen"/>
+		<LayoutTag ID="RT-3" LABEL="gr_durchgestrichen"/>
+		<LayoutTag ID="RT-4" LABEL="gr_wilhelm_grimm"/>
+		<LayoutTag ID="RT-5" LABEL="gr_jacob_oder_wilhelm_grimm"/>
+		<LayoutTag ID="RT-6" LABEL="gr_jacob_oder_wilhelm_grimm"/>
+		<LayoutTag ID="RT-7" LABEL="gr_jacob_grimm"/>
+		<LayoutTag ID="RT-8" LABEL="gr_jacob_grimm"/>
+		<LayoutTag ID="RT-9" LABEL="gr_jacob_grimm"/>
+		<LayoutTag ID="RT-10" LABEL="gr_unterstrichen"/>
+		<LayoutTag ID="RT-11" LABEL="gr_unterstrichen"/>
+		<LayoutTag ID="RT-12" LABEL="gr_unterstrichen"/>
+		<LayoutTag ID="RT-13" LABEL="gr_jacob_grimm"/>
+		<LayoutTag ID="RT-14" LABEL="gr_unterstrichen"/>
+		<LayoutTag ID="RT-15" LABEL="gr_unterstrichen"/>
+		<LayoutTag ID="RT-16" LABEL="gr_unterstrichen"/>
+		<LayoutTag ID="RT-17" LABEL="gr_jacob_grimm"/>
+		<LayoutTag ID="RT-18" LABEL="gr_unterstrichen"/>
+		<LayoutTag ID="RT-19" LABEL="gr_jacob_grimm"/>
+		<LayoutTag ID="RT-20" LABEL="gr_unterstrichen"/>
+		<LayoutTag ID="RT-21" LABEL="gr_unterstrichen"/>
+		<LayoutTag ID="RT-22" LABEL="gr_jacob_grimm"/>
+		<LayoutTag ID="RT-23" LABEL="gr_unterstrichen"/>
+	</Tags>
+	<Layout>
+		<Page ID="p-1" PHYSICAL_IMG_NR="1" HEIGHT="3596" WIDTH="2198">
+			<PrintSpace HPOS="0" VPOS="0" WIDTH="2198" HEIGHT="3596">
+				<TextBlock HPOS="0" VPOS="0" WIDTH="0" HEIGHT="0" ID="b-1" TAGREFS="RT-1">
+					<TextLine HPOS="793" VPOS="580" WIDTH="1066" HEIGHT="70" ID="l-2">
+						<String HPOS="793" VPOS="580" WIDTH="87" HEIGHT="70" ID="s-1" CONTENT="Diʒ"/>
+						<SP HPOS="880" VPOS="580" WIDTH="29" HEIGHT="70" ID="sp-1"/>
+						<String HPOS="909" VPOS="580" WIDTH="47" HEIGHT="70" ID="s-2" CONTENT="iſt"/>
+						<SP HPOS="956" VPOS="580" WIDTH="24" HEIGHT="70" ID="sp-2"/>
+						<String HPOS="980" VPOS="580" WIDTH="141" HEIGHT="70" ID="s-3" CONTENT="keifer"/>
+						<SP HPOS="1121" VPOS="580" WIDTH="23" HEIGHT="70" ID="sp-3"/>
+						<String HPOS="1144" VPOS="580" WIDTH="170" HEIGHT="70" ID="s-4" CONTENT="Otenid"/>
+						<SP HPOS="1314" VPOS="580" WIDTH="30" HEIGHT="70" ID="sp-4"/>
+						<String HPOS="1344" VPOS="580" WIDTH="88" HEIGHT="70" ID="s-5" CONTENT="vnd"/>
+						<SP HPOS="1432" VPOS="580" WIDTH="23" HEIGHT="70" ID="sp-5"/>
+						<String HPOS="1455" VPOS="580" WIDTH="170" HEIGHT="70" ID="s-6" CONTENT="d'elein"/>
+						<SP HPOS="1625" VPOS="580" WIDTH="24" HEIGHT="70" ID="sp-6"/>
+						<String HPOS="1649" VPOS="580" WIDTH="210" HEIGHT="70" ID="s-7" CONTENT="Elborich"/>
+					</TextLine>
+					<TextLine HPOS="942" VPOS="666" WIDTH="569" HEIGHT="51" ID="l-3">
+						<String HPOS="942" VPOS="666" WIDTH="47" HEIGHT="51" ID="s-8" CONTENT="Eʒ"/>
+						<SP HPOS="989" VPOS="666" WIDTH="26" HEIGHT="51" ID="sp-7"/>
+						<String HPOS="1015" VPOS="666" WIDTH="95" HEIGHT="51" ID="s-9" CONTENT="wart"/>
+						<SP HPOS="1110" VPOS="666" WIDTH="26" HEIGHT="51" ID="sp-8"/>
+						<String HPOS="1136" VPOS="666" WIDTH="56" HEIGHT="51" ID="s-10" CONTENT="ein"/>
+						<SP HPOS="1192" VPOS="666" WIDTH="26" HEIGHT="51" ID="sp-9"/>
+						<String HPOS="1218" VPOS="666" WIDTH="87" HEIGHT="51" ID="s-11" CONTENT="buͦch"/>
+						<SP HPOS="1305" VPOS="666" WIDTH="25" HEIGHT="51" ID="sp-10"/>
+						<String HPOS="1330" VPOS="666" WIDTH="178" HEIGHT="51" ID="s-12" CONTENT="gefunden"/>
+					</TextLine>
+					<TextLine HPOS="938" VPOS="719" WIDTH="499" HEIGHT="54" ID="l-4">
+						<String HPOS="938" VPOS="719" WIDTH="53" HEIGHT="54" ID="s-13" CONTENT="Ʒu"/>
+						<SP HPOS="991" VPOS="719" WIDTH="32" HEIGHT="54" ID="sp-11"/>
+						<String HPOS="1023" VPOS="719" WIDTH="147" HEIGHT="54" ID="s-14" CONTENT="Suͤders"/>
+						<SP HPOS="1170" VPOS="719" WIDTH="26" HEIGHT="54" ID="sp-12"/>
+						<String HPOS="1196" VPOS="719" WIDTH="36" HEIGHT="54" ID="s-15" CONTENT="in"/>
+						<SP HPOS="1232" VPOS="719" WIDTH="27" HEIGHT="54" ID="sp-13"/>
+						<String HPOS="1259" VPOS="719" WIDTH="59" HEIGHT="54" ID="s-16" CONTENT="der"/>
+						<SP HPOS="1318" VPOS="719" WIDTH="21" HEIGHT="54" ID="sp-14"/>
+						<String HPOS="1339" VPOS="719" WIDTH="98" HEIGHT="54" ID="s-17" CONTENT="ſtatt,"/>
+					</TextLine>
+					<TextLine HPOS="938" VPOS="779" WIDTH="650" HEIGHT="50" ID="l-5">
+						<String HPOS="938" VPOS="779" WIDTH="87" HEIGHT="50" ID="s-18" CONTENT="Daʒ"/>
+						<SP HPOS="1025" VPOS="779" WIDTH="21" HEIGHT="50" ID="sp-15"/>
+						<String HPOS="1046" VPOS="779" WIDTH="105" HEIGHT="50" ID="s-19" CONTENT="hatte"/>
+						<SP HPOS="1151" VPOS="779" WIDTH="25" HEIGHT="50" ID="sp-16"/>
+						<String HPOS="1176" VPOS="779" WIDTH="54" HEIGHT="50" ID="s-20" CONTENT="ein"/>
+						<SP HPOS="1230" VPOS="779" WIDTH="29" HEIGHT="50" ID="sp-17"/>
+						<String HPOS="1259" VPOS="779" WIDTH="159" HEIGHT="50" ID="s-21" CONTENT="geſchrift"/>
+						<SP HPOS="1418" VPOS="779" WIDTH="20" HEIGHT="50" ID="sp-18"/>
+						<String HPOS="1438" VPOS="779" WIDTH="150" HEIGHT="50" ID="s-22" CONTENT="wunder"/>
+					</TextLine>
+					<TextLine HPOS="938" VPOS="837" WIDTH="533" HEIGHT="53" ID="l-6">
+						<String HPOS="938" VPOS="837" WIDTH="87" HEIGHT="53" ID="s-23" CONTENT="Dar"/>
+						<SP HPOS="1025" VPOS="837" WIDTH="29" HEIGHT="53" ID="sp-19"/>
+						<String HPOS="1054" VPOS="837" WIDTH="47" HEIGHT="53" ID="s-24" CONTENT="an"/>
+						<SP HPOS="1101" VPOS="837" WIDTH="24" HEIGHT="53" ID="sp-20"/>
+						<String HPOS="1125" VPOS="837" WIDTH="59" HEIGHT="53" ID="s-25" CONTENT="vil"/>
+						<SP HPOS="1184" VPOS="837" WIDTH="21" HEIGHT="53" ID="sp-21"/>
+						<String HPOS="1205" VPOS="837" WIDTH="125" HEIGHT="53" ID="s-26" CONTENT="nianig"/>
+						<SP HPOS="1330" VPOS="837" WIDTH="25" HEIGHT="53" ID="sp-22"/>
+						<String HPOS="1355" VPOS="837" WIDTH="116" HEIGHT="53" ID="s-27" CONTENT="blatt;"/>
+					</TextLine>
+					<TextLine HPOS="821" VPOS="882" WIDTH="1026" HEIGHT="90" ID="l-7">
+						<String HPOS="821" VPOS="882" WIDTH="87" HEIGHT="90" ID="s-28" CONTENT="Daʒ"/>
+						<SP HPOS="908" VPOS="882" WIDTH="25" HEIGHT="90" ID="sp-23"/>
+						<String HPOS="933" VPOS="882" WIDTH="150" HEIGHT="90" ID="s-29" CONTENT="hattent"/>
+						<SP HPOS="1083" VPOS="882" WIDTH="20" HEIGHT="90" ID="sp-24"/>
+						<String HPOS="1103" VPOS="882" WIDTH="52" HEIGHT="90" ID="s-30" CONTENT="die"/>
+						<SP HPOS="1155" VPOS="882" WIDTH="25" HEIGHT="90" ID="sp-25"/>
+						<String HPOS="1180" VPOS="882" WIDTH="103" HEIGHT="90" ID="s-31" CONTENT="uͤbeln"/>
+						<SP HPOS="1283" VPOS="882" WIDTH="31" HEIGHT="90" ID="sp-26"/>
+						<String HPOS="1314" VPOS="882" WIDTH="123" HEIGHT="90" ID="s-32" CONTENT="heiden"/>
+						<SP HPOS="1437" VPOS="882" WIDTH="31" HEIGHT="90" ID="sp-27"/>
+						<String HPOS="1468" VPOS="882" WIDTH="31" HEIGHT="90" ID="s-33" CONTENT="in"/>
+						<SP HPOS="1499" VPOS="882" WIDTH="31" HEIGHT="90" ID="sp-28"/>
+						<String HPOS="1530" VPOS="882" WIDTH="56" HEIGHT="90" ID="s-34" CONTENT="die"/>
+						<SP HPOS="1586" VPOS="882" WIDTH="21" HEIGHT="90" ID="sp-29"/>
+						<String HPOS="1607" VPOS="882" WIDTH="56" HEIGHT="90" ID="s-35" CONTENT="erd"/>
+						<SP HPOS="1663" VPOS="882" WIDTH="31" HEIGHT="90" ID="sp-30"/>
+						<String HPOS="1694" VPOS="882" WIDTH="153" HEIGHT="90" ID="s-36" CONTENT="gegrahe"/>
+					</TextLine>
+					<TextLine HPOS="821" VPOS="944" WIDTH="994" HEIGHT="58" ID="l-8">
+						<String HPOS="821" VPOS="944" WIDTH="91" HEIGHT="58" ID="s-37" CONTENT="Nun"/>
+						<SP HPOS="912" VPOS="944" WIDTH="24" HEIGHT="58" ID="sp-31"/>
+						<String HPOS="936" VPOS="944" WIDTH="73" HEIGHT="58" ID="s-38" CONTENT="ſolẽ"/>
+						<SP HPOS="1009" VPOS="944" WIDTH="24" HEIGHT="58" ID="sp-32"/>
+						<String HPOS="1033" VPOS="944" WIDTH="73" HEIGHT="58" ID="s-39" CONTENT="wir"/>
+						<SP HPOS="1106" VPOS="944" WIDTH="24" HEIGHT="58" ID="sp-33"/>
+						<String HPOS="1130" VPOS="944" WIDTH="43" HEIGHT="58" ID="s-40" CONTENT="võ"/>
+						<SP HPOS="1173" VPOS="944" WIDTH="29" HEIGHT="58" ID="sp-34"/>
+						<String HPOS="1202" VPOS="944" WIDTH="39" HEIGHT="58" ID="s-41" CONTENT="dẽ"/>
+						<SP HPOS="1241" VPOS="944" WIDTH="24" HEIGHT="58" ID="sp-35"/>
+						<String HPOS="1265" VPOS="944" WIDTH="101" HEIGHT="58" ID="s-42" CONTENT="buͤche"/>
+						<SP HPOS="1366" VPOS="944" WIDTH="29" HEIGHT="58" ID="sp-36"/>
+						<String HPOS="1395" VPOS="944" WIDTH="53" HEIGHT="58" ID="s-43" CONTENT="vil"/>
+						<SP HPOS="1448" VPOS="944" WIDTH="20" HEIGHT="58" ID="sp-37"/>
+						<String HPOS="1468" VPOS="944" WIDTH="92" HEIGHT="58" ID="s-44" CONTENT="kurtʒ"/>
+						<SP HPOS="1560" VPOS="944" WIDTH="19" HEIGHT="58" ID="sp-38"/>
+						<String HPOS="1579" VPOS="944" WIDTH="87" HEIGHT="58" ID="s-45" CONTENT="wile"/>
+						<SP HPOS="1666" VPOS="944" WIDTH="19" HEIGHT="58" ID="sp-39"/>
+						<String HPOS="1685" VPOS="944" WIDTH="130" HEIGHT="58" ID="s-46" CONTENT="haben."/>
+					</TextLine>
+					<TextLine HPOS="799" VPOS="1042" WIDTH="1197" HEIGHT="69" ID="l-9">
+						<String HPOS="799" VPOS="1042" WIDTH="83" HEIGHT="69" ID="s-47" CONTENT="Die"/>
+						<SP HPOS="882" VPOS="1042" WIDTH="16" HEIGHT="69" ID="sp-40"/>
+						<String HPOS="898" VPOS="1042" WIDTH="211" HEIGHT="69" ID="s-48" CONTENT="Strophen"/>
+						<SP HPOS="1109" VPOS="1042" WIDTH="33" HEIGHT="69" ID="sp-41"/>
+						<String HPOS="1142" VPOS="1042" WIDTH="84" HEIGHT="69" ID="s-49" CONTENT="ſind"/>
+						<SP HPOS="1226" VPOS="1042" WIDTH="33" HEIGHT="69" ID="sp-42"/>
+						<String HPOS="1259" VPOS="1042" WIDTH="100" HEIGHT="69" ID="s-50" CONTENT="nicht"/>
+						<SP HPOS="1359" VPOS="1042" WIDTH="27" HEIGHT="69" ID="sp-43"/>
+						<String HPOS="1386" VPOS="1042" WIDTH="206" HEIGHT="69" ID="s-51" CONTENT="abgeſetʒt,"/>
+						<SP HPOS="1592" VPOS="1042" WIDTH="33" HEIGHT="69" ID="sp-44"/>
+						<String HPOS="1625" VPOS="1042" WIDTH="161" HEIGHT="69" ID="s-52" CONTENT="ſondern"/>
+						<SP HPOS="1786" VPOS="1042" WIDTH="33" HEIGHT="69" ID="sp-45"/>
+						<String HPOS="1819" VPOS="1042" WIDTH="84" HEIGHT="69" ID="s-53" CONTENT="nur"/>
+						<SP HPOS="1903" VPOS="1042" WIDTH="22" HEIGHT="69" ID="sp-46"/>
+						<String HPOS="1925" VPOS="1042" WIDTH="71" HEIGHT="69" ID="s-54" CONTENT="die"/>
+					</TextLine>
+					<TextLine HPOS="686" VPOS="1109" WIDTH="1310" HEIGHT="66" ID="l-10">
+						<String HPOS="686" VPOS="1109" WIDTH="152" HEIGHT="66" ID="s-55" CONTENT="langen"/>
+						<SP HPOS="838" VPOS="1109" WIDTH="39" HEIGHT="66" ID="sp-47"/>
+						<String HPOS="877" VPOS="1109" WIDTH="273" HEIGHT="66" ID="s-56" CONTENT="Reimʒeilen,"/>
+						<SP HPOS="1150" VPOS="1109" WIDTH="38" HEIGHT="66" ID="sp-48"/>
+						<String HPOS="1188" VPOS="1109" WIDTH="82" HEIGHT="66" ID="s-57" CONTENT="mit"/>
+						<SP HPOS="1270" VPOS="1109" WIDTH="27" HEIGHT="66" ID="sp-49"/>
+						<String HPOS="1297" VPOS="1109" WIDTH="99" HEIGHT="66" ID="s-58" CONTENT="roth"/>
+						<SP HPOS="1396" VPOS="1109" WIDTH="32" HEIGHT="66" ID="sp-50"/>
+						<String HPOS="1428" VPOS="1109" WIDTH="317" HEIGHT="66" ID="s-59" CONTENT="durchſtrichenen"/>
+						<SP HPOS="1745" VPOS="1109" WIDTH="44" HEIGHT="66" ID="sp-51"/>
+						<String HPOS="1789" VPOS="1109" WIDTH="207" HEIGHT="66" ID="s-60" CONTENT="Anfangs⸗"/>
+					</TextLine>
+					<TextLine HPOS="686" VPOS="1179" WIDTH="1312" HEIGHT="63" ID="l-11">
+						<String HPOS="686" VPOS="1179" WIDTH="257" HEIGHT="63" ID="s-61" CONTENT="buchſtaben;"/>
+						<SP HPOS="943" VPOS="1179" WIDTH="37" HEIGHT="63" ID="sp-52"/>
+						<String HPOS="980" VPOS="1179" WIDTH="52" HEIGHT="63" ID="s-62" CONTENT="die"/>
+						<SP HPOS="1032" VPOS="1179" WIDTH="21" HEIGHT="63" ID="sp-53"/>
+						<String HPOS="1053" VPOS="1179" WIDTH="274" HEIGHT="63" ID="s-63" CONTENT="Eigennamen"/>
+						<SP HPOS="1327" VPOS="1179" WIDTH="31" HEIGHT="63" ID="sp-54"/>
+						<String HPOS="1358" VPOS="1179" WIDTH="131" HEIGHT="63" ID="s-64" CONTENT="klein;"/>
+						<SP HPOS="1489" VPOS="1179" WIDTH="26" HEIGHT="63" ID="sp-55"/>
+						<String HPOS="1515" VPOS="1179" WIDTH="100" HEIGHT="63" ID="s-65" CONTENT="keine"/>
+						<SP HPOS="1615" VPOS="1179" WIDTH="21" HEIGHT="63" ID="sp-56"/>
+						<String HPOS="1636" VPOS="1179" WIDTH="362" HEIGHT="63" ID="s-66" CONTENT="Unterſcheidungs⸗"/>
+					</TextLine>
+					<TextLine HPOS="688" VPOS="1248" WIDTH="682" HEIGHT="66" ID="l-12">
+						<String HPOS="688" VPOS="1248" WIDTH="176" HEIGHT="66" ID="s-67" CONTENT="ʒeichen."/>
+						<SP HPOS="864" VPOS="1248" WIDTH="44" HEIGHT="66" ID="sp-57"/>
+						<String HPOS="908" VPOS="1248" WIDTH="154" HEIGHT="66" ID="s-68" CONTENT="Schluß"/>
+						<SP HPOS="1062" VPOS="1248" WIDTH="33" HEIGHT="66" ID="sp-58"/>
+						<String HPOS="1095" VPOS="1248" WIDTH="66" HEIGHT="66" ID="s-69" CONTENT="des"/>
+						<SP HPOS="1161" VPOS="1248" WIDTH="28" HEIGHT="66" ID="sp-59"/>
+						<String HPOS="1189" VPOS="1248" WIDTH="181" HEIGHT="66" ID="s-70" CONTENT="Otnit:"/>
+					</TextLine>
+					<TextLine HPOS="829" VPOS="1328" WIDTH="1167" HEIGHT="60" ID="l-13">
+						<String HPOS="829" VPOS="1328" WIDTH="69" HEIGHT="60" ID="s-71" CONTENT="Suͤ"/>
+						<SP HPOS="898" VPOS="1328" WIDTH="20" HEIGHT="60" ID="sp-60"/>
+						<String HPOS="918" VPOS="1328" WIDTH="90" HEIGHT="60" ID="s-72" CONTENT="(die"/>
+						<SP HPOS="1008" VPOS="1328" WIDTH="25" HEIGHT="60" ID="sp-61"/>
+						<String HPOS="1033" VPOS="1328" WIDTH="180" HEIGHT="60" ID="s-73" CONTENT="Wuͤrme)"/>
+						<SP HPOS="1213" VPOS="1328" WIDTH="25" HEIGHT="60" ID="sp-62"/>
+						<String HPOS="1238" VPOS="1328" WIDTH="165" HEIGHT="60" ID="s-74" CONTENT="frument"/>
+						<SP HPOS="1403" VPOS="1328" WIDTH="19" HEIGHT="60" ID="sp-63"/>
+						<String HPOS="1422" VPOS="1328" WIDTH="45" HEIGHT="60" ID="s-75" CONTENT="in"/>
+						<SP HPOS="1467" VPOS="1328" WIDTH="30" HEIGHT="60" ID="sp-64"/>
+						<String HPOS="1497" VPOS="1328" WIDTH="75" HEIGHT="60" ID="s-76" CONTENT="dem"/>
+						<SP HPOS="1572" VPOS="1328" WIDTH="30" HEIGHT="60" ID="sp-65"/>
+						<String HPOS="1602" VPOS="1328" WIDTH="155" HEIGHT="60" ID="s-77" CONTENT="land(e)."/>
+						<SP HPOS="1757" VPOS="1328" WIDTH="20" HEIGHT="60" ID="sp-66"/>
+						<String HPOS="1777" VPOS="1328" WIDTH="70" HEIGHT="60" ID="s-78" CONTENT="daʒ"/>
+						<SP HPOS="1847" VPOS="1328" WIDTH="30" HEIGHT="60" ID="sp-67"/>
+						<String HPOS="1877" VPOS="1328" WIDTH="119" HEIGHT="60" ID="s-79" CONTENT="herʒe⸗"/>
+					</TextLine>
+					<TextLine HPOS="1404" VPOS="1388" WIDTH="190" HEIGHT="53" ID="l-14">
+						<String HPOS="1404" VPOS="1388" WIDTH="78" HEIGHT="53" ID="s-80" CONTENT="clich"/>
+						<SP HPOS="1482" VPOS="1388" WIDTH="26" HEIGHT="53" ID="sp-68"/>
+						<String HPOS="1508" VPOS="1388" WIDTH="86" HEIGHT="53" ID="s-81" CONTENT="leid."/>
+					</TextLine>
+					<TextLine HPOS="755" VPOS="1445" WIDTH="925" HEIGHT="60" ID="l-15">
+						<String HPOS="755" VPOS="1445" WIDTH="82" HEIGHT="60" ID="s-82" CONTENT="Daʒ"/>
+						<SP HPOS="837" VPOS="1445" WIDTH="25" HEIGHT="60" ID="sp-69"/>
+						<String HPOS="862" VPOS="1445" WIDTH="146" HEIGHT="60" ID="s-83" CONTENT="nieman"/>
+						<SP HPOS="1008" VPOS="1445" WIDTH="29" HEIGHT="60" ID="sp-70"/>
+						<String HPOS="1037" VPOS="1445" WIDTH="59" HEIGHT="60" ID="s-84" CONTENT="vff"/>
+						<SP HPOS="1096" VPOS="1445" WIDTH="19" HEIGHT="60" ID="sp-71"/>
+						<String HPOS="1115" VPOS="1445" WIDTH="64" HEIGHT="60" ID="s-85" CONTENT="der"/>
+						<SP HPOS="1179" VPOS="1445" WIDTH="19" HEIGHT="60" ID="sp-72"/>
+						<String HPOS="1198" VPOS="1445" WIDTH="142" HEIGHT="60" ID="s-86" CONTENT="ſtroſſen"/>
+						<SP HPOS="1340" VPOS="1445" WIDTH="24" HEIGHT="60" ID="sp-73"/>
+						<String HPOS="1364" VPOS="1445" WIDTH="83" HEIGHT="60" ID="s-87" CONTENT="ging"/>
+						<SP HPOS="1447" VPOS="1445" WIDTH="29" HEIGHT="60" ID="sp-74"/>
+						<String HPOS="1476" VPOS="1445" WIDTH="83" HEIGHT="60" ID="s-88" CONTENT="oder"/>
+						<SP HPOS="1559" VPOS="1445" WIDTH="24" HEIGHT="60" ID="sp-75"/>
+						<String HPOS="1583" VPOS="1445" WIDTH="97" HEIGHT="60" ID="s-89" CONTENT="reit;"/>
+					</TextLine>
+					<TextLine HPOS="755" VPOS="1497" WIDTH="1227" HEIGHT="68" ID="l-16">
+						<String HPOS="755" VPOS="1497" WIDTH="85" HEIGHT="68" ID="s-90" CONTENT="Bitʒ"/>
+						<SP HPOS="840" VPOS="1497" WIDTH="21" HEIGHT="68" ID="sp-76"/>
+						<String HPOS="861" VPOS="1497" WIDTH="43" HEIGHT="68" ID="s-91" CONTENT="an"/>
+						<SP HPOS="904" VPOS="1497" WIDTH="32" HEIGHT="68" ID="sp-77"/>
+						<String HPOS="936" VPOS="1497" WIDTH="53" HEIGHT="68" ID="s-92" CONTENT="die"/>
+						<SP HPOS="989" VPOS="1497" WIDTH="27" HEIGHT="68" ID="sp-78"/>
+						<String HPOS="1016" VPOS="1497" WIDTH="86" HEIGHT="68" ID="s-93" CONTENT="burg"/>
+						<SP HPOS="1102" VPOS="1497" WIDTH="26" HEIGHT="68" ID="sp-79"/>
+						<String HPOS="1128" VPOS="1497" WIDTH="43" HEIGHT="68" ID="s-94" CONTENT="ʒu"/>
+						<SP HPOS="1171" VPOS="1497" WIDTH="32" HEIGHT="68" ID="sp-80"/>
+						<String HPOS="1203" VPOS="1497" WIDTH="155" HEIGHT="68" ID="s-95" CONTENT="Gartten"/>
+						<SP HPOS="1358" VPOS="1497" WIDTH="27" HEIGHT="68" ID="sp-81"/>
+						<String HPOS="1385" VPOS="1497" WIDTH="59" HEIGHT="68" ID="s-96" CONTENT="der"/>
+						<SP HPOS="1444" VPOS="1497" WIDTH="26" HEIGHT="68" ID="sp-82"/>
+						<String HPOS="1470" VPOS="1497" WIDTH="107" HEIGHT="68" ID="s-97" CONTENT="wurm"/>
+						<SP HPOS="1577" VPOS="1497" WIDTH="37" HEIGHT="68" ID="sp-83"/>
+						<String HPOS="1614" VPOS="1497" WIDTH="65" HEIGHT="68" ID="s-98" CONTENT="daʒ"/>
+						<SP HPOS="1679" VPOS="1497" WIDTH="26" HEIGHT="68" ID="sp-84"/>
+						<String HPOS="1705" VPOS="1497" WIDTH="80" HEIGHT="68" ID="s-99" CONTENT="land"/>
+						<SP HPOS="1785" VPOS="1497" WIDTH="27" HEIGHT="68" ID="sp-85"/>
+						<String HPOS="1812" VPOS="1497" WIDTH="170" HEIGHT="68" ID="s-100" CONTENT="betwang"/>
+					</TextLine>
+					<TextLine HPOS="759" VPOS="1563" WIDTH="1227" HEIGHT="63" ID="l-17">
+						<String HPOS="759" VPOS="1563" WIDTH="72" HEIGHT="63" ID="s-101" CONTENT="Suͤ"/>
+						<SP HPOS="831" VPOS="1563" WIDTH="24" HEIGHT="63" ID="sp-86"/>
+						<String HPOS="855" VPOS="1563" WIDTH="155" HEIGHT="63" ID="s-102" CONTENT="mieſtent"/>
+						<SP HPOS="1010" VPOS="1563" WIDTH="19" HEIGHT="63" ID="sp-87"/>
+						<String HPOS="1029" VPOS="1563" WIDTH="54" HEIGHT="63" ID="s-103" CONTENT="ym"/>
+						<SP HPOS="1083" VPOS="1563" WIDTH="24" HEIGHT="63" ID="sp-88"/>
+						<String HPOS="1107" VPOS="1563" WIDTH="188" HEIGHT="63" ID="s-104" CONTENT="entwichen"/>
+						<SP HPOS="1295" VPOS="1563" WIDTH="24" HEIGHT="63" ID="sp-89"/>
+						<String HPOS="1319" VPOS="1563" WIDTH="68" HEIGHT="63" ID="s-105" CONTENT="alle"/>
+						<SP HPOS="1387" VPOS="1563" WIDTH="19" HEIGHT="63" ID="sp-90"/>
+						<String HPOS="1406" VPOS="1563" WIDTH="199" HEIGHT="63" ID="s-106" CONTENT="gemeinlich"/>
+						<SP HPOS="1605" VPOS="1563" WIDTH="24" HEIGHT="63" ID="sp-91"/>
+						<String HPOS="1629" VPOS="1563" WIDTH="125" HEIGHT="63" ID="s-107" CONTENT="ſunder"/>
+						<SP HPOS="1754" VPOS="1563" WIDTH="20" HEIGHT="63" ID="sp-92"/>
+						<String HPOS="1774" VPOS="1563" WIDTH="92" HEIGHT="63" ID="s-108" CONTENT="ieren"/>
+						<SP HPOS="1866" VPOS="1563" WIDTH="24" HEIGHT="63" ID="sp-93"/>
+						<String HPOS="1890" VPOS="1563" WIDTH="96" HEIGHT="63" ID="s-109" CONTENT="dang"/>
+					</TextLine>
+					<TextLine HPOS="994" VPOS="1624" WIDTH="575" HEIGHT="56" ID="l-18">
+						<String HPOS="994" VPOS="1624" WIDTH="99" HEIGHT="56" ID="s-110" CONTENT="Disʒ"/>
+						<SP HPOS="1093" VPOS="1624" WIDTH="23" HEIGHT="56" ID="sp-94"/>
+						<String HPOS="1116" VPOS="1624" WIDTH="166" HEIGHT="56" ID="s-111" CONTENT="geſchicht"/>
+						<SP HPOS="1282" VPOS="1624" WIDTH="19" HEIGHT="56" ID="sp-95"/>
+						<String HPOS="1301" VPOS="1624" WIDTH="66" HEIGHT="56" ID="s-112" CONTENT="ſint"/>
+						<SP HPOS="1367" VPOS="1624" WIDTH="28" HEIGHT="56" ID="sp-96"/>
+						<String HPOS="1395" VPOS="1624" WIDTH="61" HEIGHT="56" ID="s-113" CONTENT="38."/>
+						<SP HPOS="1456" VPOS="1624" WIDTH="19" HEIGHT="56" ID="sp-97"/>
+						<String HPOS="1475" VPOS="1624" WIDTH="94" HEIGHT="56" ID="s-114" CONTENT="fplia"/>
+					</TextLine>
+					<TextLine HPOS="690" VPOS="1736" WIDTH="785" HEIGHT="59" ID="l-19">
+						<String HPOS="690" VPOS="1736" WIDTH="127" HEIGHT="59" ID="s-115" CONTENT="Dann"/>
+						<SP HPOS="817" VPOS="1736" WIDTH="35" HEIGHT="59" ID="sp-98"/>
+						<String HPOS="852" VPOS="1736" WIDTH="78" HEIGHT="59" ID="s-116" CONTENT="auf"/>
+						<SP HPOS="930" VPOS="1736" WIDTH="25" HEIGHT="59" ID="sp-99"/>
+						<String HPOS="955" VPOS="1736" WIDTH="79" HEIGHT="59" ID="s-117" CONTENT="dem"/>
+						<SP HPOS="1034" VPOS="1736" WIDTH="39" HEIGHT="59" ID="sp-100"/>
+						<String HPOS="1073" VPOS="1736" WIDTH="211" HEIGHT="59" ID="s-118" CONTENT="folgenden"/>
+						<SP HPOS="1284" VPOS="1736" WIDTH="34" HEIGHT="59" ID="sp-101"/>
+						<String HPOS="1318" VPOS="1736" WIDTH="157" HEIGHT="59" ID="s-119" CONTENT="Blatte:"/>
+					</TextLine>
+					<TextLine HPOS="952" VPOS="1817" WIDTH="758" HEIGHT="60" ID="l-20">
+						<String HPOS="952" VPOS="1817" WIDTH="92" HEIGHT="60" ID="s-120" CONTENT="Dis"/>
+						<SP HPOS="1044" VPOS="1817" WIDTH="24" HEIGHT="60" ID="sp-102"/>
+						<String HPOS="1068" VPOS="1817" WIDTH="54" HEIGHT="60" ID="s-121" CONTENT="iſt"/>
+						<SP HPOS="1122" VPOS="1817" WIDTH="19" HEIGHT="60" ID="sp-103"/>
+						<String HPOS="1141" VPOS="1817" WIDTH="156" HEIGHT="60" ID="s-122" CONTENT="Wolff"/>
+						<SP HPOS="1297" VPOS="1817" WIDTH="20" HEIGHT="60" ID="sp-104"/>
+						<String HPOS="1317" VPOS="1817" WIDTH="253" HEIGHT="60" ID="s-123" CONTENT="Diettrichʒ"/>
+						<SP HPOS="1570" VPOS="1817" WIDTH="24" HEIGHT="60" ID="sp-105"/>
+						<String HPOS="1594" VPOS="1817" WIDTH="116" HEIGHT="60" ID="s-124" CONTENT="buch."/>
+					</TextLine>
+					<TextLine HPOS="781" VPOS="1889" WIDTH="917" HEIGHT="53" ID="l-21">
+						<String HPOS="781" VPOS="1889" WIDTH="76" HEIGHT="53" ID="s-125" CONTENT="Hie"/>
+						<SP HPOS="857" VPOS="1889" WIDTH="23" HEIGHT="53" ID="sp-106"/>
+						<String HPOS="880" VPOS="1889" WIDTH="126" HEIGHT="53" ID="s-126" CONTENT="muͤgen"/>
+						<SP HPOS="1006" VPOS="1889" WIDTH="31" HEIGHT="53" ID="sp-107"/>
+						<String HPOS="1037" VPOS="1889" WIDTH="36" HEIGHT="53" ID="s-127" CONTENT="ir"/>
+						<SP HPOS="1073" VPOS="1889" WIDTH="23" HEIGHT="53" ID="sp-108"/>
+						<String HPOS="1096" VPOS="1889" WIDTH="81" HEIGHT="53" ID="s-128" CONTENT="gern"/>
+						<SP HPOS="1177" VPOS="1889" WIDTH="31" HEIGHT="53" ID="sp-109"/>
+						<String HPOS="1208" VPOS="1889" WIDTH="104" HEIGHT="53" ID="s-129" CONTENT="hoͤren"/>
+						<SP HPOS="1312" VPOS="1889" WIDTH="31" HEIGHT="53" ID="sp-110"/>
+						<String HPOS="1343" VPOS="1889" WIDTH="122" HEIGHT="53" ID="s-130" CONTENT="ſingen"/>
+						<SP HPOS="1465" VPOS="1889" WIDTH="27" HEIGHT="53" ID="sp-111"/>
+						<String HPOS="1492" VPOS="1889" WIDTH="72" HEIGHT="53" ID="s-131" CONTENT="vnd"/>
+						<SP HPOS="1564" VPOS="1889" WIDTH="27" HEIGHT="53" ID="sp-112"/>
+						<String HPOS="1591" VPOS="1889" WIDTH="107" HEIGHT="53" ID="s-132" CONTENT="ſagen"/>
+					</TextLine>
+					<TextLine HPOS="781" VPOS="1944" WIDTH="984" HEIGHT="54" ID="l-22">
+						<String HPOS="781" VPOS="1944" WIDTH="89" HEIGHT="54" ID="s-133" CONTENT="Von"/>
+						<SP HPOS="870" VPOS="1944" WIDTH="23" HEIGHT="54" ID="sp-113"/>
+						<String HPOS="893" VPOS="1944" WIDTH="125" HEIGHT="54" ID="s-134" CONTENT="kluger"/>
+						<SP HPOS="1018" VPOS="1944" WIDTH="27" HEIGHT="54" ID="sp-114"/>
+						<String HPOS="1045" VPOS="1944" WIDTH="201" HEIGHT="54" ID="s-135" CONTENT="ofenduͤre,"/>
+						<SP HPOS="1246" VPOS="1944" WIDTH="32" HEIGHT="54" ID="sp-115"/>
+						<String HPOS="1278" VPOS="1944" WIDTH="45" HEIGHT="54" ID="s-136" CONTENT="do"/>
+						<SP HPOS="1323" VPOS="1944" WIDTH="27" HEIGHT="54" ID="sp-116"/>
+						<String HPOS="1350" VPOS="1944" WIDTH="161" HEIGHT="54" ID="s-137" CONTENT="mieſſent"/>
+						<SP HPOS="1511" VPOS="1944" WIDTH="22" HEIGHT="54" ID="sp-117"/>
+						<String HPOS="1533" VPOS="1944" WIDTH="32" HEIGHT="54" ID="s-138" CONTENT="ir"/>
+						<SP HPOS="1565" VPOS="1944" WIDTH="22" HEIGHT="54" ID="sp-118"/>
+						<String HPOS="1587" VPOS="1944" WIDTH="178" HEIGHT="54" ID="s-139" CONTENT="getagen:"/>
+					</TextLine>
+					<TextLine HPOS="789" VPOS="1994" WIDTH="1132" HEIGHT="66" ID="l-23">
+						<String HPOS="789" VPOS="1994" WIDTH="54" HEIGHT="66" ID="s-140" CONTENT="Eʒ"/>
+						<SP HPOS="843" VPOS="1994" WIDTH="20" HEIGHT="66" ID="sp-119"/>
+						<String HPOS="863" VPOS="1994" WIDTH="114" HEIGHT="66" ID="s-141" CONTENT="wartt"/>
+						<SP HPOS="977" VPOS="1994" WIDTH="20" HEIGHT="66" ID="sp-120"/>
+						<String HPOS="997" VPOS="1994" WIDTH="55" HEIGHT="66" ID="s-142" CONTENT="ein"/>
+						<SP HPOS="1052" VPOS="1994" WIDTH="25" HEIGHT="66" ID="sp-121"/>
+						<String HPOS="1077" VPOS="1994" WIDTH="84" HEIGHT="66" ID="s-143" CONTENT="buͦch" TAGREFS="RT-2"/>
+						<SP HPOS="1161" VPOS="1994" WIDTH="30" HEIGHT="66" ID="sp-122"/>
+						<String HPOS="1191" VPOS="1994" WIDTH="209" HEIGHT="66" ID="s-144" CONTENT="gefunden,"/>
+						<SP HPOS="1400" VPOS="1994" WIDTH="25" HEIGHT="66" ID="sp-123"/>
+						<String HPOS="1425" VPOS="1994" WIDTH="64" HEIGHT="66" ID="s-145" CONTENT="Toʒ"/>
+						<SP HPOS="1489" VPOS="1994" WIDTH="25" HEIGHT="66" ID="sp-124"/>
+						<String HPOS="1514" VPOS="1994" WIDTH="85" HEIGHT="66" ID="s-146" CONTENT="ſage"/>
+						<SP HPOS="1599" VPOS="1994" WIDTH="20" HEIGHT="66" ID="sp-125"/>
+						<String HPOS="1619" VPOS="1994" WIDTH="49" HEIGHT="66" ID="s-147" CONTENT="ich"/>
+						<SP HPOS="1668" VPOS="1994" WIDTH="25" HEIGHT="66" ID="sp-126"/>
+						<String HPOS="1693" VPOS="1994" WIDTH="60" HEIGHT="66" ID="s-148" CONTENT="uͤch"/>
+						<SP HPOS="1753" VPOS="1994" WIDTH="30" HEIGHT="66" ID="sp-127"/>
+						<String HPOS="1783" VPOS="1994" WIDTH="138" HEIGHT="66" ID="s-149" CONTENT="firwor,"/>
+					</TextLine>
+					<TextLine HPOS="787" VPOS="2054" WIDTH="1126" HEIGHT="63" ID="l-24">
+						<String HPOS="787" VPOS="2054" WIDTH="55" HEIGHT="63" ID="s-150" CONTENT="Ʒu"/>
+						<SP HPOS="842" VPOS="2054" WIDTH="26" HEIGHT="63" ID="sp-128"/>
+						<String HPOS="868" VPOS="2054" WIDTH="228" HEIGHT="63" ID="s-151" CONTENT="Dageminde" TAGREFS="RT-2"/>
+						<SP HPOS="1096" VPOS="2054" WIDTH="26" HEIGHT="63" ID="sp-129"/>
+						<String HPOS="1122" VPOS="2054" WIDTH="40" HEIGHT="63" ID="s-152" CONTENT="in" TAGREFS="RT-2"/>
+						<SP HPOS="1162" VPOS="2054" WIDTH="26" HEIGHT="63" ID="sp-130"/>
+						<String HPOS="1188" VPOS="2054" WIDTH="71" HEIGHT="63" ID="s-153" CONTENT="dem" TAGREFS="RT-2"/>
+						<SP HPOS="1259" VPOS="2054" WIDTH="35" HEIGHT="63" ID="sp-131"/>
+						<String HPOS="1294" VPOS="2054" WIDTH="142" HEIGHT="63" ID="s-154" CONTENT="eloſter," TAGREFS="RT-2"/>
+						<SP HPOS="1436" VPOS="2054" WIDTH="26" HEIGHT="63" ID="sp-132"/>
+						<String HPOS="1462" VPOS="2054" WIDTH="46" HEIGHT="63" ID="s-155" CONTENT="do"/>
+						<SP HPOS="1508" VPOS="2054" WIDTH="25" HEIGHT="63" ID="sp-133"/>
+						<String HPOS="1533" VPOS="2054" WIDTH="61" HEIGHT="63" ID="s-156" CONTENT="lag"/>
+						<SP HPOS="1594" VPOS="2054" WIDTH="25" HEIGHT="63" ID="sp-134"/>
+						<String HPOS="1619" VPOS="2054" WIDTH="36" HEIGHT="63" ID="s-157" CONTENT="eʒ"/>
+						<SP HPOS="1655" VPOS="2054" WIDTH="25" HEIGHT="63" ID="sp-135"/>
+						<String HPOS="1680" VPOS="2054" WIDTH="127" HEIGHT="63" ID="s-158" CONTENT="manig"/>
+						<SP HPOS="1807" VPOS="2054" WIDTH="25" HEIGHT="63" ID="sp-136"/>
+						<String HPOS="1832" VPOS="2054" WIDTH="81" HEIGHT="63" ID="s-159" CONTENT="jor;"/>
+					</TextLine>
+					<TextLine HPOS="789" VPOS="2113" WIDTH="955" HEIGHT="56" ID="l-25">
+						<String HPOS="789" VPOS="2113" WIDTH="92" HEIGHT="56" ID="s-160" CONTENT="Sitt"/>
+						<SP HPOS="881" VPOS="2113" WIDTH="17" HEIGHT="56" ID="sp-137"/>
+						<String HPOS="898" VPOS="2113" WIDTH="114" HEIGHT="56" ID="s-161" CONTENT="wartt"/>
+						<SP HPOS="1012" VPOS="2113" WIDTH="27" HEIGHT="56" ID="sp-138"/>
+						<String HPOS="1039" VPOS="2113" WIDTH="35" HEIGHT="56" ID="s-162" CONTENT="eʒ"/>
+						<SP HPOS="1074" VPOS="2113" WIDTH="21" HEIGHT="56" ID="sp-139"/>
+						<String HPOS="1095" VPOS="2113" WIDTH="163" HEIGHT="56" ID="s-163" CONTENT="geſendet"/>
+						<SP HPOS="1258" VPOS="2113" WIDTH="26" HEIGHT="56" ID="sp-140"/>
+						<String HPOS="1284" VPOS="2113" WIDTH="57" HEIGHT="56" ID="s-164" CONTENT="uff"/>
+						<SP HPOS="1341" VPOS="2113" WIDTH="22" HEIGHT="56" ID="sp-141"/>
+						<String HPOS="1363" VPOS="2113" WIDTH="101" HEIGHT="56" ID="s-165" CONTENT="durch"/>
+						<SP HPOS="1464" VPOS="2113" WIDTH="26" HEIGHT="56" ID="sp-142"/>
+						<String HPOS="1490" VPOS="2113" WIDTH="132" HEIGHT="56" ID="s-166" CONTENT="Peiger" TAGREFS="RT-2"/>
+						<SP HPOS="1622" VPOS="2113" WIDTH="22" HEIGHT="56" ID="sp-143"/>
+						<String HPOS="1644" VPOS="2113" WIDTH="100" HEIGHT="56" ID="s-167" CONTENT="lant," TAGREFS="RT-2"/>
+					</TextLine>
+					<TextLine HPOS="785" VPOS="2161" WIDTH="1044" HEIGHT="74" ID="l-26">
+						<String HPOS="785" VPOS="2161" WIDTH="94" HEIGHT="74" ID="s-168" CONTENT="Dem"/>
+						<SP HPOS="879" VPOS="2161" WIDTH="35" HEIGHT="74" ID="sp-144"/>
+						<String HPOS="914" VPOS="2161" WIDTH="146" HEIGHT="74" ID="s-169" CONTENT="biſchoff" TAGREFS="RT-2"/>
+						<SP HPOS="1060" VPOS="2161" WIDTH="18" HEIGHT="74" ID="sp-145"/>
+						<String HPOS="1078" VPOS="2161" WIDTH="71" HEIGHT="74" ID="s-170" CONTENT="von" TAGREFS="RT-2"/>
+						<SP HPOS="1149" VPOS="2161" WIDTH="23" HEIGHT="74" ID="sp-146"/>
+						<String HPOS="1172" VPOS="2161" WIDTH="159" HEIGHT="74" ID="s-171" CONTENT="Einſtett" TAGREFS="RT-2"/>
+						<SP HPOS="1331" VPOS="2161" WIDTH="17" HEIGHT="74" ID="sp-147"/>
+						<String HPOS="1348" VPOS="2161" WIDTH="118" HEIGHT="74" ID="s-172" CONTENT="waree"/>
+						<SP HPOS="1466" VPOS="2161" WIDTH="23" HEIGHT="74" ID="sp-148"/>
+						<String HPOS="1489" VPOS="2161" WIDTH="59" HEIGHT="74" ID="s-173" CONTENT="diʒ"/>
+						<SP HPOS="1548" VPOS="2161" WIDTH="23" HEIGHT="74" ID="sp-149"/>
+						<String HPOS="1571" VPOS="2161" WIDTH="77" HEIGHT="74" ID="s-174" CONTENT="Fuch"/>
+						<SP HPOS="1648" VPOS="2161" WIDTH="29" HEIGHT="74" ID="sp-150"/>
+						<String HPOS="1677" VPOS="2161" WIDTH="152" HEIGHT="74" ID="s-175" CONTENT="bekant;"/>
+					</TextLine>
+					<TextLine HPOS="789" VPOS="2235" WIDTH="845" HEIGHT="55" ID="l-27">
+						<String HPOS="789" VPOS="2235" WIDTH="54" HEIGHT="55" ID="s-176" CONTENT="Er"/>
+						<SP HPOS="843" VPOS="2235" WIDTH="22" HEIGHT="55" ID="sp-151"/>
+						<String HPOS="865" VPOS="2235" WIDTH="126" HEIGHT="55" ID="s-177" CONTENT="kirʒett"/>
+						<SP HPOS="991" VPOS="2235" WIDTH="27" HEIGHT="55" ID="sp-152"/>
+						<String HPOS="1018" VPOS="2235" WIDTH="50" HEIGHT="55" ID="s-178" CONTENT="ym"/>
+						<SP HPOS="1068" VPOS="2235" WIDTH="31" HEIGHT="55" ID="sp-153"/>
+						<String HPOS="1099" VPOS="2235" WIDTH="72" HEIGHT="55" ID="s-179" CONTENT="dar"/>
+						<SP HPOS="1171" VPOS="2235" WIDTH="23" HEIGHT="55" ID="sp-154"/>
+						<String HPOS="1194" VPOS="2235" WIDTH="45" HEIGHT="55" ID="s-180" CONTENT="ob"/>
+						<SP HPOS="1239" VPOS="2235" WIDTH="27" HEIGHT="55" ID="sp-155"/>
+						<String HPOS="1266" VPOS="2235" WIDTH="54" HEIGHT="55" ID="s-181" CONTENT="die"/>
+						<SP HPOS="1320" VPOS="2235" WIDTH="22" HEIGHT="55" ID="sp-156"/>
+						<String HPOS="1342" VPOS="2235" WIDTH="99" HEIGHT="55" ID="s-182" CONTENT="wille"/>
+						<SP HPOS="1441" VPOS="2235" WIDTH="23" HEIGHT="55" ID="sp-157"/>
+						<String HPOS="1464" VPOS="2235" WIDTH="76" HEIGHT="55" ID="s-183" CONTENT="xvij"/>
+						<SP HPOS="1540" VPOS="2235" WIDTH="23" HEIGHT="55" ID="sp-158"/>
+						<String HPOS="1563" VPOS="2235" WIDTH="71" HEIGHT="55" ID="s-184" CONTENT="jor,"/>
+					</TextLine>
+					<TextLine HPOS="787" VPOS="2285" WIDTH="1177" HEIGHT="59" ID="l-28">
+						<String HPOS="787" VPOS="2285" WIDTH="62" HEIGHT="59" ID="s-185" CONTENT="Do"/>
+						<SP HPOS="849" VPOS="2285" WIDTH="32" HEIGHT="59" ID="sp-159"/>
+						<String HPOS="881" VPOS="2285" WIDTH="90" HEIGHT="59" ID="s-186" CONTENT="vant"/>
+						<SP HPOS="971" VPOS="2285" WIDTH="27" HEIGHT="59" ID="sp-160"/>
+						<String HPOS="998" VPOS="2285" WIDTH="36" HEIGHT="59" ID="s-187" CONTENT="er"/>
+						<SP HPOS="1034" VPOS="2285" WIDTH="27" HEIGHT="59" ID="sp-161"/>
+						<String HPOS="1061" VPOS="2285" WIDTH="63" HEIGHT="59" ID="s-188" CONTENT="dar"/>
+						<SP HPOS="1124" VPOS="2285" WIDTH="27" HEIGHT="59" ID="sp-162"/>
+						<String HPOS="1151" VPOS="2285" WIDTH="94" HEIGHT="59" ID="s-189" CONTENT="ynne"/>
+						<SP HPOS="1245" VPOS="2285" WIDTH="27" HEIGHT="59" ID="sp-163"/>
+						<String HPOS="1272" VPOS="2285" WIDTH="189" HEIGHT="59" ID="s-190" CONTENT="ofenduͤre,"/>
+						<SP HPOS="1461" VPOS="2285" WIDTH="32" HEIGHT="59" ID="sp-164"/>
+						<String HPOS="1493" VPOS="2285" WIDTH="36" HEIGHT="59" ID="s-191" CONTENT="dʒ"/>
+						<SP HPOS="1529" VPOS="2285" WIDTH="27" HEIGHT="59" ID="sp-165"/>
+						<String HPOS="1556" VPOS="2285" WIDTH="81" HEIGHT="59" ID="s-192" CONTENT="ſage"/>
+						<SP HPOS="1637" VPOS="2285" WIDTH="27" HEIGHT="59" ID="sp-166"/>
+						<String HPOS="1664" VPOS="2285" WIDTH="49" HEIGHT="59" ID="s-193" CONTENT="ich"/>
+						<SP HPOS="1713" VPOS="2285" WIDTH="27" HEIGHT="59" ID="sp-167"/>
+						<String HPOS="1740" VPOS="2285" WIDTH="59" HEIGHT="59" ID="s-194" CONTENT="uͤch"/>
+						<SP HPOS="1799" VPOS="2285" WIDTH="22" HEIGHT="59" ID="sp-168"/>
+						<String HPOS="1821" VPOS="2285" WIDTH="143" HEIGHT="59" ID="s-195" CONTENT="firwor,"/>
+					</TextLine>
+					<TextLine HPOS="787" VPOS="2338" WIDTH="957" HEIGHT="66" ID="l-29">
+						<String HPOS="787" VPOS="2338" WIDTH="151" HEIGHT="66" ID="s-196" CONTENT="Wanne"/>
+						<SP HPOS="938" VPOS="2338" WIDTH="24" HEIGHT="66" ID="sp-169"/>
+						<String HPOS="962" VPOS="2338" WIDTH="69" HEIGHT="66" ID="s-197" CONTENT="den"/>
+						<SP HPOS="1031" VPOS="2338" WIDTH="24" HEIGHT="66" ID="sp-170"/>
+						<String HPOS="1055" VPOS="2338" WIDTH="118" HEIGHT="66" ID="s-198" CONTENT="firſten"/>
+						<SP HPOS="1173" VPOS="2338" WIDTH="24" HEIGHT="66" ID="sp-171"/>
+						<String HPOS="1197" VPOS="2338" WIDTH="181" HEIGHT="66" ID="s-199" CONTENT="vertroſʒ,"/>
+						<SP HPOS="1378" VPOS="2338" WIDTH="29" HEIGHT="66" ID="sp-172"/>
+						<String HPOS="1407" VPOS="2338" WIDTH="59" HEIGHT="66" ID="s-200" CONTENT="dis"/>
+						<SP HPOS="1466" VPOS="2338" WIDTH="24" HEIGHT="66" ID="sp-173"/>
+						<String HPOS="1490" VPOS="2338" WIDTH="79" HEIGHT="66" ID="s-201" CONTENT="buͦch"/>
+						<SP HPOS="1569" VPOS="2338" WIDTH="29" HEIGHT="66" ID="sp-174"/>
+						<String HPOS="1598" VPOS="2338" WIDTH="34" HEIGHT="66" ID="s-202" CONTENT="er"/>
+						<SP HPOS="1632" VPOS="2338" WIDTH="25" HEIGHT="66" ID="sp-175"/>
+						<String HPOS="1657" VPOS="2338" WIDTH="87" HEIGHT="66" ID="s-203" CONTENT="laſʒ,"/>
+					</TextLine>
+					<TextLine HPOS="789" VPOS="2402" WIDTH="994" HEIGHT="56" ID="l-30">
+						<String HPOS="789" VPOS="2402" WIDTH="136" HEIGHT="56" ID="s-204" CONTENT="Selʒen"/>
+						<SP HPOS="925" VPOS="2402" WIDTH="24" HEIGHT="56" ID="sp-176"/>
+						<String HPOS="949" VPOS="2402" WIDTH="177" HEIGHT="56" ID="s-205" CONTENT="wunder,"/>
+						<SP HPOS="1126" VPOS="2402" WIDTH="28" HEIGHT="56" ID="sp-177"/>
+						<String HPOS="1154" VPOS="2402" WIDTH="69" HEIGHT="56" ID="s-206" CONTENT="daʒ"/>
+						<SP HPOS="1223" VPOS="2402" WIDTH="22" HEIGHT="56" ID="sp-178"/>
+						<String HPOS="1245" VPOS="2402" WIDTH="69" HEIGHT="56" ID="s-207" CONTENT="dar"/>
+						<SP HPOS="1314" VPOS="2402" WIDTH="22" HEIGHT="56" ID="sp-179"/>
+						<String HPOS="1336" VPOS="2402" WIDTH="97" HEIGHT="56" ID="s-208" CONTENT="ynne"/>
+						<SP HPOS="1433" VPOS="2402" WIDTH="22" HEIGHT="56" ID="sp-180"/>
+						<String HPOS="1455" VPOS="2402" WIDTH="192" HEIGHT="56" ID="s-209" CONTENT="geſchriben"/>
+						<SP HPOS="1647" VPOS="2402" WIDTH="27" HEIGHT="56" ID="sp-181"/>
+						<String HPOS="1674" VPOS="2402" WIDTH="109" HEIGHT="56" ID="s-210" CONTENT="was;"/>
+					</TextLine>
+					<TextLine HPOS="791" VPOS="2456" WIDTH="1122" HEIGHT="53" ID="l-31">
+						<String HPOS="791" VPOS="2456" WIDTH="56" HEIGHT="53" ID="s-211" CONTENT="Er"/>
+						<SP HPOS="847" VPOS="2456" WIDTH="21" HEIGHT="53" ID="sp-182"/>
+						<String HPOS="868" VPOS="2456" WIDTH="126" HEIGHT="53" ID="s-212" CONTENT="kirʒett"/>
+						<SP HPOS="994" VPOS="2456" WIDTH="17" HEIGHT="53" ID="sp-183"/>
+						<String HPOS="1011" VPOS="2456" WIDTH="56" HEIGHT="53" ID="s-213" CONTENT="ym"/>
+						<SP HPOS="1067" VPOS="2456" WIDTH="30" HEIGHT="53" ID="sp-184"/>
+						<String HPOS="1097" VPOS="2456" WIDTH="70" HEIGHT="53" ID="s-214" CONTENT="dar"/>
+						<SP HPOS="1167" VPOS="2456" WIDTH="21" HEIGHT="53" ID="sp-185"/>
+						<String HPOS="1188" VPOS="2456" WIDTH="43" HEIGHT="53" ID="s-215" CONTENT="ob"/>
+						<SP HPOS="1231" VPOS="2456" WIDTH="31" HEIGHT="53" ID="sp-186"/>
+						<String HPOS="1262" VPOS="2456" WIDTH="56" HEIGHT="53" ID="s-216" CONTENT="die"/>
+						<SP HPOS="1318" VPOS="2456" WIDTH="21" HEIGHT="53" ID="sp-187"/>
+						<String HPOS="1339" VPOS="2456" WIDTH="121" HEIGHT="53" ID="s-217" CONTENT="wille,"/>
+						<SP HPOS="1460" VPOS="2456" WIDTH="22" HEIGHT="53" ID="sp-188"/>
+						<String HPOS="1482" VPOS="2456" WIDTH="60" HEIGHT="53" ID="s-218" CONTENT="bitʒ"/>
+						<SP HPOS="1542" VPOS="2456" WIDTH="22" HEIGHT="53" ID="sp-189"/>
+						<String HPOS="1564" VPOS="2456" WIDTH="35" HEIGHT="53" ID="s-219" CONTENT="er"/>
+						<SP HPOS="1599" VPOS="2456" WIDTH="21" HEIGHT="53" ID="sp-190"/>
+						<String HPOS="1620" VPOS="2456" WIDTH="52" HEIGHT="53" ID="s-220" CONTENT="ſin"/>
+						<SP HPOS="1672" VPOS="2456" WIDTH="26" HEIGHT="53" ID="sp-191"/>
+						<String HPOS="1698" VPOS="2456" WIDTH="91" HEIGHT="53" ID="s-221" CONTENT="ende"/>
+						<SP HPOS="1789" VPOS="2456" WIDTH="26" HEIGHT="53" ID="sp-192"/>
+						<String HPOS="1815" VPOS="2456" WIDTH="98" HEIGHT="53" ID="s-222" CONTENT="nam."/>
+					</TextLine>
+					<TextLine HPOS="789" VPOS="2511" WIDTH="786" HEIGHT="56" ID="l-32">
+						<String HPOS="789" VPOS="2511" WIDTH="106" HEIGHT="56" ID="s-223" CONTENT="Nach"/>
+						<SP HPOS="895" VPOS="2511" WIDTH="23" HEIGHT="56" ID="sp-193"/>
+						<String HPOS="918" VPOS="2511" WIDTH="60" HEIGHT="56" ID="s-224" CONTENT="ſim"/>
+						<SP HPOS="978" VPOS="2511" WIDTH="28" HEIGHT="56" ID="sp-194"/>
+						<String HPOS="1006" VPOS="2511" WIDTH="93" HEIGHT="56" ID="s-225" CONTENT="dode"/>
+						<SP HPOS="1099" VPOS="2511" WIDTH="23" HEIGHT="56" ID="sp-195"/>
+						<String HPOS="1122" VPOS="2511" WIDTH="79" HEIGHT="56" ID="s-226" CONTENT="laſſʒ"/>
+						<SP HPOS="1201" VPOS="2511" WIDTH="28" HEIGHT="56" ID="sp-196"/>
+						<String HPOS="1229" VPOS="2511" WIDTH="37" HEIGHT="56" ID="s-227" CONTENT="eʒ"/>
+						<SP HPOS="1266" VPOS="2511" WIDTH="23" HEIGHT="56" ID="sp-197"/>
+						<String HPOS="1289" VPOS="2511" WIDTH="46" HEIGHT="56" ID="s-228" CONTENT="ſin"/>
+						<SP HPOS="1335" VPOS="2511" WIDTH="28" HEIGHT="56" ID="sp-198"/>
+						<String HPOS="1363" VPOS="2511" WIDTH="212" HEIGHT="56" ID="s-229" CONTENT="kappelon;" TAGREFS="RT-2"/>
+					</TextLine>
+					<TextLine HPOS="789" VPOS="2569" WIDTH="1016" HEIGHT="52" ID="l-33">
+						<String HPOS="789" VPOS="2569" WIDTH="69" HEIGHT="52" ID="s-230" CONTENT="Ho"/>
+						<SP HPOS="858" VPOS="2569" WIDTH="25" HEIGHT="52" ID="sp-199"/>
+						<String HPOS="883" VPOS="2569" WIDTH="39" HEIGHT="52" ID="s-231" CONTENT="er"/>
+						<SP HPOS="922" VPOS="2569" WIDTH="26" HEIGHT="52" ID="sp-200"/>
+						<String HPOS="948" VPOS="2569" WIDTH="52" HEIGHT="52" ID="s-232" CONTENT="dig"/>
+						<SP HPOS="1000" VPOS="2569" WIDTH="26" HEIGHT="52" ID="sp-201"/>
+						<String HPOS="1026" VPOS="2569" WIDTH="82" HEIGHT="52" ID="s-233" CONTENT="buͦch"/>
+						<SP HPOS="1108" VPOS="2569" WIDTH="25" HEIGHT="52" ID="sp-202"/>
+						<String HPOS="1133" VPOS="2569" WIDTH="199" HEIGHT="52" ID="s-234" CONTENT="uͤberlaſſʒ."/>
+						<SP HPOS="1332" VPOS="2569" WIDTH="30" HEIGHT="52" ID="sp-203"/>
+						<String HPOS="1362" VPOS="2569" WIDTH="47" HEIGHT="52" ID="s-235" CONTENT="an"/>
+						<SP HPOS="1409" VPOS="2569" WIDTH="31" HEIGHT="52" ID="sp-204"/>
+						<String HPOS="1440" VPOS="2569" WIDTH="47" HEIGHT="52" ID="s-236" CONTENT="ſin"/>
+						<SP HPOS="1487" VPOS="2569" WIDTH="30" HEIGHT="52" ID="sp-205"/>
+						<String HPOS="1517" VPOS="2569" WIDTH="73" HEIGHT="52" ID="s-237" CONTENT="arm"/>
+						<SP HPOS="1590" VPOS="2569" WIDTH="35" HEIGHT="52" ID="sp-206"/>
+						<String HPOS="1625" VPOS="2569" WIDTH="52" HEIGHT="52" ID="s-238" CONTENT="erʒ"/>
+						<SP HPOS="1677" VPOS="2569" WIDTH="25" HEIGHT="52" ID="sp-207"/>
+						<String HPOS="1702" VPOS="2569" WIDTH="103" HEIGHT="52" ID="s-239" CONTENT="nam,"/>
+					</TextLine>
+					<TextLine HPOS="795" VPOS="2625" WIDTH="1042" HEIGHT="59" ID="l-34">
+						<String HPOS="795" VPOS="2625" WIDTH="50" HEIGHT="59" ID="s-240" CONTENT="Er"/>
+						<SP HPOS="845" VPOS="2625" WIDTH="28" HEIGHT="59" ID="sp-208"/>
+						<String HPOS="873" VPOS="2625" WIDTH="86" HEIGHT="59" ID="s-241" CONTENT="drug"/>
+						<SP HPOS="959" VPOS="2625" WIDTH="28" HEIGHT="59" ID="sp-209"/>
+						<String HPOS="987" VPOS="2625" WIDTH="41" HEIGHT="59" ID="s-242" CONTENT="eʒ"/>
+						<SP HPOS="1028" VPOS="2625" WIDTH="23" HEIGHT="59" ID="sp-210"/>
+						<String HPOS="1051" VPOS="2625" WIDTH="36" HEIGHT="59" ID="s-243" CONTENT="in"/>
+						<SP HPOS="1087" VPOS="2625" WIDTH="24" HEIGHT="59" ID="sp-211"/>
+						<String HPOS="1111" VPOS="2625" WIDTH="64" HEIGHT="59" ID="s-244" CONTENT="daʒ"/>
+						<SP HPOS="1175" VPOS="2625" WIDTH="27" HEIGHT="59" ID="sp-212"/>
+						<String HPOS="1202" VPOS="2625" WIDTH="119" HEIGHT="59" ID="s-245" CONTENT="cloſter"/>
+						<SP HPOS="1321" VPOS="2625" WIDTH="22" HEIGHT="59" ID="sp-213"/>
+						<String HPOS="1343" VPOS="2625" WIDTH="51" HEIGHT="59" ID="s-246" CONTENT="fir"/>
+						<SP HPOS="1394" VPOS="2625" WIDTH="23" HEIGHT="59" ID="sp-214"/>
+						<String HPOS="1417" VPOS="2625" WIDTH="55" HEIGHT="59" ID="s-247" CONTENT="die"/>
+						<SP HPOS="1472" VPOS="2625" WIDTH="23" HEIGHT="59" ID="sp-215"/>
+						<String HPOS="1495" VPOS="2625" WIDTH="114" HEIGHT="59" ID="s-248" CONTENT="frowe"/>
+						<SP HPOS="1609" VPOS="2625" WIDTH="27" HEIGHT="59" ID="sp-216"/>
+						<String HPOS="1636" VPOS="2625" WIDTH="201" HEIGHT="59" ID="s-249" CONTENT="wolgetan,"/>
+					</TextLine>
+					<TextLine HPOS="793" VPOS="2672" WIDTH="718" HEIGHT="72" ID="l-35">
+						<String HPOS="793" VPOS="2672" WIDTH="55" HEIGHT="72" ID="s-250" CONTENT="Dʒ"/>
+						<SP HPOS="848" VPOS="2672" WIDTH="22" HEIGHT="72" ID="sp-217"/>
+						<String HPOS="870" VPOS="2672" WIDTH="50" HEIGHT="72" ID="s-251" CONTENT="ʒuͦ"/>
+						<SP HPOS="920" VPOS="2672" WIDTH="22" HEIGHT="72" ID="sp-218"/>
+						<String HPOS="942" VPOS="2672" WIDTH="177" HEIGHT="72" ID="s-252" CONTENT="Walpurg" TAGREFS="RT-2"/>
+						<SP HPOS="1119" VPOS="2672" WIDTH="27" HEIGHT="72" ID="sp-219"/>
+						<String HPOS="1146" VPOS="2672" WIDTH="51" HEIGHT="72" ID="s-253" CONTENT="ʒuͦ"/>
+						<SP HPOS="1197" VPOS="2672" WIDTH="16" HEIGHT="72" ID="sp-220"/>
+						<String HPOS="1213" VPOS="2672" WIDTH="177" HEIGHT="72" ID="s-254" CONTENT="Einſtette" TAGREFS="RT-2"/>
+						<SP HPOS="1390" VPOS="2672" WIDTH="22" HEIGHT="72" ID="sp-221"/>
+						<String HPOS="1412" VPOS="2672" WIDTH="98" HEIGHT="72" ID="s-255" CONTENT="ſtott."/>
+					</TextLine>
+					<TextLine HPOS="793" VPOS="2738" WIDTH="1145" HEIGHT="60" ID="l-36">
+						<String HPOS="793" VPOS="2738" WIDTH="178" HEIGHT="60" ID="s-256" CONTENT="Merkent"/>
+						<SP HPOS="971" VPOS="2738" WIDTH="24" HEIGHT="60" ID="sp-222"/>
+						<String HPOS="995" VPOS="2738" WIDTH="67" HEIGHT="60" ID="s-257" CONTENT="von"/>
+						<SP HPOS="1062" VPOS="2738" WIDTH="29" HEIGHT="60" ID="sp-223"/>
+						<String HPOS="1091" VPOS="2738" WIDTH="73" HEIGHT="60" ID="s-258" CONTENT="dem"/>
+						<SP HPOS="1164" VPOS="2738" WIDTH="33" HEIGHT="60" ID="sp-224"/>
+						<String HPOS="1197" VPOS="2738" WIDTH="159" HEIGHT="60" ID="s-259" CONTENT="buͤchte),"/>
+						<SP HPOS="1356" VPOS="2738" WIDTH="34" HEIGHT="60" ID="sp-225"/>
+						<String HPOS="1390" VPOS="2738" WIDTH="62" HEIGHT="60" ID="s-260" CONTENT="wie"/>
+						<SP HPOS="1452" VPOS="2738" WIDTH="29" HEIGHT="60" ID="sp-226"/>
+						<String HPOS="1481" VPOS="2738" WIDTH="34" HEIGHT="60" ID="s-261" CONTENT="eʒ"/>
+						<SP HPOS="1515" VPOS="2738" WIDTH="24" HEIGHT="60" ID="sp-227"/>
+						<String HPOS="1539" VPOS="2738" WIDTH="58" HEIGHT="60" ID="s-262" CONTENT="ſich"/>
+						<SP HPOS="1597" VPOS="2738" WIDTH="29" HEIGHT="60" ID="sp-228"/>
+						<String HPOS="1626" VPOS="2738" WIDTH="202" HEIGHT="60" ID="s-263" CONTENT="ʒerbreittet"/>
+						<SP HPOS="1828" VPOS="2738" WIDTH="19" HEIGHT="60" ID="sp-229"/>
+						<String HPOS="1847" VPOS="2738" WIDTH="91" HEIGHT="60" ID="s-264" CONTENT="hat:"/>
+					</TextLine>
+					<TextLine HPOS="789" VPOS="2794" WIDTH="994" HEIGHT="65" ID="l-37">
+						<String HPOS="789" VPOS="2794" WIDTH="81" HEIGHT="65" ID="s-265" CONTENT="Die"/>
+						<SP HPOS="870" VPOS="2794" WIDTH="25" HEIGHT="65" ID="sp-230"/>
+						<String HPOS="895" VPOS="2794" WIDTH="137" HEIGHT="65" ID="s-266" CONTENT="eptſſin" TAGREFS="RT-2"/>
+						<SP HPOS="1032" VPOS="2794" WIDTH="31" HEIGHT="65" ID="sp-231"/>
+						<String HPOS="1063" VPOS="2794" WIDTH="76" HEIGHT="65" ID="s-267" CONTENT="waʒ"/>
+						<SP HPOS="1139" VPOS="2794" WIDTH="20" HEIGHT="65" ID="sp-232"/>
+						<String HPOS="1159" VPOS="2794" WIDTH="178" HEIGHT="65" ID="s-268" CONTENT="ſchoͤnle),"/>
+						<SP HPOS="1337" VPOS="2794" WIDTH="30" HEIGHT="65" ID="sp-233"/>
+						<String HPOS="1367" VPOS="2794" WIDTH="71" HEIGHT="65" ID="s-269" CONTENT="alſo"/>
+						<SP HPOS="1438" VPOS="2794" WIDTH="26" HEIGHT="65" ID="sp-234"/>
+						<String HPOS="1464" VPOS="2794" WIDTH="71" HEIGHT="65" ID="s-270" CONTENT="unʒ"/>
+						<SP HPOS="1535" VPOS="2794" WIDTH="25" HEIGHT="65" ID="sp-235"/>
+						<String HPOS="1560" VPOS="2794" WIDTH="46" HEIGHT="65" ID="s-271" CONTENT="iſt"/>
+						<SP HPOS="1606" VPOS="2794" WIDTH="25" HEIGHT="65" ID="sp-236"/>
+						<String HPOS="1631" VPOS="2794" WIDTH="152" HEIGHT="65" ID="s-272" CONTENT="geſaget,"/>
+					</TextLine>
+					<TextLine HPOS="799" VPOS="2855" WIDTH="1167" HEIGHT="58" ID="l-38">
+						<String HPOS="799" VPOS="2855" WIDTH="67" HEIGHT="58" ID="s-273" CONTENT="Suͤ"/>
+						<SP HPOS="866" VPOS="2855" WIDTH="19" HEIGHT="58" ID="sp-237"/>
+						<String HPOS="885" VPOS="2855" WIDTH="78" HEIGHT="58" ID="s-274" CONTENT="ſach"/>
+						<SP HPOS="963" VPOS="2855" WIDTH="29" HEIGHT="58" ID="sp-238"/>
+						<String HPOS="992" VPOS="2855" WIDTH="67" HEIGHT="58" ID="s-275" CONTENT="das"/>
+						<SP HPOS="1059" VPOS="2855" WIDTH="29" HEIGHT="58" ID="sp-239"/>
+						<String HPOS="1088" VPOS="2855" WIDTH="82" HEIGHT="58" ID="s-276" CONTENT="buͦch"/>
+						<SP HPOS="1170" VPOS="2855" WIDTH="24" HEIGHT="58" ID="sp-240"/>
+						<String HPOS="1194" VPOS="2855" WIDTH="160" HEIGHT="58" ID="s-277" CONTENT="gernne,"/>
+						<SP HPOS="1354" VPOS="2855" WIDTH="29" HEIGHT="58" ID="sp-241"/>
+						<String HPOS="1383" VPOS="2855" WIDTH="135" HEIGHT="58" ID="s-278" CONTENT="wanne"/>
+						<SP HPOS="1518" VPOS="2855" WIDTH="24" HEIGHT="58" ID="sp-242"/>
+						<String HPOS="1542" VPOS="2855" WIDTH="34" HEIGHT="58" ID="s-279" CONTENT="eʒ"/>
+						<SP HPOS="1576" VPOS="2855" WIDTH="24" HEIGHT="58" ID="sp-243"/>
+						<String HPOS="1600" VPOS="2855" WIDTH="34" HEIGHT="58" ID="s-280" CONTENT="ir"/>
+						<SP HPOS="1634" VPOS="2855" WIDTH="24" HEIGHT="58" ID="sp-244"/>
+						<String HPOS="1658" VPOS="2855" WIDTH="77" HEIGHT="58" ID="s-281" CONTENT="wol"/>
+						<SP HPOS="1735" VPOS="2855" WIDTH="19" HEIGHT="58" ID="sp-245"/>
+						<String HPOS="1754" VPOS="2855" WIDTH="174" HEIGHT="58" ID="s-282" CONTENT="behag(e)"/>
+						<SP HPOS="1928" VPOS="2855" WIDTH="10" HEIGHT="58" ID="sp-246"/>
+						<String HPOS="1938" VPOS="2855" WIDTH="28" HEIGHT="58" ID="s-283" CONTENT="t;"/>
+					</TextLine>
+				</TextBlock>
+				<TextBlock HPOS="1063" VPOS="309" WIDTH="477" HEIGHT="76" ID="b-2" TAGREFS="RT-4">
+					<TextLine HPOS="1063" VPOS="309" WIDTH="477" HEIGHT="76" ID="l-39">
+						<String HPOS="1063" VPOS="309" WIDTH="159" HEIGHT="76" ID="s-284" CONTENT="Otnit"/>
+						<SP HPOS="1222" VPOS="309" WIDTH="32" HEIGHT="76" ID="sp-247"/>
+						<String HPOS="1254" VPOS="309" WIDTH="63" HEIGHT="76" ID="s-285" CONTENT="u."/>
+						<SP HPOS="1317" VPOS="309" WIDTH="32" HEIGHT="76" ID="sp-248"/>
+						<String HPOS="1349" VPOS="309" WIDTH="191" HEIGHT="76" ID="s-286" CONTENT="WolfD."/>
+					</TextLine>
+				</TextBlock>
+				<TextBlock HPOS="272" VPOS="1833" WIDTH="332" HEIGHT="71" ID="b-3" TAGREFS="RT-5">
+					<TextLine HPOS="272" VPOS="1833" WIDTH="332" HEIGHT="71" ID="l-40">
+						<String HPOS="272" VPOS="1833" WIDTH="71" HEIGHT="71" ID="s-287" CONTENT="cf."/>
+						<SP HPOS="343" VPOS="1833" WIDTH="24" HEIGHT="71" ID="sp-249"/>
+						<String HPOS="367" VPOS="1833" WIDTH="166" HEIGHT="71" ID="s-288" CONTENT="Adelung"/>
+						<SP HPOS="533" VPOS="1833" WIDTH="24" HEIGHT="71" ID="sp-250"/>
+						<String HPOS="557" VPOS="1833" WIDTH="47" HEIGHT="71" ID="s-289" CONTENT="1."/>
+					</TextLine>
+				</TextBlock>
+				<TextBlock HPOS="275" VPOS="1904" WIDTH="307" HEIGHT="59" ID="b-4" TAGREFS="RT-6">
+					<TextLine HPOS="275" VPOS="1904" WIDTH="307" HEIGHT="59" ID="l-41">
+						<String HPOS="275" VPOS="1904" WIDTH="307" HEIGHT="59" ID="s-290" CONTENT="223_225."/>
+					</TextLine>
+				</TextBlock>
+				<TextBlock HPOS="714" VPOS="1904" WIDTH="42" HEIGHT="61" ID="b-5" TAGREFS="RT-7">
+					<TextLine HPOS="714" VPOS="1904" WIDTH="42" HEIGHT="61" ID="l-42">
+						<String HPOS="714" VPOS="1904" WIDTH="42" HEIGHT="61" ID="s-291" CONTENT="1.)"/>
+					</TextLine>
+				</TextBlock>
+				<TextBlock HPOS="267" VPOS="1974" WIDTH="357" HEIGHT="67" ID="b-6" TAGREFS="RT-8">
+					<TextLine HPOS="267" VPOS="1974" WIDTH="357" HEIGHT="67" ID="l-43">
+						<String HPOS="267" VPOS="1974" WIDTH="220" HEIGHT="67" ID="s-292" CONTENT="heldenb."/>
+						<SP HPOS="487" VPOS="1974" WIDTH="27" HEIGHT="67" ID="sp-251"/>
+						<String HPOS="514" VPOS="1974" WIDTH="110" HEIGHT="67" ID="s-293" CONTENT="1590"/>
+					</TextLine>
+				</TextBlock>
+				<TextBlock HPOS="278" VPOS="2041" WIDTH="222" HEIGHT="100" ID="b-7" TAGREFS="RT-9">
+					<TextLine HPOS="278" VPOS="2041" WIDTH="222" HEIGHT="100" ID="l-44">
+						<String HPOS="278" VPOS="2041" WIDTH="74" HEIGHT="100" ID="s-294" CONTENT="p."/>
+						<SP HPOS="352" VPOS="2041" WIDTH="37" HEIGHT="100" ID="sp-252"/>
+						<String HPOS="389" VPOS="2041" WIDTH="111" HEIGHT="100" ID="s-295" CONTENT="36ᵇ"/>
+					</TextLine>
+				</TextBlock>
+				<GraphicalElement HPOS="867" VPOS="2105" WIDTH="239" HEIGHT="15" ID="g-1" TAGREFS="RT-10"/>
+				<GraphicalElement HPOS="1104" VPOS="2048" WIDTH="61" HEIGHT="11" ID="g-2" TAGREFS="RT-11"/>
+				<GraphicalElement HPOS="1138" VPOS="2100" WIDTH="266" HEIGHT="15" ID="g-3" TAGREFS="RT-12"/>
+				<TextBlock HPOS="714" VPOS="2126" WIDTH="45" HEIGHT="56" ID="b-8" TAGREFS="RT-13">
+					<TextLine HPOS="714" VPOS="2126" WIDTH="45" HEIGHT="56" ID="l-45">
+						<String HPOS="714" VPOS="2126" WIDTH="45" HEIGHT="56" ID="s-296" CONTENT="2.)"/>
+					</TextLine>
+				</TextBlock>
+				<GraphicalElement HPOS="1494" VPOS="2162" WIDTH="246" HEIGHT="16" ID="g-4" TAGREFS="RT-14"/>
+				<GraphicalElement HPOS="918" VPOS="2221" WIDTH="249" HEIGHT="16" ID="g-5" TAGREFS="RT-15"/>
+				<GraphicalElement HPOS="1177" VPOS="2223" WIDTH="147" HEIGHT="13" ID="g-6" TAGREFS="RT-16"/>
+				<TextBlock HPOS="724" VPOS="2348" WIDTH="50" HEIGHT="56" ID="b-9" TAGREFS="RT-17">
+					<TextLine HPOS="724" VPOS="2348" WIDTH="50" HEIGHT="56" ID="l-46">
+						<String HPOS="724" VPOS="2348" WIDTH="50" HEIGHT="56" ID="s-297" CONTENT="3.)"/>
+					</TextLine>
+				</TextBlock>
+				<GraphicalElement HPOS="1378" VPOS="2555" WIDTH="178" HEIGHT="13" ID="g-7" TAGREFS="RT-18"/>
+				<TextBlock HPOS="741" VPOS="2577" WIDTH="51" HEIGHT="75" ID="b-10" TAGREFS="RT-19">
+					<TextLine HPOS="741" VPOS="2577" WIDTH="51" HEIGHT="75" ID="l-47">
+						<String HPOS="741" VPOS="2577" WIDTH="51" HEIGHT="75" ID="s-298" CONTENT="4.)"/>
+					</TextLine>
+				</TextBlock>
+				<GraphicalElement HPOS="1215" VPOS="2723" WIDTH="172" HEIGHT="12" ID="g-8" TAGREFS="RT-20"/>
+				<GraphicalElement HPOS="947" VPOS="2730" WIDTH="186" HEIGHT="15" ID="g-9" TAGREFS="RT-21"/>
+				<TextBlock HPOS="725" VPOS="2807" WIDTH="59" HEIGHT="80" ID="b-11" TAGREFS="RT-22">
+					<TextLine HPOS="725" VPOS="2807" WIDTH="59" HEIGHT="80" ID="l-48">
+						<String HPOS="725" VPOS="2807" WIDTH="59" HEIGHT="80" ID="s-299" CONTENT="5.)"/>
+					</TextLine>
+				</TextBlock>
+				<GraphicalElement HPOS="905" VPOS="2844" WIDTH="139" HEIGHT="14" ID="g-10" TAGREFS="RT-23"/>
+			</PrintSpace>
+		</Page>
+	</Layout>
+</alto>

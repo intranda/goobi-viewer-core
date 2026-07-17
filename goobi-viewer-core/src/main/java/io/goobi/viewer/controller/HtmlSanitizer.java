@@ -299,16 +299,17 @@ public final class HtmlSanitizer {
      * </p>
      *
      * @param input raw fulltext HTML from the ALTO pipeline; may be {@code null}
-     * @return sanitized HTML containing only allowlisted {@code <button>} markup; {@code null}
-     *         if input was {@code null}
+     * @return sanitized HTML containing only allowlisted markup; {@code null} if input was {@code null}
      * @should return null when input is null
      * @should return empty string when input is empty
      * @should preserve full NamedEntityEnricher button markup
+     * @should preserve alto layout markup
      * @should strip script tags
      * @should strip onclick attribute on button
      * @should strip mark tag
      * @should strip anchor tag
      * @should strip unknown data attribute on button
+     * @should strip style attribute on span
      * @should preserve plain text content alongside button
      */
     public static String cleanFulltextWithNamedEntities(String input) {
@@ -486,21 +487,28 @@ public final class HtmlSanitizer {
      * per call (defensive copy) — see rationale on {@link #buildRichTextSafelist()}.
      *
      * <p>
-     * Deny-by-default. Only {@code <button>} survives, and only with the six attributes
-     * emitted by {@code NamedEntityEnricher.CONTENT_TEMPLATE}. Any other attribute
-     * ({@code formaction}, {@code onclick}, unknown {@code data-*}, …) is dropped.
+     * Deny-by-default. {@code <button>} survives with only the six attributes emitted by
+     * {@code NamedEntityEnricher.CONTENT_TEMPLATE}. In addition the structural markup produced by
+     * {@code AltoHtmlBuilder} / {@code LayoutTagEnricher} is permitted: {@code <div>}, {@code <aside>}, {@code <p>},
+     * {@code <span>} and {@code <br>} with a {@code class} (and {@code data-author} on the annotation wrappers) — none
+     * of which are URL-bearing attributes. Any other attribute ({@code formaction}, {@code onclick},
+     * {@code style}, unknown {@code data-*}, …) is dropped.
      * </p>
      */
     private static Safelist buildFulltextWithNamedEntitiesSafelist() {
         return new Safelist()
-                .addTags("button")
+                .addTags("button", "div", "aside", "p", "span", "br")
                 .addAttributes("button",
                         "class",
                         "type",
                         "data-entity-id",
                         "data-entity-type",
                         "data-entity-authority-data-uri",
-                        "data-entity-authority-data-search");
+                        "data-entity-authority-data-search")
+                .addAttributes("div", "class")
+                .addAttributes("aside", "class")
+                .addAttributes("p", "class", "data-author", "title")
+                .addAttributes("span", "class", "data-author");
     }
 
     /**

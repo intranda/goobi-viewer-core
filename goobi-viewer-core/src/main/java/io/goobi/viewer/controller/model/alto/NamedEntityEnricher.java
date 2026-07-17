@@ -29,6 +29,7 @@ import de.intranda.digiverso.normdataimporter.NormDataImporter;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.Page;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.LineElement;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoTags;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoTags.TagType;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
@@ -62,12 +63,19 @@ public class NamedEntityEnricher implements TextEnricher {
      *         named-entity tag, otherwise the unchanged {@code content} string
      * @should enrich every word that references a named entity tag
      * @should use the word content as button text
+     * @should not enrich words referenced only by layout tags
      */
     @Override
     public String enrich(String content, LineElement element) {
         Page page = element.getPage();
         AltoTags tags = page.getDocument().getTags();
-        List<Tag> referencingTags = tags.getTagsAsList().stream().filter(tag -> tag.getReferences().contains(element)).toList();
+        // Only named-entity tags produce entity buttons. Other tag types (e.g. layout tags for underline/
+        // strikethrough/handwriting) reference the same word elements but are handled by other enrichers.
+        List<Tag> referencingTags = tags.getTagsAsList()
+                .stream()
+                .filter(tag -> tag.getTagType() == TagType.NAMED_ENTITY_TAG)
+                .filter(tag -> tag.getReferences().contains(element))
+                .toList();
         if (referencingTags.isEmpty()) {
             return content;
         }

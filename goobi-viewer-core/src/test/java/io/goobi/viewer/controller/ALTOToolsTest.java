@@ -254,9 +254,29 @@ class ALTOToolsTest extends AbstractTest {
     void getFulltext_shouldIncludeAuthorityDataURIAttributesInOutput() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
         Assertions.assertTrue(file.isFile());
-        String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);
+        // Named-entity button markup lives on the HTML display path (getFulltextHtml), not the plain-text path.
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING);
         Assertions.assertNotNull(text);
         Assertions.assertTrue(text.contains("data-entity-authority-data-uri="));
+    }
+
+    /**
+     * The plain-text extraction path must not carry any HTML markup (no NER buttons, no layout spans).
+     *
+     * @see ALTOTools#getFulltext(String,String,boolean)
+     * @verifies return plain text without markup
+     */
+    @Test
+    void getFulltext_shouldReturnPlainTextWithoutMarkup() throws Exception {
+        File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
+        Assertions.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        String text = ALTOTools.getFulltext(alto, StringTools.DEFAULT_ENCODING, false);
+        Assertions.assertNotNull(text);
+        Assertions.assertFalse(text.contains("<button"), text);
+        Assertions.assertFalse(text.contains("view-fulltext__entity-action-button"), text);
+        Assertions.assertFalse(text.contains("<span"), text);
     }
 
     /**
@@ -273,7 +293,8 @@ class ALTOToolsTest extends AbstractTest {
     void enrich_shouldEnrichEveryWordThatReferencesANamedEntityTag() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
         Assertions.assertTrue(file.isFile());
-        String text = ALTOTools.getFulltext(file.toPath(), StringTools.DEFAULT_ENCODING);
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING);
         Assertions.assertNotNull(text);
         int buttonCount = StringUtils.countMatches(text, "view-fulltext__entity-action-button");
         Assertions.assertTrue(buttonCount >= 2,
@@ -294,7 +315,7 @@ class ALTOToolsTest extends AbstractTest {
         File file = new File("src/test/resources/data/alto_ner_multiword.xml");
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
-        String text = ALTOTools.getFulltext(alto, StringTools.DEFAULT_ENCODING, false);
+        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING);
         Assertions.assertNotNull(text);
 
         // Each word of the multi-word entity becomes its own button showing its own content.
@@ -307,6 +328,26 @@ class ALTOToolsTest extends AbstractTest {
         // Three words of the person entity plus the single-word location entity.
         int buttonCount = StringUtils.countMatches(text, "view-fulltext__entity-action-button");
         Assertions.assertEquals(4, buttonCount, "Expected 4 word-level entity buttons, found " + buttonCount + ": " + text);
+    }
+
+    /**
+     * Regression guard: words referenced only by layout tags (e.g. gr_unterstrichen) must not be turned into
+     * named-entity buttons. They receive layout markup (a span) instead.
+     *
+     * @see NamedEntityEnricher#enrich(String, de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.LineElement)
+     * @verifies not enrich words referenced only by layout tags
+     */
+    @Test
+    void enrich_shouldNotEnrichWordsReferencedOnlyByLayoutTags() throws Exception {
+        File file = new File("src/test/resources/data/alto_layouttags.xml");
+        Assertions.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        String text = ALTOTools.getFulltextHtml(alto, StringTools.DEFAULT_ENCODING);
+        Assertions.assertNotNull(text);
+        // The fixture carries only layout tags (no NamedEntityTag), so no entity buttons must be produced ...
+        Assertions.assertFalse(text.contains("view-fulltext__entity-action-button"), text);
+        // ... but the underlined words must still receive layout markup.
+        Assertions.assertTrue(text.contains("alto-tag--underline"), text);
     }
 
     /**

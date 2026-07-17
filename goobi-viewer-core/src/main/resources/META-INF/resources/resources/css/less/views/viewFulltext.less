@@ -32,6 +32,12 @@
             max-width: 100%;
         }
     }
+    &__alto {
+        padding: 10px;
+        border: 1px solid @middlegray;
+        border-radius: 0;
+        background-color: @lightgray;
+    }
     &__popover-button {
         display: flex;
         align-items: center;
@@ -97,6 +103,74 @@
     }
 }
 
+// ALTO LAYOUT-TAG FULLTEXT
+.alto-fulltext {
+    &__page {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+
+        // keep several pages / double-page views separated
+        & + & {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid @middlegray;
+        }
+    }
+    &__main {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    &__margin {
+        flex: 0 0 22%;
+        max-width: 22%;
+        font-size: 0.85em;
+        color: #555;
+        font-style: italic;
+    }
+}
+
+.alto-block {
+    margin: 0 0 0.75rem 0;
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+// WORD-LEVEL LAYOUT MARKUP
+.alto-tag {
+    &--underline {
+        text-decoration-line: underline;
+    }
+    &--strikethrough {
+        text-decoration-line: line-through;
+    }
+    // combined: a word that is both underlined and struck through
+    &--underline&--strikethrough {
+        text-decoration-line: underline line-through;
+    }
+}
+
+// HANDWRITING AUTHOR COLORING (block-level annotations)
+.alto-annotation {
+    &--jacob-grimm {
+        color: #298a08;
+    }
+    &--wilhelm-grimm {
+        color: #0174df;
+    }
+    &--jacob-oder-wilhelm-grimm {
+        color: #7a5cc0;
+    }
+    &--andere-handschrift {
+        color: #b35a00;
+    }
+    &--einweisungszeichen,
+    &--korrekturzeichen {
+        color: #b00020;
+    }
+}
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
@@ -107,6 +181,14 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+    // stack the margin annotation columns below the main text
+    .alto-fulltext__page {
+        flex-direction: column;
+    }
+    .alto-fulltext__margin {
+        flex-basis: auto;
+        max-width: 100%;
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

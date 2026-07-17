@@ -54,8 +54,10 @@ import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
+import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder;
 import io.goobi.viewer.controller.model.alto.AltoTextReader;
 import io.goobi.viewer.controller.model.alto.CoordinateFinder;
+import io.goobi.viewer.controller.model.alto.LayoutTagEnricher;
 import io.goobi.viewer.controller.model.alto.NamedEntityEnricher;
 import io.goobi.viewer.controller.model.alto.TextEnricher;
 import io.goobi.viewer.model.search.FuzzySearchTerm;
@@ -224,13 +226,40 @@ public final class ALTOTools {
             throw new IllegalArgumentException("alto may not be null");
         }
 
+        // Plain-text extraction: character cleanup only, no HTML markup. Named-entity buttons and layout markup are
+        // produced exclusively by the display path (see getFulltextHtml), so plain-text consumers (e.g. REST
+        // plaintext endpoints, TEI conversion) receive clean text.
         // Use pre-compiled pattern to avoid per-call Pattern.compile() in this hot path (called for every ALTO word)
         TextEnricher charCleanupEnricher = (string, element) -> ALTO_PROBLEMATIC_CHARS_COMPILED.matcher(string).replaceAll(" ");
-        TextEnricher nerEnricher = new NamedEntityEnricher();
         AltoTextReader reader =
-                new AltoTextReader(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING, charCleanupEnricher, nerEnricher);
+                new AltoTextReader(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING, charCleanupEnricher);
 
         return reader.extractText();
+    }
+
+    /**
+     * Builds a structured HTML representation of the given ALTO document for display in the fulltext view. Applies
+     * character cleanup, named-entity buttons and word-level layout markup (underline/strikethrough), and separates
+     * handwritten margin annotations into dedicated side columns (see {@link AltoHtmlBuilder}).
+     *
+     * @param alto ALTO XML document as a string
+     * @param charset character encoding of the ALTO document
+     * @return the structured HTML, or null on error
+     * @should return non-empty html from valid ALTO string
+     */
+    public static String getFulltextHtml(String alto, String charset) {
+        if (alto == null) {
+            throw new IllegalArgumentException("alto may not be null");
+        }
+        // Use pre-compiled pattern to avoid per-call Pattern.compile() in this hot path (called for every ALTO word)
+        TextEnricher charCleanupEnricher = (string, element) -> ALTO_PROBLEMATIC_CHARS_COMPILED.matcher(string).replaceAll(" ");
+        AltoHtmlBuilder builder = new AltoHtmlBuilder(charCleanupEnricher, new NamedEntityEnricher(), new LayoutTagEnricher());
+        try {
+            return builder.build(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING);
+        } catch (IOException | JDOMException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
     }
 
     public static XMLStreamReader createXmlParser(InputStream is) throws FactoryConfigurationError, XMLStreamException {
