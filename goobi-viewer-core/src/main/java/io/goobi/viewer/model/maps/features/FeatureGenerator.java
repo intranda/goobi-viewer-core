@@ -182,7 +182,7 @@ public class FeatureGenerator {
 
         URI link = createLink(metadata, topDocument);
         String filterQuery =
-                new FeatureQueryGenerator().createSearchFilterQuery(metadata, getAppropriateTemplate(metadata), this.featureTitleCreator);
+                new FeatureQueryGenerator().createSearchFilterQuery(metadata, this.featureTitleCreator);
 
         return coordinates.stream().map(coords -> {
             GeoMapFeature feature = getFeature(coords);

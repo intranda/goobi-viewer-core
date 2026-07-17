@@ -39,21 +39,18 @@ import io.goobi.viewer.model.metadata.MetadataContainer;
 import io.goobi.viewer.model.metadata.MetadataParameter;
 
 /**
- * Creates localised label values for geo map features by applying configured metadata templates
- * to a given {@link io.goobi.viewer.model.metadata.MetadataContainer}.
+ * Creates localised label values for geo map features by applying configured metadata templates to a given
+ * {@link io.goobi.viewer.model.metadata.MetadataContainer}.
  */
 public class LabelCreator {
 
     private final Map<String, List<Metadata>> metadataTemplates;
-    private final String valueSeparator;
+    private final String valueSeparator = "";
+    private final String filterQueryField;
 
-    public LabelCreator(Map<String, List<Metadata>> metadataTemplates) {
-        this(metadataTemplates, "");
-    }
-
-    public LabelCreator(Map<String, List<Metadata>> metadataTemplates, String valueSeparator) {
+    public LabelCreator(Map<String, List<Metadata>> metadataTemplates, String filterQueryField) {
         this.metadataTemplates = metadataTemplates;
-        this.valueSeparator = valueSeparator;
+        this.filterQueryField = filterQueryField;
     }
 
     public List<Metadata> getMetadata(String template) {
@@ -82,6 +79,10 @@ public class LabelCreator {
         } else {
             return new SimpleMetadataValue("");
         }
+    }
+
+    public String getFilterQueryField() {
+        return filterQueryField;
     }
 
     public Collection<String> getTemplateNames() {

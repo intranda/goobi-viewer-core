@@ -1010,6 +1010,20 @@ public class Configuration extends AbstractConfiguration {
                 .orElse(new HashMap<>());
     }
 
+    public String getGeomapFeatureFeatureSearchFilter(String option) {
+        if (StringUtils.isBlank(option)) {
+            return "";
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+
+        return options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .findAny()
+                .map(config -> config.getString("marker[@searchFilterField]", ""))
+                .orElse("");
+    }
+
     public Map<String, Metadata> getGeomapItemConfigurations(String option) {
         if (StringUtils.isBlank(option)) {
             return Collections.emptyMap();
@@ -5630,8 +5644,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns all export format definitions configured under {@code <export><format>} in {@code config_viewer.xml}. Both XSLT-based formats
-     * (with an {@code xslt} attribute) and Java field-mapped formats (with {@code <field>} children, e.g. excel/csv) are returned.
+     * Returns all export format definitions configured under {@code <export><format>} in {@code config_viewer.xml}. Both XSLT-based formats (with an
+     * {@code xslt} attribute) and Java field-mapped formats (with {@code <field>} children, e.g. excel/csv) are returned.
      *
      * @return list of configured export formats (may be empty, never null)
      * @should return all configured formats
