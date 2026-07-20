@@ -64,6 +64,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -83,7 +84,7 @@ public final class TocMaker {
     private static final String[] REQUIRED_FIELDS = { SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT, SolrConstants.DATAREPOSITORY,
             SolrConstants.DOCSTRCT, SolrConstants.IDDOC, SolrConstants.IDDOC_PARENT, SolrConstants.ISANCHOR, SolrConstants.ISWORK,
             SolrConstants.LABEL, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.THUMBNAIL,
-            SolrConstants.THUMBPAGENO, SolrConstants.THUMBPAGENOLABEL, SolrConstants.TITLE };
+            SolrConstants.THUMBPAGENO, SolrConstants.THUMBPAGENOLABEL, SolrConstants.TITLE, SolrConstants.NUMPAGES };
 
     private static final int ANCHOR_THUMBNAIL_HEIGHT = 60;
     private static final int ANCHOR_THUMBNAIL_WIDTH = 50;
@@ -630,7 +631,9 @@ public final class TocMaker {
                         thumbnailPermissionMap.getOrDefault(topStructPi, AccessPermission.denied());
                 logger.trace("accessPermissionThumbnail: {}", accessPermissionThumbnail.isGranted());
 
-                boolean volumeHasImages = SolrTools.getAsBoolean(volumeDoc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE));
+                MimeType mediaType = new MimeType(volumeMimeType);
+                Integer numPages = SolrTools.getAsInt(volumeDoc.getFieldValue(SolrConstants.NUMPAGES));
+                boolean volumeHasImages = mediaType.isAllowsImageView() && numPages != null && numPages > 0;
 
                 TOCElement tocElement =
                         new TOCElement(volumeLabel, String.valueOf(thumbPageNo), thumbPageNoLabel, volumeIddoc, volumeLogId, 1, topStructPi,
