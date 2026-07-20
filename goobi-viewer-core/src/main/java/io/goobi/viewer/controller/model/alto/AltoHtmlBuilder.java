@@ -89,7 +89,7 @@ public class AltoHtmlBuilder {
     public AltoHtmlBuilder(String printedLabel, Map<String, AnnotationStyle> annotationStyles, TextEnricher... wordEnrichers) {
         this.wordEnrichers = Arrays.asList(wordEnrichers);
         this.annotationStyles = (annotationStyles == null) ? Collections.emptyMap() : annotationStyles;
-        this.marginDetector = new MarginColumnDetector(printedLabel);
+        this.marginDetector = new MarginColumnDetector(printedLabel, MarginColumnDetector.DEFAULT_TOLERANCE);
     }
 
     /**
