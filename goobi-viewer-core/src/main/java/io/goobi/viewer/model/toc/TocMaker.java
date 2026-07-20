@@ -632,9 +632,11 @@ public final class TocMaker {
                         thumbnailPermissionMap.getOrDefault(topStructPi, AccessPermission.denied());
                 logger.trace("accessPermissionThumbnail: {}", accessPermissionThumbnail.isGranted());
 
+                boolean volumeHasImages = SolrTools.getAsBoolean(volumeDoc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE));
+
                 TOCElement tocElement =
                         new TOCElement(volumeLabel, String.valueOf(thumbPageNo), thumbPageNoLabel, volumeIddoc, volumeLogId, 1, topStructPi,
-                                thumbnailUrl, accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
+                                thumbnailUrl, accessPermissionPdf, false, volumeHasImages, volumeMimeType, docStructType, footerId);
                 tocElement.setAccessPermissionThumbnail(accessPermissionThumbnail);
                 tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docStructType);
                 tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) volumeDoc.getFieldValue(SolrConstants.CURRENTNO));
@@ -684,21 +686,18 @@ public final class TocMaker {
     }
 
     /**
-     * Returns {@code true} when {@code doc} represents an anchor or group whose calendar widget is the
-     * primary navigation between its sibling records — in which case the TOC sibling-enumeration block
-     * in {@link #populateTocTree} should be skipped, because the calendar covers the same ground without
-     * pulling thousands of doc records over the wire.
+     * Returns {@code true} when {@code doc} represents an anchor or group whose calendar widget is the primary navigation between its sibling records
+     * — in which case the TOC sibling-enumeration block in {@link #populateTocTree} should be skipped, because the calendar covers the same ground
+     * without pulling thousands of doc records over the wire.
      *
-     * <p>Mirrors {@code ActiveDocumentBean.shouldDeferTocToCalendar} exactly: when the configured
-     * calendar docstruct whitelist is non-empty, the doc's docstruct must match; when the whitelist is
-     * empty, fall through to the multi-year check (preserves legacy "defer for any multi-year
-     * anchor/group" behaviour). Triggered for newspaper-style records where
-     * {@code GROUPID_NEWSPAPER:* +PI:*} returns the entire archive (observed: 23.705 docs returned to
-     * feed exactly one recursive call).
+     * <p>
+     * Mirrors {@code ActiveDocumentBean.shouldDeferTocToCalendar} exactly: when the configured calendar docstruct whitelist is non-empty, the doc's
+     * docstruct must match; when the whitelist is empty, fall through to the multi-year check (preserves legacy "defer for any multi-year
+     * anchor/group" behaviour). Triggered for newspaper-style records where {@code GROUPID_NEWSPAPER:* +PI:*} returns the entire archive (observed:
+     * 23.705 docs returned to feed exactly one recursive call).
      *
      * @param doc Solr document of the candidate parent node (anchor or group)
-     * @return true if the doc qualifies as a calendar-eligible parent and its TOC sibling enumeration
-     *         should be skipped
+     * @return true if the doc qualifies as a calendar-eligible parent and its TOC sibling enumeration should be skipped
      * @should return false when doc is null
      * @should return false when doc is neither anchor nor group
      * @should return false when whitelist is non empty and docstruct is not listed
@@ -750,9 +749,9 @@ public final class TocMaker {
     }
 
     /**
-     * Recursively walks the TOC structure for one ancestor-field hierarchy, building TOCElement skeletons
-     * with default permissions (Pass 1 of the two-pass buildToc flow). Every visited PI is added to
-     * {@code collectedPis} so that Pass 2 can resolve all permissions in a single batch Solr query.
+     * Recursively walks the TOC structure for one ancestor-field hierarchy, building TOCElement skeletons with default permissions (Pass 1 of the
+     * two-pass buildToc flow). Every visited PI is added to {@code collectedPis} so that Pass 2 can resolve all permissions in a single batch Solr
+     * query.
      *
      * @param ret list to which TOC elements are added
      * @param seen set of already-added elements used for deduplication
@@ -1172,12 +1171,12 @@ public final class TocMaker {
     }
 
     /**
-     * Applies thumbnail and PDF permissions onto already-constructed TOCElements based on a per-PI batch result.
-     * Used by the two-pass buildToc flow to defer permission resolution until after structure assembly.
+     * Applies thumbnail and PDF permissions onto already-constructed TOCElements based on a per-PI batch result. Used by the two-pass buildToc flow
+     * to defer permission resolution until after structure assembly.
      *
      * @param trees list of per-ancestor-field TOCElement lists to update in place
-     * @param batch result of AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges keyed
-     *              identifier -&gt; privilege -&gt; LOGID -&gt; permission
+     * @param batch result of AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges keyed identifier -&gt; privilege -&gt; LOGID -&gt;
+     *            permission
      * @param pdfNeeded whether PDF permissions should be applied
      */
     private static void applyPermissionsToTocElements(List<List<TOCElement>> trees,
