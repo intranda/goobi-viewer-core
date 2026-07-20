@@ -23,6 +23,8 @@
 package io.goobi.viewer.controller.model.alto;
 
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
 
 class AltoHtmlBuilderTest {
 
@@ -43,9 +46,18 @@ class AltoHtmlBuilderTest {
     }
 
     private String build() throws Exception {
-        // No NamedEntityEnricher here: the fixture carries only layout tags, and we avoid the DataManager
-        // dependency of NamedEntityEnricher for this focused test.
-        return new AltoHtmlBuilder(new LayoutTagEnricher()).build(alto, StringTools.DEFAULT_ENCODING);
+        // The label->markup mapping is supplied explicitly (as it would be from config_viewer.xml); the sample
+        // fixture uses the gr_* labels. No NamedEntityEnricher here, to avoid its DataManager dependency.
+        Map<String, String> wordTags = Map.of(
+                "gr_unterstrichen", "alto-tag--underline",
+                "gr_durchgestrichen", "alto-tag--strikethrough");
+        Map<String, AnnotationStyle> annotationStyles = new LinkedHashMap<>();
+        annotationStyles.put("gr_jacob_grimm", new AnnotationStyle("alto-annotation--jacob-grimm", "Jacob Grimm"));
+        annotationStyles.put("gr_jacob_oder_wilhelm_grimm",
+                new AnnotationStyle("alto-annotation--jacob-oder-wilhelm-grimm", "Jacob oder Wilhelm Grimm"));
+        annotationStyles.put("gr_wilhelm_grimm", new AnnotationStyle("alto-annotation--wilhelm-grimm", "Wilhelm Grimm"));
+        return new AltoHtmlBuilder("gr_printed", annotationStyles, new LayoutTagEnricher(wordTags))
+                .build(alto, StringTools.DEFAULT_ENCODING);
     }
 
     /**

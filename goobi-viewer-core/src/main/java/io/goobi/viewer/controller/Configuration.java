@@ -2027,12 +2027,12 @@ public class Configuration extends AbstractConfiguration {
      * Layout-tag LABEL identifying printed text in ALTO documents, used to anchor margin-annotation detection in the
      * fulltext view.
      *
-     * @return the configured printed-text label, or "gr_printed" if not configured
+     * @return the configured printed-text label, or an empty string if not configured (margin detection disabled)
      * @should return configured value
-     * @should return default value if not configured
+     * @should return empty string if not configured
      */
     public String getAltoLayoutPrintedLabel() {
-        return getLocalString("altoLayoutTags[@printedLabel]", "gr_printed");
+        return getLocalString("altoLayoutTags[@printedLabel]", "");
     }
 
     /**

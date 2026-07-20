@@ -47,6 +47,22 @@
     <!-- altoCrowdsourcingFolder: contains ALTO files from crowdsourcing -->
     <altoCrowdsourcingFolder>alto_crowd</altoCrowdsourcingFolder>
 
+    <!-- altoLayoutTags (optional): maps ALTO <LayoutTag> LABELs to the markup used when rendering full-text from
+         ALTO. There are no built-in mappings, because LayoutTag LABELs are specific to how a collection's ALTO was
+         produced; configure the labels your ALTO actually uses. Custom styleClass values only have a visual effect
+         if the active theme defines matching CSS.
+         - @printedLabel: LABEL marking printed-text blocks; anchors detection of handwritten margin annotations
+                          (blocks outside the printed-text column are shown in a side column). Omit to disable.
+         - wordTag:       word-level layout tag -> CSS class added to the word's <span> (e.g. underline).
+         - annotationTag: annotation-author tag -> CSS class + display name for the annotation block.
+         Example (replace the placeholder LABELs with your own):
+    <altoLayoutTags printedLabel="printed">
+        <wordTag label="underlined" styleClass="alto-tag--underline" />
+        <wordTag label="struckthrough" styleClass="alto-tag--strikethrough" />
+        <annotationTag label="annotator_a" styleClass="alto-annotation--annotator-a" name="Annotator A" />
+    </altoLayoutTags>
+    -->
+
     <!-- abbyyFolder: contains ABBYY XML files -->
     <abbyyFolder>abbyy</abbyyFolder>
 
