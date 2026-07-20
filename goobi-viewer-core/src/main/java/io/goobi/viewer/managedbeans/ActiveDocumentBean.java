@@ -2748,13 +2748,14 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * resets the access rights for user comments and pdf download stored in {@link io.goobi.viewer.model.viewer.ViewManager}. After reset, the access
-     * rights will be evaluated again on being called
+     * resets the access rights for user comments, pdf download and record images stored in {@link io.goobi.viewer.model.viewer.ViewManager}. After
+     * reset, the access rights will be evaluated again on being called
      */
     public void resetAccess() {
         if (getViewManager() != null) {
             getViewManager().resetAccessPermissionPdf();
             getViewManager().resetAllowUserComments();
+            getViewManager().resetRecordViewImagesAccess();
         }
     }
 

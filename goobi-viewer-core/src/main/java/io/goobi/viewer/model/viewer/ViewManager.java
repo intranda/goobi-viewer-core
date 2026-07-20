@@ -2416,6 +2416,15 @@ public class ViewManager implements Serializable {
      *
      * @return the {@link AccessPermission} (denied ones carry placeholder info), or null if the record is not found
      */
+    /**
+     * Reset the record-level VIEW_IMAGES access permission. It will be evaluated again on the next call to
+     * {@link #getRecordViewImagesAccessPermission()}.
+     */
+    public void resetRecordViewImagesAccess() {
+        this.recordViewImagesAccess = null;
+        this.recordViewImagesAccessResolved = false;
+    }
+
     private AccessPermission getRecordViewImagesAccessPermission() throws IndexUnreachableException, DAOException {
         // Memoized for this ViewManager's lifetime (mirrors PhysicalElement.getAccessPermission): the XHTML resolves the image URL + text separately
         // and via rendered conditions, which would otherwise repeat the Solr/DB access check several times.
