@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -68,6 +69,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.controller.model.FeatureSetConfiguration;
+import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
@@ -2019,6 +2021,63 @@ public class Configuration extends AbstractConfiguration {
      */
     public int getFulltextFragmentLength() {
         return getLocalInt("search.fulltextFragmentLength", 200);
+    }
+
+    /**
+     * Layout-tag LABEL identifying printed text in ALTO documents, used to anchor margin-annotation detection in the
+     * fulltext view.
+     *
+     * @return the configured printed-text label, or "gr_printed" if not configured
+     * @should return configured value
+     * @should return default value if not configured
+     */
+    public String getAltoLayoutPrintedLabel() {
+        return getLocalString("altoLayoutTags[@printedLabel]", "gr_printed");
+    }
+
+    /**
+     * Mapping of word-level ALTO layout-tag LABEL to the CSS class applied to the enclosing span in the fulltext
+     * view (e.g. underline/strikethrough markup).
+     *
+     * @return an ordered map of label to CSS style class; empty if none configured (callers fall back to defaults)
+     * @should return configured word tags
+     */
+    public Map<String, String> getAltoLayoutWordTags() {
+        Map<String, String> ret = new LinkedHashMap<>();
+        List<HierarchicalConfiguration<ImmutableNode>> tags = getLocalConfigurationsAt("altoLayoutTags.wordTag");
+        if (tags != null) {
+            for (HierarchicalConfiguration<ImmutableNode> tag : tags) {
+                String label = tag.getString("[@label]");
+                String styleClass = tag.getString("[@styleClass]");
+                if (StringUtils.isNotEmpty(label) && StringUtils.isNotEmpty(styleClass)) {
+                    ret.put(label, styleClass);
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Mapping of ALTO handwriting-author layout-tag LABEL to its {@link AnnotationStyle} (CSS class + display name),
+     * used to style and label handwritten annotation blocks in the fulltext view.
+     *
+     * @return an ordered map of label to annotation style; empty if none configured (callers fall back to defaults)
+     * @should return configured annotation tags
+     */
+    public Map<String, AnnotationStyle> getAltoLayoutAnnotationTags() {
+        Map<String, AnnotationStyle> ret = new LinkedHashMap<>();
+        List<HierarchicalConfiguration<ImmutableNode>> tags = getLocalConfigurationsAt("altoLayoutTags.annotationTag");
+        if (tags != null) {
+            for (HierarchicalConfiguration<ImmutableNode> tag : tags) {
+                String label = tag.getString("[@label]");
+                String styleClass = tag.getString("[@styleClass]");
+                String name = tag.getString("[@name]");
+                if (StringUtils.isNotEmpty(label) && StringUtils.isNotEmpty(styleClass)) {
+                    ret.put(label, new AnnotationStyle(styleClass, name));
+                }
+            }
+        }
+        return ret;
     }
 
     /**

@@ -23,9 +23,9 @@
 package io.goobi.viewer.controller.model.alto;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.Map;
 
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.LineElement;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoTags.TagType;
@@ -33,9 +33,10 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 
 /**
  * {@link TextEnricher} implementation that applies inline visual markup to ALTO word tokens carrying word-level
- * layout tags. Underlined words ({@code gr_unterstrichen}) and struck-through words ({@code gr_durchgestrichen}) are
- * wrapped in a {@code <span>} whose CSS classes drive the rendering; a word carrying both tags gets both classes on a
- * single span.
+ * layout tags. Each configured tag LABEL maps to a CSS class that is added to a wrapping {@code <span>}; a word
+ * carrying several mapped tags gets all their classes on a single span. The default mapping covers underlined
+ * ({@code gr_unterstrichen}) and struck-through ({@code gr_durchgestrichen}) words, but it can be overridden via
+ * configuration (see {@code Configuration.getAltoLayoutWordTags()}).
  */
 public class LayoutTagEnricher implements TextEnricher {
 
@@ -45,12 +46,31 @@ public class LayoutTagEnricher implements TextEnricher {
     static final String CLASS_UNDERLINE = "alto-tag--underline";
     static final String CLASS_STRIKETHROUGH = "alto-tag--strikethrough";
 
+    /** Default mapping of word-level layout-tag LABEL to CSS style class. */
+    static final Map<String, String> DEFAULT_STYLE_CLASSES = buildDefaults();
+
+    private final Map<String, String> labelToStyleClass;
+
+    /** Uses the built-in default label-to-style-class mapping. */
+    public LayoutTagEnricher() {
+        this(null);
+    }
+
     /**
-     * Wraps the word content in a styled span if the word references any supported word-level layout tag.
+     * @param labelToStyleClass mapping of layout-tag LABEL to CSS style class; if null or empty, the built-in
+     *            defaults are used
+     */
+    public LayoutTagEnricher(Map<String, String> labelToStyleClass) {
+        this.labelToStyleClass =
+                (labelToStyleClass == null || labelToStyleClass.isEmpty()) ? DEFAULT_STYLE_CLASSES : labelToStyleClass;
+    }
+
+    /**
+     * Wraps the word content in a styled span if the word references any mapped word-level layout tag.
      *
      * @param content the textual content of the word being enriched (possibly already wrapped by a previous enricher)
      * @param element the ALTO line element whose word content is being processed
-     * @return the span-wrapped content if a supported layout tag applies, otherwise the unchanged {@code content}
+     * @return the span-wrapped content if a mapped layout tag applies, otherwise the unchanged {@code content}
      * @should wrap underlined words in an underline span
      * @should wrap struck through words in a strikethrough span
      * @should combine both classes on a single span
@@ -63,17 +83,22 @@ public class LayoutTagEnricher implements TextEnricher {
             if (tag.getTagType() != TagType.LAYOUT_TAG) {
                 continue;
             }
-            String label = tag.getLabel();
-            if (LABEL_UNDERLINE.equals(label) && !classes.contains(CLASS_UNDERLINE)) {
-                classes.add(CLASS_UNDERLINE);
-            } else if (LABEL_STRIKETHROUGH.equals(label) && !classes.contains(CLASS_STRIKETHROUGH)) {
-                classes.add(CLASS_STRIKETHROUGH);
+            String styleClass = labelToStyleClass.get(tag.getLabel());
+            if (styleClass != null && !classes.contains(styleClass)) {
+                classes.add(styleClass);
             }
         }
         if (classes.isEmpty()) {
             return content;
         }
-        return "<span class=\"alto-tag " + StringUtils.join(classes, " ") + "\">" + content + "</span>";
+        return "<span class=\"alto-tag " + String.join(" ", classes) + "\">" + content + "</span>";
+    }
+
+    private static Map<String, String> buildDefaults() {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put(LABEL_UNDERLINE, CLASS_UNDERLINE);
+        map.put(LABEL_STRIKETHROUGH, CLASS_STRIKETHROUGH);
+        return map;
     }
 
 }

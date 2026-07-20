@@ -52,6 +52,7 @@ import io.goobi.viewer.TestUtils;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.controller.model.ViewAttributes;
+import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
@@ -324,6 +325,24 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getFulltextFragmentLength_shouldReturnCorrectValue() {
         assertEquals(50, DataManager.getInstance().getConfiguration().getFulltextFragmentLength());
+    }
+
+    /**
+     * @see Configuration#getAltoLayoutPrintedLabel()
+     * @see Configuration#getAltoLayoutWordTags()
+     * @see Configuration#getAltoLayoutAnnotationTags()
+     * @verifies return configured values
+     */
+    @Test
+    void getAltoLayoutTags_shouldReturnConfiguredValues() {
+        Configuration config = DataManager.getInstance().getConfiguration();
+        assertEquals("gr_printed_test", config.getAltoLayoutPrintedLabel());
+        assertEquals("test-underline", config.getAltoLayoutWordTags().get("gr_unterstrichen"));
+        assertEquals("test-strike", config.getAltoLayoutWordTags().get("gr_durchgestrichen"));
+        AnnotationStyle jacob = config.getAltoLayoutAnnotationTags().get("gr_jacob_grimm");
+        assertNotNull(jacob);
+        assertEquals("test-jacob", jacob.styleClass());
+        assertEquals("Jacob (test)", jacob.name());
     }
 
     /**

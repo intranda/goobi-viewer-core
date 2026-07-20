@@ -54,20 +54,46 @@ import io.goobi.viewer.controller.StringTools;
  * inside the column (e.g. an inline title annotation or a footnote callout in the gutter) stay in the main flow but
  * keep their author styling.
  * </p>
+ *
+ * <p>
+ * The printed-text anchor label and the mapping of handwriting author tags to CSS class / display name are
+ * configurable (see {@code Configuration.getAltoLayoutPrintedLabel()} / {@code getAltoLayoutAnnotationTags()}); the
+ * built-in defaults cover the Grimm-corpus {@code gr_*} labels.
+ * </p>
  */
 public class AltoHtmlBuilder {
 
-    /** Layout-tag LABELs that attribute content to a handwriting author (i.e. anything but printed text). */
-    static final Map<String, String> HANDWRITING_LABEL_TO_MODIFIER = buildHandwritingLabelMap();
+    /**
+     * The CSS class and human-readable display name to apply to blocks carrying a given handwriting author tag.
+     */
+    public record AnnotationStyle(String styleClass, String name) {
+    }
 
-    /** Readable, locale-independent display names for the handwriting authors (used as the annotation title). */
-    static final Map<String, String> HANDWRITING_LABEL_TO_NAME = buildHandwritingNameMap();
+    /** Default mapping of handwriting author LABEL to its {@link AnnotationStyle}. */
+    static final Map<String, AnnotationStyle> DEFAULT_ANNOTATION_STYLES = buildDefaultAnnotationStyles();
 
     private final List<TextEnricher> wordEnrichers;
-    private final MarginColumnDetector marginDetector = new MarginColumnDetector();
+    private final Map<String, AnnotationStyle> annotationStyles;
+    private final MarginColumnDetector marginDetector;
 
+    /** Uses the built-in default printed-text label and annotation styles. */
     public AltoHtmlBuilder(TextEnricher... wordEnrichers) {
+        this(MarginColumnDetector.DEFAULT_PRINTED_LABEL, null, wordEnrichers);
+    }
+
+    /**
+     * @param printedLabel the layout-tag LABEL identifying printed text (anchors margin detection); if blank, the
+     *            built-in default is used
+     * @param annotationStyles mapping of handwriting author LABEL to {@link AnnotationStyle}; if null or empty, the
+     *            built-in defaults are used
+     * @param wordEnrichers the word-level enrichers to apply (character cleanup, named entities, layout markup, ...)
+     */
+    public AltoHtmlBuilder(String printedLabel, Map<String, AnnotationStyle> annotationStyles, TextEnricher... wordEnrichers) {
         this.wordEnrichers = Arrays.asList(wordEnrichers);
+        this.annotationStyles =
+                (annotationStyles == null || annotationStyles.isEmpty()) ? DEFAULT_ANNOTATION_STYLES : annotationStyles;
+        String label = StringUtils.isBlank(printedLabel) ? MarginColumnDetector.DEFAULT_PRINTED_LABEL : printedLabel;
+        this.marginDetector = new MarginColumnDetector(label, MarginColumnDetector.DEFAULT_TOLERANCE);
     }
 
     /**
@@ -99,7 +125,7 @@ public class AltoHtmlBuilder {
         List<TextBlock> rightMargin = new ArrayList<>();
 
         for (TextBlock block : page.getAllTextBlocksAsList()) {
-            boolean handwriting = handwritingModifier(block) != null;
+            boolean handwriting = handwritingLabel(block) != null;
             if (handwriting && marginDetector.isLeftMargin(block, column)) {
                 leftMargin.add(block);
             } else if (handwriting && marginDetector.isRightMargin(block, column)) {
@@ -132,18 +158,17 @@ public class AltoHtmlBuilder {
     }
 
     private void appendBlock(StringBuilder sb, TextBlock block) {
-        String modifier = handwritingModifier(block);
+        String label = handwritingLabel(block);
+        AnnotationStyle style = label != null ? annotationStyles.get(label) : null;
         sb.append("<p class=\"alto-block");
-        if (modifier != null) {
-            sb.append(" alto-annotation alto-annotation--").append(modifier);
+        if (style != null) {
+            sb.append(" alto-annotation ").append(style.styleClass());
         }
         sb.append('"');
-        if (modifier != null) {
-            String label = handwritingLabel(block);
+        if (style != null) {
             sb.append(" data-author=\"").append(escapeAttribute(label)).append('"');
-            String name = HANDWRITING_LABEL_TO_NAME.get(label);
-            if (name != null) {
-                sb.append(" title=\"").append(escapeAttribute(name)).append('"');
+            if (style.name() != null) {
+                sb.append(" title=\"").append(escapeAttribute(style.name())).append('"');
             }
         }
         sb.append('>');
@@ -178,23 +203,16 @@ public class AltoHtmlBuilder {
     }
 
     /**
-     * @return the handwriting author LABEL of the block, or null if the block is printed text / untagged
+     * @return the handwriting author LABEL of the block (i.e. a label present in the annotation-style mapping), or
+     *         null if the block is printed text / untagged
      */
     private String handwritingLabel(TextBlock block) {
         for (String label : block.getTagLabels()) {
-            if (HANDWRITING_LABEL_TO_MODIFIER.containsKey(label)) {
+            if (annotationStyles.containsKey(label)) {
                 return label;
             }
         }
         return null;
-    }
-
-    /**
-     * @return the CSS modifier for the block's handwriting author, or null if the block is printed text / untagged
-     */
-    private String handwritingModifier(TextBlock block) {
-        String label = handwritingLabel(block);
-        return label != null ? HANDWRITING_LABEL_TO_MODIFIER.get(label) : null;
     }
 
     private static AltoDocument loadAlto(String altoString, String charset) throws IOException, JDOMException {
@@ -203,25 +221,14 @@ public class AltoHtmlBuilder {
         return doc;
     }
 
-    private static Map<String, String> buildHandwritingLabelMap() {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("gr_jacob_grimm", "jacob-grimm");
-        map.put("gr_wilhelm_grimm", "wilhelm-grimm");
-        map.put("gr_jacob_oder_wilhelm_grimm", "jacob-oder-wilhelm-grimm");
-        map.put("gr_andere_handschrift", "andere-handschrift");
-        map.put("gr_einweisungszeichen", "einweisungszeichen");
-        map.put("gr_korrekturzeichen", "korrekturzeichen");
-        return map;
-    }
-
-    private static Map<String, String> buildHandwritingNameMap() {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("gr_jacob_grimm", "Jacob Grimm");
-        map.put("gr_wilhelm_grimm", "Wilhelm Grimm");
-        map.put("gr_jacob_oder_wilhelm_grimm", "Jacob oder Wilhelm Grimm");
-        map.put("gr_andere_handschrift", "Andere Handschrift");
-        map.put("gr_einweisungszeichen", "Einweisungszeichen");
-        map.put("gr_korrekturzeichen", "Korrekturzeichen");
+    private static Map<String, AnnotationStyle> buildDefaultAnnotationStyles() {
+        Map<String, AnnotationStyle> map = new LinkedHashMap<>();
+        map.put("gr_jacob_grimm", new AnnotationStyle("alto-annotation--jacob-grimm", "Jacob Grimm"));
+        map.put("gr_wilhelm_grimm", new AnnotationStyle("alto-annotation--wilhelm-grimm", "Wilhelm Grimm"));
+        map.put("gr_jacob_oder_wilhelm_grimm", new AnnotationStyle("alto-annotation--jacob-oder-wilhelm-grimm", "Jacob oder Wilhelm Grimm"));
+        map.put("gr_andere_handschrift", new AnnotationStyle("alto-annotation--andere-handschrift", "Andere Handschrift"));
+        map.put("gr_einweisungszeichen", new AnnotationStyle("alto-annotation--einweisungszeichen", "Einweisungszeichen"));
+        map.put("gr_korrekturzeichen", new AnnotationStyle("alto-annotation--korrekturzeichen", "Korrekturzeichen"));
         return map;
     }
 

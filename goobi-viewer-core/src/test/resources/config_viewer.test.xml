@@ -48,6 +48,13 @@
     <fulltextCrowdsourcingFolder>fulltext_crowd</fulltextCrowdsourcingFolder>
 	<!-- wcFolder: contains TEI word coordinate files -->
 	<wcFolder>wc</wcFolder>
+
+	<!-- altoLayoutTags: maps ALTO <LayoutTag> labels to fulltext markup (test values differ from code defaults) -->
+	<altoLayoutTags printedLabel="gr_printed_test">
+		<wordTag label="gr_unterstrichen" styleClass="test-underline" />
+		<wordTag label="gr_durchgestrichen" styleClass="test-strike" />
+		<annotationTag label="gr_jacob_grimm" styleClass="test-jacob" name="Jacob (test)" />
+	</altoLayoutTags>
 	<!-- teiFolder: contains TEI metadata/fulltext files -->
 	<teiFolder>tei</teiFolder>
 	<!-- cmdiFolder: contains CMDI metadata/fulltext files -->

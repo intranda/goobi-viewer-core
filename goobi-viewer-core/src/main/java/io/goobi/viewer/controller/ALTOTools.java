@@ -253,7 +253,10 @@ public final class ALTOTools {
         }
         // Use pre-compiled pattern to avoid per-call Pattern.compile() in this hot path (called for every ALTO word)
         TextEnricher charCleanupEnricher = (string, element) -> ALTO_PROBLEMATIC_CHARS_COMPILED.matcher(string).replaceAll(" ");
-        AltoHtmlBuilder builder = new AltoHtmlBuilder(charCleanupEnricher, new NamedEntityEnricher(), new LayoutTagEnricher());
+        Configuration config = DataManager.getInstance().getConfiguration();
+        LayoutTagEnricher layoutEnricher = new LayoutTagEnricher(config.getAltoLayoutWordTags());
+        AltoHtmlBuilder builder = new AltoHtmlBuilder(config.getAltoLayoutPrintedLabel(), config.getAltoLayoutAnnotationTags(),
+                charCleanupEnricher, new NamedEntityEnricher(), layoutEnricher);
         try {
             return builder.build(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING);
         } catch (IOException | JDOMException e) {

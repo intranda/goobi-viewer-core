@@ -346,8 +346,9 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertNotNull(text);
         // The fixture carries only layout tags (no NamedEntityTag), so no entity buttons must be produced ...
         Assertions.assertFalse(text.contains("view-fulltext__entity-action-button"), text);
-        // ... but the underlined words must still receive layout markup.
-        Assertions.assertTrue(text.contains("alto-tag--underline"), text);
+        // ... but the underlined words must still receive layout markup (style class comes from the test config's
+        // altoLayoutTags mapping: gr_unterstrichen -> test-underline).
+        Assertions.assertTrue(text.contains("test-underline"), text);
     }
 
     /**
