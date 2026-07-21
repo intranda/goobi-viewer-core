@@ -913,8 +913,10 @@ public class CmsBean implements Serializable {
                         if (fc != null && fc.getExternalContext().getRequest() instanceof HttpServletRequest httpRequest) {
                             requestUrl = httpRequest.getRequestURL().toString();
                         }
+                        // getOwningPage() may return null (owning component not set); guard the log to avoid a NullPointerException (java:S2259)
+                        CMSPage owningPage = content.getContent().getOwningPage();
                         logger.warn("Error handling page load for page {} in content {}: {} (Request URL: {})",
-                                content.getContent().getOwningPage().getId(), content.getItemId(), e.getMessage(), requestUrl);
+                                owningPage != null ? owningPage.getId() : null, content.getItemId(), e.getMessage(), requestUrl);
                         return "";
                     }
                 })
