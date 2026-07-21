@@ -26,6 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collections;
+import java.util.List;
+
 import jakarta.faces.context.ExternalContext;
 import jakarta.faces.context.FacesContext;
 
@@ -48,6 +51,7 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.record.relatedgroups.GroupMemberDetail;
+import io.goobi.viewer.solr.SolrConstants;
 
 class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -975,5 +979,35 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     @Test
     void getGroupMembershipDetails_shouldNeverThrow() {
         Assertions.assertDoesNotThrow(() -> adb.getGroupMembershipDetails());
+    }
+
+    /**
+     * @see ActiveDocumentBean#isAccessRestricted(List)
+     * @verifies return false when list is null or empty
+     */
+    @Test
+    void isAccessRestricted_shouldReturnFalseWhenListIsNullOrEmpty() {
+        assertFalse(ActiveDocumentBean.isAccessRestricted(null));
+        assertFalse(ActiveDocumentBean.isAccessRestricted(Collections.emptyList()));
+    }
+
+    /**
+     * @see ActiveDocumentBean#isAccessRestricted(List)
+     * @verifies return false when list contains only open access
+     */
+    @Test
+    void isAccessRestricted_shouldReturnFalseWhenListContainsOnlyOpenAccess() {
+        assertFalse(ActiveDocumentBean.isAccessRestricted(List.of(SolrConstants.OPEN_ACCESS_VALUE)));
+    }
+
+    /**
+     * @see ActiveDocumentBean#isAccessRestricted(List)
+     * @verifies return true when list contains a non open access condition
+     */
+    @Test
+    void isAccessRestricted_shouldReturnTrueWhenListContainsANonOpenAccessCondition() {
+        assertTrue(ActiveDocumentBean.isAccessRestricted(List.of("restricted")));
+        // Mixed list with open access plus a restricting condition must still count as restricted
+        assertTrue(ActiveDocumentBean.isAccessRestricted(List.of(SolrConstants.OPEN_ACCESS_VALUE, "restricted")));
     }
 }

@@ -595,6 +595,14 @@ public class UserBean implements Serializable {
                 logger.trace("Redirecting to start page");
                 return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/";
             }
+            // If the currently loaded record is access-restricted, redirect to the start page instead of back to the
+            // record URL: after logout the anonymous session may not list the record and would otherwise land on a
+            // misleading "record not found" error page.
+            ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
+            if (activeDocumentBean != null && activeDocumentBean.isCurrentRecordAccessRestricted()) {
+                logger.trace("Redirecting to start page (current record is access-restricted)");
+                return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/";
+            }
             logger.trace("Redirecting to current url {}", currentPath.getCombinedPrettyfiedUrl());
             return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + currentPath.getCombinedPrettyfiedUrl();
         } else {
