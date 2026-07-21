@@ -234,31 +234,9 @@
         }
     }
 
-    /* author colors hook onto the CONFIGURED styleClass the card carries (default
-       vocabulary below) — themes color foreign author classes the same way */
-    &__anno-note.alto-annotation--jacob-grimm {
-        border-left-color: var(--immersive-anno-author-jacob-grimm);
-    }
-
-    &__anno-note.alto-annotation--wilhelm-grimm {
-        border-left-color: var(--immersive-anno-author-wilhelm-grimm);
-    }
-
-    &__anno-note.alto-annotation--jacob-oder-wilhelm-grimm {
-        border-left-color: var(--immersive-anno-author-jacob-oder-wilhelm-grimm);
-    }
-
-    &__anno-note.alto-annotation--andere-handschrift {
-        border-left-color: var(--immersive-anno-author-andere-handschrift);
-    }
-
-    &__anno-note.alto-annotation--einweisungszeichen {
-        border-left-color: var(--immersive-anno-author-einweisungszeichen);
-    }
-
-    &__anno-note.alto-annotation--korrekturzeichen {
-        border-left-color: var(--immersive-anno-author-korrekturzeichen);
-    }
+    /* AUTHOR COLORS: the card carries the CONFIGURED annotationTag styleClass as its
+       presentation hook — the theme colors those classes (vocabulary-specific, no
+       built-in author palette in the core; unstyled authors stay on the neutral border) */
 
     /* hover on a note marks its anchor line in the main text */
     &.-annotations-on .is-anno-anchor {

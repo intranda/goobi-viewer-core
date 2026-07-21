@@ -35,7 +35,10 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocumen
 
 class LayoutTagEnricherTest {
 
-    private final LayoutTagEnricher enricher = new LayoutTagEnricher();
+    /** Explicit test mapping — the enricher has no built-in labels. */
+    private final LayoutTagEnricher enricher = new LayoutTagEnricher(Map.of(
+            "gr_unterstrichen", "alto-tag--underline",
+            "gr_durchgestrichen", "alto-tag--strikethrough"));
 
     private Map<String, LineElement> wordsById;
 
@@ -73,8 +76,7 @@ class LayoutTagEnricherTest {
      */
     @Test
     void enrich_shouldWrapStruckThroughWordsInAStrikethroughSpan() {
-        LayoutTagEnricher strikeOnly =
-                new LayoutTagEnricher(Map.of(LayoutTagEnricher.LABEL_STRIKETHROUGH, LayoutTagEnricher.CLASS_STRIKETHROUGH));
+        LayoutTagEnricher strikeOnly = new LayoutTagEnricher(Map.of("gr_durchgestrichen", "alto-tag--strikethrough"));
         Assertions.assertEquals("<span class=\"alto-tag alto-tag--strikethrough\">Dageminde</span>", strikeOnly.enrich("Dageminde", word("s-151")));
     }
 

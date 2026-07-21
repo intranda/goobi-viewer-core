@@ -23,7 +23,7 @@
 package io.goobi.viewer.controller.model.alto;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -33,36 +33,25 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 
 /**
  * {@link TextEnricher} implementation that applies inline visual markup to ALTO word tokens carrying word-level
- * layout tags. Each configured tag LABEL maps to a CSS class that is added to a wrapping {@code <span>}; a word
- * carrying several mapped tags gets all their classes on a single span. The default mapping covers underlined
- * ({@code gr_unterstrichen}) and struck-through ({@code gr_durchgestrichen}) words, but it can be overridden via
- * configuration (see {@code Configuration.getAltoLayoutWordTags()}).
+ * layout tags. Each mapped tag LABEL maps to a CSS class that is added to a wrapping {@code <span>}; a word carrying
+ * several mapped tags gets all their classes on a single span. The mapping is supplied by the caller (from
+ * configuration, see {@code Configuration.getAltoLayoutWordTags()}); there are no built-in labels, since ALTO
+ * LayoutTag LABELs are specific to how a given collection's ALTO was produced.
  */
 public class LayoutTagEnricher implements TextEnricher {
 
-    static final String LABEL_UNDERLINE = "gr_unterstrichen";
-    static final String LABEL_STRIKETHROUGH = "gr_durchgestrichen";
-
-    static final String CLASS_UNDERLINE = "alto-tag--underline";
-    static final String CLASS_STRIKETHROUGH = "alto-tag--strikethrough";
-
-    /** Default mapping of word-level layout-tag LABEL to CSS style class. */
-    static final Map<String, String> DEFAULT_STYLE_CLASSES = buildDefaults();
-
     private final Map<String, String> labelToStyleClass;
 
-    /** Uses the built-in default label-to-style-class mapping. */
+    /** Applies no markup (empty mapping). */
     public LayoutTagEnricher() {
         this(null);
     }
 
     /**
-     * @param labelToStyleClass mapping of layout-tag LABEL to CSS style class; if null or empty, the built-in
-     *            defaults are used
+     * @param labelToStyleClass mapping of layout-tag LABEL to CSS style class; null is treated as empty (no markup)
      */
     public LayoutTagEnricher(Map<String, String> labelToStyleClass) {
-        this.labelToStyleClass =
-                (labelToStyleClass == null || labelToStyleClass.isEmpty()) ? DEFAULT_STYLE_CLASSES : labelToStyleClass;
+        this.labelToStyleClass = (labelToStyleClass == null) ? Collections.emptyMap() : labelToStyleClass;
     }
 
     /**
@@ -92,13 +81,6 @@ public class LayoutTagEnricher implements TextEnricher {
             return content;
         }
         return "<span class=\"alto-tag " + String.join(" ", classes) + "\">" + content + "</span>";
-    }
-
-    private static Map<String, String> buildDefaults() {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put(LABEL_UNDERLINE, CLASS_UNDERLINE);
-        map.put(LABEL_STRIKETHROUGH, CLASS_STRIKETHROUGH);
-        return map;
     }
 
 }

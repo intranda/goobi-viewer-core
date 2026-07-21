@@ -39,6 +39,16 @@ import io.goobi.viewer.controller.model.alto.AltoLayoutAnnotationBuilder.TaggedE
 
 class AltoLayoutAnnotationBuilderTest {
 
+    /** Explicit test mappings — there are no built-in defaults (LABELs are collection-specific). */
+    private static final Map<String, AltoHtmlBuilder.AnnotationStyle> STYLES = Map.of(
+            "gr_jacob_grimm", new AltoHtmlBuilder.AnnotationStyle("alto-annotation--jacob-grimm", "Jacob Grimm"),
+            "gr_wilhelm_grimm", new AltoHtmlBuilder.AnnotationStyle("alto-annotation--wilhelm-grimm", "Wilhelm Grimm"),
+            "gr_jacob_oder_wilhelm_grimm", new AltoHtmlBuilder.AnnotationStyle("alto-annotation--jow-grimm", "Jacob oder Wilhelm Grimm"));
+
+    private static final Map<String, String> TYPES = Map.of(
+            "gr_unterstrichen", "underline",
+            "gr_durchgestrichen", "strikethrough");
+
     private String alto;
 
     @BeforeEach
@@ -49,7 +59,7 @@ class AltoLayoutAnnotationBuilderTest {
     }
 
     private LayoutAnnotations build() throws Exception {
-        return new AltoLayoutAnnotationBuilder().build(alto, StringTools.DEFAULT_ENCODING);
+        return new AltoLayoutAnnotationBuilder("gr_printed", STYLES, TYPES).build(alto, StringTools.DEFAULT_ENCODING);
     }
 
     private static Optional<BlockAnnotation> block(LayoutAnnotations result, String id) {
@@ -180,12 +190,18 @@ class AltoLayoutAnnotationBuilderTest {
     }
 
     /**
+     * There are no built-in label mappings: without configuration the result is empty, even for a fully
+     * layout-tagged document.
+     *
      * @see AltoLayoutAnnotationBuilder#build(String, String)
-     * @verifies deliver semantic types and style classes for configured mappings
+     * @verifies return an empty result without configured mappings
      */
     @Test
-    void build_shouldDeliverTheDefaultStyleClassOnBlocks() throws Exception {
-        LayoutAnnotations result = build();
-        Assertions.assertEquals("alto-annotation--jacob-grimm", block(result, "b-6").orElseThrow().getStyleClass());
+    void build_shouldReturnAnEmptyResultWithoutConfiguredMappings() throws Exception {
+        LayoutAnnotations result = new AltoLayoutAnnotationBuilder().build(alto, StringTools.DEFAULT_ENCODING);
+        Assertions.assertTrue(result.getBlocks().isEmpty());
+        // words/lines still list raw layout tags, but carry no renderable types
+        Assertions.assertTrue(result.getWords().stream().allMatch(w -> w.getTypes().isEmpty()));
+        Assertions.assertTrue(result.getLines().stream().allMatch(l -> l.getTypes().isEmpty()));
     }
 }

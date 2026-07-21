@@ -65,7 +65,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.intranda.digiverso.ocr.alto.margins.MarginColumnDetector;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
@@ -2028,11 +2027,12 @@ public class Configuration extends AbstractConfiguration {
      * Layout-tag LABEL identifying printed text in ALTO documents, used to anchor margin-annotation detection in the
      * fulltext view.
      *
-     * @return the configured printed-text label, or "gr_printed" if not configured
+     * @return the configured printed-text label, or an empty string if not configured (margin detection disabled)
      * @should return configured value
+     * @should return empty string if not configured
      */
     public String getAltoLayoutPrintedLabel() {
-        return getLocalString("altoLayoutTags[@printedLabel]", MarginColumnDetector.DEFAULT_PRINTED_LABEL);
+        return getLocalString("altoLayoutTags[@printedLabel]", "");
     }
 
     /**

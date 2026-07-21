@@ -25,7 +25,7 @@ package io.goobi.viewer.controller.model.alto;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -56,9 +56,10 @@ import io.goobi.viewer.controller.StringTools;
  * </p>
  *
  * <p>
- * The printed-text anchor label and the mapping of handwriting author tags to CSS class / display name are
- * configurable (see {@code Configuration.getAltoLayoutPrintedLabel()} / {@code getAltoLayoutAnnotationTags()}); the
- * built-in defaults cover the Grimm-corpus {@code gr_*} labels.
+ * The printed-text anchor label and the mapping of handwriting author tags to CSS class / display name are supplied
+ * by the caller from configuration (see {@code Configuration.getAltoLayoutPrintedLabel()} /
+ * {@code getAltoLayoutAnnotationTags()}). There are no built-in labels, since ALTO LayoutTag LABELs are specific to
+ * how a given collection's ALTO was produced; with no annotation mapping, all blocks stay in the main flow.
  * </p>
  */
 public class AltoHtmlBuilder {
@@ -69,31 +70,26 @@ public class AltoHtmlBuilder {
     public record AnnotationStyle(String styleClass, String name) {
     }
 
-    /** Default mapping of handwriting author LABEL to its {@link AnnotationStyle}. */
-    static final Map<String, AnnotationStyle> DEFAULT_ANNOTATION_STYLES = buildDefaultAnnotationStyles();
-
     private final List<TextEnricher> wordEnrichers;
     private final Map<String, AnnotationStyle> annotationStyles;
     private final MarginColumnDetector marginDetector;
 
-    /** Uses the built-in default printed-text label and annotation styles. */
+    /** Applies word enrichers only, with no annotation styling or margin detection (empty mapping, no anchor). */
     public AltoHtmlBuilder(TextEnricher... wordEnrichers) {
-        this(MarginColumnDetector.DEFAULT_PRINTED_LABEL, null, wordEnrichers);
+        this(null, null, wordEnrichers);
     }
 
     /**
-     * @param printedLabel the layout-tag LABEL identifying printed text (anchors margin detection); if blank, the
-     *            built-in default is used
-     * @param annotationStyles mapping of handwriting author LABEL to {@link AnnotationStyle}; if null or empty, the
-     *            built-in defaults are used
+     * @param printedLabel the layout-tag LABEL identifying printed text (anchors margin detection); if blank, margin
+     *            annotations are not split out
+     * @param annotationStyles mapping of handwriting author LABEL to {@link AnnotationStyle}; null is treated as
+     *            empty (no annotation styling / no margin authorship)
      * @param wordEnrichers the word-level enrichers to apply (character cleanup, named entities, layout markup, ...)
      */
     public AltoHtmlBuilder(String printedLabel, Map<String, AnnotationStyle> annotationStyles, TextEnricher... wordEnrichers) {
         this.wordEnrichers = Arrays.asList(wordEnrichers);
-        this.annotationStyles =
-                (annotationStyles == null || annotationStyles.isEmpty()) ? DEFAULT_ANNOTATION_STYLES : annotationStyles;
-        String label = StringUtils.isBlank(printedLabel) ? MarginColumnDetector.DEFAULT_PRINTED_LABEL : printedLabel;
-        this.marginDetector = new MarginColumnDetector(label, MarginColumnDetector.DEFAULT_TOLERANCE);
+        this.annotationStyles = (annotationStyles == null) ? Collections.emptyMap() : annotationStyles;
+        this.marginDetector = new MarginColumnDetector(printedLabel, MarginColumnDetector.DEFAULT_TOLERANCE);
     }
 
     /**
@@ -231,17 +227,6 @@ public class AltoHtmlBuilder {
         AltoDocument doc = AltoDocument.getDocumentFromString(altoString, StringUtils.isBlank(charset) ? StringTools.DEFAULT_ENCODING : charset);
         new HyphenationLinker().linkWords(doc);
         return doc;
-    }
-
-    private static Map<String, AnnotationStyle> buildDefaultAnnotationStyles() {
-        Map<String, AnnotationStyle> map = new LinkedHashMap<>();
-        map.put("gr_jacob_grimm", new AnnotationStyle("alto-annotation--jacob-grimm", "Jacob Grimm"));
-        map.put("gr_wilhelm_grimm", new AnnotationStyle("alto-annotation--wilhelm-grimm", "Wilhelm Grimm"));
-        map.put("gr_jacob_oder_wilhelm_grimm", new AnnotationStyle("alto-annotation--jacob-oder-wilhelm-grimm", "Jacob oder Wilhelm Grimm"));
-        map.put("gr_andere_handschrift", new AnnotationStyle("alto-annotation--andere-handschrift", "Andere Handschrift"));
-        map.put("gr_einweisungszeichen", new AnnotationStyle("alto-annotation--einweisungszeichen", "Einweisungszeichen"));
-        map.put("gr_korrekturzeichen", new AnnotationStyle("alto-annotation--korrekturzeichen", "Korrekturzeichen"));
-        return map;
     }
 
     private static String escapeText(String s) {
