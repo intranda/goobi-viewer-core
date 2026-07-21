@@ -164,11 +164,16 @@ public class UserBean implements Serializable {
      * @return the remaining session timeout formatted as an ISO time string
      */
     public String getSessionTimeout() {
-        long lastActityTimestamp = BeanUtils.getSession().getLastAccessedTime();
+        // getSession() returns null outside an HTTP request; without a session there is no timeout to report (java:S2259)
+        HttpSession session = BeanUtils.getSession();
+        if (session == null) {
+            return "";
+        }
+        long lastActityTimestamp = session.getLastAccessedTime();
         logger.trace("lastActityTimestamp: {}", lastActityTimestamp);
         long inactiveMillis = System.currentTimeMillis() - lastActityTimestamp;
         logger.trace("inactiveMillis: {}", inactiveMillis);
-        int maxInactiveSeconds = BeanUtils.getSession().getMaxInactiveInterval();
+        int maxInactiveSeconds = session.getMaxInactiveInterval();
         // logger.trace("maxInactiveSeconds: {}", maxInactiveSeconds); //NOSONAR Debug
         long timeoutMillis = maxInactiveSeconds * 1000 - inactiveMillis;
         logger.trace("timeoutMillis: {}", timeoutMillis);

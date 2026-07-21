@@ -1080,6 +1080,10 @@ public class Configuration extends AbstractConfiguration {
 
     public List<GeomapItemFilter> getGeomapFilters() {
         HierarchicalConfiguration<ImmutableNode> filtersConfig = this.getLocalConfigurationAt("maps.filters");
+        // getLocalConfigurationAt returns null when "maps.filters" is not configured; guard to avoid a NullPointerException (java:S2259)
+        if (filtersConfig == null) {
+            return new ArrayList<>();
+        }
         List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = filtersConfig.configurationsAt("filter");
 
         List<GeomapItemFilter> filters = new ArrayList<>();

@@ -2989,7 +2989,9 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public boolean isExplicitSearchPerformed() {
-        return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
+        // getExactSearchString() may return null; guard before replace() to avoid a NullPointerException (java:S2259)
+        String exactSearchString = getExactSearchString();
+        return exactSearchString != null && StringUtils.isNotBlank(exactSearchString.replace("-", ""));
     }
 
     /**

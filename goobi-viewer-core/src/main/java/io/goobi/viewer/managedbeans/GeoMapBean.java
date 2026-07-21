@@ -41,6 +41,7 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.storage.ApplicationBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.cms.pages.CMSPage;
@@ -81,7 +82,9 @@ public class GeoMapBean implements Serializable, IPolyglott {
      * Creates a new GeoMapBean instance.
      */
     public GeoMapBean() {
-        this.selectedLanguage = BeanUtils.getNavigationHelper().getLocale();
+        // getNavigationHelper() returns null outside a FacesContext; fall back to the default locale to avoid a NullPointerException (java:S2259)
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        this.selectedLanguage = navigationHelper != null ? navigationHelper.getLocale() : Locale.ENGLISH;
     }
 
     /**
@@ -482,9 +485,10 @@ public class GeoMapBean implements Serializable, IPolyglott {
      * @return the cached GeoMap if recently cached; otherwise the given GeoMap itself
      */
     public GeoMap getFromCache(GeoMap geomap) {
-        if (geomap != null && geomap.getId() != null) {
-            return BeanUtils.getPersistentStorageBean()
-                    .getIfRecentOrPut("cms_geomap_" + geomap.getId(), geomap, GeoMapUpdateHandler.getGeoMapTimeToLive());
+        // getPersistentStorageBean() returns null outside a FacesContext; guard and fall back to the uncached map (java:S2259)
+        ApplicationBean persistentStorageBean = BeanUtils.getPersistentStorageBean();
+        if (geomap != null && geomap.getId() != null && persistentStorageBean != null) {
+            return persistentStorageBean.getIfRecentOrPut("cms_geomap_" + geomap.getId(), geomap, GeoMapUpdateHandler.getGeoMapTimeToLive());
         }
         return geomap;
     }

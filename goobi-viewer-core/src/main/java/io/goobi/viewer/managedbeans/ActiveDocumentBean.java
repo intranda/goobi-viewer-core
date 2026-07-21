@@ -2077,7 +2077,9 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean hasAnchor() throws IndexUnreachableException {
-        return getTopDocument().isAnchorChild();
+        // getTopDocument() returns null when no record is loaded (viewManager null); guard to avoid a NullPointerException (java:S2259)
+        StructElement topDocument = getTopDocument();
+        return topDocument != null && topDocument.isAnchorChild();
     }
 
     /**
@@ -3017,7 +3019,9 @@ public class ActiveDocumentBean implements Serializable {
         try {
             // Adapt URL page range when switching between single and double page modes
             if (viewManager.isDoublePageMode() != doublePageMode) {
-                if (doublePageMode && !viewManager.getCurrentPage().isDoubleImage()) {
+                // getCurrentPage() may return null (no page for the current order); guard to avoid a NullPointerException (java:S2259)
+                PhysicalElement currentPage = viewManager.getCurrentPage();
+                if (doublePageMode && currentPage != null && !currentPage.isDoubleImage()) {
                     Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
                     Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
                     if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {

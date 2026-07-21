@@ -431,9 +431,13 @@ public class CmsCollectionsBean implements Serializable {
      * @param collection Collection whose info is added to all matching collection views
      */
     private static void addToCollectionViews(CMSCollection collection) {
-        CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
-        if (collectionView != null) {
-            collectionView.setCollectionInfo(collection.getSolrFieldValue(), collection);
+        // getBrowseBean() returns null outside a FacesContext; guard to avoid a NullPointerException (java:S2259)
+        BrowseBean browseBean = BeanUtils.getBrowseBean();
+        if (browseBean != null) {
+            CollectionView collectionView = browseBean.getCollection(collection.getSolrField());
+            if (collectionView != null) {
+                collectionView.setCollectionInfo(collection.getSolrFieldValue(), collection);
+            }
         }
         List<CollectionView> collections = BeanUtils.getCollectionViewBean().getCollections(collection.getSolrField());
         collections.forEach(view -> view.setCollectionInfo(collection.getSolrFieldValue(), collection));

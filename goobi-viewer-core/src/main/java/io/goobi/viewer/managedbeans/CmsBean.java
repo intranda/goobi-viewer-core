@@ -473,6 +473,10 @@ public class CmsBean implements Serializable {
      * @return the absolute URL to the given CMS page, in pretty or plain format
      */
     public String getUrl(CMSPage page, boolean pretty) {
+        // page may be null; guard explicitly instead of relying on the NullPointerException catch below (java:S2259)
+        if (page == null) {
+            return "pretty:index";
+        }
         try {
             String host = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
             String prettyPath = page.getRelativeUrlPath(pretty);
@@ -1557,7 +1561,9 @@ public class CmsBean implements Serializable {
      *         {@link io.goobi.viewer.managedbeans.NavigationHelper#isCmsPage()} returns false, an empty String is returned
      */
     public String getCssClass() {
-        if (BeanUtils.getNavigationHelper().isCmsPage() && getCurrentPage() != null) {
+        // getNavigationHelper() returns null outside a FacesContext; guard to avoid a NullPointerException (java:S2259)
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        if (navigationHelper != null && navigationHelper.isCmsPage() && getCurrentPage() != null) {
             return getCurrentPage().getWrapperElementClass();
         }
 
@@ -1781,7 +1787,9 @@ public class CmsBean implements Serializable {
         if (navigationMenuItems == null) {
             try {
                 String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-                String currentTheme = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
+                // getNavigationHelper() returns null outside a FacesContext; fall back to an empty theme filter (java:S2259)
+                NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+                String currentTheme = navigationHelper != null ? navigationHelper.getThemeOrSubtheme() : "";
                 navigationMenuItems = DataManager.getInstance()
                         .getDao()
                         .getAllTopCMSNavigationItems()

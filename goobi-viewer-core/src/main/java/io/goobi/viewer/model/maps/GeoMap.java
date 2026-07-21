@@ -224,9 +224,11 @@ public class GeoMap implements Serializable {
     }
 
     public String getDescription() {
-        MapTranslation desc = getDescription(BeanUtils.getNavigationHelper().getLocale().getLanguage());
+        // Resolve the locale via IPolyglott like getTitle() does; getNavigationHelper() returns null outside a
+        // FacesContext and would otherwise cause a NullPointerException (java:S2259)
+        MapTranslation desc = getDescription(IPolyglott.getCurrentLocale().getLanguage());
         if (desc.isEmpty()) {
-            desc = getDescription(BeanUtils.getNavigationHelper().getDefaultLocale().getLanguage());
+            desc = getDescription(IPolyglott.getDefaultLocale().getLanguage());
         }
         return desc.getTranslationValue();
     }

@@ -116,26 +116,30 @@ public class DocumentReference {
      *
      * @param startPage page order number to look up in ranges
      * @return the TagGroup whose range contains the given start page, or null if none found
+     * @should return null if no page ranges
      */
     public TagGroup getPageRange(int startPage) {
-        try {
-            ListIterator<TagGroup> forward = pageRanges.listIterator(startPage / getRangeSize());
-            ListIterator<TagGroup> backward = pageRanges.listIterator(startPage / getRangeSize());
-            while (forward.hasNext() || backward.hasPrevious()) {
-                if (forward.hasNext()) {
-                    TagGroup next = forward.next();
-                    if (next.getPageOrder().equals(startPage)) {
-                        return next;
-                    }
-                }
-                if (backward.hasPrevious()) {
-                    TagGroup previous = backward.previous();
-                    if (previous.getPageOrder().equals(startPage)) {
-                        return previous;
-                    }
+        // Guard against division by zero: getRangeSize() returns 0 when there are no page ranges (java:S3518).
+        // This replaces a previously swallowed ArithmeticException that produced the same null result.
+        int rangeSize = getRangeSize();
+        if (rangeSize <= 0) {
+            return null;
+        }
+        ListIterator<TagGroup> forward = pageRanges.listIterator(startPage / rangeSize);
+        ListIterator<TagGroup> backward = pageRanges.listIterator(startPage / rangeSize);
+        while (forward.hasNext() || backward.hasPrevious()) {
+            if (forward.hasNext()) {
+                TagGroup next = forward.next();
+                if (next.getPageOrder().equals(startPage)) {
+                    return next;
                 }
             }
-        } catch (ArithmeticException e) {
+            if (backward.hasPrevious()) {
+                TagGroup previous = backward.previous();
+                if (previous.getPageOrder().equals(startPage)) {
+                    return previous;
+                }
+            }
         }
 
         return null;

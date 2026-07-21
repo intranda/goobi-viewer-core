@@ -661,7 +661,12 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getCurrentObjectUrl() throws IndexUnreachableException, DAOException {
-        return imageDeliveryBean.getObjects3D().getObjectUrl(pi, getCurrentPage().getFileName());
+        // getCurrentPage() may return null (no page for the current order); without a page there is no object URL (java:S2259)
+        PhysicalElement currentPage = getCurrentPage();
+        if (currentPage == null) {
+            return "";
+        }
+        return imageDeliveryBean.getObjects3D().getObjectUrl(pi, currentPage.getFileName());
     }
 
     /**
