@@ -506,6 +506,92 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#generateAdvancedSearchMainQuery()
+     * @verifies build topstruct exclusion filter query for non-hierarchical NOT item
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldBuildTopstructExclusionForNonHierarchicalNOT() {
+        searchBean.resetAdvancedSearchParameters();
+
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setOperator(SearchItemOperator.NOT);
+        item.setField("MD_TITLE");
+        item.setValue("foo");
+
+        String query = searchBean.generateAdvancedSearchMainQuery();
+        // The inline negation stays in the stored query so the NOT operator round-trips on reload/bookmark
+        Assertions.assertTrue(query.contains("-(MD_TITLE:(foo))"), query);
+        // The actual work-level exclusion is a separate topstruct-join filter query
+        assertEquals("(*:* -_query_:\"{!join from=PI_TOPSTRUCT to=PI}(MD_TITLE:(foo))\")",
+                searchBean.getAdvancedSearchNegationFilterQuery());
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchMainQuery()
+     * @verifies not build exclusion filter query when no NOT items present
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldNotBuildExclusionFilterQueryWhenNoNOTItems() {
+        searchBean.resetAdvancedSearchParameters();
+
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setOperator(SearchItemOperator.AND);
+        item.setField("MD_TITLE");
+        item.setValue("foo");
+
+        searchBean.generateAdvancedSearchMainQuery();
+        Assertions.assertNull(searchBean.getAdvancedSearchNegationFilterQuery());
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchMainQuery()
+     * @verifies include only NOT items in exclusion filter query for a mixed group
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldIncludeOnlyNOTItemsInExclusionFilterQuery() {
+        searchBean.resetAdvancedSearchParameters();
+
+        {
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+            item.setOperator(SearchItemOperator.AND);
+            item.setField("MD_TITLE");
+            item.setValue("foo");
+        }
+        {
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+            item.setOperator(SearchItemOperator.NOT);
+            item.setField("MD_AUTHOR");
+            item.setValue("bar");
+        }
+
+        searchBean.generateAdvancedSearchMainQuery();
+        assertEquals("(*:* -_query_:\"{!join from=PI_TOPSTRUCT to=PI}(MD_AUTHOR:(bar))\")",
+                searchBean.getAdvancedSearchNegationFilterQuery());
+        // The positive AND item must not leak into the exclusion filter query
+        Assertions.assertFalse(searchBean.getAdvancedSearchNegationFilterQuery().contains("MD_TITLE"));
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchMainQuery()
+     * @verifies escape quotes in exclusion filter query for a phrase NOT item
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldEscapeQuotesInExclusionFilterQueryForPhrase() {
+        searchBean.resetAdvancedSearchParameters();
+
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setOperator(SearchItemOperator.NOT);
+        item.setField("MD_TITLE");
+        item.setValue("\"foo bar\"");
+
+        searchBean.generateAdvancedSearchMainQuery();
+        String negation = searchBean.getAdvancedSearchNegationFilterQuery();
+        Assertions.assertTrue(negation.startsWith("(*:* -_query_:\"{!join from=PI_TOPSTRUCT to=PI}"), negation);
+        // Inner double quotes from the phrase must be backslash-escaped so the _query_ string literal stays valid
+        Assertions.assertTrue(negation.contains("\\\""), negation);
+    }
+
+    /**
      * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
      * @verifies construct query info correctly
      */

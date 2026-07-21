@@ -222,6 +222,11 @@ public class SearchBean implements SearchInterface, Serializable {
     private SearchQueryGroup advancedSearchQueryGroup = new SearchQueryGroup(Collections.emptyList(), advancedSearchFieldTemplate);
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
+    /**
+     * Filter query that excludes records matched by non-hierarchical NOT items at the topstruct level. Built by
+     * {@link #generateAdvancedSearchMainQuery()} and applied as part of the custom filter query; null if there are no such items.
+     */
+    private String advancedSearchNegationFilterQuery;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
     private Search currentSearch;
     /** If >0, proximity search will be applied to phrase searches. */
@@ -819,6 +824,9 @@ public class SearchBean implements SearchInterface, Serializable {
         StringBuilder sbInfo = new StringBuilder();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
+        // Collects topstruct-level exclusion clauses for non-hierarchical NOT items (see below).
+        StringBuilder sbNegation = new StringBuilder();
+        this.advancedSearchNegationFilterQuery = null;
         Set<String> usedHierarchicalFields = new HashSet<>();
         Set<String> usedFieldValuePairs = new HashSet<>();
         this.proximitySearchDistance = 0;
@@ -1008,6 +1016,23 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                     sb.append(itemQuery);
                 }
+
+                // A NOT operator on a non-hierarchical field must exclude at the topstruct (work) level. The inline
+                // "-(body)" appended above is evaluated inside the aggregation join {!join from=PI_TOPSTRUCT to=PI}+(...),
+                // so a value carried by a sub-element doc would not exclude the parent work. Additionally build a
+                // top-level exclusion filter query that removes any work having the value on ANY of its docs, reusing the
+                // same _query_:"{!join ...}" idiom as the YEARMONTHDAY handling in SearchQueryItem.generateQuery.
+                if (SearchItemOperator.NOT == line.getOperator() && itemQuery.startsWith("-")) {
+                    // Strip the leading '-' to get the positive "(body)"; reuses generateQuery's field/phrase/escape logic.
+                    String positiveBody = itemQuery.substring(1);
+                    // Escape for embedding inside a _query_:"..." string literal: backslashes first, then double quotes.
+                    String escapedBody = positiveBody.replace("\\", "\\\\").replace("\"", "\\\"");
+                    if (sbNegation.length() == 0) {
+                        // Positive base so the resulting filter query is not purely negative (which would match nothing).
+                        sbNegation.append("*:*");
+                    }
+                    sbNegation.append(" -_query_:\"").append(SearchHelper.AGGREGATION_QUERY_PREFIX).append(escapedBody).append('"');
+                }
             }
         }
 
@@ -1036,6 +1061,10 @@ public class SearchBean implements SearchInterface, Serializable {
             facets.setActiveFacetString(facets.getActiveFacetStringPrefix() + sbCurrentCollection.toString());
         } else {
             facets.setActiveFacetString(facets.getActiveFacetString());
+        }
+
+        if (sbNegation.length() > 0) {
+            advancedSearchNegationFilterQuery = "(" + sbNegation.toString().trim() + ")";
         }
 
         advancedSearchQueryInfo = sbInfo.toString();
@@ -1135,6 +1164,13 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (activeSearchType == SearchHelper.SEARCH_TYPE_REGULAR && quickFiltersOrigin) {
             appendQuickFilterQueries(sbFilterQuery);
+        }
+
+        // Topstruct-level exclusion for non-hierarchical NOT items (see generateAdvancedSearchMainQuery); applied as fq
+        // so it excludes at the work level after the aggregation join, without altering the stored/bookmarkable query.
+        if (StringUtils.isNotEmpty(advancedSearchNegationFilterQuery)) {
+            sbFilterQuery.append(" +").append(advancedSearchNegationFilterQuery);
+            logger.debug("Applied negation filter query: {}", advancedSearchNegationFilterQuery);
         }
 
         newSearch.setCustomFilterQuery(sbFilterQuery.toString().trim());
@@ -2903,6 +2939,13 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String getAdvancedSearchQueryInfo() {
         return StringEscapeUtils.escapeHtml4(advancedSearchQueryInfo);
+    }
+
+    /**
+     * @return topstruct-level exclusion filter query built from non-hierarchical NOT items, or null if none. Package-private for tests.
+     */
+    String getAdvancedSearchNegationFilterQuery() {
+        return advancedSearchNegationFilterQuery;
     }
 
     /** {@inheritDoc} */
