@@ -13,6 +13,8 @@ import {
     nestTextLevels,
     flattenTextLevels,
     loadPageTextLevels,
+    parseLayoutAnnotations,
+    loadPageLayout,
     _clearCache,
 } from '../ivManifestSource.mjs';
 
@@ -602,5 +604,31 @@ describe('loadPageTextLevels', () => {
         expect(blocks[0].id).toBeNull();
         expect(blocks[0].lines.map((l) => l.id)).toEqual(['l1']);
         expect(blocks[0].lines[0].words).toEqual([]);
+    });
+});
+
+describe('parseLayoutAnnotations / loadPageLayout', () => {
+    test('normalizes the layout response, missing lists become empty arrays', () => {
+        expect(parseLayoutAnnotations(null)).toBeNull();
+        expect(parseLayoutAnnotations('nope')).toBeNull();
+        expect(parseLayoutAnnotations({})).toEqual({ blocks: [], words: [], lines: [] });
+        const layout = parseLayoutAnnotations({
+            printColumn: { x: 1, y: 2, w: 3, h: 4 },
+            blocks: [{ id: 'b-3' }],
+            words: [{ id: 's-1', tags: ['gr_unterstrichen'] }],
+        });
+        expect(layout.printColumn).toBeUndefined();
+        expect(layout.blocks).toHaveLength(1);
+        expect(layout.words).toHaveLength(1);
+        expect(layout.lines).toEqual([]);
+    });
+
+    test('fetches the 1-based layout endpoint and returns null on failure', async () => {
+        const fetchFn = jest.fn(() => Promise.resolve(okResponse({ blocks: [], words: [], lines: [] })));
+        const layout = await loadPageLayout('PPN1', 'https://h/api', 2, fetchFn);
+        expect(fetchFn).toHaveBeenCalledWith('https://h/api/records/PPN1/pages/3/text/layout/');
+        expect(layout).toEqual({ blocks: [], words: [], lines: [] });
+        const failing = jest.fn(() => Promise.resolve({ ok: false, status: 404 }));
+        expect(await loadPageLayout('PPN1', 'https://h/api', 2, failing)).toBeNull();
     });
 });

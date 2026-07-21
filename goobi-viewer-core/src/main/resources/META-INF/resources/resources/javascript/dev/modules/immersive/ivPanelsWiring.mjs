@@ -111,7 +111,15 @@ export function setupPanelResize(immersiveRoot) {
     const MIN_WIDTH = 240;
     const MAX_WIDTH_RATIO = 0.8;
     const maxWidth = () => immersiveViewer.getBoundingClientRect().width * MAX_WIDTH_RATIO;
-    const clamp = (px) => Math.min(Math.max(px, MIN_WIDTH), maxWidth());
+    // The handle is positioned by the width variable, not the panel edge — so the
+    // clamp floor must include the open panel's own min-width (raised in the
+    // annotations two-column mode), or the handle would detach from the panel.
+    const minWidth = () => {
+        const open = immersiveRoot.querySelector('.immersive__panel-left.is-open');
+        const panelMin = open ? parseFloat(getComputedStyle(open).minWidth) || 0 : 0;
+        return Math.max(MIN_WIDTH, panelMin);
+    };
+    const clamp = (px) => Math.min(Math.max(px, minWidth()), maxWidth());
     const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
     let stored = NaN;
     try {
@@ -123,12 +131,33 @@ export function setupPanelResize(immersiveRoot) {
     handle.className = 'immersive__panel-resize-handle';
     handle.setAttribute('aria-hidden', 'true');
     immersiveViewer.appendChild(handle);
+    // A panel can grow beyond the width variable without a drag (the annotations
+    // two-column mode raises its min-width, e.g. when the checkbox is toggled).
+    // Sync the variable up to the real panel width in that case, or the handle
+    // would sit unreachable inside the panel instead of on its edge. The current
+    // variable value is read off the handle's GEOMETRY (it is positioned by the
+    // variable) — the inline style alone misses the CSS fallback, media-query
+    // and fullscreen values a first-time visitor runs on.
+    if (typeof ResizeObserver !== 'undefined') {
+        const observer = new ResizeObserver(() => {
+            const open = immersiveViewer.querySelector('.immersive__panel-left.is-open');
+            if (!open || !handle.offsetParent) return;
+            const panelWidth = open.getBoundingClientRect().width;
+            const handleRect = handle.getBoundingClientRect();
+            const varWidth = handleRect.left + handleRect.width / 2 - immersiveViewer.getBoundingClientRect().left - RAIL_WIDTH;
+            if (panelWidth > varWidth + 1) applyWidth(panelWidth);
+        });
+        immersiveViewer.querySelectorAll('.immersive__panel-left').forEach((p) => observer.observe(p));
+    }
     handle.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         handle.setPointerCapture(e.pointerId);
         immersiveRoot.classList.add('-resizing');
         const viewerLeft = immersiveViewer.getBoundingClientRect().left;
-        const widthAt = (ev) => clamp(ev.clientX - viewerLeft - RAIL_WIDTH);
+        // Bounds are fixed for the duration of a drag — no style recalc per move.
+        const dragMin = minWidth();
+        const dragMax = maxWidth();
+        const widthAt = (ev) => Math.min(Math.max(ev.clientX - viewerLeft - RAIL_WIDTH, dragMin), dragMax);
         const onMove = (ev) => applyWidth(widthAt(ev));
         const onUp = (ev) => {
             handle.releasePointerCapture(e.pointerId);

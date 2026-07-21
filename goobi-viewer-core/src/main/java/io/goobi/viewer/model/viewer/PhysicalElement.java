@@ -179,6 +179,8 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
     private String altoText;
     /** ALTO file charset (determined when loading). */
     private String altoCharset;
+    /** Sanitized HTML rendering of the ALTO full-text — cached, as JSF evaluates the getter several times per render. */
+    private String altoFulltextHtml;
     /** Format of the loaded word coordinates XML document. */
     private CoordsFormat wordCoordsFormat = CoordsFormat.UNCHECKED;
     /** Data repository name for the record to which this page belongs. */
@@ -992,22 +994,25 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
         }
         if (StringUtils.isNotEmpty(altoText)) {
             wordCoordsFormat = CoordsFormat.ALTO;
-            String text = ALTOTools.getFulltextHtml(altoText, altoCharset);
-            if (StringUtils.isNotEmpty(text)) {
-                // Sanitize the ALTO-produced HTML (which carries NamedEntityEnricher button
-                // markup) through the dedicated allowlist that permits only the <button> tag
-                // and its known attribute set. No <mark> here because Solr-highlight placeholder
-                // substitution (SearchHelper.replaceHighlightingPlaceholders) only runs on the
-                // snippet path (BrowseElement.fulltext), not on page-level fulltext rendering.
-                // Log a warning when the sanitizer had to remove markup, matching the previous
-                // regex-based behavior.
-                String cleanText = HtmlSanitizer.cleanFulltextWithNamedEntities(text);
-                if (cleanText.length() < text.length()) {
-                    text = cleanText;
-                    logger.warn("Disallowed markup found and removed from full-text in {}, page {}", pi, getOrder());
+            if (altoFulltextHtml == null) {
+                String text = ALTOTools.getFulltextHtml(altoText, altoCharset);
+                if (StringUtils.isNotEmpty(text)) {
+                    // Sanitize the ALTO-produced HTML (which carries NamedEntityEnricher button
+                    // markup) through the dedicated allowlist that permits the <button> tag and the
+                    // structural layout markup (div/aside/p/span/br) with their known attribute sets. No <mark> here because Solr-highlight placeholder
+                    // substitution (SearchHelper.replaceHighlightingPlaceholders) only runs on the
+                    // snippet path (BrowseElement.fulltext), not on page-level fulltext rendering.
+                    // Log a warning when the sanitizer had to remove markup, matching the previous
+                    // regex-based behavior.
+                    String cleanText = HtmlSanitizer.cleanFulltextWithNamedEntities(text);
+                    if (cleanText.length() < text.length()) {
+                        text = cleanText;
+                        logger.warn("Disallowed markup found and removed from full-text in {}, page {}", pi, getOrder());
+                    }
                 }
+                altoFulltextHtml = text;
             }
-            return text;
+            return altoFulltextHtml;
         }
         wordCoordsFormat = CoordsFormat.NONE;
         if (fullText == null) {

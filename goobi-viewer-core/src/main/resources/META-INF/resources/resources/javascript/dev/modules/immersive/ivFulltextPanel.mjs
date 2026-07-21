@@ -1,8 +1,9 @@
-/** Fulltext panel wiring: combined block/line/word text with image hover linking. */
+/** Fulltext panel wiring: combined block/line/word text with image hover linking and layout annotations. */
 
-import { loadPageTextLevels, flattenTextLevels } from './ivManifestSource.mjs';
+import { loadPageTextLevels, flattenTextLevels, loadPageLayout } from './ivManifestSource.mjs';
 import { buildTextLevels, mountTextImageLink } from './ivTextImageLink.mjs';
 import { currentOrder } from './viewerImmersive.mjs';
+import { setupAnnotationsToggle, applyTextMarkup, mountBlockAnnotations, overlayRegions } from './ivAnnotations.mjs';
 
 /**
  * Wires the fulltext panel: loads the nested OCR levels for the visible page,
@@ -10,37 +11,147 @@ import { currentOrder } from './viewerImmersive.mjs';
  * teardown runs through the panels' close hook so leaving the panel always
  * clears the image overlays.
  *
+ * The ALTO layout annotations ride alongside. Annotations are only ever visible
+ * while the fulltext panel is OPEN and the checkbox is on, so the layout JSON is
+ * fetched, applied and overlaid strictly per open panel; closing the panel clears
+ * everything, the persisted checkbox state kicks back in on the next open.
+ *
  * @param {IvViewer} viewer
  * @param {string} pi
  * @param {string} apiBase
  * @param {{closePanels: Function, registerCloseHook: Function}} panels
+ * @param {{register: Function}} [keys]  the immersive key dispatcher (annotations shortcut)
  * @returns {{updateFulltextAvail: Function}}
  */
-export function setupFulltextPanel(viewer, pi, apiBase, panels) {
+export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     const fulltextPanel = document.getElementById('immersivePanelFulltext');
     const fulltextBox = document.getElementById('immersiveFulltext');
     const fulltextLoader = document.getElementById('immersiveFulltextLoader');
     const fulltextBtn = document.querySelector('[data-immersive-panel="immersivePanelFulltext"]');
     const fulltextTitleDefault = fulltextBtn ? fulltextBtn.getAttribute('title') : '';
 
+    const annoCheckbox = document.getElementById('immersiveAnnotationsToggle');
+    const annoColumnsHead = document.getElementById('immersiveAnnotationsColumns');
+    const immersiveRoot = fulltextPanel ? fulltextPanel.closest('.immersive') : null;
+    // Even READING window.localStorage can throw (browser with storage blocked);
+    // the toggle helpers handle a null storage gracefully.
+    let storage = null;
+    try {
+        storage = window.localStorage;
+    } catch {
+        storage = null;
+    }
+    const annotations = annoCheckbox && immersiveRoot ? setupAnnotationsToggle({ root: immersiveRoot, checkbox: annoCheckbox, storage, keys }) : null;
+
+    const panelOpen = () => !!fulltextPanel && fulltextPanel.classList.contains('is-open');
+
+    let layoutReq = 0;
+    let currentLayout = null;
+    let currentFlat = null;
+    let currentAnnotations = null;
+
+    const clearBlockAnnotations = () => {
+        if (currentAnnotations) {
+            currentAnnotations.destroy();
+            currentAnnotations = null;
+        }
+    };
+
+    /** Applies inline markup + block annotations (margin column etc.) to the rendered panel text. */
+    const decorate = () => {
+        if (!annotations || !currentLayout || !panelOpen() || !fulltextBox || !fulltextBox.childElementCount) return;
+        const pageNo = currentOrder(viewer) + 1;
+        const els = applyTextMarkup(fulltextBox, currentLayout, pi, pageNo);
+        clearBlockAnnotations();
+        currentAnnotations = mountBlockAnnotations({
+            box: fulltextBox,
+            layout: currentLayout,
+            pi,
+            pageNo,
+            flat: currentFlat,
+            els,
+            columnsHead: annoColumnsHead,
+            scrollContainer: fulltextPanel,
+            getRegionEls: () => overlayEls,
+        });
+        if (currentAnnotations) currentAnnotations.attachRegions(overlayEls, textRegionEls);
+    };
+
+    /**
+     * Overlay boxes are viewport-positioned against the CURRENT OSD item, which only exists
+     * once the (per-spread rebuilt) OpenSeadragon has settled — so they are (re)mounted on
+     * every onOpen, not on page change; nothing is mounted while the panel is closed.
+     */
+    let overlayEls = new Map();
+    let textRegionEls = new Map();
+    const mountOverlays = () => {
+        overlayEls = viewer.setAnnotationRegions(panelOpen() ? overlayRegions(currentLayout) : []);
+        // OSD rebuilds its overlays per page open — the note-region hover bindings go stale.
+        if (currentAnnotations) currentAnnotations.attachRegions(overlayEls, textRegionEls);
+    };
+
+    /**
+     * Per-page layout annotations while the panel is open: checkbox availability,
+     * image overlays and panel decoration. With the panel closed (or in double-page
+     * mode, where the panel is unavailable) nothing is fetched and overlays clear.
+     */
+    const refreshLayout = async () => {
+        if (!annotations) return;
+        const req = ++layoutReq;
+        // Invalidate immediately: loadFulltext may re-render and decorate() before this
+        // fetch resolves, and ALTO element ids collide across pages.
+        currentLayout = null;
+        if (!panelOpen() || viewer.isDoublePage()) {
+            mountOverlays();
+            return;
+        }
+        let layout = null;
+        try {
+            layout = await loadPageLayout(pi, apiBase, currentOrder(viewer));
+        } catch {
+            layout = null;
+        }
+        if (req !== layoutReq) return;
+        currentLayout = layout;
+        annotations.setPageData(layout);
+        mountOverlays();
+        decorate();
+    };
+
+    if (annotations) {
+        viewer.onPageChange.subscribe(refreshLayout);
+        viewer.onOpen.subscribe(mountOverlays);
+        // Note positions depend on rendered geometry, which is only measurable while visible.
+        annotations.onChange((on) => {
+            if (on && currentAnnotations) requestAnimationFrame(() => currentAnnotations && currentAnnotations.relayout());
+        });
+    }
+
     if (fulltextPanel && fulltextBox) {
         let fulltextReq = 0;
         let currentLink = null;
 
         const clearFulltextLink = () => {
+            // Also invalidates an in-flight loadFulltext: without the bump, a slow fetch
+            // resolving after panel close would re-render into the closed panel and
+            // remount the image overlays the close just removed.
+            fulltextReq++;
             if (currentLink) {
                 currentLink.destroy();
                 currentLink = null;
             }
             viewer.clearTextRegions();
+            viewer.clearAnnotationRegions();
+            textRegionEls = new Map();
+            clearBlockAnnotations();
             if (fulltextLoader) fulltextLoader.hidden = true;
         };
         panels.registerCloseHook(clearFulltextLink);
 
         const loadFulltext = async () => {
             const order = currentOrder(viewer);
-            const req = ++fulltextReq;
             clearFulltextLink();
+            const req = ++fulltextReq;
             if (fulltextLoader) fulltextLoader.hidden = false;
             fulltextBox.textContent = '';
             fulltextBox.classList.remove('-empty');
@@ -55,19 +166,26 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels) {
             if (blocks && blocks.length) {
                 fulltextBox.replaceChildren(buildTextLevels(blocks));
                 const flat = flattenTextLevels(blocks);
+                currentFlat = flat;
                 const regionEls = viewer.setTextRegions(flat);
+                textRegionEls = regionEls;
                 const parents = new Map(flat.filter((r) => r.parentId).map((r) => [r.id, r.parentId]));
                 const revealIds = new Set(flat.filter((r) => r.level !== 'block').map((r) => r.id));
                 currentLink = mountTextImageLink({ box: fulltextBox, regionEls, parents, scrollContainer: fulltextPanel, revealIds });
+                decorate();
             } else {
+                currentFlat = null;
                 fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
                 fulltextBox.classList.add('-empty');
             }
         };
 
         fulltextPanel.addEventListener('immersive:panel-open', loadFulltext);
+        fulltextPanel.addEventListener('immersive:panel-open', () => {
+            if (annotations) refreshLayout();
+        });
         viewer.onPageChange.subscribe(() => {
-            if (fulltextPanel.classList.contains('is-open')) loadFulltext();
+            if (panelOpen()) loadFulltext();
         });
     }
 
@@ -80,7 +198,9 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels) {
         const title = (doublePage && fulltextBtn.dataset.labelDisabled) || fulltextTitleDefault;
         fulltextBtn.setAttribute('title', title);
         fulltextBtn.setAttribute('aria-label', title);
-        if (doublePage && fulltextPanel && fulltextPanel.classList.contains('is-open')) panels.closePanels();
+        if (doublePage && panelOpen()) panels.closePanels();
+        // Annotations follow the fulltext availability: no data/overlays in double-page mode.
+        if (annotations) refreshLayout();
     };
     updateFulltextAvail();
 

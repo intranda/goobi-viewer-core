@@ -90,6 +90,9 @@ class AltoHtmlBuilderTest {
     void build_shouldMarkUpUnderlinedAndStruckThroughWords() throws Exception {
         String html = build();
         Assertions.assertTrue(html.contains("alto-tag--underline"), html);
+        Assertions.assertTrue(html.contains("alto-tag--strikethrough"), html);
+        // s-151 ("Dageminde") carries both word-level tags and must combine them on one span.
+        Assertions.assertTrue(html.contains("<span class=\"alto-tag alto-tag--underline alto-tag--strikethrough\">Dageminde</span>"), html);
     }
 
 }

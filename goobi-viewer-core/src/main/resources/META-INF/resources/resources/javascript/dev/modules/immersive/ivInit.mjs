@@ -80,7 +80,7 @@ export function initImmersiveViewer(immersiveRoot) {
 
             setupToc(viewer);
             setupFulltextSearch(viewer, pi, apiBase);
-            const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels);
+            const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels, keys);
             const toggleGrid = setupOverviewGrid(viewer, pi, apiBase, keys);
             setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail });
         })

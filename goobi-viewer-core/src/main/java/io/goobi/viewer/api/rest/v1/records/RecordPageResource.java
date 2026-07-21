@@ -26,12 +26,15 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_LAYOUT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_MANIFEST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_TEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -50,8 +53,10 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jdom2.JDOMException;
 
 import de.intranda.api.annotation.IAnnotationCollection;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
@@ -71,6 +76,11 @@ import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataFileTools;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.model.alto.AltoLayoutAnnotationBuilder;
+import io.goobi.viewer.controller.model.alto.AltoLayoutAnnotationBuilder.LayoutAnnotations;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -85,7 +95,9 @@ import io.goobi.viewer.model.iiif.presentation.v2.builder.SequenceBuilder;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -317,6 +329,67 @@ public class RecordPageResource {
         } else {
             return new AnnotationList(new SequenceBuilder(urls).getAnnotationListURI(pi, pageNo, AnnotationType.FULLTEXT, true));
         }
+    }
+
+    /**
+     * Returns the ALTO layout-tag annotations of a page: the printed-text column, author-attributed blocks with their
+     * margin classification, and words/drawn lines carrying layout tags. Rects use the same coordinate space as the
+     * page text annotations, so clients can join both data sets by ALTO element id.
+     *
+     * @param pageNo page number (1-based)
+     * @return the layout annotations of the page; empty lists when the page has no ALTO, no layout tags, or fulltext
+     *         access is denied
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @should return empty layout annotations for alto without layout tags
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_PAGES_LAYOUT)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "Get the ALTO layout-tag annotations of a single page", tags = { "records" })
+    @ApiResponse(responseCode = "200", description = "Layout annotations of the page (empty when none exist or access is denied)")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
+    public LayoutAnnotations getLayoutAnnotationsForPage(
+            @Parameter(description = "Page number (1-based)",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo)
+            throws PresentationException, IndexUnreachableException, DAOException {
+        requireValidPageNo(pageNo);
+        LayoutAnnotations empty = new LayoutAnnotations();
+        boolean access;
+        try {
+            access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, null, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, servletRequest)
+                    .isGranted();
+        } catch (RecordNotFoundException e) {
+            access = false;
+        }
+        if (!access) {
+            return empty;
+        }
+
+        StructElement doc = new ManifestBuilder(urls).getDocument(pi);
+        if (doc == null) {
+            return empty;
+        }
+        PhysicalElement page = AbstractPageLoader.loadPage(doc, pageNo);
+        if (page == null || StringUtils.isBlank(page.getAltoFileName())) {
+            return empty;
+        }
+        try {
+            StringPair alto = DataFileTools.loadAlto(page.getAltoFileName());
+            if (alto == null || StringUtils.isBlank(alto.getOne())) {
+                return empty;
+            }
+            Configuration config = DataManager.getInstance().getConfiguration();
+            return new AltoLayoutAnnotationBuilder(config.getAltoLayoutPrintedLabel(), config.getAltoLayoutAnnotationTags(),
+                    config.getAltoLayoutWordTagTypes()).build(alto.getOne(), alto.getTwo());
+        } catch (FileNotFoundException e) {
+            logger.debug("No ALTO file found for {}, page {}: {}", pi, pageNo, e.getMessage());
+        } catch (IOException | JDOMException e) {
+            // A malformed ALTO file must not break the page view; deliver "no annotations" instead.
+            logger.error("Could not parse ALTO for {}, page {}: {}", pi, pageNo, e.getMessage());
+        }
+        return empty;
     }
 
     /**

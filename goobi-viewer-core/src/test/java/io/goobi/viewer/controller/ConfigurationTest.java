@@ -329,17 +329,45 @@ class ConfigurationTest extends AbstractTest {
 
     /**
      * @see Configuration#getAltoLayoutPrintedLabel()
-     * @see Configuration#getAltoLayoutWordTags()
-     * @see Configuration#getAltoLayoutAnnotationTags()
-     * @verifies return configured values
+     * @verifies return configured value
      */
     @Test
-    void getAltoLayoutTags_shouldReturnConfiguredValues() {
+    void getAltoLayoutPrintedLabel_shouldReturnConfiguredValue() {
+        assertEquals("gr_printed_test", DataManager.getInstance().getConfiguration().getAltoLayoutPrintedLabel());
+    }
+
+    /**
+     * @see Configuration#getAltoLayoutWordTags()
+     * @verifies return configured word tags
+     */
+    @Test
+    void getAltoLayoutWordTags_shouldReturnConfiguredWordTags() {
         Configuration config = DataManager.getInstance().getConfiguration();
-        assertEquals("gr_printed_test", config.getAltoLayoutPrintedLabel());
         assertEquals("test-underline", config.getAltoLayoutWordTags().get("gr_unterstrichen"));
         assertEquals("test-strike", config.getAltoLayoutWordTags().get("gr_durchgestrichen"));
-        AnnotationStyle jacob = config.getAltoLayoutAnnotationTags().get("gr_jacob_grimm");
+    }
+
+    /**
+     * @see Configuration#getAltoLayoutWordTagTypes()
+     * @verifies return configured word tag types
+     */
+    @Test
+    void getAltoLayoutWordTagTypes_shouldReturnConfiguredWordTagTypes() {
+        Configuration config = DataManager.getInstance().getConfiguration();
+        assertEquals("underline", config.getAltoLayoutWordTagTypes().get("gr_unterstrichen"));
+        assertEquals("strikethrough", config.getAltoLayoutWordTagTypes().get("gr_durchgestrichen"));
+        // a type-only entry (no styleClass) feeds the immersive view but not the classic word markup
+        assertEquals("mark", config.getAltoLayoutWordTagTypes().get("test_angestrichen"));
+        assertNull(config.getAltoLayoutWordTags().get("test_angestrichen"));
+    }
+
+    /**
+     * @see Configuration#getAltoLayoutAnnotationTags()
+     * @verifies return configured annotation tags
+     */
+    @Test
+    void getAltoLayoutAnnotationTags_shouldReturnConfiguredAnnotationTags() {
+        AnnotationStyle jacob = DataManager.getInstance().getConfiguration().getAltoLayoutAnnotationTags().get("gr_jacob_grimm");
         assertNotNull(jacob);
         assertEquals("test-jacob", jacob.styleClass());
         assertEquals("Jacob (test)", jacob.name());

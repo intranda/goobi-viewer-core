@@ -63,11 +63,7 @@
                 borderColor: styles['borderTopColor'],
                 fillColor: styles['background-color'],
             });
-            let activeStyles = viewerJS.helper.getCss('page-area focus', [
-                'borderTopColor',
-                'borderTopWidth',
-                'background-color',
-            ]);
+            let activeStyles = viewerJS.helper.getCss('page-area focus', ['borderTopColor', 'borderTopWidth', 'background-color']);
             ({
                 borderWidth: parseInt(activeStyles['borderTopWidth']),
                 borderColor: activeStyles['borderTopColor'],
@@ -125,12 +121,12 @@
             window.history.replaceState(null, '', url.toString());
         }
 
-        drawActiveAreas(activeAreas, imageView) { 
+        drawActiveAreas(activeAreas, imageView) {
             let areasOnCanvas = [];
             activeAreas.forEach((activeArea, index) => {
                 const area = this.drawArea(activeArea, index, imageView);
                 areasOnCanvas.push(area?.overlay?.bounds);
-    			console.log("add active area ", area, areasOnCanvas);
+                console.log('add active area ', area, areasOnCanvas);
                 let scrollPosition = window.sessionStorage.getItem('scrollPosition');
                 $(document).scrollTop(parseInt(scrollPosition));
                 window.sessionStorage.removeItem('scrollPosition');
@@ -166,9 +162,9 @@
         }
 
         drawArea(area, shapeIndex, image, clickToLeave) {
-    		let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-    		let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
-    		let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
+            let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+            let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
+            let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
             let $area = $('#pageAreaFrame_' + area.logId + '_' + shapeIndex);
             let $label = $('#pageAreaLabel_' + area.logId + '_' + shapeIndex);
             let overlayId = area.logId + '_' + shapeIndex;
@@ -189,7 +185,7 @@
                 () => $(area.tooltip.element).addClass('hover'),
                 () => $(area.tooltip.element).removeClass('hover')
             );
-    		return area;
+            return area;
         }
     }
 
@@ -231,7 +227,7 @@
                 showNavigator: 'imageShowNavigator',
                 allowDownload: 'allowDownload',
                 allowZoom: 'allowZoom',
-    			maxZoom: 'maxZoom'
+                maxZoom: 'maxZoom',
             },
             data: {
                 footerHeight: 'height',
@@ -252,12 +248,8 @@
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
                 this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
-                this.leftMarginElement = document.querySelector(
-                    _config.elementSelectors.data.leftMarginElement
-                )?.textContent;
-                this.rightMarginElement = document.querySelector(
-                    _config.elementSelectors.data.rightMarginElement
-                )?.textContent;
+                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
@@ -270,9 +262,7 @@
 
                 this.tileSources = createTileSource();
 
-                this.tileSourceIdToOrder = Object.fromEntries(
-                    Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
-                );
+                this.tileSourceIdToOrder = Object.fromEntries(Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order]));
 
                 if (this.viewMode == 'sequence') {
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
@@ -290,7 +280,7 @@
                                 showTooltip: element.dataset[_config.datasets.data.showTooltip],
                                 highlightClassName: 'focus',
                                 highlightOnHover: true,
-                            }); 
+                            });
                             this.overlayGroups.push(overlays);
                         } catch (e) {
                             console.error('Error parsing coords string ', coordsString, e);
@@ -312,9 +302,7 @@
                 const viewerRight = this.viewer.element.offsetLeft + this.viewer.element.offsetWidth;
                 const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
                 const margins = {
-                    left:
-                        (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) +
-                        (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
                     right: sidebarRightLeft ? viewerRight - sidebarRightLeft : 0,
                     top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
                 };
@@ -444,12 +432,8 @@
         if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
             zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
         }
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateLeft)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateRight)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateLeft).forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateRight).forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
         document.querySelectorAll(_config.elementSelectors.controls.reset).forEach((button) =>
             button.addEventListener('click', (e) => {
                 rotation.rotateTo(0);
@@ -463,42 +447,38 @@
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
             margins: {
-                bottom: Number(
-                    document.querySelector(_config.elementSelectors.data.footer)?.dataset[
-                        _config.datasets.data.footerHeight
-                    ]
-                ),
+                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight]),
             },
             zoom: {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
-    			max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
+                max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
             },
             sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
             navigator: {
                 enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
-    			position: "BOTTOM_RIGHT"
+                position: 'BOTTOM_RIGHT',
             },
         };
     }
 
     function getSequenceSettings(viewMode) {
         let columns;
-    	switch ((viewMode || '').toLowerCase()) {
+        switch ((viewMode || '').toLowerCase()) {
             case 'double':
                 columns = 2;
-    			break;
+                break;
             case 'sequence':
             case 'single':
             default:
-               columns = 1;
+                columns = 1;
         }
-    	return {
-    		columns: columns,
-    		useWindowing: true,
-    		windowSize: _sequenceWindowSize,
-    		windowExpandThreshold: _expandThreshold,
-    		windowExpandSize: _expandBatchSize
-    	}
+        return {
+            columns: columns,
+            useWindowing: true,
+            windowSize: _sequenceWindowSize,
+            windowExpandThreshold: _expandThreshold,
+            windowExpandSize: _expandBatchSize,
+        };
     }
 
     function getFittingMode(pageType) {
@@ -564,11 +544,7 @@
 
             // init area select
             try {
-                let styles = viewerJS.helper.getCss('image-fragment', [
-                    'borderTopColor',
-                    'borderTopWidth',
-                    'background-color',
-                ]);
+                let styles = viewerJS.helper.getCss('image-fragment', ['borderTopColor', 'borderTopWidth', 'background-color']);
                 var fragmentSelectConfig = {
                     removeOldAreas: true,
                     drawCondition: (event) => this.active && this.fragmentSelect?.currentOverlay == undefined,
@@ -597,8 +573,7 @@
             if (this.fragmentSelect) {
                 this.fragmentSelect.finishedHook.subscribe((area) => {
                     var areaString = this.getAreaString(area);
-                    var pageUrl =
-                        window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
+                    var pageUrl = window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
                     console.log('set area data ', pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
@@ -613,14 +588,7 @@
 
         getAreaString(area) {
             if (area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {
-                var areaString =
-                    area.x.toFixed(0) +
-                    ',' +
-                    area.y.toFixed(0) +
-                    ',' +
-                    area.width.toFixed(0) +
-                    ',' +
-                    area.height.toFixed(0);
+                var areaString = area.x.toFixed(0) + ',' + area.y.toFixed(0) + ',' + area.width.toFixed(0) + ',' + area.height.toFixed(0);
                 return areaString;
             } else {
                 return 'full';
@@ -701,10 +669,7 @@
         }
 
         toggleImageShare($panel) {
-            if (
-                $panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') &&
-                $panel.hasClass('in')
-            ) {
+            if ($panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') && $panel.hasClass('in')) {
                 this.startFragmentSelect();
             }
         }
@@ -727,8 +692,7 @@
             this.container = document.querySelector(this.config.container);
             // console.log('init voyager3d', this);
             if (this.isVisible()) {
-                this.loaded = this.initView().then(() => {
-                });
+                this.loaded = this.initView().then(() => {});
             }
         }
 
@@ -1346,6 +1310,37 @@
             const osd = this.viewer.openseadragon;
             (this._textRegions || []).forEach((el) => osd.removeOverlay(el));
             this._textRegions = [];
+        }
+
+        /**
+         * Draws ALTO layout annotations (drawn underlines/strikethroughs/marks, image
+         * pixels) as overlays; each region's `modifier` becomes a class suffix. The
+         * overlays only become visible while the root carries the annotations state
+         * class, so toggling the checkbox never touches OSD.
+         */
+        setAnnotationRegions(regions) {
+            this.clearAnnotationRegions();
+            const osd = this.viewer.openseadragon;
+            const item = this.currentItem || osd.world.getItemAt(0);
+            const map = new Map();
+            if (!item) return map;
+            (regions || []).forEach((r) => {
+                if (!r.rect) return;
+                const el = document.createElement('div');
+                el.className = `immersive__anno-region immersive__anno-region-${r.modifier}`;
+                el.dataset.ivAnnoId = r.id;
+                osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
+                this._annoRegions.push(el);
+                map.set(r.id, el);
+            });
+            return map;
+        }
+
+        /** Removes all layout-annotation overlays (text regions and highlights stay). */
+        clearAnnotationRegions() {
+            const osd = this.viewer.openseadragon;
+            (this._annoRegions || []).forEach((el) => osd.removeOverlay(el));
+            this._annoRegions = [];
         }
 
         /** Current 0-based page order (the spread leader in double mode). */
@@ -2138,12 +2133,53 @@
         return nestTextLevels({ blocks, lines, words });
     }
 
+    /**
+     * Normalizes the layout-annotation endpoint response to the three lists the
+     * immersive view consumes (author blocks, tagged words, drawn lines); missing
+     * lists become empty arrays, other payload fields (e.g. printColumn) are
+     * dropped. Null for non-object payloads. Pure + tested.
+     *
+     * @param {object} json  the /text/layout/ response
+     * @returns {{blocks:Array, words:Array, lines:Array}|null}
+     */
+    function parseLayoutAnnotations(json) {
+        if (!json || typeof json !== 'object') return null;
+        const list = (value) => (Array.isArray(value) ? value : []);
+        return {
+            blocks: list(json.blocks),
+            words: list(json.words),
+            lines: list(json.lines),
+        };
+    }
+
+    /**
+     * Fetches one page's ALTO layout-tag annotations. The rects share the
+     * coordinate space of the page text annotations, so both data sets join by
+     * ALTO element id. Null on failure (treated as "no annotations").
+     *
+     * @param {string} pi
+     * @param {string} apiBase
+     * @param {number} order    0-based page order; the endpoint is 1-based, so order + 1
+     * @param {Function} fetchFn
+     * @returns {Promise<{blocks:Array, words:Array, lines:Array}|null>}
+     */
+    async function loadPageLayout(pi, apiBase, order, fetchFn = fetch) {
+        const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/layout/`);
+        if (!res.ok) return null;
+        return parseLayoutAnnotations(await res.json());
+    }
+
     /** Central keydown dispatcher for the immersive view. */
 
+    /**
+     * Overlays/popovers that swallow single-key shortcuts while open — WITHOUT the
+     * left panels, which some shortcuts (the annotations toggle lives inside the
+     * fulltext panel) must keep working under. Shared so the lists cannot drift.
+     */
+    const OVERLAY_SELECTOR_BASE = '#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden]), .popover.show';
 
     /** Overlays/panels/popovers that own the arrow and zoom keys while open. */
-    const OVERLAY_OPEN_SELECTOR =
-        '#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel-left.is-open, .popover.show';
+    const OVERLAY_OPEN_SELECTOR = `${OVERLAY_SELECTOR_BASE}, .immersive__panel-left.is-open`;
 
     /**
      * Creates the immersive key dispatcher: one document-level keydown listener,
@@ -2398,7 +2434,6 @@
 
     /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
 
-
     /**
      * Wires the rail buttons to their left panels (open/close with ARIA + inert
      * bookkeeping) and registers the panel keyboard shortcuts on the dispatcher:
@@ -2507,7 +2542,15 @@
         const MIN_WIDTH = 240;
         const MAX_WIDTH_RATIO = 0.8;
         const maxWidth = () => immersiveViewer.getBoundingClientRect().width * MAX_WIDTH_RATIO;
-        const clamp = (px) => Math.min(Math.max(px, MIN_WIDTH), maxWidth());
+        // The handle is positioned by the width variable, not the panel edge — so the
+        // clamp floor must include the open panel's own min-width (raised in the
+        // annotations two-column mode), or the handle would detach from the panel.
+        const minWidth = () => {
+            const open = immersiveRoot.querySelector('.immersive__panel-left.is-open');
+            const panelMin = open ? parseFloat(getComputedStyle(open).minWidth) || 0 : 0;
+            return Math.max(MIN_WIDTH, panelMin);
+        };
+        const clamp = (px) => Math.min(Math.max(px, minWidth()), maxWidth());
         const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
         let stored = NaN;
         try {
@@ -2519,12 +2562,33 @@
         handle.className = 'immersive__panel-resize-handle';
         handle.setAttribute('aria-hidden', 'true');
         immersiveViewer.appendChild(handle);
+        // A panel can grow beyond the width variable without a drag (the annotations
+        // two-column mode raises its min-width, e.g. when the checkbox is toggled).
+        // Sync the variable up to the real panel width in that case, or the handle
+        // would sit unreachable inside the panel instead of on its edge. The current
+        // variable value is read off the handle's GEOMETRY (it is positioned by the
+        // variable) — the inline style alone misses the CSS fallback, media-query
+        // and fullscreen values a first-time visitor runs on.
+        if (typeof ResizeObserver !== 'undefined') {
+            const observer = new ResizeObserver(() => {
+                const open = immersiveViewer.querySelector('.immersive__panel-left.is-open');
+                if (!open || !handle.offsetParent) return;
+                const panelWidth = open.getBoundingClientRect().width;
+                const handleRect = handle.getBoundingClientRect();
+                const varWidth = handleRect.left + handleRect.width / 2 - immersiveViewer.getBoundingClientRect().left - RAIL_WIDTH;
+                if (panelWidth > varWidth + 1) applyWidth(panelWidth);
+            });
+            immersiveViewer.querySelectorAll('.immersive__panel-left').forEach((p) => observer.observe(p));
+        }
         handle.addEventListener('pointerdown', (e) => {
             e.preventDefault();
             handle.setPointerCapture(e.pointerId);
             immersiveRoot.classList.add('-resizing');
             const viewerLeft = immersiveViewer.getBoundingClientRect().left;
-            const widthAt = (ev) => clamp(ev.clientX - viewerLeft - RAIL_WIDTH);
+            // Bounds are fixed for the duration of a drag — no style recalc per move.
+            const dragMin = minWidth();
+            const dragMax = maxWidth();
+            const widthAt = (ev) => Math.min(Math.max(ev.clientX - viewerLeft - RAIL_WIDTH, dragMin), dragMax);
             const onMove = (ev) => applyWidth(widthAt(ev));
             const onUp = (ev) => {
                 handle.releasePointerCapture(e.pointerId);
@@ -2693,9 +2757,7 @@
     function createFocusTrap(container) {
         return function trapFocus(e) {
             if (e.key !== 'Tab') return;
-            const f = Array.from(container.querySelectorAll(FOCUSABLE_QUERY)).filter(
-                (n) => !n.hidden && !n.disabled && n.offsetParent !== null
-            );
+            const f = Array.from(container.querySelectorAll(FOCUSABLE_QUERY)).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
             if (!f.length) return;
             const first = f[0];
             const last = f[f.length - 1];
@@ -2710,7 +2772,6 @@
     }
 
     /** Keyboard-shortcuts help modal with platform-specific modifier keycaps. */
-
 
     /**
      * Keyboard-shortcuts help modal: opened via the rail button or the `?` key,
@@ -2797,8 +2858,773 @@
         });
     }
 
-    /** Fulltext panel wiring: combined block/line/word text with image hover linking. */
+    /** ALTO layout-tag annotations: toggle state, inline markup, margin note column and image overlay regions. */
 
+    /** localStorage key persisting the annotations toggle, following the immersive-* key convention. */
+    const ANNOTATIONS_KEY = 'immersive-annotations';
+
+    /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */
+    const STATE_CLASS = '-annotations-on';
+
+    /**
+     * Below this panel content width (px) the margin column collapses and notes render inline
+     * under their anchor line. With annotations on, the LESS min-width (560px panel − 32px
+     * padding = 528px content) keeps desktop above this threshold, so the collapsed mode is
+     * the small-screen fallback only; keep 560 − padding > this value or the ResizeObserver
+     * would flip-flop (see @immersive-anno-panel-min-width in ivAnnotations.less).
+     */
+    const COLLAPSE_BELOW = 460;
+
+    /**
+     * Vertical gap (px) between stacked margin notes. Kept small on purpose: entry
+     * height + gap must stay at or below the print row height (~24px), or runs of
+     * consecutive annotations can never sit on their own lines.
+     */
+    const NOTE_GAP = 2;
+
+    /**
+     * Presentation mapping keyed by the SEMANTIC types the layout endpoint derives from the
+     * configured `altoLayoutTags` mappings (raw labels stay in the payload for reference).
+     * Author cards additionally carry the configured styleClass verbatim, so arbitrary
+     * customer vocabularies are styled via config + theme CSS without client changes; the
+     * default author colors hook onto the default styleClasses in ivAnnotations.less.
+     */
+    const WORD_TYPE_CLASSES = {
+        underline: 'immersive__anno-word-underline',
+        strikethrough: 'immersive__anno-word-strike',
+    };
+
+    /** Drawn-line types rendered as image overlays; lines without a mapped type stay hidden. */
+    const LINE_TYPE_MODIFIERS = {
+        underline: 'underline',
+        strikethrough: 'strike',
+        mark: 'mark',
+    };
+
+    /**
+     * Reads the persisted annotations toggle. Only the literal 'true' enables it;
+     * storage errors (private mode) fall back to off. Pure + tested.
+     *
+     * @param {Storage} storage  e.g. window.localStorage
+     * @returns {boolean}
+     */
+    function readAnnotationsEnabled(storage) {
+        try {
+            return storage.getItem(ANNOTATIONS_KEY) === 'true';
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * Persists the annotations toggle; storage errors are swallowed.
+     *
+     * @param {Storage} storage
+     * @param {boolean} enabled
+     */
+    function writeAnnotationsEnabled(storage, enabled) {
+        try {
+            storage.setItem(ANNOTATIONS_KEY, String(!!enabled));
+        } catch {}
+    }
+
+    /**
+     * Extracts the ALTO element id from a page text annotation URI. Those URIs end
+     * in `alto_{pi}_{pageNo}_{elementId}` (plus an optional query); the element id
+     * itself may contain underscores, so the prefix is matched as a whole. Null
+     * for synthetic ids and annotations of other pages. Pure + tested.
+     *
+     * @param {string} regionId  a data-iv-region-id value (annotation @id)
+     * @param {string} pi
+     * @param {number|string} pageNo  1-based page number
+     * @returns {string|null}
+     */
+    function altoElementId(regionId, pi, pageNo) {
+        if (!regionId) return null;
+        // Strip query and any trailing slash: deployments build the annotation URI with a
+        // trailing slash before the query (…alto_{pi}_{page}_{element}/?format=oa).
+        const id = String(regionId).split('?')[0].replace(/\/+$/, '');
+        const marker = `alto_${pi}_${pageNo}_`;
+        const at = id.lastIndexOf(marker);
+        if (at === -1) return null;
+        const element = id.slice(at + marker.length);
+        return element.length && !element.includes('/') ? element : null;
+    }
+
+    /**
+     * Whether a layout result carries any annotation data. Pure + tested.
+     *
+     * @param {{blocks:Array, words:Array, lines:Array}|null} layout
+     * @returns {boolean}
+     */
+    function hasAnnotations(layout) {
+        if (!layout) return false;
+        return !!((layout.blocks && layout.blocks.length) || (layout.words && layout.words.length) || (layout.lines && layout.lines.length));
+    }
+
+    /**
+     * CSS classes for a word's semantic types (underline/strikethrough); unknown
+     * types are ignored, duplicates collapse. Pure + tested.
+     *
+     * @param {string[]} [types]  semantic types from the layout endpoint
+     * @returns {string[]}
+     */
+    function wordTypeClasses(types) {
+        const classes = [];
+        (types || []).forEach((type) => {
+            const cls = WORD_TYPE_CLASSES[type];
+            if (cls && !classes.includes(cls)) classes.push(cls);
+        });
+        return classes;
+    }
+
+    /**
+     * Overlay modifier for a drawn line's semantic types — underline, strike or
+     * mark; null when none of its types is rendered. Pure + tested.
+     *
+     * @param {string[]} [types]  semantic types from the layout endpoint
+     * @returns {string|null}
+     */
+    function lineTypeModifier(types) {
+        for (const type of types || []) {
+            if (LINE_TYPE_MODIFIERS[type]) return LINE_TYPE_MODIFIERS[type];
+        }
+        return null;
+    }
+
+    /**
+     * Splits a configured styleClass attribute into class tokens; blank or missing
+     * values yield an empty list. Pure + tested.
+     *
+     * @param {string} [styleClass]  the configured CSS class(es) of an author mapping
+     * @returns {string[]}
+     */
+    function styleClassTokens(styleClass) {
+        return String(styleClass || '')
+            .split(/\s+/)
+            .filter(Boolean);
+    }
+
+    /**
+     * Index of the anchor whose vertical midpoint is closest to `midY` (all in
+     * ALTO units), -1 without anchors. Pure + tested.
+     *
+     * @param {number} midY
+     * @param {{y:number, h:number}[]} [anchors]
+     * @returns {number}
+     */
+    function nearestAnchorIndex(midY, anchors) {
+        let best = -1;
+        let bestDist = Infinity;
+        (anchors || []).forEach((a, i) => {
+            const dist = Math.abs(a.y + a.h / 2 - midY);
+            if (dist < bestDist) {
+                bestDist = dist;
+                best = i;
+            }
+        });
+        return best;
+    }
+
+    /**
+     * Collision handling of the margin column: a note stays exactly at its desired
+     * top (its anchor line) when it has the room. Overlapping runs merge into a
+     * cluster placed at the median of its members' candidate tops, so the
+     * displacement is balanced up AND down around the lines instead of
+     * accumulating as an ever-growing downward drift (cards are taller than print
+     * lines). Clusters are clamped to the container top and never overlap each
+     * other. Expects notes sorted by desired top. Pure + tested.
+     *
+     * @param {{top:number, height:number}[]} notes
+     * @param {number} gap
+     * @returns {number[]} final top offsets
+     */
+    function stackNoteTops(notes, gap) {
+        // A cluster stacks its members at fixed offsets; its top is the median of
+        // the members' `desired - offset` candidates (the L1-optimal placement).
+        const clusterTop = (c) => {
+            const cands = c.desired.map((d, i) => d - c.offsets[i]).sort((a, b) => a - b);
+            const mid = Math.floor(cands.length / 2);
+            const optimal = cands.length % 2 ? cands[mid] : (cands[mid - 1] + cands[mid]) / 2;
+            return Math.max(0, optimal);
+        };
+        const clusters = [];
+        (notes || []).forEach((n) => {
+            clusters.push({ desired: [n.top], offsets: [0], height: n.height });
+            // Re-balancing a merged cluster can move it up into its predecessor, so
+            // keep merging backwards until the chain is overlap-free.
+            while (clusters.length > 1) {
+                const prev = clusters[clusters.length - 2];
+                const last = clusters[clusters.length - 1];
+                if (clusterTop(last) >= clusterTop(prev) + prev.height + gap) break;
+                const base = prev.height + gap;
+                last.offsets.forEach((offset, i) => {
+                    prev.desired.push(last.desired[i]);
+                    prev.offsets.push(base + offset);
+                });
+                prev.height = base + last.height;
+                clusters.pop();
+            }
+        });
+        const tops = [];
+        clusters.forEach((c) => {
+            const top = clusterTop(c);
+            c.offsets.forEach((offset) => tops.push(top + offset));
+        });
+        return tops;
+    }
+
+    /**
+     * Whether a note whose vertical midpoint is `midY` sits ABOVE its anchor line
+     * (running heads, interlinear additions) rather than ON it — then its card
+     * also goes above the content row. The threshold is the anchor's TOP edge,
+     * not its midpoint: handwriting regularly sits slightly high of the printed
+     * line, and that jitter must not push the card a full row up. Pure + tested.
+     *
+     * @param {number} midY  the note block's vertical midpoint (ALTO units)
+     * @param {{y:number, h:number}|null} anchor
+     * @returns {boolean}
+     */
+    function isAboveAnchor(midY, anchor) {
+        return !!anchor && midY < anchor.y;
+    }
+
+    /**
+     * Whether the center of `inner` lies inside `outer` (ALTO units) — the same
+     * containment test the text nesting uses. Pure + tested.
+     *
+     * @param {{x:number, y:number, w:number, h:number}} inner
+     * @param {{x:number, y:number, w:number, h:number}} outer
+     * @returns {boolean}
+     */
+    function rectCenterInside(inner, outer) {
+        if (!inner || !outer) return false;
+        const cx = inner.x + inner.w / 2;
+        const cy = inner.y + inner.h / 2;
+        return cx >= outer.x && cx <= outer.x + outer.w && cy >= outer.y && cy <= outer.y + outer.h;
+    }
+
+    /**
+     * Image overlay descriptors for a layout: drawn lines with a rendered tag type
+     * plus the margin notes as 'note' hit areas (invisible until hovered/coupled).
+     * Pure + tested.
+     *
+     * @param {{lines:Array, blocks:Array}|null} layout
+     * @returns {{id:string, rect:object, modifier:string}[]}
+     */
+    function overlayRegions(layout) {
+        const regions = [];
+        ((layout && layout.lines) || []).forEach((line) => {
+            const modifier = lineTypeModifier(line.types);
+            if (modifier && line.rect) regions.push({ id: line.id, rect: line.rect, modifier });
+        });
+        ((layout && layout.blocks) || []).forEach((block) => {
+            if (block.author && block.rect) regions.push({ id: block.id, rect: block.rect, modifier: 'note' });
+        });
+        return regions;
+    }
+
+    /**
+     * Indexes the panel's region elements by ALTO element id (blocks, lines and
+     * words alike), so layout annotations can be joined onto the rendered text.
+     *
+     * @param {HTMLElement} box  the fulltext panel content element
+     * @param {string} pi
+     * @param {number|string} pageNo  1-based page number
+     * @returns {Map<string, HTMLElement>}
+     */
+    function indexRegionElements(box, pi, pageNo) {
+        const map = new Map();
+        box.querySelectorAll('[data-iv-region-id]').forEach((el) => {
+            const elementId = altoElementId(el.dataset.ivRegionId, pi, pageNo);
+            if (elementId) map.set(elementId, el);
+        });
+        return map;
+    }
+
+    /**
+     * Applies the word-level annotation markup (underline/strikethrough classes) to
+     * the rendered panel text. The classes only become visible while the .immersive
+     * root carries the state class, so toggling never re-renders. Block-level
+     * annotations are NOT styled in place — every handwriting block becomes a card
+     * in the annotations column (see {@link mountBlockAnnotations}).
+     *
+     * @param {HTMLElement} box  the fulltext panel content element
+     * @param {{words:Array}} layout
+     * @param {string} pi
+     * @param {number|string} pageNo  1-based page number
+     * @returns {Map<string, HTMLElement>} the region element index — pass it on to
+     *          {@link mountBlockAnnotations} to avoid a second DOM scan
+     */
+    function applyTextMarkup(box, layout, pi, pageNo) {
+        const els = indexRegionElements(box, pi, pageNo);
+        (layout.words || []).forEach((word) => {
+            const el = els.get(word.id);
+            if (el) wordTypeClasses(word.types).forEach((cls) => el.classList.add(cls));
+        });
+        return els;
+    }
+
+    /**
+     * A block's reading-order source elements in the panel: the block element when
+     * the panel carries a real block region id, otherwise (the nesting drops
+     * degenerate block levels on some pages) the rendered lines whose geometry lies
+     * inside the block.
+     */
+    function sourceElsFor(block, els, lineEls) {
+        const srcEl = els.get(block.id);
+        if (srcEl) return [srcEl];
+        return lineEls.filter((l) => rectCenterInside(l.rect, block.rect)).map((l) => l.el);
+    }
+
+    /**
+     * Marks every annotation block's sources in the reading-order text: `anno-src`
+     * hides them while annotations are off (the printed-text column shows print
+     * only), `anno-margin-src` while on (their card in the column replaces them).
+     *
+     * @returns {Map<string, HTMLElement[]>} block id → source elements
+     */
+    function markAnnotationSources(annotationBlocks, els, lineEls) {
+        const sources = new Map(annotationBlocks.map((block) => [block.id, sourceElsFor(block, els, lineEls)]));
+        sources.forEach((blockSources) => {
+            blockSources.forEach((el) => el.classList.add('immersive__anno-src', 'immersive__anno-margin-src'));
+        });
+        return sources;
+    }
+
+    /** Registers a mouseenter/mouseleave pair on `el` and records it in `registry` for teardown. */
+    function bindHover(el, enter, leave, registry) {
+        el.addEventListener('mouseenter', enter);
+        el.addEventListener('mouseleave', leave);
+        registry.push([el, enter, leave]);
+    }
+
+    /**
+     * Mounts everything block-level for one rendered page: EVERY handwriting block
+     * (margin notes, running heads, callouts, insertion marks alike) becomes a card
+     * in the annotations column, line-anchored at its position on the page, with
+     * collisions stacked; the printed-text column shows print only (the sources are
+     * hidden in both toggle states). Below {@link COLLAPSE_BELOW} content width the
+     * column collapses and the cards render inline under their anchor line. Wires
+     * the bidirectional hover coupling between cards, anchor lines and the image
+     * regions.
+     *
+     * @param {object} opts
+     * @param {HTMLElement} opts.box     the fulltext panel content element
+     * @param {object} opts.layout      the page's layout annotations
+     * @param {string} opts.pi
+     * @param {number|string} opts.pageNo  1-based page number
+     * @param {{id:string, rect:{y:number, h:number}|null, level:string}[]} opts.flat
+     *        flattened text levels of the page (line geometry for anchoring)
+     * @param {Map<string, HTMLElement>} [opts.els]  region element index from
+     *        {@link applyTextMarkup}; indexed fresh when absent
+     * @param {HTMLElement} [opts.columnsHead]  the "printed text | annotations" column header;
+     *        shown only while the side column is active
+     * @param {HTMLElement} [opts.scrollContainer]  scrollable panel; region hover reveals the card in it
+     * @param {() => Map<string, HTMLElement>} [opts.getRegionEls]  live accessor for the image
+     *        overlay elements by ALTO element id (card hover highlights the note's region on the scan)
+     * @returns {{relayout: function():void, attachRegions: function(Map, Map):void, destroy: function():void}|null}
+     *          destroy() removes cards, listeners and marker classes but does NOT restore the
+     *          reading order of repositioned inline sources — the panel rebuild on page open does
+     */
+    function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: givenEls, columnsHead, scrollContainer, getRegionEls }) {
+        const annotationBlocks = ((layout && layout.blocks) || []).filter((b) => b.author && b.rect);
+        if (!annotationBlocks.length) return null;
+
+        const els = givenEls || indexRegionElements(box, pi, pageNo);
+
+        // Rendered line elements with their ALTO geometry (anchoring + geometric source fallback).
+        const lineEls = [];
+        (flat || []).forEach((r) => {
+            if (r.level !== 'line' || !r.rect) return;
+            const el = els.get(altoElementId(r.id, pi, pageNo) || '');
+            if (el) lineEls.push({ rect: r.rect, el });
+        });
+
+        const sources = markAnnotationSources(annotationBlocks, els, lineEls);
+
+        // Anchor candidates: rendered PRINT lines (annotation lines are no anchors).
+        const anchors = lineEls.filter(({ el }) => !el.closest('.immersive__anno-src')).map(({ rect, el }) => ({ y: rect.y, h: rect.h, el }));
+
+        const column = document.createElement('div');
+        column.className = 'immersive__anno-margin';
+
+        const revealCard = (noteEl) => {
+            if (!scrollContainer) return;
+            const target = scrollTopToReveal({
+                offsetTop: offsetTopWithin(noteEl, scrollContainer),
+                height: noteEl.offsetHeight,
+                scrollTop: scrollContainer.scrollTop,
+                clientHeight: scrollContainer.clientHeight,
+                scrollHeight: scrollContainer.scrollHeight,
+            });
+            if (target !== null) scrollContainer.scrollTop = target;
+        };
+
+        // Click opens the detail popover (author + full annotation text) — Bootstrap
+        // popover per project convention, manual trigger so exactly one is open at a
+        // time. Without Bootstrap (unit tests) the entries stay inert buttons.
+        const $ = typeof window !== 'undefined' ? window.$ || window.jQuery : null;
+        const popoverCapable = !!($ && $.fn && typeof $.fn.popover === 'function');
+        const POPOVER_TEMPLATE =
+            '<div class="popover immersive__anno-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>';
+        let openNote = null;
+
+        const hideNotePopover = () => {
+            if (openNote && popoverCapable) $(openNote).popover('hide');
+        };
+
+        // Capture phase: OpenSeadragon stops click propagation over its canvas, so a
+        // bubble listener would never see outside clicks on the image.
+        const onDocumentClick = (e) => {
+            if (!openNote || !(e.target instanceof Element)) return;
+            if (e.target.closest('.immersive__anno-note, .immersive__anno-popover')) return;
+            hideNotePopover();
+        };
+        document.addEventListener('click', onDocumentClick, true);
+
+        const attachNotePopover = (noteEl, authorName, fullText) => {
+            if (!popoverCapable) return;
+            $(noteEl).popover({
+                trigger: 'manual',
+                placement: 'left',
+                container: scrollContainer || 'body',
+                template: POPOVER_TEMPLATE,
+                title: authorName || '',
+                content: fullText,
+            });
+            noteEl.setAttribute('aria-haspopup', 'dialog');
+            noteEl.setAttribute('aria-expanded', 'false');
+            noteEl.addEventListener('click', () => {
+                const wasOpen = openNote === noteEl;
+                hideNotePopover();
+                if (!wasOpen) $(noteEl).popover('show');
+            });
+            // stopPropagation: the immersive key dispatcher listens on document and would
+            // otherwise ALSO close the fulltext panel on the same Escape.
+            noteEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && openNote === noteEl) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    hideNotePopover();
+                }
+            });
+            $(noteEl).on('shown.bs.popover', () => {
+                openNote = noteEl;
+                noteEl.setAttribute('aria-expanded', 'true');
+                const id = noteEl.getAttribute('aria-describedby');
+                const pop = id && document.getElementById(id);
+                if (pop && pop.dataset.annoEscBound !== 'true') {
+                    pop.dataset.annoEscBound = 'true';
+                    pop.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            hideNotePopover();
+                            noteEl.focus();
+                        }
+                    });
+                }
+            });
+            $(noteEl).on('hidden.bs.popover', () => {
+                if (openNote === noteEl) openNote = null;
+                noteEl.setAttribute('aria-expanded', 'false');
+            });
+        };
+
+        const notes = annotationBlocks
+            .map((block) => {
+                const blockSources = sources.get(block.id) || [];
+                // A real button: the entry opens the detail popover and is keyboard-reachable.
+                const noteEl = document.createElement('button');
+                noteEl.type = 'button';
+                noteEl.className = 'immersive__anno-note';
+                // The configured styleClass is the presentation hook: themes color foreign
+                // author vocabularies purely via CSS on these classes.
+                styleClassTokens(block.styleClass).forEach((cls) => {
+                    try {
+                        noteEl.classList.add(cls);
+                    } catch {
+                        // malformed configured class token — skip, the card stays neutral
+                    }
+                });
+                // The colored left border is the visual author code; the name stays sr-only
+                // in the entry (part of the button's accessible name) and heads the popover.
+                const who = document.createElement('span');
+                who.className = 'immersive__anno-note-author';
+                who.textContent = block.authorName || '';
+                noteEl.append(who);
+                const text = document.createElement('span');
+                text.className = 'immersive__anno-note-text';
+                // Panel text when the join found sources, the block text from the layout JSON otherwise.
+                text.textContent = blockSources.length
+                    ? blockSources
+                          .map((el) => el.textContent)
+                          .join(' ')
+                          .trim()
+                    : block.text || '';
+                noteEl.append(text);
+                attachNotePopover(noteEl, block.authorName, text.textContent);
+                const midY = block.rect.y + block.rect.h / 2;
+                const anchorIdx = nearestAnchorIndex(midY, anchors);
+                const anchor = anchorIdx >= 0 ? anchors[anchorIdx] : null;
+                const aboveAnchor = isAboveAnchor(midY, anchor);
+                const imageRegion = () => (getRegionEls ? getRegionEls().get(block.id) : null);
+                // An above-anchor annotation only USES its anchor for positioning — it does
+                // not belong to that line (e.g. the page number), so no line highlight.
+                noteEl.addEventListener('mouseenter', () => {
+                    if (anchor && !aboveAnchor) anchor.el.classList.add('is-anno-anchor');
+                    const region = imageRegion();
+                    if (region) region.classList.add('is-anno-active');
+                });
+                noteEl.addEventListener('mouseleave', () => {
+                    if (anchor && !aboveAnchor) anchor.el.classList.remove('is-anno-anchor');
+                    const region = imageRegion();
+                    if (region) region.classList.remove('is-anno-active');
+                });
+                return { block, noteEl, anchor, aboveAnchor };
+            })
+            .sort((a, b) => a.block.rect.y - b.block.rect.y);
+
+        // Reverse coupling: hovering the anchor line in the printed text highlights its note(s)
+        // (above-anchor notes excluded — their anchor line is position-only).
+        const anchorListeners = [];
+        const notesByAnchor = new Map();
+        notes.forEach((n) => {
+            if (!n.anchor || n.aboveAnchor) return;
+            if (!notesByAnchor.has(n.anchor.el)) notesByAnchor.set(n.anchor.el, []);
+            notesByAnchor.get(n.anchor.el).push(n.noteEl);
+        });
+        notesByAnchor.forEach((noteEls, anchorEl) => {
+            bindHover(
+                anchorEl,
+                () => noteEls.forEach((el) => el.classList.add('is-anno-active')),
+                () => noteEls.forEach((el) => el.classList.remove('is-anno-active')),
+                anchorListeners
+            );
+        });
+
+        // ...and hovering a note on the scan highlights its card and anchor line. Bound DIRECTLY
+        // on the overlay elements (OpenSeadragon stops event propagation over its container, so
+        // document-level delegation never sees real mouse events). The note's own word/line text
+        // regions sit ON TOP of the note hit area and intercept the pointer, so they carry the
+        // coupling too; overlays are remounted per page open, hence the re-attachable binding.
+        const notesById = new Map(notes.map((n) => [n.block.id, n]));
+        const regionIdToNote = new Map();
+        notes.forEach((note) => {
+            (sources.get(note.block.id) || []).forEach((srcEl) => {
+                const collect = (el) => {
+                    const id = el.dataset && el.dataset.ivRegionId;
+                    if (id) regionIdToNote.set(id, note);
+                };
+                collect(srcEl);
+                srcEl.querySelectorAll('[data-iv-region-id]').forEach(collect);
+            });
+        });
+        const regionListeners = [];
+        const bindRegion = (el, note) => {
+            bindHover(
+                el,
+                () => {
+                    note.noteEl.classList.add('is-anno-active');
+                    revealCard(note.noteEl);
+                    if (note.anchor && !note.aboveAnchor) note.anchor.el.classList.add('is-anno-anchor');
+                },
+                () => {
+                    note.noteEl.classList.remove('is-anno-active');
+                    if (note.anchor && !note.aboveAnchor) note.anchor.el.classList.remove('is-anno-anchor');
+                },
+                regionListeners
+            );
+        };
+        const attachRegions = (annoRegionMap, textRegionMap) => {
+            regionListeners.splice(0).forEach(([el, enter, leave]) => {
+                el.removeEventListener('mouseenter', enter);
+                el.removeEventListener('mouseleave', leave);
+            });
+            if (annoRegionMap) {
+                annoRegionMap.forEach((el, id) => {
+                    const note = notesById.get(id);
+                    if (note && el.classList.contains('immersive__anno-region-note')) bindRegion(el, note);
+                });
+            }
+            if (textRegionMap) {
+                textRegionMap.forEach((el, id) => {
+                    const note = regionIdToNote.get(id);
+                    if (note) bindRegion(el, note);
+                });
+            }
+        };
+
+        const inlineNotes = [];
+
+        const relayout = () => {
+            // Entries move — an open popover would point at a stale position.
+            hideNotePopover();
+            inlineNotes.splice(0).forEach((el) => el.remove());
+            column.remove();
+            box.style.removeProperty('--immersive-anno-shift');
+            const collapsed = box.clientWidth < COLLAPSE_BELOW;
+            box.classList.toggle('-anno-collapsed', collapsed);
+            if (columnsHead) columnsHead.hidden = collapsed;
+            if (collapsed) {
+                notes.forEach(({ noteEl, anchor, aboveAnchor }) => {
+                    noteEl.classList.add('-inline');
+                    noteEl.style.top = '';
+                    if (anchor && aboveAnchor) anchor.el.before(noteEl);
+                    else if (anchor) anchor.el.after(noteEl);
+                    else box.appendChild(noteEl);
+                    inlineNotes.push(noteEl);
+                });
+                return;
+            }
+            notes.forEach(({ noteEl }) => {
+                noteEl.classList.remove('-inline');
+                column.appendChild(noteEl);
+            });
+            box.appendChild(column);
+            // Stack by RENDERED anchor offset, not ALTO order — the two can diverge on
+            // multi-column pages, and stackNoteTops expects tops in ascending order.
+            // Entries CENTER on the anchor's first text row: top-edge alignment sits
+            // visibly low, because the entry carries padding the print line lacks.
+            const rowHeight = anchors.length ? parseFloat(getComputedStyle(anchors[0].el).lineHeight) || 0 : 0;
+            const desired = notes
+                .map(({ noteEl, anchor, aboveAnchor }) => {
+                    const anchorTop = anchor ? offsetTopWithin(anchor.el, box) : 0;
+                    const height = noteEl.offsetHeight;
+                    return {
+                        noteEl,
+                        top: aboveAnchor ? anchorTop - height - NOTE_GAP : anchorTop + (rowHeight - height) / 2,
+                        height,
+                    };
+                })
+                .sort((a, b) => a.top - b.top);
+            // A card ABOVE the first printed line needs room the box does not have:
+            // shift the text down via padding instead of clamping the card onto the
+            // line (padding moves the flowed text but not the absolute note column,
+            // and the anchors' measured offsets grow by the same amount). The value
+            // travels as a custom property that LESS only applies in annotations
+            // mode, so switching the checkbox off cleans the shift up without JS.
+            const overflow = desired.length ? Math.max(0, -desired[0].top) : 0;
+            if (overflow) {
+                box.style.setProperty('--immersive-anno-shift', `${overflow}px`);
+                desired.forEach((d) => {
+                    d.top += overflow;
+                });
+            }
+            stackNoteTops(desired, NOTE_GAP).forEach((top, i) => {
+                desired[i].noteEl.style.top = `${top}px`;
+            });
+        };
+
+        let observer = null;
+        if (typeof ResizeObserver !== 'undefined') {
+            observer = new ResizeObserver(() => relayout());
+            observer.observe(box);
+        }
+        relayout();
+
+        return {
+            relayout,
+            attachRegions,
+            destroy() {
+                if (observer) observer.disconnect();
+                document.removeEventListener('click', onDocumentClick, true);
+                if (popoverCapable) notes.forEach(({ noteEl }) => $(noteEl).popover('dispose'));
+                attachRegions(null, null);
+                anchorListeners.splice(0).forEach(([el, enter, leave]) => {
+                    el.removeEventListener('mouseenter', enter);
+                    el.removeEventListener('mouseleave', leave);
+                    el.classList.remove('is-anno-anchor');
+                });
+                inlineNotes.splice(0).forEach((el) => el.remove());
+                column.remove();
+                box.classList.remove('-anno-collapsed');
+                box.style.removeProperty('--immersive-anno-shift');
+                if (columnsHead) columnsHead.hidden = true;
+                els.forEach((el) => el.classList.remove('immersive__anno-margin-src', 'immersive__anno-src'));
+                // A destroy mid-hover never gets the mouseleave — clear scan highlights.
+                if (getRegionEls) getRegionEls().forEach((el) => el.classList.remove('is-anno-active'));
+            },
+        };
+    }
+
+    /**
+     * Wires the annotations checkbox: persisted state, the root state class and
+     * the `a` keyboard shortcut. The whole toggle row is hidden (not just
+     * disabled — it would otherwise dictate the panel's minimum width) and the
+     * root state class is dropped whenever the current page has no annotation
+     * data; the persisted preference survives such pages.
+     *
+     * @param {object} opts
+     * @param {HTMLElement} opts.root      the .immersive root (carries the state class)
+     * @param {HTMLInputElement} opts.checkbox
+     * @param {Storage} opts.storage      e.g. window.localStorage
+     * @param {{register: Function}} [opts.keys]  the immersive key dispatcher
+     * @returns {{setPageData: Function, onChange: Function}}
+     */
+    function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
+        const listeners = [];
+        const toggleRow = checkbox.closest('.immersive__anno-toggle');
+        let available = false;
+
+        const sync = () => {
+            // The state class gates ALL annotations styling (two-column grid, raised
+            // panel min-width) — the persisted "on" alone must not apply it on pages
+            // without annotation data.
+            root.classList.toggle(STATE_CLASS, checkbox.checked && available);
+        };
+
+        const setEnabled = (on) => {
+            checkbox.checked = on;
+            writeAnnotationsEnabled(storage, on);
+            sync();
+            listeners.forEach((cb) => cb(on));
+        };
+
+        checkbox.checked = readAnnotationsEnabled(storage);
+        checkbox.addEventListener('change', () => setEnabled(checkbox.checked));
+
+        if (keys) {
+            // Priority 55: runs after the overlay/panel handlers (10-40) and the viewer nav keys (50).
+            keys.register(55, (e) => {
+                if (e.key !== 'a' || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return false;
+                if (isTypingTarget(e.target)) return false;
+                // Annotations are only ever visible alongside the OPEN fulltext panel — a toggle
+                // without it would flip the persisted state with zero visible effect.
+                const panel = checkbox.closest('.immersive__panel-left');
+                if (checkbox.disabled || (panel && !panel.classList.contains('is-open'))) return false;
+                // Deliberately narrower than ivKeys' OVERLAY_OPEN_SELECTOR: the open fulltext
+                // panel must NOT block the shortcut (the checkbox lives inside it).
+                if (document.querySelector(OVERLAY_SELECTOR_BASE)) {
+                    return false;
+                }
+                setEnabled(!checkbox.checked);
+                return true;
+            });
+        }
+
+        sync();
+
+        return {
+            /**
+             * Updates the toggle availability for the current page's layout data.
+             *
+             * @param {object|null} layout  the page's layout annotations
+             */
+            setPageData(layout) {
+                available = hasAnnotations(layout);
+                checkbox.disabled = !available;
+                if (toggleRow) toggleRow.hidden = !available;
+                sync();
+            },
+            onChange(cb) {
+                listeners.push(cb);
+            },
+        };
+    }
+
+    /** Fulltext panel wiring: combined block/line/word text with image hover linking and layout annotations. */
 
     /**
      * Wires the fulltext panel: loads the nested OCR levels for the visible page,
@@ -2806,37 +3632,147 @@
      * teardown runs through the panels' close hook so leaving the panel always
      * clears the image overlays.
      *
+     * The ALTO layout annotations ride alongside. Annotations are only ever visible
+     * while the fulltext panel is OPEN and the checkbox is on, so the layout JSON is
+     * fetched, applied and overlaid strictly per open panel; closing the panel clears
+     * everything, the persisted checkbox state kicks back in on the next open.
+     *
      * @param {IvViewer} viewer
      * @param {string} pi
      * @param {string} apiBase
      * @param {{closePanels: Function, registerCloseHook: Function}} panels
+     * @param {{register: Function}} [keys]  the immersive key dispatcher (annotations shortcut)
      * @returns {{updateFulltextAvail: Function}}
      */
-    function setupFulltextPanel(viewer, pi, apiBase, panels) {
+    function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
         const fulltextPanel = document.getElementById('immersivePanelFulltext');
         const fulltextBox = document.getElementById('immersiveFulltext');
         const fulltextLoader = document.getElementById('immersiveFulltextLoader');
         const fulltextBtn = document.querySelector('[data-immersive-panel="immersivePanelFulltext"]');
         const fulltextTitleDefault = fulltextBtn ? fulltextBtn.getAttribute('title') : '';
 
+        const annoCheckbox = document.getElementById('immersiveAnnotationsToggle');
+        const annoColumnsHead = document.getElementById('immersiveAnnotationsColumns');
+        const immersiveRoot = fulltextPanel ? fulltextPanel.closest('.immersive') : null;
+        // Even READING window.localStorage can throw (browser with storage blocked);
+        // the toggle helpers handle a null storage gracefully.
+        let storage = null;
+        try {
+            storage = window.localStorage;
+        } catch {
+            storage = null;
+        }
+        const annotations = annoCheckbox && immersiveRoot ? setupAnnotationsToggle({ root: immersiveRoot, checkbox: annoCheckbox, storage, keys }) : null;
+
+        const panelOpen = () => !!fulltextPanel && fulltextPanel.classList.contains('is-open');
+
+        let layoutReq = 0;
+        let currentLayout = null;
+        let currentFlat = null;
+        let currentAnnotations = null;
+
+        const clearBlockAnnotations = () => {
+            if (currentAnnotations) {
+                currentAnnotations.destroy();
+                currentAnnotations = null;
+            }
+        };
+
+        /** Applies inline markup + block annotations (margin column etc.) to the rendered panel text. */
+        const decorate = () => {
+            if (!annotations || !currentLayout || !panelOpen() || !fulltextBox || !fulltextBox.childElementCount) return;
+            const pageNo = currentOrder(viewer) + 1;
+            const els = applyTextMarkup(fulltextBox, currentLayout, pi, pageNo);
+            clearBlockAnnotations();
+            currentAnnotations = mountBlockAnnotations({
+                box: fulltextBox,
+                layout: currentLayout,
+                pi,
+                pageNo,
+                flat: currentFlat,
+                els,
+                columnsHead: annoColumnsHead,
+                scrollContainer: fulltextPanel,
+                getRegionEls: () => overlayEls,
+            });
+            if (currentAnnotations) currentAnnotations.attachRegions(overlayEls, textRegionEls);
+        };
+
+        /**
+         * Overlay boxes are viewport-positioned against the CURRENT OSD item, which only exists
+         * once the (per-spread rebuilt) OpenSeadragon has settled — so they are (re)mounted on
+         * every onOpen, not on page change; nothing is mounted while the panel is closed.
+         */
+        let overlayEls = new Map();
+        let textRegionEls = new Map();
+        const mountOverlays = () => {
+            overlayEls = viewer.setAnnotationRegions(panelOpen() ? overlayRegions(currentLayout) : []);
+            // OSD rebuilds its overlays per page open — the note-region hover bindings go stale.
+            if (currentAnnotations) currentAnnotations.attachRegions(overlayEls, textRegionEls);
+        };
+
+        /**
+         * Per-page layout annotations while the panel is open: checkbox availability,
+         * image overlays and panel decoration. With the panel closed (or in double-page
+         * mode, where the panel is unavailable) nothing is fetched and overlays clear.
+         */
+        const refreshLayout = async () => {
+            if (!annotations) return;
+            const req = ++layoutReq;
+            // Invalidate immediately: loadFulltext may re-render and decorate() before this
+            // fetch resolves, and ALTO element ids collide across pages.
+            currentLayout = null;
+            if (!panelOpen() || viewer.isDoublePage()) {
+                mountOverlays();
+                return;
+            }
+            let layout = null;
+            try {
+                layout = await loadPageLayout(pi, apiBase, currentOrder(viewer));
+            } catch {
+                layout = null;
+            }
+            if (req !== layoutReq) return;
+            currentLayout = layout;
+            annotations.setPageData(layout);
+            mountOverlays();
+            decorate();
+        };
+
+        if (annotations) {
+            viewer.onPageChange.subscribe(refreshLayout);
+            viewer.onOpen.subscribe(mountOverlays);
+            // Note positions depend on rendered geometry, which is only measurable while visible.
+            annotations.onChange((on) => {
+                if (on && currentAnnotations) requestAnimationFrame(() => currentAnnotations && currentAnnotations.relayout());
+            });
+        }
+
         if (fulltextPanel && fulltextBox) {
             let fulltextReq = 0;
             let currentLink = null;
 
             const clearFulltextLink = () => {
+                // Also invalidates an in-flight loadFulltext: without the bump, a slow fetch
+                // resolving after panel close would re-render into the closed panel and
+                // remount the image overlays the close just removed.
+                fulltextReq++;
                 if (currentLink) {
                     currentLink.destroy();
                     currentLink = null;
                 }
                 viewer.clearTextRegions();
+                viewer.clearAnnotationRegions();
+                textRegionEls = new Map();
+                clearBlockAnnotations();
                 if (fulltextLoader) fulltextLoader.hidden = true;
             };
             panels.registerCloseHook(clearFulltextLink);
 
             const loadFulltext = async () => {
                 const order = currentOrder(viewer);
-                const req = ++fulltextReq;
                 clearFulltextLink();
+                const req = ++fulltextReq;
                 if (fulltextLoader) fulltextLoader.hidden = false;
                 fulltextBox.textContent = '';
                 fulltextBox.classList.remove('-empty');
@@ -2851,19 +3787,26 @@
                 if (blocks && blocks.length) {
                     fulltextBox.replaceChildren(buildTextLevels(blocks));
                     const flat = flattenTextLevels(blocks);
+                    currentFlat = flat;
                     const regionEls = viewer.setTextRegions(flat);
+                    textRegionEls = regionEls;
                     const parents = new Map(flat.filter((r) => r.parentId).map((r) => [r.id, r.parentId]));
                     const revealIds = new Set(flat.filter((r) => r.level !== 'block').map((r) => r.id));
                     currentLink = mountTextImageLink({ box: fulltextBox, regionEls, parents, scrollContainer: fulltextPanel, revealIds });
+                    decorate();
                 } else {
+                    currentFlat = null;
                     fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
                     fulltextBox.classList.add('-empty');
                 }
             };
 
             fulltextPanel.addEventListener('immersive:panel-open', loadFulltext);
+            fulltextPanel.addEventListener('immersive:panel-open', () => {
+                if (annotations) refreshLayout();
+            });
             viewer.onPageChange.subscribe(() => {
-                if (fulltextPanel.classList.contains('is-open')) loadFulltext();
+                if (panelOpen()) loadFulltext();
             });
         }
 
@@ -2876,7 +3819,9 @@
             const title = (doublePage && fulltextBtn.dataset.labelDisabled) || fulltextTitleDefault;
             fulltextBtn.setAttribute('title', title);
             fulltextBtn.setAttribute('aria-label', title);
-            if (doublePage && fulltextPanel && fulltextPanel.classList.contains('is-open')) panels.closePanels();
+            if (doublePage && panelOpen()) panels.closePanels();
+            // Annotations follow the fulltext availability: no data/overlays in double-page mode.
+            if (annotations) refreshLayout();
         };
         updateFulltextAvail();
 
@@ -3010,7 +3955,6 @@
     }
 
     /** Search panel wiring: in-work IIIF content search with hit list and highlights. */
-
 
     /**
      * Wires the in-place IIIF content search: result list in the left panel,
@@ -3313,7 +4257,6 @@
     }
 
     /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
-
 
     /**
      * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
@@ -3768,7 +4711,6 @@
 
     /** Immersive view bootstrap: engine construction plus the UI wiring modules. */
 
-
     /** Hides the stage loading indicator at the latest after this, even without a painted tile. */
     const STAGE_LOADER_TIMEOUT_MS = 8000;
 
@@ -3836,7 +4778,7 @@
 
                 setupToc(viewer);
                 setupFulltextSearch(viewer, pi, apiBase);
-                const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels);
+                const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels, keys);
                 const toggleGrid = setupOverviewGrid(viewer, pi, apiBase, keys);
                 setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail });
             })
@@ -3872,5 +4814,4 @@
             initImmersiveViewer(immersiveRoot);
         }
     });
-
 })();

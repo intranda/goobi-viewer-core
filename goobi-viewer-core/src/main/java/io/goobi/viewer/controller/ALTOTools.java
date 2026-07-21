@@ -83,6 +83,13 @@ public final class ALTOTools {
     private static final Pattern ALTO_PROBLEMATIC_CHARS_COMPILED = Pattern.compile(ALTO_PROBLEMATIC_CHARS);
 
     /**
+     * Word-level character cleanup shared by the plain-text and the HTML path. Uses the pre-compiled pattern to
+     * avoid per-call Pattern.compile() in this hot path (called for every ALTO word).
+     */
+    private static final TextEnricher CHAR_CLEANUP_ENRICHER =
+            (string, element) -> ALTO_PROBLEMATIC_CHARS_COMPILED.matcher(string).replaceAll(" ");
+
+    /**
      * Private constructor.
      */
     private ALTOTools() {
@@ -97,7 +104,6 @@ public final class ALTOTools {
      * @return {@link String} containing plain text from ALTO at the given path
      * @throws IOException
      * @should return non-empty text from valid ALTO file
-     * @should include authority data URI attributes in output
      */
     public static String getFulltext(Path path, String encoding) throws IOException {
         String altoString = FileTools.getStringFromFile(path.toFile(), encoding);
@@ -112,6 +118,7 @@ public final class ALTOTools {
      * @param mergeLineBreakWords merge words split across line breaks into one
      * @return the plain text extracted from the ALTO XML document, or null on error
      * @should return non-empty text from valid ALTO string
+     * @should return plain text without markup
      */
     public static String getFulltext(String alto, String charset, boolean mergeLineBreakWords) {
         try {
@@ -229,10 +236,8 @@ public final class ALTOTools {
         // Plain-text extraction: character cleanup only, no HTML markup. Named-entity buttons and layout markup are
         // produced exclusively by the display path (see getFulltextHtml), so plain-text consumers (e.g. REST
         // plaintext endpoints, TEI conversion) receive clean text.
-        // Use pre-compiled pattern to avoid per-call Pattern.compile() in this hot path (called for every ALTO word)
-        TextEnricher charCleanupEnricher = (string, element) -> ALTO_PROBLEMATIC_CHARS_COMPILED.matcher(string).replaceAll(" ");
         AltoTextReader reader =
-                new AltoTextReader(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING, charCleanupEnricher);
+                new AltoTextReader(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING, CHAR_CLEANUP_ENRICHER);
 
         return reader.extractText();
     }
@@ -245,18 +250,16 @@ public final class ALTOTools {
      * @param alto ALTO XML document as a string
      * @param charset character encoding of the ALTO document
      * @return the structured HTML, or null on error
-     * @should return non-empty html from valid ALTO string
+     * @should include authority data URI attributes in output
      */
     public static String getFulltextHtml(String alto, String charset) {
         if (alto == null) {
             throw new IllegalArgumentException("alto may not be null");
         }
-        // Use pre-compiled pattern to avoid per-call Pattern.compile() in this hot path (called for every ALTO word)
-        TextEnricher charCleanupEnricher = (string, element) -> ALTO_PROBLEMATIC_CHARS_COMPILED.matcher(string).replaceAll(" ");
         Configuration config = DataManager.getInstance().getConfiguration();
         LayoutTagEnricher layoutEnricher = new LayoutTagEnricher(config.getAltoLayoutWordTags());
         AltoHtmlBuilder builder = new AltoHtmlBuilder(config.getAltoLayoutPrintedLabel(), config.getAltoLayoutAnnotationTags(),
-                charCleanupEnricher, new NamedEntityEnricher(), layoutEnricher);
+                CHAR_CLEANUP_ENRICHER, new NamedEntityEnricher(), layoutEnricher);
         try {
             return builder.build(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING);
         } catch (IOException | JDOMException e) {

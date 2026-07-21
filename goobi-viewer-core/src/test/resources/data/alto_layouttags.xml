@@ -356,7 +356,7 @@
 					<TextLine HPOS="787" VPOS="2054" WIDTH="1126" HEIGHT="63" ID="l-24">
 						<String HPOS="787" VPOS="2054" WIDTH="55" HEIGHT="63" ID="s-150" CONTENT="Ʒu"/>
 						<SP HPOS="842" VPOS="2054" WIDTH="26" HEIGHT="63" ID="sp-128"/>
-						<String HPOS="868" VPOS="2054" WIDTH="228" HEIGHT="63" ID="s-151" CONTENT="Dageminde" TAGREFS="RT-2"/>
+						<!-- s-151 carries RT-3 in ADDITION to the library sample copy (00000048.xml): covers the combined underline+strikethrough span --><String HPOS="868" VPOS="2054" WIDTH="228" HEIGHT="63" ID="s-151" CONTENT="Dageminde" TAGREFS="RT-2 RT-3"/>
 						<SP HPOS="1096" VPOS="2054" WIDTH="26" HEIGHT="63" ID="sp-129"/>
 						<String HPOS="1122" VPOS="2054" WIDTH="40" HEIGHT="63" ID="s-152" CONTENT="in" TAGREFS="RT-2"/>
 						<SP HPOS="1162" VPOS="2054" WIDTH="26" HEIGHT="63" ID="sp-130"/>

@@ -65,15 +65,16 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.intranda.digiverso.ocr.alto.margins.MarginColumnDetector;
 import de.unigoettingen.sub.commons.contentlib.imagelib.ImageType;
 import io.goobi.viewer.controller.config.filter.IFilterConfiguration;
 import io.goobi.viewer.controller.json.JsonMetadataConfiguration;
 import io.goobi.viewer.controller.model.FeatureSetConfiguration;
-import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
 import io.goobi.viewer.controller.model.LabeledValue;
 import io.goobi.viewer.controller.model.ManifestLinkConfiguration;
 import io.goobi.viewer.controller.model.ProviderConfiguration;
 import io.goobi.viewer.controller.model.ViewAttributes;
+import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.DownloadBean;
@@ -2029,10 +2030,9 @@ public class Configuration extends AbstractConfiguration {
      *
      * @return the configured printed-text label, or "gr_printed" if not configured
      * @should return configured value
-     * @should return default value if not configured
      */
     public String getAltoLayoutPrintedLabel() {
-        return getLocalString("altoLayoutTags[@printedLabel]", "gr_printed");
+        return getLocalString("altoLayoutTags[@printedLabel]", MarginColumnDetector.DEFAULT_PRINTED_LABEL);
     }
 
     /**
@@ -2051,6 +2051,29 @@ public class Configuration extends AbstractConfiguration {
                 String styleClass = tag.getString("[@styleClass]");
                 if (StringUtils.isNotEmpty(label) && StringUtils.isNotEmpty(styleClass)) {
                     ret.put(label, styleClass);
+                }
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Mapping of word/line-level ALTO layout-tag LABEL to its semantic type ({@code underline}, {@code strikethrough}
+     * or {@code mark}), used by the immersive view to render word markup and drawn-line overlays for arbitrary
+     * customer label vocabularies.
+     *
+     * @return an ordered map of label to semantic type; empty if none configured (callers fall back to defaults)
+     * @should return configured word tag types
+     */
+    public Map<String, String> getAltoLayoutWordTagTypes() {
+        Map<String, String> ret = new LinkedHashMap<>();
+        List<HierarchicalConfiguration<ImmutableNode>> tags = getLocalConfigurationsAt("altoLayoutTags.wordTag");
+        if (tags != null) {
+            for (HierarchicalConfiguration<ImmutableNode> tag : tags) {
+                String label = tag.getString("[@label]");
+                String type = tag.getString("[@type]");
+                if (StringUtils.isNotEmpty(label) && StringUtils.isNotEmpty(type)) {
+                    ret.put(label, type);
                 }
             }
         }

@@ -2,9 +2,15 @@
 
 import { isTypingTarget } from './viewerImmersive.mjs';
 
+/**
+ * Overlays/popovers that swallow single-key shortcuts while open — WITHOUT the
+ * left panels, which some shortcuts (the annotations toggle lives inside the
+ * fulltext panel) must keep working under. Shared so the lists cannot drift.
+ */
+export const OVERLAY_SELECTOR_BASE = '#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden]), .popover.show';
+
 /** Overlays/panels/popovers that own the arrow and zoom keys while open. */
-const OVERLAY_OPEN_SELECTOR =
-    '#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel-left.is-open, .popover.show';
+const OVERLAY_OPEN_SELECTOR = `${OVERLAY_SELECTOR_BASE}, .immersive__panel-left.is-open`;
 
 /**
  * Creates the immersive key dispatcher: one document-level keydown listener,

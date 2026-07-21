@@ -284,13 +284,15 @@ public final class HtmlSanitizer {
     }
 
     /**
-     * Sanitize page-level fulltext output produced by the ALTO reading pipeline (see
-     * {@link io.goobi.viewer.controller.ALTOTools#getFulltext(String, String, boolean)} and the
-     * {@code NamedEntityEnricher} it pipes through). Allows only the {@code <button>} tag with
+     * Sanitize page-level fulltext output produced by the ALTO display pipeline (see
+     * {@link io.goobi.viewer.controller.ALTOTools#getFulltextHtml(String, String)} and the
+     * {@code AltoHtmlBuilder}/{@code NamedEntityEnricher} it pipes through). Allows only the {@code <button>} tag with
      * the exact attribute set that {@code NamedEntityEnricher.CONTENT_TEMPLATE} emits:
      * {@code class}, {@code type}, and the four
      * {@code data-entity-id|data-entity-type|data-entity-authority-data-uri|data-entity-authority-data-search}
-     * attributes. No {@code href}, no other URL-bearing attribute, no other tag.
+     * attributes, plus the structural layout markup emitted by {@code AltoHtmlBuilder}
+     * ({@code div}, {@code aside}, {@code p}, {@code span}, {@code br} with {@code class},
+     * {@code data-author} and {@code title}). No {@code href} and no other URL-bearing attribute.
      *
      * <p>
      * Used for the ALTO branch of {@code PhysicalElement.getFullText()}. The plain-fulltext
@@ -322,7 +324,7 @@ public final class HtmlSanitizer {
         // Empty base URI: no URL-bearing attribute is allowed (data-entity-authority-data-uri
         // and data-entity-authority-data-search are data-* attributes, not URL attributes as
         // far as Jsoup's protocol filter is concerned). prettyPrint(false) keeps the
-        // structural whitespace produced by AltoTextReader (page/block/line separators) intact.
+        // structural whitespace produced by the ALTO HTML builder (page/block/line separators) intact.
         return Jsoup.clean(input, "", buildFulltextWithNamedEntitiesSafelist(),
                 new Document.OutputSettings().prettyPrint(false));
     }
@@ -508,7 +510,7 @@ public final class HtmlSanitizer {
                 .addAttributes("div", "class")
                 .addAttributes("aside", "class")
                 .addAttributes("p", "class", "data-author", "title")
-                .addAttributes("span", "class", "data-author");
+                .addAttributes("span", "class");
     }
 
     /**

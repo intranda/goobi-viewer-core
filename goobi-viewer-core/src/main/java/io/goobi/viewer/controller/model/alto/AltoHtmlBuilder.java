@@ -49,7 +49,7 @@ import io.goobi.viewer.controller.StringTools;
  * side columns, and it wraps handwriting-attributed blocks so their author can be styled distinctly.
  *
  * <p>
- * A block is treated as a margin annotation when it both lies horizontally outside the printed-text column
+ * A block is treated as a margin annotation when it both protrudes beyond the printed-text column edge
  * ({@link MarginColumnDetector}) and carries a handwriting author tag. Blocks that carry a handwriting tag but sit
  * inside the column (e.g. an inline title annotation or a footnote callout in the gutter) stay in the main flow but
  * keep their author styling.
@@ -177,7 +177,9 @@ public class AltoHtmlBuilder {
         for (int i = 0; i < lines.size(); i++) {
             appendLine(sb, lines.get(i));
             if (i < lines.size() - 1) {
-                sb.append("<br/>");
+                // "<br>" (not "<br/>"): jsoup re-serializes HTML without the slash, and PhysicalElement
+                // compares pre/post-sanitizing lengths to detect removed markup.
+                sb.append("<br>");
             }
         }
         sb.append("</p>");
@@ -207,6 +209,16 @@ public class AltoHtmlBuilder {
      *         null if the block is printed text / untagged
      */
     private String handwritingLabel(TextBlock block) {
+        return handwritingLabel(block, annotationStyles);
+    }
+
+    /**
+     * Shared with the JSON path ({@code AltoLayoutAnnotationBuilder}), so both stay in agreement on what counts as
+     * handwriting.
+     *
+     * @return the first of the block's labels present in the style mapping, or null for printed/untagged blocks
+     */
+    static String handwritingLabel(TextBlock block, Map<String, AnnotationStyle> annotationStyles) {
         for (String label : block.getTagLabels()) {
             if (annotationStyles.containsKey(label)) {
                 return label;

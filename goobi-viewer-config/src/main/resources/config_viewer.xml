@@ -2702,4 +2702,26 @@
             <unit>minutes</unit>
         </deleteAfter>
     </externalResource>
+
+    <!-- altoLayoutTags: maps ALTO <LayoutTag> LABELs to full-text markup. Optional; when
+         absent, the built-in defaults shown here apply (Grimm corpus vocabulary).
+         printedLabel anchors the margin-annotation detection. wordTag maps word/line
+         labels: styleClass styles single words in the classic full-text view (custom
+         values need matching CSS in the active theme); type is the semantic meaning
+         ("underline", "strikethrough" or "mark") the immersive view renders as word
+         markup and drawn-line overlays. annotationTag maps handwriting authors to a
+         style class and a display name; the immersive annotation cards carry the
+         styleClass, so themes can color custom author vocabularies via CSS. -->
+    <altoLayoutTags printedLabel="gr_printed">
+        <wordTag label="gr_unterstrichen" styleClass="alto-tag--underline" type="underline" />
+        <wordTag label="gr_durchgestrichen" styleClass="alto-tag--strikethrough" type="strikethrough" />
+        <wordTag label="gr_angestrichen" type="mark" />
+        <annotationTag label="gr_jacob_grimm" styleClass="alto-annotation--jacob-grimm" name="Jacob Grimm" />
+        <annotationTag label="gr_wilhelm_grimm" styleClass="alto-annotation--wilhelm-grimm" name="Wilhelm Grimm" />
+        <annotationTag label="gr_jacob_oder_wilhelm_grimm" styleClass="alto-annotation--jacob-oder-wilhelm-grimm" name="Jacob oder Wilhelm Grimm" />
+        <annotationTag label="gr_andere_handschrift" styleClass="alto-annotation--andere-handschrift" name="Andere Handschrift" />
+        <annotationTag label="gr_einweisungszeichen" styleClass="alto-annotation--einweisungszeichen" name="Einweisungszeichen" />
+        <annotationTag label="gr_korrekturzeichen" styleClass="alto-annotation--korrekturzeichen" name="Korrekturzeichen" />
+    </altoLayoutTags>
+
 </config>

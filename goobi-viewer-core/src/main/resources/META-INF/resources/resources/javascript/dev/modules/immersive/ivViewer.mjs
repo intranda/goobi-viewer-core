@@ -238,6 +238,37 @@ export default class IvViewer {
         this._textRegions = [];
     }
 
+    /**
+     * Draws ALTO layout annotations (drawn underlines/strikethroughs/marks, image
+     * pixels) as overlays; each region's `modifier` becomes a class suffix. The
+     * overlays only become visible while the root carries the annotations state
+     * class, so toggling the checkbox never touches OSD.
+     */
+    setAnnotationRegions(regions) {
+        this.clearAnnotationRegions();
+        const osd = this.viewer.openseadragon;
+        const item = this.currentItem || osd.world.getItemAt(0);
+        const map = new Map();
+        if (!item) return map;
+        (regions || []).forEach((r) => {
+            if (!r.rect) return;
+            const el = document.createElement('div');
+            el.className = `immersive__anno-region immersive__anno-region-${r.modifier}`;
+            el.dataset.ivAnnoId = r.id;
+            osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
+            this._annoRegions.push(el);
+            map.set(r.id, el);
+        });
+        return map;
+    }
+
+    /** Removes all layout-annotation overlays (text regions and highlights stay). */
+    clearAnnotationRegions() {
+        const osd = this.viewer.openseadragon;
+        (this._annoRegions || []).forEach((el) => osd.removeOverlay(el));
+        this._annoRegions = [];
+    }
+
     /** Current 0-based page order (the spread leader in double mode). */
     getCurrentOrder() {
         return this.current;

@@ -25,6 +25,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_LAYOUT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_TEXT;
@@ -238,6 +239,27 @@ class RecordPageResourceTest extends AbstractRestApiTest {
             assertNotNull(pdfLink, "No PDF link in canvas");
             String id = (String) pdfLink.get("@id");
             Assertions.assertTrue(id.contains("IMG+20200322+144253.jpg"), "Wrong filename in " + id);
+        }
+    }
+
+    /**
+     * The layout endpoint must answer 200 with the sparse structure; the test record's ALTO carries no layout tags, so all lists are empty.
+     *
+     * @verifies return empty layout annotations for alto without layout tags
+     * @see RecordPageResource#getLayoutAnnotationsForPage
+     */
+    @Test
+    void getLayoutAnnotationsForPage_shouldReturnEmptyLayoutAnnotationsForAltoWithoutLayoutTags() {
+        String url = urls.path(RECORDS_PAGES, RECORDS_PAGES_LAYOUT).params(PI_WITH_ALTO, PAGENO_WITH_ALTO).build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, response.getStatus(), "Should return status 200");
+            JSONObject json = new JSONObject(response.readEntity(String.class));
+            assertEquals(0, json.getJSONArray("blocks").length());
+            assertEquals(0, json.getJSONArray("words").length());
+            assertEquals(0, json.getJSONArray("lines").length());
         }
     }
 

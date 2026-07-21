@@ -442,3 +442,39 @@ export async function loadPageTextLevels(pi, apiBase, order, fetchFn = fetch) {
     ]);
     return nestTextLevels({ blocks, lines, words });
 }
+
+/**
+ * Normalizes the layout-annotation endpoint response to the three lists the
+ * immersive view consumes (author blocks, tagged words, drawn lines); missing
+ * lists become empty arrays, other payload fields (e.g. printColumn) are
+ * dropped. Null for non-object payloads. Pure + tested.
+ *
+ * @param {object} json  the /text/layout/ response
+ * @returns {{blocks:Array, words:Array, lines:Array}|null}
+ */
+export function parseLayoutAnnotations(json) {
+    if (!json || typeof json !== 'object') return null;
+    const list = (value) => (Array.isArray(value) ? value : []);
+    return {
+        blocks: list(json.blocks),
+        words: list(json.words),
+        lines: list(json.lines),
+    };
+}
+
+/**
+ * Fetches one page's ALTO layout-tag annotations. The rects share the
+ * coordinate space of the page text annotations, so both data sets join by
+ * ALTO element id. Null on failure (treated as "no annotations").
+ *
+ * @param {string} pi
+ * @param {string} apiBase
+ * @param {number} order    0-based page order; the endpoint is 1-based, so order + 1
+ * @param {Function} fetchFn
+ * @returns {Promise<{blocks:Array, words:Array, lines:Array}|null>}
+ */
+export async function loadPageLayout(pi, apiBase, order, fetchFn = fetch) {
+    const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/layout/`);
+    if (!res.ok) return null;
+    return parseLayoutAnnotations(await res.json());
+}

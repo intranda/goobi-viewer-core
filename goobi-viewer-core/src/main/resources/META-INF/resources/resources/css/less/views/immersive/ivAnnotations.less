@@ -1,0 +1,332 @@
+/* ==============================================================
+   Immersive View: Annotations
+   style declarations for viewImmersive.xhtml (ALTO layout-tag annotations:
+   toggle, inline markup, margin note column, image overlays)
+   ==============================================================*/
+
+@immersive-anno-margin-width: 160px;
+// html { font-size: 62.5% } => 1rem = 10px (see layout/general.less)
+@immersive-anno-font: 1.3rem; // 13px
+@immersive-anno-font-note: @fontSmall; // 12px
+@immersive-anno-font-overline: 1rem; // 10px
+@immersive-anno-margin-gap: 12px;
+// Must stay above COLLAPSE_BELOW (460, ivAnnotations.mjs) plus the panel padding
+// (2x16px), or the ResizeObserver would flip-flop between column and inline mode.
+@immersive-anno-panel-min-width: 560px;
+
+.immersive {
+    /* ANNOTATIONS TOGGLE (right-aligned in the __fulltext-toolbar row) */
+    &__anno-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+
+        // the server renders the row hidden until the page proves to have annotations
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__anno-checkbox {
+        accent-color: @immersive-accent;
+        width: 16px;
+        height: 16px;
+        margin: 0;
+
+        &:focus-visible {
+            outline: 2px solid @immersive-accent;
+            outline-offset: 2px;
+        }
+    }
+
+    &__anno-label {
+        color: @immersive-chrome-fg;
+        font-size: @immersive-anno-font;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    /* WORD MARKUP (only visible while annotations are switched on) */
+    &.-annotations-on &__anno-word-underline {
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-decoration-color: ~'rgb(var(--immersive-anno-underline-rgb))';
+    }
+
+    &.-annotations-on &__anno-word-strike {
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+        text-decoration-color: ~'rgb(var(--immersive-anno-strike-rgb))';
+    }
+
+    /* TWO-COLUMN MODE: with annotations on, the panel enforces the width the
+       side column needs, so notes sit line-anchored NEXT to the text (customer
+       reference layout) instead of collapsing inline. Small screens fall back. */
+    &.-annotations-on &__panel-fulltext {
+        min-width: @immersive-anno-panel-min-width;
+    }
+
+    &__anno-columns {
+        display: none;
+        gap: @immersive-anno-margin-gap;
+        padding: 6px 0 4px;
+        border-bottom: 1px solid @immersive-divider;
+        margin-bottom: 6px;
+        font-size: @immersive-anno-font-overline;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: @immersive-chrome-fg;
+        opacity: 0.7;
+    }
+
+    &.-annotations-on &__anno-columns:not([hidden]) {
+        display: flex;
+    }
+
+    &__anno-columns-main {
+        flex: 1 1 auto;
+    }
+
+    &__anno-columns-side {
+        flex: 0 0 @immersive-anno-margin-width;
+    }
+
+    /* MARGIN NOTE COLUMN (line-anchored cards right of the main text) */
+    /* __fulltext itself is styled in ivFulltext.less; the positioning context for the
+       absolute note column has to live here with the column that needs it */
+    &__fulltext {
+        position: relative;
+    }
+
+    &.-annotations-on &__fulltext:not(.-anno-collapsed) {
+        padding-right: @immersive-anno-margin-width + @immersive-anno-margin-gap;
+        // set by relayout(): room for a card ABOVE the first printed line; applied
+        // only in annotations mode, so toggling the checkbox off cleans up in CSS
+        padding-top: var(--immersive-anno-shift, 0px);
+    }
+
+    /* annotations OFF: the printed-text column shows print only — every handwriting
+       source (running heads, callouts, insertion marks, margin sources) is hidden */
+    &:not(.-annotations-on) &__anno-src {
+        display: none;
+    }
+
+    /* the reading-order source of a margin note is never shown: its card replaces it
+       while annotations are on, and anno-src hides all handwriting while off */
+    &__anno-margin-src {
+        display: none;
+    }
+
+    &__anno-margin {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: @immersive-anno-margin-width;
+    }
+
+    &.-annotations-on &__anno-margin {
+        display: block;
+    }
+
+    &__anno-note {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        // button reset: the entry is a real <button> (opens the detail popover)
+        appearance: none;
+        border: 0;
+        text-align: left;
+        font-family: inherit;
+        cursor: pointer;
+        background-color: var(--immersive-anno-note-bg);
+        border-left: 3px solid @immersive-chrome-border-color;
+        border-radius: 0 4px 4px 0;
+        // entry height + NOTE_GAP (ivAnnotations.mjs) must fit the print row height,
+        // or consecutive annotations get pushed off their lines
+        padding: 2px 8px;
+        font-size: @immersive-anno-font-note;
+        line-height: 1.4;
+        // the fulltext box renders OCR lines with pre-wrap — card text must not inherit it
+        white-space: normal;
+        color: @immersive-chrome-fg;
+        transition: top @immersive-transition;
+
+        &:hover,
+        &:active {
+            // the global button reset (resets.less: button:hover { color: @lowerblack })
+            // outweighs the base class — restate the chrome color for the states
+            color: @immersive-chrome-fg;
+            background-color: var(--immersive-anno-note-hover-bg);
+        }
+
+        &:focus-visible {
+            .mx-immersive-focus-ring();
+        }
+
+        &.-inline {
+            position: static;
+            display: block;
+            width: 100%;
+            margin: 4px 0 4px 16px;
+        }
+    }
+
+    &.-annotations-on &__anno-note {
+        display: block;
+    }
+
+    /* the author name stays in the accessibility tree (part of the button's name);
+       visually the colored left border is the code, details open in the popover */
+    &__anno-note-author {
+        .mx-sr-only();
+    }
+
+    /* strictly one line per entry — the full text lives in the click popover */
+    &__anno-note-text {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* DETAIL POPOVER (click on an entry; portaled into the fulltext panel) */
+    &__anno-popover.popover {
+        max-width: 260px;
+        color: @immersive-chrome-fg;
+        background-color: @immersive-chrome-bg;
+        border: 1px solid @immersive-chrome-border-color;
+        border-radius: @immersive-radius;
+        box-shadow: @immersive-chrome-shadow;
+
+        .popover-header {
+            padding: 6px 10px 4px;
+            background: none;
+            border-bottom: 1px solid @immersive-divider;
+            color: inherit;
+            font-size: @immersive-anno-font;
+        }
+
+        .popover-body {
+            padding: 6px 10px 8px;
+            color: inherit;
+            font-size: @immersive-anno-font-note;
+        }
+
+        &.bs-popover-top .arrow::before,
+        &.bs-popover-top .arrow::after {
+            border-top-color: @immersive-chrome-bg;
+        }
+        &.bs-popover-right .arrow::before,
+        &.bs-popover-right .arrow::after {
+            border-right-color: @immersive-chrome-bg;
+        }
+        &.bs-popover-bottom .arrow::before,
+        &.bs-popover-bottom .arrow::after {
+            border-bottom-color: @immersive-chrome-bg;
+        }
+        &.bs-popover-left .arrow::before,
+        &.bs-popover-left .arrow::after {
+            border-left-color: @immersive-chrome-bg;
+        }
+    }
+
+    /* author colors hook onto the CONFIGURED styleClass the card carries (default
+       vocabulary below) — themes color foreign author classes the same way */
+    &__anno-note.alto-annotation--jacob-grimm {
+        border-left-color: var(--immersive-anno-author-jacob-grimm);
+    }
+
+    &__anno-note.alto-annotation--wilhelm-grimm {
+        border-left-color: var(--immersive-anno-author-wilhelm-grimm);
+    }
+
+    &__anno-note.alto-annotation--jacob-oder-wilhelm-grimm {
+        border-left-color: var(--immersive-anno-author-jacob-oder-wilhelm-grimm);
+    }
+
+    &__anno-note.alto-annotation--andere-handschrift {
+        border-left-color: var(--immersive-anno-author-andere-handschrift);
+    }
+
+    &__anno-note.alto-annotation--einweisungszeichen {
+        border-left-color: var(--immersive-anno-author-einweisungszeichen);
+    }
+
+    &__anno-note.alto-annotation--korrekturzeichen {
+        border-left-color: var(--immersive-anno-author-korrekturzeichen);
+    }
+
+    /* hover on a note marks its anchor line in the main text */
+    &.-annotations-on .is-anno-anchor {
+        background-color: var(--immersive-anno-anchor-bg);
+        border-radius: 3px;
+    }
+
+    /* ...and hovering the anchor line highlights its note(s) in the side column */
+    &.-annotations-on &__anno-note.is-anno-active {
+        background-color: var(--immersive-anno-note-hover-bg);
+        outline: 1px solid @immersive-accent;
+    }
+
+    /* IMAGE OVERLAYS (real drawn strokes on the page, GraphicalElement boxes).
+       Toggled via visibility, NOT display: OpenSeadragon writes display:block as an
+       inline style on every overlay update, which would override any class rule. */
+    &__anno-region {
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    &.-annotations-on &__anno-region {
+        visibility: visible;
+    }
+
+    &__anno-region-underline {
+        background-color: ~'rgba(var(--immersive-anno-underline-rgb), 0.35)';
+        outline: 1px solid ~'rgb(var(--immersive-anno-underline-rgb))';
+    }
+
+    &__anno-region-strike {
+        background-color: ~'rgba(var(--immersive-anno-strike-rgb), 0.35)';
+        outline: 1px solid ~'rgb(var(--immersive-anno-strike-rgb))';
+    }
+
+    &__anno-region-mark {
+        background-color: ~'rgba(var(--immersive-anno-mark-rgb), 0.35)';
+        outline: 1px solid ~'rgb(var(--immersive-anno-mark-rgb))';
+    }
+
+    /* margin-note regions are transparent hit areas: invisible until hovered on the
+       scan (:hover) or from their card (.is-anno-active), but always hit-testable so
+       image-to-card hover works */
+    &.-annotations-on &__anno-region-note {
+        visibility: visible;
+        background-color: transparent;
+        outline: none;
+        pointer-events: auto;
+    }
+
+    &.-annotations-on &__anno-region-note:hover,
+    &.-annotations-on &__anno-region-note.is-anno-active {
+        background-color: ~'rgba(var(--immersive-accent-rgb), 0.15)';
+        outline: 2px solid @immersive-accent;
+    }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    .immersive.-annotations-on .immersive__panel-fulltext {
+        min-width: 0;
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+}

@@ -248,10 +248,11 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
+     * @see ALTOTools#getFulltextHtml(String,String)
      * @verifies include authority data URI attributes in output
      */
     @Test
-    void getFulltext_shouldIncludeAuthorityDataURIAttributesInOutput() throws Exception {
+    void getFulltextHtml_shouldIncludeAuthorityDataURIAttributesInOutput() throws Exception {
         File file = new File("src/test/resources/data/viewer/data/1/alto/PPN648829383/00000014.xml");
         Assertions.assertTrue(file.isFile());
         // Named-entity button markup lives on the HTML display path (getFulltextHtml), not the plain-text path.

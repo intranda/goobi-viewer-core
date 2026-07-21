@@ -76,11 +76,11 @@
 
 // ENTITY COLORING
 [data-entity-type='person'] {
-    color: #0174df;
+    color: #0154a3;
     &:hover,
     &:focus,
     &:active {
-        color: #0174df;
+        color: #0154a3;
     }
 }
 
@@ -95,11 +95,11 @@
 
 [data-entity-type='corporation'],
 [data-entity-type='institution'] {
-    color: #298a08;
+    color: #1e6606;
     &:hover,
     &:focus,
     &:active {
-        color: #298a08;
+        color: #1e6606;
     }
 }
 
@@ -152,18 +152,19 @@
 }
 
 // HANDWRITING AUTHOR COLORING (block-level annotations)
+// AA contrast (>= 4.5:1) against the @lightgray page background
 .alto-annotation {
     &--jacob-grimm {
-        color: #298a08;
+        color: #1e6606;
     }
     &--wilhelm-grimm {
-        color: #0174df;
+        color: #0154a3;
     }
     &--jacob-oder-wilhelm-grimm {
-        color: #7a5cc0;
+        color: #6247a8;
     }
     &--andere-handschrift {
-        color: #b35a00;
+        color: #8a4500;
     }
     &--einweisungszeichen,
     &--korrekturzeichen {

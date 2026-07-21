@@ -4,7 +4,7 @@
  * key dispatcher.
  */
 import { jest } from '@jest/globals';
-import { setupPanels } from '../ivPanelsWiring.mjs';
+import { setupPanels, setupPanelResize } from '../ivPanelsWiring.mjs';
 import { createKeyDispatcher } from '../ivKeys.mjs';
 
 function mountMarkup() {
@@ -102,5 +102,94 @@ describe('setupPanels', () => {
         document.body.appendChild(grid);
         expect(keys.handleEvent(altDigit('Digit1'))).toBe(false);
         expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(false);
+    });
+});
+
+describe('setupPanelResize', () => {
+    afterEach(() => {
+        document.body.innerHTML = '';
+    });
+
+    /** The handle position follows --immersive-panel-width, so the clamp must never
+     *  let the variable drop below the open panel's own min-width (annotations
+     *  two-column mode raises it) — otherwise the handle detaches from the panel edge. */
+    test('drag clamps to the open panel min-width so the handle stays on the panel edge', () => {
+        document.body.innerHTML = `
+            <div class="immersive">
+                <div class="immersive__viewer">
+                    <aside id="immersivePanelFulltext" class="immersive__panel immersive__panel-left is-open"></aside>
+                </div>
+            </div>`;
+        const root = document.querySelector('.immersive');
+        const viewer = document.querySelector('.immersive__viewer');
+        viewer.getBoundingClientRect = () => ({ left: 0, width: 2000 });
+        document.getElementById('immersivePanelFulltext').style.minWidth = '560px';
+
+        setupPanelResize(root);
+        const handle = viewer.querySelector('.immersive__panel-resize-handle');
+        handle.setPointerCapture = jest.fn();
+        handle.releasePointerCapture = jest.fn();
+
+        handle.dispatchEvent(new MouseEvent('pointerdown', { clientX: 740 }));
+        handle.dispatchEvent(new MouseEvent('pointermove', { clientX: 300 }));
+        expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('560px');
+        handle.dispatchEvent(new MouseEvent('pointerup', { clientX: 300 }));
+        expect(localStorage.getItem('immersive-panel-width')).toBe('560');
+    });
+
+    test('a panel growing beyond the width variable (annotations min-width) syncs the variable to the panel edge', () => {
+        const roCallbacks = [];
+        global.ResizeObserver = class {
+            constructor(cb) {
+                roCallbacks.push(cb);
+            }
+            observe() {}
+            disconnect() {}
+        };
+        try {
+            document.body.innerHTML = `
+                <div class="immersive">
+                    <div class="immersive__viewer">
+                        <aside id="immersivePanelFulltext" class="immersive__panel immersive__panel-left is-open"></aside>
+                    </div>
+                </div>`;
+            const root = document.querySelector('.immersive');
+            const viewer = document.querySelector('.immersive__viewer');
+            const panel = document.getElementById('immersivePanelFulltext');
+            setupPanelResize(root);
+            const handle = viewer.querySelector('.immersive__panel-resize-handle');
+            Object.defineProperty(handle, 'offsetParent', { get: () => viewer });
+            viewer.getBoundingClientRect = () => ({ left: 0, width: 2000 });
+            panel.getBoundingClientRect = () => ({ width: 560 });
+            // Handle center at rail (40) + variable resolving to the 340px CSS fallback
+            // — the first-visit case with no inline style and no stored width.
+            handle.getBoundingClientRect = () => ({ left: 374, width: 12 });
+            roCallbacks.forEach((cb) => cb());
+            expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('560px');
+        } finally {
+            delete global.ResizeObserver;
+        }
+    });
+
+    test('drag without a raised panel min-width clamps to the global minimum', () => {
+        document.body.innerHTML = `
+            <div class="immersive">
+                <div class="immersive__viewer">
+                    <aside id="immersivePanelToc" class="immersive__panel immersive__panel-left is-open"></aside>
+                </div>
+            </div>`;
+        const root = document.querySelector('.immersive');
+        const viewer = document.querySelector('.immersive__viewer');
+        viewer.getBoundingClientRect = () => ({ left: 0, width: 2000 });
+
+        setupPanelResize(root);
+        const handle = viewer.querySelector('.immersive__panel-resize-handle');
+        handle.setPointerCapture = jest.fn();
+        handle.releasePointerCapture = jest.fn();
+
+        handle.dispatchEvent(new MouseEvent('pointerdown', { clientX: 740 }));
+        handle.dispatchEvent(new MouseEvent('pointermove', { clientX: 100 }));
+        expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('240px');
+        handle.dispatchEvent(new MouseEvent('pointerup', { clientX: 100 }));
     });
 });
