@@ -134,6 +134,28 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#setAdvancedSearchFieldTemplate(String)
+     * @verifies not reset query items when template unchanged
+     */
+    @Test
+    void setAdvancedSearchFieldTemplate_shouldNotResetQueryItemsWhenTemplateUnchanged() {
+        // Establish the default template ("-" resolves to the default template name)
+        searchBean.setAdvancedSearchFieldTemplate("-");
+        // Enter a value into the first query item
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setField("MD_TITLE");
+        item.setValue("foo");
+
+        // Returning to the advanced search form passes "-" again (see searchAdvanced2 mapping / back link).
+        // Since the template is already the default, this must NOT wipe the entered query items.
+        searchBean.setAdvancedSearchFieldTemplate("-");
+
+        SearchQueryItem preserved = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        assertEquals("MD_TITLE", preserved.getField());
+        assertEquals("foo", preserved.getValue());
+    }
+
+    /**
      * @see SearchBean#resetSearchAction()
      * @verifies return correct Pretty URL ID
      */
