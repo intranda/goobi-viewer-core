@@ -43,8 +43,11 @@ COPY goobi-viewer-config/docker/viewer.xml.template ${CATALINA_HOME}/conf/
 COPY goobi-viewer-config/docker/disable_dev_options.patch /viewer-template/
 COPY goobi-viewer-config/docker/insert_theme_preresource.patch.template /viewer-template/
 
+# Install the fixed server.xml (from install/, copied to /viewer-template/config above);
+# the only container-specific change is binding the connector to all interfaces
+# (0.0.0.0) instead of loopback (127.0.0.1).
 RUN --mount=type=bind,source=goobi-viewer-config/docker,target=/tmp/patches,readonly \
-    patch ${CATALINA_HOME}/conf/server.xml < /tmp/patches/server.xml.patch && \
+    sed 's/address="127.0.0.1"/address="0.0.0.0"/' /viewer-template/config/tomcat/server.xml > ${CATALINA_HOME}/conf/server.xml && \
     patch --output=${CATALINA_HOME}/conf/context.xml.template ${CATALINA_HOME}/conf/context.xml < /tmp/patches/context.xml.patch
 
 RUN grep -qxF 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' ${CATALINA_HOME}/conf/logging.properties || echo 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' >> ${CATALINA_HOME}/conf/logging.properties && \
