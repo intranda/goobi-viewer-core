@@ -5761,12 +5761,18 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * getExcelDownloadTimeout.
+     * Timeout in seconds for generating a search result export before it is aborted. Read from the {@code timeout} attribute of the
+     * {@code <search><export>} element and applied to every export format (Excel, CSV and XSLT-based formats such as RIS).
      *
-     * @return a int.
+     * <p>The setting previously lived at {@code <export><excel><timeout>}, but the dedicated {@code <excel>} element was replaced by
+     * {@code <format name="excel">} during the export config normalization; the timeout therefore moved to the shared {@code <export>}
+     * element so it keeps working and now governs all formats, not just Excel.
+     *
+     * @return the configured export timeout in seconds; 120 if not set
+     * @should return correct value
      */
-    public int getExcelDownloadTimeout() {
-        return getLocalInt("search.export.excel.timeout", 120);
+    public int getSearchExportTimeout() {
+        return getLocalInt("search.export[@timeout]", 120);
     }
 
     /**

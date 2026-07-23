@@ -2620,7 +2620,8 @@ public class SearchBean implements SearchInterface, Serializable {
         String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Locale locale = navigationHelper.getLocale();
-        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
+        // Shared export timeout in seconds (config <search><export> @timeout), applies to all formats
+        int timeout = DataManager.getInstance().getConfiguration().getSearchExportTimeout(); //[s]
 
         BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {

@@ -685,8 +685,11 @@
                    contentType   - HTTP Content-Type for the response
                    fileExtension - file extension for the Content-Disposition header
              To add a new XSLT format, add a <format> element here and drop the XSLT file into the
-             viewer config directory or the classpath under resources/xsl/. -->
-        <export>
+             viewer config directory or the classpath under resources/xsl/.
+
+             timeout - maximum time in seconds allowed to generate an export before it is aborted (the client then
+                       receives HTTP 503). Applies to all formats. Default is 120. -->
+        <export timeout="120">
             <format name="excel" enabled="false">
                 <!-- field: Solr fields to put into the export sheet. One element per field. -->
                 <field>PI_TOPSTRUCT</field>
