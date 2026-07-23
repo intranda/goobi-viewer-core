@@ -1764,7 +1764,14 @@ public class SearchBean implements SearchInterface, Serializable {
             return;
         }
 
-        this.advancedSearchFieldTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
+        // Incoming value is null or "-" (i.e. "default"). Resolve it to the actual default template name and only
+        // reset if the template really changes. Otherwise navigating back to the advanced search form (e.g. via the
+        // "back to advanced search" link, which passes "-" as the context) would wipe the session-held query items.
+        String resolvedTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
+        if (resolvedTemplate != null && resolvedTemplate.equals(this.advancedSearchFieldTemplate)) {
+            return;
+        }
+        this.advancedSearchFieldTemplate = resolvedTemplate;
         // Reset query items and slider ranges if active group is used as item field template
         resetAdvancedSearchParameters();
         facets.resetSliderRange();
@@ -2617,7 +2624,8 @@ public class SearchBean implements SearchInterface, Serializable {
         String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Locale locale = navigationHelper.getLocale();
-        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
+        // Shared export timeout in seconds (config <search><export> @timeout), applies to all formats
+        int timeout = DataManager.getInstance().getConfiguration().getSearchExportTimeout(); //[s]
 
         BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {
@@ -2986,7 +2994,9 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public boolean isExplicitSearchPerformed() {
-        return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
+        // getExactSearchString() may return null; guard before replace() to avoid a NullPointerException (java:S2259)
+        String exactSearchString = getExactSearchString();
+        return exactSearchString != null && StringUtils.isNotBlank(exactSearchString.replace("-", ""));
     }
 
     /**

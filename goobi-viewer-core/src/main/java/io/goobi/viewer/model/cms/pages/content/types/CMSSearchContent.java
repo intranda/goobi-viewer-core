@@ -208,7 +208,9 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      */
     private String searchAction() throws ViewerConfigurationException, PresentationException, IndexUnreachableException, DAOException {
-        this.search.search(this.getOwningPage().getSubTheme());
+        // getOwningPage() may return null (owning component not set); guard to avoid a NullPointerException (java:S2259)
+        CMSPage owningPage = this.getOwningPage();
+        this.search.search(owningPage != null ? owningPage.getSubTheme() : null);
         BeanUtils.getNavigationHelper().addSearchUrlWithCurrentSortStringToHistory();
         return "";
     }

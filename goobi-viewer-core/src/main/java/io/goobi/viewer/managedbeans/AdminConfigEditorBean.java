@@ -51,6 +51,7 @@ import jakarta.faces.model.DataModel;
 import jakarta.faces.model.ListDataModel;
 import jakarta.inject.Named;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.logging.log4j.LogManager;
@@ -347,8 +348,13 @@ public class AdminConfigEditorBean implements Serializable {
             return false;
         }
 
-        // Delegate to the session-id-parameterized variant so the lock logic stays unit-testable without a FacesContext
-        return isFileLocked(fileRecord.getFile(), BeanUtils.getSession().getId());
+        // Delegate to the session-id-parameterized variant so the lock logic stays unit-testable without a FacesContext.
+        // getSession() returns null outside an HTTP request; without our session id we cannot detect a foreign lock (java:S2259)
+        HttpSession session = BeanUtils.getSession();
+        if (session == null) {
+            return false;
+        }
+        return isFileLocked(fileRecord.getFile(), session.getId());
     }
 
     /**
@@ -465,7 +471,11 @@ public class AdminConfigEditorBean implements Serializable {
 
         // Explicitly release the lock on close: an intentional action, so there is no false-release risk and the
         // file becomes available to others immediately. unlockFile is owner-checked, so this only releases our lock.
-        unlockFile(currentFileRecord.getFile(), BeanUtils.getSession().getId());
+        // getSession() returns null outside an HTTP request; without our session id there is no lock of ours to release (java:S2259)
+        HttpSession session = BeanUtils.getSession();
+        if (session != null) {
+            unlockFile(currentFileRecord.getFile(), session.getId());
+        }
 
         fileInEditionNumber = -1;
         currentFileRecord = null;

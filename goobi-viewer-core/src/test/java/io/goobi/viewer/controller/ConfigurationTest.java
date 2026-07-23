@@ -3094,6 +3094,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getSearchExportTimeout()
+     * @verifies return correct value
+     */
+    @Test
+    void getSearchExportTimeout_shouldReturnCorrectValue() {
+        assertEquals(180, DataManager.getInstance().getConfiguration().getSearchExportTimeout());
+    }
+
+    /**
      * @see Configuration#isDisplayAdditionalMetadataEnabled()
      * @verifies return correct value
      */

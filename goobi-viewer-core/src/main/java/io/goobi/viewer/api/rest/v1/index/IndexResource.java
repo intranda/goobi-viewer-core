@@ -116,9 +116,8 @@ public class IndexResource {
     private static final Logger logger = LogManager.getLogger(IndexResource.class);
 
     /**
-     * Snapshot of the computed Solr field list together with its expiry timestamp.
-     * Held in a volatile static reference because the JAX-RS resource is instantiated
-     * per request — the cache must live across requests.
+     * Snapshot of the computed Solr field list together with its expiry timestamp. Held in a volatile static reference because the JAX-RS resource is
+     * instantiated per request — the cache must live across requests.
      */
     private record CachedFieldInfo(List<SolrFieldInfo> value, long expiresAtMillis) {
     }
@@ -126,16 +125,15 @@ public class IndexResource {
     private static volatile CachedFieldInfo cachedFieldInfo; //NOSONAR S3077: DCL; CachedFieldInfo record is immutable and safely published
 
     /**
-     * TTL for the {@link #cachedFieldInfo} snapshot. Hard-coded because Solr field schemas
-     * change rarely (only with redeployments) and the endpoint is otherwise a cheap DoS
-     * vector for unauthenticated callers. Five minutes balances staleness after a schema
-     * update against repeated full-field recomputation.
+     * TTL for the {@link #cachedFieldInfo} snapshot. Hard-coded because Solr field schemas change rarely (only with redeployments) and the endpoint
+     * is otherwise a cheap DoS vector for unauthenticated callers. Five minutes balances staleness after a schema update against repeated full-field
+     * recomputation.
      */
     private static final long INDEX_FIELDS_CACHE_TTL_MILLIS = TimeUnit.MINUTES.toMillis(5);
 
     /**
-     * Test-only hook to drop the cached snapshot so unit tests start from a clean state.
-     * Visible to tests in the same package via package-private access.
+     * Test-only hook to drop the cached snapshot so unit tests start from a clean state. Visible to tests in the same package via package-private
+     * access.
      */
     static void invalidateAllIndexFieldsCacheForTesting() {
         cachedFieldInfo = null;
@@ -145,13 +143,11 @@ public class IndexResource {
     private static final int MAX_RECORD_HITS = 50_000;
 
     /**
-     * Allow-list pattern for the {@code region} query parameter of the spatial search/heatmap endpoints.
-     * Accepts only the characters needed by WKT range literals (e.g. {@code ["-180 -90" TO "180 90"]})
-     * and WKT shape literals ({@code POINT(...)}, {@code POLYGON(...)}, {@code MULTIPOLYGON(...)}).
-     * The letter set is the union of letters appearing in {@code POLYGON}, {@code POINT},
-     * {@code MULTIPOLYGON} and {@code TO}; this excludes characters Solr query syntax needs for
-     * local-param ({@code {}!}), boolean ({@code OR}, {@code AND} — the letters {@code R}, {@code A},
-     * {@code D} are not in the allow-list), wildcard ({@code *}) or field-name injection ({@code :}).
+     * Allow-list pattern for the {@code region} query parameter of the spatial search/heatmap endpoints. Accepts only the characters needed by WKT
+     * range literals (e.g. {@code ["-180 -90" TO "180 90"]}) and WKT shape literals ({@code POINT(...)}, {@code POLYGON(...)},
+     * {@code MULTIPOLYGON(...)}). The letter set is the union of letters appearing in {@code POLYGON}, {@code POINT}, {@code MULTIPOLYGON} and
+     * {@code TO}; this excludes characters Solr query syntax needs for local-param ({@code {}!}), boolean ({@code OR}, {@code AND} — the letters
+     * {@code R}, {@code A}, {@code D} are not in the allow-list), wildcard ({@code *}) or field-name injection ({@code :}).
      */
     private static final Pattern WKT_REGION_PATTERN = Pattern.compile("^[\\s\\[\\]\",.\\-+0-9()PONLYGITMU]*$");
 
@@ -396,8 +392,7 @@ public class IndexResource {
             // Minimum of 1: HeatmapFacetMap.setGridLevel() throws IllegalArgumentException for 0 or negative values.
             // Maximum of 2^31-1 because gridLevel is stored as Java int; larger values overflow and cause a 400.
             @Parameter(description = "The granularity of each grid cell (minimum: 1)",
-                    schema = @Schema(type = "integer", minimum = "1", maximum = "2147483647"))
-            @QueryParam("gridLevel") Integer gridLevel)
+                    schema = @Schema(type = "integer", minimum = "1", maximum = "2147483647")) @QueryParam("gridLevel") Integer gridLevel)
             throws IndexUnreachableException, IllegalRequestException, ContentNotFoundException {
         // Validate solrField before sending to Solr: an invalid name (e.g. "0") causes an
         // unhandled exception deep in the Solr client that surfaces as HTTP 500.
@@ -567,9 +562,9 @@ public class IndexResource {
         String finalQuery = "+(%s) +(%s)".formatted(effectiveQuery, coordinateQuery);
 
         LabelCreator markerLabels =
-                new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getMarkerMetadataList(labelConfig)));
+                new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getMarkerMetadataList(labelConfig)), "");
         LabelCreator itemLabels =
-                new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getItemMetadataList(labelConfig)));
+                new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getItemMetadataList(labelConfig)), "");
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
 
         SolrSearchScope scope = SolrSearchScope.DOCSTRUCTS;

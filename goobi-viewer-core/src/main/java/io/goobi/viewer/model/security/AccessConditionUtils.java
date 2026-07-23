@@ -316,7 +316,16 @@ public final class AccessConditionUtils {
                             Arrays.asList(SolrConstants.ACCESSCONDITION));
             if (results != null) {
                 if (results.isEmpty()) {
-                    logger.debug("No hits for permission check query: {}", query); //NOSONAR this will help identify index inconsistencies
+                    //if thumbnail request, get hits for record THUMBNAIL
+                    if (IPrivilegeHolder.PRIV_VIEW_THUMBNAILS.equals(privilegeName)) {
+                        query = "+PI:%s +THUMBNAIL:%s".formatted(identifier, fileName);
+                        results = DataManager.getInstance()
+                                .getSearchIndex()
+                                .search(query, 1, null, Arrays.asList(SolrConstants.ACCESSCONDITION));
+                    }
+                    if (results.isEmpty()) {
+                        logger.debug("No hits for permission check query: {}", query); //NOSONAR this will help identify index inconsistencies
+                    }
                 }
                 for (SolrDocument doc : results) {
                     Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
@@ -1611,8 +1620,8 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Evaluates whether a licensee satisfies a given set of access conditions for a privilege. Used to apply license-type
-     * overrides without coupling {@link #isAccessTicketRequiredForLicensee} to a concrete licensee type.
+     * Evaluates whether a licensee satisfies a given set of access conditions for a privilege. Used to apply license-type overrides without coupling
+     * {@link #isAccessTicketRequiredForLicensee} to a concrete licensee type.
      */
     @FunctionalInterface
     private interface AccessConditionEvaluator {
@@ -1620,10 +1629,10 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Determines whether an access ticket is required for a licensee that has already been granted access, honoring license-type
-     * overrides: a ticket-requiring license type does not impose its ticket requirement on a licensee that satisfies another
-     * relevant license type which overrides it. License types not subject to such an override still contribute their ticket
-     * requirement, preserving the "all access conditions must be satisfied" semantics of the record for the general case.
+     * Determines whether an access ticket is required for a licensee that has already been granted access, honoring license-type overrides: a
+     * ticket-requiring license type does not impose its ticket requirement on a licensee that satisfies another relevant license type which overrides
+     * it. License types not subject to such an override still contribute their ticket requirement, preserving the "all access conditions must be
+     * satisfied" semantics of the record for the general case.
      *
      * @param relevantLicenseTypes license types relevant for the record
      * @param privilegeName requested privilege

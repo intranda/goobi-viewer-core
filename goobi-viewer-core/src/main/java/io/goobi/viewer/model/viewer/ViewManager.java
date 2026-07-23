@@ -661,7 +661,12 @@ public class ViewManager implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String getCurrentObjectUrl() throws IndexUnreachableException, DAOException {
-        return imageDeliveryBean.getObjects3D().getObjectUrl(pi, getCurrentPage().getFileName());
+        // getCurrentPage() may return null (no page for the current order); without a page there is no object URL (java:S2259)
+        PhysicalElement currentPage = getCurrentPage();
+        if (currentPage == null) {
+            return "";
+        }
+        return imageDeliveryBean.getObjects3D().getObjectUrl(pi, currentPage.getFileName());
     }
 
     /**
@@ -2416,6 +2421,15 @@ public class ViewManager implements Serializable {
      *
      * @return the {@link AccessPermission} (denied ones carry placeholder info), or null if the record is not found
      */
+    /**
+     * Reset the record-level VIEW_IMAGES access permission. It will be evaluated again on the next call to
+     * {@link #getRecordViewImagesAccessPermission()}.
+     */
+    public void resetRecordViewImagesAccess() {
+        this.recordViewImagesAccess = null;
+        this.recordViewImagesAccessResolved = false;
+    }
+
     private AccessPermission getRecordViewImagesAccessPermission() throws IndexUnreachableException, DAOException {
         // Memoized for this ViewManager's lifetime (mirrors PhysicalElement.getAccessPermission): the XHTML resolves the image URL + text separately
         // and via rendered conditions, which would otherwise repeat the Solr/DB access check several times.

@@ -578,7 +578,7 @@
 			<versionLabelField>MD_VERSIONLABEL</versionLabelField>
 		</versioning>
 		<!-- Search export settings -->
-		<export>
+		<export timeout="180">
 			<format name="excel" enabled="true">
 				<!-- field: Solr fields to put into the export sheet. One element per
 					field. -->
