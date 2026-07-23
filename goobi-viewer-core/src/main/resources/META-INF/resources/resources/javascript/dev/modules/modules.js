@@ -63,11 +63,7 @@
                 borderColor: styles['borderTopColor'],
                 fillColor: styles['background-color'],
             });
-            let activeStyles = viewerJS.helper.getCss('page-area focus', [
-                'borderTopColor',
-                'borderTopWidth',
-                'background-color',
-            ]);
+            let activeStyles = viewerJS.helper.getCss('page-area focus', ['borderTopColor', 'borderTopWidth', 'background-color']);
             ({
                 borderWidth: parseInt(activeStyles['borderTopWidth']),
                 borderColor: activeStyles['borderTopColor'],
@@ -125,12 +121,12 @@
             window.history.replaceState(null, '', url.toString());
         }
 
-        drawActiveAreas(activeAreas, imageView) { 
+        drawActiveAreas(activeAreas, imageView) {
             let areasOnCanvas = [];
             activeAreas.forEach((activeArea, index) => {
                 const area = this.drawArea(activeArea, index, imageView);
                 areasOnCanvas.push(area?.overlay?.bounds);
-    			console.log("add active area ", area, areasOnCanvas);
+                console.log('add active area ', area, areasOnCanvas);
                 let scrollPosition = window.sessionStorage.getItem('scrollPosition');
                 $(document).scrollTop(parseInt(scrollPosition));
                 window.sessionStorage.removeItem('scrollPosition');
@@ -166,9 +162,9 @@
         }
 
         drawArea(area, shapeIndex, image, clickToLeave) {
-    		let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-    		let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
-    		let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
+            let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+            let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
+            let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
             let $area = $('#pageAreaFrame_' + area.logId + '_' + shapeIndex);
             let $label = $('#pageAreaLabel_' + area.logId + '_' + shapeIndex);
             let overlayId = area.logId + '_' + shapeIndex;
@@ -189,7 +185,7 @@
                 () => $(area.tooltip.element).addClass('hover'),
                 () => $(area.tooltip.element).removeClass('hover')
             );
-    		return area;
+            return area;
         }
     }
 
@@ -231,7 +227,7 @@
                 showNavigator: 'imageShowNavigator',
                 allowDownload: 'allowDownload',
                 allowZoom: 'allowZoom',
-    			maxZoom: 'maxZoom'
+                maxZoom: 'maxZoom',
             },
             data: {
                 footerHeight: 'height',
@@ -252,12 +248,8 @@
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
                 this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
-                this.leftMarginElement = document.querySelector(
-                    _config.elementSelectors.data.leftMarginElement
-                )?.textContent;
-                this.rightMarginElement = document.querySelector(
-                    _config.elementSelectors.data.rightMarginElement
-                )?.textContent;
+                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
@@ -270,9 +262,7 @@
 
                 this.tileSources = createTileSource();
 
-                this.tileSourceIdToOrder = Object.fromEntries(
-                    Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
-                );
+                this.tileSourceIdToOrder = Object.fromEntries(Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order]));
 
                 if (this.viewMode == 'sequence') {
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
@@ -290,7 +280,7 @@
                                 showTooltip: element.dataset[_config.datasets.data.showTooltip],
                                 highlightClassName: 'focus',
                                 highlightOnHover: true,
-                            }); 
+                            });
                             this.overlayGroups.push(overlays);
                         } catch (e) {
                             console.error('Error parsing coords string ', coordsString, e);
@@ -312,9 +302,7 @@
                 const viewerRight = this.viewer.element.offsetLeft + this.viewer.element.offsetWidth;
                 const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
                 const margins = {
-                    left:
-                        (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) +
-                        (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
                     right: sidebarRightLeft ? viewerRight - sidebarRightLeft : 0,
                     top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
                 };
@@ -444,12 +432,8 @@
         if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
             zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
         }
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateLeft)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateRight)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateLeft).forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateRight).forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
         document.querySelectorAll(_config.elementSelectors.controls.reset).forEach((button) =>
             button.addEventListener('click', (e) => {
                 rotation.rotateTo(0);
@@ -463,42 +447,38 @@
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
             margins: {
-                bottom: Number(
-                    document.querySelector(_config.elementSelectors.data.footer)?.dataset[
-                        _config.datasets.data.footerHeight
-                    ]
-                ),
+                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight]),
             },
             zoom: {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
-    			max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
+                max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
             },
             sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
             navigator: {
                 enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
-    			position: "BOTTOM_RIGHT"
+                position: 'BOTTOM_RIGHT',
             },
         };
     }
 
     function getSequenceSettings(viewMode) {
         let columns;
-    	switch ((viewMode || '').toLowerCase()) {
+        switch ((viewMode || '').toLowerCase()) {
             case 'double':
                 columns = 2;
-    			break;
+                break;
             case 'sequence':
             case 'single':
             default:
-               columns = 1;
+                columns = 1;
         }
-    	return {
-    		columns: columns,
-    		useWindowing: true,
-    		windowSize: _sequenceWindowSize,
-    		windowExpandThreshold: _expandThreshold,
-    		windowExpandSize: _expandBatchSize
-    	}
+        return {
+            columns: columns,
+            useWindowing: true,
+            windowSize: _sequenceWindowSize,
+            windowExpandThreshold: _expandThreshold,
+            windowExpandSize: _expandBatchSize,
+        };
     }
 
     function getFittingMode(pageType) {
@@ -564,11 +544,7 @@
 
             // init area select
             try {
-                let styles = viewerJS.helper.getCss('image-fragment', [
-                    'borderTopColor',
-                    'borderTopWidth',
-                    'background-color',
-                ]);
+                let styles = viewerJS.helper.getCss('image-fragment', ['borderTopColor', 'borderTopWidth', 'background-color']);
                 var fragmentSelectConfig = {
                     removeOldAreas: true,
                     drawCondition: (event) => this.active && this.fragmentSelect?.currentOverlay == undefined,
@@ -597,8 +573,7 @@
             if (this.fragmentSelect) {
                 this.fragmentSelect.finishedHook.subscribe((area) => {
                     var areaString = this.getAreaString(area);
-                    var pageUrl =
-                        window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
+                    var pageUrl = window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
                     console.log('set area data ', pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
@@ -613,14 +588,7 @@
 
         getAreaString(area) {
             if (area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {
-                var areaString =
-                    area.x.toFixed(0) +
-                    ',' +
-                    area.y.toFixed(0) +
-                    ',' +
-                    area.width.toFixed(0) +
-                    ',' +
-                    area.height.toFixed(0);
+                var areaString = area.x.toFixed(0) + ',' + area.y.toFixed(0) + ',' + area.width.toFixed(0) + ',' + area.height.toFixed(0);
                 return areaString;
             } else {
                 return 'full';
@@ -701,10 +669,7 @@
         }
 
         toggleImageShare($panel) {
-            if (
-                $panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') &&
-                $panel.hasClass('in')
-            ) {
+            if ($panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') && $panel.hasClass('in')) {
                 this.startFragmentSelect();
             }
         }
@@ -727,8 +692,7 @@
             this.container = document.querySelector(this.config.container);
             // console.log('init voyager3d', this);
             if (this.isVisible()) {
-                this.loaded = this.initView().then(() => {
-                });
+                this.loaded = this.initView().then(() => {});
             }
         }
 
@@ -2140,7 +2104,6 @@
 
     /** Central keydown dispatcher for the immersive view. */
 
-
     /** Overlays/panels/popovers that own the arrow and zoom keys while open. */
     const OVERLAY_OPEN_SELECTOR =
         '#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel-left.is-open, .popover.show';
@@ -2398,7 +2361,6 @@
 
     /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
 
-
     /**
      * Wires the rail buttons to their left panels (open/close with ARIA + inert
      * bookkeeping) and registers the panel keyboard shortcuts on the dispatcher:
@@ -2497,7 +2459,7 @@
 
     /**
      * Adds the drag handle that resizes the left panels: one shared
-     * --immersive-panel-width custom property, persisted in localStorage.
+     * --immersive-panel-width custom property, persisted in sessionStorage.
      */
     function setupPanelResize(immersiveRoot) {
         const immersiveViewer = immersiveRoot && immersiveRoot.querySelector('.immersive__viewer');
@@ -2511,7 +2473,7 @@
         const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
         let stored = NaN;
         try {
-            stored = parseInt(localStorage.getItem(WIDTH_KEY), 10);
+            stored = parseInt(sessionStorage.getItem(WIDTH_KEY), 10);
         } catch {}
         if (Number.isFinite(stored)) applyWidth(clamp(stored));
 
@@ -2532,7 +2494,7 @@
                 handle.removeEventListener('pointerup', onUp);
                 immersiveRoot.classList.remove('-resizing');
                 try {
-                    localStorage.setItem(WIDTH_KEY, String(Math.round(widthAt(ev))));
+                    sessionStorage.setItem(WIDTH_KEY, String(Math.round(widthAt(ev))));
                 } catch {}
             };
             handle.addEventListener('pointermove', onMove);
@@ -2693,9 +2655,7 @@
     function createFocusTrap(container) {
         return function trapFocus(e) {
             if (e.key !== 'Tab') return;
-            const f = Array.from(container.querySelectorAll(FOCUSABLE_QUERY)).filter(
-                (n) => !n.hidden && !n.disabled && n.offsetParent !== null
-            );
+            const f = Array.from(container.querySelectorAll(FOCUSABLE_QUERY)).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
             if (!f.length) return;
             const first = f[0];
             const last = f[f.length - 1];
@@ -2710,7 +2670,6 @@
     }
 
     /** Keyboard-shortcuts help modal with platform-specific modifier keycaps. */
-
 
     /**
      * Keyboard-shortcuts help modal: opened via the rail button or the `?` key,
@@ -2798,7 +2757,6 @@
     }
 
     /** Fulltext panel wiring: combined block/line/word text with image hover linking. */
-
 
     /**
      * Wires the fulltext panel: loads the nested OCR levels for the visible page,
@@ -3010,7 +2968,6 @@
     }
 
     /** Search panel wiring: in-work IIIF content search with hit list and highlights. */
-
 
     /**
      * Wires the in-place IIIF content search: result list in the left panel,
@@ -3313,7 +3270,6 @@
     }
 
     /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
-
 
     /**
      * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
@@ -3768,7 +3724,6 @@
 
     /** Immersive view bootstrap: engine construction plus the UI wiring modules. */
 
-
     /** Hides the stage loading indicator at the latest after this, even without a painted tile. */
     const STAGE_LOADER_TIMEOUT_MS = 8000;
 
@@ -3872,5 +3827,4 @@
             initImmersiveViewer(immersiveRoot);
         }
     });
-
 })();

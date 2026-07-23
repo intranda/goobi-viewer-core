@@ -4,7 +4,7 @@
  * key dispatcher.
  */
 import { jest } from '@jest/globals';
-import { setupPanels } from '../ivPanelsWiring.mjs';
+import { setupPanels, setupPanelResize } from '../ivPanelsWiring.mjs';
 import { createKeyDispatcher } from '../ivKeys.mjs';
 
 function mountMarkup() {
@@ -102,5 +102,46 @@ describe('setupPanels', () => {
         document.body.appendChild(grid);
         expect(keys.handleEvent(altDigit('Digit1'))).toBe(false);
         expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(false);
+    });
+});
+
+describe('setupPanelResize', () => {
+    const WIDTH_KEY = 'immersive-panel-width';
+
+    function mountResizeMarkup() {
+        document.body.innerHTML = `
+            <div class="immersive">
+                <div class="immersive__viewer"></div>
+            </div>`;
+        const root = document.querySelector('.immersive');
+        const viewer = root.querySelector('.immersive__viewer');
+        viewer.getBoundingClientRect = () => ({ left: 0, width: 1000 });
+        return { root, viewer };
+    }
+
+    afterEach(() => {
+        document.body.innerHTML = '';
+        sessionStorage.clear();
+        localStorage.clear();
+    });
+
+    test('restores the stored width from sessionStorage, ignoring localStorage', () => {
+        sessionStorage.setItem(WIDTH_KEY, '300');
+        localStorage.setItem(WIDTH_KEY, '555');
+        const { root, viewer } = mountResizeMarkup();
+        setupPanelResize(root);
+        expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('300px');
+    });
+
+    test('persists the dragged width to sessionStorage only', () => {
+        const { root, viewer } = mountResizeMarkup();
+        setupPanelResize(root);
+        const handle = viewer.querySelector('.immersive__panel-resize-handle');
+        handle.setPointerCapture = jest.fn();
+        handle.releasePointerCapture = jest.fn();
+        handle.dispatchEvent(new MouseEvent('pointerdown', { clientX: 440 }));
+        handle.dispatchEvent(new MouseEvent('pointerup', { clientX: 440 }));
+        expect(sessionStorage.getItem(WIDTH_KEY)).toBe('400');
+        expect(localStorage.getItem(WIDTH_KEY)).toBeNull();
     });
 });
