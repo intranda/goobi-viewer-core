@@ -952,6 +952,7 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @param imageToShow Single page number (1) or range (2-3)
      * @throws IllegalUrlParameterException
+     * @should not throw when viewManager is null
      */
     public void setImageToShow(String imageToShow) throws IllegalUrlParameterException {
         synchronized (lock) {
@@ -962,8 +963,13 @@ public class ActiveDocumentBean implements Serializable {
                 //                this.imageToShow = "1";
                 throw new IllegalUrlParameterException("Illegal page number(s): " + imageToShow);
             }
-            if (viewManager != null) {
-                viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
+            // Capture the volatile viewManager once to avoid a TOCTOU race: setImageToShow locks on
+            // 'lock' while reset() locks on 'this' and nulls viewManager, so a concurrent reset()
+            // (e.g. simultaneous requests in the same @SessionScoped bean) could null the field
+            // between the null check and the dereference, causing an NPE at setDropdownSelected.
+            ViewManager localViewManager = this.viewManager;
+            if (localViewManager != null) {
+                localViewManager.setDropdownSelected(String.valueOf(this.imageToShow));
             }
             // Reset LOGID (the LOGID setter is called later by PrettyFaces, so if a value is passed, it will still be set)
             try {

@@ -107,6 +107,21 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * Verifies the null-safe branch that guards against the TOCTOU race in setImageToShow: on a fresh
+     * bean no record is loaded yet, so viewManager is null and setDropdownSelected must be skipped
+     * without throwing. This mirrors the state during PrettyFaces path-param injection before update().
+     *
+     * @see ActiveDocumentBean#setImageToShow(String)
+     * @verifies not throw when viewManager is null
+     */
+    @Test
+    void setImageToShow_shouldNotThrowWhenViewManagerIsNull() throws Exception {
+        Assertions.assertNull(adb.getViewManager());
+        adb.setImageToShow("1039");
+        assertEquals("1039", adb.getImageToShow());
+    }
+
+    /**
      * @see ActiveDocumentBean#update()
      * @verifies set toc on view manager after update
      */

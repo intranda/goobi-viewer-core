@@ -78,6 +78,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.export.RISExport;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -1053,6 +1054,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should set advancedSearchOrigin from cms page when current page is a cms page
+     * @should not set advancedSearchOrigin when cms page id is null
      */
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         executeSearch("");
@@ -1073,8 +1075,13 @@ public class SearchBean implements SearchInterface, Serializable {
         mirrorAdvancedSearchCurrentHierarchicalFacets();
         mirrorActiveFacetsToQuickFilterDropdowns();
 
+        // Only record a CMS page origin for a persisted page (id != null); a transient page would yield an
+        // origin without a resolvable back-link target, making getOriginUrl() throw during rendering
         if (this.navigationHelper != null && this.navigationHelper.isCmsPage()) {
-            this.advancedSearchOrigin = new AdvancedSearchOrigin(this.navigationHelper.getCurrentCMSPage());
+            CMSPage currentCmsPage = this.navigationHelper.getCurrentCMSPage();
+            if (currentCmsPage != null && currentCmsPage.getId() != null) {
+                this.advancedSearchOrigin = new AdvancedSearchOrigin(currentCmsPage);
+            }
         }
 
         // Create SearchQueryGroup from query
@@ -1300,7 +1307,14 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return the origin record from which the search was triggered, or null
      */
     public AdvancedSearchOrigin getAdvancedSearchOrigin() {
-        return advancedSearchOrigin;
+        // Defense in depth: only expose an origin that can actually resolve to a back-link URL. An
+        // invalid origin (no record pi and no CMS page id) would pass the view's "not empty" check and
+        // then make getOriginUrl() throw during rendering. The producers below already avoid storing
+        // invalid origins; this guard also covers any future assignment path.
+        if (advancedSearchOrigin != null && advancedSearchOrigin.isValid()) {
+            return advancedSearchOrigin;
+        }
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -3103,6 +3117,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should populate CALENDAR_DAY query item when both dates are supplied
      * @should preserve freshly typed search term when called with dates from the calendar TocView
      * @should set advancedSearchOrigin with pi label and docstrct from active document
+     * @should not set advancedSearchOrigin when pi is blank
      */
     public String searchInRecord(String piField, String piValue, String date1, String date2) {
         logger.debug("searchInRecord: piField={}, piValue={}, date1={}, date2={}", piField, piValue, date1, date2);
@@ -3154,9 +3169,11 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("Searching for: {}", this.advancedSearchQueryGroup.getQueryItems().get(1).getValue());
 
         String outcome = this.searchAdvanced();
-        // Set advancedSearchOrigin AFTER searchAdvanced() because it calls resetSearchParameters() which would null it
+        // Set advancedSearchOrigin AFTER searchAdvanced() because it calls resetSearchParameters() which would null it.
+        // Require a non-blank pi so we never record an origin that has no resolvable back-link target (a blank pi
+        // would otherwise produce an origin whose getOriginUrl() throws during rendering).
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-        if (adb != null && adb.getViewManager() != null) {
+        if (adb != null && adb.getViewManager() != null && StringUtils.isNotBlank(piValue)) {
             this.advancedSearchOrigin = new AdvancedSearchOrigin(
                     piValue,
                     adb.getViewManager().getTopStructElement().getLabel(),
