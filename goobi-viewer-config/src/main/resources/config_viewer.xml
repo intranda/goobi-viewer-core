@@ -1756,7 +1756,6 @@
                 <displayWidget name="statistics-usage" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="annotations" />
                 <displayWidget name="record-notes" />
-                <displayWidget name="data-info" />
                 <displayWidget name="downloads" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="citation" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="related-groups" expanded="false" />
