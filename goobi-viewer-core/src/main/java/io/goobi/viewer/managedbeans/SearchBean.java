@@ -55,7 +55,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -79,7 +78,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
-import io.goobi.viewer.model.export.ExcelExport;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.export.RISExport;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -817,6 +816,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should not add more facets if field value combo already in current facets
      * @should not replace obsolete facets with duplicates
      * @should remove facets that are not matched among query items
+     * @should add hierarchical NOT item as an exclusion facet
      */
     String generateAdvancedSearchMainQuery() {
         logger.trace("generateAdvancedSearchMainQuery");
@@ -853,9 +853,6 @@ public class SearchBean implements SearchInterface, Serializable {
                         continue;
                     }
 
-                    // A NOT operator turns the hierarchical item into an exclusion facet. The marker is encoded
-                    // into the serialized link (e.g. "!DC:value") so the resulting FacetItem is parsed as excluded
-                    // and produces a negative filter query, while include/exclude of the same value stay distinct.
                     String exclusionMarker = SearchItemOperator.NOT.equals(line.getOperator()) ? FacetItem.EXCLUDE_PREFIX : "";
 
                     // Skip identical hierarchical items
@@ -1086,6 +1083,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should set advancedSearchOrigin from cms page when current page is a cms page
+     * @should not set advancedSearchOrigin when cms page id is null
      */
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         executeSearch("");
@@ -1106,8 +1104,13 @@ public class SearchBean implements SearchInterface, Serializable {
         mirrorAdvancedSearchCurrentHierarchicalFacets();
         mirrorActiveFacetsToQuickFilterDropdowns();
 
+        // Only record a CMS page origin for a persisted page (id != null); a transient page would yield an
+        // origin without a resolvable back-link target, making getOriginUrl() throw during rendering
         if (this.navigationHelper != null && this.navigationHelper.isCmsPage()) {
-            this.advancedSearchOrigin = new AdvancedSearchOrigin(this.navigationHelper.getCurrentCMSPage());
+            CMSPage currentCmsPage = this.navigationHelper.getCurrentCMSPage();
+            if (currentCmsPage != null && currentCmsPage.getId() != null) {
+                this.advancedSearchOrigin = new AdvancedSearchOrigin(currentCmsPage);
+            }
         }
 
         // Create SearchQueryGroup from query
@@ -1340,7 +1343,14 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return the origin record from which the search was triggered, or null
      */
     public AdvancedSearchOrigin getAdvancedSearchOrigin() {
-        return advancedSearchOrigin;
+        // Defense in depth: only expose an origin that can actually resolve to a back-link URL. An
+        // invalid origin (no record pi and no CMS page id) would pass the view's "not empty" check and
+        // then make getOriginUrl() throw during rendering. The producers below already avoid storing
+        // invalid origins; this guard also covers any future assignment path.
+        if (advancedSearchOrigin != null && advancedSearchOrigin.isValid()) {
+            return advancedSearchOrigin;
+        }
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -2664,7 +2674,8 @@ public class SearchBean implements SearchInterface, Serializable {
         String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Locale locale = navigationHelper.getLocale();
-        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
+        // Shared export timeout in seconds (config <search><export> @timeout), applies to all formats
+        int timeout = DataManager.getInstance().getConfiguration().getSearchExportTimeout(); //[s]
 
         BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {
@@ -2743,142 +2754,6 @@ public class SearchBean implements SearchInterface, Serializable {
             this.downloadReady = null;
         }
         return "";
-    }
-
-    /**
-     * exportSearchAsExcelAction.
-     *
-     * @return an empty string after initiating the Excel export response
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public String exportSearchAsExcelAction() throws IndexUnreachableException {
-        logger.trace("exportSearchAsExcelAction");
-        final FacesContext facesContext = FacesContext.getCurrentInstance();
-
-        String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
-        String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
-        Locale locale = navigationHelper.getLocale();
-        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
-
-        BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
-            if (!facesContext.getResponseComplete()) {
-                try (SXSSFWorkbook wb = buildExcelSheet(facesContext, finalQuery, currentQuery, proximitySearchDistance, locale)) {
-                    if (wb == null) {
-                        job.setError("Failed to create excel sheet");
-                    } else if (Thread.interrupted()) {
-                        job.setError("Execution cancelled");
-                    } else {
-                        Callable<Boolean> download = new Callable<Boolean>() {
-
-                            @Override
-                            public Boolean call() {
-                                ExcelExport export = new ExcelExport();
-                                try {
-                                    logger.debug("Writing Excel...");
-                                    export.setWorkbook(wb);
-                                    return export.writeToResponse(facesContext.getExternalContext().getResponseOutputStream());
-                                } catch (IOException e) {
-                                    logger.error(e.getMessage(), e);
-                                    return false;
-                                } finally {
-                                    facesContext.responseComplete();
-                                    try {
-                                        export.close();
-                                    } catch (IOException e) {
-                                        logger.error(e.getMessage());
-                                    }
-                                }
-                            }
-                        };
-
-                        downloadComplete = new FutureTask<>(download);
-                        EXECUTOR.submit(downloadComplete);
-                        downloadComplete.get(timeout, TimeUnit.SECONDS);
-                    }
-                } catch (TimeoutException e) {
-                    job.setError("Timeout for excel download");
-                } catch (InterruptedException e) {
-                    job.setError("Timeout for excel download");
-                    Thread.currentThread().interrupt();
-                } catch (ExecutionException | ViewerConfigurationException e) {
-                    logger.error(e.getMessage(), e);
-                    job.setError("Failed to create excel sheet");
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            } else {
-                job.setError("Response is already committed");
-            }
-        };
-
-        try {
-            Task excelCreationJob = new Task(new TaskParameter(TaskType.SEARCH_EXCEL_EXPORT), task);
-            Long jobId = DataManager.getInstance().getRestApiJobManager().addTask(excelCreationJob);
-            Future<?> ready = DataManager.getInstance()
-                    .getRestApiJobManager()
-                    .triggerTaskInThread(jobId, (HttpServletRequest) facesContext.getExternalContext().getRequest());
-            ready.get(timeout, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            logger.debug("Download interrupted");
-            Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
-            logger.debug("Download execution error", e);
-            Messages.error("download_internal_error");
-        } catch (TimeoutException e) {
-            logger.debug("Downloadtimed out");
-            Messages.error("download_timeout");
-        } finally {
-            if (downloadReady != null && !downloadReady.isDone()) {
-                downloadReady.cancel(true);
-            }
-            if (downloadComplete != null && !downloadComplete.isDone()) {
-                downloadComplete.cancel(true);
-            }
-            this.downloadComplete = null;
-            this.downloadReady = null;
-        }
-        return "";
-    }
-
-    /**
-     * @param facesContext Current JSF FacesContext for writing the response
-     * @param finalQuery Complete query with suffixes.
-     * @param exportQuery Query constructed from the user's input, without any secret suffixes.
-     * @param proximitySearchDistance Maximum word distance for proximity searches
-     * @param locale Locale used for formatting exported cell values
-     * @return {@link SXSSFWorkbook}
-     * @throws InterruptedException
-     * @throws ViewerConfigurationException
-     * @throws IndexUnreachableException
-     * @throws DAOException
-     * @throws PresentationException
-     */
-    private SXSSFWorkbook buildExcelSheet(final FacesContext facesContext, String finalQuery, String exportQuery, int proximitySearchDistance,
-            Locale locale) throws InterruptedException, ViewerConfigurationException {
-        try {
-            String termQuery = null;
-            if (searchTerms != null) {
-                termQuery = SearchHelper.buildTermQuery(searchTerms.get(SearchHelper.TITLE_TERMS));
-            }
-            Map<String, String> params = SearchHelper.generateQueryParams(termQuery);
-            SXSSFWorkbook wb = new SXSSFWorkbook(25); //NOSONAR try-with-resources in the calling method
-            SearchHelper.exportSearchAsExcel(wb, finalQuery, exportQuery, currentSearch.getAllSortFields(), facets.generateFacetFilterQueries(true),
-                    params, searchTerms, locale, proximitySearchDistance);
-            if (Thread.interrupted()) {
-                throw new InterruptedException();
-            }
-            facesContext.getExternalContext().responseReset();
-            facesContext.getExternalContext().setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            facesContext.getExternalContext()
-                    .setResponseHeader("Content-Disposition", "attachment;filename=\"viewer_search_"
-                            + LocalDateTime.now().format(DateTools.FORMATTERFILENAME)
-                            + ".xlsx\"");
-            return wb;
-        } catch (IndexUnreachableException | DAOException | PresentationException e) {
-            logger.error(e.getMessage(), e);
-        }
-
-        return null;
     }
 
     /**
@@ -3176,7 +3051,9 @@ public class SearchBean implements SearchInterface, Serializable {
     /** {@inheritDoc} */
     @Override
     public boolean isExplicitSearchPerformed() {
-        return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
+        // getExactSearchString() may return null; guard before replace() to avoid a NullPointerException (java:S2259)
+        String exactSearchString = getExactSearchString();
+        return exactSearchString != null && StringUtils.isNotBlank(exactSearchString.replace("-", ""));
     }
 
     /**
@@ -3283,6 +3160,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should populate CALENDAR_DAY query item when both dates are supplied
      * @should preserve freshly typed search term when called with dates from the calendar TocView
      * @should set advancedSearchOrigin with pi label and docstrct from active document
+     * @should not set advancedSearchOrigin when pi is blank
      */
     public String searchInRecord(String piField, String piValue, String date1, String date2) {
         logger.debug("searchInRecord: piField={}, piValue={}, date1={}, date2={}", piField, piValue, date1, date2);
@@ -3334,9 +3212,11 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("Searching for: {}", this.advancedSearchQueryGroup.getQueryItems().get(1).getValue());
 
         String outcome = this.searchAdvanced();
-        // Set advancedSearchOrigin AFTER searchAdvanced() because it calls resetSearchParameters() which would null it
+        // Set advancedSearchOrigin AFTER searchAdvanced() because it calls resetSearchParameters() which would null it.
+        // Require a non-blank pi so we never record an origin that has no resolvable back-link target (a blank pi
+        // would otherwise produce an origin whose getOriginUrl() throws during rendering).
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-        if (adb != null && adb.getViewManager() != null) {
+        if (adb != null && adb.getViewManager() != null && StringUtils.isNotBlank(piValue)) {
             this.advancedSearchOrigin = new AdvancedSearchOrigin(
                     piValue,
                     adb.getViewManager().getTopStructElement().getLabel(),

@@ -17,7 +17,8 @@
  * program. If not, see <http://www.gnu.org/licenses/>.
  *
  * Allows filtering a list of text entries with the content of an input element. Takes the selector of the input and one pointing to all
- * elements to filter. If the input element is not empty, hide all list elements which don't start with the input element value
+ * elements to filter. If the input element is not empty, hide all list elements which don't start with the input element value.
+ * With config.persistent the filter only reacts to its dedicated toggle button.
  *
  * @version 3.4.0
  * @module viewerJS.listFilter
@@ -38,6 +39,7 @@ var viewerJS = (function (viewer) {
 
         this.config = config;
         this.enable();
+        this.syncExpandedState();
 
         // toggle filter input
 
@@ -51,6 +53,7 @@ var viewerJS = (function (viewer) {
             }
 
             $input.toggleClass('in').focus();
+            this.syncExpandedState();
 
             if ($input.val() !== '') {
                 $input.val('').trigger('input');
@@ -58,7 +61,10 @@ var viewerJS = (function (viewer) {
         });
 
         this.config.header.on('click', (event) => {
-            console.log('clicked on heading');
+            if (this.config.persistent) {
+                return;
+            }
+
             event.stopImmediatePropagation();
 
             var $input = this.config.input;
@@ -66,6 +72,7 @@ var viewerJS = (function (viewer) {
             this.resetFilters();
 
             $input.toggleClass('in').focus();
+            this.syncExpandedState();
 
             if ($input.val() !== '') {
                 $input.val('').trigger('input');
@@ -80,6 +87,9 @@ var viewerJS = (function (viewer) {
 
         // reset filter on body click
         $('body').on('click', (event) => {
+            if (this.config.persistent) {
+                return;
+            }
             if ($('.widget-search-facets__filter-input').hasClass('in')) {
                 if (event.target.id == 'searchListFacetsWrapper' || $(event.target).closest('#searchListFacetsWrapper').length) {
                     return;
@@ -101,6 +111,17 @@ var viewerJS = (function (viewer) {
         if (this.config.input.hasClass('in')) {
             this.config.input.removeClass('in').val('').trigger('input');
             this.config.elements.show();
+            this.syncExpandedState();
+        }
+    };
+
+    /**
+     * @description Mirrors the open state of the filter input onto the toggle button for assistive technologies.
+     * @method syncExpandedState
+     * */
+    viewer.listFilter.prototype.syncExpandedState = function () {
+        if (this.config.inputToggle && this.config.inputToggle.length) {
+            this.config.inputToggle.attr('aria-expanded', String(this.config.input.hasClass('in')));
         }
     };
 
@@ -122,6 +143,7 @@ var viewerJS = (function (viewer) {
     // filter results
     viewer.listFilter.prototype.filter = function (event) {
         let value = $(this.config.input).val().trim().toLowerCase();
+        let visibleCount = 0;
 
         if (value) {
             if (_debug) {
@@ -134,6 +156,7 @@ var viewerJS = (function (viewer) {
 
                 if (elementText.includes(value)) {
                     $element.show();
+                    visibleCount++;
                 } else {
                     $element.hide();
                 }
@@ -141,6 +164,25 @@ var viewerJS = (function (viewer) {
         } else {
             $(this.config.elements).show();
         }
+
+        this.updateStatus(value ? visibleCount : null);
+    };
+
+    /**
+     * @description Announces the number of visible entries via the status element inside the wrapper; cleared when no filter is active.
+     * @method updateStatus
+     * */
+    viewer.listFilter.prototype.updateStatus = function (visibleCount) {
+        var $status = $(this.config.wrapper).find('[data-filter-status]');
+        if (!$status.length) {
+            return;
+        }
+        if (visibleCount === null) {
+            $status.text('');
+            return;
+        }
+        var label = $status.attr('data-filter-status-label') || '{0}';
+        $status.text(label.replace('{0}', visibleCount));
     };
 
     // unfilter elements
@@ -165,7 +207,6 @@ var viewerJS = (function (viewer) {
     return viewer;
 })(viewerJS || {}, jQuery);
 
-// CommonJS export for Jest. No-op in the browser where `module` is undefined.
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = viewerJS;
 }

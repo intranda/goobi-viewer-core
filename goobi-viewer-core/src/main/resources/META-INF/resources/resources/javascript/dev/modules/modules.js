@@ -2459,7 +2459,7 @@
 
     /**
      * Adds the drag handle that resizes the left panels: one shared
-     * --immersive-panel-width custom property, persisted in localStorage.
+     * --immersive-panel-width custom property, persisted in sessionStorage.
      */
     function setupPanelResize(immersiveRoot) {
         const immersiveViewer = immersiveRoot && immersiveRoot.querySelector('.immersive__viewer');
@@ -2473,7 +2473,7 @@
         const applyWidth = (px) => immersiveViewer.style.setProperty('--immersive-panel-width', Math.round(px) + 'px');
         let stored = NaN;
         try {
-            stored = parseInt(localStorage.getItem(WIDTH_KEY), 10);
+            stored = parseInt(sessionStorage.getItem(WIDTH_KEY), 10);
         } catch {}
         if (Number.isFinite(stored)) applyWidth(clamp(stored));
 
@@ -2494,7 +2494,7 @@
                 handle.removeEventListener('pointerup', onUp);
                 immersiveRoot.classList.remove('-resizing');
                 try {
-                    localStorage.setItem(WIDTH_KEY, String(Math.round(widthAt(ev))));
+                    sessionStorage.setItem(WIDTH_KEY, String(Math.round(widthAt(ev))));
                 } catch {}
             };
             handle.addEventListener('pointermove', onMove);

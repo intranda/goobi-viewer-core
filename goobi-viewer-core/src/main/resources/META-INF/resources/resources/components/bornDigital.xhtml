@@ -29,8 +29,7 @@
             </ui:fragment>
 
             <!-- ACCESS GRANTED -->
-            <ui:fragment
-                rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital or activeDocumentBean.viewManager.accessPermissionExternalResources}">
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionBornDigital or activeDocumentBean.viewManager.accessPermissionExternalResources}">
                 <div class="born-digital__box">
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.hasDownloadResources}">
                         <div class="born-digital__head-wrapper">
@@ -100,7 +99,7 @@
                         </div>
                     </ui:fragment>
 
-                    <ui:fragment rendered="#{activeDocumentBean.viewManager.hasExternalResources}">
+                    <ui:fragment rendered="#{activeDocumentBean.viewManager.hasExternalResources and activeDocumentBean.viewManager.accessPermissionExternalResources}">
                         <div class="download-external-resource__wrapper">
                             <div class="download-external-resource__heading">#{msg.bornDigital_external_resources}</div>
                             <ui:include src="/resources/includes/metadata/externalResourceDownload.xhtml" />

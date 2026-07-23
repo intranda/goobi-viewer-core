@@ -77,11 +77,10 @@ if [[ -n "${THEME_DIR-}" ]]; then
 fi
 
 # Generate directory structure in case the viewer directory is bind mounted
-mkdir -p /opt/digiverso/{config/bin,indexer,logs,viewer/{abbyy,cmdi,deleted_mets,hotfolder,media,orig_lido,orig_denkxweb,success,ugc,alto,cms_media,error_mets,indexed_lido,mix,pdf,tei,updated_mets,cache,config,fulltext,indexed_mets,oai/token,ptif,themes,wc,bin}}
+mkdir -p /opt/digiverso/{logs,viewer/{abbyy,cmdi,deleted_mets,hotfolder,media,orig_lido,orig_denkxweb,success,ugc,alto,cms_media,error_mets,indexed_lido,mix,pdf,tei,updated_mets,cache,config,fulltext,indexed_mets,oai/token,ptif,themes,wc,bin}}
 
 echo "Setting database configuration from environment..."
 envsubst "\$DB_HOST \$DB_PORT \$DB_NAME \$DB_USER \$DB_PASSWORD" <"${CATALINA_HOME}/conf/viewer.xml.template" > "${CATALINA_HOME}/conf/Catalina/localhost/${WEBAPP_NAME}.xml"
-envsubst "\$VIEWER_DOMAIN" <"${CATALINA_HOME}/conf/server.xml.template" >"${CATALINA_HOME}/conf/server.xml"
 envsubst "\$TOMCAT_SAMESITECOOKIES" </tmp/context.xml.template >"${CATALINA_HOME}/conf/context.xml"
 
 if ! [[ -v SOLR_URL ]]; then

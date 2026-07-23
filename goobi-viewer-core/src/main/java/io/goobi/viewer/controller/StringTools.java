@@ -858,7 +858,9 @@ public final class StringTools {
 
         // Collapse separators left behind by an empty placeholder (case: blank logId)
         filename = filename.replaceAll("[_-]{2,}", "_"); // duplicate separators -> single
-        filename = filename.replaceAll("[_-]+\\.", ".");  // trailing separator before extension
+        // Possessive quantifier [_-]++ avoids super-linear backtracking on long separator runs without a dot (java:S8786);
+        // semantically identical because '.' is not in the [_-] class, so no backtracking is ever needed here.
+        filename = filename.replaceAll("[_-]++\\.", ".");  // trailing separator before extension
         filename = filename.replaceAll("^[_-]+", "");      // leading separator
 
         return filename;

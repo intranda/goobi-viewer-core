@@ -31,7 +31,7 @@
 	</repositories>
 
 	<properties>
-		<revision>26.06</revision>
+		<revision>26.07</revision>
 		<changelist>-SNAPSHOT</changelist>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<failOnSnapshot>false</failOnSnapshot>
@@ -53,7 +53,7 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Shared dependency versions (later of the previous drifts preferred) -->
-		<checkstyle.version>13.7.0</checkstyle.version>
+		<checkstyle.version>13.8.0</checkstyle.version>
 		<commons-configuration2.version>2.15.1</commons-configuration2.version>
 		<commons-io.version>2.22.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
@@ -67,7 +67,7 @@
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20260522</json.version>
-		<junit.version>6.1.1</junit.version>
+		<junit.version>6.1.2</junit.version>
 		<log4j.version>2.26.1</log4j.version>
 		<!--netty.version>4.1.132.Final</netty.version-->
 		<solr.version>9.10.1</solr.version>

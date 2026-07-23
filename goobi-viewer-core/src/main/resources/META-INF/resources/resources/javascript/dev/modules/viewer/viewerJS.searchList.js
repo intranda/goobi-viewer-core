@@ -38,10 +38,10 @@ var viewerJS = (function (viewer) {
         searchTriggerSelector: '#slCurrentSearchTrigger',
         saveSearchModalSelector: '#saveSearchModal',
         saveSearchInputSelector: '#saveSearchInput',
-        excelExportSelector: '.excel-export-trigger',
-        excelExportLoaderSelector: '.excel-export-loader',
-        risExportSelector: '.ris-export-trigger',
-        risExportLoaderSelector: '.ris-export-loader',
+        exportDownloadSelector: '.search-list__export-dropdown-link',
+        exportWrapperSelector: '.search-list__export-dropdown-wrapper',
+        exportLoaderSelector: '.search-list__export-loader',
+        exportToggleSelector: '.search-list__export-dropdown-toggle',
         hitContentLoaderSelector: '.search-list__loader',
         hitContentSelector: '.search-list__hit-content',
         listStyle: '',
@@ -49,6 +49,25 @@ var viewerJS = (function (viewer) {
             getMoreChildren: 'Mehr Treffer laden',
         },
     };
+
+    /**
+     * Triggers a browser download of the given blob under the given file name.
+     *
+     * @param {Blob} blob the file content to save
+     * @param {string} filename the download file name
+     */
+    function _saveBlob(blob, filename) {
+        var objectUrl = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = objectUrl;
+        a.download = filename || 'search_export';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () {
+            URL.revokeObjectURL(objectUrl);
+        }, 1000);
+    }
 
     viewer.searchList = {
         /**
@@ -182,57 +201,49 @@ var viewerJS = (function (viewer) {
                 location.href = _defaults.contextPath + '/search/';
             });
 
-            // show/hide loader for excel export
-            $(_defaults.excelExportSelector).on('click', function () {
-                var trigger = $(this);
-                var excelLoader = $(_defaults.excelExportLoaderSelector);
+            // Search hit export downloads (excel/csv/ris/endnote/bibtex): show a spinner while the file is
+            // generated, then trigger the download. Access-denied (403) and timeout (503) responses are
+            // surfaced as messages instead of navigating the page away. Delegated so it also covers hits
+            // rendered after init. Falls back to following the link if fetch is unavailable.
+            $(document).on('click', _defaults.exportDownloadSelector, function (event) {
+                if (typeof window.fetch !== 'function') {
+                    return;
+                }
+                event.preventDefault();
 
-                trigger.hide();
-                excelLoader.show();
+                var link = this;
+                var $wrapper = $(link).closest(_defaults.exportWrapperSelector);
+                var $loader = $wrapper.find(_defaults.exportLoaderSelector);
+                var $toggle = $wrapper.find(_defaults.exportToggleSelector);
+                var messages = $wrapper.data();
 
-                var url = _defaults.contextPath + '/api/v1/tasks/';
-                let downloadFinished = false;
-                rxjs.interval(1000)
-                    .pipe(
-                        rxjs.operators.flatMap(() => fetch(url)),
-                        rxjs.operators.flatMap((response) => response.json()),
-                        rxjs.operators.takeWhile((json) => {
-                            let waiting = json.some((job) => job.status != 'COMPLETE' && job.status != 'ERROR');
-                            return waiting;
-                        }),
-                        rxjs.operators.last()
-                    )
-                    .subscribe((jobs) => {
-                        //console.log("all jobs finished ", jobs.map(j => j.status));
-                        excelLoader.hide();
-                        trigger.show();
-                    });
-            });
+                $toggle.addClass('d-none');
+                $loader.removeClass('d-none');
 
-            // show/hide loader for RIS export
-            $(_defaults.risExportSelector).on('click', function () {
-                var trigger = $(this);
-                var risLoader = $(_defaults.risExportLoaderSelector);
-
-                trigger.hide();
-                risLoader.show();
-
-                var url = _defaults.contextPath + '/api/v1/tasks/';
-                let downloadFinished = false;
-                rxjs.interval(1000)
-                    .pipe(
-                        rxjs.operators.flatMap(() => fetch(url)),
-                        rxjs.operators.flatMap((response) => response.json()),
-                        rxjs.operators.takeWhile((json) => {
-                            let waiting = json.some((job) => job.status != 'COMPLETE' && job.status != 'ERROR');
-                            return waiting;
-                        }),
-                        rxjs.operators.last()
-                    )
-                    .subscribe((jobs) => {
-                        //console.log("all jobs finished ", jobs.map(j => j.status));
-                        risLoader.hide();
-                        trigger.show();
+                fetch(link.href, { credentials: 'same-origin' })
+                    .then(function (response) {
+                        if (response.ok) {
+                            var disposition = response.headers.get('Content-Disposition') || '';
+                            var match = /filename="?([^";]+)"?/.exec(disposition);
+                            var filename = match ? match[1] : 'search_export';
+                            return response.blob().then(function (blob) {
+                                _saveBlob(blob, filename);
+                            });
+                        }
+                        if (response.status === 403) {
+                            throw messages.msgDenied;
+                        }
+                        if (response.status === 503) {
+                            throw messages.msgTimeout;
+                        }
+                        throw messages.msgError;
+                    })
+                    .catch(function (err) {
+                        window.alert(typeof err === 'string' && err ? err : messages.msgError || 'Export failed');
+                    })
+                    .then(function () {
+                        $loader.addClass('d-none');
+                        $toggle.removeClass('d-none');
                     });
             });
 
@@ -317,23 +328,15 @@ var viewerJS = (function (viewer) {
                     }
                 }
                 _searchListStyle = sessionStorage.getItem('searchListStyle');
-            } else if (
-                typeof cmsSearchCustomView !== 'undefined' &&
-                sessionStorage.getItem(cmsSearchViewlistStyleID) !== null
-            ) {
+            } else if (typeof cmsSearchCustomView !== 'undefined' && sessionStorage.getItem(cmsSearchViewlistStyleID) !== null) {
                 _searchListStyle = sessionStorage.getItem(cmsSearchViewlistStyleID);
                 if (_debug) {
-                    console.log(
-                        'view for THIS special search page (based on page id): ' +
-                            sessionStorage.getItem(cmsSearchViewlistStyleID)
-                    );
+                    console.log('view for THIS special search page (based on page id): ' + sessionStorage.getItem(cmsSearchViewlistStyleID));
                 }
             } else {
                 _searchListStyle = _defaults.listStyle;
                 if (_debug) {
-                    console.log(
-                        'default value used (can be based on CMS comp), nothing else defined: ' + _defaults.listStyle
-                    );
+                    console.log('default value used (can be based on CMS comp), nothing else defined: ' + _defaults.listStyle);
                 }
             }
 
@@ -412,22 +415,12 @@ var viewerJS = (function (viewer) {
             const activeTitle = $thumbToggle.attr('data-title-active');
             const inactiveTitle = $thumbToggle.attr('data-title-inactive');
             if (show) {
-                $thumbToggle
-                    .addClass('-active')
-                    .attr('title', activeTitle)
-                    .attr('aria-checked', true)
-                    .off('mouseleave.tooltip')
-                    .off('mouseenter.tooltip');
+                $thumbToggle.addClass('-active').attr('title', activeTitle).attr('aria-checked', true).off('mouseleave.tooltip').off('mouseenter.tooltip');
                 $('.search-list__subhit-thumbnail').show();
                 $('[data-toggle="tooltip"]').tooltip('dispose');
                 viewerJS.helper.initBsFeatures();
             } else {
-                $thumbToggle
-                    .removeClass('-active')
-                    .attr('title', inactiveTitle)
-                    .attr('aria-checked', false)
-                    .off('mouseleave.tooltip')
-                    .off('mouseenter.tooltip');
+                $thumbToggle.removeClass('-active').attr('title', inactiveTitle).attr('aria-checked', false).off('mouseleave.tooltip').off('mouseenter.tooltip');
                 $('.search-list__subhit-thumbnail').hide();
                 $('[data-toggle="tooltip"]').tooltip('dispose');
                 viewerJS.helper.initBsFeatures();
@@ -448,14 +441,7 @@ var viewerJS = (function (viewer) {
             let toggleArea = document.querySelector("div[data-toggle-id='" + button.dataset.toggleId + "']");
             let hitsPopulated = toggleArea.querySelector('[data-hits-populated]').dataset.hitsPopulated;
             if (_debug) {
-                console.log(
-                    'clicked hit-content',
-                    button,
-                    scriptName,
-                    toggleArea,
-                    hitsDisplayed,
-                    _defaults.childHitsToLoadOnExpand
-                );
+                console.log('clicked hit-content', button, scriptName, toggleArea, hitsDisplayed, _defaults.childHitsToLoadOnExpand);
             }
 
             $currBtn.toggleClass('in');

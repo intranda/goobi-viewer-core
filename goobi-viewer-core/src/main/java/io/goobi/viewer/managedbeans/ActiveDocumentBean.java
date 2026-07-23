@@ -952,6 +952,7 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @param imageToShow Single page number (1) or range (2-3)
      * @throws IllegalUrlParameterException
+     * @should not throw when viewManager is null
      */
     public void setImageToShow(String imageToShow) throws IllegalUrlParameterException {
         synchronized (lock) {
@@ -962,8 +963,13 @@ public class ActiveDocumentBean implements Serializable {
                 //                this.imageToShow = "1";
                 throw new IllegalUrlParameterException("Illegal page number(s): " + imageToShow);
             }
-            if (viewManager != null) {
-                viewManager.setDropdownSelected(String.valueOf(this.imageToShow));
+            // Capture the volatile viewManager once to avoid a TOCTOU race: setImageToShow locks on
+            // 'lock' while reset() locks on 'this' and nulls viewManager, so a concurrent reset()
+            // (e.g. simultaneous requests in the same @SessionScoped bean) could null the field
+            // between the null check and the dereference, causing an NPE at setDropdownSelected.
+            ViewManager localViewManager = this.viewManager;
+            if (localViewManager != null) {
+                localViewManager.setDropdownSelected(String.valueOf(this.imageToShow));
             }
             // Reset LOGID (the LOGID setter is called later by PrettyFaces, so if a value is passed, it will still be set)
             try {
@@ -1685,6 +1691,45 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
+     * Checks whether the currently loaded record is access-restricted, i.e. carries at least one access condition other than open access.
+     * <p>
+     * Added so that the logout redirect (see {@link UserBean#logout()}) can send the user to the start page instead of back to a restricted
+     * record URL that would be unavailable to the now anonymous session and would otherwise trigger a misleading "record not found" error page.
+     *
+     * @return true if a record is loaded and it has a restricting access condition; false otherwise
+     * @should return false when no record is loaded
+     * @should return false when record is open access
+     * @should return true when record has restricted access condition
+     */
+    public boolean isCurrentRecordAccessRestricted() {
+        StructElement top = getTopDocument();
+        if (top == null) {
+            return false;
+        }
+
+        return isAccessRestricted(top.getMetadataValues(SolrConstants.ACCESSCONDITION));
+    }
+
+    /**
+     * Determines whether the given list of access conditions restricts access, i.e. contains at least one value other than the open-access marker.
+     * <p>
+     * Extracted as a static helper so the restriction semantics can be unit-tested without a loaded ViewManager/Solr backend.
+     *
+     * @param accessConditions list of ACCESSCONDITION values of a record; may be null or empty
+     * @return true if at least one non-open-access condition is present; false if null, empty or only open access
+     * @should return false when list is null or empty
+     * @should return false when list contains only open access
+     * @should return true when list contains a non open access condition
+     */
+    static boolean isAccessRestricted(List<String> accessConditions) {
+        if (accessConditions == null || accessConditions.isEmpty()) {
+            return false;
+        }
+
+        return accessConditions.stream().anyMatch(ac -> !SolrConstants.OPEN_ACCESS_VALUE.equals(ac));
+    }
+
+    /**
      * setChildrenVisible.
      *
      * @param element TOC element whose children to make visible
@@ -2077,7 +2122,9 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public boolean hasAnchor() throws IndexUnreachableException {
-        return getTopDocument().isAnchorChild();
+        // getTopDocument() returns null when no record is loaded (viewManager null); guard to avoid a NullPointerException (java:S2259)
+        StructElement topDocument = getTopDocument();
+        return topDocument != null && topDocument.isAnchorChild();
     }
 
     /**
@@ -2748,13 +2795,14 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * resets the access rights for user comments and pdf download stored in {@link io.goobi.viewer.model.viewer.ViewManager}. After reset, the access
-     * rights will be evaluated again on being called
+     * resets the access rights for user comments, pdf download and record images stored in {@link io.goobi.viewer.model.viewer.ViewManager}. After
+     * reset, the access rights will be evaluated again on being called
      */
     public void resetAccess() {
         if (getViewManager() != null) {
             getViewManager().resetAccessPermissionPdf();
             getViewManager().resetAllowUserComments();
+            getViewManager().resetRecordViewImagesAccess();
         }
     }
 
@@ -3016,7 +3064,9 @@ public class ActiveDocumentBean implements Serializable {
         try {
             // Adapt URL page range when switching between single and double page modes
             if (viewManager.isDoublePageMode() != doublePageMode) {
-                if (doublePageMode && !viewManager.getCurrentPage().isDoubleImage()) {
+                // getCurrentPage() may return null (no page for the current order); guard to avoid a NullPointerException (java:S2259)
+                PhysicalElement currentPage = viewManager.getCurrentPage();
+                if (doublePageMode && currentPage != null && !currentPage.isDoubleImage()) {
                     Optional<PhysicalElement> currentLeftPage = viewManager.getCurrentLeftPage();
                     Optional<PhysicalElement> currentRightPage = viewManager.getCurrentRightPage();
                     if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {

@@ -1010,6 +1010,20 @@ public class Configuration extends AbstractConfiguration {
                 .orElse(new HashMap<>());
     }
 
+    public String getGeomapFeatureFeatureSearchFilter(String option) {
+        if (StringUtils.isBlank(option)) {
+            return "";
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+
+        return options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .findAny()
+                .map(config -> config.getString("marker[@searchFilterField]", ""))
+                .orElse("");
+    }
+
     public Map<String, Metadata> getGeomapItemConfigurations(String option) {
         if (StringUtils.isBlank(option)) {
             return Collections.emptyMap();
@@ -1066,6 +1080,10 @@ public class Configuration extends AbstractConfiguration {
 
     public List<GeomapItemFilter> getGeomapFilters() {
         HierarchicalConfiguration<ImmutableNode> filtersConfig = this.getLocalConfigurationAt("maps.filters");
+        // getLocalConfigurationAt returns null when "maps.filters" is not configured; guard to avoid a NullPointerException (java:S2259)
+        if (filtersConfig == null) {
+            return new ArrayList<>();
+        }
         List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = filtersConfig.configurationsAt("filter");
 
         List<GeomapItemFilter> filters = new ArrayList<>();
@@ -3704,6 +3722,18 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     *
+     * @return the configured display style for the search facets sidebar; either "widgets" (default) or "combined"
+     * @should return correct value
+     * @should return widgets if value empty
+     * @should return widgets if value invalid
+     */
+    public String getFacetsStyle() {
+        String style = getLocalString("search.facets[@style]", "widgets");
+        return "combined".equals(style) ? "combined" : "widgets";
+    }
+
+    /**
      * getGeoFacetFields.
      *
      * @return a list of configured geo-type facet field names
@@ -4238,6 +4268,15 @@ public class Configuration extends AbstractConfiguration {
      */
     public boolean isPagePdfEnabled() {
         return getLocalBoolean("pdf.pagePdfEnabled", false);
+    }
+
+    /**
+     * Allow single page PDF downloads to use prerendered page PDFs
+     * 
+     * @return true if prerendered PDFs may be used for single page PDF download. If false, the PDF is always generated from the image file
+     */
+    public boolean isUsePdfSourceForPagePdfs() {
+        return getLocalBoolean("pdf.pagePdfEnabled[@usePdfSource]", true);
     }
 
     /**
@@ -5366,8 +5405,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * Builds the quick filter fields from the facet template named by {@link #getQuickFilterTemplateName()}. Range facet fields become date-range
-     * widgets; regular (untyped) facet fields become dropdowns. Hierarchical, geo and boolean facet fields are not supported as quick filters and
-     * are skipped.
+     * widgets; regular (untyped) facet fields become dropdowns. Hierarchical, geo and boolean facet fields are not supported as quick filters and are
+     * skipped.
      *
      * @return ordered list of quick filter fields
      */
@@ -5621,10 +5660,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns all XSLT-based export format definitions configured under {@code <search><export><format>} in {@code config_viewer.xml}.
+     * Returns all export format definitions configured under {@code <export><format>} in {@code config_viewer.xml}. Both XSLT-based formats (with an
+     * {@code xslt} attribute) and Java field-mapped formats (with {@code <field>} children, e.g. excel/csv) are returned.
      *
      * @return list of configured export formats (may be empty, never null)
      * @should return all configured formats
+     * @should read field columns for java based formats
      */
     public List<ExportFormat> getSearchExportFormats() {
         List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt("search.export.format");
@@ -5634,9 +5675,28 @@ public class Configuration extends AbstractConfiguration {
             if (StringUtils.isNotBlank(name)) {
                 boolean enabled = node.getBoolean("[@enabled]", false);
                 String xslt = node.getString("[@xslt]", "");
-                String contentType = node.getString("[@contentType]", "text/plain");
-                String fileExtension = node.getString("[@fileExtension]", "txt");
-                ret.add(new ExportFormat(name, enabled, xslt, contentType, fileExtension));
+                String contentType = node.getString("[@contentType]", "");
+                String fileExtension = node.getString("[@fileExtension]", "");
+                ret.add(new ExportFormat(name, enabled, xslt, contentType, fileExtension, parseExportFields(node)));
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Reads the {@code <field>} child elements of a single {@code <format>} node into a list of {@link ExportFieldConfiguration}s.
+     *
+     * @param node the {@code <format>} configuration node
+     * @return the configured field columns (may be empty, never null)
+     */
+    private static List<ExportFieldConfiguration> parseExportFields(HierarchicalConfiguration<ImmutableNode> node) {
+        List<HierarchicalConfiguration<ImmutableNode>> fieldNodes = node.configurationsAt("field");
+        List<ExportFieldConfiguration> ret = new ArrayList<>(fieldNodes.size());
+        for (HierarchicalConfiguration<ImmutableNode> fieldNode : fieldNodes) {
+            String field = fieldNode.getString(".", "");
+            if (StringUtils.isNotBlank(field)) {
+                String label = fieldNode.getString(XML_PATH_ATTRIBUTE_LABEL);
+                ret.add(new ExportFieldConfiguration(field).setLabel(label));
             }
         }
         return ret;
@@ -5665,7 +5725,7 @@ public class Configuration extends AbstractConfiguration {
      * @return true if Excel export of search results is enabled, false otherwise
      */
     public boolean isSearchExcelExportEnabled() {
-        return getLocalBoolean("search.export.excel[@enabled]", false);
+        return getSearchExportFormat("excel").isPresent();
     }
 
     /**
@@ -5675,39 +5735,56 @@ public class Configuration extends AbstractConfiguration {
      * @return a list of configured export field definitions for the Excel search export
      */
     public List<ExportFieldConfiguration> getSearchExcelExportFields() {
-        return getExportConfigurations("search.export.excel.field");
+        return getExportFormatFields("excel");
     }
 
     /**
+     * isSearchCsvExportEnabled.
      *
-     * @param path XPath expression for the config elements
-     * @return the list of configured export field configurations at the given path
+     * @should return correct value
+     * @return true if CSV export of search results is enabled, false otherwise
      */
-    List<ExportFieldConfiguration> getExportConfigurations(String path) {
-        if (path == null) {
-            return new ArrayList<>();
-        }
-
-        List<HierarchicalConfiguration<ImmutableNode>> nodes = getLocalConfigurationsAt(path);
-        List<ExportFieldConfiguration> ret = new ArrayList<>(nodes.size());
-        for (HierarchicalConfiguration<ImmutableNode> node : nodes) {
-            String field = node.getString(".", "");
-            if (StringUtils.isNotBlank(field)) {
-                String label = node.getString(XML_PATH_ATTRIBUTE_LABEL);
-                ret.add(new ExportFieldConfiguration(field).setLabel(label));
-            }
-        }
-
-        return ret;
+    public boolean isSearchCsvExportEnabled() {
+        return getSearchExportFormat("csv").isPresent();
     }
 
     /**
-     * getExcelDownloadTimeout.
+     * getSearchCsvExportFields.
      *
-     * @return a int.
+     * @should return all values
+     * @return a list of configured export field definitions for the CSV search export
      */
-    public int getExcelDownloadTimeout() {
-        return getLocalInt("search.export.excel.timeout", 120);
+    public List<ExportFieldConfiguration> getSearchCsvExportFields() {
+        return getExportFormatFields("csv");
+    }
+
+    /**
+     * Returns the configured field columns of the Java field-mapped export format with the given name, regardless of whether it is enabled.
+     *
+     * @param name the format name (e.g. "excel", "csv")
+     * @return the configured field columns (may be empty, never null)
+     */
+    private List<ExportFieldConfiguration> getExportFormatFields(String name) {
+        return getSearchExportFormats().stream()
+                .filter(f -> name.equals(f.getName()))
+                .findFirst()
+                .map(ExportFormat::getFields)
+                .orElseGet(ArrayList::new);
+    }
+
+    /**
+     * Timeout in seconds for generating a search result export before it is aborted. Read from the {@code timeout} attribute of the
+     * {@code <search><export>} element and applied to every export format (Excel, CSV and XSLT-based formats such as RIS).
+     *
+     * <p>The setting previously lived at {@code <export><excel><timeout>}, but the dedicated {@code <excel>} element was replaced by
+     * {@code <format name="excel">} during the export config normalization; the timeout therefore moved to the shared {@code <export>}
+     * element so it keeps working and now governs all formats, not just Excel.
+     *
+     * @return the configured export timeout in seconds; 120 if not set
+     * @should return correct value
+     */
+    public int getSearchExportTimeout() {
+        return getLocalInt("search.export[@timeout]", 120);
     }
 
     /**

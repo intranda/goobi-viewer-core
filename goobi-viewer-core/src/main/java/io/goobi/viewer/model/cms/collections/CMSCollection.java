@@ -47,6 +47,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.CmsMediaBean;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.CategorizableTranslatedSelectable;
@@ -465,7 +466,12 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * populateLabels.
      */
     public void populateLabels() {
-        List<String> languages = BeanUtils.getNavigationHelper().getSupportedLanguages();
+        // getNavigationHelper() returns null outside a FacesContext; guard to avoid a NullPointerException (java:S2259)
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        if (navigationHelper == null) {
+            return;
+        }
+        List<String> languages = navigationHelper.getSupportedLanguages();
         for (String language : languages) {
             if (getLabels().stream().noneMatch(label -> label.getLanguage().equalsIgnoreCase(language))) {
                 addLabel(new CMSCollectionTranslation(language, ""));
@@ -477,7 +483,11 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      * populateDescriptions.
      */
     public void populateDescriptions() {
-        this.populateDescriptions(BeanUtils.getNavigationHelper().getSupportedLanguages());
+        // getNavigationHelper() returns null outside a FacesContext; guard to avoid a NullPointerException (java:S2259)
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        if (navigationHelper != null) {
+            this.populateDescriptions(navigationHelper.getSupportedLanguages());
+        }
     }
 
     /**

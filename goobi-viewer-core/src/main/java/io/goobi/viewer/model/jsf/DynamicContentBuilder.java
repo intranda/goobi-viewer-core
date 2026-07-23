@@ -44,6 +44,7 @@ import jakarta.faces.application.Application;
 import jakarta.faces.application.Resource;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.component.UIComponentBase;
+import jakarta.faces.component.UIOutput;
 import jakarta.faces.component.UIPanel;
 import jakarta.faces.component.html.HtmlPanelGroup;
 import jakarta.faces.context.FacesContext;
@@ -266,7 +267,10 @@ public class DynamicContentBuilder {
 
             @Override
             public String getFamily() {
-                return null;
+                // This component is added to the tree dynamically (bypassing Facelets parsing),
+                // triggering Mojarra's PostAddToViewEvent component-nesting validation in
+                // development mode, which NPEs if getFamily() returns null.
+                return UIOutput.COMPONENT_FAMILY;
             }
         };
     }

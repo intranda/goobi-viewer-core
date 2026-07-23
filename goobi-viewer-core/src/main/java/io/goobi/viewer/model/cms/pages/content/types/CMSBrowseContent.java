@@ -35,6 +35,7 @@ import io.goobi.viewer.exceptions.RedirectException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.cms.itemfunctionality.BrowseFunctionality;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.pages.content.CMSContent;
 import io.goobi.viewer.model.cms.pages.content.PagedCMSContent;
@@ -112,9 +113,11 @@ public class CMSBrowseContent extends CMSContent implements PagedCMSContent {
             browse.reset();
         }
         //filter for subtheme
-        if (StringUtils.isNotBlank(getOwningPage().getSubTheme())) {
+        // getOwningPage() may return null (owning component not set); guard to avoid a NullPointerException (java:S2259)
+        CMSPage owningPage = getOwningPage();
+        if (owningPage != null && StringUtils.isNotBlank(owningPage.getSubTheme())) {
             browse.setFilter(DataManager.getInstance().getConfiguration().getSubthemeDiscriminatorField(),
-                    getOwningPage().getSubTheme());
+                    owningPage.getSubTheme());
         } else {
             //reset subtheme filter
             browse.setFilter(null, null);

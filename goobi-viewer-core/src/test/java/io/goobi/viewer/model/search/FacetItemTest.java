@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -352,7 +354,6 @@ class FacetItemTest extends AbstractTest {
         Assertions.assertTrue(item.isExcluded());
         Assertions.assertEquals("DC", item.getField());
         Assertions.assertEquals("foo", item.getValue());
-        // getLink() must re-emit the marker so the exclusion round-trips through the facet string/URL
         Assertions.assertEquals(FacetItem.EXCLUDE_PREFIX + "DC:foo", item.getLink());
     }
 
@@ -395,9 +396,8 @@ class FacetItemTest extends AbstractTest {
     void getExcludeUrlEscapedLink_shouldPrependUrlEncodedExclusionMarker() {
         IFacetItem item = new FacetItem("DC:foo", true);
         String excludeLink = item.getExcludeUrlEscapedLink();
-        // The marker '!' is URL-encoded to %21; decoding must yield an excluded FacetItem for "DC:foo"
         Assertions.assertTrue(excludeLink.startsWith("%21"), "expected leading %21 marker but was: " + excludeLink);
-        String decoded = java.net.URLDecoder.decode(excludeLink, java.nio.charset.StandardCharsets.UTF_8);
+        String decoded = URLDecoder.decode(excludeLink, StandardCharsets.UTF_8);
         IFacetItem roundTrip = new FacetItem(decoded, true);
         Assertions.assertTrue(roundTrip.isExcluded());
         Assertions.assertEquals("DC", roundTrip.getField());

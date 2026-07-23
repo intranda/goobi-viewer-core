@@ -120,6 +120,11 @@ public class CoordinateFinder {
 
     private String[] normalizeSearchTerm(String term) {
         String cleaned = StringTools.removeQuotations(term);
+        // removeQuotations() returns null for null input; guard before split to avoid a NullPointerException (java:S2259).
+        // An empty array is treated as an invalid search by isInvalidSearch() further up.
+        if (cleaned == null) {
+            return new String[0];
+        }
         return cleaned.split("\\s+");
     }
 

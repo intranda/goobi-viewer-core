@@ -1,0 +1,481 @@
+/* ==============================================================
+   Widget Combined Facets
+   Style declarations for the "combined" display mode of
+   widget_searchFacets.xhtml (one connected filter container)
+   ==============================================================*/
+
+/* BLOCK */
+.combined-facets {
+    position: relative;
+    padding: 24px;
+    overflow-anchor: none;
+    color: var(--combined-facets-color);
+    background: var(--combined-facets-background);
+    border-radius: var(--combined-facets-radius);
+
+    /* ELEMENTS */
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    &__title {
+        margin: 0;
+        padding: 0;
+        font-size: @fontXLarge;
+        font-weight: 400;
+        color: var(--combined-facets-color);
+    }
+
+    &__reset {
+        display: inline-flex;
+        align-items: center;
+        flex: 0 0 auto;
+        font-size: @fontMedium;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--combined-facets-accent);
+        text-decoration: none;
+
+        .icon-text {
+            gap: 0;
+        }
+
+        &:hover,
+        &:focus {
+            color: var(--combined-facets-accent);
+            text-decoration: none;
+
+            .combined-facets__reset-label {
+                max-width: 200px;
+                margin-inline-start: 4px;
+                opacity: 1;
+            }
+        }
+    }
+
+    &__reset-icon-svg {
+        display: block;
+        width: 16px;
+        height: 16px;
+    }
+
+    &__reset-label {
+        max-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        opacity: 0;
+        transition:
+            max-width 0.2s ease-in-out,
+            opacity 0.15s ease-in-out,
+            margin 0.2s ease-in-out;
+    }
+
+    /* BADGE STRIP */
+    .active-facets-badges {
+        margin-bottom: 16px;
+    }
+
+    .active-facets-badges__list {
+        gap: 5px;
+    }
+
+    .active-facets-badges__badge {
+        --active-facets-badge-background: var(--combined-facets-badge-background);
+        --active-facets-badge-color: var(--combined-facets-badge-color);
+        --active-facets-badge-border: var(--combined-facets-badge-border);
+        --active-facets-badge-muted: var(--combined-facets-badge-muted);
+        --active-facets-badge-radius: var(--combined-facets-radius);
+        --active-facets-badge-contrast: var(--combined-facets-badge-contrast);
+        height: 24px;
+        padding-block: 0;
+        padding-inline: 7px 4px;
+        gap: 4px;
+        font-size: @fontSmall;
+        font-weight: 600;
+
+        &:hover,
+        &:focus {
+            --active-facets-badge-background: var(--combined-facets-badge-background-hover);
+        }
+    }
+
+    .active-facets-badges__badge-remove {
+        width: 16px;
+        height: 16px;
+        color: var(--active-facets-badge-contrast);
+        background: var(--active-facets-badge-color);
+    }
+
+    .active-facets-badges__badge-remove-icon-svg {
+        width: 10px;
+        height: 10px;
+    }
+
+    /* SECTIONS */
+    .widget {
+        margin: 0;
+        padding: 16px 0;
+        background: transparent;
+        border: 0;
+        border-top: 1px solid var(--combined-facets-divider);
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .widget__topbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        align-items: center;
+        min-height: 0;
+        padding: 0;
+        overflow: visible;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    /* SECTION COLLAPSE */
+    .widget-search-facets__section-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        grid-row: 1;
+        grid-column: 3;
+        width: 24px;
+        height: 24px;
+        margin-inline-start: 4px;
+        color: var(--combined-facets-accent);
+    }
+
+    .widget-search-facets__section-toggle-icon-svg {
+        width: 20px;
+        height: 20px;
+        transform: rotate(180deg);
+        transition: transform 0.15s ease-in-out;
+    }
+
+    .widget.-section-collapsed {
+        .widget-search-facets__section-toggle-icon-svg {
+            transform: rotate(0deg);
+        }
+
+        > *:not(.widget__topbar) {
+            display: none;
+        }
+
+        .widget-search-facets__filter input,
+        .widget-search-facets__filter input.in,
+        .widget-search-facets__filter-icon,
+        .widget-search-facets__filter input.in + .widget-search-facets__filter-icon,
+        .widget-search-facets__filter .widget-search-facets__filter-button {
+            display: none;
+        }
+    }
+
+    .widget__title {
+        padding: 0;
+        font-size: @fontNormal;
+        font-weight: 600;
+        color: var(--combined-facets-color);
+    }
+
+    .widget__body {
+        padding: 12px 0 0;
+        background: transparent;
+        border: 0;
+    }
+
+    .widget__description-text {
+        font-size: @fontSmall;
+        color: var(--combined-facets-muted);
+    }
+
+    /* VALUE LISTS (the 400px height cap comes from the widgets-mode base rule) */
+    .widget-search-facets__collection ul {
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: var(--combined-facets-scrollbar) transparent;
+    }
+
+    .widget-search-facets__list {
+        gap: 10px;
+    }
+
+    .widget-search-facets__list-item .widget-search-facets__list-item-link {
+        color: var(--combined-facets-color);
+
+        &:hover,
+        &:focus {
+            color: var(--combined-facets-color);
+        }
+    }
+
+    /* FILTER */
+    .widget-search-facets__filter {
+        display: contents;
+        pointer-events: auto;
+    }
+
+    .widget-search-facets__filter input {
+        display: none;
+        grid-row: 2;
+        grid-column: 1 / -1;
+        position: static;
+        width: 100%;
+        height: 42px;
+        margin-top: 8px;
+        padding: 0 12px;
+        padding-inline-start: 34px;
+        font-size: @fontMedium;
+        color: var(--combined-facets-color);
+        background: var(--combined-facets-box);
+        border: 0;
+        border-radius: var(--combined-facets-radius);
+        cursor: text;
+        user-select: text;
+
+        &::placeholder {
+            color: var(--combined-facets-muted);
+            opacity: 1;
+        }
+
+        &.in {
+            display: block;
+        }
+    }
+
+    .widget-search-facets__filter input.in + .widget-search-facets__filter-icon {
+        display: flex;
+    }
+
+    .widget-search-facets__filter-icon {
+        display: none;
+        grid-row: 2;
+        grid-column: 1;
+        align-self: center;
+        justify-self: start;
+        margin-top: 8px;
+        margin-inline-start: 10px;
+        color: var(--combined-facets-muted);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .widget-search-facets__filter-icon-svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .widget-search-facets__filter .widget-search-facets__filter-button,
+    .widget-search-facets__filter .widget-search-facets__filter-button:hover {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        grid-row: 1;
+        grid-column: 2;
+        position: static;
+        right: auto;
+        width: 24px;
+        height: 24px;
+    }
+
+    /* focus-visible only (no sticky click state); the radius sits in the base state
+       so the closing background fade keeps round corners */
+    .widget-search-facets__filter .widget-search-facets__filter-button {
+        color: var(--combined-facets-muted);
+        border-radius: 4px;
+
+        &:hover,
+        &:focus-visible {
+            color: var(--combined-facets-accent);
+        }
+    }
+
+    .widget-search-facets__filter input.in ~ .widget-search-facets__filter-button,
+    .widget-search-facets__filter input.in ~ .widget-search-facets__filter-button:hover,
+    .widget-search-facets__filter input.in ~ .widget-search-facets__filter-button:focus {
+        color: var(--combined-facets-accent-contrast);
+        background: var(--combined-facets-accent);
+    }
+
+    /* currentColor defeats the theme's generic topbar icon color */
+    .widget-search-facets__filter-button .widget-search-facets__topbar-icon-svg {
+        width: 18px;
+        height: 18px;
+        color: currentColor;
+    }
+
+    /* BOOLEAN FACETS */
+    .widget-search-facets__boolean .widget-search-facets__boolean-button {
+        color: var(--combined-facets-color);
+        background: var(--combined-facets-box);
+        border: 0;
+        border-radius: var(--combined-facets-radius);
+
+        &:hover,
+        &:focus {
+            color: var(--combined-facets-color);
+            background: var(--combined-facets-box);
+            box-shadow: inset 0 0 0 1px var(--combined-facets-muted);
+        }
+
+        &.-active {
+            color: var(--combined-facets-accent-contrast);
+            background: var(--combined-facets-accent);
+        }
+    }
+
+    /* EXPAND/COLLAPSE */
+    .widget-search-facets__collapse {
+        justify-content: flex-start;
+        margin-top: 8px;
+    }
+
+    .widget-search-facets__collapse-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: @fontMedium;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--combined-facets-accent);
+
+        &:hover,
+        &:focus {
+            color: var(--combined-facets-accent);
+            text-decoration: underline;
+        }
+    }
+
+    .widget-search-facets__collapse-chevron {
+        display: none;
+    }
+
+    .widget-search-facets__collapse-alt-icon {
+        display: flex;
+    }
+
+    .widget-search-facets__collapse-alt-icon-svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .widget-search-facets__collapse-label {
+        display: inline;
+    }
+
+    /* currentColor defeats the theme's generic topbar icon color */
+    .widget-chronology-slider__action-reset-button,
+    .widget-geofacetting__actions button {
+        color: var(--combined-facets-muted);
+
+        &:hover,
+        &:focus-visible {
+            color: var(--combined-facets-accent);
+        }
+    }
+
+    /* the theme forces the chronology actions white via [data-reset] — outgun its specificity */
+    .widget-chronology-slider__item.chronology-slider-actions,
+    .widget-chronology-slider__item.chronology-slider-actions [data-reset='chrono-slider'] {
+        color: var(--combined-facets-muted);
+    }
+
+    .widget-chronology-slider__item.chronology-slider-actions [data-reset='chrono-slider']:hover,
+    .widget-chronology-slider__item.chronology-slider-actions [data-reset='chrono-slider']:focus-visible {
+        color: var(--combined-facets-accent);
+    }
+
+    .widget__topbar .widget__topbar-icon-svg {
+        color: currentColor;
+    }
+
+    /* CHRONOLOGY SECTION */
+    /* double class keeps the specificity above the theme's content-box backgrounds */
+    .widget-chronology-slider__item.chronology-slider-start,
+    .widget-chronology-slider__item.chronology-slider-end,
+    .widget-chronology-slider__item.chronology-slider {
+        background-color: transparent;
+    }
+
+    .widget-chronology-slider__item-input {
+        padding: 0.3rem 0;
+        font-size: @fontSmall;
+        color: var(--combined-facets-muted);
+    }
+
+    .widget-chronology-slider {
+        overflow: visible;
+    }
+
+    .widget-chronology-slider__slider {
+        height: 4px;
+        /* keep the overhanging right handle clear of the container edge */
+        margin-inline-end: 5px;
+        border-radius: 4px;
+        background-color: color-mix(in srgb, var(--combined-facets-color) 15%, transparent);
+
+        .ui-slider-range {
+            height: 4px;
+            border-color: var(--combined-facets-accent);
+            background-color: var(--combined-facets-accent);
+        }
+
+        .ui-slider-handle {
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 0;
+            border-radius: 50%;
+            background-color: var(--combined-facets-accent);
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 24px;
+                height: 24px;
+                transform: translate(-50%, -50%);
+            }
+        }
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+    .combined-facets {
+        padding: 16px;
+    }
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+    .combined-facets__reset:hover .combined-facets__reset-label,
+    .combined-facets__reset:focus .combined-facets__reset-label {
+        max-width: 0;
+        margin-inline-start: 0;
+        opacity: 0;
+    }
+
+    .combined-facets .widget-search-facets__collection ul {
+        max-height: min(320px, 45vh);
+    }
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+    .combined-facets {
+        padding: 12px;
+    }
+}

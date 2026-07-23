@@ -545,13 +545,17 @@
         </versioning>
         <!-- Search export settings -->
         <export>
-            <!-- enabled: If true, Excel (.xlsx) export is enabled (default is false). -->
-            <excel enabled="true">
-                <!-- field: Solr fields to put into the export sheet. One element per 
+            <format name="excel" enabled="true">
+                <!-- field: Solr fields to put into the export sheet. One element per
                     field. -->
                 <field>PI</field>
                 <field>LABEL</field>
-            </excel>
+            </format>
+            <format name="csv" enabled="true">
+                <field>PI</field>
+                <field>LABEL</field>
+            </format>
+            <format name="ris" enabled="true" xslt="solr2ris.xsl" contentType="text/plain" fileExtension="ris" />
         </export>
         
         <!-- useFacetsAsExpandQuery/@enabled: If true, currently active facets will be used to build the expand query to produce child hits,

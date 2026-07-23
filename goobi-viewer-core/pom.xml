@@ -87,7 +87,7 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.8.0</alto.version>
-		<ics.version>4.4.3</ics.version>
+		<ics.version>4.4.4</ics.version>
 		<tei-conversion.version>1.4.0</tei-conversion.version>
 		<intranda-content-view.version>0.6.2</intranda-content-view.version>
 		<iiif-api-model.version>3.2.1</iiif-api-model.version>
@@ -354,6 +354,10 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-csv</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>

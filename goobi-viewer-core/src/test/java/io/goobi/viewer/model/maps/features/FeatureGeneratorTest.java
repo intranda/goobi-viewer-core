@@ -29,7 +29,7 @@ class FeatureGeneratorTest {
                         new MetadataParameter(MetadataParameterType.FIELD, "MD_TITLE"),
                         new MetadataParameter(MetadataParameterType.FIELD, "MD_LOCATION")));
 
-        LabelCreator titleGenerator = new LabelCreator(Map.of("_DEFAULT", List.of(metadataConfig)));
+        LabelCreator titleGenerator = new LabelCreator(Map.of("_DEFAULT", List.of(metadataConfig)), "");
         FeatureGenerator generator = new FeatureGenerator(List.of(COORDINATE_FIELD), Collections.emptyList(), titleGenerator, titleGenerator);
 
         SolrDocument mainDoc = new SolrDocument(
@@ -58,8 +58,8 @@ class FeatureGeneratorTest {
         SolrDocument locationDoc2 = new SolrDocument(
                 Map.of("LABEL", "MD_LOCATION", "MD_VALUE", "Kassel", "MD_COORDINATES", "51.311296 9.484915"));
 
-        LabelCreator titleGenerator = new LabelCreator(Map.of("_DEFAULT", List.of(Metadata.forField("MD_TITLE"))));
-        LabelCreator entityTitleGenerator = new LabelCreator(Map.of("_DEFAULT", List.of(Metadata.forField("MD_VALUE"))));
+        LabelCreator titleGenerator = new LabelCreator(Map.of("_DEFAULT", List.of(Metadata.forField("MD_TITLE"))), "");
+        LabelCreator entityTitleGenerator = new LabelCreator(Map.of("_DEFAULT", List.of(Metadata.forField("MD_VALUE"))), "");
         FeatureGenerator generator = new FeatureGenerator(List.of(COORDINATE_FIELD), Collections.emptyList(), titleGenerator, entityTitleGenerator);
 
         MetadataDocument mdDoc = MetadataDocument.fromSolrDocs(mainDoc, Collections.emptyList(), List.of(locationDoc1, locationDoc2));

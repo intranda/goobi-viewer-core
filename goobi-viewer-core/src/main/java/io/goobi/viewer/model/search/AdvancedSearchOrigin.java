@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.translations.IPolyglott;
@@ -80,10 +82,13 @@ public class AdvancedSearchOrigin {
 
     /**
      * @should return true when pi is not null
+     * @should return false when pi is blank
      * @should return false when cms page id is set
      */
     public boolean isRecordOrigin() {
-        return this.pi != null;
+        // Treat a blank pi as invalid: a blank pi cannot build a valid TOC back-link and would
+        // otherwise pass a bare non-null check while producing a broken URL
+        return StringUtils.isNotBlank(this.pi);
     }
 
     /**
@@ -92,6 +97,20 @@ public class AdvancedSearchOrigin {
      */
     public boolean isCmsPageOrigin() {
         return this.cmsPageId != null;
+    }
+
+    /**
+     * Returns whether this origin can produce a back-link URL, i.e. it points to either a record or a CMS page.
+     *
+     * @return true if either a record pi or a cms page id is set; false otherwise
+     * @should return true for record origin
+     * @should return true for cms page origin
+     * @should return false when neither pi nor cms page id is set
+     */
+    public boolean isValid() {
+        // Guards callers/views against an origin that has neither a record nor a CMS page target,
+        // which would make getOriginUrl() throw during rendering
+        return this.isRecordOrigin() || this.isCmsPageOrigin();
     }
 
     /**

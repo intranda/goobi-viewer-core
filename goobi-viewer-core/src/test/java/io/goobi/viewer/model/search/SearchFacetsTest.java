@@ -525,6 +525,22 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies skip invalid facet links carrying an exclusion marker
+     */
+    @Test
+    void parseFacetString_shouldSkipInvalidFacetLinksCarryingAnExclusionMarker() {
+        // The exclusion marker must be stripped before the invalid-link guard runs, otherwise
+        // links like "!:foo" pass the guard and produce items with an empty field name.
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString(FacetItem.EXCLUDE_PREFIX + ":foo;;" + FacetItem.EXCLUDE_PREFIX + ";DC:a;;"
+                + FacetItem.EXCLUDE_PREFIX + ";;MD_FIELD:value;;", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_FIELD", facetItems.get(0).getField());
+        Assertions.assertEquals("value", facetItems.get(0).getValue());
+    }
+
+    /**
      * @see SearchFacets#setActiveFacetString(String)
      * @verifies preserve exclusion marker through round trip
      */
@@ -1199,6 +1215,29 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.getAvailableFacets().put("MD_PLACEPUBLISH", items);
 
         Assertions.assertFalse(facets.isDisplayFacetExpandLink("MD_PLACEPUBLISH"));
+    }
+
+    // ====================== getAllFacetFields / getGeoFacetFields tests ======================
+
+    /**
+     * @see SearchFacets#getAllFacetFields()
+     * @verifies return all configured facet fields in configuration order
+     */
+    @Test
+    void getAllFacetFields_shouldReturnAllConfiguredFacetFieldsInConfigurationOrder() {
+        SearchFacets facets = new SearchFacets();
+        List<String> result = facets.getAllFacetFields();
+        assertEquals(List.of("DC", "YEAR", "MD_CREATOR", "MD_PLACEPUBLISH", "WKT_COORDS", "MD_PERSON", "BOOL_HASIMAGES"), result);
+    }
+
+    /**
+     * @see SearchFacets#getGeoFacetFields()
+     * @verifies return all geo facet fields
+     */
+    @Test
+    void getGeoFacetFields_shouldReturnAllGeoFacetFields() {
+        SearchFacets facets = new SearchFacets();
+        assertEquals(List.of("WKT_COORDS"), facets.getGeoFacetFields());
     }
 
     // ====================== getAllAvailableFacets tests ======================
