@@ -510,6 +510,73 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies parse exclusion marker correctly
+     */
+    @Test
+    void parseFacetString_shouldParseExclusionMarkerCorrectly() {
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString(FacetItem.EXCLUDE_PREFIX + "DC:a;;DC:b;;", facetItems, null);
+        Assertions.assertEquals(2, facetItems.size());
+        Assertions.assertTrue(facetItems.get(0).isExcluded());
+        Assertions.assertEquals("DC", facetItems.get(0).getField());
+        Assertions.assertEquals("a", facetItems.get(0).getValue());
+        Assertions.assertFalse(facetItems.get(1).isExcluded());
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies skip invalid facet links carrying an exclusion marker
+     */
+    @Test
+    void parseFacetString_shouldSkipInvalidFacetLinksCarryingAnExclusionMarker() {
+        // The exclusion marker must be stripped before the invalid-link guard runs, otherwise
+        // links like "!:foo" pass the guard and produce items with an empty field name.
+        List<IFacetItem> facetItems = new ArrayList<>();
+        SearchFacets.parseFacetString(FacetItem.EXCLUDE_PREFIX + ":foo;;" + FacetItem.EXCLUDE_PREFIX + ";DC:a;;"
+                + FacetItem.EXCLUDE_PREFIX + ";;MD_FIELD:value;;", facetItems, null);
+        Assertions.assertEquals(1, facetItems.size());
+        Assertions.assertEquals("MD_FIELD", facetItems.get(0).getField());
+        Assertions.assertEquals("value", facetItems.get(0).getValue());
+    }
+
+    /**
+     * @see SearchFacets#setActiveFacetString(String)
+     * @verifies preserve exclusion marker through round trip
+     */
+    @Test
+    void setActiveFacetString_shouldPreserveExclusionMarkerThroughRoundTrip() {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString(FacetItem.EXCLUDE_PREFIX + "DC:a;;");
+        Assertions.assertEquals(1, facets.getActiveFacets().size());
+        Assertions.assertTrue(facets.getActiveFacets().get(0).isExcluded());
+        Assertions.assertTrue(facets.getActiveFacetStringPrefix(null, false).contains(FacetItem.EXCLUDE_PREFIX + "DC:a"));
+    }
+
+    /**
+     * @see SearchFacets#generateHierarchicalFacetFilterQuery()
+     * @verifies negate excluded item and add positive base when all excluded
+     */
+    @Test
+    void generateHierarchicalFacetFilterQuery_shouldNegateExcludedItemAndAddPositiveBaseWhenAllExcluded() {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString(FacetItem.EXCLUDE_PREFIX + "DC:a;;");
+        Assertions.assertEquals("*:* AND -(FACET_DC:\"a\" OR FACET_DC:a.*)", facets.generateHierarchicalFacetFilterQuery());
+    }
+
+    /**
+     * @see SearchFacets#generateHierarchicalFacetFilterQuery()
+     * @verifies not add positive base when include and exclude are mixed
+     */
+    @Test
+    void generateHierarchicalFacetFilterQuery_shouldNotAddPositiveBaseWhenIncludeAndExcludeAreMixed() {
+        SearchFacets facets = new SearchFacets();
+        facets.setActiveFacetString("DC:a;;" + FacetItem.EXCLUDE_PREFIX + "DC:b;;");
+        Assertions.assertEquals("(FACET_DC:\"a\" OR FACET_DC:a.*) AND -(FACET_DC:\"b\" OR FACET_DC:b.*)",
+                facets.generateHierarchicalFacetFilterQuery());
+    }
+
+    /**
      * @see SearchFacets#isHasWrongLanguageCode(String,String)
      * @verifies return true if language code different
      */
@@ -1148,6 +1215,29 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         facets.getAvailableFacets().put("MD_PLACEPUBLISH", items);
 
         Assertions.assertFalse(facets.isDisplayFacetExpandLink("MD_PLACEPUBLISH"));
+    }
+
+    // ====================== getAllFacetFields / getGeoFacetFields tests ======================
+
+    /**
+     * @see SearchFacets#getAllFacetFields()
+     * @verifies return all configured facet fields in configuration order
+     */
+    @Test
+    void getAllFacetFields_shouldReturnAllConfiguredFacetFieldsInConfigurationOrder() {
+        SearchFacets facets = new SearchFacets();
+        List<String> result = facets.getAllFacetFields();
+        assertEquals(List.of("DC", "YEAR", "MD_CREATOR", "MD_PLACEPUBLISH", "WKT_COORDS", "MD_PERSON", "BOOL_HASIMAGES"), result);
+    }
+
+    /**
+     * @see SearchFacets#getGeoFacetFields()
+     * @verifies return all geo facet fields
+     */
+    @Test
+    void getGeoFacetFields_shouldReturnAllGeoFacetFields() {
+        SearchFacets facets = new SearchFacets();
+        assertEquals(List.of("WKT_COORDS"), facets.getGeoFacetFields());
     }
 
     // ====================== getAllAvailableFacets tests ======================

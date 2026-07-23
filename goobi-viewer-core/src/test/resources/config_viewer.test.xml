@@ -456,7 +456,7 @@
                 <field>!BOOL_PRIORITIZE</field>
             </static>
 		</sorting>
-		<facets>
+		<facets style="combined">
 			<template name="_DEFAULT">
 				<field type="hierarchical" initialElementNumber=" 4" priorityValues="collection2;collection1" descriptionKey="facet_description_dc" alwaysApplyToUnfilteredHits="true">DC</field>
 				<field type="range" minValue="-1000" maxValue="2050" labelField="MD_FIELDLABEL" sortOrder="numerical"
@@ -578,7 +578,7 @@
 			<versionLabelField>MD_VERSIONLABEL</versionLabelField>
 		</versioning>
 		<!-- Search export settings -->
-		<export>
+		<export timeout="180">
 			<format name="excel" enabled="true">
 				<!-- field: Solr fields to put into the export sheet. One element per
 					field. -->

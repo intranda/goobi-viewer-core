@@ -516,7 +516,7 @@ public class ViewerResourceBundle extends ResourceBundle {
                 return translation;
             }
             // Fall back to translations without the language part
-            useKey = useKey.replaceAll(SolrConstants.MIDFIX_LANG + "[A-Z{][A-Z}]", "");
+            useKey = useKey.replaceAll(SolrConstants.MIDFIX_LANG + "([A-Z]{2,3}|\\{\\})", "");
         }
 
         return getTranslationFromBundleUsingCleanedUpKeys(useKey, bundle);

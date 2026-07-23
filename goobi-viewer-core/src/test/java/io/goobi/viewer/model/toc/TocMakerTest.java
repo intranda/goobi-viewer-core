@@ -57,7 +57,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         List<?> fields = TocMaker.getSolrFieldsToFetch("_DEFAULT");
         Assertions.assertNotNull(fields);
         // 17 REQUIRED_FIELDS + 1 base param (MD_CREATOR; LABEL is deduped) + 2 params × 2 LANG_ variants (EN, DE) + 3 ancestor/GROUPID_* fields (#27788)
-        Assertions.assertEquals(25, fields.size());
+        Assertions.assertEquals(26, fields.size());
     }
 
     /**
@@ -239,8 +239,7 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * Test that parseVolumeLabelConfig extracts all brace-delimited field names
-     * from the label configuration string.
+     * Test that parseVolumeLabelConfig extracts all brace-delimited field names from the label configuration string.
      *
      * @see TocMaker#parseVolumeLabelConfig(String)
      * @verifies parse all field names correctly
@@ -314,12 +313,10 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see TocMaker#generateToc(TOC,StructElement,boolean,String,int,int)
      * @verifies prefer the ancestor-containing tree over a standalone tree
      *
-     * Safety net for optimizing the tree-selection logic in buildToc:
-     * buildToc builds one TOC tree per configured ancestor field and returns the LARGEST.
-     * For a volume that belongs to an anchor, the tree with the ancestor (N+1 elements)
-     * must win over a hypothetical standalone tree (N elements).
-     * Any optimization that changes "return largest" to "return first non-empty" must
-     * not break this: the ancestor must always appear at index 0.
+     *           Safety net for optimizing the tree-selection logic in buildToc: buildToc builds one TOC tree per configured ancestor field and
+     *           returns the LARGEST. For a volume that belongs to an anchor, the tree with the ancestor (N+1 elements) must win over a hypothetical
+     *           standalone tree (N elements). Any optimization that changes "return largest" to "return first non-empty" must not break this: the
+     *           ancestor must always appear at index 0.
      */
     @Test
     void generateToc_shouldPreferTreeWithAncestorOverStandaloneTree() throws Exception {
@@ -357,7 +354,8 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
 
         Set<String> uniquePis = new HashSet<>();
         for (TOCElement element : tocElements.get(StringConstants.DEFAULT_NAME)) {
-            if (element.getTopStructPi() != null) uniquePis.add(element.getTopStructPi());
+            if (element.getTopStructPi() != null)
+                uniquePis.add(element.getTopStructPi());
         }
         Assertions.assertFalse(uniquePis.isEmpty(), "Rendered TOC has no top-struct PIs at all");
         Assertions.assertEquals(8, uniquePis.size(), "Rendered TOC should reference exactly 8 unique PIs");

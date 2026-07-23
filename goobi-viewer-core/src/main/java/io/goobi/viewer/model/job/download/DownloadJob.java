@@ -205,7 +205,12 @@ public abstract class DownloadJob {
     public boolean isExpired() {
 
         try {
-            return System.currentTimeMillis() > DateTools.getMillisFromLocalDateTime(getExirationTime(), false);
+            // getExirationTime() may return null; treat a missing expiration time as expired to avoid a NullPointerException (java:S2259)
+            LocalDateTime expirationTime = getExirationTime();
+            if (expirationTime == null) {
+                return true;
+            }
+            return System.currentTimeMillis() > DateTools.getMillisFromLocalDateTime(expirationTime, false);
         } catch (IOException e) {
             return true;
         }

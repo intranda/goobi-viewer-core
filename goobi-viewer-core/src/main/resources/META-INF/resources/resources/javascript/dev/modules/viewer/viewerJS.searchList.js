@@ -239,7 +239,7 @@ var viewerJS = (function (viewer) {
                         throw messages.msgError;
                     })
                     .catch(function (err) {
-                        window.alert(typeof err === 'string' && err ? err : (messages.msgError || 'Export failed'));
+                        window.alert(typeof err === 'string' && err ? err : messages.msgError || 'Export failed');
                     })
                     .then(function () {
                         $loader.addClass('d-none');
@@ -328,23 +328,15 @@ var viewerJS = (function (viewer) {
                     }
                 }
                 _searchListStyle = sessionStorage.getItem('searchListStyle');
-            } else if (
-                typeof cmsSearchCustomView !== 'undefined' &&
-                sessionStorage.getItem(cmsSearchViewlistStyleID) !== null
-            ) {
+            } else if (typeof cmsSearchCustomView !== 'undefined' && sessionStorage.getItem(cmsSearchViewlistStyleID) !== null) {
                 _searchListStyle = sessionStorage.getItem(cmsSearchViewlistStyleID);
                 if (_debug) {
-                    console.log(
-                        'view for THIS special search page (based on page id): ' +
-                            sessionStorage.getItem(cmsSearchViewlistStyleID)
-                    );
+                    console.log('view for THIS special search page (based on page id): ' + sessionStorage.getItem(cmsSearchViewlistStyleID));
                 }
             } else {
                 _searchListStyle = _defaults.listStyle;
                 if (_debug) {
-                    console.log(
-                        'default value used (can be based on CMS comp), nothing else defined: ' + _defaults.listStyle
-                    );
+                    console.log('default value used (can be based on CMS comp), nothing else defined: ' + _defaults.listStyle);
                 }
             }
 
@@ -423,22 +415,12 @@ var viewerJS = (function (viewer) {
             const activeTitle = $thumbToggle.attr('data-title-active');
             const inactiveTitle = $thumbToggle.attr('data-title-inactive');
             if (show) {
-                $thumbToggle
-                    .addClass('-active')
-                    .attr('title', activeTitle)
-                    .attr('aria-checked', true)
-                    .off('mouseleave.tooltip')
-                    .off('mouseenter.tooltip');
+                $thumbToggle.addClass('-active').attr('title', activeTitle).attr('aria-checked', true).off('mouseleave.tooltip').off('mouseenter.tooltip');
                 $('.search-list__subhit-thumbnail').show();
                 $('[data-toggle="tooltip"]').tooltip('dispose');
                 viewerJS.helper.initBsFeatures();
             } else {
-                $thumbToggle
-                    .removeClass('-active')
-                    .attr('title', inactiveTitle)
-                    .attr('aria-checked', false)
-                    .off('mouseleave.tooltip')
-                    .off('mouseenter.tooltip');
+                $thumbToggle.removeClass('-active').attr('title', inactiveTitle).attr('aria-checked', false).off('mouseleave.tooltip').off('mouseenter.tooltip');
                 $('.search-list__subhit-thumbnail').hide();
                 $('[data-toggle="tooltip"]').tooltip('dispose');
                 viewerJS.helper.initBsFeatures();
@@ -459,14 +441,7 @@ var viewerJS = (function (viewer) {
             let toggleArea = document.querySelector("div[data-toggle-id='" + button.dataset.toggleId + "']");
             let hitsPopulated = toggleArea.querySelector('[data-hits-populated]').dataset.hitsPopulated;
             if (_debug) {
-                console.log(
-                    'clicked hit-content',
-                    button,
-                    scriptName,
-                    toggleArea,
-                    hitsDisplayed,
-                    _defaults.childHitsToLoadOnExpand
-                );
+                console.log('clicked hit-content', button, scriptName, toggleArea, hitsDisplayed, _defaults.childHitsToLoadOnExpand);
             }
 
             $currBtn.toggleClass('in');

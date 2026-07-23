@@ -510,17 +510,23 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
     /** {@inheritDoc} */
     @Override
     public String getDescription() {
-        return getCurrentLanguageMetadata().getDescription();
+        // getCurrentLanguageMetadata() may return null (no metadata available); guard to avoid a NullPointerException (java:S2259)
+        CMSMediaItemMetadata metadata = getCurrentLanguageMetadata();
+        return metadata != null ? metadata.getDescription() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public String getName() {
-        return getCurrentLanguageMetadata().getName();
+        // getCurrentLanguageMetadata() may return null (no metadata available); guard to avoid a NullPointerException (java:S2259)
+        CMSMediaItemMetadata metadata = getCurrentLanguageMetadata();
+        return metadata != null ? metadata.getName() : null;
     }
 
     public String getAlternativeText() {
-        return getCurrentLanguageMetadata().getAlternativeText();
+        // getCurrentLanguageMetadata() may return null (no metadata available); guard to avoid a NullPointerException (java:S2259)
+        CMSMediaItemMetadata metadata = getCurrentLanguageMetadata();
+        return metadata != null ? metadata.getAlternativeText() : null;
     }
 
     @Deprecated(since = "2026.01")
@@ -666,7 +672,9 @@ public class CMSMediaItem implements BrowseElementInfo, Comparable<CMSMediaItem>
      * @return true if the metadata name for the given locale is non-blank, false otherwise
      */
     public boolean isFinished(Locale locale) {
-        return StringUtils.isNotBlank(getMetadataForLocale(locale).getName());
+        // getMetadataForLocale() may return null (no metadata for the locale); guard to avoid a NullPointerException (java:S2259)
+        CMSMediaItemMetadata metadata = getMetadataForLocale(locale);
+        return metadata != null && StringUtils.isNotBlank(metadata.getName());
     }
 
     /**

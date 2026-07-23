@@ -2199,6 +2199,35 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getFacetsStyle()
+     * @verifies return correct value
+     */
+    @Test
+    void getFacetsStyle_shouldReturnCorrectValue() {
+        assertEquals("combined", DataManager.getInstance().getConfiguration().getFacetsStyle());
+    }
+
+    /**
+     * @see Configuration#getFacetsStyle()
+     * @verifies return widgets if value empty
+     */
+    @Test
+    void getFacetsStyle_shouldReturnWidgetsIfValueEmpty() {
+        DataManager.getInstance().getConfiguration().overrideValue("search.facets[@style]", "");
+        assertEquals("widgets", DataManager.getInstance().getConfiguration().getFacetsStyle());
+    }
+
+    /**
+     * @see Configuration#getFacetsStyle()
+     * @verifies return widgets if value invalid
+     */
+    @Test
+    void getFacetsStyle_shouldReturnWidgetsIfValueInvalid() {
+        DataManager.getInstance().getConfiguration().overrideValue("search.facets[@style]", "fancy");
+        assertEquals("widgets", DataManager.getInstance().getConfiguration().getFacetsStyle());
+    }
+
+    /**
      * @see Configuration#getPriorityValuesForFacetField(String)
      * @verifies return return all configured elements for regular fields
      */
@@ -3067,6 +3096,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getSearchExportTimeout()
+     * @verifies return correct value
+     */
+    @Test
+    void getSearchExportTimeout_shouldReturnCorrectValue() {
+        assertEquals(180, DataManager.getInstance().getConfiguration().getSearchExportTimeout());
+    }
+
+    /** 
      * @see Configuration#isCollectionArchivesEnabled()
      * @verifies return correct value
      */

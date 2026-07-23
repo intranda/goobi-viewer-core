@@ -194,7 +194,12 @@ public class ArchiveTree implements Serializable {
      */
     public List<ArchiveEntry> getVisibleTree(boolean searchActive) {
         logger.trace("getVisibleTree: {}", trueRootElement.getLabel());
-        return getTreeView().stream()
+        // getTreeView() may return null; guard to avoid a NullPointerException (java:S2259)
+        List<ArchiveEntry> treeView = getTreeView();
+        if (treeView == null) {
+            return List.of();
+        }
+        return treeView.stream()
                 .filter(e -> isEntryVisible(e) && (e.isDisplaySearch() || !searchActive) && e.isAccessAllowed())
                 .toList();
     }
@@ -488,7 +493,8 @@ public class ArchiveTree implements Serializable {
      * @return Optional<ArchiveEntry>
      */
     private Optional<ArchiveEntry> findEntry(String identifier, ArchiveEntry node) {
-        if (StringUtils.isNotBlank(identifier)) {
+        // node may be null (getRootElement() can return null); guard to avoid a NullPointerException (java:S2259)
+        if (node != null && StringUtils.isNotBlank(identifier)) {
             if (identifier.equals(node.getId())) {
                 return Optional.of(node);
             }

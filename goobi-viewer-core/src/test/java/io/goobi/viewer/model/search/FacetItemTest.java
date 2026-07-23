@@ -21,6 +21,8 @@
  */
 package io.goobi.viewer.model.search;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -340,5 +342,65 @@ class FacetItemTest extends AbstractTest {
         Assertions.assertEquals("Groos, Karl", facetItems.get(1).getValue());
         Assertions.assertEquals(2, facetItems.get(1).getCount());
         Assertions.assertEquals("Montana, Tony", facetItems.get(2).getValue());
+    }
+
+    /**
+     * @see FacetItem#setLink(String)
+     * @verifies detect exclusion marker and keep field and value clean
+     */
+    @Test
+    void setLink_shouldDetectExclusionMarkerAndKeepFieldAndValueClean() {
+        IFacetItem item = new FacetItem(FacetItem.EXCLUDE_PREFIX + "DC:foo", true);
+        Assertions.assertTrue(item.isExcluded());
+        Assertions.assertEquals("DC", item.getField());
+        Assertions.assertEquals("foo", item.getValue());
+        Assertions.assertEquals(FacetItem.EXCLUDE_PREFIX + "DC:foo", item.getLink());
+    }
+
+    /**
+     * @see FacetItem#getLink()
+     * @verifies not add exclusion marker for a regular facet item
+     */
+    @Test
+    void getLink_shouldNotAddExclusionMarkerForARegularFacetItem() {
+        IFacetItem item = new FacetItem("DC:foo", true);
+        Assertions.assertFalse(item.isExcluded());
+        Assertions.assertEquals("DC:foo", item.getLink());
+    }
+
+    /**
+     * @see FacetItem#getQueryEscapedLink()
+     * @verifies negate a non hierarchical exclusion facet item
+     */
+    @Test
+    void getQueryEscapedLink_shouldNegateANonHierarchicalExclusionFacetItem() {
+        IFacetItem item = new FacetItem(FacetItem.EXCLUDE_PREFIX + "FIELD:value", false);
+        Assertions.assertEquals("-(FIELD:value)", item.getQueryEscapedLink());
+    }
+
+    /**
+     * @see FacetItem#getQueryEscapedLink()
+     * @verifies negate a hierarchical exclusion facet item
+     */
+    @Test
+    void getQueryEscapedLink_shouldNegateAHierarchicalExclusionFacetItem() {
+        IFacetItem item = new FacetItem(FacetItem.EXCLUDE_PREFIX + "FIELD:value", true);
+        Assertions.assertEquals("-(FIELD:value OR FIELD:value.*)", item.getQueryEscapedLink());
+    }
+
+    /**
+     * @see FacetItem#getExcludeUrlEscapedLink()
+     * @verifies prepend url encoded exclusion marker
+     */
+    @Test
+    void getExcludeUrlEscapedLink_shouldPrependUrlEncodedExclusionMarker() {
+        IFacetItem item = new FacetItem("DC:foo", true);
+        String excludeLink = item.getExcludeUrlEscapedLink();
+        Assertions.assertTrue(excludeLink.startsWith("%21"), "expected leading %21 marker but was: " + excludeLink);
+        String decoded = URLDecoder.decode(excludeLink, StandardCharsets.UTF_8);
+        IFacetItem roundTrip = new FacetItem(decoded, true);
+        Assertions.assertTrue(roundTrip.isExcluded());
+        Assertions.assertEquals("DC", roundTrip.getField());
+        Assertions.assertEquals("foo", roundTrip.getValue());
     }
 }

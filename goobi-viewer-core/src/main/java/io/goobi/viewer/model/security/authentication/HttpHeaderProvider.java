@@ -90,7 +90,11 @@ public class HttpHeaderProvider extends HttpAuthenticationProvider {
                     url + (StringUtils.isNotEmpty(redirectUrl) ? "?redirectUrl=" + URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8) : "");
             try {
                 logger.trace("Redirecting to: {}", fullUrl);
-                BeanUtils.getResponse().sendRedirect(fullUrl);
+                // getResponse() returns null outside a FacesContext; guard to avoid a NullPointerException (java:S2259)
+                HttpServletResponse response = BeanUtils.getResponse();
+                if (response != null) {
+                    response.sendRedirect(fullUrl);
+                }
             } catch (IOException e) {
                 throw new AuthenticationProviderException(e);
             }

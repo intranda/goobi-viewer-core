@@ -1013,6 +1013,20 @@ public class Configuration extends AbstractConfiguration {
                 .orElse(new HashMap<>());
     }
 
+    public String getGeomapFeatureFeatureSearchFilter(String option) {
+        if (StringUtils.isBlank(option)) {
+            return "";
+        }
+
+        List<HierarchicalConfiguration<ImmutableNode>> options = getLocalConfigurationsAt("maps.metadata.option");
+
+        return options.stream()
+                .filter(config -> option.equals(config.getString("[@name]", "_DEFAULT")))
+                .findAny()
+                .map(config -> config.getString("marker[@searchFilterField]", ""))
+                .orElse("");
+    }
+
     public Map<String, Metadata> getGeomapItemConfigurations(String option) {
         if (StringUtils.isBlank(option)) {
             return Collections.emptyMap();
@@ -1069,6 +1083,10 @@ public class Configuration extends AbstractConfiguration {
 
     public List<GeomapItemFilter> getGeomapFilters() {
         HierarchicalConfiguration<ImmutableNode> filtersConfig = this.getLocalConfigurationAt("maps.filters");
+        // getLocalConfigurationAt returns null when "maps.filters" is not configured; guard to avoid a NullPointerException (java:S2259)
+        if (filtersConfig == null) {
+            return new ArrayList<>();
+        }
         List<HierarchicalConfiguration<ImmutableNode>> filterConfigs = filtersConfig.configurationsAt("filter");
 
         List<GeomapItemFilter> filters = new ArrayList<>();
@@ -3707,6 +3725,18 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     *
+     * @return the configured display style for the search facets sidebar; either "widgets" (default) or "combined"
+     * @should return correct value
+     * @should return widgets if value empty
+     * @should return widgets if value invalid
+     */
+    public String getFacetsStyle() {
+        String style = getLocalString("search.facets[@style]", "widgets");
+        return "combined".equals(style) ? "combined" : "widgets";
+    }
+
+    /**
      * getGeoFacetFields.
      *
      * @return a list of configured geo-type facet field names
@@ -5633,8 +5663,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns all export format definitions configured under {@code <export><format>} in {@code config_viewer.xml}. Both XSLT-based formats
-     * (with an {@code xslt} attribute) and Java field-mapped formats (with {@code <field>} children, e.g. excel/csv) are returned.
+     * Returns all export format definitions configured under {@code <export><format>} in {@code config_viewer.xml}. Both XSLT-based formats (with an
+     * {@code xslt} attribute) and Java field-mapped formats (with {@code <field>} children, e.g. excel/csv) are returned.
      *
      * @return list of configured export formats (may be empty, never null)
      * @should return all configured formats
@@ -5854,12 +5884,18 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * getExcelDownloadTimeout.
+     * Timeout in seconds for generating a search result export before it is aborted. Read from the {@code timeout} attribute of the
+     * {@code <search><export>} element and applied to every export format (Excel, CSV and XSLT-based formats such as RIS).
      *
-     * @return a int.
+     * <p>The setting previously lived at {@code <export><excel><timeout>}, but the dedicated {@code <excel>} element was replaced by
+     * {@code <format name="excel">} during the export config normalization; the timeout therefore moved to the shared {@code <export>}
+     * element so it keeps working and now governs all formats, not just Excel.
+     *
+     * @return the configured export timeout in seconds; 120 if not set
+     * @should return correct value
      */
-    public int getExcelDownloadTimeout() {
-        return getLocalInt("search.export.excel.timeout", 120);
+    public int getSearchExportTimeout() {
+        return getLocalInt("search.export[@timeout]", 120);
     }
 
     /**

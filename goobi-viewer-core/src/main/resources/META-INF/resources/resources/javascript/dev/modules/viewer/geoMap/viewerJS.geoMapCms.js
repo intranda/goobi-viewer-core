@@ -88,7 +88,7 @@ var viewerJS = (function (viewer) {
                             window.open(feature.properties.link, '_self');
                         } else if (layer.config.search?.searchUrlTemplate && feature.properties?.filterQuery) {
                             $(layer.config.search.loader).show();
-                            window.open(layer.config.search.searchUrlTemplate + '?filterQuery=' + feature.properties.filterQuery, '_self');
+                            window.open(layer.config.search.searchUrlTemplate + '?filterQuery=' + feature.properties.filterQuery, layer.config.search.linkTarget);
                         }
                     }
                 });

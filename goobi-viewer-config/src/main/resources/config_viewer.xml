@@ -531,6 +531,9 @@
         </sorting>
 
         <!-- facets: Contains a list of fields that are available for faceting in a search result list -->
+        <!-- The <facets> element may have a 'style' attribute which selects the sidebar display mode: -->
+        <!-- 'widgets' (default): each facet field is rendered as an individual widget box -->
+        <!-- 'combined': all facets are rendered as sections of one connected filter container, e.g. <facets style="combined"> -->
         <!-- each facets.field element may have a 'type' attribute which determines how the data is interpreted and displayed -->
         <!-- Allowed values for 'type' are -->
         <!-- range: the values of this field are interpreted as dates within a timeline or some other number range. -->
@@ -685,8 +688,11 @@
                    contentType   - HTTP Content-Type for the response
                    fileExtension - file extension for the Content-Disposition header
              To add a new XSLT format, add a <format> element here and drop the XSLT file into the
-             viewer config directory or the classpath under resources/xsl/. -->
-        <export>
+             viewer config directory or the classpath under resources/xsl/.
+
+             timeout - maximum time in seconds allowed to generate an export before it is aborted (the client then
+                       receives HTTP 503). Applies to all formats. Default is 120. -->
+        <export timeout="120">
             <format name="excel" enabled="false">
                 <!-- field: Solr fields to put into the export sheet. One element per field. -->
                 <field>PI_TOPSTRUCT</field>
@@ -1753,7 +1759,6 @@
                 <displayWidget name="statistics-usage" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="annotations" />
                 <displayWidget name="record-notes" />
-                <displayWidget name="data-info" />
                 <displayWidget name="downloads" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="citation" collapsible="true" collapsedByDefault="true" />
                 <displayWidget name="related-groups" expanded="false" />

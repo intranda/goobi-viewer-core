@@ -1,14 +1,10 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:goobi="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:facelets="http://io.goobi.viewer"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:util="http://goobi.io/util"
     xmlns:searchFacetsComponent="http://xmlns.jcp.org/jsf/composite/components/widgets/searchFacets">
     <composite:interface>
         <composite:attribute
@@ -21,13 +17,65 @@
             type="io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElement"
             required="false"
             default="#{null}" />
+        <composite:attribute
+            name="mode"
+            type="java.lang.String"
+            required="false"
+            default="#{configurationBean.facetsStyle}" />
     </composite:interface>
 
     <composite:implementation>
         <h:panelGroup rendered="#{cc.attrs.sidebarElement == null or cc.attrs.sidebarElement.contentType.isAllowedForPage(cmsPage)}">
-            <searchFacetsComponent:chronologyFacet cmsPage="#{cc.attrs.cmsPage}" />
-            <searchFacetsComponent:geoFacetting cmsPage="#{cc.attrs.cmsPage}" />
-            <searchFacetsComponent:searchFacets cmsPage="#{cc.attrs.cmsPage}" />
+            <div
+                id="searchListFacetsWrapper"
+                class="widget-search-facets #{cc.attrs.mode eq 'combined' ? 'combined-facets' : ''}"
+                data-filter-persistent="#{cc.attrs.mode eq 'combined'}">
+                <ui:fragment rendered="#{cc.attrs.mode eq 'combined'}">
+                    <div class="combined-facets__head">
+                        <h2 class="combined-facets__title">#{msg.search__combined_facets__title}</h2>
+                        <h:outputLink
+                            styleClass="combined-facets__reset"
+                            rendered="#{not empty searchBean.facets.activeFacets}"
+                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/-/#{navigationHelper.subThemeQueryParam}"
+                            title="#{msg.search__combined_facets__reset_all}">
+                            <util:icon-text
+                                icon="x"
+                                iconSvgClass="combined-facets__reset-icon-svg"
+                                text="#{msg.search__combined_facets__reset_all}"
+                                textClass="combined-facets__reset-label" />
+                        </h:outputLink>
+                    </div>
+                </ui:fragment>
+                <searchFacetsComponent:activeFacetsBadges
+                    mode="#{cc.attrs.mode}"
+                    cmsPage="#{cc.attrs.cmsPage}" />
+                <c:forEach
+                    var="facetField"
+                    items="#{searchBean.facets.allFacetFields}"
+                    varStatus="facetStatus">
+                    <c:choose>
+                        <c:when test="#{searchBean.facets.allRangeFacetFields.contains(facetField)}">
+                            <searchFacetsComponent:chronologyFacet
+                                field="#{facetField}"
+                                index="#{facetStatus.index}"
+                                headingLevel="#{cc.attrs.mode eq 'combined' ? '3' : '2'}" />
+                        </c:when>
+                        <c:when test="#{searchBean.facets.geoFacetFields.contains(facetField)}">
+                            <searchFacetsComponent:geoFacetting headingLevel="#{cc.attrs.mode eq 'combined' ? '3' : '2'}" />
+                        </c:when>
+                        <c:when test="#{searchBean.facets.allAvailableFacets.containsKey(facetField)}">
+                            <searchFacetsComponent:fieldFacet
+                                field="#{facetField}"
+                                index="#{facetStatus.index}"
+                                cmsPage="#{cc.attrs.cmsPage}"
+                                headingLevel="#{cc.attrs.mode eq 'combined' ? '3' : '2'}" />
+                        </c:when>
+                    </c:choose>
+                </c:forEach>
+                <ui:fragment rendered="#{cc.attrs.mode eq 'combined'}">
+                    <script>viewerJS.combinedFacets.init();</script>
+                </ui:fragment>
+            </div>
         </h:panelGroup>
     </composite:implementation>
 </ui:composition>

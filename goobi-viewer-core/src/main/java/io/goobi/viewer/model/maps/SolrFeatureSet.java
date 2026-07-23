@@ -61,8 +61,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Transient;
 
 /**
- * A {@link FeatureSet} implementation that generates geo map features by executing a configurable
- * Solr query and converting the matching documents into GeoJSON features.
+ * A {@link FeatureSet} implementation that generates geo map features by executing a configurable Solr query and converting the matching documents
+ * into GeoJSON features.
  */
 @Entity
 @DiscriminatorValue("solr")
@@ -185,8 +185,9 @@ public class SolrFeatureSet extends FeatureSet {
             throws PresentationException, IndexUnreachableException {
 
         LabelCreator markerLabels =
-                new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getMarkerMetadataList()));
-        LabelCreator itemLabels = new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getItemMetadataList()));
+                new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getMarkerMetadataList()),
+                        DataManager.getInstance().getConfiguration().getGeomapFeatureFeatureSearchFilter(this.markerTitleField));
+        LabelCreator itemLabels = new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getItemMetadataList()), "");
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
 
         List<MetadataDocument> hits;

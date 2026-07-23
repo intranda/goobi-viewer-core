@@ -35,23 +35,116 @@
         gap: 5px;
     }
     &__list-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 5px;
         padding: 0;
         padding-inline-end: 5px;
-    }
-    &__list-item-link {
-        &.-active {
-            padding: 3px;
-            font-weight: 600;
+        line-height: 1.5;
+
+        &:hover,
+        &:focus-within {
+            .widget-search-facets__list-item-control {
+                width: 16px;
+                border-width: 1px;
+                opacity: 1;
+                transition:
+                    width 0.15s ease-in-out,
+                    margin 0.15s ease-in-out,
+                    opacity 0.05s linear 0.12s,
+                    background-color 0.15s ease-in-out;
+
+                &.-include { 
+                    margin-inline-end: 8px;
+                }
+            }
+        }
+
+        &.-active,
+        &.-excluded {
+            .widget-search-facets__list-item-label {
+                font-weight: 600;
+            }
         }
     }
-    &__list-item-link-inner {
+
+    /* nested under the list item to win over the generic ".widget__body a { display: block }" rule */
+    &__list-item &__list-item-link {
         display: flex;
-        gap: 5px;
-        justify-content: space-between;
+        align-items: flex-start;
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: visible;
+
+        &:hover,
+        &:focus {
+            text-decoration: none;
+
+            .widget-search-facets__list-item-control.-include {
+                color: var(--facet-control-active-fg);
+                background: var(--facet-control-active);
+                border-color: var(--facet-control-active);
+            }
+        }
     }
-    &__list-item-link-active {
+    &__list-item-text {
+        flex: 1 1 auto;
+        min-width: 0;
     }
-    &__list-item-icon {
+    &__list-item-count {
+        white-space: nowrap;
+    }
+    &__list-item &__list-item-control-link {
+        display: inline-flex;
+        flex: 0 0 auto;
+        overflow: visible;
+    }
+    /* INCLUDE/EXCLUDE CONTROLS */
+    &__list-item-control {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 0;
+        height: 16px;
+        overflow: hidden;
+        color: var(--facet-control-color);
+        border: 0 solid var(--facet-control-border);
+        border-radius: var(--facet-control-radius);
+        opacity: 0;
+        /* opacity is delayed against width so no half-revealed box shows */
+        transition:
+            width 0.15s ease-in-out 0.05s,
+            margin 0.15s ease-in-out 0.05s,
+            opacity 0.05s linear,
+            background-color 0.15s ease-in-out;
+
+        &.-set {
+            width: 16px;
+            border-width: 1px;
+            opacity: 1;
+            color: var(--facet-control-active-fg);
+            background: var(--facet-control-active);
+            border-color: var(--facet-control-active);
+
+            &.-include {
+                margin-inline-end: 5px;
+            }
+        }
+    }
+    &__list-item-control-link {
+        &:hover,
+        &:focus {
+            .widget-search-facets__list-item-control {
+                color: var(--facet-control-active-fg);
+                background: var(--facet-control-active);
+                border-color: var(--facet-control-active);
+            }
+        }
+    }
+    &__list-item-control-icon-svg {
+        width: 12px;
+        height: 12px;
     }
     /* FILTER */
     &__filter {
@@ -151,9 +244,18 @@
         &.-collapse {
         }
     }
-    &__collapse-button-icon-svg {
+    &__collapse-chevron-svg {
         color: @widget-icon-color-expand;
     }
+    /* combined-mode-only parts, hidden in widgets mode */
+    &__collapse-alt-icon,
+    &__collapse-label,
+    &__filter-icon,
+    &__section-toggle {
+        display: none;
+    }
+    /* hidden without JS in BOTH modes: viewerJS.listFilter's enable() reveals the
+       wrapper via jQuery .show() when a value filter is configured */
     &__filter {
         display: none;
     }
@@ -202,6 +304,20 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
+}
+
+/* no hover capability (touch devices, regardless of viewport width):
+   include/exclude controls are always visible instead of hover-revealed */
+@media (hover: none) {
+    .widget-search-facets__list-item-control {
+        width: 16px;
+        border-width: 1px;
+        opacity: 1;
+
+        &.-include {
+            margin-inline-end: 5px;
+        }
+    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

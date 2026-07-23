@@ -211,7 +211,7 @@
                 </div>
 
                 <!-- LINKS -->
-                <!-- ONLY RENDER IF OPAC, DFG OR MIRADOR AVAILABLE -->
+                <!-- ONLY RENDER IF OPAC OR DFG AVAILABLE -->
                 <div
                     jsf:id="widgetSectionLinks"
                     class="widget-format-links__work-downloads widget__badge-container"
@@ -258,25 +258,6 @@
                             rel="nofollow noopener"
                             aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.dfgViewerLink}">
                             #{msg.dfgViewerLink}
-                        </a>
-                    </ui:fragment>
-
-                    <!-- MIRADOR -->
-                    <ui:fragment
-                        visibility-class="widget-element"
-                        rendered="#{!activeDocumentBean.anchor and activeDocumentBean.viewManager.hasPages and !activeDocumentBean.viewManager.mediaType.allowsImageView}">
-                        <a
-                            href="#{request.contextPath}/mirador/?pi=#{activeDocumentBean.persistentIdentifier}&amp;page=1"
-                            id="mirador"
-                            class="badge badge-dark widget-format-links__work-link-mirador-viewer"
-                            title="#{msg.action__view_in_mirador__tooltip}"
-                            data-toggle="tooltip"
-                            data-placement="top"
-                            data-trigger="hover"
-                            target="_blank"
-                            rel="nofollow noopener"
-                            aria-label="#{msg[activeDocumentBean.viewManager.topStructElement.docStructType]}: #{msg.action__view_in_mirador}">
-                            #{msg.action__view_in_mirador}
                         </a>
                     </ui:fragment>
                 </div>

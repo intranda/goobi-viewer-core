@@ -538,8 +538,10 @@ public class ArchiveBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
      */
     public String reIndexArchiveAction() throws IndexUnreachableException, DAOException, RecordNotFoundException {
-        if (getCurrentArchive() != null) {
-            if (IndexerTools.reIndexRecord(getCurrentArchive().getResourceId())) {
+        // getCurrentArchive() re-resolves the archive on each call and may return null; capture once to avoid a NullPointerException (java:S2259)
+        ArchiveResource currentArchive = getCurrentArchive();
+        if (currentArchive != null) {
+            if (IndexerTools.reIndexRecord(currentArchive.getResourceId())) {
                 Messages.info("reIndexRecordSuccess");
             } else {
                 Messages.error("reIndexRecordFailure");
@@ -557,11 +559,13 @@ public class ArchiveBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String deleteArchiveAction() throws IOException, IndexUnreachableException {
-        if (getCurrentArchive() == null) {
+        // getCurrentArchive() re-resolves the archive on each call; capture once to avoid a NullPointerException (java:S2259)
+        ArchiveResource currentArchive = getCurrentArchive();
+        if (currentArchive == null) {
             return "";
         }
 
-        if (IndexerTools.deleteRecord(getCurrentArchive().getResourceId(), false,
+        if (IndexerTools.deleteRecord(currentArchive.getResourceId(), false,
                 Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
             Messages.info("archives__widget__action_delete_archive_success");
             return "pretty:index";
