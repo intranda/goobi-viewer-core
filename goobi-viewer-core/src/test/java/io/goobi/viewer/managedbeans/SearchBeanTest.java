@@ -1408,7 +1408,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         List<SearchQueryItem> items = Arrays.asList(new SearchQueryItem(), new SearchQueryItem(), new SearchQueryItem());
         searchBean.getAdvancedSearchQueryGroup().injectItems(items);
 
-        searchBean.searchInRecord("PI_ANCHOR", "PPN456", "11.01.1895", "31.12.1895");
+        searchBean.searchInToc("PI_ANCHOR", "PPN456", "11.01.1895", "31.12.1895");
 
         Assertions.assertEquals(SolrConstants.CALENDAR_DAY, items.get(2).getField());
         Assertions.assertEquals("11.01.1895", items.get(2).getValue());
@@ -1430,7 +1430,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.getAdvancedSearchQueryGroup().injectItems(items);
         items.get(1).setValue("vaduz");
 
-        searchBean.searchInRecord("PI_ANCHOR", "PPN456", "11.01.2021", "23.05.2021");
+        searchBean.searchInToc("PI_ANCHOR", "PPN456", "11.01.2021", "23.05.2021");
 
         Assertions.assertEquals("vaduz", items.get(1).getValue());
         Assertions.assertEquals(SolrConstants.CALENDAR_DAY, items.get(2).getField());
@@ -1455,7 +1455,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             when(se.getDocStructType()).thenReturn("Monograph");
             mockedBeanUtils.when(BeanUtils::getActiveDocumentBean).thenReturn(adb);
 
-            searchBean.searchInRecord("PI_TOPSTRUCT", "PI_001", null, null);
+            searchBean.searchInToc("PI_TOPSTRUCT", "PI_001", null, null);
 
             AdvancedSearchOrigin origin = searchBean.getAdvancedSearchOrigin();
             Assertions.assertNotNull(origin);
@@ -1485,7 +1485,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
             // A crawler hitting the search-in-record action without a loaded record supplies a null PI;
             // the resulting origin has no target URL, so the bean must not expose it (would throw on render)
-            searchBean.searchInRecord("PI_TOPSTRUCT", null, null, null);
+            searchBean.searchInRecord("PI_TOPSTRUCT", null);
 
             Assertions.assertNull(searchBean.getAdvancedSearchOrigin());
         }

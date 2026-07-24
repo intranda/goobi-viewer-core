@@ -879,7 +879,10 @@ public class SearchBean implements SearchInterface, Serializable {
 
                     if (!skipQueryItem) {
                         String itemQuery =
-                                new StringBuilder().append(exclusionMarker).append(item.getField()).append(':').append(item.getValue().trim())
+                                new StringBuilder().append(exclusionMarker)
+                                        .append(item.getField())
+                                        .append(':')
+                                        .append(item.getValue().trim())
                                         .toString();
                         // logger.trace("item query: {}", itemQuery); //NOSONAR Debug
 
