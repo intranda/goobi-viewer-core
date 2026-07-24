@@ -158,7 +158,7 @@
                 value="#{navigationHelper.objectUrl}/#{archiveEntry.associatedRecordPi}/1/">
                 <!-- TODO less trivial image display -->
                 <div class="archives__object-image-overlay" />
-                <img />
+                <img data-viewer-thumbnail="thumbnail"/>
                 <!-- set src from javascript -->
                 <div class="archives__object-image-hover-text">#{msg.archives__showRecord}</div>
                 <div class="archives__object-image-hover-icon">
@@ -183,15 +183,15 @@
 
     <script type="text/javascript">
         var normdataConfig = {
-    path: '#{request.contextPath}',
-    lang: {
-        popoverTitle: '#{msg.normdataPopoverTitle}',
-        popoverClose: '#{msg.normdataPopoverClose}',
-        showNormdata: '#{msg.normdataExpand}',
-    },
-    elemWrapper: $('#metadataElementWrapper'),
-};
-
-viewerJS.normdata.init(normdataConfig);
+		    path: '#{request.contextPath}',
+		    lang: {
+		        popoverTitle: '#{msg.normdataPopoverTitle}',
+		        popoverClose: '#{msg.normdataPopoverClose}',
+		        showNormdata: '#{msg.normdataExpand}',
+		    },
+		    elemWrapper: $('#metadataElementWrapper'),
+		};
+		
+		viewerJS.normdata.init(normdataConfig);
     </script>
 </ui:composition>
