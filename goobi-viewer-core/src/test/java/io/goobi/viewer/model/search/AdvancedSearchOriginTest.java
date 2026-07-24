@@ -132,7 +132,7 @@ class AdvancedSearchOriginTest {
      */
     @Test
     void getOriginUrl_shouldReturnTocUrlForRecordOrigin() {
-        AdvancedSearchOrigin origin = new AdvancedSearchOrigin("PI_001", "Test Record", "Monograph");
+        AdvancedSearchOrigin origin = new AdvancedSearchOrigin("PI_001", "Test Record", "Monograph", true);
 
         try (MockedStatic<PrettyUrlTools> mockTools = mockStatic(PrettyUrlTools.class)) {
             mockTools.when(() -> PrettyUrlTools.getAbsolutePageUrl("toc2", "PI_001", 1))
@@ -187,12 +187,23 @@ class AdvancedSearchOriginTest {
     // --- isValid ---
 
     /**
-     * @verifies return true for record origin
+     * @verifies return false for record origin outside of toc calendar
      * @see AdvancedSearchOrigin#isValid()
      */
     @Test
-    void isValid_shouldReturnTrueForRecordOrigin() {
+    void isValid_shouldReturnFalseForRecordSearchWidgetOrigin() {
         AdvancedSearchOrigin origin = new AdvancedSearchOrigin("PI_001", "Test Record", "Monograph");
+
+        assertFalse(origin.isValid());
+    }
+
+    /**
+     * @verifies return true for record origin outside of toc calendar
+     * @see AdvancedSearchOrigin#isValid()
+     */
+    @Test
+    void isValid_shouldReturnTrueForRecordTocOrigin() {
+        AdvancedSearchOrigin origin = new AdvancedSearchOrigin("PI_001", "Test Record", "Monograph", true);
 
         assertTrue(origin.isValid());
     }
