@@ -68,9 +68,19 @@
                                         </div>
                                     </div>
                                     <div class="col-3 col-sm-2 collection__item-end">
+                                        <!-- COLLECTION ARCHIVE DOWNLOAD (logged-in users only) -->
+                                        <h:panelGroup rendered="#{userBean.loggedIn and collectionArchiveBean.isAvailable(browseDcElement)}">
+                                            <div class="collection__archive-download">
+                                                <a
+                                                    href="#{collectionArchiveBean.getDownloadUrl(browseDcElement)}"
+                                                    title="#{msg[browseDcElement.label]}: #{msg.collectionArchive_download}">
+                                                    <util:icon icon="download" />
+                                                </a>
+                                            </div>
+                                        </h:panelGroup>
+
                                         <!-- TOGGLE DESCRIPTION -->
-                                        <h:panelGroup
-                                            rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
+                                        <h:panelGroup rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
                                             <div class="collection__description-toggle">
                                                 <button
                                                     jsf:styleClass="btn btn-link"
@@ -99,18 +109,6 @@
                                                     title="#{msg[browseDcElement.label]}: #{msg.rssSubscribe}"
                                                     target="_blank">
                                                     <util:icon icon="rss" />
-                                                </a>
-                                            </div>
-                                        </h:panelGroup>
-
-                                        <!-- COLLECTION ARCHIVE DOWNLOAD (logged-in users only) -->
-                                        <h:panelGroup
-                                            rendered="#{userBean.loggedIn and collectionArchiveBean.isAvailable(browseDcElement)}">
-                                            <div class="collection__archive-download">
-                                                <a
-                                                    href="#{collectionArchiveBean.getDownloadUrl(browseDcElement)}"
-                                                    title="#{msg[browseDcElement.label]}: #{msg.collectionArchive_download}">
-                                                    <util:icon icon="download" />
                                                 </a>
                                             </div>
                                         </h:panelGroup>
