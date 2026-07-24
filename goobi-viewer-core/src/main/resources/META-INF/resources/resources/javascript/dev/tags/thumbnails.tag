@@ -15,8 +15,14 @@ For ambigious sources, the additional opts.type property determines how the sour
 
 <thumbnails>
 		<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? 'selected' : ''} {getPageStatus(index)}" each="{canvas, index in thumbnails}">
+<<<<<<< HEAD
 			<a class="thumbnails-image-link" href="{getLink(canvas)}"  onclick="{handleClickOnImage}">
 				<img class="thumbnails-image" alt="{getObjectTitle() + ': ' + getValue(canvas.label)}" src="{getImage(canvas)}" loading="lazy" />
+=======
+			<a class="thumbnails-image-link" href="{getLink(canvas)}" aria-label="{getAriaLabel(canvas, index)}" aria-current="{this.opts.index == index ? 'page' : undefined}" tabindex="{needsKeyboardFocus(canvas) ? '0' : undefined}" role="{needsKeyboardFocus(canvas) ? 'link' : undefined}" onclick="{handleClickOnImage}" onkeydown="{handleKeydownOnImage}">
+				<!-- the link carries the accessible name via aria-label; a speaking alt would be read twice by screen readers -->
+				<img class="thumbnails-image" alt="" src="{getImage(canvas)}" loading="lazy" data-viewer-thumbnail="thumbnail"/>
+>>>>>>> 4307eee1db (show 404 and 403 placeholder images in archive view)
 			<div class="thumbnails-image-overlay">
 				<div class="thumbnails-label">{getValue(canvas.label)}</div>
 			</div>
@@ -56,6 +62,8 @@ this.on("updated", () => {
 	if(activeThumb) {		
 		activeThumb.scrollIntoView({block: "end", behavior: "smooth"});
 	}
+	//the thumbnail loader runs before this tag creates is html, so the img elements are not registered in the thumbnailLoader. Trigger it manually
+	window.viewerJS?.thumbnailLoader?.loadAll();
 	if(this.opts.onload) {
 	    this.opts.onload();
 	}
