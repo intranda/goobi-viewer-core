@@ -50,6 +50,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import de.intranda.digiverso.normdataimporter.NormDataImporter;
+import de.intranda.digiverso.normdataimporter.model.GeoNamesRecord;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.StringConstants;
@@ -598,7 +599,27 @@ public class Metadata implements MetadataListElement, Serializable {
                         // Popup button
                         NavigationHelper nh = BeanUtils.getNavigationHelper();
                         if (nh != null) {
-                            String html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale);
+                            String messageKey = "NORMDATA_BUTTON";
+                            if (value.contains("d-nb.info/gnd/")) {
+                                messageKey = "NORMDATA_BUTTON_GND";
+                            } else if (value.contains(GeoNamesRecord.GEONAMES_DOMAIN)) {
+                                messageKey = "NORMDATA_BUTTON_GEONAMES";
+                            } else if (value.contains("viaf.org")) {
+                                messageKey = "NORMDATA_BUTTON_VIAF";
+                            } else if (value.contains("wikidata.org")) {
+                                messageKey = "NORMDATA_BUTTON_WIKIDATA";
+                            } else if (value.contains("vocab.getty.edu")) {
+                                messageKey = "NORMDATA_BUTTON_GETTY";
+                            } else if (value.contains("dante.gbv.de")) {
+                                messageKey = "NORMDATA_BUTTON_DANTE";
+                            } else if (value.contains("wikipedia.org") || value.contains("wikimedia.org")) {
+                                messageKey = "NORMDATA_BUTTON_WIKIMEDIA";
+                            }
+                            String html = ViewerResourceBundle.getTranslation(messageKey, locale);
+                            if (html.equals(messageKey)) {
+                                // Provider key undefined (e.g. dropped by a local message override) - fall back to the generic button
+                                html = ViewerResourceBundle.getTranslation("NORMDATA_BUTTON", locale);
+                            }
 
                             html = html.replace("{0}", nh.getApplicationUrl())
                                     .replace("{1}", BeanUtils.escapeCriticalUrlChracters(value))
