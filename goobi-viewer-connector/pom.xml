@@ -289,34 +289,10 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Ruleset, suppressions and execution binding are inherited from the parent pluginManagement -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>com.puppycrawl.tools</groupId>
-						<artifactId>checkstyle</artifactId>
-						<version>${checkstyle.version}</version>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<id>checkstyle-check</id>
-						<phase>verify</phase>
-						<configuration>
-							<skip>${skipCheckstyle}</skip>
-							<failOnViolation>true</failOnViolation>
-							<failsOnError>false</failsOnError>
-							<logViolationsToConsole>true</logViolationsToConsole>
-							<maxAllowedViolations>${checkstyle.max.violations}</maxAllowedViolations>
-							<violationSeverity>warning</violationSeverity>
-							<configLocation>checkstyle.xml</configLocation>
-						</configuration>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -295,6 +295,36 @@
 							<version>${checkstyle.version}</version>
 						</dependency>
 					</dependencies>
+					<!-- Ruleset and suppressions live in the reactor root (not per-module ${basedir}) so every module
+					     shares one config; modules only declare the plugin coordinates and inherit this execution.
+					     Kept at plugin level rather than inside the execution so that goals invoked directly from the
+					     command line - notably the checkstyle:checkstyle report run by CI - use the project ruleset
+					     instead of the plugin default sun_checks.xml -->
+					<configuration>
+						<configLocation>${maven.multiModuleProjectDirectory}/checkstyle.xml</configLocation>
+						<inputEncoding>UTF-8</inputEncoding>
+						<suppressionsLocation>${maven.multiModuleProjectDirectory}/checkstyle-suppressions.xml</suppressionsLocation>
+						<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+					</configuration>
+					<executions>
+						<execution>
+							<id>checkstyle-check</id>
+							<phase>verify</phase>
+							<!-- skip stays execution-scoped: at plugin level it would also suppress the CI report goal,
+							     which is switched on via -Dcheckstyle.skip=false and must not inherit ${skipCheckstyle} -->
+							<configuration>
+								<skip>${skipCheckstyle}</skip>
+								<failOnViolation>true</failOnViolation>
+								<failsOnError>false</failsOnError>
+								<logViolationsToConsole>true</logViolationsToConsole>
+								<maxAllowedViolations>${checkstyle.max.violations}</maxAllowedViolations>
+								<violationSeverity>warning</violationSeverity>
+							</configuration>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
