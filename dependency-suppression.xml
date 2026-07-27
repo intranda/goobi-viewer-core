@@ -32,13 +32,14 @@
         <cve>CVE-2006-0197</cve>
     </suppress>
 
-    <!-- CVE-2026-23907 only affects the ExtractEmbeddedFiles example program, not the PDFBox library itself -->
+    <!-- CVE-2026-23907 and CVE-2026-33929 only affect the ExtractEmbeddedFiles example program, not the PDFBox library itself -->
     <suppress>
         <notes><![CDATA[
         file name: pdfbox-3.0.5.jar / pdfbox-io-3.0.5.jar
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/pdfbox.*@.*$</packageUrl>
         <cve>CVE-2026-23907</cve>
+        <cve>CVE-2026-33929</cve>
     </suppress>
 
 
@@ -156,32 +157,29 @@
     </suppress>
 
 
-    <!-- no fix available yet: these CVEs affect all current Netty releases including 4.1.119.Final;
-         Netty is pinned to 4.1.119.Final in dependencyManagement to stay on the latest available version.
-         To be re-evaluated when a fixed Netty release is published. -->
+    <!-- Jetty 10.0.26 (jetty-io, http2-client and related client artifacts) is a transitive dependency of
+         solr-solrj, pulled in purely for its HTTP/2 client used to talk to Solr. jetty-server and
+         jetty-security are not on the classpath of either module, and neither module contains any direct
+         org.eclipse.jetty usage - confirmed via dependency:tree and a source grep. This rules out the
+         request-parsing/server-authentication CVEs below regardless of Jetty version:
+           - CVE-2026-2332: HTTP/1.1 parser request smuggling - requires a component parsing untrusted
+             inbound requests and forwarding them; we only parse Solr's own responses on a
+             self-initiated connection.
+           - CVE-2026-5795: JASPIAuthenticator ThreadLocal leak - the vulnerable class lives in
+             jetty-security, which is absent from both dependency trees.
+           - CVE-2026-6790: missing Host-header-vs-authority check - a server-side request validation
+             gap; we are the client setting the Host header, not validating it.
+         CVE-2025-11143 remains suppressed as before because Jetty is transitive of solr-solrj and cannot
+         be upgraded independently; re-evaluate all four once Solr ships a version with a fixed Jetty. -->
     <suppress>
         <notes><![CDATA[
-        file name: netty-transport-*.jar - CVE-2026-* and CVE-2025-58056/58057/55163/67735 affect all current Netty releases
-        ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-.*@.*$</packageUrl>
-        <cve>CVE-2026-33870</cve>
-        <cve>CVE-2026-33871</cve>
-        <cve>CVE-2025-58056</cve>
-        <cve>CVE-2025-58057</cve>
-        <cve>CVE-2025-55163</cve>
-        <cve>CVE-2025-67735</cve>
-    </suppress>
-
-
-    <!-- Jetty 10.0.26 is a transitive dependency of solr-solrj and cannot be upgraded independently
-         without risking incompatibility with the Solr client. To be re-evaluated when Solr ships a
-         version that includes a fixed Jetty release. -->
-    <suppress>
-        <notes><![CDATA[
-        file name: jetty-*.jar - transitive of solr-solrj, cannot be upgraded independently
+        file name: jetty-*.jar / http2-client-10.0.26.jar - client-only usage transitive of solr-solrj, cannot be upgraded independently
         ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty.*@.*$</packageUrl>
         <cve>CVE-2025-11143</cve>
+        <cve>CVE-2026-2332</cve>
+        <cve>CVE-2026-5795</cve>
+        <cve>CVE-2026-6790</cve>
     </suppress>
 
 
@@ -199,15 +197,26 @@
 
     <!-- ZooKeeper 3.9.4 is a transitive dependency of solr-solrj-zookeeper and cannot be upgraded
          independently without risking incompatibility with the Solr client. To be re-evaluated when
-         Solr ships a version that includes a fixed ZooKeeper release. -->
+         Solr ships a version that includes a fixed ZooKeeper release. The regex covers both the
+         zookeeper and zookeeper-jute artifacts (same release train, same transitive origin). -->
     <suppress>
         <notes><![CDATA[
-        file name: zookeeper-3.9.4.jar - transitive of solr-solrj-zookeeper, cannot be upgraded independently
+        file name: zookeeper-3.9.4.jar / zookeeper-jute-3.9.4.jar - transitive of solr-solrj-zookeeper, cannot be upgraded independently
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.zookeeper/zookeeper@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.zookeeper/zookeeper.*@.*$</packageUrl>
         <cve>CVE-2026-24308</cve>
         <cve>CVE-2026-24281</cve>
     </suppress>
 
+    <!-- CVE-2026-44825 is hardcoded credentials in the "bin/solr auth enable" setup CLI script of the
+         Solr server distribution. goobi-viewer only consumes solr-api/solr-solrj as a Java client
+         library against an externally run Solr server; it never ships or invokes bin/solr. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: solr-api-9.10.1.jar / solr-solrj-zookeeper-9.10.1.jar - client library only, bin/solr CLI is not part of this project
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.solr/solr.*@.*$</packageUrl>
+        <cve>CVE-2026-44825</cve>
+    </suppress>
 
 </suppressions>

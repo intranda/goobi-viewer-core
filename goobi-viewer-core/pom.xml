@@ -133,6 +133,8 @@
 		<mockito.version>5.23.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 		<mockserver.version>7.5.0</mockserver.version>
+		<!-- mockserver-netty 7.5.0 requires the Netty 4.2.x line; see dependencyManagement below -->
+		<netty.version>4.2.16.Final</netty.version>
 		<omnifaces.version>4.7.12</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.5.1</poi.version>
@@ -150,6 +152,21 @@
 		<sf-geojson.version>3.3.3</sf-geojson.version>
 	</properties>
 
+	<!-- Force all transitive Netty artifacts (pulled in by mockserver-netty, test scope) to a single
+	     consistent, patched version instead of relying on Maven's nearest-wins mediation, which would
+	     otherwise mix versions across the Netty submodules and leave old CVEs open (CVE-2026-44891,
+	     CVE-2026-55831, CVE-2026-55833 etc., fixed as of 4.1.136.Final/4.2.16.Final). -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-bom</artifactId>
+				<version>${netty.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 	
@@ -1303,7 +1320,9 @@
 					<format>ALL</format>
 					<skip>${skipDependencyCheck}</skip>
 					<suppressionFiles>
-						<suppressionFile>file://${basedir}/dependency-suppression.xml</suppressionFile>
+						<!-- Shared reactor-wide file (not per-module ${basedir}) so core and connector
+							 stay in sync automatically instead of needing manual duplication -->
+						<suppressionFile>file://${maven.multiModuleProjectDirectory}/dependency-suppression.xml</suppressionFile>
 					</suppressionFiles>
 				</configuration>
 				<executions>
