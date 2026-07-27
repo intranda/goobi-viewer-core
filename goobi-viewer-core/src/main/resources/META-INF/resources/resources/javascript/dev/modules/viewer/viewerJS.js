@@ -92,6 +92,9 @@ var viewerJS = (function () {
         //init toggle hide/show
         viewerJS.toggle.init();
 
+        // init accessible language switcher menu
+        viewerJS.changeLocalMenu.init();
+
         viewerJS.initWidgetUsage();
 
         viewerJS.initFragmentActions();

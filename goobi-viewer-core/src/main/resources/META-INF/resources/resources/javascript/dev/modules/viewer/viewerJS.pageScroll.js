@@ -49,7 +49,11 @@ var viewerJS = (function (viewer) {
                 }
             });
 
-            _elem.on('click', function () {
+            // "obj" is expected to be a real anchor link (e.g. <a href="#top">) so
+            // the control still works without JavaScript; prevent the native, instant
+            // jump here so only the animated scroll below runs when JS is available.
+            _elem.on('click', function (e) {
+                e.preventDefault();
                 _scrollPage(_text);
             });
 
@@ -97,9 +101,18 @@ var viewerJS = (function (viewer) {
      * @param {String} anchor The name of the anchor to scroll to.
      */
     function _scrollPage(anchor) {
+        var $anchor = $(anchor);
+
+        // Move keyboard focus to the anchor (not just scroll the viewport), so tab order
+        // continues from the top of the page instead of from wherever this control lives.
+        // preventScroll avoids fighting the animated scroll below with a native jump.
+        if ($anchor.length) {
+            $anchor[0].focus({ preventScroll: true });
+        }
+
         $('html,body').animate(
             {
-                scrollTop: $(anchor).offset().top,
+                scrollTop: $anchor.offset().top,
             },
             1000
         );
