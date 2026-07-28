@@ -199,7 +199,6 @@
                                             <div class="admin__translations-filter-wrapper">
                                                 <h:inputText
                                                     styleClass="form-control admin__translations-search-input"
-                                                    pt:placeholder="#{msg.search}"
                                                     value="#{adminBean.currentTranslationGroup.filterString}"
                                                     immediate="true">
                                                     <f:ajax
@@ -215,6 +214,12 @@
                                                             render="overviewList" />
                                                     </button>
                                                 </div>
+                                                <script>
+                                                	$('.admin__translations-search-input').attr('placeholder', '#{msg.search}'); 
+                                                	 viewerJS.jsfAjax.success.subscribe(function () {
+                                                		 $('.admin__translations-search-input').attr('placeholder', '#{msg.search}'); 
+                                                	 });
+                                                </script>
                                             </div>
 
                                             <!-- LIST OF MSG KEYS IN THIS GROUP -->
