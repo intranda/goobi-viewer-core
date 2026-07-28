@@ -129,7 +129,7 @@
 		<mariadb-java-client.version>3.5.9</mariadb-java-client.version>
 		<mockito.version>5.23.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
-		<mockserver.version>7.0.0</mockserver.version>
+		<mockserver.version>7.4.0</mockserver.version>
 		<omnifaces.version>4.7.12</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.5.1</poi.version>
