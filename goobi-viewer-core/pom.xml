@@ -105,7 +105,7 @@
 		<commons-net.version>3.13.0</commons-net.version>
 		<commons-text.version>1.15.0</commons-text.version>
 		<cron-expression-descriptor.version>1.2.10</cron-expression-descriptor.version>
-		<dbunit.version>3.2.0</dbunit.version>
+		<dbunit.version>3.3.0</dbunit.version>
 		<eclipselink.version>4.0.9</eclipselink.version>
 		<h2.version>2.4.240</h2.version>
 		<httpmime.version>4.5.14</httpmime.version>
