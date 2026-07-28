@@ -16,9 +16,16 @@
       <property name="allowMissingParamTags" value="true"/>
       <property name="allowMissingReturnTag" value="true"/>
     </module>
-    <module name="JavadocStyle">
+    <!-- JavadocStyle was removed in Checkstyle 13.9.0; replaced by the granular checks
+         Checkstyle itself recommends as its successor -->
+    <module name="InvalidJavadocPosition">
       <property name="severity" value="info"/>
-      <property name="scope" value="public"/>
+    </module>
+    <module name="SingleLineJavadoc">
+      <property name="severity" value="info"/>
+    </module>
+    <module name="NonEmptyAtclauseDescription">
+      <property name="severity" value="info"/>
     </module>
     <module name="JavadocType">
       <property name="scope" value="public"/>
