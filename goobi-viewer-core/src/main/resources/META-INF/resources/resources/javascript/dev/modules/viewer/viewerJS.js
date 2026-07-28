@@ -339,22 +339,7 @@ var viewerJS = (function () {
         if (!event || event.status == 'success') {
             if ($('.tinyMCE').length > 0) {
                 viewer.tinyConfig.language = currentLang;
-                viewer.tinyConfig.setup = function (ed) {
-                    // listen to changes on tinymce input fields
-                    ed.on('init', function (e) {
-                        viewerJS.stickyElements.refresh.next();
-                    });
-
-                    ed.on('change input paste', function (e) {
-                        tinymce.triggerSave();
-                        //trigger a change event on the underlying textArea
-                        $(ed.targetElm).change();
-                        if (currentPage === 'adminCmsNewPage') {
-                            createPageConfig.prevBtn.attr('disabled', true);
-                            createPageConfig.prevDescription.show();
-                        }
-                    });
-                };
+                // setup comes from the shared _defaults.setup in viewerJS.tinyMce.js
                 viewerJS.tinyMce.init(viewer.tinyConfig);
             }
         }

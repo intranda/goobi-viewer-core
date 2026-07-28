@@ -63,9 +63,20 @@
 		    	}    
 		    });
 		    if(this.opts.item.isReviewMode()) {
-		        config.readonly = 1;
+		        // Use a real boolean here: TinyMCE 6+ validates 'readonly' with a
+		        // boolean processor and silently falls back to its default (false)
+		        // if it receives a non-boolean, which would make review mode editable.
+		        config.readonly = true;
 		    }
-	  	    tinymce.init( config );
+		    // Route through the shared wrapper instead of the raw global so most
+		    // of _defaults (plugins, toolbar, license_key, etc.) still applies.
+		    // Note: the 'setup' key above replaces _defaults.setup wholesale
+		    // (getConfig's deep merge copies function values by reference, it
+		    // does not compose them) — this tag intentionally keeps its own
+		    // setup rather than _defaults', since riot binds native DOM
+		    // listeners here that jQuery's $(ed.targetElm).change() wouldn't
+		    // reach.
+	  	    viewerJS.tinyMce.init( config );
 	    }
 	}
 	

@@ -32,11 +32,29 @@ var viewerJS = (function (viewer) {
         width: '100%',
         height: 400,
         theme: 'silver',
+        license_key: 'gpl',
+        // TinyMCE 8 defaults this to true, rewriting existing <object>/
+        // <embed> markup into <iframe>/<video>/<audio> on load and again
+        // on save. Only one of the ~14 editor surfaces using this config
+        // (the CMS htmltext field) runs its saved value through a
+        // server-side sanitizer at all; the rest store whatever TinyMCE
+        // produces unfiltered. Disabled globally until real content on
+        // the unsanitized surfaces has been checked (see the plan's Task
+        // 16 content-safety spot check).
+        convert_unsafe_embeds: false,
+        // TinyMCE 6+ flipped this default to true; without it, pasting an
+        // image embeds it as a base64 data: URI, which HtmlSanitizer then
+        // strips outright on the sanitized CMS field (see Task 0 decision
+        // #11) and which can overflow TEXT columns on unsanitized ones.
+        // false restores exactly the v5 behavior.
+        paste_data_images: false,
+        skin: 'tinymce-5',
+        content_css: 'tinymce-5',
         plugins:
-            'print preview paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists wordcount media textpattern help',
+            'preview searchreplace autolink directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help',
         toolbar:
-            'formatselect fontsizeselect | undo redo | bold italic underline strikethrough | removeformat | alignleft aligncenter alignright alignjustify | bullist numlist | link anchor image media | table | code',
-        fontsize_formats: '10pt 12pt 14pt 15pt 16pt 18pt 24pt 36pt',
+            'blocks fontsize | undo redo | bold italic underline strikethrough | removeformat | alignleft aligncenter alignright alignjustify | bullist numlist | link anchor image media | table | code',
+        font_size_formats: '10pt 12pt 14pt 15pt 16pt 18pt 24pt 36pt',
         menubar: false,
         statusbar: false,
         pagebreak_separator: '<span class="pagebreak"></span>',
@@ -50,13 +68,16 @@ var viewerJS = (function (viewer) {
             });
 
             ed.on('change input paste', function (e) {
-                console.log('trigger save');
                 ed.save();
                 //tinymce.triggerSave();
                 //trigger a change event on the underlying textArea
-                console.log('target ', ed.targetElm, ed.getElement());
                 $(ed.targetElm).change();
-                if (currentPage === 'adminCmsNewPage') {
+                // currentPage is only ever declared by the reference theme's
+                // own page chrome; other consumers of this shared _defaults
+                // (e.g. the crowdsourcing module's OCR editor) never declare
+                // it, so this guard is required to avoid a ReferenceError on
+                // every keystroke there.
+                if (typeof currentPage !== 'undefined' && currentPage === 'adminCmsNewPage') {
                     createPageConfig.prevBtn.attr('disabled', true);
                     createPageConfig.prevDescription.show();
                 }
@@ -65,7 +86,6 @@ var viewerJS = (function (viewer) {
                 $(ed.targetElm).blur();
             });
 
-            // SETUP IS OVERRIDEN BY THE INIT FUNCTION
             //			ed.ui.registry.addButton('myCustomToolbarButton', {
             //				text: 'My Custom Button',
             //	              onAction: function () {
@@ -110,38 +130,11 @@ var viewerJS = (function (viewer) {
         close: function () {
             tinymce.remove();
         },
-        overview: function () {
-            // check if description or publication editing is enabled and
-            // set fullscreen options
-            if ($('.overview__description-editor').length > 0) {
-                viewerJS.tinyConfig.setup = function (editor) {
-                    editor.on('init', function (e) {
-                        $('.overview__publication-action .btn').hide();
-                    });
-                    editor.on('FullscreenStateChanged', function (e) {
-                        if (e.state) {
-                            $('.overview__description-action-fullscreen').addClass('in');
-                        } else {
-                            $('.overview__description-action-fullscreen').removeClass('in');
-                        }
-                    });
-                };
-            } else {
-                viewerJS.tinyConfig.setup = function (editor) {
-                    editor.on('init', function (e) {
-                        $('.overview__description-action .btn').hide();
-                    });
-                    editor.on('FullscreenStateChanged', function (e) {
-                        if (e.state) {
-                            $('.overview__publication-action-fullscreen').addClass('in');
-                        } else {
-                            $('.overview__publication-action-fullscreen').removeClass('in');
-                        }
-                    });
-                };
-            }
-        },
     };
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}
