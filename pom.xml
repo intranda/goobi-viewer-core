@@ -66,7 +66,7 @@
 		<jackson.version>2.21.5</jackson.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<!-- https://github.com/stleary/JSON-java -->
-		<json.version>20260522</json.version>
+		<json.version>20260719</json.version>
 		<junit.version>6.1.2</junit.version>
 		<log4j.version>2.26.1</log4j.version>
 		<!--netty.version>4.1.132.Final</netty.version-->
