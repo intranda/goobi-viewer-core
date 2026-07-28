@@ -1,0 +1,87 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    template="/resources/themes/#{navigationHelper.theme}/template.html">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPage('sitemap', false, true)}" />
+            <f:event
+                type="preRenderView"
+                listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('sitemap',1)}" />
+            <f:event
+                type="preRenderView"
+                listener="#{searchBean.resetSearchFilter}" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="breadcrumbs">
+        <viewerComponent:breadcrumbs
+            showIcon="false"
+            showStartText="true" />
+    </ui:define>
+
+    <ui:define name="content">
+        <f:view
+            contentType="text/html"
+            encoding="utf-8">
+            <div
+                id="sitemap"
+                class="view-sitemap">
+                <h1 class="view-sitemap__heading">#{msg.sitemap}</h1>
+
+                <!-- MAIN NAVIGATION -->
+                <nav
+                    class="view-sitemap__nav"
+                    aria-label="#{msg.label__sitemap__main_navigation}">
+                    <h2 class="view-sitemap__nav-heading">#{msg.label__sitemap__main_navigation}</h2>
+                    <ui:include src="/resources/components/sitemapNavTree.xhtml">
+                        <ui:param
+                            name="items"
+                            value="#{cmsBean.navigationMenuItems}" />
+                    </ui:include>
+                </nav>
+
+                <!-- LEGAL / CONTACT PAGES (mirrors the footer link set defined via ThemeConfiguration) -->
+                <nav
+                    class="view-sitemap__nav"
+                    aria-label="#{msg.label__sitemap__additional_pages}">
+                    <h2 class="view-sitemap__nav-heading">#{msg.label__sitemap__additional_pages}</h2>
+                    <ul class="view-sitemap__list">
+                        <li class="view-sitemap__list-item">
+                            <a
+                                class="view-sitemap__list-link"
+                                href="#{adminThemesBean.getFooterUrl('legal', request.contextPath.concat('/imprint'))}">#{msg.imprint}</a>
+                        </li>
+                        <li class="view-sitemap__list-item">
+                            <a
+                                class="view-sitemap__list-link"
+                                href="#{adminThemesBean.getFooterUrl('privacy', request.contextPath.concat('/privacy'))}">#{msg.privacy}</a>
+                        </li>
+                        <li class="view-sitemap__list-item">
+                            <h:panelGroup rendered="#{adminThemesBean.hasFooterUrl('contact')}">
+                                <a
+                                    class="view-sitemap__list-link"
+                                    target="_blank"
+                                    rel="noopener"
+                                    href="#{adminThemesBean.getFooterUrl('contact', '')}">#{msg.contact}</a>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{!adminThemesBean.hasFooterUrl('contact')}">
+                                <button
+                                    type="button"
+                                    class="btn btn--link view-sitemap__list-link"
+                                    data-toggle="modal"
+                                    data-target="#feedbackModal">#{msg.contact}</button>
+                            </h:panelGroup>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </f:view>
+    </ui:define>
+</ui:composition>

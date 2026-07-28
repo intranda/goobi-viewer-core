@@ -49,6 +49,14 @@
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 
+	<!-- SITEMAP -->
+	<url-mapping id="sitemap">
+		<pattern value="/sitemap/" />
+		<view-id value="/sitemap.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
+	</url-mapping>
+
 	<!-- TAGS -->
 	<url-mapping id="tags">
 		<pattern value="/tags/" />
