@@ -72,6 +72,7 @@ var viewerJS = (function (viewer) {
                 //tinymce.triggerSave();
                 //trigger a change event on the underlying textArea
                 $(ed.targetElm).change();
+				ed.targetElm.innerHTML = ed.targetElm.value;
                 // currentPage is only ever declared by the reference theme's
                 // own page chrome; other consumers of this shared _defaults
                 // (e.g. the crowdsourcing module's OCR editor) never declare
