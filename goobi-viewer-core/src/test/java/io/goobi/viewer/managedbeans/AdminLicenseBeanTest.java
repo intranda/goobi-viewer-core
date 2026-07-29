@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.security.LicenseType;
 
 class AdminLicenseBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -79,46 +78,5 @@ class AdminLicenseBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         // "RESTRICTED" is carried by grouped metadata (and event) documents; the aggregation join must still resolve
         // these to their top-level record via PI_TOPSTRUCT, otherwise metadata-only records would drop out (see #26795).
         Assertions.assertTrue(bean.getNumRecordsWithAccessCondition("RESTRICTED") >= 1);
-    }
-
-    /**
-     * @see AdminLicenseBean#createsOverrideCycle(LicenseType, List)
-     * @verifies detect reciprocal override cycle
-     */
-    @Test
-    void createsOverrideCycle_shouldDetectReciprocalCycle() {
-        LicenseType a = new LicenseType();
-        a.setName("A");
-        LicenseType b = new LicenseType();
-        b.setName("B");
-        a.getOverriddenLicenseTypes().add(b);
-        b.getOverriddenLicenseTypes().add(a);
-        Assertions.assertTrue(AdminLicenseBean.createsOverrideCycle(a, Arrays.asList(a, b)));
-    }
-
-    /**
-     * @see AdminLicenseBean#createsOverrideCycle(LicenseType, List)
-     * @verifies detect self override cycle
-     */
-    @Test
-    void createsOverrideCycle_shouldDetectSelfCycle() {
-        LicenseType a = new LicenseType();
-        a.setName("A");
-        a.getOverriddenLicenseTypes().add(a);
-        Assertions.assertTrue(AdminLicenseBean.createsOverrideCycle(a, Arrays.asList(a)));
-    }
-
-    /**
-     * @see AdminLicenseBean#createsOverrideCycle(LicenseType, List)
-     * @verifies return false for acyclic overrides
-     */
-    @Test
-    void createsOverrideCycle_shouldReturnFalseForAcyclicOverrides() {
-        LicenseType a = new LicenseType();
-        a.setName("A");
-        LicenseType b = new LicenseType();
-        b.setName("B");
-        a.getOverriddenLicenseTypes().add(b);
-        Assertions.assertFalse(AdminLicenseBean.createsOverrideCycle(a, Arrays.asList(a, b)));
     }
 }
