@@ -1002,6 +1002,16 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getViewerBaseUrl()
+     * @verifies return configured value with trailing slash
+     */
+    @Test
+    void getViewerBaseUrl_shouldReturnConfiguredValueWithTrailingSlash() {
+        // urls.base is configured without a trailing slash; the getter must append one
+        assertEquals("https://viewer.goobi.io/viewer/", DataManager.getInstance().getConfiguration().getViewerBaseUrl());
+    }
+
+    /**
      * @see Configuration#getCollectionSplittingChar(String)
      * @verifies return correct value
      */

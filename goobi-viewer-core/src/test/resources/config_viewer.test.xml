@@ -89,6 +89,9 @@
 		<urnResolver>urnResolver_value</urnResolver>
 		
  		<iiif useForCmsMedia="true">https://viewer.goobi.io/api/v1/</iiif>
+		<!-- base: Base viewer URL up to the context path. Deliberately without a
+			trailing slash here to exercise the getter's slash normalization. -->
+		<base>https://viewer.goobi.io/viewer</base>
 		<rest>http://localhost:8080/viewer/api/v1/</rest>
         
         <!-- workflow: REST service URL of Goobi workflow -->
