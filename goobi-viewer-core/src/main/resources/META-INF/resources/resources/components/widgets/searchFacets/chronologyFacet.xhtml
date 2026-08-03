@@ -34,6 +34,7 @@
                 <div class="widget__topbar widget-chronology-slider__topbar">
                     <div class="widget-chronology-slider__item chronology-slider-label">
                         <h2
+                            id="chronoSliderTitle_#{cc.attrs.index}"
                             class="widget__title widget-chronology-slider__title"
                             aria-level="#{cc.attrs.headingLevel}">
                             #{msg.widgetChronology_label}: #{msg[cc.attrs.field]}
@@ -88,6 +89,7 @@
                     value-input="#{cc.clientId}:chronologySliderForm:chronologySliderInput"
                     update-facet="#{cc.clientId}:chronologySliderForm:chronologySliderSet"
                     loader="chronologyLoader-#{cc.attrs.index}"
+                    group-label-id="chronoSliderTitle_#{cc.attrs.index}"
                     show-tooltip="true" />
 
                 <script>

@@ -23,14 +23,16 @@
                 class="#{cc.attrs.linkClass}"
                 href="#{cc.attrs.navItem.navigationUrl}"
                 target="_blank"
-                rel="noopener">
+                rel="noopener"
+                aria-current="#{cc.attrs.navItem.matchesPage(navigationHelper.currentPage) ? 'page' : ''}">
                 <span>#{msg[cc.attrs.navItem.itemLabel]}</span>
             </a>
         </ui:fragment>
         <ui:fragment rendered="#{!cc.attrs.navItem.openInNewWindow}">
             <a
                 class="#{cc.attrs.linkClass}"
-                href="#{cc.attrs.navItem.navigationUrl}">
+                href="#{cc.attrs.navItem.navigationUrl}"
+                aria-current="#{cc.attrs.navItem.matchesPage(navigationHelper.currentPage) ? 'page' : ''}">
                 <span>#{msg[cc.attrs.navItem.itemLabel]}</span>
             </a>
         </ui:fragment>

@@ -29,7 +29,8 @@
         <nav
             id="alphabeticPaginator"
             class="alphabetic-paginator #{cc.attrs.rtl ? '-rtl' : '-ltr'}"
-            aria-label="#{msg.sortBy}">
+            role="navigation"
+            aria-label="#{msg.aria_label__nav_alphabetic}">
             <h:form
                 id="alphabeticPaginatorForm"
                 prependId="false">
@@ -38,7 +39,7 @@
                         value="#{cc.attrs.filters}"
                         var="filter">
                         <li class="#{cc.attrs.currentStringFilter == filter ? 'active' : ''}">
-                            <a href="#{cc.attrs.baseUrl}#{navigationHelper.urlEncode(filter)}/1/">#{filter}</a>
+                            <a href="#{cc.attrs.baseUrl}#{navigationHelper.urlEncode(filter)}/1/" aria-current="#{cc.attrs.currentStringFilter == filter ? 'page' : 'false'}">#{filter}</a>
                         </li>
                     </ui:repeat>
                 </ul>
