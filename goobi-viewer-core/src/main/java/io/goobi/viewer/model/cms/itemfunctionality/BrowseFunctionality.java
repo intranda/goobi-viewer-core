@@ -26,7 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.RedirectException;
-import io.goobi.viewer.managedbeans.BrowseBean;
+import io.goobi.viewer.managedbeans.TermBrowseBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 
 /**
@@ -34,7 +34,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
  */
 public class BrowseFunctionality implements Functionality {
 
-    private BrowseBean bean = BeanUtils.getBrowseBean();
+    private TermBrowseBean bean = BeanUtils.getTermBrowseBean();
 
     private String browseField = "";
 

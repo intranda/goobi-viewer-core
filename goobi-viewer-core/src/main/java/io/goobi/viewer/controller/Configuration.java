@@ -3665,6 +3665,34 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * getQueryFacetFields.
+     *
+     * @return a list of configured query-type facet field names (e.g. the dynamic-collection facet)
+     * @should return all values
+     */
+    public List<String> getQueryFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("query")) {
+                ret.add(field);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * isQueryFacetField.
+     *
+     * @param facetField facet field name to test
+     * @return true if the given field is configured as a query-type facet
+     */
+    public boolean isQueryFacetField(String facetField) {
+        return getQueryFacetFields().contains(facetField);
+    }
+
+    /**
      * getRangeFacetFields.
      *
      * @return List of facet fields to be used as range values

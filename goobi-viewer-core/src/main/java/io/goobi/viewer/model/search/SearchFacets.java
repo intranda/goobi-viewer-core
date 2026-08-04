@@ -56,6 +56,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
+import io.goobi.viewer.model.search.FacetItem.FacetType;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
@@ -658,6 +660,15 @@ public class SearchFacets implements Serializable {
                 GeoFacetItem item = new GeoFacetItem(facetField);
                 item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
                 facetItems.add(item);
+            } else if (isFieldQueryFacet(facetField)) {
+                // Query facet (e.g. dynamic collection): the value is an identifier resolved to the collection's stored Solr query
+                String name = facetLink.substring(facetLink.indexOf(":") + 1);
+                String label = labelMap != null && labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
+                String itemLink = itemExcluded ? FacetItem.EXCLUDE_PREFIX + facetLink : facetLink;
+                FacetItem item = new FacetItem(itemLink, label, false);
+                item.setType(FacetType.QUERY);
+                item.setFacetQuery(getDynamicCollectionQuery(name));
+                facetItems.add(item);
             } else {
                 // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
                 String label = labelMap != null && labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
@@ -675,6 +686,33 @@ public class SearchFacets implements Serializable {
     static boolean isFieldHierarchical(String field) {
         //        logger.trace("isFieldHierarchical: {} ? {}", field, //NOSONAR Debug
         return DataManager.getInstance().getConfiguration().getHierarchicalFacetFields().contains(field);
+    }
+
+    /**
+     *
+     * @param field Solr facet field name to test for query-facet configuration
+     * @return true if field is a query-type facet (e.g. the dynamic-collection facet); false otherwise
+     */
+    static boolean isFieldQueryFacet(String field) {
+        return DataManager.getInstance().getConfiguration().isQueryFacetField(field);
+    }
+
+    /**
+     * Resolves the stored Solr query of the dynamic collection with the given name.
+     *
+     * @param name unique name of the dynamic collection
+     * @return the collection's Solr query, or null if no such collection exists or on DAO error
+     */
+    static String getDynamicCollectionQuery(String name) {
+        try {
+            DynamicCollection collection = DataManager.getInstance().getDao().getDynamicCollection(name);
+            if (collection != null) {
+                return collection.getSolrQuery();
+            }
+        } catch (DAOException e) {
+            logger.trace("Error retrieving dynamic collection '{}' from DAO", name);
+        }
+        return null;
     }
 
     /**
@@ -1156,7 +1194,7 @@ public class SearchFacets implements Serializable {
      * @should return all facet items in correct order
      */
     public Map<String, List<IFacetItem>> getAllAvailableFacets() {
-        return getAvailableFacets(Arrays.asList("", "boolean", "hierarchical"));
+        return getAvailableFacets(Arrays.asList("", "boolean", "hierarchical", "query"));
     }
 
     public boolean hasAvailableFacets() {

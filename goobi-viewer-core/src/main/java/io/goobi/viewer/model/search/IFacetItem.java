@@ -41,6 +41,16 @@ public interface IFacetItem {
 
     FacetType getType();
 
+    /**
+     * @return for {@link FacetType#QUERY} items, the pre-built Solr query used as this facet's filter query; null otherwise
+     */
+    String getFacetQuery();
+
+    /**
+     * @param facetQuery the pre-built Solr query to use as this facet's filter query (for {@link FacetType#QUERY} items)
+     */
+    void setFacetQuery(String facetQuery);
+
     String getField();
 
     void setField(String field);

@@ -80,7 +80,7 @@ public class CmsCollectionsBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(CmsCollectionsBean.class);
 
     @Inject
-    private BrowseBean browseBean;
+    private CollectionBrowseBean browseBean;
 
     private CMSCollection currentCollection;
     private CMSCollection originalCollection; //collection from database, without any edits after last save
@@ -436,7 +436,7 @@ public class CmsCollectionsBean implements Serializable {
             return;
         }
         // getBrowseBean()/getCollectionViewBean() return null outside a FacesContext; guard both (java:S2259)
-        BrowseBean browseBean = BeanUtils.getBrowseBean();
+        CollectionBrowseBean browseBean = BeanUtils.getCollectionBrowseBean();
         if (browseBean != null) {
             CollectionView collectionView = browseBean.getCollection(collection.getSolrField());
             if (collectionView != null) {
@@ -459,7 +459,7 @@ public class CmsCollectionsBean implements Serializable {
             return;
         }
         // getBrowseBean()/getCollectionViewBean() return null outside a FacesContext; guard both (java:S2259)
-        BrowseBean browseBean = BeanUtils.getBrowseBean();
+        CollectionBrowseBean browseBean = BeanUtils.getCollectionBrowseBean();
         if (browseBean != null) {
             CollectionView collectionView = browseBean.getCollection(collection.getSolrField());
             if (collectionView != null) {

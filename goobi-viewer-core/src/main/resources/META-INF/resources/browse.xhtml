@@ -12,7 +12,7 @@
         <f:metadata>
             <f:event
                 type="preRenderView"
-                listener="#{navigationHelper.setCurrentPageBrowse(browseBean.dcCollection)}" />
+                listener="#{navigationHelper.setCurrentPageBrowse(collectionBrowseBean.dcCollection)}" />
             <f:event
                 type="preRenderView"
                 listener="#{searchBean.resetActiveSearchType}" />
@@ -24,10 +24,10 @@
                 listener="#{searchBean.facets.resetSliderRange}" />
             <f:viewAction
                 onPostback="false"
-                action="#{browseBean.initializeCollection(browseBean.collectionField)}" />
+                action="#{collectionBrowseBean.initializeCollection(collectionBrowseBean.collectionField)}" />
             <f:viewAction
                 onPostback="false"
-                action="#{browseBean.populateCollection(browseBean.collectionField)}" />
+                action="#{collectionBrowseBean.populateCollection(collectionBrowseBean.collectionField)}" />
         </f:metadata>
     </ui:define>
 
@@ -51,12 +51,12 @@
 
             <viewerComponent:collectionView
                 id="collection"
-                collection="#{browseBean.getCollection(browseBean.collectionField)}" />
+                collection="#{collectionBrowseBean.getCollection(collectionBrowseBean.collectionField)}" />
         </div>
     </ui:define>
 
     <ui:define name="sidebar">
-        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+        <h:panelGroup rendered="#{termBrowseBean.browsingMenuEnabled}">
             <widgetComponent:widget_browsing />
         </h:panelGroup>
         <widgetComponent:widget_rssFeed />

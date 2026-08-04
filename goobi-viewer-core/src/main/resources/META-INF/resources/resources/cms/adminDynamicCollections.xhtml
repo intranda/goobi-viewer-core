@@ -1,0 +1,101 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:util="http://goobi.io/util"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin('adminDynamicCollections')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{cmsBean.init()}" />
+        </f:metadata>
+    </ui:define>
+
+    <!-- CONTENT -->
+    <ui:define name="content">
+        <ui:fragment
+            id="dynamicCollectionsAccessControl"
+            rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
+            <div
+                id="adminDynamicCollections"
+                class="admin__cms-collections">
+                <!-- TITLE -->
+                <div class="admin__title-bar">
+                    <h1 class="admin__title">#{msg.admin__dynamic_collections}</h1>
+                </div>
+
+                <viewerComponent:adminBreadcrumbs />
+
+                <div class="admin__content-inner-content">
+                    <!-- GENERAL DESCRIPTION -->
+                    <div class="admin__info-text">#{msg.admin__dynamic_collections_desc}</div>
+
+                    <h:form
+                        id="dynamicCollectionsForm"
+                        prependId="false">
+                        <div class="admin__content-wrapper">
+                            <div class="admin__content-main">
+                                <!-- NEW COLLECTION -->
+                                <div class="admin__default-block d-flex justify-content-end">
+                                    <h:outputLink
+                                        styleClass="btn btn--success"
+                                        value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/edit/-/">
+                                        <h:outputText value="#{msg.admin__dynamic_collections_add}" />
+                                    </h:outputLink>
+                                </div>
+
+                                <div class="admin__default-block">
+                                    <ui:fragment rendered="#{empty dynamicCollectionsBean.collections}">
+                                        <div class="admin__form-help-text in">#{msg.admin__dynamic_collections_empty}</div>
+                                    </ui:fragment>
+                                    <ul class="admin__cms-collections-tree-listing">
+                                        <ui:repeat
+                                            var="collection"
+                                            value="#{dynamicCollectionsBean.collections}">
+                                            <li class="row no-gutters admin__cms-collections-entry">
+                                                <div class="col-2 collection__structure-col">
+                                                    <h:panelGroup rendered="#{collection.hasImage()}">
+                                                        <img
+                                                            src="#{collection.getIconURI(60, 60)}"
+                                                            class="img-fluid"
+                                                            alt="" />
+                                                    </h:panelGroup>
+                                                </div>
+                                                <div class="col-8">
+                                                    <div class="collection__title">
+                                                        <h:outputLink
+                                                            value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/edit/#{collection.name}/">
+                                                            <h:outputText value="#{collection.getLabel(navigationHelper.locale)}" />
+                                                        </h:outputLink>
+                                                    </div>
+                                                    <div class="admin__form-help-text in">#{collection.solrQuery}</div>
+                                                </div>
+                                                <div class="col-2 admin__cms-collections-entry-end">
+                                                    <h:commandLink
+                                                        styleClass="-redlink"
+                                                        action="#{dynamicCollectionsBean.deleteCollection(collection)}"
+                                                        title="#{msg.delete}">
+                                                        <util:icon
+                                                            icon="trash"
+                                                            svgClass="icon icon-md" />
+                                                        <f:ajax render="dynamicCollectionsForm" />
+                                                    </h:commandLink>
+                                                </div>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </ui:fragment>
+    </ui:define>
+</ui:composition>

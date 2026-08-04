@@ -66,7 +66,7 @@
                                         <ul class="admin__cms-collections-tree-listing">
                                             <ui:repeat
                                                 var="browseDcElement"
-                                                value="#{browseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
+                                                value="#{collectionBrowseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
                                                 <li
                                                     class="row no-gutters admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
                                                     style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
@@ -76,7 +76,7 @@
                                                             <div class="collection__structure text-center">
                                                                 <button
                                                                     class="btn btn--link"
-                                                                    jsf:action="#{browseBean.getCollection(cmsCollectionsBean.solrField).toggleChildren(browseDcElement)}">
+                                                                    jsf:action="#{collectionBrowseBean.getCollection(cmsCollectionsBean.solrField).toggleChildren(browseDcElement)}">
                                                                     <f:passThroughAttribute
                                                                         name="aria-label"
                                                                         value="#{msg.aria_label__show_details}" />

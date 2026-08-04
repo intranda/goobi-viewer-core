@@ -10,15 +10,15 @@
         <composite:attribute
             name="filters"
             required="false"
-            default="#{browseBean.availableStringFilters}" />
+            default="#{termBrowseBean.availableStringFilters}" />
         <composite:attribute
             name="currentStringFilter"
             required="false"
-            default="#{browseBean.currentStringFilter}" />
+            default="#{termBrowseBean.currentStringFilter}" />
         <composite:attribute
             name="baseUrl"
             required="false"
-            default="#{navigationHelper.applicationUrl}term/#{browseBean.browsingMenuField}/#{browseBean.filterQuery}/" />
+            default="#{navigationHelper.applicationUrl}term/#{termBrowseBean.browsingMenuField}/#{termBrowseBean.filterQuery}/" />
         <composite:attribute
             name="rtl"
             required="false"

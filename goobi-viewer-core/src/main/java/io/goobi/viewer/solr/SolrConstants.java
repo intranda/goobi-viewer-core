@@ -130,6 +130,8 @@ public final class SolrConstants {
     public static final String DEFAULT = "DEFAULT";
     /** Constant <code>DC="DC"</code>. */
     public static final String DC = "DC";
+    /** Reserved pseudo facet field for database-defined dynamic collections. Constant <code>DYNCOL="DYNCOL"</code>. */
+    public static final String DYNCOL = "DYNCOL";
     /** Constant <code>DOCSTRCT="DOCSTRCT"</code>. */
     public static final String DOCSTRCT = "DOCSTRCT";
     /** Constant <code>DOCSTRCT_SUB="DOCSTRCT_SUB"</code>. */

@@ -29,9 +29,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -56,6 +58,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
 import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
 import io.goobi.viewer.model.maps.Point;
@@ -388,6 +391,7 @@ public class Search implements Serializable {
 
         populateRanges(finalQuery, facets, resultGroups.size() == 1 ? resultGroups.get(0) : null, params);
         populateUnfilteredFacets(finalQuery, facets, resultGroups.size() == 1 ? resultGroups.get(0) : null, params, locale);
+        populateDynamicCollectionFacets(finalQuery, facets, resultGroups.size() == 1 ? resultGroups.get(0) : null, params, locale);
 
         logger.trace("result groups: {}", this.resultGroups.size());
         for (SearchResultGroup resultGroup : this.resultGroups) {
@@ -435,6 +439,10 @@ public class Search implements Serializable {
         if (facets.getGeoFacetting().isActive()) {
             allFacetFields.add(SolrConstants.BOOL_WKT_COORDS);
         }
+
+        // Query-backed facet fields (dynamic collections) are never real Solr fields: always strip them from the facet field list so they are not
+        // sent to Solr as facet.field. Their counts are computed separately via facet.query in populateDynamicCollectionFacets().
+        allFacetFields.removeIf(f -> DataManager.getInstance().getConfiguration().isQueryFacetField(SearchHelper.defacetifyField(f)));
 
         List<String> allFilterQueries = new ArrayList<>();
         allFilterQueries.addAll(activeFacetFilterQueries);
@@ -571,6 +579,7 @@ public class Search implements Serializable {
                 //       facetField.getName());
             }
         }
+
         // If this is a group preview, use the group's configured hit count instead of paginator hits per page
         int useHitsPerPage = hitsPerPage;
         if (resultGroups.size() > 1 && resultGroup.getPreviewHitCount() > 0 && resultGroup.getPreviewHitCount() < useHitsPerPage) {
@@ -691,6 +700,76 @@ public class Search implements Serializable {
         }
 
         processUnfilteredFacets(resp, unfilteredFacetFields, facets, locale);
+    }
+
+    /**
+     * Populates the available facets for database-defined dynamic collections (query facets). Each collection's stored Solr query is added as a Solr
+     * facet.query over the current (unfiltered) result set, and the resulting counts become {@link FacetType#QUERY} facet items under the reserved
+     * {@link SolrConstants#DYNCOL} pseudo field. Counts are computed independently of active facets, consistent with other always-available facets.
+     *
+     * @param finalQuery fully assembled main Solr query
+     * @param facets active search facets to populate
+     * @param resultGroup single result group, or null when multiple/none
+     * @param params additional Solr query parameters
+     * @param locale locale used to resolve collection labels
+     * @throws PresentationException if any
+     * @throws IndexUnreachableException if any
+     */
+    private void populateDynamicCollectionFacets(String finalQuery, SearchFacets facets, SearchResultGroup resultGroup,
+            Map<String, String> params, Locale locale) throws PresentationException, IndexUnreachableException {
+        if (!DataManager.getInstance().getConfiguration().isQueryFacetField(SolrConstants.DYNCOL)) {
+            return;
+        }
+
+        List<DynamicCollection> collections;
+        try {
+            collections = DataManager.getInstance().getDao().getAllDynamicCollections();
+        } catch (DAOException e) {
+            logger.error("Could not load dynamic collections for faceting: {}", e.getMessage());
+            return;
+        }
+
+        List<String> facetQueries = new ArrayList<>();
+        Map<String, DynamicCollection> collectionsByQuery = new LinkedHashMap<>();
+        for (DynamicCollection collection : collections) {
+            if (StringUtils.isNotBlank(collection.getSolrQuery())) {
+                String cleaned = SolrTools.cleanUpQuery(collection.getSolrQuery());
+                facetQueries.add(cleaned);
+                collectionsByQuery.put(cleaned, collection);
+            }
+        }
+        if (facetQueries.isEmpty()) {
+            return;
+        }
+
+        List<String> activeFilterQueries = new ArrayList<>(2);
+        if (StringUtils.isNotEmpty(customFilterQuery)) {
+            activeFilterQueries.add(customFilterQuery);
+        }
+        if (resultGroup != null) {
+            activeFilterQueries.add(resultGroup.getQuery());
+        }
+
+        QueryResponse resp = DataManager.getInstance()
+                .getSearchIndex()
+                .search(finalQuery, 0, 0, null, null, facetQueries, null, Collections.singletonList(SolrConstants.IDDOC), activeFilterQueries,
+                        params);
+        if (resp == null || resp.getFacetQuery() == null) {
+            return;
+        }
+
+        List<IFacetItem> dynColItems = new ArrayList<>();
+        for (Entry<String, Integer> entry : resp.getFacetQuery().entrySet()) {
+            DynamicCollection collection = collectionsByQuery.get(entry.getKey());
+            if (collection == null || entry.getValue() == null || entry.getValue() <= 0) {
+                continue;
+            }
+            dynColItems.add(FacetItem.buildQueryFacetItem(SolrConstants.DYNCOL, collection.getName(), collection.getLabel(locale),
+                    collection.getSolrQuery(), entry.getValue().longValue()));
+        }
+        if (!dynColItems.isEmpty()) {
+            facets.getAvailableFacets().put(SolrConstants.DYNCOL, dynColItems);
+        }
     }
 
     /**

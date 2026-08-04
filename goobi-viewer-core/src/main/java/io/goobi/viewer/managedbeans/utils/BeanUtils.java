@@ -40,7 +40,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.managedbeans.ActiveDocumentBean;
 import io.goobi.viewer.managedbeans.AdminBean;
 import io.goobi.viewer.managedbeans.BookmarkBean;
-import io.goobi.viewer.managedbeans.BrowseBean;
+import io.goobi.viewer.managedbeans.CollectionBrowseBean;
+import io.goobi.viewer.managedbeans.TermBrowseBean;
 import io.goobi.viewer.managedbeans.CalendarBean;
 import io.goobi.viewer.managedbeans.CaptchaBean;
 import io.goobi.viewer.managedbeans.CmsBean;
@@ -536,12 +537,21 @@ public final class BeanUtils {
     }
 
     /**
-     * getBrowseBean.
+     * getCollectionBrowseBean.
      *
-     * @return the BrowseBean managed bean
+     * @return the CollectionBrowseBean managed bean
      */
-    public static BrowseBean getBrowseBean() {
-        return (BrowseBean) getBeanByName("browseBean", BrowseBean.class);
+    public static CollectionBrowseBean getCollectionBrowseBean() {
+        return (CollectionBrowseBean) getBeanByName("collectionBrowseBean", CollectionBrowseBean.class);
+    }
+
+    /**
+     * getTermBrowseBean.
+     *
+     * @return the TermBrowseBean managed bean
+     */
+    public static TermBrowseBean getTermBrowseBean() {
+        return (TermBrowseBean) getBeanByName("termBrowseBean", TermBrowseBean.class);
     }
 
     /**

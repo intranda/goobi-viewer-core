@@ -63,6 +63,8 @@ public class FacetItem implements Serializable, IFacetItem {
     private String field;
     private String value;
     private String value2;
+    /** For {@link FacetType#QUERY} items: the pre-built Solr query used as this facet's filter query. */
+    private String facetQuery;
     private String link;
     private String label;
     private long count;
@@ -382,6 +384,24 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     /**
+     * Builds a {@link FacetType#QUERY} facet item backed by a pre-built Solr query (e.g. a dynamic collection). The item's link/value is the
+     * given identifier so it round-trips through the URL as {@code field:name}, while its filter query is the supplied Solr query.
+     *
+     * @param field the pseudo facet field (e.g. {@code DYNCOL})
+     * @param name the stable identifier used as the facet value/link
+     * @param label the (already translated) display label
+     * @param solrQuery the pre-built Solr query used as this facet's filter query
+     * @param count the number of search results matching the query
+     * @return a new query-backed {@link FacetItem}
+     */
+    public static FacetItem buildQueryFacetItem(String field, String name, String label, String solrQuery, long count) {
+        FacetItem item = new FacetItem(field, field + ":" + name, label, count, false);
+        item.setType(FacetType.QUERY);
+        item.setFacetQuery(solrQuery);
+        return item;
+    }
+
+    /**
      * Returns field:value (with the value escaped for the Solr query).
      *
      * @should escape values containing whitespaces
@@ -411,6 +431,10 @@ public class FacetItem implements Serializable, IFacetItem {
     }
 
     private String buildPositiveQueryEscapedLink() {
+        // A QUERY facet carries a pre-built Solr query (e.g. a dynamic collection's stored query); use it verbatim, do not facetify the field/value.
+        if (type == FacetType.QUERY) {
+            return StringUtils.isEmpty(facetQuery) ? "" : "(" + facetQuery + ")";
+        }
         String f = SearchHelper.facetifyField(this.field);
         String escapedValue = getEscapedValue(value);
         if (hierarchial) {
@@ -530,9 +554,19 @@ public class FacetItem implements Serializable, IFacetItem {
         return type;
     }
 
-    
+
     public void setType(FacetType type) {
         this.type = type;
+    }
+
+    @Override
+    public String getFacetQuery() {
+        return facetQuery;
+    }
+
+    @Override
+    public void setFacetQuery(String facetQuery) {
+        this.facetQuery = facetQuery;
     }
 
     /**
@@ -768,6 +802,8 @@ public class FacetItem implements Serializable, IFacetItem {
         BOOLEAN,
         GEO,
         HIERARCHICAL,
-        RANGE;
+        RANGE,
+        /** A facet whose filter query is an arbitrary, pre-built Solr query (e.g. dynamic collections) rather than a field:value pair. */
+        QUERY;
     }
 }

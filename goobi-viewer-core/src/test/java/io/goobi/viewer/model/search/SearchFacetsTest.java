@@ -101,6 +101,32 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies resolve a query facet token to the dynamic collection's stored solr query
+     */
+    @Test
+    void parseFacetString_shouldResolveQueryFacetForDynamicCollection() throws DAOException {
+        io.goobi.viewer.model.cms.collections.DynamicCollection dc =
+                new io.goobi.viewer.model.cms.collections.DynamicCollection("dyncol_parse_test");
+        dc.setSolrQuery("DOCSTRCT:monograph");
+        DataManager.getInstance().getDao().addDynamicCollection(dc);
+        try {
+            List<IFacetItem> facetItems = new ArrayList<>();
+            SearchFacets.parseFacetString(SolrConstants.DYNCOL + ":dyncol_parse_test;;", facetItems, null);
+            Assertions.assertEquals(1, facetItems.size());
+            IFacetItem item = facetItems.get(0);
+            Assertions.assertEquals(FacetItem.FacetType.QUERY, item.getType());
+            Assertions.assertEquals(SolrConstants.DYNCOL, item.getField());
+            Assertions.assertEquals("dyncol_parse_test", item.getValue());
+            // The filter query is the stored solr query in parentheses, and the link round-trips as DYNCOL:<name>
+            Assertions.assertEquals("(DOCSTRCT:monograph)", item.getQueryEscapedLink());
+            Assertions.assertEquals(SolrConstants.DYNCOL + ":dyncol_parse_test", item.getLink());
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(dc);
+        }
+    }
+
+    /**
      * @see SearchFacets#parseFacetString(String,List,boolean)
      * @verifies empty list before filling
      */
@@ -1227,7 +1253,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     void getAllFacetFields_shouldReturnAllConfiguredFacetFieldsInConfigurationOrder() {
         SearchFacets facets = new SearchFacets();
         List<String> result = facets.getAllFacetFields();
-        assertEquals(List.of("DC", "YEAR", "MD_CREATOR", "MD_PLACEPUBLISH", "WKT_COORDS", "MD_PERSON", "BOOL_HASIMAGES"), result);
+        assertEquals(List.of("DC", "YEAR", "MD_CREATOR", "MD_PLACEPUBLISH", "WKT_COORDS", "MD_PERSON", "BOOL_HASIMAGES", "DYNCOL"), result);
     }
 
     /**
