@@ -181,6 +181,10 @@ var viewerJS = (function (viewer) {
             $status.text('');
             return;
         }
+        if (visibleCount === 0) {
+            $status.text($status.attr('data-filter-status-empty-label'));
+            return;
+        }
         var label = $status.attr('data-filter-status-label') || '{0}';
         $status.text(label.replace('{0}', visibleCount));
     };

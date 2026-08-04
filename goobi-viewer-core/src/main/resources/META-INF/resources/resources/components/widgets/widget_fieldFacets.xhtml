@@ -29,11 +29,11 @@
                         data-facet="searchFacetFilter"
                         data-facetfield="#{field}">
                         <div class="widget__topbar widget-search-facets__topbar">
-                            <h2
+                            <h3
                                 class="widget__title widget-search-facets__title"
                                 data-heading="searchFacetFilter">
                                 #{msg[field.concat('_DD')]}
-                            </h2>
+                            </h3>
                             <!-- FILTER FACETS -->
                             <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(field)}">
                                 <div
@@ -59,10 +59,13 @@
                                         class="sr-only"
                                         role="status"
                                         data-filter-status=""
-                                        data-filter-status-label="#{msg.search__facets__filter_matches}" />
+                                        data-filter-status-label="#{msg.search__facets__filter_matches}"
+                                        data-filter-status-empty-label="#{msg.search__facets__filter_no_matches}" />
                                 </div>
                             </ui:fragment>
                         </div>
+
+                        <p class="sr-only">#{msg.a11y__widget_facets_reloaded}</p>
 
                         <div class="widget__body widget-search-facets__body">
                             <ul class="widget-search-facets__list">
@@ -71,9 +74,7 @@
                                     value="#{searchBean.facets.getActiveFacetsForField(field)}"
                                     var="facet">
                                     <li class="active #{facet.excluded ? '-excluded' : ''}">
-                                        <h:commandLink
-                                            action="#{searchBean.removeFacetAction(facet.link)}"
-                                            title="#{msg.removeFacet}">
+                                        <h:commandLink action="#{searchBean.removeFacetAction(facet.link)}">
                                             <div class="row">
                                                 <div class="col-11">
                                                     <ui:fragment rendered="#{facet.excluded}">
@@ -94,8 +95,11 @@
                                                 name="data-placement"
                                                 value="top" />
                                             <f:passThroughAttribute
+                                                name="data-original-title"
+                                                value="#{msg.removeFacet}" />
+                                            <f:passThroughAttribute
                                                 name="aria-label"
-                                                value="#{facet.excluded ? msg.searchOperator_NOT.concat(' ') : ''}#{msg[field.concat('_DD')]}: #{facet.translatedLabel}" />
+                                                value="#{facet.excluded ? msg.searchOperator_NOT.concat(' ') : ''}#{msg[field.concat('_DD')]}: #{facet.translatedLabel} (#{msg.removeFacet})" />
                                         </h:commandLink>
                                     </li>
                                 </ui:repeat>

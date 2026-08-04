@@ -52,14 +52,15 @@
                     <ui:repeat
                         var="lang"
                         value="#{navigationHelper.supportedLanguages}">
-                        <li role="none">
+                        <li
+                            role="none"
+                            jsf:rendered="#{navigationHelper.localeString != lang}">
                             <button
                                 type="submit"
                                 role="menuitem"
                                 tabindex="-1"
                                 lang="#{lang}"
-                                class="#{navigationHelper.localeString == lang ? 'activeLang' : ''}"
-                                aria-current="#{navigationHelper.localeString == lang ? 'true':'false'}"
+                                class="change-local-menu__language-entry"
                                 jsf:action="#{navigationHelper.setLocaleString(lang)}">
                                 <h:outputText
                                     value="#{msg['changeLocal_' += lang]}"

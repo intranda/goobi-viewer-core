@@ -49,6 +49,9 @@
                 <searchFacetsComponent:activeFacetsBadges
                     mode="#{cc.attrs.mode}"
                     cmsPage="#{cc.attrs.cmsPage}" />
+                <ui:fragment rendered="#{cc.attrs.mode ne 'combined'}">
+                    <h2 class="widget__title widget-search-facets__available-title">#{msg.search__facets__available_title}</h2>
+                </ui:fragment>
                 <c:forEach
                     var="facetField"
                     items="#{searchBean.facets.allFacetFields}"
