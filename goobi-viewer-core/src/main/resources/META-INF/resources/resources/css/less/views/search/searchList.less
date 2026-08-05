@@ -318,15 +318,6 @@
             text-decoration: none;
             color: @black;
         }
-        .fa {
-            margin-right: 7px;
-            transition: all 0.2s linear;
-        }
-        &.in {
-            .fa {
-                transform: rotate(90deg);
-            }
-        }
         &.active {
             display: inline-block;
         }
@@ -358,12 +349,6 @@
         max-width: 100%;
         min-width: 160px;
     }
-    &__struct-title,
-    &__struct-chapter {
-        .fa {
-            margin-right: 5px;
-        }
-    }
     &__struct-title {
         h4 {
             line-height: normal;
@@ -383,9 +368,6 @@
                 padding-right: 5px;
                 white-space: nowrap;
             }
-        }
-        .fa {
-            margin-right: 10px;
         }
     }
     &__struct-child-hits {
@@ -447,10 +429,9 @@
     }
     &__hit-title {
         position: relative;
-		.search-list__hit-title    
-        &.-noThumbnail {
+        .search-list__hit-title &.-noThumbnail {
             padding-right: 2.4rem;
-        } 
+        }
         &.-hitNumber {
             display: flex;
             align-items: center;
@@ -460,11 +441,11 @@
             }
         }
     }
-	&__hit-title-heading {
-		padding-bottom: 0.5rem;
-		margin: 0;
-		word-wrap: anywhere;
-	}
+    &__hit-title-heading {
+        padding-bottom: 0.5rem;
+        margin: 0;
+        word-wrap: anywhere;
+    }
     &__hit-title-link {
         display: block;
     }

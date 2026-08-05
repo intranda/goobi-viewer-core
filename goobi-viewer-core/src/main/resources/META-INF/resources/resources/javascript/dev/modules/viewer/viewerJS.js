@@ -168,15 +168,6 @@ var viewerJS = (function () {
             }, _defaults.messageBoxInterval);
         })();
 
-        // add class on toggle sidebar widget (CMS individual sidebar widgets)
-        $('.collapse').on('show.bs.collapse', function () {
-            $(this).prev().find('.fa').removeClass('fa-arrow-down').addClass('fa-arrow-up');
-        });
-
-        $('.collapse').on('hide.bs.collapse', function () {
-            $(this).prev().find('.fa').removeClass('fa-arrow-up').addClass('fa-arrow-down');
-        });
-
         $('body').on('click', '[data-collapse-show]', function () {
             var href = $(this).data('collapse-show');
             $(href).collapse('show');
