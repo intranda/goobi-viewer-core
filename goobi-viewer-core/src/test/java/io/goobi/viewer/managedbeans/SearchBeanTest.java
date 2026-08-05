@@ -136,6 +136,21 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#resetSearchInCurrentItemTerm()
+     * @verifies clear the search in current item term
+     */
+    @Test
+    void resetSearchInCurrentItemTerm_shouldClearTheSearchInCurrentItemTerm() {
+        searchBean.resetAdvancedSearchParameters();
+        assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1).setValue("foo");
+        assertEquals("foo", searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1).getValue());
+
+        searchBean.resetSearchInCurrentItemTerm();
+        assertEquals("", searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1).getValue());
+    }
+
+    /**
      * @see SearchBean#setAdvancedSearchFieldTemplate(String)
      * @verifies not reset query items when template unchanged
      */

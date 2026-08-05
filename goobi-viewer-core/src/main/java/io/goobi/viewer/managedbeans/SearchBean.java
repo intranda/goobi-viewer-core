@@ -792,6 +792,20 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Clears the "search in current record" term (advanced query item index 1) without touching the
+     * rest of the advanced-search query group. Called on record navigation so the term does not leak
+     * from one record into the next.
+     *
+     * @should clear the search in current item term
+     */
+    public void resetSearchInCurrentItemTerm() {
+        List<SearchQueryItem> items = advancedSearchQueryGroup.getQueryItems();
+        if (items.size() > 1) {
+            items.get(1).setValue("");
+        }
+    }
+
+    /**
      * "Setter" for resetting the query item list via a f:setPropertyActionListener.
      *
      * @param reset true to reset advanced search query items to defaults
