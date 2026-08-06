@@ -3,6 +3,7 @@
     xmlns:util="http://goobi.io/util"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
@@ -45,7 +46,7 @@
                                 <div class="admin__default-block d-flex justify-content-end">
                                     <h:outputLink
                                         styleClass="btn btn--success"
-                                        value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/edit/-/">
+                                        value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/new/">
                                         <h:outputText value="#{msg.admin__dynamic_collections_add}" />
                                     </h:outputLink>
                                 </div>
@@ -68,24 +69,42 @@
                                                     </h:panelGroup>
                                                 </div>
                                                 <div class="col-8">
+                                                    <!-- NAME (edit link) -->
                                                     <div class="collection__title">
                                                         <h:outputLink
                                                             value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/edit/#{collection.name}/">
-                                                            <h:outputText value="#{collection.getLabel(navigationHelper.locale)}" />
+                                                            <h:outputText value="#{collection.name}" />
                                                         </h:outputLink>
                                                     </div>
+                                                    <!-- LABEL (translated) -->
+                                                    <ui:fragment
+                                                        rendered="#{not empty collection.getLabel(navigationHelper.locale) and collection.getLabel(navigationHelper.locale) != collection.name}">
+                                                        <div class="admin__form-help-text in">#{collection.getLabel(navigationHelper.locale)}</div>
+                                                    </ui:fragment>
+                                                    <!-- SOLR QUERY -->
                                                     <div class="admin__form-help-text in">#{collection.solrQuery}</div>
+                                                    <!-- LINK TO COLLECTION CONTENT LISTING -->
+                                                    <div>
+                                                        <h:outputLink
+                                                            target="_blank"
+                                                            value="#{dynamicCollectionsBean.getSearchUrl(collection)}">
+                                                            <h:outputText value="#{msg.admin__dynamic_collections_show_records}" />
+                                                        </h:outputLink>
+                                                    </div>
                                                 </div>
                                                 <div class="col-2 admin__cms-collections-entry-end">
-                                                    <h:commandLink
-                                                        styleClass="-redlink"
-                                                        action="#{dynamicCollectionsBean.deleteCollection(collection)}"
-                                                        title="#{msg.delete}">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn--clean -redlink"
+                                                        data-require-confirmation="true"
+                                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.confirm__delete_dynamic_collection, collection.name)}"
+                                                        jsf:action="#{dynamicCollectionsBean.deleteCollection(collection)}"
+                                                        title="#{msg.delete}"
+                                                        aria-label="#{msg.delete}: #{collection.name}">
                                                         <util:icon
                                                             icon="trash"
                                                             svgClass="icon icon-md" />
-                                                        <f:ajax render="dynamicCollectionsForm" />
-                                                    </h:commandLink>
+                                                    </button>
                                                 </div>
                                             </li>
                                         </ui:repeat>

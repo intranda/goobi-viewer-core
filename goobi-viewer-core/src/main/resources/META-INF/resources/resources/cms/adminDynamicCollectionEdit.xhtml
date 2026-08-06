@@ -60,14 +60,34 @@
                                 <h2>#{msg.admin__dynamic_collections_query}</h2>
                                 <div class="admin__default-block">
                                     <p class="admin__boxed-entry-description">#{msg.admin__dynamic_collections_query_desc}</p>
-                                    <h:inputTextarea
-                                        id="solrQuery"
-                                        styleClass="form-control"
-                                        value="#{dynamicCollectionsBean.currentCollection.solrQuery}">
-                                        <f:ajax
-                                            execute="@this"
-                                            event="valueChange" />
-                                    </h:inputTextarea>
+                                    <h:panelGroup
+                                        layout="block"
+                                        id="solrQueryGroup">
+                                        <h:inputTextarea
+                                            id="solrQuery"
+                                            styleClass="form-control"
+                                            required="true"
+                                            requiredMessage="#{msg.admin__dynamic_collections_query_required}"
+                                            value="#{dynamicCollectionsBean.currentCollection.solrQuery}">
+                                            <f:validator validatorId="solrQueryValidator" />
+                                            <f:ajax
+                                                event="blur"
+                                                listener="#{dynamicCollectionsBean.checkQuery}"
+                                                render="solrQueryGroup" />
+                                        </h:inputTextarea>
+                                        <h:message
+                                            for="solrQuery"
+                                            infoClass="admin__form-help-text in"
+                                            warnClass="admin__form-input-error"
+                                            errorClass="admin__form-input-error" />
+                                        <ui:fragment rendered="#{dynamicCollectionsBean.queryHitCount != null}">
+                                            <div class="admin__form-help-text in">
+                                                <h:outputFormat value="#{msg.admin__dynamic_collections_query_hits}">
+                                                    <f:param value="#{dynamicCollectionsBean.queryHitCount}" />
+                                                </h:outputFormat>
+                                            </div>
+                                        </ui:fragment>
+                                    </h:panelGroup>
                                 </div>
 
                                 <!-- DESCRIPTION -->

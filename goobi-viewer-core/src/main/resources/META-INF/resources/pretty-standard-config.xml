@@ -1182,6 +1182,12 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{dynamicCollectionsBean.updateCollections}</action>
     </url-mapping>
+    <url-mapping id="adminDynamicCollectionNew">
+        <pattern value="/admin/cms/dynamic-collections/new/" />
+        <view-id value="/resources/cms/adminDynamicCollectionEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{dynamicCollectionsBean.createNewCollection}</action>
+    </url-mapping>
     <url-mapping id="adminDynamicCollectionEdit">
         <pattern value="/admin/cms/dynamic-collections/edit/#{collectionName}/" />
         <view-id value="/resources/cms/adminDynamicCollectionEdit.xhtml" />

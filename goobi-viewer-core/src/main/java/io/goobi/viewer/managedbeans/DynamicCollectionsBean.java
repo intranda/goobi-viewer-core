@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.common.SolrDocument;
 
 import io.goobi.viewer.controller.DataManager;
@@ -36,16 +38,17 @@ import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.faces.validators.SolrQueryValidator;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean.CMSCollectionImageMode;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.collections.DynamicCollection;
 import io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation;
-import io.goobi.viewer.solr.SolrConstants;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.faces.validator.ValidatorException;
 import jakarta.inject.Named;
 
@@ -61,14 +64,16 @@ public class DynamicCollectionsBean implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(DynamicCollectionsBean.class);
 
-    /** Sentinel path parameter value indicating that a new collection should be created. */
-    private static final String NEW_COLLECTION = "-";
+    /** Reserved value that must not be used as a collection name (it is the viewer's "empty/none" placeholder and would clash in URLs). */
+    private static final String RESERVED_NAME = "-";
 
     private List<DynamicCollection> collections;
     private DynamicCollection currentCollection;
     private DynamicCollection originalCollection; //collection from database, without any edits after last save
     private boolean piValid = true;
     private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
+    /** Hit count of the current Solr query, computed on blur for a syntactically valid query; null if not yet evaluated or empty. */
+    private Long queryHitCount = null;
 
     /**
      * Creates a new DynamicCollectionsBean instance.
@@ -122,21 +127,29 @@ public class DynamicCollectionsBean implements Serializable {
     }
 
     /**
-     * Loads the dynamic collection with the given name for editing, or prepares a new collection if the name is the {@value #NEW_COLLECTION}
-     * sentinel. Called by the edit pretty-URL route.
+     * Loads the existing dynamic collection with the given name for editing. Called by the edit pretty-URL route. New collections are created via
+     * {@link #createNewCollection()} instead, so this never treats any name as a "create new" sentinel.
      *
-     * @param name unique name of the collection, or "-" to create a new one
+     * @param name unique name of the collection to load
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public void setCollectionName(String name) throws DAOException {
-        if (StringUtils.isBlank(name) || NEW_COLLECTION.equals(name)) {
+        currentCollection = DataManager.getInstance().getDao().getDynamicCollection(name);
+        if (currentCollection == null) {
+            logger.warn("No dynamic collection found for name '{}'", name);
             currentCollection = new DynamicCollection();
-        } else {
-            currentCollection = DataManager.getInstance().getDao().getDynamicCollection(name);
-            if (currentCollection == null) {
-                currentCollection = new DynamicCollection(name);
-            }
         }
+        currentCollection.populateLabels();
+        currentCollection.populateDescriptions();
+        initImageMode();
+        originalCollection = new DynamicCollection(currentCollection);
+    }
+
+    /**
+     * Prepares a blank dynamic collection for creation. Called by the "new collection" pretty-URL route.
+     */
+    public void createNewCollection() {
+        currentCollection = new DynamicCollection();
         currentCollection.populateLabels();
         currentCollection.populateDescriptions();
         initImageMode();
@@ -146,14 +159,14 @@ public class DynamicCollectionsBean implements Serializable {
     /**
      * getCollectionName.
      *
-     * @return the name of the current collection, or the new-collection sentinel if none/blank
+     * @return the name of the current collection, or the placeholder value if none/blank
      */
     public String getCollectionName() {
         if (currentCollection != null && StringUtils.isNotBlank(currentCollection.getName())) {
             return currentCollection.getName();
         }
 
-        return NEW_COLLECTION;
+        return RESERVED_NAME;
     }
 
     /**
@@ -260,7 +273,7 @@ public class DynamicCollectionsBean implements Serializable {
         if (StringUtils.isBlank(name)) {
             throw new ValidatorException(errorMessage(ViewerResourceBundle.getTranslation("admin__dynamic_collections_name_required", null)));
         }
-        if (name.contains(":") || name.contains(";")) {
+        if (name.contains(":") || name.contains(";") || RESERVED_NAME.equals(name)) {
             throw new ValidatorException(errorMessage(ViewerResourceBundle.getTranslation("admin__dynamic_collections_name_invalid", null)));
         }
         try {
@@ -365,14 +378,40 @@ public class DynamicCollectionsBean implements Serializable {
     }
 
     /**
-     * Builds the search-result URL for the given collection using its dynamic-collection facet token.
+     * AJAX listener (fired on blur of the Solr query field) that computes the hit count of the current query. Only runs when the field's
+     * {@code solrQueryValidator} has already accepted the syntax, so a syntax error is reported by the validator, not here.
+     *
+     * @param event the AJAX behavior event
+     */
+    public void checkQuery(AjaxBehaviorEvent event) {
+        queryHitCount = null;
+        String query = currentCollection != null ? currentCollection.getSolrQuery() : null;
+        if (StringUtils.isBlank(query)) {
+            return;
+        }
+        try {
+            queryHitCount = SolrQueryValidator.getHitCount(query);
+        } catch (SolrServerException | IOException e) {
+            logger.error("Error counting hits for dynamic collection query '{}': {}", query, e.getMessage());
+        }
+    }
+
+    /**
+     * @return the hit count computed by the last {@link #checkQuery(AjaxBehaviorEvent)} call, or null if not evaluated / query empty
+     */
+    public Long getQueryHitCount() {
+        return queryHitCount;
+    }
+
+    /**
+     * Builds the search-result URL listing the records of the given collection. The collection's stored Solr query is used directly as the search
+     * query, so the link works regardless of whether the {@code DYNCOL} facet is configured in the viewer config.
      *
      * @param collection collection to build the search URL for
-     * @return an absolute search page URL pre-filtered by the collection's facet
+     * @return an absolute search page URL listing the collection's records
      */
     public String getSearchUrl(DynamicCollection collection) {
-        String filter = SolrConstants.DYNCOL + ":" + collection.getName();
-        filter = StringTools.encodeUrl(filter);
-        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", "-", 1, "-", filter);
+        String query = StringTools.encodeUrl(StringUtils.trimToEmpty(collection.getSolrQuery()));
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, 1, "-", "-");
     }
 }

@@ -45,7 +45,7 @@ class DynamicCollectionsBeanTest extends AbstractDatabaseEnabledTest {
     @Test
     void saveCurrentCollection_shouldCreateAndUpdate() throws DAOException {
         DynamicCollectionsBean bean = new DynamicCollectionsBean();
-        bean.setCollectionName("-");
+        bean.createNewCollection();
         bean.getCurrentCollection().setName("bean_create_test");
         bean.getCurrentCollection().setSolrQuery("DOCSTRCT:monograph");
         assertEquals("pretty:adminDynamicCollections", bean.saveCurrentCollection());
@@ -70,7 +70,7 @@ class DynamicCollectionsBeanTest extends AbstractDatabaseEnabledTest {
     @Test
     void saveCurrentCollection_shouldClearUnusedImageFields() throws DAOException {
         DynamicCollectionsBean bean = new DynamicCollectionsBean();
-        bean.setCollectionName("-");
+        bean.createNewCollection();
         bean.getCurrentCollection().setName("bean_image_test");
         bean.getCurrentCollection().setRepresentativeWorkPI("PPN123");
         bean.setImageMode(CMSCollectionImageMode.NONE);
@@ -93,6 +93,7 @@ class DynamicCollectionsBeanTest extends AbstractDatabaseEnabledTest {
         assertThrows(ValidatorException.class, () -> bean.validateName(null, null, "foo:bar"));
         assertThrows(ValidatorException.class, () -> bean.validateName(null, null, "foo;bar"));
         assertThrows(ValidatorException.class, () -> bean.validateName(null, null, "  "));
+        assertThrows(ValidatorException.class, () -> bean.validateName(null, null, "-"));
     }
 
     /**

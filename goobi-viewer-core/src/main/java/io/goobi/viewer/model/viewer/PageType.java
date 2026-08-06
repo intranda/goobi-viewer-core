@@ -125,6 +125,8 @@ public enum PageType {
     adminCmsMenuItems("admin/cms/menus", "cms_menu_heading", adminDashboard),
     adminCmsCollections("admin/cms/collections", "admin__cms_collections", adminDashboard),
     adminCmsEditCollection("admin/cms/collections/edit", "cms_collection_edit", adminCmsCollections),
+    adminDynamicCollections("admin/cms/dynamic-collections", "admin__dynamic_collections", adminDashboard),
+    adminDynamicCollectionEdit("admin/cms/dynamic-collections/edit", "admin__dynamic_collections_edit", adminDynamicCollections),
     adminCmsGeoMaps("admin/cms/maps", "cms__geomaps__title", adminDashboard),
     adminCmsGeoMapEdit("admin/cms/maps/edit", "cms__geomap_edit__title", adminCmsGeoMaps),
     adminCmsGeoMapNew("admin/cms/maps/new", "cms__geomap_new__title", adminCmsGeoMaps),
