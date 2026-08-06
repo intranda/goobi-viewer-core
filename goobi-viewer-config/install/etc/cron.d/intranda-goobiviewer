@@ -1,0 +1,9 @@
+PATH=/usr/bin:/bin:/usr/sbin/
+MAILTO=admin@intranda.com
+
+#
+# Regular cron jobs for the Goobi viewer
+#
+
+## Optimize the Solr search index once a month
+@monthly            root    curl -s 'http://localhost:8983/solr/current/update?optimize=true&waitFlush=false'

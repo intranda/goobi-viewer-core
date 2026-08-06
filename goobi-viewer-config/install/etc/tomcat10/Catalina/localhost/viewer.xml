@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Context>
+    <Resources>
+        <PreResources
+            className="org.apache.catalina.webresources.DirResourceSet"
+            base="/opt/digiverso/viewer/themes/goobi-viewer-theme-reference/WebContent/resources/themes/"
+            webAppMount="/resources/themes" />  
+    </Resources>
+    <Resource
+        name="viewer"
+        auth="Container"
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+        type="javax.sql.DataSource"
+        driverClassName="org.mariadb.jdbc.Driver"
+        username="viewer"
+        password="${PW_SQL_VIEWER}"
+        maxActive="100"
+        maxIdle="30"
+        minIdle="4"
+        maxWait="10000"
+        testOnBorrow="true"
+        testWhileIdle="true"
+        validationQuery="SELECT SQL_NO_CACHE 1"
+        removeAbandoned="true"
+        removeAbandonedTimeout="600"
+        url="jdbc:mariadb://localhost/viewer?characterEncoding=UTF-8&amp;autoReconnectForPools=true" />
+</Context>

@@ -5,7 +5,7 @@ VIEWERDBNAME="viewer"
 VIEWERFOLDER="/opt/digiverso/viewer"
 SOLRURL=""
 MYSQLUSER=viewer
-MYSQLPASS=CHANGEME
+MYSQLPASS=${PW_SQL_VIEWER}
 
 USAGE="script_create_package.sh -d VIEWERDBNAME -f /path/to/viewer -s https://viewer.example.org/solr/"
 while getopts "d:f:s:h" OPCOES; do

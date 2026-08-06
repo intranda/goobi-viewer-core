@@ -81,7 +81,7 @@ docker image rm mariadb:latest
 ## Configuration via environment variables
 
 The viewer container is configured through environment variables that are evaluated by the entrypoint script
-([`goobi-viewer-config/docker/run.sh`](goobi-viewer-config/docker/run.sh)) on startup. The script writes the values
+([`goobi-viewer-config/install/docker/run.sh`](goobi-viewer-config/install/docker/run.sh)) on startup. The script writes the values
 into the Tomcat configuration (`server.xml`, `context.xml`, the JNDI resource definition) and into
 `config_viewer.xml` / `config_oai.xml` inside the deployed web application.
 

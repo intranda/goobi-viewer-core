@@ -62,11 +62,10 @@ fi
 set -u
 
 cp "${CATALINA_HOME}/conf/context.xml.template" /tmp/
-# Enable / Disable developer option (hot reloading for theme developers)
-if ! [[ "$DEV" == "true" ]]; then
-  patch /tmp/context.xml.template < /viewer-template/disable_dev_options.patch
-else
+# Enable developer options (hot reloading for theme developers); off by default
+if [[ "$DEV" == "true" ]]; then
   echo "[WARN] Developer options enabled. Don't use in production ('DEV'=false)"
+  patch /tmp/context.xml.template < /viewer-template/enable_dev_options.patch
 fi
 
 if [[ -n "${THEME_DIR-}" ]]; then

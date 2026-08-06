@@ -37,19 +37,21 @@ RUN ["/bin/bash", "-c", "mkdir -p /opt/digiverso/{logs,viewer/{abbyy,cmdi,delete
 RUN ["/bin/bash", "-c", "mkdir -p /viewer-template/{config,oai}" ]
 RUN mkdir -p ${CATALINA_HOME}/conf/Catalina/localhost/ && mkdir -p ${CATALINA_HOME}/webapps/viewer
 
-COPY goobi-viewer-config/docker/setenv.sh ${CATALINA_HOME}/bin/setenv.sh
-COPY goobi-viewer-config/install/ /viewer-template/config
-COPY goobi-viewer-config/docker/stopwords /stopwords
-COPY goobi-viewer-config/docker/viewer.xml.template ${CATALINA_HOME}/conf/
-COPY goobi-viewer-config/docker/disable_dev_options.patch /viewer-template/
-COPY goobi-viewer-config/docker/insert_theme_preresource.patch.template /viewer-template/
+COPY goobi-viewer-config/install/docker/setenv.sh ${CATALINA_HOME}/bin/setenv.sh
+COPY goobi-viewer-config/install/config/ /viewer-template/config
+COPY goobi-viewer-config/install/docker/stopwords /stopwords
+COPY goobi-viewer-config/install/docker/viewer.xml.template ${CATALINA_HOME}/conf/
+COPY goobi-viewer-config/install/docker/enable_dev_options.patch /viewer-template/
+COPY goobi-viewer-config/install/docker/insert_theme_preresource.patch.template /viewer-template/
 
-# Install the fixed server.xml (from install/, copied to /viewer-template/config above);
-# the only container-specific change is binding the connector to all interfaces
-# (0.0.0.0) instead of loopback (127.0.0.1).
-RUN --mount=type=bind,source=goobi-viewer-config/docker,target=/tmp/patches,readonly \
-    sed 's/address="127.0.0.1"/address="0.0.0.0"/' /viewer-template/config/tomcat/server.xml > ${CATALINA_HOME}/conf/server.xml && \
-    patch --output=${CATALINA_HOME}/conf/context.xml.template ${CATALINA_HOME}/conf/context.xml < /tmp/patches/context.xml.patch
+# Install the shipped Tomcat configuration from install/etc/tomcat instead of the
+# stock files of the base image. The only container-specific changes are binding
+# the connector to all interfaces (0.0.0.0) instead of loopback (127.0.0.1) and
+# turning the fixed sameSiteCookies value into a placeholder that run.sh fills in
+# from ${TOMCAT_SAMESITECOOKIES} at container start.
+RUN --mount=type=bind,source=goobi-viewer-config/install/etc/tomcat,target=/tmp/tomcat-conf,readonly \
+    sed 's/address="127.0.0.1"/address="0.0.0.0"/' /tmp/tomcat-conf/server.xml > ${CATALINA_HOME}/conf/server.xml && \
+    sed 's/sameSiteCookies="strict"/sameSiteCookies="${TOMCAT_SAMESITECOOKIES}"/' /tmp/tomcat-conf/context.xml > ${CATALINA_HOME}/conf/context.xml.template
 
 RUN grep -qxF 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' ${CATALINA_HOME}/conf/logging.properties || echo 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' >> ${CATALINA_HOME}/conf/logging.properties && \
     grep -qxF 'org.apache.tomcat.util.net.NioEndpoint.level = OFF' ${CATALINA_HOME}/conf/logging.properties || echo 'org.apache.tomcat.util.net.NioEndpoint.level = OFF' >> ${CATALINA_HOME}/conf/logging.properties && \
@@ -58,8 +60,8 @@ RUN grep -qxF 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' ${CATALINA_HOM
 
 COPY --from=build-stage /viewer-exploded/ ${CATALINA_HOME}/webapps/viewer/
 
-COPY goobi-viewer-config/docker/run.sh /
-COPY goobi-viewer-config/docker/healthcheck.sh /
+COPY goobi-viewer-config/install/docker/run.sh /
+COPY goobi-viewer-config/install/docker/healthcheck.sh /
 
 EXPOSE 8080
 
