@@ -22,14 +22,14 @@
 
         <div class="search-list__options">
             <!-- HITCOUNT -->
-            <div class="search-list__hitcount">
+            <p class="search-list__hitcount">
                 <h:outputText
                     rendered="#{search.hitsCount > 0}"
                     value="#{msg.hits}: #{search.hitsCount}" />
                 <h:outputText
                     rendered="#{search.hitsCount == 0}"
                     value="#{msg.hitsZero}." />
-            </div>
+            </p>
 
             <!-- RSS LINK -->
             <ui:fragment rendered="#{configurationBean.displaySearchRssLinks}">

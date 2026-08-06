@@ -164,6 +164,7 @@
     }
     &__hitcount {
         white-space: nowrap;
+        margin-bottom: 0;
     }
     &__save-search {
         > span {
@@ -284,9 +285,17 @@
         }
     }
     &__hits-list {
+        display: flex;
+        flex-direction: column;
+        row-gap: 20px;
+    }
+    &__hits-list-items {
         display: grid;
         grid-template-columns: 1fr;
         gap: 20px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
     }
     /* RESULT GROUP STYLES */
     &__hit-result-group-heading {

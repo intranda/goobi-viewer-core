@@ -66,6 +66,10 @@
                                     value="#{msg['changeLocal_' += lang]}"
                                     rendered="#{cc.attrs.longLanguageStrings == false}" />
                                 <h:outputText
+                                    styleClass="sr-only"
+                                    value=" - #{msg['changeLocal_long_' += lang]}"
+                                    rendered="#{cc.attrs.longLanguageStrings == false}" />
+                                <h:outputText
                                     value="#{msg['changeLocal_long_' += lang]}"
                                     rendered="#{cc.attrs.longLanguageStrings == true}" />
                             </button>
