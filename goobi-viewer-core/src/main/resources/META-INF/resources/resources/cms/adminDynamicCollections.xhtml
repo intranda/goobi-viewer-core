@@ -69,18 +69,15 @@
                                                     </h:panelGroup>
                                                 </div>
                                                 <div class="col-8">
-                                                    <!-- NAME (edit link) -->
+                                                    <!-- LABEL (translated) as title, links to edit -->
                                                     <div class="collection__title">
                                                         <h:outputLink
-                                                            value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/edit/#{collection.name}/">
-                                                            <h:outputText value="#{collection.name}" />
+                                                            value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/edit/#{collection.identifier}/">
+                                                            <h:outputText value="#{collection.getLabel(navigationHelper.locale)}" />
                                                         </h:outputLink>
                                                     </div>
-                                                    <!-- LABEL (translated) -->
-                                                    <ui:fragment
-                                                        rendered="#{not empty collection.getLabel(navigationHelper.locale) and collection.getLabel(navigationHelper.locale) != collection.name}">
-                                                        <div class="admin__form-help-text in">#{collection.getLabel(navigationHelper.locale)}</div>
-                                                    </ui:fragment>
+                                                    <!-- IDENTIFIER -->
+                                                    <div class="admin__form-help-text in">#{collection.identifier}</div>
                                                     <!-- SOLR QUERY -->
                                                     <div class="admin__form-help-text in">#{collection.solrQuery}</div>
                                                     <!-- LINK TO COLLECTION CONTENT LISTING -->
@@ -94,13 +91,12 @@
                                                 </div>
                                                 <div class="col-2 admin__cms-collections-entry-end">
                                                     <button
-                                                        type="button"
                                                         class="btn btn--clean -redlink"
                                                         data-require-confirmation="true"
-                                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.confirm__delete_dynamic_collection, collection.name)}"
+                                                        data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.confirm__delete_dynamic_collection, collection.identifier)}"
                                                         jsf:action="#{dynamicCollectionsBean.deleteCollection(collection)}"
                                                         title="#{msg.delete}"
-                                                        aria-label="#{msg.delete}: #{collection.name}">
+                                                        aria-label="#{msg.delete}: #{collection.identifier}">
                                                         <util:icon
                                                             icon="trash"
                                                             svgClass="icon icon-md" />

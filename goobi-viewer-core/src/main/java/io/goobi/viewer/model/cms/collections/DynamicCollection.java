@@ -79,11 +79,11 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * A digital collection defined entirely in the database. Unlike {@link CMSCollection}, whose membership is derived from a single Solr field value,
- * a dynamic collection is identified by a unique {@link #name} and its contents are given by an arbitrary {@link #solrQuery}. It carries a
- * representative image, a name and description in multiple languages and an optional URL linking to a collection page.
+ * a dynamic collection is identified by a unique {@link #identifier} and its contents are given by an arbitrary {@link #solrQuery}. It carries a
+ * representative image, a label and description in multiple languages and an optional URL linking to a collection page.
  */
 @Entity
-@Table(name = "dynamic_collections", uniqueConstraints = { @UniqueConstraint(columnNames = { "name" }) })
+@Table(name = "dynamic_collections", uniqueConstraints = { @UniqueConstraint(columnNames = { "identifier" }) })
 public class DynamicCollection implements Comparable<DynamicCollection>, BrowseElementInfo, CMSMediaHolder, IPolyglott, Serializable {
 
     private static final long serialVersionUID = -8703131458920215939L;
@@ -99,9 +99,9 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
     @Column(name = "dynamic_collection_id")
     private Long id;
 
-    /** Unique, stable identifier used in the {@code DYNCOL:&lt;name&gt;} facet token and the browse URL. */
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+    /** Unique, immutable, URL-safe identifier used in the {@code DYNCOL:&lt;identifier&gt;} facet token and the browse URL. */
+    @Column(name = "identifier", nullable = false, unique = true)
+    private String identifier;
 
     /** Arbitrary Solr query defining the records belonging to this collection. */
     @Column(name = "solr_query", columnDefinition = "LONGTEXT")
@@ -139,16 +139,16 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
     }
 
     /**
-     * Creates a new DynamicCollection with the given identifying name.
+     * Creates a new DynamicCollection with the given identifier.
      *
-     * @param name the unique name of the collection
-     * @throws java.lang.IllegalArgumentException if the name is null, empty or blank
+     * @param identifier the unique identifier of the collection
+     * @throws java.lang.IllegalArgumentException if the identifier is null, empty or blank
      */
-    public DynamicCollection(String name) {
-        if (StringUtils.isBlank(name)) {
-            throw new IllegalArgumentException("The name of a DynamicCollection may not be null, empty or blank");
+    public DynamicCollection(String identifier) {
+        if (StringUtils.isBlank(identifier)) {
+            throw new IllegalArgumentException("The identifier of a DynamicCollection may not be null, empty or blank");
         }
-        this.name = name;
+        this.identifier = identifier;
     }
 
     /**
@@ -158,7 +158,7 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
      */
     public DynamicCollection(DynamicCollection orig) {
         this.id = orig.id;
-        this.name = orig.name;
+        this.identifier = orig.identifier;
         this.solrQuery = orig.solrQuery;
         this.sortOrder = orig.sortOrder;
         this.collectionUrl = orig.collectionUrl;
@@ -204,19 +204,32 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
         return id;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * <p>The {@link BrowseElementInfo} "name" is the collection's immutable identifier.
+     */
     @Override
     public String getName() {
-        return name;
+        return identifier;
     }
 
     /**
-     * Setter for the field <code>name</code>.
+     * Getter for the field <code>identifier</code>.
      *
-     * @param name the unique name of the collection
+     * @return the unique, immutable identifier of the collection
      */
-    public void setName(String name) {
-        this.name = name;
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * Setter for the field <code>identifier</code>.
+     *
+     * @param identifier the unique, immutable identifier of the collection
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     /**
@@ -308,6 +321,14 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
     }
 
     /**
+     * Removes all label and description translations whose value is blank, so that empty translation rows are not persisted (they are re-created in
+     * memory for editing via {@link #populateLabels()} / {@link #populateDescriptions()}).
+     */
+    public void pruneEmptyTranslations() {
+        translations.removeIf(translation -> StringUtils.isBlank(translation.getTranslationValue()));
+    }
+
+    /**
      * returns all translations of this collection with the tag {@link #LABEL_TAG}.
      *
      * @return all labels for this collection
@@ -326,10 +347,10 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
     }
 
     /**
-     * Get the label for the given {@code locale}, falling back to the collection {@link #name} if no matching label exists.
+     * Get the label for the given {@code locale}, falling back to the collection {@link #identifier} if no matching label exists.
      *
      * @param locale a {@link java.util.Locale} object.
-     * @return the label string for the given locale, or the collection name
+     * @return the label string for the given locale, or the collection identifier
      */
     public String getLabel(Locale locale) {
         String language = locale != null ? locale.getLanguage() : selectedLocale.getLanguage();
@@ -338,7 +359,7 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
                 .map(Translation::getTranslationValue)
                 .filter(StringUtils::isNotBlank)
                 .findFirst()
-                .orElse(name);
+                .orElse(identifier);
     }
 
     /**
@@ -591,7 +612,7 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
                 .filter(l -> StringUtils.isNotBlank(l.getTranslationValue()))
                 .collect(Collectors.toMap(Translation::getLanguage, Translation::getTranslationValue));
         if (labels.isEmpty()) {
-            return new SimpleMetadataValue(name);
+            return new SimpleMetadataValue(identifier);
         }
 
         return new MultiLanguageMetadataValue(labels);
@@ -687,7 +708,7 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
     public boolean contentEquals(DynamicCollection other) {
         return Objects.equals(this.mediaItem, other.mediaItem)
                 && Strings.CS.equals(this.representativeWorkPI, other.representativeWorkPI)
-                && Strings.CS.equals(this.name, other.name)
+                && Strings.CS.equals(this.identifier, other.identifier)
                 && Strings.CS.equals(this.solrQuery, other.solrQuery)
                 && this.sortOrder == other.sortOrder
                 && Strings.CS.equals(this.collectionUrl, other.collectionUrl)
@@ -727,7 +748,7 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return name == null ? 0 : name.hashCode();
+        return identifier == null ? 0 : identifier.hashCode();
     }
 
     /** {@inheritDoc} */

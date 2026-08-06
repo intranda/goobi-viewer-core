@@ -764,6 +764,7 @@ public class Search implements Serializable {
             if (collection == null || entry.getValue() == null || entry.getValue() <= 0) {
                 continue;
             }
+            // Display the collection's database-stored label for the locale (falls back to the identifier if untranslated)
             dynColItems.add(FacetItem.buildQueryFacetItem(SolrConstants.DYNCOL, collection.getName(), collection.getLabel(locale),
                     collection.getSolrQuery(), entry.getValue().longValue()));
         }

@@ -127,6 +127,19 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchFacets#isFacetListSizeSufficient(String)
+     * @verifies show a query facet with a single value (unlike regular facets which need at least two)
+     */
+    @Test
+    void isFacetListSizeSufficient_shouldReturnTrueForSingleValueQueryFacet() {
+        SearchFacets facets = new SearchFacets();
+        facets.getAvailableFacets()
+                .put(SolrConstants.DYNCOL, new ArrayList<>(java.util.List.of(
+                        FacetItem.buildQueryFacetItem(SolrConstants.DYNCOL, "col", "Col", "DOCSTRCT:monograph", 3))));
+        Assertions.assertTrue(facets.isFacetListSizeSufficient(SolrConstants.DYNCOL));
+    }
+
+    /**
      * @see SearchFacets#parseFacetString(String,List,boolean)
      * @verifies empty list before filling
      */

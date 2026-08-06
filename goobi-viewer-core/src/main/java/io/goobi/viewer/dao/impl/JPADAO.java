@@ -4793,12 +4793,12 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public DynamicCollection getDynamicCollection(String name) throws DAOException {
+    public DynamicCollection getDynamicCollection(String identifier) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT c FROM DynamicCollection c WHERE c.name = :name");
-            q.setParameter("name", name);
+            Query q = em.createQuery("SELECT c FROM DynamicCollection c WHERE c.identifier = :identifier");
+            q.setParameter("identifier", identifier);
             return (DynamicCollection) getSingleResult(q).orElse(null);
         } finally {
             close(em);

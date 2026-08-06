@@ -46,7 +46,7 @@ class DynamicCollectionsBeanTest extends AbstractDatabaseEnabledTest {
     void saveCurrentCollection_shouldCreateAndUpdate() throws DAOException {
         DynamicCollectionsBean bean = new DynamicCollectionsBean();
         bean.createNewCollection();
-        bean.getCurrentCollection().setName("bean_create_test");
+        bean.getCurrentCollection().setIdentifier("bean_create_test");
         bean.getCurrentCollection().setSolrQuery("DOCSTRCT:monograph");
         assertEquals("pretty:adminDynamicCollections", bean.saveCurrentCollection());
 
@@ -71,7 +71,7 @@ class DynamicCollectionsBeanTest extends AbstractDatabaseEnabledTest {
     void saveCurrentCollection_shouldClearUnusedImageFields() throws DAOException {
         DynamicCollectionsBean bean = new DynamicCollectionsBean();
         bean.createNewCollection();
-        bean.getCurrentCollection().setName("bean_image_test");
+        bean.getCurrentCollection().setIdentifier("bean_image_test");
         bean.getCurrentCollection().setRepresentativeWorkPI("PPN123");
         bean.setImageMode(CMSCollectionImageMode.NONE);
         bean.saveCurrentCollection();
@@ -84,30 +84,31 @@ class DynamicCollectionsBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies reject names containing a colon or semicolon
+     * @verifies reject identifiers with characters outside the URL-safe set
      */
     @Test
-    void validateName_shouldRejectInvalidCharacters() {
+    void validateIdentifier_shouldRejectInvalidCharacters() {
         DynamicCollectionsBean bean = new DynamicCollectionsBean();
         bean.setCurrentCollection(new DynamicCollection());
-        assertThrows(ValidatorException.class, () -> bean.validateName(null, null, "foo:bar"));
-        assertThrows(ValidatorException.class, () -> bean.validateName(null, null, "foo;bar"));
-        assertThrows(ValidatorException.class, () -> bean.validateName(null, null, "  "));
-        assertThrows(ValidatorException.class, () -> bean.validateName(null, null, "-"));
+        assertThrows(ValidatorException.class, () -> bean.validateIdentifier(null, null, "foo:bar"));
+        assertThrows(ValidatorException.class, () -> bean.validateIdentifier(null, null, "foo;bar"));
+        assertThrows(ValidatorException.class, () -> bean.validateIdentifier(null, null, "foo bar"));
+        assertThrows(ValidatorException.class, () -> bean.validateIdentifier(null, null, "  "));
+        assertThrows(ValidatorException.class, () -> bean.validateIdentifier(null, null, "-"));
     }
 
     /**
-     * @verifies reject a duplicate name for a different collection
+     * @verifies reject a duplicate identifier for a different collection
      */
     @Test
-    void validateName_shouldRejectDuplicate() throws DAOException {
+    void validateIdentifier_shouldRejectDuplicate() throws DAOException {
         DynamicCollection existing = new DynamicCollection("bean_dup_test");
         existing.setSolrQuery("*:*");
         DataManager.getInstance().getDao().addDynamicCollection(existing);
         try {
             DynamicCollectionsBean bean = new DynamicCollectionsBean();
             bean.setCurrentCollection(new DynamicCollection());
-            assertThrows(ValidatorException.class, () -> bean.validateName(null, null, "bean_dup_test"));
+            assertThrows(ValidatorException.class, () -> bean.validateIdentifier(null, null, "bean_dup_test"));
         } finally {
             DataManager.getInstance().getDao().deleteDynamicCollection(existing);
         }

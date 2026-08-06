@@ -2010,11 +2010,11 @@ public interface IDAO {
     /**
      * getDynamicCollection.
      *
-     * @param name unique name identifying the dynamic collection
+     * @param identifier unique identifier of the dynamic collection
      * @return the matching dynamic collection, or null if not found
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public DynamicCollection getDynamicCollection(String name) throws DAOException;
+    public DynamicCollection getDynamicCollection(String identifier) throws DAOException;
 
     /**
      * addDynamicCollection.

@@ -348,7 +348,8 @@ public class SearchFacets implements Serializable {
     public boolean isFacetListSizeSufficient(String field) {
         // logger.trace("isFacetListSizeSufficient: {}", field); //NOSONAR Debug
         if (availableFacets.get(field) != null) {
-            if (SolrConstants.DOCSTRCT_SUB.equals(field)) {
+            // DOCSTRCT_SUB and query facets (e.g. dynamic collections) are meaningful even with a single value
+            if (SolrConstants.DOCSTRCT_SUB.equals(field) || isFieldQueryFacet(field)) {
                 return getAvailableFacetsListSizeForField(field) > 0;
             }
             return getAvailableFacetsListSizeForField(field) > 1;

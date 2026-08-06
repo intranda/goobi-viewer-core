@@ -212,6 +212,8 @@ public class DynamicCollectionsBean implements Serializable {
                 default:
                     break;
             }
+            // Do not persist empty label/description translation rows
+            getCurrentCollection().pruneEmptyTranslations();
             if (getCurrentCollection().getId() != null) {
                 DataManager.getInstance().getDao().updateDynamicCollection(getCurrentCollection());
             } else {
@@ -259,30 +261,34 @@ public class DynamicCollectionsBean implements Serializable {
         }
     }
 
+    /** Allowed identifier characters: letters, digits, underscore and hyphen (URL-safe, no encoding surprises). */
+    private static final String IDENTIFIER_PATTERN = "[A-Za-z0-9_-]+";
+
     /**
-     * Validates the collection name entered in the edit form: it must be non-blank, contain neither ':' nor ';' (which would break the facet token
-     * and URL round-trip), and be unique among dynamic collections.
+     * Validates the collection identifier entered in the edit form: it must be non-blank, match {@link #IDENTIFIER_PATTERN} (URL-safe characters
+     * only), not be the reserved placeholder, and be unique among dynamic collections.
      *
      * @param context current JSF faces context
      * @param comp UI component that triggered the validation
-     * @param value name value submitted by the user
-     * @throws jakarta.faces.validator.ValidatorException if the name is invalid
+     * @param value identifier value submitted by the user
+     * @throws jakarta.faces.validator.ValidatorException if the identifier is invalid
      */
-    public void validateName(FacesContext context, UIComponent comp, Object value) throws ValidatorException {
-        String name = value != null ? value.toString().trim() : "";
-        if (StringUtils.isBlank(name)) {
-            throw new ValidatorException(errorMessage(ViewerResourceBundle.getTranslation("admin__dynamic_collections_name_required", null)));
+    public void validateIdentifier(FacesContext context, UIComponent comp, Object value) throws ValidatorException {
+        String identifier = value != null ? value.toString().trim() : "";
+        if (StringUtils.isBlank(identifier)) {
+            throw new ValidatorException(errorMessage(ViewerResourceBundle.getTranslation("admin__dynamic_collections_identifier_required", null)));
         }
-        if (name.contains(":") || name.contains(";") || RESERVED_NAME.equals(name)) {
-            throw new ValidatorException(errorMessage(ViewerResourceBundle.getTranslation("admin__dynamic_collections_name_invalid", null)));
+        if (!identifier.matches(IDENTIFIER_PATTERN) || RESERVED_NAME.equals(identifier)) {
+            throw new ValidatorException(errorMessage(ViewerResourceBundle.getTranslation("admin__dynamic_collections_identifier_invalid", null)));
         }
         try {
-            DynamicCollection existing = DataManager.getInstance().getDao().getDynamicCollection(name);
+            DynamicCollection existing = DataManager.getInstance().getDao().getDynamicCollection(identifier);
             if (existing != null && (currentCollection == null || !existing.getId().equals(currentCollection.getId()))) {
-                throw new ValidatorException(errorMessage(ViewerResourceBundle.getTranslation("admin__dynamic_collections_name_duplicate", null)));
+                throw new ValidatorException(
+                        errorMessage(ViewerResourceBundle.getTranslation("admin__dynamic_collections_identifier_duplicate", null)));
             }
         } catch (DAOException e) {
-            logger.error("Error validating dynamic collection name: {}", e.getMessage());
+            logger.error("Error validating dynamic collection identifier: {}", e.getMessage());
         }
     }
 

@@ -37,23 +37,32 @@
                                 id="dynamicEditCollectionForm"
                                 prependId="false">
 
-                                <!-- NAME -->
-                                <h2>#{msg.admin__dynamic_collections_name}</h2>
+                                <!-- IDENTIFIER (immutable once created) -->
+                                <h2>#{msg.admin__dynamic_collections_identifier}</h2>
                                 <div class="admin__default-block">
-                                    <p class="admin__boxed-entry-description">#{msg.admin__dynamic_collections_name_desc}</p>
-                                    <h:inputText
-                                        id="collectionName"
-                                        styleClass="form-control"
-                                        required="true"
-                                        validator="#{dynamicCollectionsBean.validateName}"
-                                        value="#{dynamicCollectionsBean.currentCollection.name}">
-                                        <f:ajax
-                                            execute="@this"
-                                            event="valueChange" />
-                                    </h:inputText>
-                                    <h:message
-                                        for="collectionName"
-                                        styleClass="admin__form-input-error" />
+                                    <p class="admin__boxed-entry-description">#{msg.admin__dynamic_collections_identifier_desc}</p>
+                                    <!-- New collection: editable identifier -->
+                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id == null}">
+                                        <h:inputText
+                                            id="collectionIdentifier"
+                                            styleClass="form-control"
+                                            required="true"
+                                            validator="#{dynamicCollectionsBean.validateIdentifier}"
+                                            value="#{dynamicCollectionsBean.currentCollection.identifier}">
+                                            <f:ajax
+                                                execute="@this"
+                                                event="valueChange" />
+                                        </h:inputText>
+                                        <h:message
+                                            for="collectionIdentifier"
+                                            styleClass="admin__form-input-error" />
+                                    </ui:fragment>
+                                    <!-- Existing collection: identifier is immutable -->
+                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
+                                        <h:outputText
+                                            styleClass="form-control -readonly"
+                                            value="#{dynamicCollectionsBean.currentCollection.identifier}" />
+                                    </ui:fragment>
                                 </div>
 
                                 <!-- SOLR QUERY -->
@@ -90,23 +99,25 @@
                                     </h:panelGroup>
                                 </div>
 
-                                <!-- DESCRIPTION -->
-                                <h2>#{msg.cms_collections_description}</h2>
+                                <!-- LABEL & DESCRIPTION (per language) -->
+                                <h2>#{msg.admin__dynamic_collections_translations}</h2>
                                 <div class="admin__cms-edit-collection-translation-box">
-                                    <h:panelGroup id="descriptionGroup">
+                                    <h:panelGroup id="translationsGroup">
                                         <!-- LANGUAGE TABS -->
                                         <div class="admin__language-tabs">
                                             <viewerComponent:localeSelector
                                                 object="#{dynamicCollectionsBean.currentCollection}"
-                                                render="descriptionGroup"
-                                                execute="descriptionGroup" />
+                                                render="translationsGroup"
+                                                execute="translationsGroup" />
                                         </div>
 
                                         <div class="admin__default-block">
+                                            <!-- LABEL (shown in the facet and collection listing) -->
                                             <div class="form-group form-row">
-                                                <div class="col-2">#{msg.label}:</div>
+                                                <div class="col-2"><label for="collectionLabel">#{msg.label}:</label></div>
                                                 <div class="col-10">
                                                     <h:inputText
+                                                        id="collectionLabel"
                                                         styleClass="form-control"
                                                         value="#{dynamicCollectionsBean.currentCollection.labelAsTranslation.translationValue}">
                                                         <f:ajax
@@ -115,10 +126,12 @@
                                                     </h:inputText>
                                                 </div>
                                             </div>
+                                            <!-- DESCRIPTION -->
                                             <div class="form-group form-row">
                                                 <div class="col-2">#{msg.description}:</div>
                                                 <div class="col-10">
                                                     <h:inputTextarea
+                                                        id="collectionDescription"
                                                         value="#{dynamicCollectionsBean.currentCollection.descriptionAsTranslation.translationValue}"
                                                         styleClass="form-control tinyMCE -validation-input">
                                                         <f:passThroughAttribute
