@@ -59,6 +59,10 @@ var viewerJS = (function (viewer) {
     };
 
     viewer.loadThumbnails.prototype.loadImage = function (element, source) {
+        if (element.dataset.viewerThumbnailLoading) {
+            return;
+        }
+        element.dataset.viewerThumbnailLoading = 'true';
         //Hide broken image icon while loading by either setting style.display to "none" or setting empty alt attribute
         //first solution hides whole image, the latter only its content
         let alt = element.alt;
@@ -73,6 +77,7 @@ var viewerJS = (function (viewer) {
             },
         })
             .done((blob) => {
+                delete element.dataset.viewerThumbnailLoading;
                 try {
                     var url = window.URL || window.webkitURL;
                     element.src = url.createObjectURL(blob);
@@ -85,6 +90,7 @@ var viewerJS = (function (viewer) {
                 }
             })
             .fail((error) => {
+                delete element.dataset.viewerThumbnailLoading;
                 var status = error.status;
                 switch (status) {
                     case 403:

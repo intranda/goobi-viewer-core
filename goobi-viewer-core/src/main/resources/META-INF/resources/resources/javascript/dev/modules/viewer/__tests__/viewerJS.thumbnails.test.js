@@ -63,13 +63,16 @@ function stubAjax() {
 
 let lastAjaxOpts;
 let lastChain;
+let ajaxChains;
 beforeEach(() => {
     document.body.innerHTML = '';
     lastAjaxOpts = null;
     lastChain = null;
+    ajaxChains = [];
     jest.spyOn($, 'ajax').mockImplementation((opts) => {
         lastAjaxOpts = opts;
         lastChain = stubAjax();
+        ajaxChains.push(lastChain);
         return lastChain;
     });
     // jsdom URL.createObjectURL needs a stub.
@@ -92,8 +95,14 @@ describe('viewer.loadThumbnails constructor', () => {
 
     test('runs loadAll once on construction and again whenever jsfAjax.success fires', () => {
         document.body.innerHTML = '<img data-viewer-thumbnail="thumbnail" data-src="/img.jpg" />';
+        const img = document.querySelector('img');
         const t = new viewerJS.loadThumbnails('/notfound.png', '/denied.png');
         expect($.ajax).toHaveBeenCalledTimes(1);
+        // Settle the first request; a still-pending load would be skipped on the next round.
+        lastChain._reject({ status: 404 });
+        // The not-found image failed to render, so the next round retries it.
+        Object.defineProperty(img, 'complete', { value: true, configurable: true });
+        Object.defineProperty(img, 'naturalWidth', { value: 0, configurable: true });
         viewerJS.jsfAjax.success.next();
         expect($.ajax).toHaveBeenCalledTimes(2);
     });
@@ -175,6 +184,34 @@ describe('loadImage status branches', () => {
         new viewerJS.loadThumbnails('/notfound.png', '/denied.png');
         lastChain._reject({ status: 502 });
         expect(document.querySelector('img').getAttribute('src')).toBe('/img.jpg');
+    });
+});
+
+describe('overlapping loads', () => {
+    // Regression: loadAll runs repeatedly (riot updates, every jsfAjax.success). A second
+    // loadImage on an element whose request is still pending captured display:none as the
+    // value to restore, leaving the thumbnail permanently hidden.
+    test('a second load round while the first request is pending does not leave the image hidden', () => {
+        document.body.innerHTML = '<img data-viewer-thumbnail="thumbnail" data-src="/img.jpg" />';
+        const img = document.querySelector('img');
+        new viewerJS.loadThumbnails('/notfound.png', '/denied.png');
+        expect(img.style.display).toBe('none');
+
+        viewerJS.jsfAjax.success.next();
+
+        ajaxChains.forEach((chain) => chain._reject({ status: 403 }));
+
+        expect(img.getAttribute('src')).toBe('/denied.png');
+        expect(img.style.display).not.toBe('none');
+    });
+
+    test('an element with a pending request is not requested a second time', () => {
+        document.body.innerHTML = '<img data-viewer-thumbnail="thumbnail" data-src="/img.jpg" />';
+        new viewerJS.loadThumbnails('/notfound.png', '/denied.png');
+
+        viewerJS.jsfAjax.success.next();
+
+        expect($.ajax).toHaveBeenCalledTimes(1);
     });
 });
 
