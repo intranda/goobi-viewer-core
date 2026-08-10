@@ -142,7 +142,7 @@
 		<rome.version>2.1.0</rome.version>
 		<spring.version>6.2.19</spring.version>
 		<slf4j.version>2.0.18</slf4j.version>
-		<swagger.version>2.2.52</swagger.version>
+		<swagger.version>2.2.53</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.7.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
