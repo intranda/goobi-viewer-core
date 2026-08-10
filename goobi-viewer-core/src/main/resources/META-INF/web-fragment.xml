@@ -36,9 +36,10 @@
     </context-param>
     <!-- Mojarra 4.1.13 added DefaultFaceletFactory.requireFaceletResource(), which rejects any
          template or include whose resolved URL does not end with one of the configured Facelets
-         suffixes (default: .xhtml only). All viewer theme templates use the .html extension
-         (e.g. /resources/themes/<theme>/template.html), so without this parameter every view
-         fails with "... is not a Facelet resource". Space-separated; .xhtml must stay listed
+         suffixes (default: .xhtml only). Two viewer conventions need more than .xhtml:
+         theme templates use the .html extension (/resources/themes/<theme>/template.html), and
+         icons are inlined as markup via <ui:include src="....svg">. Without this parameter both
+         fail with "... is not a Facelet resource". Space-separated; .xhtml must stay listed
          because this value replaces the default instead of extending it. -->
     <context-param>
         <param-name>jakarta.faces.FACELETS_SUFFIX</param-name>

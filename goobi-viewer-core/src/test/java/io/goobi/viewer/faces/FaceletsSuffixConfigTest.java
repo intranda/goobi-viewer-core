@@ -41,14 +41,14 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractTest;
 
 /**
- * Verifies that the Facelets suffixes declared in <code>META-INF/web-fragment.xml</code> cover every file extension the bundled views use in their
- * <code>template</code> attribute.
+ * Verifies that the Facelets suffixes declared in <code>META-INF/web-fragment.xml</code> cover every file extension the bundled views use in a
+ * <code>template</code> attribute or a <code>&lt;ui:include&gt;</code>.
  *
  * <p>
  * Background: Mojarra 4.1.13 introduced <code>DefaultFaceletFactory.requireFaceletResource()</code>, which rejects a template or include whose
- * resolved URL does not end with one of the configured Facelets suffixes (default: <code>.xhtml</code> only). Since all viewer theme templates use
- * the <code>.html</code> extension, dropping <code>.html</code> from <code>jakarta.faces.FACELETS_SUFFIX</code> would break every view with
- * "... is not a Facelet resource".
+ * resolved URL does not end with one of the configured Facelets suffixes (default: <code>.xhtml</code> only). The viewer needs two more: theme
+ * templates use the <code>.html</code> extension, and icons are inlined as markup via <code>&lt;ui:include src="....svg"&gt;</code>. Dropping either
+ * from <code>jakarta.faces.FACELETS_SUFFIX</code> breaks the affected views with "... is not a Facelet resource".
  * </p>
  */
 class FaceletsSuffixConfigTest extends AbstractTest {
@@ -67,24 +67,27 @@ class FaceletsSuffixConfigTest extends AbstractTest {
      */
     private static final Pattern TEMPLATE_ATTRIBUTE_PATTERN = Pattern.compile("(?<![\\w-])template\\s*=\\s*\"([^\"]+)\"");
 
-    /** A literal file extension; template values whose tail is an EL expression have no statically known extension. */
+    /** Matches the src attribute of a ui:include tag; the character class spans line breaks, so attributes may be wrapped. */
+    private static final Pattern INCLUDE_SRC_PATTERN = Pattern.compile("<ui:include\\b[^>]*?\\bsrc\\s*=\\s*\"([^\"]+)\"");
+
+    /** A literal file extension; values whose tail is an EL expression have no statically known extension. */
     private static final Pattern LITERAL_EXTENSION_PATTERN = Pattern.compile("\\.[A-Za-z0-9]+");
 
     /**
-     * Every extension used in a template attribute of a bundled view must be declared as a Facelets suffix.
+     * Every extension used in a template attribute or ui:include of a bundled view must be declared as a Facelets suffix.
      */
     @Test
-    void faceletsSuffixes_shouldCoverAllTemplateExtensionsUsedByBundledViews() throws IOException {
+    void faceletsSuffixes_shouldCoverAllFaceletExtensionsUsedByBundledViews() throws IOException {
         Set<String> configuredSuffixes = readConfiguredFaceletsSuffixes();
         assertTrue(configuredSuffixes.contains(".xhtml"), ".xhtml must remain configured, otherwise no view can be resolved at all");
 
-        Set<String> usedExtensions = collectTemplateExtensions();
-        assertFalse(usedExtensions.isEmpty(), "No template attributes found - test setup is broken");
+        Set<String> usedExtensions = collectFaceletExtensions();
+        assertFalse(usedExtensions.isEmpty(), "No template attributes or ui:include tags found - test setup is broken");
 
         for (String extension : usedExtensions) {
             assertTrue(configuredSuffixes.contains(extension),
-                    "Template extension " + extension + " is used by bundled views but not declared in jakarta.faces.FACELETS_SUFFIX "
-                            + configuredSuffixes + "; Mojarra would reject those templates as \"not a Facelet resource\"");
+                    "Extension " + extension + " is referenced by bundled views but not declared in jakarta.faces.FACELETS_SUFFIX "
+                            + configuredSuffixes + "; Mojarra would reject those files as \"not a Facelet resource\"");
         }
     }
 
@@ -96,25 +99,33 @@ class FaceletsSuffixConfigTest extends AbstractTest {
         return Set.of(matcher.group(1).trim().split("\\s+"));
     }
 
-    private static Set<String> collectTemplateExtensions() throws IOException {
+    private static Set<String> collectFaceletExtensions() throws IOException {
         Set<String> extensions = new HashSet<>();
         try (Stream<Path> views = Files.walk(VIEWS_ROOT)) {
             List<Path> viewFiles = views.filter(Files::isRegularFile).filter(p -> p.getFileName().toString().endsWith(".xhtml")).toList();
             for (Path viewFile : viewFiles) {
-                Matcher matcher = TEMPLATE_ATTRIBUTE_PATTERN.matcher(Files.readString(viewFile, StandardCharsets.UTF_8));
-                while (matcher.find()) {
-                    String template = matcher.group(1);
-                    int dotIndex = template.lastIndexOf('.');
-                    if (dotIndex > -1) {
-                        String extension = template.substring(dotIndex);
-                        if (LITERAL_EXTENSION_PATTERN.matcher(extension).matches()) {
-                            extensions.add(extension);
-                        }
-                    }
-                }
+                String view = Files.readString(viewFile, StandardCharsets.UTF_8);
+                addLiteralExtensions(TEMPLATE_ATTRIBUTE_PATTERN.matcher(view), extensions);
+                addLiteralExtensions(INCLUDE_SRC_PATTERN.matcher(view), extensions);
             }
         }
 
         return extensions;
+    }
+
+    /**
+     * Adds the extension of every match's first group to the given set, skipping values that end in an EL expression.
+     */
+    private static void addLiteralExtensions(Matcher matcher, Set<String> extensions) {
+        while (matcher.find()) {
+            String path = matcher.group(1);
+            int dotIndex = path.lastIndexOf('.');
+            if (dotIndex > -1) {
+                String extension = path.substring(dotIndex);
+                if (LITERAL_EXTENSION_PATTERN.matcher(extension).matches()) {
+                    extensions.add(extension);
+                }
+            }
+        }
     }
 }
