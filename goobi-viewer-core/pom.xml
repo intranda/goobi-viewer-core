@@ -129,7 +129,7 @@
 		<jersey.version>3.1.12</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
 		<jsoup.version>1.22.2</jsoup.version>
-		<mariadb-java-client.version>3.5.9</mariadb-java-client.version>
+		<mariadb-java-client.version>3.5.10</mariadb-java-client.version>
 		<mockito.version>5.23.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 		<mockserver.version>7.4.0</mockserver.version>
