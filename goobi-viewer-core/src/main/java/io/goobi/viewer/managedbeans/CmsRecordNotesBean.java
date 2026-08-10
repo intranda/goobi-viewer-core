@@ -167,7 +167,7 @@ public class CmsRecordNotesBean implements Serializable {
                         DataManager.getInstance().getSearchIndex().getFirstDoc("+" + SolrConstants.PI + ":\"" + note.getRecordPi() + '"', null));
             }
             if (note.getSolrDoc() != null) {
-                return IdentifierResolver.constructUrl(note.getSolrDoc(), false);
+                return navigationHelper.getApplicationUrl() + IdentifierResolver.constructUrl(note.getSolrDoc(), false).substring(1);
             }
 
             return navigationHelper.getMetadataUrl() + "/" + note.getRecordPi() + "/";

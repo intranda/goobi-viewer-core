@@ -20,8 +20,27 @@
 		<sonar.projectKey>intranda_goobi-viewer-connector</sonar.projectKey>
 
 		<xstream.version>1.4.21</xstream.version>
+		<!-- AWS SDK's netty-nio-client (via ics/s3) and Solr's ZooKeeper client both pin their own
+		     Netty to the 4.1.x line upstream; see dependencyManagement below -->
+		<netty.version>4.1.136.Final</netty.version>
 	</properties>
 
+	<!-- Force all transitive Netty artifacts (pulled in via AWS SDK's netty-nio-client and Solr's
+	     ZooKeeper client) to a single consistent, patched 4.1.x version instead of relying on Maven's
+	     nearest-wins mediation, which otherwise mixes 4.1.132.Final (AWS SDK path) and 4.1.119.Final
+	     (ZooKeeper path) and leaves old CVEs open. Staying on 4.1.x rather than jumping to 4.2.x because
+	     neither AWS SDK nor ZooKeeper is released/tested against Netty 4.2.x. -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-bom</artifactId>
+				<version>${netty.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -278,7 +297,9 @@
 					<skipTestScope>true</skipTestScope>
 					<skip>${skipDependencyCheck}</skip>
 					<suppressionFiles>
-						<suppressionFile>file://${basedir}/dependency-suppression.xml</suppressionFile>
+						<!-- Shared reactor-wide file (not per-module ${basedir}) so core and connector
+							 stay in sync automatically instead of needing manual duplication -->
+						<suppressionFile>file://${maven.multiModuleProjectDirectory}/dependency-suppression.xml</suppressionFile>
 					</suppressionFiles>
 				</configuration>
 				<executions>

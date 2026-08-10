@@ -273,7 +273,7 @@
     			var isInstance = false;
           try {
             isInstance = this instanceof a;
-          } catch {}
+          } catch (e) {}
     			if (isInstance) {
             return Reflect.construct(f, arguments, this.constructor);
     			}

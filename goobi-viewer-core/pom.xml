@@ -105,7 +105,7 @@
 		<commons-net.version>3.13.0</commons-net.version>
 		<commons-text.version>1.15.0</commons-text.version>
 		<cron-expression-descriptor.version>1.2.10</cron-expression-descriptor.version>
-		<dbunit.version>3.3.0</dbunit.version>
+		<dbunit.version>3.4.0</dbunit.version>
 		<eclipselink.version>4.0.9</eclipselink.version>
 		<h2.version>2.4.240</h2.version>
 		<httpmime.version>4.5.14</httpmime.version>
@@ -113,7 +113,7 @@
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
 		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
-		<jakarta.faces.version>4.1.11</jakarta.faces.version>
+		<jakarta.faces.version>4.1.13</jakarta.faces.version>
 		<jakarta.inject.version>2.0.1</jakarta.inject.version>
 		<jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
 		<jakarta.jstl.version>3.0.2</jakarta.jstl.version>
@@ -128,11 +128,13 @@
 		<jaxb-runtime.version>4.0.9</jaxb-runtime.version>
 		<jersey.version>3.1.12</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
-		<jsoup.version>1.22.2</jsoup.version>
-		<mariadb-java-client.version>3.5.9</mariadb-java-client.version>
+		<jsoup.version>1.23.1</jsoup.version>
+		<mariadb-java-client.version>3.5.10</mariadb-java-client.version>
 		<mockito.version>5.23.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
-		<mockserver.version>7.4.0</mockserver.version>
+		<mockserver.version>7.5.0</mockserver.version>
+		<!-- mockserver-netty 7.5.0 requires the Netty 4.2.x line; see dependencyManagement below -->
+		<netty.version>4.2.16.Final</netty.version>
 		<omnifaces.version>4.7.12</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.5.1</poi.version>
@@ -142,7 +144,7 @@
 		<rome.version>2.1.0</rome.version>
 		<spring.version>6.2.19</spring.version>
 		<slf4j.version>2.0.18</slf4j.version>
-		<swagger.version>2.2.52</swagger.version>
+		<swagger.version>2.2.53</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.7.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
@@ -150,6 +152,21 @@
 		<sf-geojson.version>3.3.3</sf-geojson.version>
 	</properties>
 
+	<!-- Force all transitive Netty artifacts (pulled in by mockserver-netty, test scope) to a single
+	     consistent, patched version instead of relying on Maven's nearest-wins mediation, which would
+	     otherwise mix versions across the Netty submodules and leave old CVEs open (CVE-2026-44891,
+	     CVE-2026-55831, CVE-2026-55833 etc., fixed as of 4.1.136.Final/4.2.16.Final). -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.netty</groupId>
+				<artifactId>netty-bom</artifactId>
+				<version>${netty.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 	
@@ -1303,7 +1320,9 @@
 					<format>ALL</format>
 					<skip>${skipDependencyCheck}</skip>
 					<suppressionFiles>
-						<suppressionFile>file://${basedir}/dependency-suppression.xml</suppressionFile>
+						<!-- Shared reactor-wide file (not per-module ${basedir}) so core and connector
+							 stay in sync automatically instead of needing manual duplication -->
+						<suppressionFile>file://${maven.multiModuleProjectDirectory}/dependency-suppression.xml</suppressionFile>
 					</suppressionFiles>
 				</configuration>
 				<executions>

@@ -23,29 +23,29 @@
                     </button>
                 </li>
                 <li each="{item in getFirstItems()}" class="numeric-paginator__navigate">
-                    <a if="{isRenderAsLink(item)}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}">
+                    <a if="{isRenderAsLink(item)}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto} {item}">
                         <span>{item}</span>
                     </a>
-                    <button if="{isRenderAsButton(item)}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}">
+                    <button if="{isRenderAsButton(item)}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto} {item}">
                         <span>{item}</span>
                     </button>
                 </li>
                 <li class="numeric-paginator__dots" if="{isShowDotsAfterFirstItems()}"><span>...</span></li>
                 <li each="{item in getCenterItems()}" class="numeric-paginator__navigate {item == currentItem ? '-active' : ''}">
-                    <a if="{isRenderAsLink(item) && item != currentItem}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}">
+                    <a if="{isRenderAsLink(item) && item != currentItem}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto} {item}">
                         <span>{item}</span>
                     </a>
-                    <button if="{isRenderAsButton(item) && item != currentItem}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}">
+                    <button if="{isRenderAsButton(item) && item != currentItem}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto} {item}">
                         <span>{item}</span>
                     </button>
                     <span if="{item == currentItem}">{item}</span>
                 </li>
                 <li class="numeric-paginator__dots" if="{isShowDotsBeforeLastItems()}"><span>...</span></li>
                 <li each="{item in getLastItems()}" class="numeric-paginator__navigate">
-                    <a if="{isRenderAsLink(item)}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto}">
+                    <a if="{isRenderAsLink(item)}" href="{getItemUrl(item)}" aria-label="{msg.aria_label__pagination_goto} {item}">
                         <span>{item}</span>
                     </a>
-                    <button if="{isRenderAsButton(item)}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto}">
+                    <button if="{isRenderAsButton(item)}" onclick="{navigateToItem}" aria-label="{msg.aria_label__pagination_goto} {item}">
                         <span>{item}</span>
                     </button>
                 </li>

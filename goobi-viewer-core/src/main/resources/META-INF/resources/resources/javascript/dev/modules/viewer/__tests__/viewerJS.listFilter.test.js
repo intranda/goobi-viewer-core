@@ -27,7 +27,7 @@ function makeListFilter() {
         <div id="wrapper">
             <input id="filter-input" type="text" />
             <button id="input-toggle">T</button>
-            <span id="filter-status" role="status" data-filter-status="" data-filter-status-label="{0} sichtbar"></span>
+            <span id="filter-status" role="status" data-filter-status="" data-filter-status-label="{0} sichtbar" data-filter-status-empty-label="Keine Ergebnisse gefunden"></span>
             <h3 id="filter-header">Header</h3>
             <ul>
                 <li class="filter-element"><a>Apple</a></li>
@@ -191,11 +191,11 @@ describe('listFilter status announcement', () => {
         expect(document.getElementById('filter-status').textContent).toBe('2 sichtbar');
     });
 
-    test('announces zero matches', () => {
+    test('announces a dedicated no-results message on zero matches', () => {
         makeListFilter();
         $('#filter-input').val('zzz');
         _filterSubscriber();
-        expect(document.getElementById('filter-status').textContent).toBe('0 sichtbar');
+        expect(document.getElementById('filter-status').textContent).toBe('Keine Ergebnisse gefunden');
     });
 
     test('clears the announcement when the input is emptied', () => {

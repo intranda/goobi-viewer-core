@@ -15,6 +15,11 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
     }
+    /* transparent to the grid layout above, so its children (start/end) keep
+       occupying their own grid columns as if this wrapper didn't exist */
+    &__group {
+        display: contents;
+    }
     &__description-text {
         grid-column: 1 / 3;
     }

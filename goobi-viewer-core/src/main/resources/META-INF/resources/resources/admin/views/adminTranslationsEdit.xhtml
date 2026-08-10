@@ -199,12 +199,13 @@
                                             <div class="admin__translations-filter-wrapper">
                                                 <h:inputText
                                                     styleClass="form-control admin__translations-search-input"
-                                                    pt:placeholder="#{msg.search}"
                                                     value="#{adminBean.currentTranslationGroup.filterString}"
                                                     immediate="true">
-                                                    <f:ajax
+
+														<f:ajax
                                                         execute="@form"
                                                         render="overviewList" />
+
                                                 </h:inputText>
                                                 <div class="admin__translations-search-clear">x</div>
                                                 <div class="admin__translations-search-action">

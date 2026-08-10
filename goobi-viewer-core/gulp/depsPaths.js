@@ -327,10 +327,11 @@ const depsPathsJS = [
         expand: true,
         cwd: nodeModules,
         src: [
-            'tinymce/jquery.tinymce.min.js*',
             'tinymce/tinymce.min.js*',
-            'tinymce/license.txt',
+            'tinymce/license.md',
+            'tinymce/notices.txt',
             'tinymce/icons/**/*',
+            'tinymce/models/**/*',
             'tinymce/plugins/**/*',
             'tinymce/skins/**/*',
             'tinymce/themes/**/*',

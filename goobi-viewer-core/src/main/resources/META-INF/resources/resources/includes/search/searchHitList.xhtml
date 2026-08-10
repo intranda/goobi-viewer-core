@@ -143,11 +143,14 @@
                     <ui:fragment rendered="#{searchBean.displayResultGroupNames}">
                         <h2 class="search-list__hit-result-group-heading">#{msg[resultGroup.name]} (#{resultGroup.hitsCount})</h2>
                     </ui:fragment>
+                    <ul
+                        class="search-list__hits-list-items"
+                        role="list">
                     <ui:repeat
                         value="#{resultGroup.hits}"
                         var="hit"
                         varStatus="status">
-                        <div class="search-list__hit #{hit.cssClass}">
+                        <li class="search-list__hit #{hit.cssClass}">
                             <!-- COinS IMPLEMENTATION -->
                             <span
                                 class="Z3988"
@@ -358,8 +361,10 @@
                                     </h:panelGroup>
                                 </div>
                             </ui:fragment>
-                        </div>
+                        </li>
                     </ui:repeat>
+                    </ul>
+
                     <!-- EXPAND LINK -->
                     <ui:fragment rendered="#{groupPreviewMode and searchBean.activeContext eq '-' and resultGroup.displayExpandUrl}">
                         <a

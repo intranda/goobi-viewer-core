@@ -49,14 +49,16 @@
                         <li class="active-facets-badges__list-item">
                             <h:commandLink
                                 styleClass="active-facets-badges__badge #{facet.excluded ? '-excluded' : ''}"
-                                action="#{searchBean.removeFacetAction(facet.link)}"
-                                title="#{msg.removeFacet}">
+                                action="#{searchBean.removeFacetAction(facet.link)}">
                                 <f:passThroughAttribute
                                     name="data-toggle"
                                     value="tooltip" />
                                 <f:passThroughAttribute
                                     name="data-placement"
                                     value="top" />
+                                <f:passThroughAttribute
+                                    name="data-original-title"
+                                    value="#{msg.removeFacet}" />
                                 <!-- tooltip only repeats the sr-only prefix: keep it visual-only -->
                                 <f:passThroughAttribute
                                     name="data-tooltip-muted"

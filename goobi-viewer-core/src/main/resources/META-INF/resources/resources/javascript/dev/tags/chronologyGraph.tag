@@ -6,7 +6,7 @@
 			<canvas class="chronology-slider__chart" ref="chart"></canvas>
 			<canvas class="chronology-slider__draw" ref="draw"></canvas>
 		</div>
-		<div class="chronology-slider__input-wrapper">
+		<div class="chronology-slider__input-wrapper" role="group" aria-labelledby="{opts.groupLabelId}">
 			<input onchange="{setStartYear}" data-input='number' data-toggle="tooltip"
 				data-placement="top" aria-label="{msg.enterYearStart}" title="{msg.enterYearStart}" class="form-control chronology-slider__input-start" ref="input_start" value="{startYear}"></input>
 			<div class="chronology-slider__between-year-symbol">-</div>

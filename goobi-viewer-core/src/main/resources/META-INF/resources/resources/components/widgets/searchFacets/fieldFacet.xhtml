@@ -42,12 +42,11 @@
                     data-facet="searchFacetFilter"
                     data-facetfield="#{cc.attrs.field}">
                     <div class="widget__topbar widget-search-facets__topbar">
-                        <h2
+                        <h3
                             class="widget__title widget-search-facets__title"
-                            data-heading="searchFacetFilter"
-                            aria-level="#{cc.attrs.headingLevel}"> 
+                            data-heading="searchFacetFilter">
                             #{msg[cc.attrs.field.concat('_DD')]}
-                        </h2>
+                        </h3>
                         <!-- FILTER FACETS -->
                         <ui:fragment rendered="#{configurationBean.isFacetFieldDisplayValueFilter(cc.attrs.field)}">
                             <div
@@ -78,7 +77,8 @@
                                     class="sr-only"
                                     role="status"
                                     data-filter-status=""
-                                    data-filter-status-label="#{msg.search__facets__filter_matches}" />
+                                    data-filter-status-label="#{msg.search__facets__filter_matches}"
+                                    data-filter-status-empty-label="#{msg.search__facets__filter_no_matches}" />
                             </div>
                         </ui:fragment>
                         <!-- SECTION COLLAPSE -->
@@ -94,6 +94,8 @@
                         </button>
                     </div>
 
+                    <p class="sr-only">#{msg.a11y__widget_facets_reloaded}</p>
+
                     <ui:fragment rendered="#{configurationBean.isFacetFieldTypeBoolean(cc.attrs.field)}">
                         <div class="widget__body widget-search-facets__body">
                             <div class="widget-search-facets__boolean">
@@ -101,8 +103,7 @@
                                     <div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
                                         <h:commandLink
                                             action="#{searchBean.removeFacetAction(cc.attrs.field.concat(':true'))}"
-                                            styleClass="btn widget-search-facets__boolean-button -active"
-                                            title="#{msg.removeFacet}">
+                                            styleClass="btn widget-search-facets__boolean-button -active">
                                             #{msg.yes}
                                             <f:passThroughAttribute
                                                 name="data-triggerjs"
@@ -113,6 +114,9 @@
                                             <f:passThroughAttribute
                                                 name="data-placement"
                                                 value="top" />
+                                            <f:passThroughAttribute
+                                                name="data-original-title"
+                                                value="#{msg.removeFacet}" />
                                             <f:passThroughAttribute
                                                 name="aria-label"
                                                 value="#{msg.removeFacet}: #{msg[cc.attrs.field.concat('_DD')]} #{msg.yes}" />
@@ -146,8 +150,7 @@
                                     <div class="widget-search-facets__boolean-button-wrapper small-button-loader__wrapper">
                                         <h:commandLink
                                             action="#{searchBean.removeFacetAction(cc.attrs.field.concat(':false'))}"
-                                            styleClass="btn widget-search-facets__boolean-button -active"
-                                            title="#{msg.removeFacet}">
+                                            styleClass="btn widget-search-facets__boolean-button -active">
                                             #{msg.no}
                                             <f:passThroughAttribute
                                                 name="data-triggerjs"
@@ -158,6 +161,9 @@
                                             <f:passThroughAttribute
                                                 name="data-placement"
                                                 value="top" />
+                                            <f:passThroughAttribute
+                                                name="data-original-title"
+                                                value="#{msg.removeFacet}" />
                                             <f:passThroughAttribute
                                                 name="aria-label"
                                                 value="#{msg.removeFacet}: #{msg[cc.attrs.field.concat('_DD')]} #{msg.no}" />
@@ -216,8 +222,7 @@
                                     <li class="widget-search-facets__list-item #{facet.excluded ? '-excluded' : '-active'}">
                                         <h:commandLink
                                             styleClass="widget-search-facets__list-item-link"
-                                            action="#{searchBean.removeFacetAction(facet.link)}"
-                                            title="#{msg.removeFacet}">
+                                            action="#{searchBean.removeFacetAction(facet.link)}">
                                             <ui:fragment rendered="#{!facet.excluded}">
                                                 <span
                                                     class="widget-search-facets__list-item-control -include -set"
@@ -245,6 +250,9 @@
                                             <f:passThroughAttribute
                                                 name="data-placement"
                                                 value="top" />
+                                            <f:passThroughAttribute
+                                                name="data-original-title"
+                                                value="#{msg.removeFacet}" />
                                             <f:passThroughAttribute
                                                 name="aria-label"
                                                 value="#{facet.excluded ? msg.search__active_facets__excluded.concat(': ') : ''}#{msg[cc.attrs.field.concat('_DD')]}: #{facet.translatedLabel} (#{msg.removeFacet})" />
@@ -281,8 +289,7 @@
                                         <ui:fragment rendered="#{facet.count lt searchBean.hitsCount}">
                                             <h:outputLink
                                                 styleClass="widget-search-facets__list-item-control-link"
-                                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.excludeUrlEscapedLink}/#{navigationHelper.subThemeQueryParam}"
-                                                title="#{msg.searchOperator_NOT}: #{facet.translatedLabel}">
+                                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.excludeUrlEscapedLink}/#{navigationHelper.subThemeQueryParam}">
                                                 <span
                                                     class="widget-search-facets__list-item-control -exclude"
                                                     aria-hidden="true">
@@ -299,6 +306,9 @@
                                                 <f:passThroughAttribute
                                                     name="data-placement"
                                                     value="top" />
+                                                <f:passThroughAttribute
+                                                    name="data-original-title"
+                                                    value="#{msg.searchOperator_NOT}: #{facet.translatedLabel}" />
                                                 <!-- tooltip only repeats the aria-label: keep it visual-only -->
                                                 <f:passThroughAttribute
                                                     name="data-tooltip-muted"
@@ -317,7 +327,8 @@
                             <button
                                 class="btn btn--clean widget-search-facets__collapse-button -expand"
                                 jsf:action="#{searchBean.facets.expandFacet(cc.attrs.field)}"
-                                title="#{msg.search__facets__show_all}">
+                                title="#{msg.search__facets__show_all}"
+                                aria-label="#{msg.search__facets__show_all}: #{msg[cc.attrs.field.concat('_DD')]}">
                                 <util:icon
                                     icon="chevron-down"
                                     styleClass="widget-search-facets__collapse-chevron"
@@ -339,7 +350,8 @@
                             <button
                                 class="btn btn--clean widget-search-facets__collapse-button -collapse"
                                 jsf:action="#{searchBean.facets.collapseFacet(cc.attrs.field)}"
-                                title="#{msg.search__facets__show_less}">
+                                title="#{msg.search__facets__show_less}"
+                                aria-label="#{msg.search__facets__show_less}: #{msg[cc.attrs.field.concat('_DD')]}">
                                 <util:icon
                                     icon="chevron-up"
                                     styleClass="widget-search-facets__collapse-chevron"

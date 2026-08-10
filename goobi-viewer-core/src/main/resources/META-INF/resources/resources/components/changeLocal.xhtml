@@ -53,7 +53,8 @@
                                 <button
                                     title="#{msg['changeLocal_' += lang]} - #{msg['changeLocal_long_' += lang]}"
                                     type="submit"
-                                    aria-current="#{navigationHelper.localeString == lang ? 'true':'false'}"
+                                    lang="#{lang}"
+                                    aria-current="#{navigationHelper.localeString == lang ? 'true' : null}"
                                     class="#{navigationHelper.localeString == lang ?'activeLang':''}"
                                     jsf:action="#{navigationHelper.setLocaleString(lang)}">
                                     <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
@@ -98,6 +99,7 @@
                                     <ui:fragment rendered="#{cc.attrs.longLanguageStrings == false}">
                                         <button
                                             class="flag #{navigationHelper.localeString eq lang ?'activeLang':''}"
+                                            lang="#{lang}"
                                             jsf:action="#{navigationHelper.setLocaleString(lang)}">
                                             <h:outputText
                                                 value="#{msg['changeLocal_' += lang]}"
@@ -114,6 +116,7 @@
                                     <ui:fragment rendered="#{cc.attrs.longLanguageStrings == true}">
                                         <button
                                             class="flag #{navigationHelper.localeString eq lang ?'activeLang':''}"
+                                            lang="#{lang}"
                                             jsf:action="#{navigationHelper.setLocaleString(lang)}">
                                             <h:outputText
                                                 value="#{msg['changeLocal_long_' += lang]}"
@@ -139,7 +142,7 @@
                     prependId="false">
                     <ul>
                         <li>
-                            <button jsf:action="#{navigationHelper.setLocaleString(cc.attrs.singleLanguage)}">
+                            <button lang="#{cc.attrs.singleLanguage}" jsf:action="#{navigationHelper.setLocaleString(cc.attrs.singleLanguage)}">
                                 <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
                                     <img
                                         src="#{request.contextPath}/resources/themes/#{navigationHelper.theme}/images/lang/flag_#{cc.attrs.singleLanguage}.gif"

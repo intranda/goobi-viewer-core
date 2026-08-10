@@ -53,7 +53,7 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Shared dependency versions (later of the previous drifts preferred) -->
-		<checkstyle.version>13.9.0</checkstyle.version>
+		<checkstyle.version>13.10.0</checkstyle.version>
 		<commons-configuration2.version>2.15.1</commons-configuration2.version>
 		<commons-io.version>2.22.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
@@ -63,13 +63,12 @@
 		<httpcore.version>4.4.16</httpcore.version>
 		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 		<jakarta.transaction-api.version>2.0.1</jakarta.transaction-api.version>
-		<jackson.version>2.21.5</jackson.version>
+		<jackson.version>2.22.1</jackson.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<!-- https://github.com/stleary/JSON-java -->
 		<json.version>20260719</json.version>
-		<junit.version>6.1.2</junit.version>
+		<junit.version>6.1.3</junit.version>
 		<log4j.version>2.26.1</log4j.version>
-		<!--netty.version>4.1.132.Final</netty.version-->
 		<solr.version>9.10.1</solr.version>
 
 		<!-- Shared plugin versions -->
@@ -183,54 +182,6 @@
 				<artifactId>log4j-core</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
-
-			<!-- Force netty to a consistent version across all transitive sources (mockserver pulls in older 4.1.86,
-			     AWS SDK and ZooKeeper need newer versions; nearest-wins would otherwise downgrade them - CVE-2023-44487 etc.) -->
-			<!--dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-buffer</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-codec</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-codec-http</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-codec-http2</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-common</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-handler</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-resolver</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport</artifactId>
-				<version>${netty.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.netty</groupId>
-				<artifactId>netty-transport-native-unix-common</artifactId>
-				<version>${netty.version}</version>
-			</dependency-->
 		</dependencies>
 	</dependencyManagement>
 

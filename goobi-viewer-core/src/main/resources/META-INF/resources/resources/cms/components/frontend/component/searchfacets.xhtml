@@ -55,14 +55,14 @@
 
                 <div class="search-list__options">
                     <!-- HITCOUNT -->
-                    <div class="search-list__hitcount">
+                    <p class="search-list__hitcount">
                         <h:outputText
                             rendered="#{searchBean.hitsCount > 0}"
                             value="#{msg.hits}: #{searchBean.hitsCount}" />
                         <h:outputText
                             rendered="#{searchBean.hitsCount == 0}"
                             value="#{msg.hitsZero}." />
-                    </div>
+                    </p>
                 </div>
 
                 <h:form styleClass="d-none">
