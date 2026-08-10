@@ -35,7 +35,10 @@
         </rule>
         <rule groupId="org.jboss.weld.servlet" artifactId="weld-servlet-shaded">
             <ignoreVersions>
+		<!-- EE 11 -->
                 <ignoreVersion type="regex">6.*</ignoreVersion>
+		<!-- EE 12 -->
+                <ignoreVersion type="regex">7.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="jakarta.ws.rs" artifactId="jakarta.ws.rs-api">
@@ -58,6 +61,15 @@
                 <ignoreVersion type="regex">5.*</ignoreVersion>
             </ignoreVersions>
         </rule>
+
+
+	<!-- This is Jakarta EE 12 ...-->
+        <rule groupId="jakarta.enterprise" artifactId="jakarta.enterprise.cdi*">
+            <ignoreVersions>
+                <ignoreVersion type="regex">5.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+	<!-- EE 12 Weld is in the block above -->
 
 
 
