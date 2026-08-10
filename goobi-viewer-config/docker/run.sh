@@ -148,7 +148,8 @@ find "${CATALINA_HOME}" /opt/digiverso/viewer/ /opt/digiverso/logs/ \! -user use
 # No initial user password given
 if [[ -z "${VIEWER_USERPASS-}" ]]; then
   echo "Starting application server..."
-  touch /tmp/startup-succeeded
+  # Record the resolved webapp path so healthcheck.sh knows what to request.
+  printf '%s' "${VIEWER_BASE_PATH}" > /tmp/startup-succeeded
   exec gosu user catalina.sh run
 fi
 
@@ -188,5 +189,6 @@ unset STORED_HASH STORED_2B NEW_HASH EMAIL_SQL
 
 # Finally, start application
 echo "Starting application server..."
-touch /tmp/startup-succeeded
+# Record the resolved webapp path so healthcheck.sh knows what to request.
+printf '%s' "${VIEWER_BASE_PATH}" > /tmp/startup-succeeded
 exec gosu user catalina.sh run

@@ -27,6 +27,7 @@ RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula selec
 	  libopenjp2-7 \
       mariadb-client-core \
       gosu \
+      curl \
       whois && \
 	apt-get -y clean && \
 	rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
@@ -67,6 +68,8 @@ EXPOSE 8080
 RUN userdel -r ubuntu 2>/dev/null || true; groupdel ubuntu 2>/dev/null || true; \
     groupadd -g 1000 user && useradd -u 1000 -g user -M -s /usr/sbin/nologin user
 
-HEALTHCHECK --interval=30s --timeout=5s --retries=4 CMD ["/healthcheck.sh"]
+# timeout must exceed healthcheck.sh's curl --max-time. start-period covers the
+# first-run schema initialisation, during which the app is legitimately absent.
+HEALTHCHECK --interval=30s --timeout=15s --retries=4 --start-period=120s CMD ["/healthcheck.sh"]
 
 CMD ["/run.sh"]
