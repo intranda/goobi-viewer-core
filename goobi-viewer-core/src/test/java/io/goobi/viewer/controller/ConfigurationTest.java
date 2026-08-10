@@ -2055,7 +2055,7 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("WKT_COORDS", result.get(4));
         assertEquals("MD_PERSON", result.get(5));
         assertEquals("BOOL_HASIMAGES", result.get(6));
-        assertEquals("DYNCOL", result.get(7));
+        assertEquals("DC_DYNAMIC", result.get(7));
     }
 
     /**
@@ -2141,8 +2141,8 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getQueryFacetFields_shouldReturnConfiguredQueryFacetFields() {
         assertEquals(1, DataManager.getInstance().getConfiguration().getQueryFacetFields().size());
-        assertEquals("DYNCOL", DataManager.getInstance().getConfiguration().getQueryFacetFields().get(0));
-        assertTrue(DataManager.getInstance().getConfiguration().isQueryFacetField("DYNCOL"));
+        assertEquals("DC_DYNAMIC", DataManager.getInstance().getConfiguration().getQueryFacetFields().get(0));
+        assertTrue(DataManager.getInstance().getConfiguration().isQueryFacetField("DC_DYNAMIC"));
         assertFalse(DataManager.getInstance().getConfiguration().isQueryFacetField("DC"));
     }
 

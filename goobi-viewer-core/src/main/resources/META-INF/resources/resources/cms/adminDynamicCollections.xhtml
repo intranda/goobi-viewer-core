@@ -29,6 +29,11 @@
                 <!-- TITLE -->
                 <div class="admin__title-bar">
                     <h1 class="admin__title">#{msg.admin__dynamic_collections}</h1>
+                    <h:outputLink
+                        value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/new/"
+                        styleClass="btn btn--default admin__title-bar-action">
+                        <span>#{msg.admin__dynamic_collections_add}</span>
+                    </h:outputLink>
                 </div>
 
                 <viewerComponent:adminBreadcrumbs />
@@ -42,15 +47,6 @@
                         prependId="false">
                         <div class="admin__content-wrapper">
                             <div class="admin__content-main">
-                                <!-- NEW COLLECTION -->
-                                <div class="admin__default-block d-flex justify-content-end">
-                                    <h:outputLink
-                                        styleClass="btn btn--success"
-                                        value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/new/">
-                                        <h:outputText value="#{msg.admin__dynamic_collections_add}" />
-                                    </h:outputLink>
-                                </div>
-
                                 <div class="admin__default-block">
                                     <ui:fragment rendered="#{empty dynamicCollectionsBean.collections}">
                                         <div class="admin__form-help-text in">#{msg.admin__dynamic_collections_empty}</div>
@@ -71,8 +67,7 @@
                                                 <div class="col-8">
                                                     <!-- LABEL (translated) as title, links to edit -->
                                                     <div class="collection__title">
-                                                        <h:outputLink
-                                                            value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/edit/#{collection.identifier}/">
+                                                        <h:outputLink value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/edit/#{collection.identifier}/">
                                                             <h:outputText value="#{collection.getLabel(navigationHelper.locale)}" />
                                                         </h:outputLink>
                                                     </div>

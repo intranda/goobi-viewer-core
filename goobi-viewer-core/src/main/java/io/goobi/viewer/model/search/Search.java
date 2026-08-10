@@ -705,7 +705,7 @@ public class Search implements Serializable {
     /**
      * Populates the available facets for database-defined dynamic collections (query facets). Each collection's stored Solr query is added as a Solr
      * facet.query over the current (unfiltered) result set, and the resulting counts become {@link FacetType#QUERY} facet items under the reserved
-     * {@link SolrConstants#DYNCOL} pseudo field. Counts are computed independently of active facets, consistent with other always-available facets.
+     * {@link SolrConstants#DC_DYNAMIC} pseudo field. Counts are computed independently of active facets, consistent with other always-available facets.
      *
      * @param finalQuery fully assembled main Solr query
      * @param facets active search facets to populate
@@ -717,7 +717,7 @@ public class Search implements Serializable {
      */
     private void populateDynamicCollectionFacets(String finalQuery, SearchFacets facets, SearchResultGroup resultGroup,
             Map<String, String> params, Locale locale) throws PresentationException, IndexUnreachableException {
-        if (!DataManager.getInstance().getConfiguration().isQueryFacetField(SolrConstants.DYNCOL)) {
+        if (!DataManager.getInstance().getConfiguration().isQueryFacetField(SolrConstants.DC_DYNAMIC)) {
             return;
         }
 
@@ -765,11 +765,11 @@ public class Search implements Serializable {
                 continue;
             }
             // Display the collection's database-stored label for the locale (falls back to the identifier if untranslated)
-            dynColItems.add(FacetItem.buildQueryFacetItem(SolrConstants.DYNCOL, collection.getName(), collection.getLabel(locale),
+            dynColItems.add(FacetItem.buildQueryFacetItem(SolrConstants.DC_DYNAMIC, collection.getName(), collection.getLabel(locale),
                     collection.getSolrQuery(), entry.getValue().longValue()));
         }
         if (!dynColItems.isEmpty()) {
-            facets.getAvailableFacets().put(SolrConstants.DYNCOL, dynColItems);
+            facets.getAvailableFacets().put(SolrConstants.DC_DYNAMIC, dynColItems);
         }
     }
 

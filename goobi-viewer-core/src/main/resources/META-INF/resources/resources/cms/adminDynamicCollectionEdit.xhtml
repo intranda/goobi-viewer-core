@@ -2,6 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
@@ -32,17 +33,15 @@
 
                 <div class="admin__content-inner-content">
                     <div class="admin__content-wrapper">
-                        <div class="admin__content-main">
+                        <div class="admin__content-main #{dynamicCollectionsBean.currentCollection.id == null ? '-full' : ''}">
                             <h:form
                                 id="dynamicEditCollectionForm"
                                 prependId="false">
-
-                                <!-- IDENTIFIER (immutable once created) -->
-                                <h2>#{msg.admin__dynamic_collections_identifier}</h2>
-                                <div class="admin__default-block">
-                                    <p class="admin__boxed-entry-description">#{msg.admin__dynamic_collections_identifier_desc}</p>
-                                    <!-- New collection: editable identifier -->
-                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id == null}">
+                                <!-- IDENTIFIER (only editable on creation; shown in the info sidebar afterwards) -->
+                                <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id == null}">
+                                    <h2>#{msg.admin__dynamic_collections_identifier}</h2>
+                                    <div class="admin__default-block">
+                                        <p class="admin__boxed-entry-description">#{msg.admin__dynamic_collections_identifier_desc}</p>
                                         <h:inputText
                                             id="collectionIdentifier"
                                             styleClass="form-control"
@@ -55,15 +54,9 @@
                                         </h:inputText>
                                         <h:message
                                             for="collectionIdentifier"
-                                            styleClass="admin__form-input-error" />
-                                    </ui:fragment>
-                                    <!-- Existing collection: identifier is immutable -->
-                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
-                                        <h:outputText
-                                            styleClass="form-control -readonly"
-                                            value="#{dynamicCollectionsBean.currentCollection.identifier}" />
-                                    </ui:fragment>
-                                </div>
+                                            errorClass="-validation-message -danger" />
+                                    </div>
+                                </ui:fragment>
 
                                 <!-- SOLR QUERY -->
                                 <h2>#{msg.admin__dynamic_collections_query}</h2>
@@ -87,8 +80,8 @@
                                         <h:message
                                             for="solrQuery"
                                             infoClass="admin__form-help-text in"
-                                            warnClass="admin__form-input-error"
-                                            errorClass="admin__form-input-error" />
+                                            warnClass="-validation-message -warning"
+                                            errorClass="-validation-message -danger" />
                                         <ui:fragment rendered="#{dynamicCollectionsBean.queryHitCount != null}">
                                             <div class="admin__form-help-text in">
                                                 <h:outputFormat value="#{msg.admin__dynamic_collections_query_hits}">
@@ -99,8 +92,8 @@
                                     </h:panelGroup>
                                 </div>
 
-                                <!-- LABEL & DESCRIPTION (per language) -->
-                                <h2>#{msg.admin__dynamic_collections_translations}</h2>
+                                <!-- DESCRIPTION (per language, tabs; labels are translated via the translations editor like regular collection names) -->
+                                <h2>#{msg.description}</h2>
                                 <div class="admin__cms-edit-collection-translation-box">
                                     <h:panelGroup id="translationsGroup">
                                         <!-- LANGUAGE TABS -->
@@ -112,37 +105,17 @@
                                         </div>
 
                                         <div class="admin__default-block">
-                                            <!-- LABEL (shown in the facet and collection listing) -->
-                                            <div class="form-group form-row">
-                                                <div class="col-2"><label for="collectionLabel">#{msg.label}:</label></div>
-                                                <div class="col-10">
-                                                    <h:inputText
-                                                        id="collectionLabel"
-                                                        styleClass="form-control"
-                                                        value="#{dynamicCollectionsBean.currentCollection.labelAsTranslation.translationValue}">
-                                                        <f:ajax
-                                                            execute="@this"
-                                                            event="valueChange" />
-                                                    </h:inputText>
-                                                </div>
-                                            </div>
-                                            <!-- DESCRIPTION -->
-                                            <div class="form-group form-row">
-                                                <div class="col-2">#{msg.description}:</div>
-                                                <div class="col-10">
-                                                    <h:inputTextarea
-                                                        id="collectionDescription"
-                                                        value="#{dynamicCollectionsBean.currentCollection.descriptionAsTranslation.translationValue}"
-                                                        styleClass="form-control tinyMCE -validation-input">
-                                                        <f:passThroughAttribute
-                                                            name="aria-label"
-                                                            value="#{msg.aria_label__collections_description}" />
-                                                        <f:ajax
-                                                            execute="@this"
-                                                            event="valueChange" />
-                                                    </h:inputTextarea>
-                                                </div>
-                                            </div>
+                                            <h:inputTextarea
+                                                id="collectionDescription"
+                                                value="#{dynamicCollectionsBean.currentCollection.descriptionAsTranslation.translationValue}"
+                                                styleClass="form-control tinyMCE -validation-input">
+                                                <f:passThroughAttribute
+                                                    name="aria-label"
+                                                    value="#{msg.aria_label__collections_description}" />
+                                                <f:ajax
+                                                    execute="@this"
+                                                    event="valueChange" />
+                                            </h:inputTextarea>
                                         </div>
                                     </h:panelGroup>
                                 </div>
@@ -268,14 +241,36 @@
                                     </h:panelGroup>
                                 </div>
 
-                                <div class="admin__final-actions mb-0">
+                                <!-- FLOATING SAVE BAR -->
+                                <div class="admin__content-component-overlay-bar">
                                     <!-- CANCEL -->
                                     <h:commandLink
                                         id="dynamicEditCollectionBack"
-                                        styleClass="btn"
+                                        styleClass="btn btn--cancel"
                                         value="#{msg.cancel}"
                                         immediate="true"
                                         action="#{dynamicCollectionsBean.resetCurrentCollection}" />
+                                    <!-- PREVIEW -->
+                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
+                                        <h:outputLink
+                                            styleClass="btn btn--default"
+                                            target="_blank"
+                                            value="#{dynamicCollectionsBean.getSearchUrl(dynamicCollectionsBean.currentCollection)}">
+                                            <h:outputText value="#{msg.admin__cms_collections_preview}" />
+                                        </h:outputLink>
+                                    </ui:fragment>
+                                    <!-- DELETE -->
+                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
+                                        <button
+                                            id="deleteCollectionButton"
+                                            class="btn btn--danger"
+                                            data-require-confirmation="true"
+                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.confirm__delete_dynamic_collection, dynamicCollectionsBean.currentCollection.identifier)}"
+                                            jsf:action="#{dynamicCollectionsBean.deleteCurrentCollection}"
+                                            aria-label="#{msg.delete}: #{dynamicCollectionsBean.currentCollection.identifier}">
+                                            #{msg.delete}
+                                        </button>
+                                    </ui:fragment>
                                     <!-- SAVE -->
                                     <h:commandButton
                                         disabled="#{!dynamicCollectionsBean.currentCollectionValid}"
@@ -310,6 +305,77 @@
                                 </ui:fragment>
                             </h:panelGroup>
                         </div>
+
+                        <!-- INFO SIDEBAR (existing collections only) -->
+                        <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
+                            <div class="admin__content-side -sticky -refreshHCsticky">
+                                <!-- TRANSLATION HINT -->
+                                <ui:fragment rendered="#{!dynamicCollectionsBean.currentLabelsComplete}">
+                                    <div class="admin__default-block -warning">
+                                        <h2>#{msg.admin__cms_collections_translation}</h2>
+                                        <div class="admin__form-help-text in mb-3">#{msg.admin__cms_collections_translation_desc}</div>
+                                        <!-- TRANSLATION ACTION: opens the translations editor on the dynamic collections group -->
+                                        <div class="row">
+                                            <div class="col-12 d-flex justify-content-center">
+                                                <a
+                                                    class="btn btn--full"
+                                                    href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.dynamicCollectionsTranslationGroupId}/#{dynamicCollectionsBean.currentCollection.identifier}/"
+                                                    aria-label="#{msg.admin__translations_translate}: #{dynamicCollectionsBean.currentCollection.identifier}">
+                                                    #{msg.admin__translations_translate}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+
+                                <div class="admin__default-block">
+                                    <h2>#{msg.admin__cms_collections_information}</h2>
+                                    <div class="admin__cms-edit-collection-info-box">
+                                        <!-- IDENTIFIER (immutable) -->
+                                        <div class="admin__cms-edit-collection-data-wrapper">
+                                            <div class="admin__cms-edit-collection-data-type mb-4">#{msg.admin__cms_collections_info_internal_name}</div>
+                                            <div class="admin__cms-edit-collection-data-value mb-4">#{dynamicCollectionsBean.currentCollection.identifier}</div>
+                                        </div>
+                                        <!-- LABELS PER LANGUAGE -->
+                                        <ui:repeat
+                                            var="labelTranslation"
+                                            value="#{dynamicCollectionsBean.currentCollection.labels}">
+                                            <div class="admin__cms-edit-collection-data-wrapper">
+                                                <div class="admin__cms-edit-collection-data-type">#{msg[labelTranslation.language]}</div>
+                                                <div class="admin__cms-edit-collection-data-value">
+                                                    #{empty labelTranslation.translationValue ? '-/-' : labelTranslation.translationValue}
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                        <!-- QUERY HIT COUNT -->
+                                        <ui:fragment rendered="#{dynamicCollectionsBean.queryHitCount != null}">
+                                            <div class="admin__cms-edit-collection-data-wrapper">
+                                                <div class="admin__cms-edit-collection-data-type">#{msg.hits}</div>
+                                                <div class="admin__cms-edit-collection-data-value">#{dynamicCollectionsBean.queryHitCount}</div>
+                                            </div>
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:fragment>
+
+                        <script>
+                            // Warn before leaving the page with unsaved changes (native browser dialog, cf. adminJS.configEditor).
+                            // TinyMCE edits arrive as change events on the underlying textarea (viewerJS.tinyMce setup).
+                            let dynamicCollectionDirty = false;
+                            $('#dynamicEditCollectionForm').on('change input', () => {
+                                dynamicCollectionDirty = true;
+                            });
+                            // Save, cancel and delete leave the page intentionally
+                            $('#saveCollection, #dynamicEditCollectionBack, #deleteCollectionButton').on('click', () => {
+                                dynamicCollectionDirty = false;
+                            });
+                            window.addEventListener('beforeunload', (event) => {
+                                if (dynamicCollectionDirty) {
+                                    event.returnValue = false;
+                                }
+                            });
+                        </script>
                     </div>
                 </div>
             </div>

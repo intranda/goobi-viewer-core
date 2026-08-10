@@ -387,7 +387,7 @@ public class FacetItem implements Serializable, IFacetItem {
      * Builds a {@link FacetType#QUERY} facet item backed by a pre-built Solr query (e.g. a dynamic collection). The item's link/value is the
      * given identifier so it round-trips through the URL as {@code field:name}, while its filter query is the supplied Solr query.
      *
-     * @param field the pseudo facet field (e.g. {@code DYNCOL})
+     * @param field the pseudo facet field (e.g. {@code DC_DYNAMIC})
      * @param name the stable identifier used as the facet value/link
      * @param label the (already translated) display label
      * @param solrQuery the pre-built Solr query used as this facet's filter query

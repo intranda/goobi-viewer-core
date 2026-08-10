@@ -134,7 +134,7 @@ class SearchTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
-     * Verifies that a database-defined dynamic collection configured as a query facet (DYNCOL) is faceted via Solr facet.query and its count is
+     * Verifies that a database-defined dynamic collection configured as a query facet (DC_DYNAMIC) is faceted via Solr facet.query and its count is
      * surfaced as an available facet item.
      *
      * @verifies populate dynamic collection query facets
@@ -153,9 +153,9 @@ class SearchTest extends AbstractDatabaseAndSolrEnabledTest {
 
             search.execute(facets, null, 10, Locale.ENGLISH);
 
-            Assertions.assertTrue(facets.getAvailableFacets().containsKey(SolrConstants.DYNCOL),
-                    "DYNCOL should appear in available facets after execute()");
-            java.util.List<IFacetItem> items = facets.getAvailableFacets().get(SolrConstants.DYNCOL);
+            Assertions.assertTrue(facets.getAvailableFacets().containsKey(SolrConstants.DC_DYNAMIC),
+                    "DC_DYNAMIC should appear in available facets after execute()");
+            java.util.List<IFacetItem> items = facets.getAvailableFacets().get(SolrConstants.DC_DYNAMIC);
             Assertions.assertEquals(1, items.size());
             Assertions.assertEquals("search_dyncol_test", items.get(0).getValue());
             Assertions.assertTrue(items.get(0).getCount() > 0, "The dynamic collection facet should report a positive hit count");

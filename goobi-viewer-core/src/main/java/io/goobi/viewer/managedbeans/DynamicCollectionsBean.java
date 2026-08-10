@@ -142,6 +142,7 @@ public class DynamicCollectionsBean implements Serializable {
         currentCollection.populateLabels();
         currentCollection.populateDescriptions();
         initImageMode();
+        updateQueryHitCount();
         originalCollection = new DynamicCollection(currentCollection);
     }
 
@@ -222,7 +223,7 @@ public class DynamicCollectionsBean implements Serializable {
             updateCollections();
             invalidateBrowseView(getCurrentCollection());
         }
-        return "pretty:adminDynamicCollections";
+        return "pretty:adminCmsCollections";
     }
 
     /**
@@ -231,7 +232,7 @@ public class DynamicCollectionsBean implements Serializable {
      * @return the pretty URL name for the collections overview after discarding changes to the current collection
      */
     public String resetCurrentCollection() {
-        return "pretty:adminDynamicCollections";
+        return "pretty:adminCmsCollections";
     }
 
     /**
@@ -244,6 +245,17 @@ public class DynamicCollectionsBean implements Serializable {
         DataManager.getInstance().getDao().deleteDynamicCollection(collection);
         invalidateBrowseView(collection);
         updateCollections();
+    }
+
+    /**
+     * Deletes the currently edited collection and returns to the overview page. Used by the delete button on the edit page.
+     *
+     * @return pretty URL outcome of the dynamic collections overview
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public String deleteCurrentCollection() throws DAOException {
+        deleteCollection(currentCollection);
+        return "pretty:adminCmsCollections";
     }
 
     /**
@@ -390,6 +402,13 @@ public class DynamicCollectionsBean implements Serializable {
      * @param event the AJAX behavior event
      */
     public void checkQuery(AjaxBehaviorEvent event) {
+        updateQueryHitCount();
+    }
+
+    /**
+     * Recomputes {@link #queryHitCount} for the current collection's Solr query. Resets the count to null if the query is blank or counting fails.
+     */
+    private void updateQueryHitCount() {
         queryHitCount = null;
         String query = currentCollection != null ? currentCollection.getSolrQuery() : null;
         if (StringUtils.isBlank(query)) {
@@ -403,15 +422,27 @@ public class DynamicCollectionsBean implements Serializable {
     }
 
     /**
-     * @return the hit count computed by the last {@link #checkQuery(AjaxBehaviorEvent)} call, or null if not evaluated / query empty
+     * @return the hit count computed on page load or by the last {@link #checkQuery(AjaxBehaviorEvent)} call, or null if not evaluated / query empty
      */
     public Long getQueryHitCount() {
         return queryHitCount;
     }
 
     /**
+     * Whether the current collection carries a non-blank label for every supported language. Used by the translation hint in the edit page sidebar.
+     *
+     * @return true if all label translations are filled (or no collection is loaded); false otherwise
+     */
+    public boolean isCurrentLabelsComplete() {
+        if (currentCollection == null) {
+            return true;
+        }
+        return currentCollection.getLabels().stream().allMatch(t -> StringUtils.isNotBlank(t.getTranslationValue()));
+    }
+
+    /**
      * Builds the search-result URL listing the records of the given collection. The collection's stored Solr query is used directly as the search
-     * query, so the link works regardless of whether the {@code DYNCOL} facet is configured in the viewer config.
+     * query, so the link works regardless of whether the {@code DC_DYNAMIC} facet is configured in the viewer config.
      *
      * @param collection collection to build the search URL for
      * @return an absolute search page URL listing the collection's records

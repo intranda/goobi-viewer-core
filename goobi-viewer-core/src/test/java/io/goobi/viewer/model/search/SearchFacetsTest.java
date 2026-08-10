@@ -112,15 +112,15 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         DataManager.getInstance().getDao().addDynamicCollection(dc);
         try {
             List<IFacetItem> facetItems = new ArrayList<>();
-            SearchFacets.parseFacetString(SolrConstants.DYNCOL + ":dyncol_parse_test;;", facetItems, null);
+            SearchFacets.parseFacetString(SolrConstants.DC_DYNAMIC + ":dyncol_parse_test;;", facetItems, null);
             Assertions.assertEquals(1, facetItems.size());
             IFacetItem item = facetItems.get(0);
             Assertions.assertEquals(FacetItem.FacetType.QUERY, item.getType());
-            Assertions.assertEquals(SolrConstants.DYNCOL, item.getField());
+            Assertions.assertEquals(SolrConstants.DC_DYNAMIC, item.getField());
             Assertions.assertEquals("dyncol_parse_test", item.getValue());
-            // The filter query is the stored solr query in parentheses, and the link round-trips as DYNCOL:<name>
+            // The filter query is the stored solr query in parentheses, and the link round-trips as DC_DYNAMIC:<name>
             Assertions.assertEquals("(DOCSTRCT:monograph)", item.getQueryEscapedLink());
-            Assertions.assertEquals(SolrConstants.DYNCOL + ":dyncol_parse_test", item.getLink());
+            Assertions.assertEquals(SolrConstants.DC_DYNAMIC + ":dyncol_parse_test", item.getLink());
         } finally {
             DataManager.getInstance().getDao().deleteDynamicCollection(dc);
         }
@@ -134,9 +134,9 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     void isFacetListSizeSufficient_shouldReturnTrueForSingleValueQueryFacet() {
         SearchFacets facets = new SearchFacets();
         facets.getAvailableFacets()
-                .put(SolrConstants.DYNCOL, new ArrayList<>(java.util.List.of(
-                        FacetItem.buildQueryFacetItem(SolrConstants.DYNCOL, "col", "Col", "DOCSTRCT:monograph", 3))));
-        Assertions.assertTrue(facets.isFacetListSizeSufficient(SolrConstants.DYNCOL));
+                .put(SolrConstants.DC_DYNAMIC, new ArrayList<>(java.util.List.of(
+                        FacetItem.buildQueryFacetItem(SolrConstants.DC_DYNAMIC, "col", "Col", "DOCSTRCT:monograph", 3))));
+        Assertions.assertTrue(facets.isFacetListSizeSufficient(SolrConstants.DC_DYNAMIC));
     }
 
     /**
@@ -1266,7 +1266,7 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
     void getAllFacetFields_shouldReturnAllConfiguredFacetFieldsInConfigurationOrder() {
         SearchFacets facets = new SearchFacets();
         List<String> result = facets.getAllFacetFields();
-        assertEquals(List.of("DC", "YEAR", "MD_CREATOR", "MD_PLACEPUBLISH", "WKT_COORDS", "MD_PERSON", "BOOL_HASIMAGES", "DYNCOL"), result);
+        assertEquals(List.of("DC", "YEAR", "MD_CREATOR", "MD_PLACEPUBLISH", "WKT_COORDS", "MD_PERSON", "BOOL_HASIMAGES", "DC_DYNAMIC"), result);
     }
 
     /**

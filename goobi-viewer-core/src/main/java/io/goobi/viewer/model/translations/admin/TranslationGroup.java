@@ -34,9 +34,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.CollectionBrowseBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation;
 import io.goobi.viewer.model.translations.admin.MessageEntry.TranslationStatus;
 import io.goobi.viewer.solr.SolrTools;
 
@@ -56,7 +62,9 @@ public final class TranslationGroup {
         SOLR_FIELD_NAMES,
         SOLR_FIELD_VALUES,
         CORE_STRINGS,
-        LOCAL_STRINGS;
+        LOCAL_STRINGS,
+        /** Labels of database-defined dynamic collections; persisted to the database instead of the messages files. */
+        DYNAMIC_COLLECTIONS;
 
         /**
          *
@@ -543,10 +551,16 @@ public final class TranslationGroup {
     }
 
     /**
-     * Persists the edited values of <code>selectedEntry</code> to all language messages.properties files.
+     * Persists the edited values of <code>selectedEntry</code> to all language messages.properties files; entries of a
+     * {@link TranslationGroupType#DYNAMIC_COLLECTIONS} group are persisted to the database instead.
      */
     public synchronized void saveSelectedEntry() {
         if (selectedEntry == null) {
+            return;
+        }
+
+        if (TranslationGroupType.DYNAMIC_COLLECTIONS.equals(type)) {
+            saveSelectedEntryToDatabase();
             return;
         }
 
@@ -557,6 +571,44 @@ public final class TranslationGroup {
 
             ViewerResourceBundle.updateLocalMessageKey(selectedEntry.getKey(), value.getValue(), value.getLanguage());
             value.resetDirtyStatus();
+        }
+        selectedEntry.setNewEntryMode(false);
+    }
+
+    /**
+     * Persists the edited values of <code>selectedEntry</code> as labels of the dynamic collection identified by the entry key.
+     */
+    private void saveSelectedEntryToDatabase() {
+        try {
+            DynamicCollection collection = DataManager.getInstance().getDao().getDynamicCollection(selectedEntry.getKey());
+            if (collection == null) {
+                logger.warn("No dynamic collection found for identifier '{}'", selectedEntry.getKey());
+                return;
+            }
+            collection.populateLabels();
+            boolean dirty = false;
+            for (MessageValue value : selectedEntry.getValues()) {
+                if (!value.isDirty()) {
+                    continue;
+                }
+                DynamicCollectionTranslation label = collection.getLabelAsTranslation(value.getLanguage());
+                if (label != null) {
+                    label.setTranslationValue(value.getValue());
+                    dirty = true;
+                }
+                value.resetDirtyStatus();
+            }
+            if (dirty) {
+                collection.pruneEmptyTranslations();
+                DataManager.getInstance().getDao().updateDynamicCollection(collection);
+                // Drop any cached frontend browse view so the new labels take effect immediately
+                CollectionBrowseBean browseBean = BeanUtils.getCollectionBrowseBean();
+                if (browseBean != null) {
+                    browseBean.removeDynamicCollectionView(collection.getName());
+                }
+            }
+        } catch (DAOException e) {
+            logger.error("Error saving dynamic collection labels: {}", e.getMessage());
         }
         selectedEntry.setNewEntryMode(false);
     }

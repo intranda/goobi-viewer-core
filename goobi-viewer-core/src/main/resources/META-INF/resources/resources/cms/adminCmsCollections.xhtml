@@ -35,6 +35,12 @@
                 <!-- TITLE -->
                 <div class="admin__title-bar">
                     <h1 class="admin__title">#{msg.admin__cms_collections}</h1>
+                    <!-- ADD DYNAMIC COLLECTION -->
+                    <h:outputLink
+                        value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/new/"
+                        styleClass="btn btn--default admin__title-bar-action">
+                        <span>#{msg.admin__dynamic_collections_add}</span>
+                    </h:outputLink>
                 </div>
 
                 <viewerComponent:adminBreadcrumbs />
@@ -49,11 +55,17 @@
                         prependId="false">
                         <div class="admin__content-wrapper">
                             <div class="admin__content-main -sticky -refreshHCsticky">
-                                <h2>#{msg.admin__cms_collections_collection_tree}</h2>
-
                                 <h:panelGroup
                                     layout="block"
                                     id="collectionTreeGroup">
+                                    <!-- HEADING -->
+                                    <ui:fragment rendered="#{cmsCollectionsBean.dynamicCollectionsSource}">
+                                        <h2>#{msg.admin__dynamic_collections}</h2>
+                                    </ui:fragment>
+                                    <ui:fragment rendered="#{!cmsCollectionsBean.dynamicCollectionsSource}">
+                                        <h2>#{msg.admin__cms_collections_collection_tree}</h2>
+                                    </ui:fragment>
+
                                     <!-- LANGUAGE TABS -->
                                     <div class="admin__language-tabs">
                                         <viewerComponent:localeSelector
@@ -62,114 +74,150 @@
                                             execute="collectionTreeGroup" />
                                     </div>
 
-                                    <div class="admin__default-block">
-                                        <ul class="admin__cms-collections-tree-listing">
-                                            <ui:repeat
-                                                var="browseDcElement"
-                                                value="#{collectionBrowseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
-                                                <li
-                                                    class="row no-gutters admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
-                                                    style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
-                                                    <div class="col-1 collection__structure-col">
-                                                        <!-- STRUCTURE -->
-                                                        <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
-                                                            <div class="collection__structure text-center">
-                                                                <button
-                                                                    class="btn btn--link"
-                                                                    jsf:action="#{collectionBrowseBean.getCollection(cmsCollectionsBean.solrField).toggleChildren(browseDcElement)}">
+                                    <!-- DYNAMIC COLLECTIONS (database-defined, same listing style as the Solr tree) -->
+                                    <ui:fragment rendered="#{cmsCollectionsBean.dynamicCollectionsSource}">
+                                        <div class="admin__default-block">
+                                            <ui:fragment rendered="#{empty dynamicCollectionsBean.collections}">
+                                                <div class="admin__form-help-text in">#{msg.admin__dynamic_collections_empty}</div>
+                                            </ui:fragment>
+                                            <ul class="admin__cms-collections-tree-listing">
+                                                <ui:repeat
+                                                    var="collection"
+                                                    value="#{dynamicCollectionsBean.collections}">
+                                                    <li class="row no-gutters admin__cms-collections-entry">
+                                                        <div class="col-1 collection__structure-col" />
+                                                        <div class="col-9">
+                                                            <div class="collection__title">
+                                                                <h:outputLink
+                                                                    value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/edit/#{collection.identifier}/">
+                                                                    <h:outputText value="#{collection.getLabel(cmsCollectionsBean.currentTab.selectedLocale)}" />
                                                                     <f:passThroughAttribute
-                                                                        name="aria-label"
-                                                                        value="#{msg.aria_label__show_details}" />
-                                                                    <h:panelGroup
-                                                                        rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
-                                                                        <util:icon
-                                                                            icon="square-rounded-plus"
-                                                                            svgClass="icon icon-md" />
-                                                                    </h:panelGroup>
-                                                                    <h:panelGroup
-                                                                        rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
-                                                                        <util:icon
-                                                                            icon="square-rounded-minus"
-                                                                            svgClass="icon icon-md" />
-                                                                    </h:panelGroup>
-                                                                    <f:ajax render="collectionTreeGroup" />
-                                                                </button>
+                                                                        name="data-toggle"
+                                                                        value="tooltip" />
+                                                                    <f:passThroughAttribute
+                                                                        name="data-placement"
+                                                                        value="top" />
+                                                                    <f:passThroughAttribute
+                                                                        name="title"
+                                                                        value="#{msg.edit}" />
+                                                                </h:outputLink>
                                                             </div>
-                                                        </h:panelGroup>
-                                                    </div>
-                                                    <div class="col-9">
-                                                        <div class="collection__title">
-                                                            <!-- TITLE -->
-                                                            <h:outputLink
-                                                                value="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/">
-                                                                <h:outputText
-                                                                    rendered="#{browseDcElement.displayNumberOfVolumes}"
-                                                                    value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)} (#{browseDcElement.numberOfVolumes})" />
-                                                                <h:outputText
-                                                                    rendered="#{!browseDcElement.displayNumberOfVolumes}"
-                                                                    value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)}" />
-                                                                <f:passThroughAttribute
-                                                                    name="data-toggle"
-                                                                    value="tooltip" />
-                                                                <f:passThroughAttribute
-                                                                    name="data-placement"
-                                                                    value="top" />
-                                                                <f:passThroughAttribute
-                                                                    name="title"
-                                                                    value="#{msg.edit}" />
-                                                                <f:ajax render="collectionTreeGroup" />
-                                                            </h:outputLink>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-2 admin__cms-collections-entry-end">
-                                                        <!-- TOGGLE DESCRIPTION -->
-                                                        <h:panelGroup
-                                                            rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
-                                                            <div class="admin__cms-collections-description-toggle">
-                                                                <h:commandLink title="#{msg[browseDcElement.label]}">
-                                                                    <h:panelGroup rendered="#{not browseDcElement.showDescription}">
-                                                                        <util:icon
-                                                                            icon="chevron-down"
-                                                                            aria-hidden="true" />
-                                                                    </h:panelGroup>
+                                                        <div class="col-2 admin__cms-collections-entry-end" />
+                                                    </li>
+                                                </ui:repeat>
+                                            </ul>
+                                        </div>
+                                    </ui:fragment>
 
-                                                                    <h:panelGroup rendered="#{browseDcElement.showDescription}">
-                                                                        <util:icon
-                                                                            icon="chevron-up"
-                                                                            aria-hidden="true" />
-                                                                    </h:panelGroup>
-
-                                                                    <f:setPropertyActionListener
-                                                                        target="#{browseDcElement.showDescription}"
-                                                                        value="#{not browseDcElement.showDescription}" />
-                                                                    <f:ajax render="collectionTreeGroup" />
-                                                                </h:commandLink>
-                                                            </div>
-                                                        </h:panelGroup>
-                                                    </div>
-
-                                                    <!-- DESCRIPTION -->
-                                                    <h:panelGroup rendered="#{browseDcElement.hasCMSDescription() and browseDcElement.showDescription}">
-                                                        <div class="col-1" />
-                                                        <div class="col-8 pb-3">
-                                                            <div class="collection__description">
-                                                                <h:outputText
-                                                                    value="#{browseDcElement.getDescription(cmsCollectionsBean.currentTab.selectedLocale.language)}"
-                                                                    escape="false" />
-                                                            </div>
-                                                            <h:panelGroup rendered="#{browseDcElement.hasIcon()}">
-                                                                <img
-                                                                    src="#{browseDcElement.icon}"
-                                                                    alt=""
-                                                                    class="img-fluid"
-                                                                    data-viewer-thumbnail="thumbnail" />
+                                    <!-- SOLR FIELD COLLECTION TREE -->
+                                    <ui:fragment rendered="#{!cmsCollectionsBean.dynamicCollectionsSource}">
+                                        <div class="admin__default-block">
+                                            <ul class="admin__cms-collections-tree-listing">
+                                                <ui:repeat
+                                                    var="browseDcElement"
+                                                    value="#{collectionBrowseBean.getCollection(cmsCollectionsBean.solrField).visibleDcElements}">
+                                                    <li
+                                                        class="row no-gutters admin__cms-collections-entry admin__cms-collections-entry -level-#{browseDcElement.level}"
+                                                        style="#{navigationHelper.localeString eq 'ar' or navigationHelper.localeString eq 'iw' ? 'padding-right:' : 'padding-left:'} #{browseDcElement.level * 32}px">
+                                                        <div class="col-1 collection__structure-col">
+                                                            <!-- STRUCTURE -->
+                                                            <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.opensInNewWindow}">
+                                                                <div class="collection__structure text-center">
+                                                                    <button
+                                                                        class="btn btn--link"
+                                                                        jsf:action="#{collectionBrowseBean.getCollection(cmsCollectionsBean.solrField).toggleChildren(browseDcElement)}">
+                                                                        <f:passThroughAttribute
+                                                                            name="aria-label"
+                                                                            value="#{msg.aria_label__show_details}" />
+                                                                        <h:panelGroup rendered="#{browseDcElement.hasSubelements and !browseDcElement.showSubElements}">
+                                                                            <util:icon
+                                                                                icon="square-rounded-plus"
+                                                                                svgClass="icon icon-md" />
+                                                                        </h:panelGroup>
+                                                                        <h:panelGroup rendered="#{browseDcElement.hasSubelements and browseDcElement.showSubElements}">
+                                                                            <util:icon
+                                                                                icon="square-rounded-minus"
+                                                                                svgClass="icon icon-md" />
+                                                                        </h:panelGroup>
+                                                                        <f:ajax render="collectionTreeGroup" />
+                                                                    </button>
+                                                                </div>
                                                             </h:panelGroup>
                                                         </div>
-                                                    </h:panelGroup>
-                                                </li>
-                                            </ui:repeat>
-                                        </ul>
-                                    </div>
+                                                        <div class="col-9">
+                                                            <div class="collection__title">
+                                                                <!-- TITLE -->
+                                                                <h:outputLink value="#{navigationHelper.applicationUrl}admin/cms/collections/edit/#{browseDcElement.name}/">
+                                                                    <h:outputText
+                                                                        rendered="#{browseDcElement.displayNumberOfVolumes}"
+                                                                        value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)} (#{browseDcElement.numberOfVolumes})" />
+                                                                    <h:outputText
+                                                                        rendered="#{!browseDcElement.displayNumberOfVolumes}"
+                                                                        value="#{navigationHelper.getTranslation(browseDcElement.name, cmsCollectionsBean.currentTab.selectedLocale.language, false)}" />
+                                                                    <f:passThroughAttribute
+                                                                        name="data-toggle"
+                                                                        value="tooltip" />
+                                                                    <f:passThroughAttribute
+                                                                        name="data-placement"
+                                                                        value="top" />
+                                                                    <f:passThroughAttribute
+                                                                        name="title"
+                                                                        value="#{msg.edit}" />
+                                                                    <f:ajax render="collectionTreeGroup" />
+                                                                </h:outputLink>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-2 admin__cms-collections-entry-end">
+                                                            <!-- TOGGLE DESCRIPTION -->
+                                                            <h:panelGroup
+                                                                rendered="#{msg[browseDcElement.description] != browseDcElement.description || browseDcElement.hasCMSDescription()}">
+                                                                <div class="admin__cms-collections-description-toggle">
+                                                                    <h:commandLink title="#{msg[browseDcElement.label]}">
+                                                                        <h:panelGroup rendered="#{not browseDcElement.showDescription}">
+                                                                            <util:icon
+                                                                                icon="chevron-down"
+                                                                                aria-hidden="true" />
+                                                                        </h:panelGroup>
+
+                                                                        <h:panelGroup rendered="#{browseDcElement.showDescription}">
+                                                                            <util:icon
+                                                                                icon="chevron-up"
+                                                                                aria-hidden="true" />
+                                                                        </h:panelGroup>
+
+                                                                        <f:setPropertyActionListener
+                                                                            target="#{browseDcElement.showDescription}"
+                                                                            value="#{not browseDcElement.showDescription}" />
+                                                                        <f:ajax render="collectionTreeGroup" />
+                                                                    </h:commandLink>
+                                                                </div>
+                                                            </h:panelGroup>
+                                                        </div>
+
+                                                        <!-- DESCRIPTION -->
+                                                        <h:panelGroup rendered="#{browseDcElement.hasCMSDescription() and browseDcElement.showDescription}">
+                                                            <div class="col-1" />
+                                                            <div class="col-8 pb-3">
+                                                                <div class="collection__description">
+                                                                    <h:outputText
+                                                                        value="#{browseDcElement.getDescription(cmsCollectionsBean.currentTab.selectedLocale.language)}"
+                                                                        escape="false" />
+                                                                </div>
+                                                                <h:panelGroup rendered="#{browseDcElement.hasIcon()}">
+                                                                    <img
+                                                                        src="#{browseDcElement.icon}"
+                                                                        alt=""
+                                                                        class="img-fluid"
+                                                                        data-viewer-thumbnail="thumbnail" />
+                                                                </h:panelGroup>
+                                                            </div>
+                                                        </h:panelGroup>
+                                                    </li>
+                                                </ui:repeat>
+                                            </ul>
+                                        </div>
+                                    </ui:fragment>
                                 </h:panelGroup>
                             </div>
 
@@ -179,7 +227,7 @@
                                     id="collectionsTranslationProgress"
                                     layout="block">
                                     <!-- IMPORT -->
-                                    <ui:fragment rendered="#{cmsCollectionsBean.displayImportDescriptionsWidget}">
+                                    <ui:fragment rendered="#{!cmsCollectionsBean.dynamicCollectionsSource and cmsCollectionsBean.displayImportDescriptionsWidget}">
                                         <div class="admin__default-block -danger">
                                             <h2>#{msg.admin__cms_collections_import}</h2>
                                             <div class="admin__form-help-text in mb-2">#{msg.admin__cms_collections_import_desc}</div>
@@ -193,7 +241,7 @@
                                     </ui:fragment>
 
                                     <!-- TRANSLATIONS -->
-                                    <ui:fragment rendered="#{cmsCollectionsBean.displayTranslationWidget}">
+                                    <ui:fragment rendered="#{!cmsCollectionsBean.dynamicCollectionsSource and cmsCollectionsBean.displayTranslationWidget}">
                                         <c:choose>
                                             <c:when test="#{adminBean.hasAccessPermissingForTranslationFiles}">
                                                 <ui:repeat
@@ -208,9 +256,7 @@
                                                         <!-- PROGRESS BAR FOR COLLECTION NAMES-->
                                                         <div class="admin__cms-collections-progress-bar-wrapper mb-4">
                                                             <div class="admin__cms-collections-progress-bar-info">
-                                                                <span class="admin__cms-collections-progress-heading">
-                                                                    #{msg.label__crowdsourcing_campaign_progress}
-                                                                </span>
+                                                                <span class="admin__cms-collections-progress-heading">#{msg.label__crowdsourcing_campaign_progress}</span>
                                                                 <div class="admin__cms-collections-progress-bar-numbers">
                                                                     <span>
                                                                         (#{group.fullyTranslatedEntryCount} #{msg.of}
@@ -274,18 +320,75 @@
                                         </c:choose>
                                     </ui:fragment>
 
-                                    <!-- COLLECTION INDEX FIELD -->
+                                    <!-- TRANSLATIONS (dynamic collections, via the synthetic translation group) -->
+                                    <ui:fragment rendered="#{cmsCollectionsBean.dynamicCollectionsSource}">
+                                        <ui:repeat
+                                            var="group"
+                                            value="#{adminBean.dynamicCollectionsTranslationGroups}">
+                                            <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
+                                                <div class="admin__default-block -warning">
+                                                    <!-- GROUP TITLE -->
+                                                    <h2>#{msg.admin__cms_collections_translation}</h2>
+
+                                                    <div class="admin__form-help-text in mb-2">#{msg.admin__cms_collections_translation_desc}</div>
+
+                                                    <!-- PROGRESS BAR FOR COLLECTION LABELS -->
+                                                    <div class="admin__cms-collections-progress-bar-wrapper mb-4">
+                                                        <div class="admin__cms-collections-progress-bar-info">
+                                                            <span class="admin__cms-collections-progress-heading">#{msg.label__crowdsourcing_campaign_progress}</span>
+                                                            <div class="admin__cms-collections-progress-bar-numbers">
+                                                                <span>
+                                                                    (#{group.fullyTranslatedEntryCount} #{msg.of}
+                                                                    #{group.entryCount})
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="admin__cms-collections-progress-bar">
+                                                            <div
+                                                                class="admin__dashboard-translations-progress-complete"
+                                                                style="flex: 0 0 #{group.fullyTranslatedEntryCountPercentage}%; max-width: #{group.fullyTranslatedEntryCountPercentage}%;" />
+                                                            <div
+                                                                class="admin__dashboard-translations-progress-partially"
+                                                                style="flex: 0 0 #{group.partiallyTranslatedEntryCountPercentage}%; max-width: #{group.partiallyTranslatedEntryCountPercentage}%;" />
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- TRANSLATION ACTION -->
+                                                    <div class="row">
+                                                        <div class="col-12 d-flex justify-content-center">
+                                                            <ui:fragment rendered="#{!adminBean.translationLocked}">
+                                                                <a
+                                                                    class="btn btn--full"
+                                                                    href="#{navigationHelper.applicationUrl}admin/translations/edit/#{group.id}/"
+                                                                    aria-label="#{msg.edit}: #{msg[group.name]}">
+                                                                    #{msg.admin__cms_collections_translation_translate}
+                                                                </a>
+                                                            </ui:fragment>
+
+                                                            <!-- TRANSLATIONS LOCKED -->
+                                                            <h:outputText
+                                                                rendered="#{adminBean.translationLocked}"
+                                                                value="#{msg.admin__translation_locked}" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
+                                        </ui:repeat>
+                                    </ui:fragment>
+
+                                    <!-- COLLECTION SOURCE (Solr field or dynamic collections) -->
                                     <ui:fragment rendered="#{cmsCollectionsBean.displaySolrFieldSelectionWidget}">
                                         <div class="admin__default-block">
-                                            <h2>#{msg.admin__cms_collections_solr_field}</h2>
-                                            <div class="admin__form-help-text in mb-4">#{msg.admin__cms_collections_solr_field_desc}</div>
+                                            <h2>#{msg.admin__cms_collections_source}</h2>
+                                            <div class="admin__form-help-text in mb-4">#{msg.admin__cms_collections_source_desc}</div>
                                             <div class="d-flex">
                                                 <h:selectOneMenu
                                                     id="SolrFieldSelect"
                                                     name="SolrFieldSelect"
                                                     value="#{cmsCollectionsBean.solrField}"
                                                     styleClass="form-control">
-                                                    <f:selectItems value="#{cmsCollectionsBean.allCollectionFields}" />
+                                                    <f:selectItems value="#{cmsCollectionsBean.sourceSelectItems}" />
                                                     <f:ajax render="collectionTreeGroup" />
                                                     <f:ajax render="collectionsTranslationProgress" />
                                                 </h:selectOneMenu>

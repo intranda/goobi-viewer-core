@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -30,6 +31,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.model.SelectItem;
 import jakarta.faces.validator.ValidatorException;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -175,11 +177,11 @@ public class CmsCollectionsBean implements Serializable {
 
     /**
      *
-     * @return true if number of available collections is greater than 1; false otherwise
+     * @return true if there is more than one source option (configured collection fields plus the dynamic collections entry); false otherwise
      * @should return false if only one collection field is configured
      */
     public boolean isDisplaySolrFieldSelectionWidget() {
-        return getAllCollectionFields().size() > 1;
+        return getSourceSelectItems().size() > 1;
     }
 
     /**
@@ -324,6 +326,10 @@ public class CmsCollectionsBean implements Serializable {
      */
     public void setSolrField(String solrField) {
         this.solrField = solrField;
+        if (isDynamicCollectionsSource()) {
+            // The dynamic collections source has no Solr collection tree to load
+            return;
+        }
         try {
             updateCollections();
             loadCollection(solrField);
@@ -332,6 +338,41 @@ public class CmsCollectionsBean implements Serializable {
             logger.error(e.getMessage());
             collections = Collections.emptyList();
         }
+    }
+
+    /**
+     * Whether the collection source dropdown is set to the database-defined dynamic collections instead of a Solr field.
+     *
+     * @return true if the {@link SolrConstants#DC_DYNAMIC} pseudo field is selected as the collection source; false otherwise
+     */
+    public boolean isDynamicCollectionsSource() {
+        return SolrConstants.DC_DYNAMIC.equals(solrField);
+    }
+
+    /**
+     * Options for the collection source dropdown: all configured collection Solr fields plus the dynamic collections pseudo field. The dynamic
+     * entry only appears once at least one dynamic collection exists (or while it is the selected source, so the selection stays valid after the
+     * last collection is deleted).
+     *
+     * @return the source options for the sidebar widget
+     */
+    public List<SelectItem> getSourceSelectItems() {
+        List<SelectItem> items = new ArrayList<>();
+        for (String field : getAllCollectionFields()) {
+            items.add(new SelectItem(field, field));
+        }
+        boolean dynamicAvailable = isDynamicCollectionsSource();
+        if (!dynamicAvailable) {
+            try {
+                dynamicAvailable = !DataManager.getInstance().getDao().getAllDynamicCollections().isEmpty();
+            } catch (DAOException e) {
+                logger.error("Error checking for dynamic collections: {}", e.getMessage());
+            }
+        }
+        if (dynamicAvailable) {
+            items.add(new SelectItem(SolrConstants.DC_DYNAMIC, ViewerResourceBundle.getTranslation(SolrConstants.DC_DYNAMIC + "_DD", null)));
+        }
+        return items;
     }
 
     /**
@@ -687,7 +728,7 @@ public class CmsCollectionsBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public void initSolrField() throws IllegalRequestException, IndexUnreachableException {
-        if (browseBean.getCollection(solrField) == null) {
+        if (!isDynamicCollectionsSource() && browseBean.getCollection(solrField) == null) {
             loadCollection(solrField);
         }
     }

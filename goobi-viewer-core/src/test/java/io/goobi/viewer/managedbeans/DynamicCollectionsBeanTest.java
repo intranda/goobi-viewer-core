@@ -48,7 +48,7 @@ class DynamicCollectionsBeanTest extends AbstractDatabaseEnabledTest {
         bean.createNewCollection();
         bean.getCurrentCollection().setIdentifier("bean_create_test");
         bean.getCurrentCollection().setSolrQuery("DOCSTRCT:monograph");
-        assertEquals("pretty:adminDynamicCollections", bean.saveCurrentCollection());
+        assertEquals("pretty:adminCmsCollections", bean.saveCurrentCollection());
 
         DynamicCollection persisted = DataManager.getInstance().getDao().getDynamicCollection("bean_create_test");
         assertNotNull(persisted);
@@ -129,5 +129,39 @@ class DynamicCollectionsBeanTest extends AbstractDatabaseEnabledTest {
     @Test
     void getDynamicCollection_shouldReturnNullForUnknownName() throws DAOException {
         assertNull(DataManager.getInstance().getDao().getDynamicCollection("does_not_exist_xyz"));
+    }
+
+    /**
+     * @verifies delete the current collection and navigate to the overview
+     */
+    @Test
+    void deleteCurrentCollection_shouldDeleteAndNavigate() throws DAOException {
+        DynamicCollectionsBean bean = new DynamicCollectionsBean();
+        bean.createNewCollection();
+        bean.getCurrentCollection().setIdentifier("bean_delete_test");
+        bean.saveCurrentCollection();
+        assertNotNull(DataManager.getInstance().getDao().getDynamicCollection("bean_delete_test"));
+
+        bean.setCollectionName("bean_delete_test");
+        assertEquals("pretty:adminCmsCollections", bean.deleteCurrentCollection());
+        assertNull(DataManager.getInstance().getDao().getDynamicCollection("bean_delete_test"));
+    }
+
+    /**
+     * @verifies compute the query hit count when loading an existing collection
+     */
+    @Test
+    void setCollectionName_shouldComputeQueryHitCount() throws DAOException {
+        DynamicCollection existing = new DynamicCollection("bean_hitcount_test");
+        existing.setSolrQuery("*:*");
+        DataManager.getInstance().getDao().addDynamicCollection(existing);
+        try {
+            DynamicCollectionsBean bean = new DynamicCollectionsBean();
+            bean.setCollectionName("bean_hitcount_test");
+            assertNotNull(bean.getQueryHitCount());
+            assertTrue(bean.getQueryHitCount() > 0);
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(existing);
+        }
     }
 }

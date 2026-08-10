@@ -85,13 +85,13 @@ class FacetItemTest extends AbstractTest {
      */
     @Test
     void buildQueryFacetItem_shouldUseStoredSolrQueryAsFilterQuery() {
-        FacetItem item = FacetItem.buildQueryFacetItem(SolrConstants.DYNCOL, "mycol", "My collection", "DOCSTRCT:monograph", 5);
+        FacetItem item = FacetItem.buildQueryFacetItem(SolrConstants.DC_DYNAMIC, "mycol", "My collection", "DOCSTRCT:monograph", 5);
         Assertions.assertEquals(FacetItem.FacetType.QUERY, item.getType());
-        Assertions.assertEquals(SolrConstants.DYNCOL, item.getField());
+        Assertions.assertEquals(SolrConstants.DC_DYNAMIC, item.getField());
         Assertions.assertEquals("mycol", item.getValue());
         Assertions.assertEquals("My collection", item.getLabel());
         Assertions.assertEquals(5, item.getCount());
-        // The filter query must be the raw stored query wrapped in parentheses, NOT DYNCOL:mycol facetified
+        // The filter query must be the raw stored query wrapped in parentheses, NOT DC_DYNAMIC:mycol facetified
         Assertions.assertEquals("(DOCSTRCT:monograph)", item.getQueryEscapedLink());
     }
 
@@ -101,7 +101,7 @@ class FacetItemTest extends AbstractTest {
      */
     @Test
     void getQueryEscapedLink_shouldNegateStoredSolrQueryForExcludedQueryFacetItem() {
-        FacetItem item = FacetItem.buildQueryFacetItem(SolrConstants.DYNCOL, "mycol", "My collection", "DOCSTRCT:monograph", 5);
+        FacetItem item = FacetItem.buildQueryFacetItem(SolrConstants.DC_DYNAMIC, "mycol", "My collection", "DOCSTRCT:monograph", 5);
         item.setExcluded(true);
         Assertions.assertEquals("-(DOCSTRCT:monograph)", item.getQueryEscapedLink());
     }

@@ -99,7 +99,7 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
     @Column(name = "dynamic_collection_id")
     private Long id;
 
-    /** Unique, immutable, URL-safe identifier used in the {@code DYNCOL:&lt;identifier&gt;} facet token and the browse URL. */
+    /** Unique, immutable, URL-safe identifier used in the {@code DC_DYNAMIC:&lt;identifier&gt;} facet token and the browse URL. */
     @Column(name = "identifier", nullable = false, unique = true)
     private String identifier;
 

@@ -469,7 +469,7 @@
 				<field type="geo" predicate="ISWITHIN" displayResultsOnMap="false">WKT_COORDS</field>
 	            <field groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_PERSON</field>
 	            <field type="boolean">BOOL_HASIMAGES</field>
-	            <field type="query">DYNCOL</field>
+	            <field type="query">DC_DYNAMIC</field>
 			</template>
 			<!-- Named template exposed as quick filters on the simple search field. Note MD_CREATOR is a plain
 			     dropdown here even though it is hierarchical in _DEFAULT. -->
