@@ -54,7 +54,7 @@
                                     title="#{msg['changeLocal_' += lang]} - #{msg['changeLocal_long_' += lang]}"
                                     type="submit"
                                     lang="#{lang}"
-                                    aria-current="#{navigationHelper.localeString == lang ? 'true':'false'}"
+                                    aria-current="#{navigationHelper.localeString == lang ? 'true' : null}"
                                     class="#{navigationHelper.localeString == lang ?'activeLang':''}"
                                     jsf:action="#{navigationHelper.setLocaleString(lang)}">
                                     <h:panelGroup rendered="#{cc.attrs.showFlags == true}">
