@@ -43,7 +43,7 @@
          because this value replaces the default instead of extending it. -->
     <context-param>
         <param-name>jakarta.faces.FACELETS_SUFFIX</param-name>
-        <param-value>.xhtml .html</param-value>
+        <param-value>.xhtml .html .svg</param-value>
     </context-param>
     <!-- All f:convertDateTime widgets will use the server's time zone for output. 
          Remove once the widgets are able to use the client's time zone. -->
