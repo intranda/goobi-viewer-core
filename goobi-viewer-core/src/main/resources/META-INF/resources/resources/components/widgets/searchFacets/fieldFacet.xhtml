@@ -327,7 +327,8 @@
                             <button
                                 class="btn btn--clean widget-search-facets__collapse-button -expand"
                                 jsf:action="#{searchBean.facets.expandFacet(cc.attrs.field)}"
-                                title="#{msg.search__facets__show_all}">
+                                title="#{msg.search__facets__show_all}"
+                                aria-label="#{msg.search__facets__show_all}: #{msg[cc.attrs.field.concat('_DD')]}">
                                 <util:icon
                                     icon="chevron-down"
                                     styleClass="widget-search-facets__collapse-chevron"
@@ -349,7 +350,8 @@
                             <button
                                 class="btn btn--clean widget-search-facets__collapse-button -collapse"
                                 jsf:action="#{searchBean.facets.collapseFacet(cc.attrs.field)}"
-                                title="#{msg.search__facets__show_less}">
+                                title="#{msg.search__facets__show_less}"
+                                aria-label="#{msg.search__facets__show_less}: #{msg[cc.attrs.field.concat('_DD')]}">
                                 <util:icon
                                     icon="chevron-up"
                                     styleClass="widget-search-facets__collapse-chevron"
