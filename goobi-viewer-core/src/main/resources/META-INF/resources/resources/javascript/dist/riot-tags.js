@@ -4221,7 +4221,7 @@ this.initMap = function() {
 	            svg: true
 	        }
         }]
-    })
+    });
 
     let initialView = $.extend(true, {}, DEFAULT_VIEW, this.opts.geomap.initialView);
     this.geoMap.init(initialView);

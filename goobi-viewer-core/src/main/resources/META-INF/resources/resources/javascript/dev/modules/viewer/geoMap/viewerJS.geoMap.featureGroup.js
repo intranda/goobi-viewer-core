@@ -410,9 +410,9 @@ var viewerJS = (function (viewer) {
     };
 
     viewer.GeoMap.featureGroup.prototype.getCount = function (properties) {
-        if (properties.entities) {
+        if (properties?.entities) {
             return properties.entities.filter((e) => e.visible !== false).length;
-        } else if (properties.count) {
+        } else if (properties?.count) {
             return properties.count;
         } else {
             return 1;
