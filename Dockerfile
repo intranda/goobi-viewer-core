@@ -61,7 +61,6 @@ COPY goobi-viewer-config/docker/run.sh /
 COPY goobi-viewer-config/docker/healthcheck.sh /
 
 EXPOSE 8080
-EXPOSE 8009
 
 # Ubuntu 24.04 ships a default 'ubuntu' user/group at 1000;
 # remove it, then create our unprivileged 'user' at uid/gid 1000.
