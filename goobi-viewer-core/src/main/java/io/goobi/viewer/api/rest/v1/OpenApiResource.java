@@ -112,9 +112,13 @@ public class OpenApiResource {
     }
 
     /**
+     * Made static so the build-time OpenAPI spec generator can reuse the exact same
+     * {@link Info} object as the runtime resource, instead of duplicating a slimmed-down
+     * copy that could drift out of sync (no instance state is used here).
+     *
      * @return {@link Info}
      */
-    public Info getInfo() {
+    public static Info getInfo() {
         return new Info()
                 .title("Goobi viewer API.")
                 .description("This documentation describes the Goobi viewer API.")

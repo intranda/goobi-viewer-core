@@ -2987,7 +2987,7 @@ riot.tag2('subcollection', '<ul if="{collection.members && collection.members.le
 
 
 
-riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}"><a class="thumbnails-image-link" href="{getLink(canvas)}" aria-label="{getAriaLabel(canvas, index)}" aria-current="{this.opts.index == index ? \'page\' : undefined}" tabindex="{needsKeyboardFocus(canvas) ? \'0\' : undefined}" role="{needsKeyboardFocus(canvas) ? \'link\' : undefined}" onclick="{handleClickOnImage}" onkeydown="{handleKeydownOnImage}"><img class="thumbnails-image" alt="" riot-src="{getImage(canvas)}" loading="lazy"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
+riot.tag2('thumbnails', '<div ref="thumb" class="thumbnails-image-wrapper {this.opts.index == index ? \'selected\' : \'\'} {getPageStatus(index)}" each="{canvas, index in thumbnails}"><a class="thumbnails-image-link" href="{getLink(canvas)}" aria-label="{getAriaLabel(canvas, index)}" aria-current="{this.opts.index == index ? \'page\' : undefined}" tabindex="{needsKeyboardFocus(canvas) ? \'0\' : undefined}" role="{needsKeyboardFocus(canvas) ? \'link\' : undefined}" onclick="{handleClickOnImage}" onkeydown="{handleKeydownOnImage}"><img class="thumbnails-image" alt="" riot-src="{getImage(canvas)}" loading="lazy" data-viewer-thumbnail="thumbnail"><div class="thumbnails-image-overlay"><div class="thumbnails-label">{getValue(canvas.label)}</div></div></a></div>', '', '', function(opts) {
 
 this.thumbnails = [];
 this._debug = false;
@@ -3020,6 +3020,8 @@ this.on("updated", () => {
 	if(activeThumb) {
 		activeThumb.scrollIntoView({block: "end", behavior: "smooth"});
 	}
+
+	window.viewerJS?.thumbnailLoader?.loadAll();
 	if(this.opts.onload) {
 	    this.opts.onload();
 	}

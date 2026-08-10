@@ -39,6 +39,7 @@ public class AdvancedSearchOrigin {
     private final Long cmsPageId;
     private final String label;
     private final String docstrct;
+    private final boolean calendarSearch;
 
     /**
      * @param pi Persistent identifier of the record
@@ -47,10 +48,21 @@ public class AdvancedSearchOrigin {
      * @should set pi label and docstrct from constructor arguments
      */
     public AdvancedSearchOrigin(String pi, String label, String docstrct) {
+        this(pi, label, docstrct, false);
+    }
+
+    /**
+     * @param pi Persistent identifier of the record
+     * @param label Display label of the record
+     * @param docstrct Document structure type (e.g. "Newspaper", "Periodical")
+     * @should set pi label and docstrct from constructor arguments
+     */
+    public AdvancedSearchOrigin(String pi, String label, String docstrct, boolean isCalendarSearch) {
         this.pi = pi;
         this.cmsPageId = null;
         this.label = label;
         this.docstrct = docstrct;
+        this.calendarSearch = isCalendarSearch;
     }
 
     /**
@@ -62,6 +74,7 @@ public class AdvancedSearchOrigin {
         this.cmsPageId = cmsPage.getId();
         this.label = cmsPage.getTitle(IPolyglott.getCurrentLocale());
         this.docstrct = null;
+        this.calendarSearch = false;
     }
 
     public String getPi() {
@@ -78,6 +91,10 @@ public class AdvancedSearchOrigin {
 
     public Long getCmsPageId() {
         return cmsPageId;
+    }
+
+    public boolean isCalendarSearch() {
+        return calendarSearch;
     }
 
     /**
@@ -100,26 +117,25 @@ public class AdvancedSearchOrigin {
     }
 
     /**
-     * Returns whether this origin can produce a back-link URL, i.e. it points to either a record or a CMS page.
-     *
-     * @return true if either a record pi or a cms page id is set; false otherwise
-     * @should return true for record origin
-     * @should return true for cms page origin
+     * Check whether further changing advanced search parameters should lead to a dedicated cmsPage or the calendar toc view of a record
+     * 
      * @should return false when neither pi nor cms page id is set
+     * @should return false for record origin outside of toc calendar
+     * @should return true for cms page origin
+     * @should return true for record origin outside of toc calendar
+     * @return true if the origin of this search is not the default advanced search page, false otherwise
      */
     public boolean isValid() {
-        // Guards callers/views against an origin that has neither a record nor a CMS page target,
-        // which would make getOriginUrl() throw during rendering
-        return this.isRecordOrigin() || this.isCmsPageOrigin();
+        return isCmsPageOrigin() || (isRecordOrigin() && isCalendarSearch());
     }
 
     /**
-     * @should return toc url for record origin
+     * @should return toc url for record origin and calendar search
      * @should return cms page url for cms page origin
      * @should throw IllegalStateException when pi is null and no cms page id set
      */
     public String getOriginUrl() {
-        if (this.isRecordOrigin()) {
+        if (this.isRecordOrigin() && isCalendarSearch()) {
             return PrettyUrlTools.getAbsolutePageUrl("toc2", this.getPi(), 1);
         } else if (this.isCmsPageOrigin()) {
             return PrettyUrlTools.getAbsolutePageUrl("cmsOpenPage1", this.getCmsPageId());

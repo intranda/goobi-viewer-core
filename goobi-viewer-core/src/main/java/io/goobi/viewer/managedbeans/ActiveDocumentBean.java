@@ -463,6 +463,12 @@ public class ActiveDocumentBean implements Serializable {
                     mayChangeHitIndex = true;
                 }
 
+                // Clear any leftover "search in current record" term so it does not leak into the newly loaded record.
+                // Safe here because this block only runs for a new/different record, never during searchInRecord() itself.
+                if (searchBean != null) {
+                    searchBean.resetSearchInCurrentItemTerm();
+                }
+
                 StructElement topStructElement = new StructElement(topDocumentIddoc);
 
                 // Exit here if record is not found or has been deleted

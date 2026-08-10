@@ -234,20 +234,29 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String CMS_MEDIA_ITEM_BY_FILE = "/{filename: [^\\/]*\\.\\w{1,4}}";
     public static final String CMS_MEDIA_FILES = "/files";
     public static final String CMS_MEDIA_FILES_FILE = "/files/{filename}";
-    public static final String CMS_MEDIA_FILES_FILE_PDF = "/files/{filename: (?i)[^\\/]*\\.(pdf)}";
-    public static final String CMS_MEDIA_FILES_FILE_HTML = "/files/{filename: (?i)[^\\/]*\\.(html)}";
-    public static final String CMS_MEDIA_FILES_FILE_SVG = "/files/{filename: (?i)[^\\/]*\\.(svg)}";
-    public static final String CMS_MEDIA_FILES_FILE_ICO = "/files/{filename: (?i)[^\\/]*\\.(ico)}";
-    public static final String CMS_MEDIA_FILES_FILE_AUDIO = "/files/{filename: (?i).*\\.(mp3|mpeg|wav|ogg|wma)}";
-    public static final String CMS_MEDIA_FILES_FILE_VIDEO = "/files/{filename: (?i).*\\.(mp4|mpeg4|avi|mov|wmv)}";
-    public static final String CMS_MEDIA_FILES_FILE_IMAGE = "/cms/media/files/{filename: (?i)[^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
+    // Case-insensitive file extensions are expressed via explicit character classes instead of the inline flag (?i).
+    // (?i) is valid in Java regex but rejected by the ECMA-262 dialect used for OpenAPI/JSON-Schema pattern validation
+    // ("Invalid special open parenthesis"), which broke importing the generated API spec. Character classes match the
+    // same strings in both engines and preserve the case-insensitivity needed for uploaded files with upper-case extensions.
+    public static final String CMS_MEDIA_FILES_FILE_PDF = "/files/{filename: [^\\/]*\\.([pP][dD][fF])}";
+    public static final String CMS_MEDIA_FILES_FILE_HTML = "/files/{filename: [^\\/]*\\.([hH][tT][mM][lL])}";
+    public static final String CMS_MEDIA_FILES_FILE_SVG = "/files/{filename: [^\\/]*\\.([sS][vV][gG])}";
+    public static final String CMS_MEDIA_FILES_FILE_ICO = "/files/{filename: [^\\/]*\\.([iI][cC][oO])}";
+    public static final String CMS_MEDIA_FILES_FILE_AUDIO =
+            "/files/{filename: .*\\.([mM][pP]3|[mM][pP][eE][gG]|[wW][aA][vV]|[oO][gG][gG]|[wW][mM][aA])}";
+    public static final String CMS_MEDIA_FILES_FILE_VIDEO =
+            "/files/{filename: .*\\.([mM][pP]4|[mM][pP][eE][gG]4|[aA][vV][iI]|[mM][oO][vV]|[wW][mM][vV])}";
+    public static final String CMS_MEDIA_FILES_FILE_IMAGE =
+            "/cms/media/files/{filename: [^\\/]*\\.([jJ][pP][eE]?[gG]|[tT][iI][fF][fF]?|[pP][nN][gG]|[gG][iI][fF]|[jJ][pP]2)}";
     public static final String CMS_MEDIA_FILES_FILE_IMAGE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
     public static final String TEMP_MEDIA_FILES = "/temp/files";
     public static final String TEMP_MEDIA_FILES_FOLDER = "/{folder}";
     public static final String TEMP_MEDIA_FILES_FILE = "/{folder}/{filename}";
 
-    public static final String TEMP_MEDIA_FILES_FILE_IMAGE = "/temp/files/{folder}/{filename: (?i)[^\\/]*\\.(jpe?g|tiff?|png|gif|jp2)}";
+    // See CMS_MEDIA_FILES_FILE_IMAGE above: character classes instead of the ECMA-262-incompatible inline flag (?i).
+    public static final String TEMP_MEDIA_FILES_FILE_IMAGE =
+            "/temp/files/{folder}/{filename: [^\\/]*\\.([jJ][pP][eE]?[gG]|[tT][iI][fF][fF]?|[pP][nN][gG]|[gG][iI][fF]|[jJ][pP]2)}";
     public static final String TEMP_MEDIA_FILES_FILE_IIIF = "/{region}/{size}/{rotation}/{quality}.{format}";
 
     public static final String EXTERNAL_IMAGES = "/images/external/{filename}";

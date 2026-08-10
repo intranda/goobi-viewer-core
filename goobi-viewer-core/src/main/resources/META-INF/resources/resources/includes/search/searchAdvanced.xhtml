@@ -150,7 +150,7 @@
                                                     </c:forEach>
 
                                                     <f:ajax
-                                                        render=":searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} :advsearch_value_group_0-#{status.index}-#{lineStatus.index}"
+                                                        render="searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} advsearch_value_group_0-#{status.index}-#{lineStatus.index}"
                                                         onevent="e => {if(e.status == 'success' &amp;&amp; viewerJS.datePicker) viewerJS.datePicker.init()}" />
                                                 </h:selectOneMenu>
                                             </div>
@@ -206,7 +206,7 @@
                                                                 itemDisabled="#{field.disabled}" />
                                                         </c:forEach>
                                                         <f:ajax
-                                                            render=":searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} :advsearch_value_group_0-#{status.index}-#{lineStatus.index}"
+                                                            render="searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} advsearch_value_group_0-#{status.index}-#{lineStatus.index}"
                                                             onevent="e => {if(e.status == 'success' &amp;&amp; viewerJS.datePicker) viewerJS.datePicker.init()}" />
                                                     </h:selectOneMenu>
                                                 </div>

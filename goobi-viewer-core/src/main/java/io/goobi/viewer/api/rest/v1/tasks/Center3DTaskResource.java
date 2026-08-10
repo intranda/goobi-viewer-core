@@ -91,8 +91,9 @@ public class Center3DTaskResource {
             description = "Finds every .gltf/.glb file in the record's media folder and queues a centering task for each. "
                     + "Responds immediately; the work runs asynchronously.")
     @ApiResponse(responseCode = "200", description = "Tasks queued",
+            // Explicit type = "object" so Swagger does not infer "string" from the JSON-looking example value.
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(example = "{\"pi\":\"PPN123\",\"queued\":2,\"force\":false}")))
+                    schema = @Schema(type = "object", example = "{\"pi\":\"PPN123\",\"queued\":2,\"force\":false}")))
     @ApiResponse(responseCode = "401", description = "Admin login required")
     @ApiResponse(responseCode = "404", description = "Record not found or has no media folder")
     @ApiResponse(responseCode = "500", description = "Internal error")
@@ -134,8 +135,9 @@ public class Center3DTaskResource {
             description = "Walks all configured data repositories, finds every .gltf/.glb file, and queues a centering task for each. "
                     + "Responds immediately; the work runs asynchronously. This operation may queue many tasks.")
     @ApiResponse(responseCode = "200", description = "Tasks queued",
+            // Explicit type = "object" so Swagger does not infer "string" from the JSON-looking example value.
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(example = "{\"queued\":42,\"force\":false}")))
+                    schema = @Schema(type = "object", example = "{\"queued\":42,\"force\":false}")))
     @ApiResponse(responseCode = "401", description = "Admin login required")
     @ApiResponse(responseCode = "500", description = "Internal error")
     public Response centerAll(

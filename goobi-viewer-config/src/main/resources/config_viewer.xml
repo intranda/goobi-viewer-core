@@ -89,6 +89,9 @@
         <!-- dfg-viewer: absolute path to DFG-Viewer for linking in bibliographic data.
             @sourcefileField can contain an optional Solr index field containing a custom record file URL -->
         <dfg-viewer sourcefileField="">https://dfg-viewer.de/show?set[mets]=</dfg-viewer>
+        
+        <!-- base: Base viewer URL for icons, etc. Change this to the actual server URL. -->
+        <base>http://localhost:8080/viewer/</base>
 
         <!-- rest: REST service URL from which internal Goobi viewer resources are requested -->
         <rest>http://localhost:8080/viewer/api/v1/</rest>
@@ -661,8 +664,8 @@
         <!-- docstrctWhitelistFilterQuery: Filter query for including or excluding document types
              (for collection listings, etc.). Default is "all records and anchors but no volumes". -->
         <!-- Example query for also including periodical volumes:
-             ((ISWORK:true ISANCHOR:true) -IDDOC_PARENT:*) (+DOCTYPE:DOCSTRCT +DOCSTRCT:PeriodicalVolume) -->
-        <docstrctWhitelistFilterQuery>(ISWORK:true ISANCHOR:true) -IDDOC_PARENT:*</docstrctWhitelistFilterQuery>
+             ((ISWORK:true ISANCHOR:true) -PI_PARENT:*) (+DOCTYPE:DOCSTRCT +DOCSTRCT:PeriodicalVolume) -->
+        <docstrctWhitelistFilterQuery>(ISWORK:true ISANCHOR:true) -PI_PARENT:*</docstrctWhitelistFilterQuery>
 
         <!-- versioning -->
         <versioning>

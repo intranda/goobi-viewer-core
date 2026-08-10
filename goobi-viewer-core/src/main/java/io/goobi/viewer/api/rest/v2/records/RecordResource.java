@@ -203,7 +203,6 @@ public class RecordResource {
      * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting), user comments
      * (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
      *
-     * @param pi The pi of the manifest to search
      * @param query The search query; a list of space separated terms. The search is for all complete words which match any of the query terms. Terms
      *            may contain the wildcard charachter '*' to represent an arbitrary number of characters within the word
      * @param motivation a space separated list of motivations of annotations to search for. Search for the following motivations is implemented:
@@ -226,7 +225,7 @@ public class RecordResource {
     @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: search within the manifest of the given record")
     @ApiResponse(responseCode = "200", description = "IIIF Search result containing matching annotations")
     @ApiResponse(responseCode = "404", description = "Record not found")
-    public SearchResult searchInManifest(@PathParam("pi") String pi, @QueryParam("q") String query, @QueryParam("motivation") String motivation,
+    public SearchResult searchInManifest(@QueryParam("q") String query, @QueryParam("motivation") String motivation,
             @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
             throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
@@ -235,7 +234,6 @@ public class RecordResource {
     /**
      * autoCompleteInManifest.
      *
-     * @param pi persistent identifier of the record to search
      * @param query partial query string for auto-completion
      * @param motivation space-separated list of annotation motivations to filter
      * @param date date filter (not supported; passed to 'ignored' property)
@@ -251,7 +249,7 @@ public class RecordResource {
     @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: autocomplete search within the manifest of the given record")
     @ApiResponse(responseCode = "200", description = "IIIF AutoSuggest result containing matching terms")
     @ApiResponse(responseCode = "404", description = "Record not found")
-    public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi, @QueryParam("q") String query,
+    public AutoSuggestResult autoCompleteInManifest(@QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
             @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation)

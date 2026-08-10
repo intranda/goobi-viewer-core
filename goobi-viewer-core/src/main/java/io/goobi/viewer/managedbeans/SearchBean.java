@@ -792,6 +792,20 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Clears the "search in current record" term (advanced query item index 1) without touching the
+     * rest of the advanced-search query group. Called on record navigation so the term does not leak
+     * from one record into the next.
+     *
+     * @should clear the search in current item term
+     */
+    public void resetSearchInCurrentItemTerm() {
+        List<SearchQueryItem> items = advancedSearchQueryGroup.getQueryItems();
+        if (items.size() > 1) {
+            items.get(1).setValue("");
+        }
+    }
+
+    /**
      * "Setter" for resetting the query item list via a f:setPropertyActionListener.
      *
      * @param reset true to reset advanced search query items to defaults
@@ -879,7 +893,10 @@ public class SearchBean implements SearchInterface, Serializable {
 
                     if (!skipQueryItem) {
                         String itemQuery =
-                                new StringBuilder().append(exclusionMarker).append(item.getField()).append(':').append(item.getValue().trim())
+                                new StringBuilder().append(exclusionMarker)
+                                        .append(item.getField())
+                                        .append(':')
+                                        .append(item.getValue().trim())
                                         .toString();
                         // logger.trace("item query: {}", itemQuery); //NOSONAR Debug
 
@@ -3137,14 +3154,27 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * searchInRecord.
+     * searchInRecord. Narrowing down search leads to advanced search
      *
      * @param piField Solr field name holding the record identifier
      * @param piValue persistent identifier value to restrict the search to
      * @return Navigation outcome
      */
     public String searchInRecord(String piField, String piValue) {
-        return searchInRecord(piField, piValue, null, null);
+        return searchInRecord(piField, piValue, null, null, false);
+    }
+
+    /**
+     * searchInToc. Narrowing down search leads by to record toc
+     *
+     * @param piField Solr field name holding the record identifier
+     * @param piValue persistent identifier value to restrict the search to
+     * @param date1 Start date for the calendar day range filter
+     * @param date2 End date for the calendar day range filter
+     * @return Navigation outcome
+     */
+    public String searchInToc(String piField, String piValue, String date1, String date2) {
+        return searchInRecord(piField, piValue, date1, date2, true);
     }
 
     /**
@@ -3154,6 +3184,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param piValue persistent identifier value to restrict the search to
      * @param date1 Start date for the calendar day range filter
      * @param date2 End date for the calendar day range filter
+     * @param tocOrigin if true, the {@link #advancedSearchOrigin} will be set to toc, so narrowing down the search will lead back to the toc page of
+     *            the record
      * @return Navigation outcome
      * @should reset CALENDAR_DAY query item when no dates are supplied
      * @should preserve freshly typed search term when no dates are supplied
@@ -3162,7 +3194,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should set advancedSearchOrigin with pi label and docstrct from active document
      * @should not set advancedSearchOrigin when pi is blank
      */
-    public String searchInRecord(String piField, String piValue, String date1, String date2) {
+    public String searchInRecord(String piField, String piValue, String date1, String date2, boolean tocOrigin) {
         logger.debug("searchInRecord: piField={}, piValue={}, date1={}, date2={}", piField, piValue, date1, date2);
         // Clear any active facets from the browsing context so they don't pollute the search
         this.facets.resetActiveFacets();
@@ -3220,7 +3252,8 @@ public class SearchBean implements SearchInterface, Serializable {
             this.advancedSearchOrigin = new AdvancedSearchOrigin(
                     piValue,
                     adb.getViewManager().getTopStructElement().getLabel(),
-                    adb.getViewManager().getTopStructElement().getDocStructType());
+                    adb.getViewManager().getTopStructElement().getDocStructType(),
+                    tocOrigin);
         }
         return outcome;
     }
