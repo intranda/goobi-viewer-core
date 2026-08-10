@@ -27,6 +27,15 @@ fail_startup() {
 [ -z "$STOPWORDS_LANG" ] && STOPWORDS_LANG="de"
 [ -z "${VIEWER_BASE_PATH+x}" ] && VIEWER_BASE_PATH="/viewer"
 
+# The defaults above must be exported, not merely set: several config files are
+# rendered below with envsubst, which is a separate process and therefore only
+# sees exported variables. A plain shell variable renders as an empty string --
+# e.g. an unset DB_HOST silently produced url="jdbc:mariadb://:/" and left the
+# webapp unable to start.
+export USE_SSL DEV DB_HOST DB_NAME DB_USER DB_PORT SOLR_HOST \
+       TOMCAT_SAMESITECOOKIES STOPWORDS_LANG VIEWER_DOMAIN THEME_NAME \
+       VIEWER_BASE_PATH
+
 # Required env vars — validate before `set -u` so we get a clear message
 # rather than an opaque "unbound variable" failure later.
 if [[ -z "${DB_PASSWORD:-}" ]]; then
