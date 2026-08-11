@@ -23,24 +23,26 @@ package io.goobi.viewer.model.maps;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchHelper;
 import jakarta.enterprise.inject.spi.DefinitionException;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 /**
- * A {@link SolrFeatureSet} that derives its geo map features from the current search result set
- * by using the active search query from the {@link io.goobi.viewer.managedbeans.SearchBean}.
+ * A {@link SolrFeatureSet} that derives its geo map features from the current search result set by using the active search query from the
+ * {@link io.goobi.viewer.managedbeans.SearchBean}.
  */
 @Entity
 @DiscriminatorValue("search")
@@ -98,7 +100,7 @@ public class SearchResultFeatureSet extends SolrFeatureSet {
 
         if (searchBean != null && searchBean.getCurrentSearch() != null) {
 
-            List<String> facetFilterQueries = searchBean.getFacets().generateFacetFilterQueries(true);
+            List<String> facetFilterQueries = getSearchFilterQueries(searchBean);
             String finalQuery = createFinalQuery(searchBean);
 
             Collection<GeoMapFeature> features = super.createFeatures(finalQuery, facetFilterQueries);
@@ -110,15 +112,54 @@ public class SearchResultFeatureSet extends SolrFeatureSet {
         }
     }
 
+    /**
+     * @param searchBean the bean holding the currently active search
+     * @return the facet filter queries of the current search plus its effective filter query, if any
+     */
+    private List<String> getSearchFilterQueries(SearchBean searchBean) {
+        List<String> facetFilterQueries = searchBean.getFacets().generateFacetFilterQueries(true);
+        String filterQuery = searchBean.getEffectiveFilterQuery();
+        if (StringUtils.isNotBlank(filterQuery)) {
+
+            //if searching for metadata docs, adapt the filter query to find metadata docs
+            if (SolrSearchScope.METADATA.equals(this.getSearchScope())) {
+                String searchFilterField = DataManager.getInstance().getConfiguration().getGeomapFeatureFeatureSearchFilter(getMarkerTitleField());
+                if (StringUtils.isNotBlank(searchFilterField)) {
+                    filterQuery = filterQuery.replace(searchFilterField, "MD_VALUE");
+                }
+
+            }
+
+            facetFilterQueries.add(filterQuery);
+        }
+        return facetFilterQueries;
+    }
+
+    /**
+     * Encodes the current search's facet/filter queries (see {@link #getSearchFilterQueries(SearchBean)}) as a single Solr filter query to be sent
+     * along with heatmap requests, so heatmap results are restricted the same way as the regular, non-heatmap feature list.
+     */
+    @Override
+    public String getFacetQueryEncoded() {
+        SearchBean searchBean = getSearchBean();
+        if (searchBean == null || searchBean.getCurrentSearch() == null) {
+            return "";
+        }
+        List<String> facetFilterQueries = getSearchFilterQueries(searchBean);
+        if (facetFilterQueries.isEmpty()) {
+            return "";
+        }
+
+        String combinedQuery = facetFilterQueries.stream().map(q -> "(%s)".formatted(q)).collect(Collectors.joining(" AND "));
+
+        return StringTools.encodeUrl(combinedQuery, true);
+    }
+
     String createFinalQuery(SearchBean searchBean) {
         String query = searchBean.getCurrentSearch().getQuery();
         String combinedQuery = createCombinedQuery(query, getSolrQuery());
         String currentQuery = SearchHelper.prepareQuery(combinedQuery);
-        SearchAggregationType aggregationType =
-                this.isAggregateResults() ? SearchAggregationType.AGGREGATE_TO_TOPSTRUCT : SearchAggregationType.NO_AGGREGATION;
-        String finalQuery =
-                SearchHelper.buildFinalQuery(currentQuery, true, aggregationType);
-        return finalQuery;
+        return currentQuery;
     }
 
     String createCombinedQuery(String query1, String query2) {
