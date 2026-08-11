@@ -3078,39 +3078,35 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSPage> getAllCMSPages() throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT o FROM CMSPage o");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error(MSG_EXCEPTION_CMS, e.getMessage());
-                return new ArrayList<>();
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM CMSPage o");
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error(MSG_EXCEPTION_CMS, e.getMessage());
+            return new ArrayList<>();
+        } finally {
+            close(em);
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public CMSPage getCmsPageForStaticPage(String pageName) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
-                q.setParameter("pageName", pageName);
-                q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
-                if (!q.getResultList().isEmpty()) {
-                    return (CMSPage) q.getSingleResult();
-                }
-            } finally {
-                close(em);
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM CMSPage o WHERE o.staticPageName = :pageName");
+            q.setParameter("pageName", pageName);
+            q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+            if (!q.getResultList().isEmpty()) {
+                return (CMSPage) q.getSingleResult();
             }
-            return null;
+        } finally {
+            close(em);
         }
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -3118,49 +3114,47 @@ public class JPADAO implements IDAO {
     @Override
     public List<CMSPage> getCMSPages(int first, int pageSize, String sortField, boolean descending, Map<String, String> filters,
             List<Long> allowedTemplates, List<String> allowedSubthemes, List<String> allowedCategories) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
+            StringBuilder order = new StringBuilder();
+
+            Map<String, Object> params = new HashMap<>();
+
+            String filterString = createFilterQuery2(null, filters, params);
+            String rightsFilterString = "";
             try {
-                StringBuilder sbQuery = new StringBuilder("SELECT DISTINCT a FROM CMSPage a");
-                StringBuilder order = new StringBuilder();
-
-                Map<String, Object> params = new HashMap<>();
-
-                String filterString = createFilterQuery2(null, filters, params);
-                String rightsFilterString = "";
-                try {
-                    rightsFilterString = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
-                    if (!rightsFilterString.isEmpty()) {
-                        rightsFilterString = (StringUtils.isBlank(filterString) ? QUERY_ELEMENT_WHERE : QUERY_ELEMENT_AND) + rightsFilterString;
-                    }
-                } catch (AccessDeniedException e) {
-                    //may not request any cms pages at all
-                    return Collections.emptyList();
+                rightsFilterString = createCMSPageFilter(params, "a", allowedTemplates, allowedSubthemes, allowedCategories);
+                if (!rightsFilterString.isEmpty()) {
+                    rightsFilterString = (StringUtils.isBlank(filterString) ? QUERY_ELEMENT_WHERE : QUERY_ELEMENT_AND) + rightsFilterString;
                 }
-
-                if (StringUtils.isNotEmpty(sortField)) {
-                    order.append(" ORDER BY a.").append(sortField);
-                    if (descending) {
-                        order.append(QUERY_ELEMENT_DESC);
-                    }
-                }
-                sbQuery.append(filterString).append(rightsFilterString).append(order);
-
-                logger.trace("CMS page query: {}", sbQuery);
-                Query q = em.createQuery(sbQuery.toString());
-                params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
-                q.setFirstResult(first);
-                q.setMaxResults(pageSize);
-                q.setFlushMode(FlushModeType.COMMIT);
-
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error(MSG_EXCEPTION_CMS, e.getMessage());
-                return new ArrayList<>();
-            } finally {
-                close(em);
+            } catch (AccessDeniedException e) {
+                //may not request any cms pages at all
+                return Collections.emptyList();
             }
+
+            if (StringUtils.isNotEmpty(sortField)) {
+                order.append(" ORDER BY a.").append(sortField);
+                if (descending) {
+                    order.append(QUERY_ELEMENT_DESC);
+                }
+            }
+            sbQuery.append(filterString).append(rightsFilterString).append(order);
+
+            logger.trace("CMS page query: {}", sbQuery);
+            Query q = em.createQuery(sbQuery.toString());
+            params.entrySet().forEach(entry -> q.setParameter(entry.getKey(), entry.getValue()));
+            q.setFirstResult(first);
+            q.setMaxResults(pageSize);
+            q.setFlushMode(FlushModeType.COMMIT);
+
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error(MSG_EXCEPTION_CMS, e.getMessage());
+            return new ArrayList<>();
+        } finally {
+            close(em);
         }
     }
 
@@ -3303,17 +3297,15 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public CMSPage getCMSPage(long id) throws DAOException {
-        synchronized (cmsRequestLock) {
-            logger.trace("getCMSPage: {}", id);
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                return em.getReference(CMSPage.class, id);
-            } catch (EntityNotFoundException e) {
-                return null;
-            } finally {
-                close(em);
-            }
+        logger.trace("getCMSPage: {}", id);
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.getReference(CMSPage.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -3321,16 +3313,14 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSNavigationItem> getRelatedNavItem(CMSPage page) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.cmsPage = :page");
-                q.setParameter("page", page);
-                return q.getResultList();
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.cmsPage = :page");
+            q.setParameter("page", page);
+            return q.getResultList();
+        } finally {
+            close(em);
         }
     }
 
@@ -3491,16 +3481,14 @@ public class JPADAO implements IDAO {
     /** {@inheritDoc} */
     @Override
     public PersistentCMSComponent getCMSComponent(Long id) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                return em.getReference(PersistentCMSComponent.class, id);
-            } catch (EntityNotFoundException e) {
-                return null;
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.getReference(PersistentCMSComponent.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -3508,20 +3496,18 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSMediaItem> getAllCMSMediaItems() throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT o FROM CMSMediaItem o");
-                q.setFlushMode(FlushModeType.COMMIT);
-                q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error(MSG_EXCEPTION_CMS, e.toString());
-                return new ArrayList<>();
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM CMSMediaItem o");
+            q.setFlushMode(FlushModeType.COMMIT);
+            q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error(MSG_EXCEPTION_CMS, e.toString());
+            return new ArrayList<>();
+        } finally {
+            close(em);
         }
     }
 
@@ -3529,58 +3515,51 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSMediaItem> getAllCMSCollectionItems() throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
-                return q.getResultList();
-            } catch (PersistenceException e) {
-                logger.error(MSG_EXCEPTION_CMS, e.toString());
-                return new ArrayList<>();
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.collection = true");
+            return q.getResultList();
+        } catch (PersistenceException e) {
+            logger.error(MSG_EXCEPTION_CMS, e.toString());
+            return new ArrayList<>();
+        } finally {
+            close(em);
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public CMSMediaItem getCMSMediaItemByFilename(String filename) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.fileName = :fileName");
-                q.setParameter("fileName", filename);
-                // q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
-                return (CMSMediaItem) q.getSingleResult();
-            } catch (NoResultException e) {
-                //nothing found; no biggie
-                return null;
-            } catch (PersistenceException e) {
-                logger.error("Exception \"{}\" when trying to get CMS media item with filename '{}'", e.toString(), filename);
-                return null;
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM CMSMediaItem o WHERE o.fileName = :fileName");
+            q.setParameter("fileName", filename);
+            // q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+            return (CMSMediaItem) q.getSingleResult();
+        } catch (NoResultException e) {
+            //nothing found; no biggie
+            return null;
+        } catch (PersistenceException e) {
+            logger.error("Exception \"{}\" when trying to get CMS media item with filename '{}'", e.toString(), filename);
+            return null;
+        } finally {
+            close(em);
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public CMSMediaItem getCMSMediaItem(long id) throws DAOException {
-        synchronized (cmsRequestLock) {
-
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                return em.getReference(CMSMediaItem.class, id);
-            } catch (EntityNotFoundException e) {
-                return null;
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.getReference(CMSMediaItem.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -3668,38 +3647,34 @@ public class JPADAO implements IDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<CMSNavigationItem> getAllTopCMSNavigationItems() throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
-                q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
-                q.setFlushMode(FlushModeType.COMMIT);
-                List<CMSNavigationItem> list = q.getResultList();
-                Collections.sort(list);
-                return list;
-            } catch (PersistenceException e) {
-                logger.error(MSG_EXCEPTION_CMS, e.toString());
-                return new ArrayList<>();
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT o FROM CMSNavigationItem o WHERE o.parentItem IS NULL");
+            q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
+            q.setFlushMode(FlushModeType.COMMIT);
+            List<CMSNavigationItem> list = q.getResultList();
+            Collections.sort(list);
+            return list;
+        } catch (PersistenceException e) {
+            logger.error(MSG_EXCEPTION_CMS, e.toString());
+            return new ArrayList<>();
+        } finally {
+            close(em);
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public CMSNavigationItem getCMSNavigationItem(long id) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                return em.find(CMSNavigationItem.class, id);
-            } catch (EntityNotFoundException e) {
-                return null;
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(CMSNavigationItem.class, id);
+        } catch (EntityNotFoundException e) {
+            return null;
+        } finally {
+            close(em);
         }
     }
 
@@ -4704,16 +4679,14 @@ public class JPADAO implements IDAO {
     @Override
     @SuppressWarnings("unchecked")
     public List<CMSCollection> getCMSCollections(String solrField) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                Query q = em.createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field");
-                q.setParameter("field", solrField);
-                return q.getResultList();
-            } finally {
-                close(em);
-            }
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT c FROM CMSCollection c WHERE c.solrField = :field");
+            q.setParameter("field", solrField);
+            return q.getResultList();
+        } finally {
+            close(em);
         }
     }
 
