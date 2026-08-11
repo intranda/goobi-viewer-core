@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.archive;
+package io.goobi.viewer.model.export.bagit;
 
 /**
  * The kinds of content that can be included in a per-collection BagIt archive. Each content type maps to a boolean toggle in

@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.archive;
+package io.goobi.viewer.model.export.bagit;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -67,9 +68,11 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.export.XsltSearchExport;
 import io.goobi.viewer.model.search.SearchHelper;
-import io.goobi.viewer.model.security.LicenseType;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 
 /**
  * Builds and serves the per-collection BagIt archives described by {@code <collectionArchives>} in {@code config_viewer.xml}.
@@ -77,8 +80,10 @@ import io.goobi.viewer.solr.SolrConstants;
  * <p>
  * Responsibilities:
  * <ul>
- * <li>build the open-access Solr filter (only {@code OPENACCESS} and backend-configured open-access license types) and the
- * collection-selector query, with all indexed values Solr-escaped to prevent query injection;</li>
+ * <li>build the collection-selector query with the anonymous access / static / blacklist suffixes (record-level pre-filter), with all
+ * indexed values Solr-escaped to prevent query injection;</li>
+ * <li>enforce <b>page-level</b> access when assembling the payload: per-file for images/ALTO/plaintext (only anonymously-accessible files
+ * are packed), and a whole-record "fully open" gate for the METS/LIDO source and TEI;</li>
  * <li>decide whether a collection's archive needs (re)generation by comparing the current record count and maximum
  * {@link SolrConstants#DATEINDEXED} against the values encoded in the existing archive's file name;</li>
  * <li>assemble the enabled content types into a bag's {@code data/} directory, write it via {@link BagItWriter}, and atomically move it
@@ -269,39 +274,26 @@ public class CollectionArchiveService {
     // ----- Solr queries -----
 
     /**
-     * Builds the open-access filter query fragment: only records whose access condition is {@code OPENACCESS} or a backend-configured
-     * open-access {@link LicenseType}. License-type names are Solr-escaped to prevent query injection.
-     *
-     * @return a Solr filter fragment of the form {@code +(ACCESSCONDITION:"OPENACCESS" ACCESSCONDITION:"…")}
-     * @throws DAOException if the license types cannot be loaded
-     */
-    public String buildOpenAccessFilter() throws DAOException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("+(").append(SolrConstants.ACCESSCONDITION).append(":\"").append(SolrConstants.OPEN_ACCESS_VALUE).append('"');
-        for (LicenseType licenseType : DataManager.getInstance().getDao().getAllLicenseTypes()) {
-            if (licenseType.isOpenAccess() && StringUtils.isNotBlank(licenseType.getName())) {
-                sb.append(' ').append(SolrConstants.ACCESSCONDITION).append(":\"").append(escapePhrase(licenseType.getName())).append('"');
-            }
-        }
-        sb.append(')');
-        return sb.toString();
-    }
-
-    /**
      * Builds the full Solr query selecting the freely-accessible top-level records of a collection (and its sub-collections). The
      * collection name is escaped both as a phrase and as a wildcard prefix to prevent query injection.
+     *
+     * <p>
+     * Access, static-query and collection-blacklist filtering are delegated to {@link SearchHelper#getAllSuffixes(HttpServletRequest,
+     * boolean, boolean)} with a {@code null} request, which evaluates the access filter for an <b>anonymous</b> principal (failing closed
+     * to {@code OPENACCESS}-only), appends the configured {@code <staticQuerySuffix>}, and excludes blacklisted DC collections. This is a
+     * coarse record-level pre-filter; page-level access is enforced per file when the payload is assembled (see
+     * {@link #populateRecordFolders} and {@link #isRecordFullyOpen}).
      *
      * @param field the collection Solr field
      * @param collectionName the collection name
      * @return the combined Solr query string
-     * @throws DAOException if the license types cannot be loaded for the access filter
      */
-    public String buildCollectionQuery(String field, String collectionName) throws DAOException {
+    public static String buildCollectionQuery(String field, String collectionName) {
         String phrase = escapePhrase(collectionName);
         String prefix = ClientUtils.escapeQueryChars(collectionName);
         return "+(" + field + ":\"" + phrase + "\" " + field + ":" + prefix + ".*)"
-                + " +(" + SolrConstants.ISWORK + ":* " + SolrConstants.ISANCHOR + ":*) "
-                + buildOpenAccessFilter();
+                + " +(" + SolrConstants.ISWORK + ":* " + SolrConstants.ISANCHOR + ":*)"
+                + SearchHelper.getAllSuffixes(null, true, true);
     }
 
     /**
@@ -315,11 +307,11 @@ public class CollectionArchiveService {
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
-    long getRecordCount(String query) throws IndexUnreachableException, PresentationException {
+    static long getRecordCount(String query) throws IndexUnreachableException, PresentationException {
         return DataManager.getInstance().getSearchIndex().getHitCount(query);
     }
 
-    long getMaxIndexedMillis(String query) throws IndexUnreachableException, PresentationException {
+    static long getMaxIndexedMillis(String query) throws IndexUnreachableException, PresentationException {
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, 1,
                 Collections.singletonList(new StringPair(SolrConstants.DATEINDEXED, "desc")),
                 Collections.singletonList(SolrConstants.DATEINDEXED));
@@ -439,10 +431,9 @@ public class CollectionArchiveService {
         }
     }
 
-    private List<SolrDocument> fetchRecords(String query) throws PresentationException, IndexUnreachableException {
+    private static List<SolrDocument> fetchRecords(String query) throws PresentationException, IndexUnreachableException {
         SolrDocumentList docs = DataManager.getInstance().getSearchIndex().search(query, MAX_RECORDS, null,
-                List.of(SolrConstants.PI, SolrConstants.SOURCEDOCFORMAT, SolrConstants.DATAREPOSITORY,
-                        SolrConstants.BOOL_IMAGEAVAILABLE, SolrConstants.FULLTEXTAVAILABLE));
+                List.of(SolrConstants.PI, SolrConstants.SOURCEDOCFORMAT, SolrConstants.DATAREPOSITORY));
         if (docs != null && docs.getNumFound() > MAX_RECORDS) {
             logger.warn("Collection has {} records; only the first {} are included in the archive.", docs.getNumFound(), MAX_RECORDS);
         }
@@ -455,10 +446,16 @@ public class CollectionArchiveService {
         Path targetDir = dataDir.resolve(type.getDataSubfolder());
         switch (type) {
             case METADATA_SOURCE -> populateSourceFiles(targetDir, records, stats);
-            case FULLTEXT_ALTO -> populateRecordFolders(type, targetDir, records, config.getAltoFolder(), stats);
-            case FULLTEXT_TEXT -> populateRecordFolders(type, targetDir, records, config.getFulltextFolder(), stats);
-            case FULLTEXT_TEI -> populateRecordFolders(type, targetDir, records, config.getTeiFolder(), stats);
-            case IMAGES -> populateRecordFolders(type, targetDir, records, config.getMediaFolder(), stats);
+            case FULLTEXT_ALTO ->
+                populateAccessFilteredFolders(type, targetDir, records, config.getAltoFolder(),
+                        SolrConstants.FILENAME_ALTO, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, stats);
+            case FULLTEXT_TEXT ->
+                populateAccessFilteredFolders(type, targetDir, records, config.getFulltextFolder(),
+                        SolrConstants.FILENAME_FULLTEXT, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, stats);
+            case IMAGES ->
+                populateAccessFilteredFolders(type, targetDir, records, config.getMediaFolder(),
+                        SolrConstants.FILENAME, IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES, stats);
+            case FULLTEXT_TEI -> populateTeiFolders(type, targetDir, records, config.getTeiFolder(), stats);
             case EXPORT_CSV -> populateCsv(targetDir, collectionName, query, stats);
             case EXPORT_RIS -> populateXslt(type, targetDir, collectionName, query, "ris", DEFAULT_RIS_XSLT, "ris", stats);
             case EXPORT_BIBTEX -> populateXslt(type, targetDir, collectionName, query, "bibtex", DEFAULT_BIBTEX_XSLT, "bib", stats);
@@ -466,10 +463,22 @@ public class CollectionArchiveService {
         }
     }
 
-    private void populateSourceFiles(Path targetDir, List<SolrDocument> records, PopulationStats stats) throws IOException {
+    /**
+     * Copies the raw record source (METS/LIDO/DublinCore/EAD) whenever the <b>main record (topstruct)</b> is anonymously open access.
+     * Page-level restrictions do not exclude it — the source is a record-level metadata file describing the whole object, and the
+     * stakeholder decision is to ship it as long as the main record is open (the restricted <em>bytes</em>, i.e. images/OCR of locked
+     * pages, are excluded per file elsewhere).
+     */
+    private static void populateSourceFiles(Path targetDir, List<SolrDocument> records, PopulationStats stats)
+            throws IOException, IndexUnreachableException, PresentationException, DAOException {
         for (SolrDocument doc : records) {
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             if (StringUtils.isBlank(pi)) {
+                continue;
+            }
+            if (!isMainRecordOpen(pi)) {
+                stats.record(ArchiveContentType.METADATA_SOURCE, false);
+                logger.debug("Skipping record source: main record {} is not anonymously open access.", pi);
                 continue;
             }
             String format = (String) doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT);
@@ -483,17 +492,58 @@ public class CollectionArchiveService {
                 stats.record(ArchiveContentType.METADATA_SOURCE, true);
             } else {
                 stats.record(ArchiveContentType.METADATA_SOURCE, false);
-                // A record present in the index should always have a metadata source file; its absence is a data-integrity problem.
-                logger.warn("Record {} is indexed but its metadata source file is missing (expected at {}).", pi, source);
+                // An open, indexed record should always have a source file on disk; its absence is a data-integrity problem.
+                logger.warn("Record {} is indexed but its source file is missing (expected at {}).", pi, source);
             }
         }
     }
 
-    private void populateRecordFolders(ArchiveContentType type, Path targetDir, List<SolrDocument> records, String dataFolderName,
-            PopulationStats stats) throws IOException {
+    /**
+     * Copies page-keyed content (images / ALTO / plaintext) filtered <b>per file</b> against anonymous access rights. Only files whose
+     * bare name is returned by {@link AccessConditionUtils#fetchAccessibleFileNames} (which evaluates the per-PAGE access conditions) are
+     * packed, so restricted pages of an otherwise-open work never enter the bag.
+     */
+    private static void populateAccessFilteredFolders(ArchiveContentType type, Path targetDir, List<SolrDocument> records,
+            String dataFolderName, String filenameField, String privilege, PopulationStats stats) throws IOException {
         for (SolrDocument doc : records) {
             String pi = (String) doc.getFieldValue(SolrConstants.PI);
             if (StringUtils.isBlank(pi)) {
+                continue;
+            }
+            // Anonymous principal (request == null): only OPENACCESS / open-licence pages are returned; fails closed (empty) on error.
+            Set<String> allowed = new HashSet<>(AccessConditionUtils.fetchAccessibleFileNames(pi, filenameField, privilege, null));
+            String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
+            Path recordFolder = DataFileTools.getDataFolder(pi, dataFolderName, dataRepository);
+            int copied = 0;
+            if (!allowed.isEmpty() && recordFolder != null && Files.isDirectory(recordFolder)) {
+                copied = copyAllowedFiles(recordFolder, targetDir.resolve(FileTools.sanitizeFileName(pi)), allowed);
+            }
+            stats.record(type, copied > 0);
+            if (allowed.size() > copied) {
+                // Files the index reports as accessible but that are not present on disk — a data-integrity problem.
+                logger.warn("Record {}: {} of {} access-permitted '{}' file(s) are missing on disk (folder {}).",
+                        pi, allowed.size() - copied, allowed.size(), dataFolderName, recordFolder);
+            } else if (allowed.isEmpty()) {
+                logger.debug("No anonymously accessible '{}' files for record {}.", dataFolderName, pi);
+            }
+        }
+    }
+
+    /**
+     * Copies the record-level TEI folder, but only for records where <b>no page has a restricted fulltext</b>. TEI is not page-keyed and
+     * aggregates the text of all pages into a single document, so it is withheld entirely if any page's fulltext is restricted (its text
+     * cannot be redacted per page).
+     */
+    private static void populateTeiFolders(ArchiveContentType type, Path targetDir, List<SolrDocument> records, String dataFolderName,
+            PopulationStats stats) throws IOException, IndexUnreachableException, PresentationException {
+        for (SolrDocument doc : records) {
+            String pi = (String) doc.getFieldValue(SolrConstants.PI);
+            if (StringUtils.isBlank(pi)) {
+                continue;
+            }
+            if (hasRestrictedFulltextPage(pi)) {
+                stats.record(type, false);
+                logger.debug("Skipping TEI for record {}: at least one page has a restricted fulltext.", pi);
                 continue;
             }
             String dataRepository = (String) doc.getFieldValue(SolrConstants.DATAREPOSITORY);
@@ -502,43 +552,56 @@ public class CollectionArchiveService {
             if (recordFolder != null && Files.isDirectory(recordFolder)) {
                 copied = copyFolderContents(recordFolder, targetDir.resolve(FileTools.sanitizeFileName(pi)));
             }
-            if (copied > 0) {
-                stats.record(type, true);
-            } else {
-                stats.record(type, false);
-                if (contentExpected(type, doc)) {
-                    // The index advertises this content, so its absence on disk is a data-integrity problem worth a warning.
-                    logger.warn("Record {} is flagged as having {} content, but no '{}' files were found (folder {}).",
-                            pi, availabilityLabel(type), dataFolderName, recordFolder);
-                } else {
-                    logger.debug("No '{}' files for record {} (folder {}).", dataFolderName, pi, recordFolder);
-                }
+            stats.record(type, copied > 0);
+            if (copied == 0) {
+                logger.debug("No '{}' files for record {} (folder {}).", dataFolderName, pi, recordFolder);
             }
         }
     }
 
     /**
-     * Whether the index advertises that the given content type should be present for a record — {@code BOOL_IMAGEAVAILABLE} for images,
-     * {@code FULLTEXTAVAILABLE} for any fulltext flavour. Used to decide whether a missing folder is a warning (index says it exists) or
-     * merely a debug note (record legitimately has none).
+     * Whether the main record (topstruct) is anonymously open access, i.e. its source file may be downloaded without any privilege. Uses
+     * the same record-level check as the born-digital / original-content download path.
      */
-    private static boolean contentExpected(ArchiveContentType type, SolrDocument doc) {
-        return switch (type) {
-            case IMAGES -> isTrue(doc.getFieldValue(SolrConstants.BOOL_IMAGEAVAILABLE));
-            case FULLTEXT_ALTO, FULLTEXT_TEXT, FULLTEXT_TEI -> isTrue(doc.getFieldValue(SolrConstants.FULLTEXTAVAILABLE));
-            default -> false;
-        };
-    }
-
-    private static String availabilityLabel(ArchiveContentType type) {
-        return type == ArchiveContentType.IMAGES ? "image" : "fulltext";
+    private static boolean isMainRecordOpen(String pi) throws IndexUnreachableException, DAOException {
+        return AccessConditionUtils.checkContentFileAccessPermission(pi, null).isGranted();
     }
 
     /**
-     * Coerces a Solr field value to a boolean, tolerating both native {@link Boolean} values and the string {@code "true"}.
+     * Whether any page of the record carries a fulltext that an anonymous principal may not read. Compares the number of anonymously
+     * accessible {@code FILENAME_FULLTEXT} pages with the total number of pages that have a fulltext; a shortfall means at least one page
+     * is restricted. Fails closed (treats the record as restricted) on Solr error via {@link AccessConditionUtils#fetchAccessibleFileNames}
+     * returning an empty list.
      */
-    private static boolean isTrue(Object value) {
-        return Boolean.TRUE.equals(value) || "true".equalsIgnoreCase(String.valueOf(value));
+    private static boolean hasRestrictedFulltextPage(String pi) throws IndexUnreachableException, PresentationException {
+        int accessible = AccessConditionUtils
+                .fetchAccessibleFileNames(pi, SolrConstants.FILENAME_FULLTEXT, IPrivilegeHolder.PRIV_VIEW_FULLTEXT, null).size();
+        String escaped = ClientUtils.escapeQueryChars(pi);
+        long total = DataManager.getInstance().getSearchIndex().getHitCount("+" + SolrConstants.PI_TOPSTRUCT + ":" + escaped
+                + " +" + SolrConstants.DOCTYPE + ":" + DocType.PAGE + " +" + SolrConstants.FILENAME_FULLTEXT + ":[* TO *]");
+        return accessible < total;
+    }
+
+    /**
+     * Copies only the regular files of {@code sourceDir} whose bare file name is contained in {@code allowedFilenames}. The target
+     * directory is created lazily so records with no permitted file leave no empty folder in the bag.
+     *
+     * @return the number of files copied
+     */
+    static int copyAllowedFiles(Path sourceDir, Path targetDir, Set<String> allowedFilenames) throws IOException {
+        int copied = 0;
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(sourceDir)) {
+            for (Path entry : stream) {
+                if (Files.isRegularFile(entry) && allowedFilenames.contains(entry.getFileName().toString())) {
+                    if (copied == 0) {
+                        Files.createDirectories(targetDir);
+                    }
+                    Files.copy(entry, targetDir.resolve(entry.getFileName().toString()), StandardCopyOption.REPLACE_EXISTING);
+                    copied++;
+                }
+            }
+        }
+        return copied;
     }
 
     private static int copyFolderContents(Path sourceDir, Path targetDir) throws IOException {
@@ -558,7 +621,7 @@ public class CollectionArchiveService {
         return copied;
     }
 
-    private void populateCsv(Path targetDir, String collectionName, String query, PopulationStats stats)
+    private static void populateCsv(Path targetDir, String collectionName, String query, PopulationStats stats)
             throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException, IOException {
         Files.createDirectories(targetDir);
         try (Writer writer = Files.newBufferedWriter(targetDir.resolve(slugify(collectionName) + ".csv"), StandardCharsets.UTF_8)) {

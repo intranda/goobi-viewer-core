@@ -42,7 +42,7 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaResourceHelper;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.FileTools;
-import io.goobi.viewer.model.archive.CollectionArchiveService;
+import io.goobi.viewer.model.export.bagit.CollectionArchiveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -58,8 +58,10 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * REST resource exposing the pre-generated per-collection BagIt archive for download. Both endpoints are restricted to logged-in users (or
- * a valid bearer token) via {@link UserLoggedInBinding}; the served bags additionally contain only open-access content, so access is
- * gated in depth.
+ * a valid bearer token) via {@link UserLoggedInBinding}. The bag's payload is filtered at generation time against <b>anonymous</b> access
+ * rights — per file for images/ALTO/plaintext and per whole record for the METS/LIDO source and TEI — so restricted pages and works are
+ * excluded from the archive (see {@code CollectionArchiveService}). Access is not, and cannot be, re-checked per downloading user at this
+ * endpoint, which is why only anonymously-accessible content is ever packed.
  */
 @jakarta.ws.rs.Path(COLLECTIONS_ARCHIVE)
 @ViewerRestServiceBinding

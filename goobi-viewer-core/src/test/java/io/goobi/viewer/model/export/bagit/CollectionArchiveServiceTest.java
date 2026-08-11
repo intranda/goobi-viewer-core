@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.model.archive;
+package io.goobi.viewer.model.export.bagit;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class CollectionArchiveServiceTest {
 
@@ -81,5 +87,46 @@ class CollectionArchiveServiceTest {
         // Spaces and colons are legal inside a phrase and must be left untouched
         assertEquals("a b:c", CollectionArchiveService.escapePhrase("a b:c"));
         assertTrue(CollectionArchiveService.escapePhrase("plain").equals("plain"));
+    }
+
+    /**
+     * @see CollectionArchiveService#copyAllowedFiles(Path, Path, Set)
+     * @verifies copy only files whose name is permitted
+     */
+    @Test
+    void copyAllowedFiles_shouldCopyOnlyPermittedFiles(@TempDir Path tmp) throws Exception {
+        Path src = tmp.resolve("src");
+        Files.createDirectories(src);
+        // Two open pages and one restricted page on disk
+        Files.writeString(src.resolve("00000001.jpg"), "open1", StandardCharsets.UTF_8);
+        Files.writeString(src.resolve("00000002.jpg"), "restricted", StandardCharsets.UTF_8);
+        Files.writeString(src.resolve("00000003.jpg"), "open3", StandardCharsets.UTF_8);
+
+        Path target = tmp.resolve("target");
+        int copied = CollectionArchiveService.copyAllowedFiles(src, target, Set.of("00000001.jpg", "00000003.jpg"));
+
+        assertEquals(2, copied);
+        assertTrue(Files.isRegularFile(target.resolve("00000001.jpg")));
+        assertTrue(Files.isRegularFile(target.resolve("00000003.jpg")));
+        // The restricted page must not be packed
+        assertFalse(Files.exists(target.resolve("00000002.jpg")));
+    }
+
+    /**
+     * @see CollectionArchiveService#copyAllowedFiles(Path, Path, Set)
+     * @verifies create no target folder when nothing is permitted
+     */
+    @Test
+    void copyAllowedFiles_shouldCreateNoFolderWhenNothingPermitted(@TempDir Path tmp) throws Exception {
+        Path src = tmp.resolve("src");
+        Files.createDirectories(src);
+        Files.writeString(src.resolve("00000001.jpg"), "restricted", StandardCharsets.UTF_8);
+
+        Path target = tmp.resolve("target");
+        int copied = CollectionArchiveService.copyAllowedFiles(src, target, Set.of());
+
+        assertEquals(0, copied);
+        // No empty payload folder should be left in the bag
+        assertFalse(Files.exists(target));
     }
 }

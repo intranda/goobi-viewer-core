@@ -38,8 +38,8 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
-import io.goobi.viewer.model.archive.CollectionArchiveConfig;
-import io.goobi.viewer.model.archive.CollectionArchiveService;
+import io.goobi.viewer.model.export.bagit.CollectionArchiveConfig;
+import io.goobi.viewer.model.export.bagit.CollectionArchiveService;
 import io.goobi.viewer.model.job.TaskType;
 
 /**

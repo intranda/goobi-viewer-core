@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.model.archive.CollectionArchiveService;
+import io.goobi.viewer.model.export.bagit.CollectionArchiveService;
 import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
