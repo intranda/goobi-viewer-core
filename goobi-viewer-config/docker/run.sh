@@ -13,28 +13,18 @@ fail_startup() {
   exec sleep infinity
 }
 
-[ -z "$USE_SSL" ] && USE_SSL="false"
-[ -z "$DEV" ] && DEV="false"
-[ -z "$DB_HOST" ] && DB_HOST="viewer-db"
-[ -z "$DB_NAME" ] && DB_NAME="viewer"
-[ -z "$DB_USER" ] && DB_USER="viewer"
-[ -z "$DB_PORT" ] && DB_PORT=3306
-[ -z "$SOLR_HOST" ] && SOLR_HOST="solr"
-[ -z "$TOMCAT_SAMESITECOOKIES" ] && TOMCAT_SAMESITECOOKIES="strict"
-[ -z "$STOPWORDS_LANG" ] && STOPWORDS_LANG="de"
-[ -z "$VIEWER_DOMAIN" ] && VIEWER_DOMAIN="localhost:8080"
-[ -z "$THEME_NAME" ] && THEME_NAME="reference"
-[ -z "$STOPWORDS_LANG" ] && STOPWORDS_LANG="de"
-[ -z "${VIEWER_BASE_PATH+x}" ] && VIEWER_BASE_PATH="/viewer"
-
-# The defaults above must be exported, not merely set: several config files are
-# rendered below with envsubst, which is a separate process and therefore only
-# sees exported variables. A plain shell variable renders as an empty string --
-# e.g. an unset DB_HOST silently produced url="jdbc:mariadb://:/" and left the
-# webapp unable to start.
-export USE_SSL DEV DB_HOST DB_NAME DB_USER DB_PORT SOLR_HOST \
-       TOMCAT_SAMESITECOOKIES STOPWORDS_LANG VIEWER_DOMAIN THEME_NAME \
-       VIEWER_BASE_PATH
+[ -z "$USE_SSL" ] && export USE_SSL="false"
+[ -z "$DEV" ] && export DEV="false"
+[ -z "$DB_HOST" ] && export DB_HOST="viewer-db"
+[ -z "$DB_NAME" ] && export DB_NAME="viewer"
+[ -z "$DB_USER" ] && export DB_USER="viewer"
+[ -z "$DB_PORT" ] && export DB_PORT=3306
+[ -z "$SOLR_HOST" ] && export SOLR_HOST="solr"
+[ -z "$TOMCAT_SAMESITECOOKIES" ] && export TOMCAT_SAMESITECOOKIES="strict"
+[ -z "$STOPWORDS_LANG" ] && export STOPWORDS_LANG="de"
+[ -z "$VIEWER_DOMAIN" ] && export VIEWER_DOMAIN="localhost:8080"
+[ -z "$THEME_NAME" ] && export THEME_NAME="reference"
+[ -z "${VIEWER_BASE_PATH+x}" ] && export VIEWER_BASE_PATH="/viewer"
 
 # Required env vars — validate before `set -u` so we get a clear message
 # rather than an opaque "unbound variable" failure later.

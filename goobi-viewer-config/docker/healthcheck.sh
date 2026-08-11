@@ -7,8 +7,7 @@
 BASE_PATH="$(< /tmp/startup-succeeded)"
 URL="http://127.0.0.1:8080/${BASE_PATH:+${BASE_PATH}/}"
 
-# A TCP connect alone is not sufficient: Tomcat accepts connections even when
-# the webapp failed to deploy, and answers 404 for a context that never started.
+# Tomcat accepts connections even when the webapp failed to deploy, and answers 404 for a context that never started.
 # Only a 2xx/3xx response proves the application itself is actually serving.
 STATUS="$(curl --silent --output /dev/null --max-time 10 --write-out '%{http_code}' "$URL")"
 
