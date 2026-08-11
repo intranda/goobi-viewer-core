@@ -453,6 +453,12 @@ if (typeof L !== 'undefined') {
                 clusterOptions.spiderfyOnMaxZoom = false;
             }
             // console.log("_createClusters", clusterOptions);
+            if (_this.clusterMarkers) {
+                // Remove the previous cluster layer before replacing it - otherwise it stays on the map
+                // as an orphaned layer (e.g. when two heatmap requests race), and its markers get counted
+                // together with the new cluster's markers.
+                _this._map.removeLayer(_this.clusterMarkers);
+            }
             _this.clusterMarkers = new L.MarkerClusterGroup(clusterOptions);
             _this.featureGroup.removeAllMarkers();
 

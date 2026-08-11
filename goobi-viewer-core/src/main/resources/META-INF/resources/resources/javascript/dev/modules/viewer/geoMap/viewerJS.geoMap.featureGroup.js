@@ -206,6 +206,7 @@ var viewerJS = (function (viewer) {
             field: 'WKT_COORDS',
             type: 'clusters',
             filterQuery: this.config.heatmap.filterQuery,
+            facetQuery: this.config.heatmap.facetQuery,
             labelField: this.config.heatmap.labelField,
             searchScope: this.config.heatmap.searchScope,
             queryAdapter: this.config.heatmap.queryAdapter,
