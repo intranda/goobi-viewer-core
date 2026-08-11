@@ -3499,7 +3499,9 @@ public class JPADAO implements IDAO {
         preQuery();
         EntityManager em = getEntityManager();
         try {
-            Query q = em.createQuery("SELECT o FROM CMSMediaItem o");
+            // LEFT JOIN FETCH categories so the (lazy) relation is populated while the EntityManager is still open;
+            // otherwise EclipseLink loads it on first access via an implicit, unmanaged DB connection after close(em) below.
+            Query q = em.createQuery("SELECT DISTINCT o FROM CMSMediaItem o LEFT JOIN FETCH o.categories");
             q.setFlushMode(FlushModeType.COMMIT);
             q.setHint(PARAM_STOREMODE, PARAM_STOREMODE_VALUE_REFRESH);
             return q.getResultList();
