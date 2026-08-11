@@ -22,7 +22,6 @@
 package io.goobi.viewer.model.export.bagit;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -73,6 +72,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Builds and serves the per-collection BagIt archives described by {@code <collectionArchives>} in {@code config_viewer.xml}.
@@ -282,7 +282,7 @@ public class CollectionArchiveService {
      * boolean, boolean)} with a {@code null} request, which evaluates the access filter for an <b>anonymous</b> principal (failing closed
      * to {@code OPENACCESS}-only), appends the configured {@code <staticQuerySuffix>}, and excludes blacklisted DC collections. This is a
      * coarse record-level pre-filter; page-level access is enforced per file when the payload is assembled (see
-     * {@link #populateRecordFolders} and {@link #isRecordFullyOpen}).
+     * {@link #populateAccessFilteredFolders} and {@link #hasRestrictedFulltextPage}).
      *
      * @param field the collection Solr field
      * @param collectionName the collection name
