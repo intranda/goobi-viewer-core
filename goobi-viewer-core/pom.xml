@@ -113,7 +113,11 @@
 		<jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
 		<jakarta.el.version>6.0.1</jakarta.el.version>
 		<jakarta.enterprise.version>4.1.0</jakarta.enterprise.version>
-		<jakarta.faces.version>4.1.13</jakarta.faces.version>
+		<!-- Pinned to 4.1.11: Mojarra 4.1.13 added DefaultFaceletFactory.requireWithinApplicationRoot(), which rejects any
+		     relative ui:include whose resolved file: URL lies outside the webapp root. Themes are mounted as Tomcat
+		     pre-resources from /opt/digiverso/viewer/themes/, so every relative include in a theme template breaks.
+		     Do not bump before all themes use context-absolute include paths (/resources/themes/<name>/...). -->
+		<jakarta.faces.version>4.1.11</jakarta.faces.version>
 		<jakarta.inject.version>2.0.1</jakarta.inject.version>
 		<jakarta.jms-api.version>3.1.0</jakarta.jms-api.version>
 		<jakarta.jstl.version>3.0.2</jakarta.jstl.version>
