@@ -1,13 +1,17 @@
 /**
  * Jest configuration for the goobi-viewer-core JavaScript test suite.
  *
- * Two test "projects" coexist:
+ * Four test "projects" coexist:
  *   - "browser-modules": jsdom environment, for the JS modules that ship in
  *     the WAR (see src/main/resources/.../javascript/dev/modules/...).
  *     These were originally written against a real browser; jsdom gives us
  *     window/document/localStorage without spawning Chrome.
  *   - "node-scripts":    node environment, for the pre-commit helper
  *     scripts under scripts/pre-commit/.
+ *   - "build-assets":    node environment, for the build tooling under gulp/
+ *     that generates checked-in artifacts (the patched ReplayWeb.page bundle).
+ *   - "modules-mjs":     jsdom environment, for the ES-module sources under
+ *     .../javascript/dev/modules/**\/*.mjs (test files are *.test.mjs).
  *
  * Run from this directory (goobi-viewer-core/):
  *   npx jest                      # full suite
@@ -32,6 +36,7 @@ module.exports = {
     collectCoverageFrom: [
         'goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/**/*.js',
         'scripts/pre-commit/*.js',
+        'goobi-viewer-core/gulp/*.js',
         '!**/__tests__/**',
         '!**/node_modules/**',
     ],
@@ -95,6 +100,15 @@ module.exports = {
             testEnvironment: 'node',
             rootDir: repoRoot,
             testMatch: ['<rootDir>/scripts/pre-commit/__tests__/**/*.test.js'],
+        },
+        {
+            // Build tooling under goobi-viewer-core/gulp/. Plain Node, no DOM:
+            // these tests cover the code that generates checked-in build
+            // artifacts (currently the patched ReplayWeb.page bundle).
+            displayName: 'build-assets',
+            testEnvironment: 'node',
+            rootDir: repoRoot,
+            testMatch: ['<rootDir>/goobi-viewer-core/gulp/__tests__/**/*.test.js'],
         },
         {
             // ES-module project for all src/.../modules/**/*.mjs sources (media,
