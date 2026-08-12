@@ -104,7 +104,7 @@
     "tinymce": "8.8.2",
     "tone": "^15.1.22",
     "verovio": "^5.6.0",
-	"replaywebpage": "^2.4.6"
+	"replaywebpage": "~2.5.0"
   },
   "browserslist": [
     ">0.5%",

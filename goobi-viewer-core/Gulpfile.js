@@ -25,6 +25,7 @@ const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const reporter = require('postcss-reporter');
 const { depsPathsJS, depsPathsCSS, tablerIconSources } = require('./gulp/depsPaths');
+const replaywebpagePatch = require('./gulp/replaywebpagePatch');
 
 const isWin = process.platform === 'win32';
 const toPosix = (p) => (p ? p.replace(/\\/g, '/') : p);
@@ -780,6 +781,34 @@ function copyDependencies() {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Patch third-party bundles                                            ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Regenerates the patched ReplayWeb.page bundle from node_modules.
+ * Runs right after copy-deps. Throws — and thus fails the task — when the
+ * upstream markup no longer matches the patch anchor; see
+ * gulp/replaywebpagePatch.js for what to do then.
+ *
+ * @returns {Promise<void>} Resolves once ui.js has been written.
+ */
+function patchReplayWebPage() {
+    const started = process.hrtime.bigint();
+    const { version, file, bytes } = replaywebpagePatch.generate();
+
+    logTask({
+        name: 'patch-replaywebpage',
+        started,
+        genCount: 1,
+        copyCount: 0,
+        projOut: [file],
+        extra: [`replaywebpage@${version} (${Math.round(bytes / 1024)} KB)`],
+    });
+
+    return Promise.resolve();
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
    ║ Full project → deployment mirror (one-shot)                          ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
@@ -1037,7 +1066,10 @@ const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags
 
 exports.build = buildAll;
 exports.dev = watchMode;
-exports['copy-deps'] = copyDependencies;
+// The order matters: patchReplayWebPage overwrites ui.js and must run AFTER
+// copyDependencies, so the patch survives even if a merge reintroduces the
+// ui.js entry in depsPaths. See gulp/replaywebpagePatch.js.
+exports['copy-deps'] = gulp.series(copyDependencies, patchReplayWebPage);
 exports['sync-all'] = fullSync;
 exports.target = printTargets;
 exports.java = java;
@@ -1046,7 +1078,8 @@ exports.icons = buildIcons;
 /* ── Task exports ────────────────────────────────────────────────────────────────────────────
    - npm run build      → builds styles, JS bundles, riot tags, icons
    - npm run dev        → starts watchers (no initial full sync; run npm run sync separately if needed)
-   - npm run copyDeps   → copies declared 3rd-party assets
+   - npm run copyDeps   → copies declared 3rd-party assets, then regenerates
+                          the patched replaywebpage bundle (see gulp/replaywebpagePatch.js)
    - npm run icons      → rebuilds Tabler SVG sprite assets
    - npm run sync       → one-shot full project → deploy mirror
    - npm run target     → prints resolved paths / env overrides

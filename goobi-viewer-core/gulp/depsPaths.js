@@ -312,14 +312,17 @@ const depsPathsJS = [
         dest: `${jsLibsDir}chartjs/chartjs-adapter-luxon`,
     },
 	
-	{
-	    // replayWeb.page
-	    expand: true,
-	    cwd: nodeModules,
-	    src: ['replaywebpage/sw.js', 'replaywebpage/ui.js'],
-	    flatten: true,
-	    dest: `${jsLibsDir}replaywebpage/`,
-	},
+    {
+        // replayWeb.page — only the service worker is copied verbatim.
+        // ui.js is NOT copied: gulp/replaywebpagePatch.js generates it from
+        // node_modules with the download-menu patch applied. See that file's
+        // header for why the output has to keep the name ui.js.
+        expand: true,
+        cwd: nodeModules,
+        src: ['replaywebpage/sw.js'],
+        flatten: true,
+        dest: `${jsLibsDir}replaywebpage/`,
+    },
 
 
     {
