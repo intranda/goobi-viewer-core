@@ -49,7 +49,6 @@
                                     value="#{searchBean.searchString}"
                                     items="#{searchBean.autocomplete}"
                                     placeholder="#{msg.search}"
-                                    arialabel="#{msg.searchField}"
                                     styleclass="form-control -no-outline" />
                             </c:when>
                             <c:otherwise>
@@ -62,7 +61,7 @@
                                         value="#{msg.search}" />
                                     <f:passThroughAttribute
                                         name="aria-label"
-                                        value="#{msg.searchField}" />
+                                        value="#{msg.search}" />
                                 </h:inputText>
                             </c:otherwise>
                         </c:choose>
