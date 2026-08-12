@@ -23,6 +23,7 @@ package io.goobi.viewer.model.toc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -33,13 +34,16 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -401,5 +405,168 @@ class TocMakerTest extends AbstractDatabaseAndSolrEnabledTest {
         doc.setField(SolrConstants.DOCSTRCT, "MultiVolumeWork");
         doc.setField(SolrConstants.PI, "test_pi");
         Assertions.assertFalse(TocMaker.isCalendarEligibleParent(doc));
+    }
+
+    /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
+     * @verifies include loaded volume and its structure when anchor is calendar eligible
+     */
+    @Test
+    void generateToc_shouldIncludeLoadedVolumeAndItsStructureWhenAnchorIsCalendarEligible() throws Exception {
+        TOC toc = buildTocWithCalendarEligibleAnchor(false);
+        List<TOCElement> elements = toc.getTocElements();
+        // The anchor heads the TOC, the loaded volume and its 104 structure elements follow it - the same
+        // result the non-calendar build produces with siblings excluded, i.e. the optimization changes the
+        // query but not the TOC. While the calendar branch ended the whole walk at the anchor, the volume
+        // was absent and only the anchor remained.
+        Assertions.assertEquals("306653648", elements.get(0).getTopStructPi());
+        long volumeElements = elements.stream().filter(element -> "306653648_1891".equals(element.getTopStructPi())).count();
+        Assertions.assertEquals(104, volumeElements, "Loaded volume and its structure elements are missing from the TOC");
+        Assertions.assertEquals(105, elements.size(), "TOC should consist of the anchor plus the loaded volume tree");
+        // The lookup ActiveDocumentBean.getTitleBarLabel() performs for the loaded record. It returned null
+        // while the volume was missing, which sent the title bar into its StructElement fallback - and that
+        // one hands out the raw, untranslated DOCSTRCT.
+        Assertions.assertNotNull(toc.getLabel("306653648_1891"), "TOC must provide a label for the loaded record");
+    }
+
+    /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
+     * @verifies still list sibling volumes of calendar eligible anchor when siblings requested
+     */
+    @Test
+    void generateToc_shouldStillListSiblingVolumesOfCalendarEligibleAnchorWhenSiblingsRequested() throws Exception {
+        // With listSiblingRecords enabled the sibling volumes are requested output: they are the only way to
+        // reach another volume from a volume page, because the calendar TOC view only renders for a loaded
+        // anchor or group. So narrowing the query down to the navigation path must not happen here, and the
+        // result has to stay identical to the non-calendar build (1 anchor + 104 volume elements + 6 siblings).
+        List<TOCElement> elements = buildTocWithCalendarEligibleAnchor(true).getTocElements();
+        List<String> siblingPis = elements.stream()
+                .map(TOCElement::getTopStructPi)
+                .filter(pi -> pi != null && pi.startsWith("306653648_") && !"306653648_1891".equals(pi))
+                .distinct()
+                .sorted()
+                .toList();
+        Assertions.assertEquals(List.of("306653648_1892", "306653648_1893", "306653648_1894", "306653648_1897", "306653648_1898", "306653648_1899"),
+                siblingPis, "Requested sibling volumes must survive the calendar optimization");
+        Assertions.assertEquals(111, elements.size());
+    }
+
+    /**
+     * @see TocMaker#generateToc(TOC, StructElement, boolean, String, int, int)
+     * @verifies restrict sibling query to navigation path when anchor is calendar eligible
+     */
+    @Test
+    void generateToc_shouldRestrictSiblingQueryToNavigationPathWhenAnchorIsCalendarEligible() throws Exception {
+        // Performance guard. The TOC contents alone cannot show this: a build that enumerates all 23.705
+        // issues of a newspaper and then refrains from adding them produces the same element list as one
+        // that never asks for them. So watch the queries themselves and require the anchor's child query to
+        // name the volume on the navigation path, which is what bounds the result set.
+        // Note this observes one specific search() overload - if the production code moves to another one,
+        // the first assertion below fails rather than passing silently.
+        String volumeIddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
+        Assertions.assertNotNull(volumeIddoc);
+        SolrSearchIndex originalIndex = DataManager.getInstance().getSearchIndex();
+        List<String> queries = Collections.synchronizedList(new ArrayList<>());
+        SolrSearchIndex indexSpy = Mockito.spy(originalIndex);
+        Mockito.doAnswer(invocation -> {
+            queries.add(invocation.getArgument(0));
+            return invocation.callRealMethod();
+        }).when(indexSpy).search(Mockito.anyString(), Mockito.anyInt(), Mockito.any(), Mockito.any());
+        DataManager.getInstance().injectSearchIndex(indexSpy);
+        try {
+            buildTocWithCalendarEligibleAnchor(false);
+        } finally {
+            DataManager.getInstance().injectSearchIndex(originalIndex);
+        }
+
+        List<String> anchorChildQueries = queries.stream().filter(query -> query.contains(SolrConstants.PI_PARENT + ":\"306653648\"")).toList();
+        Assertions.assertFalse(anchorChildQueries.isEmpty(), "Expected the anchor's child query to run at all; observed queries: " + queries);
+        for (String query : anchorChildQueries) {
+            Assertions.assertTrue(query.contains("+" + SolrConstants.IDDOC + ":(") && query.contains(volumeIddoc),
+                    "The child query of a calendar-eligible anchor must be restricted to the navigation path, otherwise it returns every sibling: "
+                            + query);
+        }
+    }
+
+    /**
+     * @see TocMaker#buildMainChainRestriction(List, String)
+     * @verifies return clause for every chain iddoc except the parent
+     */
+    @Test
+    void buildMainChainRestriction_shouldReturnClauseForEveryChainIddocExceptTheParent() {
+        // Deeper hierarchies put more than one IDDOC below the calendar-eligible node, and a chain that
+        // accumulated several ancestor fields may hold unrelated IDDOCs; all of them are OR-joined here and
+        // sorted out by the ancestor field clause of the query this is appended to. Null entries are skipped.
+        Assertions.assertEquals(" +IDDOC:(\"1\" OR \"3\")", TocMaker.buildMainChainRestriction(Arrays.asList("1", null, "2", "3"), "2"));
+        Assertions.assertEquals(" +IDDOC:(\"1\")", TocMaker.buildMainChainRestriction(Arrays.asList("1", "2"), "2"));
+    }
+
+    /**
+     * @see TocMaker#buildMainChainRestriction(List, String)
+     * @verifies return null if chain holds no other iddoc
+     */
+    @Test
+    void buildMainChainRestriction_shouldReturnNullIfChainHoldsNoOtherIddoc() {
+        // Returning null is what tells the caller there is nothing on the path below this document, so the
+        // query can be skipped altogether instead of being restricted to an empty set
+        Assertions.assertNull(TocMaker.buildMainChainRestriction(Arrays.asList("2"), "2"));
+        Assertions.assertNull(TocMaker.buildMainChainRestriction(Arrays.asList((String) null), "2"));
+    }
+
+    /**
+     * @see TocMaker#buildMainChainRestriction(List, String)
+     * @verifies return null if chain is null or empty
+     */
+    @Test
+    void buildMainChainRestriction_shouldReturnNullIfChainIsNullOrEmpty() {
+        Assertions.assertNull(TocMaker.buildMainChainRestriction(null, "2"));
+        Assertions.assertNull(TocMaker.buildMainChainRestriction(new ArrayList<>(), "2"));
+    }
+
+    /**
+     * Generates the TOC of volume 306653648_1891 with its anchor forced to be calendar-eligible.
+     *
+     * <p>
+     * Two config values are overridden to reproduce a production newspaper setup on the test data:
+     *
+     * <ul>
+     * <li>The test index stores the anchor's docstruct as lower case "newspaper" while the test config whitelists "Newspaper", so
+     * {@link TocMaker#isCalendarEligibleParent(SolrDocument)} would never fire here. The precondition assertion below guarantees the calendar branch
+     * really is the code path under test rather than the regular sibling build.</li>
+     * <li>The ancestor identifier fields are reduced to PI_PARENT, which is what the reference config ships. buildToc builds one tree per ancestor
+     * field and returns the largest one; with the test config's additional MD_OTHERANCESTOR and GROUPID_1 fields, their ancestor lists come out empty
+     * and the resulting trees are rooted in the volume itself, which would mask an incomplete anchor tree.</li>
+     * </ul>
+     *
+     * <p>
+     * Generation goes through {@link TOC#generate(StructElement, boolean, String, int)} rather than calling {@link TocMaker} directly, so the tests
+     * exercise the same entry point ActiveDocumentBean uses.
+     *
+     * @param addAllSiblings value for the listSiblingRecords behaviour under test
+     * @return the generated TOC
+     * @throws Exception on Solr, config or permission failures
+     */
+    private static TOC buildTocWithCalendarEligibleAnchor(boolean addAllSiblings) throws Exception {
+        Configuration originalConfig = DataManager.getInstance().getConfiguration();
+        Configuration configSpy = Mockito.spy(originalConfig);
+        Mockito.doReturn(List.of("newspaper")).when(configSpy).getCalendarDocStructTypes();
+        // Fresh mutable list per call because buildToc prepends PI_PARENT to the returned list when absent
+        Mockito.doAnswer(invocation -> new ArrayList<>(List.of(SolrConstants.PI_PARENT))).when(configSpy).getAncestorIdentifierFields();
+        DataManager.getInstance().injectConfiguration(configSpy);
+        try {
+            SolrDocument anchorDoc = DataManager.getInstance().getSearchIndex().getFirstDoc(SolrConstants.PI + ":306653648", null);
+            Assertions.assertNotNull(anchorDoc);
+            Assertions.assertTrue(TocMaker.isCalendarEligibleParent(anchorDoc),
+                    "Test precondition: anchor 306653648 must be calendar-eligible for this test to exercise the calendar branch");
+
+            String iddoc = DataManager.getInstance().getSearchIndex().getIddocFromIdentifier("306653648_1891");
+            Assertions.assertNotNull(iddoc);
+            TOC toc = new TOC();
+            toc.generate(new StructElement(iddoc), addAllSiblings, "image/tiff", 1);
+            Assertions.assertFalse(toc.getTocElements().isEmpty());
+            return toc;
+        } finally {
+            DataManager.getInstance().injectConfiguration(originalConfig);
+        }
     }
 }

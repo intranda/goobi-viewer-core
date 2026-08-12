@@ -144,6 +144,9 @@ public final class TocMaker {
      * @should throw IllegalArgumentException if structElement is null
      * @should throw IllegalArgumentException if toc is null
      * @should render unique PIs that match the existing anchor structure invariant
+     * @should include loaded volume and its structure when anchor is calendar eligible
+     * @should restrict sibling query to navigation path when anchor is calendar eligible
+     * @should still list sibling volumes of calendar eligible anchor when siblings requested
      * @return a linked map of view names to their TOC element lists, preserving insertion order
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -758,7 +761,7 @@ public final class TocMaker {
      *
      * @param ret list to which TOC elements are added
      * @param seen set of already-added elements used for deduplication
-     * @param mainDocumentChain IDDOC path from the top ancestor to the loaded record
+     * @param mainDocumentChain IDDOC path from the loaded record (index 0) up to the top ancestor
      * @param doc Solr document of the current node to process
      * @param level current depth level in the TOC tree
      * @param addChildren whether to recurse into child struct elements
@@ -842,14 +845,30 @@ public final class TocMaker {
             if (mainDocumentChain != null && !mainDocumentChain.contains(iddoc)) {
                 return;
             }
-            // Skip the sibling enumeration when this doc is itself a calendar-eligible anchor
-            // or group. The sidebar calendar widget already provides date-based navigation
-            // between siblings; loading thousands of issues here just to recurse into one is
-            // pure waste. Whitelist-gated, so non-calendar serials are unaffected.
-            // Profiling on a 23.705-issue newspaper showed this single sibling query ate 2.6s
-            // of a 3.5s navigation request.
-            if (isCalendarEligibleParent(doc)) {
-                return;
+            // Do not enumerate the siblings when this doc is itself a calendar-eligible anchor or
+            // group. The sidebar calendar widget already provides date-based navigation between
+            // siblings; loading thousands of issues here just to recurse into one is pure waste.
+            // Whitelist-gated, so non-calendar serials are unaffected. Profiling on a 23.705-issue
+            // newspaper showed this single sibling query ate 2.6s of a 3.5s navigation request.
+            //
+            // Only the enumeration is waste, though: the walk down to the loaded record still has to
+            // happen, otherwise the record itself never becomes a TOCElement and everything keyed on
+            // it (TOC.getLabel(pi), and through it the title bar label) falls back to the untranslated
+            // DOCSTRCT. Restricting the query to the IDDOCs on the navigation path keeps the walk
+            // intact and lets Solr drop the thousands of siblings server-side, so the same query
+            // returns at most as many documents as the chain is long.
+            //
+            // Restricting is only sound while the caller does not want the siblings listed: the loop
+            // below discards off-path children in that case anyway, so the narrower query cannot change
+            // the resulting TOC. With listSiblingRecords enabled the siblings are the requested output
+            // and the query has to stay open, even for a calendar-eligible anchor.
+            String mainChainRestriction = null;
+            if (!addAllSiblings && isCalendarEligibleParent(doc)) {
+                mainChainRestriction = buildMainChainRestriction(mainDocumentChain, iddoc);
+                if (mainChainRestriction == null) {
+                    // Nothing below this doc on the navigation path, so there is nothing to walk into
+                    return;
+                }
             }
             String queryValue;
             if (ancestorField.startsWith(SolrConstants.IDDOC)) {
@@ -873,6 +892,7 @@ public final class TocMaker {
                         .append(SolrConstants.PI)
                         .append(":*")
                         .append(filterQuery)
+                        .append(mainChainRestriction != null ? mainChainRestriction : "")
                         .toString();
                 logger.trace("Sibling query: {}", siblingQuery);
                 SolrDocumentList childDocs = DataManager.getInstance()
@@ -895,6 +915,42 @@ public final class TocMaker {
                 }
             }
         }
+    }
+
+    /**
+     * Builds an additional query clause that narrows a sibling query down to the documents on the current navigation path.
+     *
+     * <p>
+     * Appending this to the sibling query is what lets the walk continue into a calendar-eligible parent's children without enumerating them: the
+     * clause is evaluated by Solr, so the response holds at most as many documents as {@code mainDocumentChain} is long instead of every issue of a
+     * newspaper. All other constraints of the sibling query - the ancestor field clause above all - stay in place, so a document is still only ever
+     * attached below its real parent.
+     *
+     * <p>
+     * Note that {@code mainDocumentChain} accumulates the ancestors of every configured ancestor identifier field in one list, so it may well contain
+     * IDDOCs that are not children of {@code parentIddoc} at all. Those simply fail the query's ancestor field clause.
+     *
+     * @param mainDocumentChain IDDOC path from the loaded record (index 0) up to the top ancestor
+     * @param parentIddoc IDDOC of the document whose children are being queried; excluded from the clause
+     * @return the query clause, or null if the chain holds no IDDOC other than {@code parentIddoc}
+     * @should return clause for every chain iddoc except the parent
+     * @should return null if chain holds no other iddoc
+     * @should return null if chain is null or empty
+     */
+    static String buildMainChainRestriction(List<String> mainDocumentChain, String parentIddoc) {
+        if (mainDocumentChain == null || mainDocumentChain.isEmpty()) {
+            return null;
+        }
+
+        List<String> values = mainDocumentChain.stream()
+                .filter(chainIddoc -> chainIddoc != null && !chainIddoc.equals(parentIddoc))
+                .map(chainIddoc -> "\"" + chainIddoc + "\"")
+                .toList();
+        if (values.isEmpty()) {
+            return null;
+        }
+
+        return " +" + SolrConstants.IDDOC + ":(" + String.join(" OR ", values) + ")";
     }
 
     /**
