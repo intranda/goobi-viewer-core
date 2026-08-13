@@ -25,27 +25,59 @@
         <h:panelGroup
             layout="block"
             styleClass="active-facets-badges #{cc.attrs.mode eq 'combined' ? '' : 'widget widget-active-facets'}"
-            rendered="#{not empty searchBean.facets.activeFacets}">
+            rendered="#{not empty searchBean.facets.activeFacets or searchBean.explicitSearchPerformed}">
             <ui:fragment rendered="#{cc.attrs.mode ne 'combined'}">
                 <div class="widget__topbar widget-active-facets__topbar">
                     <h2 class="widget__title widget-active-facets__title">#{msg.search__active_facets__title}</h2>
-                    <h:outputLink
-                        styleClass="widget-active-facets__reset"
-                        value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/-/#{navigationHelper.subThemeQueryParam}"
-                        title="#{msg.search__combined_facets__reset_all}">
-                        <util:icon-text
-                            icon="x"
-                            iconSvgClass="widget-active-facets__reset-icon-svg"
-                            text="#{msg.search__combined_facets__reset_all}"
-                            textClass="widget-active-facets__reset-label" />
-                    </h:outputLink>
+                    <h:form>
+                        <h:commandLink
+                            styleClass="widget-active-facets__reset"
+                            action="#{searchBean.resetAllActiveFiltersAction}"
+                            title="#{msg.search__combined_facets__reset_all}">
+                            <util:icon-text
+                                icon="x"
+                                iconSvgClass="widget-active-facets__reset-icon-svg"
+                                text="#{msg.search__combined_facets__reset_all}"
+                                textClass="widget-active-facets__reset-label" />
+                        </h:commandLink>
+                    </h:form>
                 </div>
             </ui:fragment>
             <h:form styleClass="#{cc.attrs.mode eq 'combined' ? '' : 'widget__body widget-active-facets__body'}">
                 <ul class="active-facets-badges__list">
+                    <c:if test="#{searchBean.explicitSearchPerformed}">
+                        <li class="active-facets-badges__list-item">
+                            <h:commandLink
+                                styleClass="active-facets-badges__badge"
+                                action="#{searchBean.removeSearchTermAction}">
+                                <f:passThroughAttribute
+                                    name="data-toggle"
+                                    value="tooltip" />
+                                <f:passThroughAttribute
+                                    name="data-placement"
+                                    value="top" />
+                                <f:passThroughAttribute
+                                    name="data-original-title"
+                                    value="#{msg.removeFacet}" />
+                                <f:passThroughAttribute
+                                    name="data-tooltip-muted"
+                                    value="true" />
+                                <span class="sr-only">#{msg.removeFacet}: </span>
+                                <span class="active-facets-badges__badge-field">#{msg.search__active_facets__search_term}:</span>
+                                <span class="active-facets-badges__badge-label">#{searchBean.searchString}</span>
+                                <span
+                                    class="active-facets-badges__badge-remove"
+                                    aria-hidden="true">
+                                    <util:icon
+                                        icon="x"
+                                        svgClass="active-facets-badges__badge-remove-icon-svg" />
+                                </span>
+                            </h:commandLink>
+                        </li>
+                    </c:if>
                     <c:forEach
                         items="#{searchBean.facets.activeFacets}"
-                        var="facet">  
+                        var="facet">
                         <li class="active-facets-badges__list-item">
                             <h:commandLink
                                 styleClass="active-facets-badges__badge #{facet.excluded ? '-excluded' : ''}"

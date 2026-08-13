@@ -1969,10 +1969,46 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("removeFacetAction: {}", facetQuery);
         //reset the search result list to page one since the result list will necessarily change when removing the facet
         setCurrentPage(1);
-        //redirect to current cms page if this action takes place on a cms page
+        facets.removeFacetAction(facetQuery);
+        return redirectAfterFilterChange();
+    }
+
+    /**
+     * Clears the currently entered simple search term while keeping all active facets intact.
+     *
+     * @return Navigation outcome
+     * @should reset searchString correctly
+     */
+    public String removeSearchTermAction() {
+        logger.trace("removeSearchTermAction");
+        //reset the search result list to page one since the result list will necessarily change when removing the search term
+        setSearchString("");
+        return redirectAfterFilterChange();
+    }
+
+    /**
+     * Clears all active facets as well as the currently entered simple search term.
+     *
+     * @return Navigation outcome
+     * @should reset facets and searchString correctly
+     */
+    public String resetAllActiveFiltersAction() {
+        logger.trace("resetAllActiveFiltersAction");
+        facets.resetActiveFacets();
+        setSearchString("");
+        return redirectAfterFilterChange();
+    }
+
+    /**
+     * Shared redirect logic for actions that alter the active facets and/or the search term (e.g. removing a single facet, removing the search
+     * term or resetting all filters at once). Redirects to the current CMS page, the browse page or the appropriate search page, depending on
+     * where the action was triggered.
+     *
+     * @return Navigation outcome
+     */
+    private String redirectAfterFilterChange() {
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
-            facets.removeFacetAction(facetQuery);
             String url = PrettyUrlTools.getAbsolutePageUrl(StringConstants.PRETTY_CMSSEARCH6, oPath.get().getCmsPage().getId(),
                     getActiveContext(), this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(),
                     this.getFacets().getActiveFacetString());
@@ -1980,7 +2016,6 @@ public class SearchBean implements SearchInterface, Serializable {
             PrettyUrlTools.redirectToUrl(url);
             return "";
         } else if (PageType.browse.equals(oPath.map(ViewerPath::getPageType).orElse(PageType.other))) {
-            facets.removeFacetAction(facetQuery);
             return redirectToSearchUrl(StringConstants.PRETTY_BROWSE4);
         } else {
             String ret = StringConstants.PRETTY_NEWSEARCH5;
@@ -1994,7 +2029,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 default:
                     break;
             }
-            facets.removeFacetAction(facetQuery);
             return redirectToSearchUrl(ret);
         }
     }
@@ -3065,12 +3099,56 @@ public class SearchBean implements SearchInterface, Serializable {
         return currentSearch != null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should return true if search string set
+     * @should return false if search string empty
+     */
     @Override
     public boolean isExplicitSearchPerformed() {
         // getExactSearchString() may return null; guard before replace() to avoid a NullPointerException (java:S2259)
         String exactSearchString = getExactSearchString();
         return exactSearchString != null && StringUtils.isNotBlank(exactSearchString.replace("-", ""));
+    }
+
+    /**
+     * Checks whether at least one of the configured facet fields (regular, range or geo) would actually render selectable content for the
+     * current search result. Used to hide the "available filters" section header when no facet has anything to offer.
+     *
+     * @return true if at least one facet field has content to display; false otherwise
+     * @should return true if a field facet has sufficient values
+     * @should return true if an active facet exists for a field
+     * @should return true if the geo facet map is available
+     * @should return false if no facet has content
+     */
+    public boolean isHasAvailableFacetFields() {
+        if (facets == null) {
+            return false;
+        }
+        String language = navigationHelper != null ? navigationHelper.getLocaleString() : null;
+        List<String> rangeFields = facets.getAllRangeFacetFields();
+        List<String> geoFields = facets.getGeoFacetFields();
+        for (String field : facets.getAllFacetFields()) {
+            if (rangeFields.contains(field)) {
+                try {
+                    if (facets.isHasRangeFacets() && !facets.getValueRange(field).isEmpty()) {
+                        return true;
+                    }
+                } catch (PresentationException | IndexUnreachableException e) {
+                    logger.warn(e.getMessage());
+                }
+            } else if (geoFields.contains(field)) {
+                if (isShowGeoFacetMap()) {
+                    return true;
+                }
+            } else if (!DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget(field)
+                    && !facets.isHasWrongLanguageCode(field, language)
+                    && (facets.isFacetListSizeSufficient(field) || !facets.getActiveFacetsForField(field).isEmpty())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

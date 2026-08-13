@@ -28,6 +28,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -1576,5 +1577,110 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         }
 
         Assertions.assertNull(searchBean.getAdvancedSearchOrigin());
+    }
+
+    /**
+     * @see SearchBean#isExplicitSearchPerformed()
+     * @verifies return true if search string set
+     */
+    @Test
+    void isExplicitSearchPerformed_shouldReturnTrueIfSearchStringSet() {
+        searchBean.setSearchString("test");
+        Assertions.assertTrue(searchBean.isExplicitSearchPerformed());
+    }
+
+    /**
+     * @see SearchBean#isExplicitSearchPerformed()
+     * @verifies return false if search string empty
+     */
+    @Test
+    void isExplicitSearchPerformed_shouldReturnFalseIfSearchStringEmpty() {
+        searchBean.setSearchString("");
+        Assertions.assertFalse(searchBean.isExplicitSearchPerformed());
+    }
+
+    /**
+     * @see SearchBean#removeSearchTermAction()
+     * @verifies reset searchString correctly
+     */
+    @Test
+    void removeSearchTermAction_shouldResetSearchStringCorrectly() throws Exception {
+        searchBean.setSearchString("test");
+        searchBean.getFacets().setActiveFacetString("DC:sonstige");
+        Assertions.assertEquals(1, searchBean.getFacets().getActiveFacets().size());
+
+        searchBean.removeSearchTermAction();
+
+        assertEquals("", searchBean.getSearchString());
+        Assertions.assertFalse(searchBean.isExplicitSearchPerformed());
+        // Active facets must remain untouched
+        Assertions.assertEquals(1, searchBean.getFacets().getActiveFacets().size());
+    }
+
+    /**
+     * @see SearchBean#resetAllActiveFiltersAction()
+     * @verifies reset facets and searchString correctly
+     */
+    @Test
+    void resetAllActiveFiltersAction_shouldResetFacetsAndSearchStringCorrectly() throws Exception {
+        searchBean.setSearchString("test");
+        searchBean.getFacets().setActiveFacetString("DC:sonstige");
+        Assertions.assertEquals(1, searchBean.getFacets().getActiveFacets().size());
+
+        searchBean.resetAllActiveFiltersAction();
+
+        assertEquals("", searchBean.getSearchString());
+        Assertions.assertFalse(searchBean.isExplicitSearchPerformed());
+        Assertions.assertTrue(searchBean.getFacets().getActiveFacets().isEmpty());
+    }
+
+    /**
+     * @see SearchBean#isHasAvailableFacetFields()
+     * @verifies return false if no facet has content
+     */
+    @Test
+    void isHasAvailableFacetFields_shouldReturnFalseIfNoFacetHasContent() {
+        Assertions.assertFalse(searchBean.isHasAvailableFacetFields());
+    }
+
+    /**
+     * @see SearchBean#isHasAvailableFacetFields()
+     * @verifies return true if a field facet has sufficient values
+     */
+    @Test
+    void isHasAvailableFacetFields_shouldReturnTrueIfAFieldFacetHasSufficientValues() {
+        List<IFacetItem> items = new ArrayList<>(List.of(new FacetItem("MD_PLACEPUBLISH:a", false), new FacetItem("MD_PLACEPUBLISH:b", false)));
+        searchBean.getFacets().getAvailableFacets().put("MD_PLACEPUBLISH", items);
+        Assertions.assertTrue(searchBean.isHasAvailableFacetFields());
+    }
+
+    /**
+     * @see SearchBean#isHasAvailableFacetFields()
+     * @verifies return true if an active facet exists for a field
+     */
+    @Test
+    void isHasAvailableFacetFields_shouldReturnTrueIfAnActiveFacetExistsForAField() {
+        searchBean.getFacets().setActiveFacetString("MD_PLACEPUBLISH:foo");
+        Assertions.assertTrue(searchBean.isHasAvailableFacetFields());
+    }
+
+    /**
+     * @see SearchBean#isHasAvailableFacetFields()
+     * @verifies return true if the geo facet map is available
+     */
+    @Test
+    void isHasAvailableFacetFields_shouldReturnTrueIfTheGeoFacetMapIsAvailable() throws Exception {
+        NavigationHelper navHelper = mock(NavigationHelper.class);
+        when(navHelper.getSubThemeDiscriminatorQuerySuffix()).thenReturn("");
+        when(navHelper.getLocale()).thenReturn(Locale.ENGLISH);
+        searchBean.setNavigationHelper(navHelper);
+        searchBean.executeSearch();
+
+        String geoJson =
+                "{\"type\":\"rectangle\",\"vertices\":[[52.27468490157105,12.831527289994273],[52.78227376368535,12.831527289994273],"
+                        + "[52.78227376368535,13.864873763618117],[52.27468490157105,13.864873763618117],[52.27468490157105,12.831527289994273]]}";
+        searchBean.getFacets().setGeoFacetFeature(geoJson);
+
+        Assertions.assertTrue(searchBean.isHasAvailableFacetFields());
     }
 }

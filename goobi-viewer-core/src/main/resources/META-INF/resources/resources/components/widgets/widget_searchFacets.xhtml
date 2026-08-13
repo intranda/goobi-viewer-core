@@ -33,23 +33,24 @@
                 <ui:fragment rendered="#{cc.attrs.mode eq 'combined'}">
                     <div class="combined-facets__head">
                         <h2 class="combined-facets__title">#{msg.search__combined_facets__title}</h2>
-                        <h:outputLink
-                            styleClass="combined-facets__reset"
-                            rendered="#{not empty searchBean.facets.activeFacets}"
-                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/-/#{navigationHelper.subThemeQueryParam}"
-                            title="#{msg.search__combined_facets__reset_all}">
-                            <util:icon-text
-                                icon="x"
-                                iconSvgClass="combined-facets__reset-icon-svg"
-                                text="#{msg.search__combined_facets__reset_all}"
-                                textClass="combined-facets__reset-label" />
-                        </h:outputLink>
+                        <h:form rendered="#{not empty searchBean.facets.activeFacets or searchBean.explicitSearchPerformed}">
+                            <h:commandLink
+                                styleClass="combined-facets__reset"
+                                action="#{searchBean.resetAllActiveFiltersAction}"
+                                title="#{msg.search__combined_facets__reset_all}">
+                                <util:icon-text
+                                    icon="x"
+                                    iconSvgClass="combined-facets__reset-icon-svg"
+                                    text="#{msg.search__combined_facets__reset_all}"
+                                    textClass="combined-facets__reset-label" />
+                            </h:commandLink>
+                        </h:form>
                     </div>
                 </ui:fragment>
                 <searchFacetsComponent:activeFacetsBadges
                     mode="#{cc.attrs.mode}"
                     cmsPage="#{cc.attrs.cmsPage}" />
-                <ui:fragment rendered="#{cc.attrs.mode ne 'combined' and not empty searchBean.facets.allFacetFields}">
+                <ui:fragment rendered="#{cc.attrs.mode ne 'combined' and searchBean.hasAvailableFacetFields}">
                     <h2 class="widget__title widget-search-facets__available-title">#{msg.search__facets__available_title}</h2>
                 </ui:fragment>
                 <c:forEach
