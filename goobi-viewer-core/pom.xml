@@ -1106,14 +1106,17 @@
 						<phase>generate-test-resources</phase>
 						<configuration>
 							<!--
-							    Using `install` rather than `ci` because this
-							    repository's .gitignore excludes package-lock.json,
-							    so a committed lockfile is not guaranteed in CI
-							    checkouts. The "ignore-scripts" flag suppresses
-							    the package's `prepare` step that installs lefthook
-							    git hooks, a dev convenience irrelevant in CI.
+							    Using `ci` so the build installs exactly the
+							    committed package-lock.json: it aborts when the
+							    lockfile drifted from package.json instead of
+							    silently resolving newer versions, and it wipes
+							    node_modules beforehand, so a reused CI workspace
+							    cannot carry stale packages into the build. The
+							    "ignore-scripts" flag suppresses the package's
+							    `prepare` step that installs lefthook git hooks,
+							    a dev convenience irrelevant in CI.
 							-->
-							<arguments>install --no-audit --no-fund --ignore-scripts</arguments>
+							<arguments>ci --no-audit --no-fund --ignore-scripts</arguments>
 						</configuration>
 					</execution>
 					<execution>
