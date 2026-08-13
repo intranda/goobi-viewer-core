@@ -14,6 +14,15 @@
 	<rewrite match="/admin/record/?$" substitute="/admin/record/new/"/>
 	<rewrite match="/admin/cms/maps/edit/?$" substitute="/admin/cms/maps/"/>
 
+	<!-- The API documentation page moved from /api/swagger/ to /api/docs/ when the
+	     renderer was switched from Swagger UI to Scalar. Redirect the old URL so
+	     existing links and bookmarks keep working with a single canonical target.
+	     Both rules also cover the form without a trailing slash, which the
+	     /api/-excluding rule above deliberately leaves alone - for the docs page
+	     that only ever answers GET requests, the redirect is harmless. -->
+	<rewrite match="^/api/swagger/?$" substitute="/api/docs/"/>
+	<rewrite match="^/api/docs$" substitute="/api/docs/"/>
+
 	<!-- GET parameter example -->
 	<!-- <query-param name="language"> #{bean.language} </query-param> -->
 
@@ -1441,9 +1450,10 @@
 	</url-mapping>
 	
 
-	<!-- Swagger OpenApi -->
-	<url-mapping id="swagger">
-		<pattern value="/api/swagger/" />
+	<!-- OpenAPI documentation. The former /api/swagger/ is redirected here by a
+	     rewrite rule at the top of this file. -->
+	<url-mapping id="apiDocs">
+		<pattern value="/api/docs/" />
 		<view-id value="/restApi.xhtml" />
 	</url-mapping>
 
