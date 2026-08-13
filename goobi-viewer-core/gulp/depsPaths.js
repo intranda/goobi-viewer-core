@@ -263,12 +263,35 @@ const depsPathsJS = [
     },
 
     {
-        // SWAGGER-UI
+        // SCALAR API REFERENCE
+        // The standalone build is self-contained: it references no chunk files
+        // and injects its own styles, so there is no CSS counterpart below.
+        //
+        // Checklist when bumping @scalar/api-reference:
+        // 1. Re-grep the new standalone.js for `*.scalar.com` hosts - a version
+        //    bump can add new outbound calls that withDefaultFonts/hideClientButton/
+        //    showDeveloperTools do not cover yet. Pay particular attention to the
+        //    proxy default: 1.64.1 falls back to proxy.scalar.com only for
+        //    `layout: 'web'`, which we never use, and that is the one place where an
+        //    outbound call can appear without any explicit configuration.
+        // 2. Verify requestBuilder still exposes path: {variables, raw} and that
+        //    the beforeRequest hook still runs before the payload is built - Scalar
+        //    documents onBeforeRequest itself as an "Experimental API", and a break
+        //    here fails silently (POST requests just stop reaching their resource).
+        //    See viewerJS.apiDocs.js.
+        // 3. libs/scalar/LICENSE.txt is hand-written, not copied from node_modules
+        //    (the package ships no LICENSE file) - diff it against the upstream
+        //    license by hand on every bump.
+        // 4. Check whether Scalar still hides elements behind Tailwind's
+        //    `hidden <variant>:<display>` pattern. viewer.min.css carries a global
+        //    `.hidden { display: none !important }`, which beats those rules and
+        //    collapsed the whole navigation sidebar until css/misc/rest_api.css
+        //    re-asserted them. New occurrences need the same treatment there.
         expand: true,
         cwd: nodeModules,
-        src: ['swagger-ui-dist/swagger-ui-bundle.js*'],
+        src: ['@scalar/api-reference/dist/browser/standalone.js'],
         flatten: true,
-        dest: `${jsLibsDir}swagger/`,
+        dest: `${jsLibsDir}scalar/`,
     },
 
     {
@@ -472,15 +495,6 @@ const depsPathsCSS = [
         src: '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css',
         flatten: true,
         dest: `${cssLibsDir}mapbox/geocoder/`,
-    },
-
-    {
-        // SWAGGER-UI
-        expand: true,
-        cwd: nodeModules,
-        src: ['swagger-ui-dist/swagger-ui.css*'],
-        flatten: true,
-        dest: `${cssLibsDir}swagger/`,
     },
 
     {
