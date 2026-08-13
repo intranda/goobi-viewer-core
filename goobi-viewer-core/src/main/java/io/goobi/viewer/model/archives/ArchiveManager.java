@@ -70,7 +70,9 @@ public class ArchiveManager implements Serializable {
 
     private DatabaseState databaseState = DatabaseState.NOT_INITIALIZED;
 
-    private Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
+    // volatile so that the map initArchives() publishes is visible to the request threads reading it; the map is
+    // replaced as a whole instead of being locked, because initArchives() performs blocking Solr queries
+    private volatile Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
 
     private Map<String, NodeType> nodeTypes;
 
@@ -145,8 +147,11 @@ public class ArchiveManager implements Serializable {
             return false;
         }
         //initialize archives with 'null' archive tree values
-        Map<ArchiveResource, ArchiveTree> cachedDatabases = this.archives;
-        this.archives = new HashMap<>();
+        // Work on a copy of the currently published map and assign the result to the field only once it is complete.
+        // Emptying the field first left every concurrent reader without any archive for the duration of the
+        // getPossibleDatabases() query below, so getArchive() returned null for archives that were in fact loaded.
+        Map<ArchiveResource, ArchiveTree> cachedDatabases = new HashMap<>(this.archives);
+        Map<ArchiveResource, ArchiveTree> updatedArchives = new HashMap<>();
         boolean updated = false;
         for (ArchiveResource db : eadParser.getPossibleDatabases()) {
             if (db == null) {
@@ -157,17 +162,18 @@ public class ArchiveManager implements Serializable {
             ArchiveTree cachedTree = cachedResource != null ? cachedDatabases.get(cachedResource) : null;
             if (cachedTree == null) {
                 logger.trace("Archive '{}' is not yet loaded.", db.getResourceId());
-                this.archives.put(db, null);
+                updatedArchives.put(db, null);
                 updated = true;
             } else if (isOutdated(cachedResource, db)) {
                 logger.trace("Archive '{}' is outdated, (re)loading...", db.getResourceId());
-                this.archives.put(db, null);
+                updatedArchives.put(db, null);
                 updated = true;
             } else {
-                this.archives.put(cachedResource, cachedTree);
+                updatedArchives.put(cachedResource, cachedTree);
                 cachedDatabases.remove(cachedResource);
             }
         }
+        this.archives = updatedArchives;
         // cached databases that are included in the response are removed from the cachedDatabases list.
         // If it is still not empty at this point, databases were removed
         updated = updated || !cachedDatabases.isEmpty();
@@ -591,6 +597,8 @@ public class ArchiveManager implements Serializable {
     /**
      * Checks the list of ead archives for updates. An update occurs if either the "lastModifiedDate" of an archive has changed since the last
      * request, or if an archive was added or removed. In these cases, the list of records associated with an archive entry is updated as well
+     *
+     * @should keep already loaded archives resolvable while the archive list is reloaded
      */
     public void updateArchiveList() {
         logger.trace("updateArchiveList"); //NOSONAR Debug
