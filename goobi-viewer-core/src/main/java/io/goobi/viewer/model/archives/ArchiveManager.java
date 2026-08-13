@@ -72,7 +72,7 @@ public class ArchiveManager implements Serializable {
 
     // volatile so that the map initArchives() publishes is visible to the request threads reading it; the map is
     // replaced as a whole instead of being locked, because initArchives() performs blocking Solr queries
-    private volatile Map<ArchiveResource, ArchiveTree> archives = new HashMap<>();
+    private volatile Map<ArchiveResource, ArchiveTree> archives = new HashMap<>(); //NOSONAR S3077: whole-map swap, see comment above
 
     private Map<String, NodeType> nodeTypes;
 

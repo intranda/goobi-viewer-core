@@ -1020,9 +1020,10 @@ public final class AccessConditionUtils {
      *
      * @param identifier The PI of the work to check
      * @param request The HttpRequest which may provide a {@link jakarta.servlet.http.HttpSession} to store the access map
-     * @return {@link AccessPermission}
+     * @return {@link AccessPermission}; denied if no permission could be determined
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should return denied permission if identifier empty
      */
     public static AccessPermission checkContentFileAccessPermission(String identifier, HttpServletRequest request)
             throws IndexUnreachableException, DAOException {
@@ -1060,6 +1061,13 @@ public final class AccessConditionUtils {
             } catch (PresentationException e) {
                 logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
             }
+        }
+
+        // Fail closed if no permission could be determined (blank identifier or PresentationException while querying Solr). Callers
+        // dereference the result directly, so returning null here caused a NullPointerException. The denial is deliberately not
+        // written to the session, since a transient Solr failure must not deny access for the rest of the session.
+        if (ret == null) {
+            return AccessPermission.denied();
         }
 
         // Add permission check outcome to user session

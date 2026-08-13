@@ -858,9 +858,10 @@ public final class StringTools {
 
         // Collapse separators left behind by an empty placeholder (case: blank logId)
         filename = filename.replaceAll("[_-]{2,}", "_"); // duplicate separators -> single
-        // Possessive quantifier [_-]++ avoids super-linear backtracking on long separator runs without a dot (java:S8786);
-        // semantically identical because '.' is not in the [_-] class, so no backtracking is ever needed here.
-        filename = filename.replaceAll("[_-]++\\.", ".");  // trailing separator before extension
+        // Strips a trailing separator before the extension. The possessive quantifier [_-]++ avoids super-linear backtracking on long
+        // separator runs without a dot; it is semantically identical here because '.' is not in the [_-] class, so the engine never
+        // needs to give characters back. Sonar keeps reporting java:S8786 on the possessive form, which is a false positive.
+        filename = filename.replaceAll("[_-]++\\.", "."); //NOSONAR S8786 false positive: possessive quantifier cannot backtrack
         filename = filename.replaceAll("^[_-]+", "");      // leading separator
 
         return filename;
