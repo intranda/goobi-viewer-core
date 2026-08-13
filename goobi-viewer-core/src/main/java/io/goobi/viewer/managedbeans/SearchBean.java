@@ -3126,7 +3126,9 @@ public class SearchBean implements SearchInterface, Serializable {
         if (facets == null) {
             return false;
         }
-        String language = navigationHelper != null ? navigationHelper.getLocaleString() : null;
+        // Resolve the language via BeanUtils (as in setSortString() etc.) instead of the injected navigationHelper:
+        // the helper may be absent, and SolrTools.isHasWrongLanguageCode() rejects a null language with an IllegalArgumentException
+        String language = BeanUtils.getLocale().getLanguage();
         List<String> rangeFields = facets.getAllRangeFacetFields();
         List<String> geoFields = facets.getGeoFacetFields();
         for (String field : facets.getAllFacetFields()) {
