@@ -292,7 +292,10 @@
 					<skipProvidedScope>true</skipProvidedScope>
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 					<knownExploitedEnabled>false</knownExploitedEnabled>
-					<nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
+					<!-- Kept in sync with the core module's configuration. The connector has no
+						 package.json of its own, so this is a no-op here, but a divergent value
+						 would suggest the npm analysis is deliberately handled differently. -->
+					<nodeAuditAnalyzerEnabled>true</nodeAuditAnalyzerEnabled>
 					<format>ALL</format>
 					<skipTestScope>true</skipTestScope>
 					<skip>${skipDependencyCheck}</skip>

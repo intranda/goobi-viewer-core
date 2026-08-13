@@ -1323,7 +1323,12 @@
 					<!--failBuildOnCVSS>5.0</failBuildOnCVSS-->
 					<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
 					<knownExploitedEnabled>false</knownExploitedEnabled>
-					<nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled>
+					<!-- Enabled on purpose: without the npm audit API the ~1500 packages from
+						 package-lock.json are only matched via CPE against the NVD, which almost
+						 never hits for npm. A comparison run found 1 npm issue with the analyzer
+						 off vs. 21 (11 high) reported by `npm audit`, among them runtime deps
+						 like @xmldom/xmldom, fast-xml-parser and riot. -->
+					<nodeAuditAnalyzerEnabled>true</nodeAuditAnalyzerEnabled>
 					<skipProvidedScope>true</skipProvidedScope>
 					<skipTestScope>true</skipTestScope>
 					<format>ALL</format>
