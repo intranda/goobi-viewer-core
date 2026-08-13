@@ -1,83 +1,68 @@
-.swagger-api__wrapper {
+/* Mount container for the Scalar API reference. Scalar ships its own styles
+   inside the standalone bundle; only the container geometry belongs here. */
+#scalar-api-reference {
     width: 100%;
-    max-width: 1460px;
-    margin: 0 auto;
-    box-sizing: border-box;
-}
-.swagger-api__intro-wrapper {
-    padding: 40px;
-    background: #f5f5f5;
-    border: 1px solid gray;
-    border-bottom: none;
-    border-top: none;
+    min-height: 100vh;
 }
 
-.swagger-api__heading {
-    font-size: 40px;
+/* viewer.min.css sets `html { font-size: 62.5% }` so the rest of the viewer can
+   treat 1rem as 10px. Scalar keeps 23 rem-based rules, which then resolve to
+   62.5% of their intended size - the content container shrinks from 1536px to
+   960px and the markdown headings end up smaller than the body text. Resetting
+   the root here is not free: templateBlankUnstyled.html still renders
+   cookieBanner.xhtml, maintenanceMode.xhtml and <h:messages> (the
+   alert alert-success/-danger boxes) on this page, and their rem-based rules
+   (e.g. .cookie-banner__info{padding:4rem 4rem}, .alert{padding:1.2rem 2rem})
+   render about 1.6x too large as a result. This is accepted because most themes
+   have shipped the exact same html { font-size: 100% } reset for years on the
+   Mirador page (templateBlankUnstyled.html, the ui:fragment bound to
+   currentPage == 'mirador'), which carries the same cookie banner. This page
+   is actually more correct than the Mirador one: the additional
+   `body { font-size: 1rem }` below keeps the body text at 16px, whereas the
+   Mirador template leaves it uncorrected and the body creeps up to 25.6px.
+
+   The same rule set also carries `html { width: 100vw; overflow-x: hidden }`.
+   The 100vw includes the scrollbar, which pushes content sideways, and the
+   overflow-x turns the root element into a scroll container - that stops
+   Scalar's `position: sticky` sidebar from sticking. Neither is needed here,
+   because this page renders nothing but the API reference. */
+html {
+    font-size: 100%;
+    width: auto;
+    overflow-x: visible;
 }
 
-.swagger-api__info {
-    margin-top: 20px;
+/* viewer.min.css ships a global utility `.hidden { display: none !important }`.
+   Scalar marks its navigation sidebar with Tailwind's responsive pair
+   `hidden lg:flex` - hidden by default, flex from a 1000px viewport up. The
+   viewer's !important wins against Scalar's plain `lg:flex` no matter the
+   specificity or order, so the sidebar stays collapsed at every width and the
+   layout's first grid column shrinks to 0px.
+
+   The rule below re-asserts Scalar's own rule - same media condition, same
+   declaration - with the !important needed to survive the collision. It does
+   not invent behaviour: outside 1000px Scalar's default still applies. Scoped
+   to the container so the viewer's `.hidden` keeps working everywhere else.
+
+   Reproduced and verified in headless Chrome at 2048px: without this rule the
+   sidebar computes to display:none / 0x0 and the grid to `0px 2033px`, with it
+   to display:flex / 288x1113 and `288px 1745px`.
+
+   If a future Scalar version hides other elements behind the same
+   `hidden <variant>:<display>` pattern, they will need the same treatment. */
+@media (width >= 1000px) {
+    #scalar-api-reference .lg\:flex {
+        display: flex !important;
+    }
 }
 
-.swagger-api__wrapper .swagger-ui .info {
-    margin-top: 0;
-}
+body {
+    font-size: 1rem;
 
-.swagger-api__options {
-    margin-top: 1rem;
-}
-
-#swagger-api__option-v1,
-#swagger-api__option-v2 {
-    font-size: 18px;
-    font-weight: 700;
-    padding: 5px 10px 5px 10px;
-    border: 2px solid #41444e;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
-    font-family: sans-serif;
-    color: #3b4151;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    margin-right: 25px;
-    background: transparent;
-    color: #222;
-    transition: all 0.2s ease;
-}
-
-/* .version { */
-/* 	background:  */
-/* } */
-
-#swagger-api__option-v1 {
-}
-
-#swagger-api__option-v2 {
-}
-
-.swagger-api__containers {
-    border: 1px solid grey;
-    border-top: none;
-}
-
-#swagger-api__option-v1.-active {
-    background: #49cc90;
-}
-#swagger-api__option-v2.-active {
-    background: #49cc90;
-}
-
-#swagger-container-v1,
-#swagger-container-v2 {
-    padding-top: 40px;
-}
-
-.swagger-api__loader-icon {
-    margin-left: 30px;
-    margin-bottom: 30px;
-}
-t #swagger-container-v2 {
-    display: none;
+    /* viewer.min.css sets `body { padding: 3rem }`. rem resolves against the root,
+       so the font-size reset above grows that frame from 30px to 48px. The API
+       reference is meant to own the full page, so drop it entirely rather than
+       scale it back. Safe for the components mentioned above: the cookie banner
+       is `position: fixed; inset: 0` and does not depend on body padding. */
+    padding: 0;
 }
