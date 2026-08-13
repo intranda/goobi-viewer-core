@@ -169,8 +169,14 @@
              jetty-security, which is absent from both dependency trees.
            - CVE-2026-6790: missing Host-header-vs-authority check - a server-side request validation
              gap; we are the client setting the Host header, not validating it.
+           - CVE-2026-10050: Digest authentication server-side component encodes passwords as ISO-8859-1.
+             The affected class is org.eclipse.jetty.security.DigestAuthenticator, which ships in
+             jetty-security - absent here. Verified by unpacking the two flagged artifacts: neither
+             jetty-io-10.0.26.jar nor http2-client-10.0.26.jar contains that class. The NVD names 10.0.31
+             as the fixed version, but the highest published 10.0.x on Maven Central is 10.0.26, so there
+             is no upgrade path within the 10 line at all.
          CVE-2025-11143 remains suppressed as before because Jetty is transitive of solr-solrj and cannot
-         be upgraded independently; re-evaluate all four once Solr ships a version with a fixed Jetty. -->
+         be upgraded independently; re-evaluate all five once Solr ships a version with a fixed Jetty. -->
     <suppress>
         <notes><![CDATA[
         file name: jetty-*.jar / http2-client-10.0.26.jar - client-only usage transitive of solr-solrj, cannot be upgraded independently
@@ -180,6 +186,21 @@
         <cve>CVE-2026-2332</cve>
         <cve>CVE-2026-5795</cve>
         <cve>CVE-2026-6790</cve>
+        <cve>CVE-2026-10050</cve>
+    </suppress>
+
+    <!-- CVE-2025-7962 is an SMTP injection in Jakarta Mail affecting angus-mail < 2.0.4. It is matched
+         against angus-activation, which is the Jakarta Activation (JAF) implementation and contains no
+         SMTP code at all. The actual mail implementation in the tree is org.eclipse.angus:jakarta.mail
+         2.0.5 (shading angus-mail 2.0.5), i.e. above the 2.0.4 fix line - the scan reports that artifact
+         without any finding. Scoped to angus-activation only so that real angus-mail findings still
+         surface. -->
+    <suppress>
+        <notes><![CDATA[
+        file name: angus-activation-2.0.3.jar - JAF implementation mismatched against the angus_mail CPE, no SMTP code
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus\-activation@.*$</packageUrl>
+        <cve>CVE-2025-7962</cve>
     </suppress>
 
 
