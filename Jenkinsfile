@@ -141,6 +141,11 @@ pipeline {
             }
           }
           steps {
+            // This stage gets its own workspace, which Jenkins reuses across builds and
+            // which the setup stage's clean never reaches. Wipe leftovers (stale target/
+            // artifacts, an outdated package-lock.json) first - it has to happen before
+            // anything is unstashed, or it would delete the unstashed content again.
+            sh 'git reset --hard HEAD && git clean -fdx'
             sh 'git submodule update --init --recursive'
             unstash 'm2-goobi-viewer'
             sh 'mkdir -p /var/maven/.m2/repository/io/goobi/viewer && cp -r m2-goobi-viewer/. /var/maven/.m2/repository/io/goobi/viewer/ || true'
@@ -163,6 +168,11 @@ pipeline {
             }
           }
           steps {
+            // This stage gets its own workspace, which Jenkins reuses across builds and
+            // which the setup stage's clean never reaches. Wipe leftovers (stale target/
+            // artifacts, an outdated package-lock.json) first - it has to happen before
+            // anything is unstashed, or it would delete the unstashed content again.
+            sh 'git reset --hard HEAD && git clean -fdx'
             sh 'git submodule update --init --recursive'
             unstash 'm2-goobi-viewer'
             sh 'mkdir -p /var/maven/.m2/repository/io/goobi/viewer && cp -r m2-goobi-viewer/. /var/maven/.m2/repository/io/goobi/viewer/ || true'
