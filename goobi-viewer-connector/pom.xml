@@ -296,6 +296,16 @@
 					<format>ALL</format>
 					<skipTestScope>true</skipTestScope>
 					<skip>${skipDependencyCheck}</skip>
+					<!-- viewer-core is already analysed by its own module's dependency-check run.
+						 Scanning it here too makes the archive analyzer unpack the jar and re-report
+						 all bundled JS libs (pdf.js, tinymce, ...) plus every transitive core
+						 dependency. Since the Jenkins publisher aggregates both module reports via
+						 **/target/dependency-check-report.xml, each of those findings showed up twice.
+						 Excluding the artifact also drops its transitive dependencies, which is
+						 intended - the core report already covers them. -->
+					<excludes>
+						<exclude>io.goobi.viewer:viewer-core</exclude>
+					</excludes>
 					<suppressionFiles>
 						<!-- Shared reactor-wide file (not per-module ${basedir}) so core and connector
 							 stay in sync automatically instead of needing manual duplication -->
