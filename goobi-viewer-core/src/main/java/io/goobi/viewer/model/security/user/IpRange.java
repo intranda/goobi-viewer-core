@@ -141,7 +141,10 @@ public class IpRange extends AbstractLicensee implements Serializable {
             }
             return subnetUtils.getInfo().isInRange(ip);
         } catch (IllegalArgumentException e) {
-            if (!NetTools.ADDRESS_LOCALHOST_IPV6.equals(ip)) {
+            if (ip.indexOf(':') >= 0) {
+                // IPv6 addresses are not supported by the IPv4-only SubnetUtils; this is expected, not a syntax error
+                logger.warn("Cannot match IPv6 address [{}] against subnet mask [{}]: IPv6 is not supported.", ip, subnetMask);
+            } else {
                 logger.error(e.getMessage());
             }
         }
