@@ -84,6 +84,18 @@ var viewerJS = (function (viewer) {
                 }
             });
             ed.on('blur', function (e) {
+                // Flush pending content first: blur is what triggers the
+                // underlying textarea's f:ajax "blur" listener (a JSF
+                // round-trip that, via viewerJS.jsfAjax's global
+                // tinymce.close()+init(), tears down and rebuilds every
+                // editor on the page from that ajax response). Without an
+                // explicit save() here, an edit made only through a
+                // toolbar action — never producing a synchronous
+                // "change"/"input"/"paste" event — is still unsaved at
+                // this point and gets submitted stale, then permanently
+                // lost once the rebuild happens.
+                ed.save();
+                ed.targetElm.innerHTML = ed.targetElm.value;
                 $(ed.targetElm).blur();
             });
 

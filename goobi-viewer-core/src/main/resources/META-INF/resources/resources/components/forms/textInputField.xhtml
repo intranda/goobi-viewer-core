@@ -85,9 +85,6 @@
                             <f:validator
                                 validatorId="#{cc.attrs.validatorId}"
                                 for="#{cc.id}_inputField" />
-                            <f:ajax
-                                event="blur"
-                                render="inputGroup" />
                         </h:inputText>
                     </h:panelGroup>
 
@@ -109,9 +106,6 @@
                         <f:passThroughAttribute
                             name="aria-label"
                             value="#{cc.attrs.label}" />
-                        <f:ajax
-                            event="blur"
-                            render="inputGroup" />
                     </h:inputTextarea>
 
                     <ui:fragment rendered="#{not empty cc.attrs.helpText}">

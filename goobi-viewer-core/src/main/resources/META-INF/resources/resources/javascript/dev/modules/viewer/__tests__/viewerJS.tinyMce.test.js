@@ -137,4 +137,22 @@ describe('viewerJS.tinyMce _defaults.setup (via getConfig)', () => {
 
         expect(seenBlur).toHaveBeenCalled();
     });
+
+    test('the blur handler flushes the editor content via ed.save() before blurring the target element, so a pending edit not yet mirrored by a "change input paste" event (e.g. a toolbar action) is never submitted stale', () => {
+        const config = viewerJS.tinyMce.getConfig({});
+        const targetElm = document.createElement('textarea');
+        document.body.appendChild(targetElm);
+        targetElm.focus();
+        const ed = makeMockEditor(targetElm);
+        config.setup(ed);
+
+        const callOrder = [];
+        ed.save.mockImplementation(() => callOrder.push('save'));
+        $(targetElm).on('blur', () => callOrder.push('blur'));
+
+        ed._handlers['blur']({});
+
+        expect(ed.save).toHaveBeenCalled();
+        expect(callOrder).toEqual(['save', 'blur']);
+    });
 });
