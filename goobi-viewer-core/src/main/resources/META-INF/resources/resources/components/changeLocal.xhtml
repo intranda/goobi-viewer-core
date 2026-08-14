@@ -50,8 +50,13 @@
                             var="lang"
                             value="#{navigationHelper.supportedLanguages}">
                             <li>
+                                <!-- aria-label instead of title: a <button> with visible text content
+                                     computes its accessible name from that content, not from title
+                                     (title is only used as a fallback name source when no other name
+                                     exists) - so the longer "FR - Français" wording never reached
+                                     screen readers as title, only as an unused mouse tooltip. -->
                                 <button
-                                    title="#{msg['changeLocal_' += lang]} - #{msg['changeLocal_long_' += lang]}"
+                                    aria-label="#{msg['changeLocal_' += lang]} - #{msg['changeLocal_long_' += lang]}"
                                     type="submit"
                                     lang="#{lang}"
                                     aria-current="#{navigationHelper.localeString == lang ? 'true' : null}"
