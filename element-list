@@ -11,6 +11,7 @@ io.goobi.viewer.api.rest.model.ner
 io.goobi.viewer.api.rest.model.statistics.index
 io.goobi.viewer.api.rest.model.statistics.usage
 io.goobi.viewer.api.rest.model.tasks
+io.goobi.viewer.api.rest.model.webarchives
 io.goobi.viewer.api.rest.resourcebuilders
 io.goobi.viewer.api.rest.serialization
 io.goobi.viewer.api.rest.v1
@@ -119,6 +120,7 @@ io.goobi.viewer.model.maps
 io.goobi.viewer.model.maps.coordinates
 io.goobi.viewer.model.maps.features
 io.goobi.viewer.model.media.voyager
+io.goobi.viewer.model.media.webarchives
 io.goobi.viewer.model.metadata
 io.goobi.viewer.model.misc
 io.goobi.viewer.model.normdata
