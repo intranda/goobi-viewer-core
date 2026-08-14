@@ -66,6 +66,7 @@
     "through2": "^4.0.2"
   },
   "dependencies": {
+    "@likecoin/epub-ts": "^0.7.1",
     "@mapbox/mapbox-gl-geocoder": "~5.0.1",
     "@reactivex/rxjs": "~6.5.5",
     "@rollup/plugin-commonjs": "^29.0.0",
@@ -78,7 +79,6 @@
     "chartjs-adapter-luxon": "~1.3.1",
     "clipboard": "~2.0.4",
     "codemirror": "^5.0.0",
-    "epubjs": "~0.3.93",
     "flatpickr": "~4.6.13",
     "font-awesome": "~4.7.0",
     "hc-sticky": "~2.3.0",

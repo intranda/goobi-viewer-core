@@ -96,12 +96,16 @@ const depsPathsJS = [
     },
 
     {
-        // epubjs
+        // epub-ts — replaces the unmaintained epubjs (last release 2022), whose prebuilt
+        // bundle carried @xmldom/xmldom 0.7.13 with five open high-severity advisories.
+        // epub-ts is an API-compatible TypeScript rewrite of exactly that epubjs version
+        // and pulls in jszip only. The UMD build registers the same global `ePub`
+        // function that viewEpub.xhtml calls, so the reader code stays unchanged.
         expand: true,
         cwd: nodeModules,
-        src: ['epubjs/dist/epub.min.js'],
+        src: ['@likecoin/epub-ts/dist/epub.umd.js'],
         flatten: true,
-        dest: `${jsLibsDir}epubjs/`,
+        dest: `${jsLibsDir}epubts/`,
     },
 
     {
