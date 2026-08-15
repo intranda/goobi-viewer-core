@@ -178,4 +178,37 @@ class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertNotNull(entry);
         Assertions.assertEquals(2, entry.getValues().size());
     }
+
+    /**
+     * @see CmsCollectionsBean#isDynamicSourceObsolete()
+     * @verifies return true only if pseudo field selected and no dynamic collections exist
+     */
+    @Test
+    void isDynamicSourceObsolete_shouldReturnTrueOnlyIfPseudoFieldSelectedAndNoDynamicCollectionsExist() throws Exception {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.setSolrFieldNoUpdates(SolrConstants.DC);
+        Assertions.assertFalse(bean.isDynamicSourceObsolete());
+
+        bean.setSolrFieldNoUpdates(SolrConstants.DC_DYNAMIC);
+        Assertions.assertTrue(bean.isDynamicSourceObsolete());
+
+        DynamicCollection collection = new DynamicCollection("cms_source_obsolete_test");
+        collection.setSolrQuery("*:*");
+        DataManager.getInstance().getDao().addDynamicCollection(collection);
+        try {
+            Assertions.assertFalse(bean.isDynamicSourceObsolete());
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(collection);
+        }
+    }
+
+    /**
+     * @see CmsCollectionsBean#getDefaultCollectionField()
+     * @verifies return first configured collection field
+     */
+    @Test
+    void getDefaultCollectionField_shouldReturnFirstConfiguredCollectionField() {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        Assertions.assertEquals(bean.getAllCollectionFields().get(0), bean.getDefaultCollectionField());
+    }
 }

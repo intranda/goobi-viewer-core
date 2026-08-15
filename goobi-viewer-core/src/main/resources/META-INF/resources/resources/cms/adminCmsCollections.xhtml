@@ -37,9 +37,9 @@
                     <h1 class="admin__title">#{msg.admin__cms_collections}</h1>
                     <!-- ADD DYNAMIC COLLECTION -->
                     <h:outputLink
-                        value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/new/"
+                        value="#{navigationHelper.applicationUrl}admin/cms/collections/dynamic/new/"
                         styleClass="btn btn--default admin__title-bar-action">
-                        <span>#{msg.admin__dynamic_collections_add}</span>
+                        <span>#{msg.add}</span>
                     </h:outputLink>
                 </div>
 
@@ -89,7 +89,7 @@
                                                         <div class="col-9">
                                                             <div class="collection__title">
                                                                 <h:outputLink
-                                                                    value="#{navigationHelper.applicationUrl}admin/cms/dynamic-collections/edit/#{collection.identifier}/">
+                                                                    value="#{navigationHelper.applicationUrl}admin/cms/collections/dynamic/edit/#{collection.identifier}/">
                                                                     <h:outputText value="#{collection.getLabel(cmsCollectionsBean.currentTab.selectedLocale)}" />
                                                                     <f:passThroughAttribute
                                                                         name="data-toggle"

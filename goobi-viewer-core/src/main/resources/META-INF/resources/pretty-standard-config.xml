@@ -1176,20 +1176,14 @@
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{cmsCollectionsBean.setCollectionName(collectionName)}</action>
     </url-mapping>
-    <url-mapping id="adminDynamicCollections">
-        <pattern value="/admin/cms/dynamic-collections/" />
-        <view-id value="/resources/cms/adminDynamicCollections.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{dynamicCollectionsBean.updateCollections}</action>
-    </url-mapping>
     <url-mapping id="adminDynamicCollectionNew">
-        <pattern value="/admin/cms/dynamic-collections/new/" />
+        <pattern value="/admin/cms/collections/dynamic/new/" />
         <view-id value="/resources/cms/adminDynamicCollectionEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{dynamicCollectionsBean.createNewCollection}</action>
     </url-mapping>
     <url-mapping id="adminDynamicCollectionEdit">
-        <pattern value="/admin/cms/dynamic-collections/edit/#{collectionName}/" />
+        <pattern value="/admin/cms/collections/dynamic/edit/#{collectionName}/" />
         <view-id value="/resources/cms/adminDynamicCollectionEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{dynamicCollectionsBean.setCollectionName(collectionName)}</action>

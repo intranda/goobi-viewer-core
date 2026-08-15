@@ -90,16 +90,6 @@
                                 </h:outputLink>
                             </li>
                         </ui:fragment>
-                        <ui:fragment rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
-                            <li class="#{navigationHelper.currentPage == 'adminDynamicCollections' ? 'active' : ''}">
-                                <h:outputLink value="#{navigationHelper.getPageUrl('adminDynamicCollections')}/">
-                                    <util:icon-text
-                                        icon="library"
-                                        text="#{msg.admin__dynamic_collections}"
-                                        styleClass="icon-text--nav" />
-                                </h:outputLink>
-                            </li>
-                        </ui:fragment>
                         <ui:fragment rendered="#{userBean.user.cmsAdmin}">
                             <li class="#{navigationHelper.currentPage == 'adminCmsArchives' ? 'active' : ''}">
                                 <h:outputLink value="#{navigationHelper.getPageUrl('adminCmsArchives')}/">

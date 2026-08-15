@@ -361,18 +361,42 @@ public class CmsCollectionsBean implements Serializable {
         for (String field : getAllCollectionFields()) {
             items.add(new SelectItem(field, field));
         }
-        boolean dynamicAvailable = isDynamicCollectionsSource();
-        if (!dynamicAvailable) {
-            try {
-                dynamicAvailable = !DataManager.getInstance().getDao().getAllDynamicCollections().isEmpty();
-            } catch (DAOException e) {
-                logger.error("Error checking for dynamic collections: {}", e.getMessage());
-            }
-        }
-        if (dynamicAvailable) {
+        if (isDynamicCollectionsSource() || hasDynamicCollections()) {
             items.add(new SelectItem(SolrConstants.DC_DYNAMIC, ViewerResourceBundle.getTranslation(SolrConstants.DC_DYNAMIC + "_DD", null)));
         }
         return items;
+    }
+
+    /**
+     * Whether the dynamic collections source is selected although no dynamic collections exist any more, e.g. after deleting the last one.
+     *
+     * @return true if the selected source is no longer available; false otherwise
+     * @should return true only if pseudo field selected and no dynamic collections exist
+     */
+    public boolean isDynamicSourceObsolete() {
+        return isDynamicCollectionsSource() && !hasDynamicCollections();
+    }
+
+    /**
+     * Collection source to fall back to when the selected source is no longer available.
+     *
+     * @return the first configured collection field; {@link SolrConstants#DC} if none are configured
+     * @should return first configured collection field
+     */
+    public String getDefaultCollectionField() {
+        return getAllCollectionFields().stream().findFirst().orElse(SolrConstants.DC);
+    }
+
+    /**
+     * @return true if at least one database-defined dynamic collection exists; false otherwise
+     */
+    private static boolean hasDynamicCollections() {
+        try {
+            return !DataManager.getInstance().getDao().getAllDynamicCollections().isEmpty();
+        } catch (DAOException e) {
+            logger.error("Error checking for dynamic collections: {}", e.getMessage());
+            return false;
+        }
     }
 
     /**
@@ -728,6 +752,9 @@ public class CmsCollectionsBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public void initSolrField() throws IllegalRequestException, IndexUnreachableException {
+        if (isDynamicSourceObsolete()) {
+            setSolrField(getDefaultCollectionField());
+        }
         if (!isDynamicCollectionsSource() && browseBean.getCollection(solrField) == null) {
             loadCollection(solrField);
         }
