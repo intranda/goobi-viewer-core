@@ -585,7 +585,8 @@ public final class TranslationGroup {
                 logger.warn("No dynamic collection found for identifier '{}'", selectedEntry.getKey());
                 return;
             }
-            collection.populateLabels();
+            // Ensure a label row exists for every language offered by the editor, otherwise edited values would be dropped silently
+            collection.populateLabels(selectedEntry.getValues().stream().map(MessageValue::getLanguage).toList());
             boolean dirty = false;
             for (MessageValue value : selectedEntry.getValues()) {
                 if (!value.isDirty()) {

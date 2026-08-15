@@ -464,10 +464,18 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
      */
     public void populateLabels() {
         NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
-        if (navigationHelper == null) {
-            return;
+        if (navigationHelper != null) {
+            this.populateLabels(navigationHelper.getSupportedLanguages());
         }
-        for (String language : navigationHelper.getSupportedLanguages()) {
+    }
+
+    /**
+     * populateLabels.
+     *
+     * @param languages list of language codes to ensure labels exist for
+     */
+    public void populateLabels(List<String> languages) {
+        for (String language : languages) {
             if (getLabels().stream().noneMatch(label -> label.getLanguage().equalsIgnoreCase(language))) {
                 addLabel(new DynamicCollectionTranslation(language, ""));
             }

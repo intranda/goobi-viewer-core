@@ -24,6 +24,8 @@ package io.goobi.viewer.model.translations.admin;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.cms.collections.DynamicCollection;
@@ -39,7 +41,8 @@ class DynamicCollectionsTranslationGroupItemTest extends AbstractDatabaseEnabled
     void loadEntries_shouldLoadDatabaseLabels() throws Exception {
         DynamicCollection collection = new DynamicCollection("dyncol_group_test");
         collection.setSolrQuery("*:*");
-        collection.populateLabels();
+        // Explicit language list: populateLabels() without arguments needs a NavigationHelper, which does not exist in unit tests
+        collection.populateLabels(List.of("de", "en"));
         collection.getLabelAsTranslation("de").setTranslationValue("Testsammlung");
         collection.pruneEmptyTranslations();
         DataManager.getInstance().getDao().addDynamicCollection(collection);
@@ -73,7 +76,7 @@ class DynamicCollectionsTranslationGroupItemTest extends AbstractDatabaseEnabled
 
             DynamicCollection persisted = DataManager.getInstance().getDao().getDynamicCollection("dyncol_group_save_test");
             Assertions.assertNotNull(persisted);
-            persisted.populateLabels();
+            Assertions.assertNotNull(persisted.getLabelAsTranslation("en"), "Saving must create the label row for a language that had none");
             Assertions.assertEquals("Test collection", persisted.getLabelAsTranslation("en").getTranslationValue());
         } finally {
             DataManager.getInstance()

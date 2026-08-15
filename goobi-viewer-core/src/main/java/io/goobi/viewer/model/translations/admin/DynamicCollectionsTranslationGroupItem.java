@@ -74,7 +74,6 @@ public class DynamicCollectionsTranslationGroupItem extends TranslationGroupItem
         List<Locale> allLocales = ViewerResourceBundle.getAllLocales();
         List<MessageEntry> ret = new ArrayList<>(collections.size());
         for (DynamicCollection collection : collections) {
-            collection.populateLabels();
             List<MessageValue> values = new ArrayList<>(allLocales.size());
             for (Locale locale : allLocales) {
                 DynamicCollectionTranslation label = collection.getLabelAsTranslation(locale.getLanguage());
