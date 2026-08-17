@@ -74,7 +74,9 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
      */
     private final List<String> types;
 
-    private transient UIComponent uiComponent;
+    // Volatile because concurrent requests of the same HTTP session share this instance and read the
+    // lazily built component without holding a lock; see getUiComponent() for the publication rules.
+    private transient volatile UIComponent uiComponent;
     private transient UIComponent backendUiComponent;
 
     private CMSComponentScope scope = CMSComponentScope.PAGEVIEW;
@@ -286,24 +288,51 @@ public class CMSComponent implements Comparable<CMSComponent>, Serializable {
         return scopeCompare * 100_000 + orderCompare;
     }
 
+    /**
+     * Returns this component's frontend JSF component tree, building it on first access.
+     *
+     * <p>The subtree is built into a local panel group and only published to {@link #uiComponent} once it is
+     * complete, so that every caller sees exactly one fully built instance. Concurrent requests of the same
+     * HTTP session share this object (the session-scoped {@code CmsBean} holds the current CMSPage, and
+     * Tomcat's {@code CrawlerSessionManagerValve} funnels all crawler requests into a single session). The
+     * previous implementation assigned the field before building and then re-read it as the build target: if
+     * another thread overwrote the field in between, both threads appended their composite child to the same
+     * panel group, which produced two children with an identical id and an IllegalStateException in JSF's
+     * {@code checkIdUniqueness} while saving the view. Publication happens inside a short lock that performs
+     * no I/O, so the first complete build wins and a losing thread discards its own subtree.</p>
+     *
+     * @return the frontend UI component, or null if this component has no usable JSF component
+     * @throws PresentationException if the JSF component cannot be built
+     * @should return the same instance to concurrent callers
+     */
     public UIComponent getUiComponent() throws PresentationException {
 
-        if (this.uiComponent == null && this.jsfComponent != null && this.jsfComponent.exists()) {
-            DynamicContentBuilder builder = new DynamicContentBuilder();
-            this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-            // Use a suffix that is unique per page and stable across postbacks. The order value alone is not
-            // guaranteed to be unique (no DB constraint, and it is re-assigned during rendering), which caused
-            // colliding client ids (e.g. two "cms_headerslider_2" components) and an IllegalStateException in
-            // JSF's checkIdUniqueness when saving the view. See getUniqueComponentIdSuffix() for details.
-            this.uiComponent.setId("cms_" + FilenameUtils.getBaseName(this.templateFilename) + "_" + getUniqueComponentIdSuffix());
-            Map<String, Object> attributes = new HashMap<>();
-            for (CMSComponentAttribute attribute : this.getAttributes().values()) {
-                attributes.put(attribute.getName(), attribute.isBooleanValue() ? attribute.getBooleanValue() : attribute.getValue());
-            }
-            attributes.put("component", this);
-            UIComponent component = builder.build(this.getJsfComponent(), this.uiComponent, attributes);
+        UIComponent existing = this.uiComponent;
+        if (existing != null) {
+            return existing;
         }
-        return uiComponent;
+        if (this.jsfComponent == null || !this.jsfComponent.exists()) {
+            return null;
+        }
+        DynamicContentBuilder builder = new DynamicContentBuilder();
+        UIComponent component = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+        // Use a suffix that is unique per page and stable across postbacks. The order value alone is not
+        // guaranteed to be unique (no DB constraint, and it is re-assigned during rendering), which caused
+        // colliding client ids (e.g. two "cms_headerslider_2" components) and an IllegalStateException in
+        // JSF's checkIdUniqueness when saving the view. See getUniqueComponentIdSuffix() for details.
+        component.setId("cms_" + FilenameUtils.getBaseName(this.templateFilename) + "_" + getUniqueComponentIdSuffix());
+        Map<String, Object> attributes = new HashMap<>();
+        for (CMSComponentAttribute attribute : this.getAttributes().values()) {
+            attributes.put(attribute.getName(), attribute.isBooleanValue() ? attribute.getBooleanValue() : attribute.getValue());
+        }
+        attributes.put("component", this);
+        builder.build(this.getJsfComponent(), component, attributes);
+        synchronized (this) {
+            if (this.uiComponent == null) {
+                this.uiComponent = component;
+            }
+            return this.uiComponent;
+        }
     }
 
     /**
