@@ -21,32 +21,44 @@
  */
 package io.goobi.viewer.api.rest.v1.records.media;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
+import org.goobi.presentation.contentServlet.controller.GetMetsPageCountAction;
 
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibPdfException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.ContentServerConfiguration;
+import de.unigoettingen.sub.commons.contentlib.servlet.model.MetsPdfRequest;
 import de.unigoettingen.sub.commons.contentlib.servlet.model.PdfInformation;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerPdfInfoBinding;
-import de.unigoettingen.sub.commons.contentlib.servlet.rest.MetsPdfResource;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.mq.ViewerMessage;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.faces.validators.PIValidator;
+import io.goobi.viewer.model.job.download.PdfDownloadJob;
+import io.goobi.viewer.model.viewer.Dataset;
 import io.goobi.viewer.solr.SolrConstants;
-import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -54,13 +66,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
@@ -68,36 +83,39 @@ import jakarta.ws.rs.core.StreamingOutput;
  *
  * @author Florian Alpers
  */
-@Path(ApiUrls.RECORDS_RECORD)
+@jakarta.ws.rs.Path(ApiUrls.RECORDS_RECORD)
 @ContentServerBinding
-public class ViewerRecordPDFResource extends MetsPdfResource {
+public class ViewerRecordPDFResource {
 
     private static final Logger logger = LogManager.getLogger(ViewerRecordPDFResource.class);
 
-    private String filename;
+    /** Maximum time to wait for a PDF that is currently being created by another thread/process before giving up on this request. */
+    private static final int MAX_WAIT_FOR_LOCK_MILLIS = 90_000;
+
     private final String pi;
+    private final boolean usePdfSource;
+
+    private final HttpServletRequest request;
+    private final HttpServletResponse response;
+    private final ContentServerCacheManager cacheManager;
 
     public ViewerRecordPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record",
                     schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
+            @Parameter(description = "allow using single page files from pdf folder to render pdf") @QueryParam("usePdfSource") Boolean usePdfSource,
             @Context ContentServerCacheManager cacheManager) throws ContentLibException {
-        // Validate PI before passing it to MetsPdfResource, which builds a file:// URI from
-        // the value and throws ContentLibException (HTTP 500) on illegal URI characters.
-        // requireValidPi() must be called here inside super() because Java requires the
-        // super-constructor call to be the first statement.
-        super(context, request, response, "pdf", requireValidPi(pi) + ".xml", cacheManager);
-        this.pi = pi;
-        String custom = StringTools.formatPdfDownloadFilename(
-                DataManager.getInstance().getConfiguration().getDownloadFilenamePattern(), pi, null);
-        this.filename = custom != null ? custom : pi + ".pdf";
+        this.pi = requireValidPi(pi);
+        this.cacheManager = cacheManager;
+        this.request = request;
+        this.response = response;
+        this.usePdfSource = Optional.ofNullable(usePdfSource).orElse(ContentServerConfiguration.getInstance().getUsePdf());
         request.setAttribute("pi", pi);
     }
 
-    @Override
     @GET
-    @Path(ApiUrls.RECORDS_PDF)
+    @jakarta.ws.rs.Path(ApiUrls.RECORDS_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
@@ -107,15 +125,54 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "Record not found")
     @ApiResponse(responseCode = "500", description = "PDF generation error")
-    public StreamingOutput getPdf() throws ContentLibException {
-        logger.trace("getPdf: {}", filename);
-        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + filename + "\"");
-        return super.getPdf();
+    @ApiResponse(responseCode = "503", description = "PDF is still being created by another request, retry later")
+    public StreamingOutput getPdf()
+            throws ContentLibException, PresentationException, IOException, IndexUnreachableException, RecordNotFoundException {
+        ViewerMessage message = new ViewerMessage(PdfDownloadJob.TYPE);
+        message.getProperties().put("pi", this.pi);
+        message.getProperties().put("usePdfSource", Boolean.toString(this.usePdfSource));
+        PdfDownloadJob job = new PdfDownloadJob(message);
+
+        int waitedMillis = 0;
+        while (!Files.exists(job.getPath())) {
+            if (job.isLocked()) {
+                //pdf is currently being created by someone else
+                if (waitedMillis >= MAX_WAIT_FOR_LOCK_MILLIS) {
+                    throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE)
+                            .header("Retry-After", "30")
+                            .entity("PDF for '" + pi + "' is still being created, please retry later")
+                            .build());
+                }
+                try {
+                    Thread.sleep(1000);
+                    waitedMillis += 1000;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE)
+                            .header("Retry-After", "30")
+                            .entity("PDF creation for '" + pi + "' was interrupted, please retry later")
+                            .build());
+                }
+            } else {
+                // No-op if another thread/process wins the race to acquire the lock in the meantime (see PdfDownloadJob#create)
+                job.create();
+            }
+        }
+
+        response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
+                NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + StringTools.sanitizeFilenameToAscii(job.getDownloadFilename()) + "\"");
+        response.setContentLengthLong(Files.size(job.getPath()));
+
+        return out -> {
+            try (InputStream in = Files.newInputStream(job.getPath())) {
+                IOUtils.copy(in, out);
+            }
+        };
+
     }
 
-    @Override
     @GET
-    @Path(ApiUrls.RECORDS_PDF_INFO)
+    @jakarta.ws.rs.Path(ApiUrls.RECORDS_PDF_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
     @Operation(tags = { "records" }, summary = "Get information about PDF for entire record")
@@ -132,7 +189,8 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
         info.setTitle(pi);
         try {
             String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + pi + " +" + SolrConstants.DOCTYPE + ":PAGE";
-            List<SolrDocument> pageDocs = DataManager.getInstance().getSearchIndex()
+            List<SolrDocument> pageDocs = DataManager.getInstance()
+                    .getSearchIndex()
                     .getDocs(query, List.of(SolrConstants.MDNUM_FILESIZE));
             long totalBytes = 0;
             if (pageDocs != null) {
@@ -151,7 +209,7 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     }
 
     @GET
-    @Path(ApiUrls.RECORDS_EPUB_INFO)
+    @jakarta.ws.rs.Path(ApiUrls.RECORDS_EPUB_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
     @Operation(tags = { "records" }, summary = "Get information about epub for entire record")
@@ -163,17 +221,24 @@ public class ViewerRecordPDFResource extends MetsPdfResource {
     public PdfInformation getEpubInfoAsJson() throws ContentLibException {
         // Same as getInfoAsJson(): rethrow ContentLibPdfException (missing METS) as 404.
         try {
-            return super.getInfo("epub");
-        } catch (ContentLibPdfException e) {
-            throw new ContentNotFoundException("Record not found: " + filename, e);
+            String cleanedPi = StringTools.cleanUserGeneratedData(this.pi);
+            Dataset work = DataFileTools.getDataset(cleanedPi);
+            MetsPdfRequest pdfRequest = PdfDownloadJob.createPdfRequest(work, Optional.empty(), false, cleanedPi);
+            PdfInformation info = new GetMetsPageCountAction(ContentServerCacheManager.getInstance()).getEpubInfo(pdfRequest);
+
+            return info;
+        } catch (ContentLibPdfException | URISyntaxException | PresentationException | IndexUnreachableException | RecordNotFoundException
+                | IOException e) {
+            throw new ContentNotFoundException("Record not found: " + this.pi, e);
         }
     }
 
     /**
-     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400)
-     * if the PI contains characters that are illegal in java.net.URI paths or Solr queries.
+     * Validates the PI and returns it unchanged. Throws {@link BadRequestException} (HTTP 400) if the PI contains characters that are illegal in
+     * java.net.URI paths or Solr queries.
      *
-     * <p>Declared static so it can be invoked inside the super() constructor call.
+     * <p>
+     * Declared static so it can be invoked inside the super() constructor call.
      *
      * @param pi persistent identifier to validate
      * @return the unchanged pi if valid

@@ -37,6 +37,8 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.controller.DataFileTools;
@@ -61,7 +63,13 @@ import jakarta.mail.MessagingException;
  */
 public abstract class DownloadJob {
 
+    private static final Logger logger = LogManager.getLogger(DownloadJob.class);
+
     public static final String FILE_EXTENSION_CREATING_LOCK = ".creating.lock";
+
+    /** Age after which a creation lock file is considered abandoned (e.g. left behind by a crash during generation) and removed automatically. */
+    private static final Duration MAX_LOCK_AGE = Duration.ofMinutes(90);
+
     private final String pi;
 
     public DownloadJob(String pi) {
@@ -117,7 +125,20 @@ public abstract class DownloadJob {
 
     public boolean isLocked() throws IOException {
         Path lockFile = getPath().getParent().resolve(FilenameUtils.getBaseName(getFilename()) + FILE_EXTENSION_CREATING_LOCK);
-        return Files.exists(lockFile);
+        if (!Files.exists(lockFile)) {
+            return false;
+        }
+        if (isLockStale(lockFile)) {
+            logger.warn("Removing stale creation lock file '{}' (older than {})", lockFile, MAX_LOCK_AGE);
+            Files.deleteIfExists(lockFile);
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isLockStale(Path lockFile) throws IOException {
+        FileTime lastModified = Files.getLastModifiedTime(lockFile);
+        return Duration.between(lastModified.toInstant(), Instant.now()).compareTo(MAX_LOCK_AGE) > 0;
     }
 
     /**
