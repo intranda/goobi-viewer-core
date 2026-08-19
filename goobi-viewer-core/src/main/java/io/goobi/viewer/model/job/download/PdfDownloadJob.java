@@ -125,7 +125,10 @@ public class PdfDownloadJob extends DownloadJob {
 
     public void create(Dataset work)
             throws IOException, ContentLibException, PresentationException {
-        createLock();
+        if (!createLock()) {
+            // Another thread/process is already generating this file; do nothing and let the caller wait/retry.
+            return;
+        }
         Files.deleteIfExists(getTempPath());
         try (FileOutputStream fos = new FileOutputStream(getTempPath().toFile())) {
             MetsPdfRequest request = createPdfRequest(work,
@@ -194,7 +197,7 @@ public class PdfDownloadJob extends DownloadJob {
         return sb.toString();
     }
 
-    private static MetsPdfRequest createPdfRequest(Dataset work, Optional<String> divId, boolean usePdfSource, String configVariant)
+    public static MetsPdfRequest createPdfRequest(Dataset work, Optional<String> divId, boolean usePdfSource, String configVariant)
             throws URISyntaxException {
 
         boolean usePdfFiles = usePdfSource;
