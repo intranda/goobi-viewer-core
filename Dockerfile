@@ -44,12 +44,12 @@ COPY goobi-viewer-config/install/docker/viewer.xml.template ${CATALINA_HOME}/con
 COPY goobi-viewer-config/install/docker/enable_dev_options.patch /viewer-template/
 COPY goobi-viewer-config/install/docker/insert_theme_preresource.patch.template /viewer-template/
 
-# Install the shipped Tomcat configuration from install/etc/tomcat instead of the
+# Install the shipped Tomcat configuration from install/etc/tomcat10 instead of the
 # stock files of the base image. The only container-specific changes are binding
 # the connector to all interfaces (0.0.0.0) instead of loopback (127.0.0.1) and
 # turning the fixed sameSiteCookies value into a placeholder that run.sh fills in
 # from ${TOMCAT_SAMESITECOOKIES} at container start.
-RUN --mount=type=bind,source=goobi-viewer-config/install/etc/tomcat,target=/tmp/tomcat-conf,readonly \
+RUN --mount=type=bind,source=goobi-viewer-config/install/etc/tomcat10,target=/tmp/tomcat-conf,readonly \
     sed 's/address="127.0.0.1"/address="0.0.0.0"/' /tmp/tomcat-conf/server.xml > ${CATALINA_HOME}/conf/server.xml && \
     sed 's/sameSiteCookies="strict"/sameSiteCookies="${TOMCAT_SAMESITECOOKIES}"/' /tmp/tomcat-conf/context.xml > ${CATALINA_HOME}/conf/context.xml.template
 
