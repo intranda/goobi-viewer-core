@@ -28,7 +28,8 @@
     &__structure,
     &__title,
     &__description-toggle,
-    &__rss {
+    &__rss,
+    &__archive-download {
         button {
             font-size: 1.4rem;
         }
@@ -41,7 +42,8 @@
         }
     }
     &__description-toggle,
-    &__rss {
+    &__rss,
+    &__archive-download {
         a {
             display: inline-block;
             padding: 10px;
@@ -60,16 +62,16 @@
     &__item-end {
         display: flex;
         justify-content: flex-end;
-    }
-    &__description-toggle,
-    &__rss {
+        align-items: center;
         padding-right: 15px;
-        text-align: center;
     }
     &__description-toggle {
-        padding: 0;
-    }
-    &__rss {
+        button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
     }
     &__description {
         padding: 5px 15px;
@@ -103,7 +105,8 @@
     .collection__structure a,
     .collection__title a,
     .collection__description-toggle a,
-    .collection__rss a {
+    .collection__rss a,
+    .collection__archive-download a {
         padding: 10px 3px;
     }
     .collection__description img {

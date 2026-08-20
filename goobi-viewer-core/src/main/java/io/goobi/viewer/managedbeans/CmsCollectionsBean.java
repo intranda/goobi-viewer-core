@@ -431,25 +431,46 @@ public class CmsCollectionsBean implements Serializable {
      * @param collection Collection whose info is added to all matching collection views
      */
     private static void addToCollectionViews(CMSCollection collection) {
-        CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
-        if (collectionView != null) {
-            collectionView.setCollectionInfo(collection.getSolrFieldValue(), collection);
+        // collection may be null (getCurrentCollection() can return null); nothing to add then (java:S2259)
+        if (collection == null) {
+            return;
         }
-        List<CollectionView> collections = BeanUtils.getCollectionViewBean().getCollections(collection.getSolrField());
-        collections.forEach(view -> view.setCollectionInfo(collection.getSolrFieldValue(), collection));
+        // getBrowseBean()/getCollectionViewBean() return null outside a FacesContext; guard both (java:S2259)
+        BrowseBean browseBean = BeanUtils.getBrowseBean();
+        if (browseBean != null) {
+            CollectionView collectionView = browseBean.getCollection(collection.getSolrField());
+            if (collectionView != null) {
+                collectionView.setCollectionInfo(collection.getSolrFieldValue(), collection);
+            }
+        }
+        CollectionViewBean collectionViewBean = BeanUtils.getCollectionViewBean();
+        if (collectionViewBean != null) {
+            List<CollectionView> collections = collectionViewBean.getCollections(collection.getSolrField());
+            collections.forEach(view -> view.setCollectionInfo(collection.getSolrFieldValue(), collection));
+        }
     }
 
     /**
      * @param collection Collection whose info is removed from all matching collection views
      */
     private static void removeFromCollectionViews(CMSCollection collection) {
-        CollectionView collectionView = BeanUtils.getBrowseBean().getCollection(collection.getSolrField());
-        if (collectionView != null) {
-            collectionView.removeCollectionInfo(collection.getSolrFieldValue());
+        // collection may be null; nothing to remove then (java:S2259)
+        if (collection == null) {
+            return;
         }
-        List<CollectionView> collections = BeanUtils.getCollectionViewBean().getCollections(collection.getSolrField());
-        collections.forEach(view -> view.removeCollectionInfo(collection.getSolrFieldValue()));
-
+        // getBrowseBean()/getCollectionViewBean() return null outside a FacesContext; guard both (java:S2259)
+        BrowseBean browseBean = BeanUtils.getBrowseBean();
+        if (browseBean != null) {
+            CollectionView collectionView = browseBean.getCollection(collection.getSolrField());
+            if (collectionView != null) {
+                collectionView.removeCollectionInfo(collection.getSolrFieldValue());
+            }
+        }
+        CollectionViewBean collectionViewBean = BeanUtils.getCollectionViewBean();
+        if (collectionViewBean != null) {
+            List<CollectionView> collections = collectionViewBean.getCollections(collection.getSolrField());
+            collections.forEach(view -> view.removeCollectionInfo(collection.getSolrFieldValue()));
+        }
     }
 
     /**

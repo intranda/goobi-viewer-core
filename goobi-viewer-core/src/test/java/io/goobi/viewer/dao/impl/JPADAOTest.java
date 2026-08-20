@@ -1915,6 +1915,25 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#getAllCMSMediaItems()
+     * @verifies fetch categories without duplicating items
+     */
+    @Test
+    void getAllCMSMediaItems_shouldFetchCategoriesWithoutDuplicatingItems() throws Exception {
+        List<CMSMediaItem> items = DataManager.getInstance().getDao().getAllCMSMediaItems();
+        assertEquals(4, items.size());
+
+        Map<Long, Integer> categoryCountById = new HashMap<>();
+        for (CMSMediaItem item : items) {
+            categoryCountById.put(item.getId(), item.getCategories().size());
+        }
+        assertEquals(3, categoryCountById.get(1L).intValue());
+        assertEquals(2, categoryCountById.get(2L).intValue());
+        assertEquals(0, categoryCountById.get(3L).intValue());
+        assertEquals(1, categoryCountById.get(4L).intValue());
+    }
+
+    /**
      * @see JPADAO#getCMSMediaItem(long)
      * @verifies return correct item
      */

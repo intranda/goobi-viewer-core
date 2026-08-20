@@ -78,6 +78,7 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.bookmark.BookmarkList;
+import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.export.RISExport;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.maps.GeoMap;
@@ -220,6 +221,11 @@ public class SearchBean implements SearchInterface, Serializable {
     private SearchQueryGroup advancedSearchQueryGroup = new SearchQueryGroup(Collections.emptyList(), advancedSearchFieldTemplate);
     /** Human-readable representation of the advanced search query for displaying. */
     private String advancedSearchQueryInfo;
+    /**
+     * Filter query that excludes records matched by non-hierarchical NOT items at the topstruct level. Built by
+     * {@link #generateAdvancedSearchMainQuery()} and applied as part of the custom filter query; null if there are no such items.
+     */
+    private String advancedSearchNegationFilterQuery;
     /** Current search object. Contains the results and can be used to persist search parameters in the DB. */
     private Search currentSearch;
     /** If >0, proximity search will be applied to phrase searches. */
@@ -786,6 +792,20 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
+     * Clears the "search in current record" term (advanced query item index 1) without touching the
+     * rest of the advanced-search query group. Called on record navigation so the term does not leak
+     * from one record into the next.
+     *
+     * @should clear the search in current item term
+     */
+    public void resetSearchInCurrentItemTerm() {
+        List<SearchQueryItem> items = advancedSearchQueryGroup.getQueryItems();
+        if (items.size() > 1) {
+            items.get(1).setValue("");
+        }
+    }
+
+    /**
      * "Setter" for resetting the query item list via a f:setPropertyActionListener.
      *
      * @param reset true to reset advanced search query items to defaults
@@ -810,6 +830,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @should not add more facets if field value combo already in current facets
      * @should not replace obsolete facets with duplicates
      * @should remove facets that are not matched among query items
+     * @should add hierarchical NOT item as an exclusion facet
      */
     String generateAdvancedSearchMainQuery() {
         logger.trace("generateAdvancedSearchMainQuery");
@@ -817,6 +838,9 @@ public class SearchBean implements SearchInterface, Serializable {
         StringBuilder sbInfo = new StringBuilder();
         searchTerms.clear();
         StringBuilder sbCurrentCollection = new StringBuilder();
+        // Collects topstruct-level exclusion clauses for non-hierarchical NOT items (see below).
+        StringBuilder sbNegation = new StringBuilder();
+        this.advancedSearchNegationFilterQuery = null;
         Set<String> usedHierarchicalFields = new HashSet<>();
         Set<String> usedFieldValuePairs = new HashSet<>();
         this.proximitySearchDistance = 0;
@@ -843,6 +867,8 @@ public class SearchBean implements SearchInterface, Serializable {
                         continue;
                     }
 
+                    String exclusionMarker = SearchItemOperator.NOT.equals(line.getOperator()) ? FacetItem.EXCLUDE_PREFIX : "";
+
                     // Skip identical hierarchical items
 
                     // Find existing facet items that can be re-purposed for the existing facets
@@ -856,8 +882,8 @@ public class SearchBean implements SearchInterface, Serializable {
                             // logger.trace("facet item already handled: {}", facetItem.getLink()); //NOSONAR Debug
                             continue;
                         }
-                        if (!usedFieldValuePairs.contains(item.getField() + ":" + item.getValue())) {
-                            facetItem.setLink(item.getField() + ":" + item.getValue());
+                        if (!usedFieldValuePairs.contains(exclusionMarker + item.getField() + ":" + item.getValue())) {
+                            facetItem.setLink(exclusionMarker + item.getField() + ":" + item.getValue());
                             usedFieldValuePairs.add(facetItem.getLink());
                             // logger.trace("reuse facet item: {}", facetItem); //NOSONAR Debug
                             skipQueryItem = true;
@@ -867,7 +893,11 @@ public class SearchBean implements SearchInterface, Serializable {
 
                     if (!skipQueryItem) {
                         String itemQuery =
-                                new StringBuilder().append(item.getField()).append(':').append(item.getValue().trim()).toString();
+                                new StringBuilder().append(exclusionMarker)
+                                        .append(item.getField())
+                                        .append(':')
+                                        .append(item.getValue().trim())
+                                        .toString();
                         // logger.trace("item query: {}", itemQuery); //NOSONAR Debug
 
                         // Check whether this combination already exists and skip, if that's the case
@@ -1000,6 +1030,23 @@ public class SearchBean implements SearchInterface, Serializable {
                     }
                     sb.append(itemQuery);
                 }
+
+                // A NOT operator on a non-hierarchical field must exclude at the topstruct (work) level. The inline
+                // "-(body)" appended above is evaluated inside the aggregation join {!join from=PI_TOPSTRUCT to=PI}+(...),
+                // so a value carried by a sub-element doc would not exclude the parent work. Additionally build a
+                // top-level exclusion filter query that removes any work having the value on ANY of its docs, reusing the
+                // same _query_:"{!join ...}" idiom as the YEARMONTHDAY handling in SearchQueryItem.generateQuery.
+                if (SearchItemOperator.NOT == line.getOperator() && itemQuery.startsWith("-")) {
+                    // Strip the leading '-' to get the positive "(body)"; reuses generateQuery's field/phrase/escape logic.
+                    String positiveBody = itemQuery.substring(1);
+                    // Escape for embedding inside a _query_:"..." string literal: backslashes first, then double quotes.
+                    String escapedBody = positiveBody.replace("\\", "\\\\").replace("\"", "\\\"");
+                    if (sbNegation.length() == 0) {
+                        // Positive base so the resulting filter query is not purely negative (which would match nothing).
+                        sbNegation.append("*:*");
+                    }
+                    sbNegation.append(" -_query_:\"").append(SearchHelper.AGGREGATION_QUERY_PREFIX).append(escapedBody).append('"');
+                }
             }
         }
 
@@ -1030,6 +1077,10 @@ public class SearchBean implements SearchInterface, Serializable {
             facets.setActiveFacetString(facets.getActiveFacetString());
         }
 
+        if (sbNegation.length() > 0) {
+            advancedSearchNegationFilterQuery = "(" + sbNegation.toString().trim() + ")";
+        }
+
         advancedSearchQueryInfo = sbInfo.toString();
         // Quickfix for single hierarchical item query info having an opening parenthesis only
         if (advancedSearchQueryInfo.startsWith("(") && !advancedSearchQueryInfo.endsWith(")")) {
@@ -1049,6 +1100,7 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @should set advancedSearchOrigin from cms page when current page is a cms page
+     * @should not set advancedSearchOrigin when cms page id is null
      */
     public void executeSearch() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         executeSearch("");
@@ -1069,8 +1121,13 @@ public class SearchBean implements SearchInterface, Serializable {
         mirrorAdvancedSearchCurrentHierarchicalFacets();
         mirrorActiveFacetsToQuickFilterDropdowns();
 
+        // Only record a CMS page origin for a persisted page (id != null); a transient page would yield an
+        // origin without a resolvable back-link target, making getOriginUrl() throw during rendering
         if (this.navigationHelper != null && this.navigationHelper.isCmsPage()) {
-            this.advancedSearchOrigin = new AdvancedSearchOrigin(this.navigationHelper.getCurrentCMSPage());
+            CMSPage currentCmsPage = this.navigationHelper.getCurrentCMSPage();
+            if (currentCmsPage != null && currentCmsPage.getId() != null) {
+                this.advancedSearchOrigin = new AdvancedSearchOrigin(currentCmsPage);
+            }
         }
 
         // Create SearchQueryGroup from query
@@ -1127,6 +1184,13 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (activeSearchType == SearchHelper.SEARCH_TYPE_REGULAR && quickFiltersOrigin) {
             appendQuickFilterQueries(sbFilterQuery);
+        }
+
+        // Topstruct-level exclusion for non-hierarchical NOT items (see generateAdvancedSearchMainQuery); applied as fq
+        // so it excludes at the work level after the aggregation join, without altering the stored/bookmarkable query.
+        if (StringUtils.isNotEmpty(advancedSearchNegationFilterQuery)) {
+            sbFilterQuery.append(" +").append(advancedSearchNegationFilterQuery);
+            logger.debug("Applied negation filter query: {}", advancedSearchNegationFilterQuery);
         }
 
         newSearch.setCustomFilterQuery(sbFilterQuery.toString().trim());
@@ -1296,7 +1360,14 @@ public class SearchBean implements SearchInterface, Serializable {
      * @return the origin record from which the search was triggered, or null
      */
     public AdvancedSearchOrigin getAdvancedSearchOrigin() {
-        return advancedSearchOrigin;
+        // Defense in depth: only expose an origin that can actually resolve to a back-link URL. An
+        // invalid origin (no record pi and no CMS page id) would pass the view's "not empty" check and
+        // then make getOriginUrl() throw during rendering. The producers below already avoid storing
+        // invalid origins; this guard also covers any future assignment path.
+        if (advancedSearchOrigin != null && advancedSearchOrigin.isValid()) {
+            return advancedSearchOrigin;
+        }
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -1760,7 +1831,14 @@ public class SearchBean implements SearchInterface, Serializable {
             return;
         }
 
-        this.advancedSearchFieldTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
+        // Incoming value is null or "-" (i.e. "default"). Resolve it to the actual default template name and only
+        // reset if the template really changes. Otherwise navigating back to the advanced search form (e.g. via the
+        // "back to advanced search" link, which passes "-" as the context) would wipe the session-held query items.
+        String resolvedTemplate = DataManager.getInstance().getConfiguration().getAdvancedSearchDefaultTemplateName();
+        if (resolvedTemplate != null && resolvedTemplate.equals(this.advancedSearchFieldTemplate)) {
+            return;
+        }
+        this.advancedSearchFieldTemplate = resolvedTemplate;
         // Reset query items and slider ranges if active group is used as item field template
         resetAdvancedSearchParameters();
         facets.resetSliderRange();
@@ -1891,10 +1969,46 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("removeFacetAction: {}", facetQuery);
         //reset the search result list to page one since the result list will necessarily change when removing the facet
         setCurrentPage(1);
-        //redirect to current cms page if this action takes place on a cms page
+        facets.removeFacetAction(facetQuery);
+        return redirectAfterFilterChange();
+    }
+
+    /**
+     * Clears the currently entered simple search term while keeping all active facets intact.
+     *
+     * @return Navigation outcome
+     * @should reset searchString correctly
+     */
+    public String removeSearchTermAction() {
+        logger.trace("removeSearchTermAction");
+        //reset the search result list to page one since the result list will necessarily change when removing the search term
+        setSearchString("");
+        return redirectAfterFilterChange();
+    }
+
+    /**
+     * Clears all active facets as well as the currently entered simple search term.
+     *
+     * @return Navigation outcome
+     * @should reset facets and searchString correctly
+     */
+    public String resetAllActiveFiltersAction() {
+        logger.trace("resetAllActiveFiltersAction");
+        facets.resetActiveFacets();
+        setSearchString("");
+        return redirectAfterFilterChange();
+    }
+
+    /**
+     * Shared redirect logic for actions that alter the active facets and/or the search term (e.g. removing a single facet, removing the search
+     * term or resetting all filters at once). Redirects to the current CMS page, the browse page or the appropriate search page, depending on
+     * where the action was triggered.
+     *
+     * @return Navigation outcome
+     */
+    private String redirectAfterFilterChange() {
         Optional<ViewerPath> oPath = ViewHistory.getCurrentView(BeanUtils.getRequest());
         if (oPath.isPresent() && oPath.get().isCmsPage()) {
-            facets.removeFacetAction(facetQuery);
             String url = PrettyUrlTools.getAbsolutePageUrl(StringConstants.PRETTY_CMSSEARCH6, oPath.get().getCmsPage().getId(),
                     getActiveContext(), this.getExactSearchString(), oPath.get().getCmsPage().getListPage(), this.getSortString(),
                     this.getFacets().getActiveFacetString());
@@ -1902,7 +2016,6 @@ public class SearchBean implements SearchInterface, Serializable {
             PrettyUrlTools.redirectToUrl(url);
             return "";
         } else if (PageType.browse.equals(oPath.map(ViewerPath::getPageType).orElse(PageType.other))) {
-            facets.removeFacetAction(facetQuery);
             return redirectToSearchUrl(StringConstants.PRETTY_BROWSE4);
         } else {
             String ret = StringConstants.PRETTY_NEWSEARCH5;
@@ -1916,7 +2029,6 @@ public class SearchBean implements SearchInterface, Serializable {
                 default:
                     break;
             }
-            facets.removeFacetAction(facetQuery);
             return redirectToSearchUrl(ret);
         }
     }
@@ -2613,7 +2725,8 @@ public class SearchBean implements SearchInterface, Serializable {
         String currentQuery = SearchHelper.prepareQuery(searchStringInternal);
         String finalQuery = SearchHelper.buildFinalQuery(currentQuery, true, SearchAggregationType.AGGREGATE_TO_TOPSTRUCT);
         Locale locale = navigationHelper.getLocale();
-        int timeout = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout(); //[s]
+        // Shared export timeout in seconds (config <search><export> @timeout), applies to all formats
+        int timeout = DataManager.getInstance().getConfiguration().getSearchExportTimeout(); //[s]
 
         BiConsumer<HttpServletRequest, Task> task = (request, job) -> {
             if (!facesContext.getResponseComplete()) {
@@ -2752,6 +2865,13 @@ public class SearchBean implements SearchInterface, Serializable {
      */
     public String getAdvancedSearchQueryInfo() {
         return StringEscapeUtils.escapeHtml4(advancedSearchQueryInfo);
+    }
+
+    /**
+     * @return topstruct-level exclusion filter query built from non-hierarchical NOT items, or null if none. Package-private for tests.
+     */
+    String getAdvancedSearchNegationFilterQuery() {
+        return advancedSearchNegationFilterQuery;
     }
 
     /** {@inheritDoc} */
@@ -2979,10 +3099,58 @@ public class SearchBean implements SearchInterface, Serializable {
         return currentSearch != null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should return true if search string set
+     * @should return false if search string empty
+     */
     @Override
     public boolean isExplicitSearchPerformed() {
-        return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
+        // getExactSearchString() may return null; guard before replace() to avoid a NullPointerException (java:S2259)
+        String exactSearchString = getExactSearchString();
+        return exactSearchString != null && StringUtils.isNotBlank(exactSearchString.replace("-", ""));
+    }
+
+    /**
+     * Checks whether at least one of the configured facet fields (regular, range or geo) would actually render selectable content for the
+     * current search result. Used to hide the "available filters" section header when no facet has anything to offer.
+     *
+     * @return true if at least one facet field has content to display; false otherwise
+     * @should return true if a field facet has sufficient values
+     * @should return true if an active facet exists for a field
+     * @should return true if the geo facet map is available
+     * @should return false if no facet has content
+     */
+    public boolean isHasAvailableFacetFields() {
+        if (facets == null) {
+            return false;
+        }
+        // Resolve the language via BeanUtils (as in setSortString() etc.) instead of the injected navigationHelper:
+        // the helper may be absent, and SolrTools.isHasWrongLanguageCode() rejects a null language with an IllegalArgumentException
+        String language = BeanUtils.getLocale().getLanguage();
+        List<String> rangeFields = facets.getAllRangeFacetFields();
+        List<String> geoFields = facets.getGeoFacetFields();
+        for (String field : facets.getAllFacetFields()) {
+            if (rangeFields.contains(field)) {
+                try {
+                    if (facets.isHasRangeFacets() && !facets.getValueRange(field).isEmpty()) {
+                        return true;
+                    }
+                } catch (PresentationException | IndexUnreachableException e) {
+                    logger.warn(e.getMessage());
+                }
+            } else if (geoFields.contains(field)) {
+                if (isShowGeoFacetMap()) {
+                    return true;
+                }
+            } else if (!DataManager.getInstance().getConfiguration().isFacetFieldSkipInWidget(field)
+                    && !facets.isHasWrongLanguageCode(field, language)
+                    && (facets.isFacetListSizeSufficient(field) || !facets.getActiveFacetsForField(field).isEmpty())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -3066,14 +3234,27 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * searchInRecord.
+     * searchInRecord. Narrowing down search leads to advanced search
      *
      * @param piField Solr field name holding the record identifier
      * @param piValue persistent identifier value to restrict the search to
      * @return Navigation outcome
      */
     public String searchInRecord(String piField, String piValue) {
-        return searchInRecord(piField, piValue, null, null);
+        return searchInRecord(piField, piValue, null, null, false);
+    }
+
+    /**
+     * searchInToc. Narrowing down search leads by to record toc
+     *
+     * @param piField Solr field name holding the record identifier
+     * @param piValue persistent identifier value to restrict the search to
+     * @param date1 Start date for the calendar day range filter
+     * @param date2 End date for the calendar day range filter
+     * @return Navigation outcome
+     */
+    public String searchInToc(String piField, String piValue, String date1, String date2) {
+        return searchInRecord(piField, piValue, date1, date2, true);
     }
 
     /**
@@ -3083,14 +3264,17 @@ public class SearchBean implements SearchInterface, Serializable {
      * @param piValue persistent identifier value to restrict the search to
      * @param date1 Start date for the calendar day range filter
      * @param date2 End date for the calendar day range filter
+     * @param tocOrigin if true, the {@link #advancedSearchOrigin} will be set to toc, so narrowing down the search will lead back to the toc page of
+     *            the record
      * @return Navigation outcome
      * @should reset CALENDAR_DAY query item when no dates are supplied
      * @should preserve freshly typed search term when no dates are supplied
      * @should populate CALENDAR_DAY query item when both dates are supplied
      * @should preserve freshly typed search term when called with dates from the calendar TocView
      * @should set advancedSearchOrigin with pi label and docstrct from active document
+     * @should not set advancedSearchOrigin when pi is blank
      */
-    public String searchInRecord(String piField, String piValue, String date1, String date2) {
+    public String searchInRecord(String piField, String piValue, String date1, String date2, boolean tocOrigin) {
         logger.debug("searchInRecord: piField={}, piValue={}, date1={}, date2={}", piField, piValue, date1, date2);
         // Clear any active facets from the browsing context so they don't pollute the search
         this.facets.resetActiveFacets();
@@ -3140,13 +3324,16 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("Searching for: {}", this.advancedSearchQueryGroup.getQueryItems().get(1).getValue());
 
         String outcome = this.searchAdvanced();
-        // Set advancedSearchOrigin AFTER searchAdvanced() because it calls resetSearchParameters() which would null it
+        // Set advancedSearchOrigin AFTER searchAdvanced() because it calls resetSearchParameters() which would null it.
+        // Require a non-blank pi so we never record an origin that has no resolvable back-link target (a blank pi
+        // would otherwise produce an origin whose getOriginUrl() throws during rendering).
         ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-        if (adb != null && adb.getViewManager() != null) {
+        if (adb != null && adb.getViewManager() != null && StringUtils.isNotBlank(piValue)) {
             this.advancedSearchOrigin = new AdvancedSearchOrigin(
                     piValue,
                     adb.getViewManager().getTopStructElement().getLabel(),
-                    adb.getViewManager().getTopStructElement().getDocStructType());
+                    adb.getViewManager().getTopStructElement().getDocStructType(),
+                    tocOrigin);
         }
         return outcome;
     }

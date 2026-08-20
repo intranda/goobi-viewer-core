@@ -66,10 +66,15 @@ public class AdminThemesBean implements Serializable {
 
     public String loadSubThemeName() {
         try {
-            if (BeanUtils.getNavigationHelper().isCmsPage()) {
+            // getNavigationHelper() returns null outside a FacesContext; guard to avoid a NullPointerException (java:S2259)
+            NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+            if (navigationHelper == null) {
+                return "";
+            }
+            if (navigationHelper.isCmsPage()) {
                 return BeanUtils.getCmsBean().getCurrentPage().getSubTheme();
             } else {
-                return Optional.ofNullable(BeanUtils.getNavigationHelper().getSubThemeDiscriminatorValue())
+                return Optional.ofNullable(navigationHelper.getSubThemeDiscriminatorValue())
                         .map(v -> v.replaceAll("^-$", ""))
                         .orElse("");
             }
@@ -142,7 +147,12 @@ public class AdminThemesBean implements Serializable {
     }
 
     public ThemeConfiguration getCurrentTheme() throws DAOException {
-        String themeName = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
+        // getNavigationHelper() returns null outside a FacesContext; without a theme name there is no current theme (java:S2259)
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        if (navigationHelper == null) {
+            return null;
+        }
+        String themeName = navigationHelper.getThemeOrSubtheme();
         return DataManager.getInstance().getDao().getTheme(themeName);
     }
 
@@ -192,7 +202,12 @@ public class AdminThemesBean implements Serializable {
 
     private static String getFullUrl(String defaultUrl) {
         String basePath = BeanUtils.getRequest().getContextPath();
-        String imagePath = BeanUtils.getNavigationHelper().getResource(defaultUrl.replaceAll("^\\/", ""));
+        // getNavigationHelper() returns null outside a FacesContext; fall back to the raw default URL (java:S2259)
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        if (navigationHelper == null) {
+            return basePath + defaultUrl;
+        }
+        String imagePath = navigationHelper.getResource(defaultUrl.replaceAll("^\\/", ""));
         return basePath + imagePath;
     }
 

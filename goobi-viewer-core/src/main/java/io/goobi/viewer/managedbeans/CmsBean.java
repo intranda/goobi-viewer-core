@@ -473,6 +473,10 @@ public class CmsBean implements Serializable {
      * @return the absolute URL to the given CMS page, in pretty or plain format
      */
     public String getUrl(CMSPage page, boolean pretty) {
+        // page may be null; guard explicitly instead of relying on the NullPointerException catch below (java:S2259)
+        if (page == null) {
+            return "pretty:index";
+        }
         try {
             String host = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
             String prettyPath = page.getRelativeUrlPath(pretty);
@@ -909,8 +913,10 @@ public class CmsBean implements Serializable {
                         if (fc != null && fc.getExternalContext().getRequest() instanceof HttpServletRequest httpRequest) {
                             requestUrl = httpRequest.getRequestURL().toString();
                         }
+                        // getOwningPage() may return null (owning component not set); guard the log to avoid a NullPointerException (java:S2259)
+                        CMSPage owningPage = content.getContent().getOwningPage();
                         logger.warn("Error handling page load for page {} in content {}: {} (Request URL: {})",
-                                content.getContent().getOwningPage().getId(), content.getItemId(), e.getMessage(), requestUrl);
+                                owningPage != null ? owningPage.getId() : null, content.getItemId(), e.getMessage(), requestUrl);
                         return "";
                     }
                 })
@@ -1557,7 +1563,9 @@ public class CmsBean implements Serializable {
      *         {@link io.goobi.viewer.managedbeans.NavigationHelper#isCmsPage()} returns false, an empty String is returned
      */
     public String getCssClass() {
-        if (BeanUtils.getNavigationHelper().isCmsPage() && getCurrentPage() != null) {
+        // getNavigationHelper() returns null outside a FacesContext; guard to avoid a NullPointerException (java:S2259)
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        if (navigationHelper != null && navigationHelper.isCmsPage() && getCurrentPage() != null) {
             return getCurrentPage().getWrapperElementClass();
         }
 
@@ -1781,7 +1789,9 @@ public class CmsBean implements Serializable {
         if (navigationMenuItems == null) {
             try {
                 String mainTheme = DataManager.getInstance().getConfiguration().getTheme();
-                String currentTheme = BeanUtils.getNavigationHelper().getThemeOrSubtheme();
+                // getNavigationHelper() returns null outside a FacesContext; fall back to an empty theme filter (java:S2259)
+                NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+                String currentTheme = navigationHelper != null ? navigationHelper.getThemeOrSubtheme() : "";
                 navigationMenuItems = DataManager.getInstance()
                         .getDao()
                         .getAllTopCMSNavigationItems()
@@ -1831,11 +1841,27 @@ public class CmsBean implements Serializable {
         return Arrays.asList(Sorting.values());
     }
 
+    /**
+     * Returns the view id rendered for the CMS url mappings that use this method as their dynamic
+     * {@code <view-id>} (see pretty-standard-config.xml).
+     *
+     * <p>Never returns an empty string. PrettyFaces hands a blank dynaview id to
+     * {@code PrettyConfig.isMappingId()}, where it matches the first {@code <url-mapping>} without an
+     * {@code id} attribute, because {@code UrlMapping}'s default id is the empty string. PrettyFaces then
+     * treats that mapping as the target and rebuilds its URL from the current bean values, which in the
+     * reference theme resolves to the record mapping {@code /id/#{pi:activeDocumentBean.persistentIdentifier}/}
+     * and, without a loaded record, to the literal path {@code /id/-/}. Dispatching there let the servlet
+     * container apply welcome file resolution and Mojarra failed with
+     * "/id/-/index.xhtml Not Found in ExternalContext as a Resource".</p>
+     *
+     * @return view id of the current CMS page, or the 404 view id if no page is set
+     * @should return error view id when no page is set
+     */
     public String getCurrentPageUrl() {
         if (this.currentPage != null) {
             return "cmsPage.xhtml";
         }
-        return "";
+        return "errorHttp404.xhtml";
     }
 
     public CMSTemplateManager getTemplateManager() {

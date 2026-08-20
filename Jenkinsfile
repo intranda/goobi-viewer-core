@@ -108,7 +108,6 @@ pipeline {
           }
           steps {
             sh "mvn -f pom.xml test -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -DskipTests=false -Dmaven.main.skip=true -Dcheckstyle.skip=true -DskipDependencyCheck=true --no-transfer-progress"
-            junit '**/target/surefire-reports/*.xml'
             step([
                     $class           : 'JacocoPublisher',
                     execPattern      : '**/target/jacoco.exec',
@@ -117,6 +116,14 @@ pipeline {
                     exclusionPattern : '**/*Test.class'
             ])
             sh "mvn -f pom.xml org.jacoco:jacoco-maven-plugin:report -Drevision=\$BUILD_VERSION -Dchangelist=\$BUILD_TYPE -Dmaven.main.skip=true --no-transfer-progress"
+          }
+          post {
+            // Publish JUnit results even when the stage fails (e.g. the OpenAPI Spectral gate
+            // makes `mvn test` exit non-zero), so both surefire and Spectral findings stay visible.
+            // The Spectral JUnit report is written to target/spectral-openapi-junit.xml.
+            always {
+              junit testResults: '**/target/surefire-reports/*.xml,**/target/spectral-openapi-junit.xml', allowEmptyResults: true
+            }
           }
         }
 
@@ -134,6 +141,11 @@ pipeline {
             }
           }
           steps {
+            // This stage gets its own workspace, which Jenkins reuses across builds and
+            // which the setup stage's clean never reaches. Wipe leftovers (stale target/
+            // artifacts, an outdated package-lock.json) first - it has to happen before
+            // anything is unstashed, or it would delete the unstashed content again.
+            sh 'git reset --hard HEAD && git clean -fdx'
             sh 'git submodule update --init --recursive'
             unstash 'm2-goobi-viewer'
             sh 'mkdir -p /var/maven/.m2/repository/io/goobi/viewer && cp -r m2-goobi-viewer/. /var/maven/.m2/repository/io/goobi/viewer/ || true'
@@ -156,6 +168,11 @@ pipeline {
             }
           }
           steps {
+            // This stage gets its own workspace, which Jenkins reuses across builds and
+            // which the setup stage's clean never reaches. Wipe leftovers (stale target/
+            // artifacts, an outdated package-lock.json) first - it has to happen before
+            // anything is unstashed, or it would delete the unstashed content again.
+            sh 'git reset --hard HEAD && git clean -fdx'
             sh 'git submodule update --init --recursive'
             unstash 'm2-goobi-viewer'
             sh 'mkdir -p /var/maven/.m2/repository/io/goobi/viewer && cp -r m2-goobi-viewer/. /var/maven/.m2/repository/io/goobi/viewer/ || true'

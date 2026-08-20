@@ -406,6 +406,57 @@ describe('viewerJS.parseMap', function () {
     });
 });
 
+describe('viewerJS.helper.initBsFeatures (tooltip description muting)', function () {
+    beforeEach(function () {
+        // initBsFeatures touches Bootstrap plugins and matchMedia, neither of
+        // which exist in jsdom: stub them chainable/neutral.
+        $.fn.tooltip = jest.fn(function () {
+            return this;
+        });
+        $.fn.popover = jest.fn(function () {
+            return this;
+        });
+        window.matchMedia = jest.fn().mockReturnValue({ matches: false });
+    });
+
+    afterEach(function () {
+        delete $.fn.tooltip;
+        delete $.fn.popover;
+        delete window.matchMedia;
+        document.body.innerHTML = '';
+    });
+
+    function setupLink(muted) {
+        document.body.innerHTML = '<a href="#" title="Remove"' + (muted ? ' data-tooltip-muted="true"' : '') + '>chip</a>';
+        return document.querySelector('a');
+    }
+
+    test('should remove aria-describedby on shown.bs.tooltip for muted elements', function () {
+        const link = setupLink(true);
+        viewerJS.helper.initBsFeatures();
+        link.setAttribute('aria-describedby', 'tooltip123');
+        $(link).trigger('shown.bs.tooltip');
+        expect(link.hasAttribute('aria-describedby')).toBe(false);
+    });
+
+    test('should keep aria-describedby for elements without the muted marker', function () {
+        const link = setupLink(false);
+        viewerJS.helper.initBsFeatures();
+        link.setAttribute('aria-describedby', 'tooltip456');
+        $(link).trigger('shown.bs.tooltip');
+        expect(link.getAttribute('aria-describedby')).toBe('tooltip456');
+    });
+
+    test('should not stack handlers when initBsFeatures runs repeatedly', function () {
+        const link = setupLink(true);
+        viewerJS.helper.initBsFeatures();
+        viewerJS.helper.initBsFeatures();
+        link.setAttribute('aria-describedby', 'tooltip789');
+        $(link).trigger('shown.bs.tooltip');
+        expect(link.hasAttribute('aria-describedby')).toBe(false);
+    });
+});
+
 describe('viewerJS.getMapBoxToken', function () {
     afterEach(function () {
         delete viewerJS.mapBoxConfig;

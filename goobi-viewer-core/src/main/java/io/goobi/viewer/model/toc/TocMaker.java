@@ -64,6 +64,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.viewer.MimeType;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
@@ -83,7 +84,7 @@ public final class TocMaker {
     private static final String[] REQUIRED_FIELDS = { SolrConstants.CURRENTNO, SolrConstants.CURRENTNOSORT, SolrConstants.DATAREPOSITORY,
             SolrConstants.DOCSTRCT, SolrConstants.IDDOC, SolrConstants.IDDOC_PARENT, SolrConstants.ISANCHOR, SolrConstants.ISWORK,
             SolrConstants.LABEL, SolrConstants.LOGID, SolrConstants.MIMETYPE, SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.THUMBNAIL,
-            SolrConstants.THUMBPAGENO, SolrConstants.THUMBPAGENOLABEL, SolrConstants.TITLE };
+            SolrConstants.THUMBPAGENO, SolrConstants.THUMBPAGENOLABEL, SolrConstants.TITLE, SolrConstants.NUMPAGES };
 
     private static final int ANCHOR_THUMBNAIL_HEIGHT = 60;
     private static final int ANCHOR_THUMBNAIL_WIDTH = 50;
@@ -143,6 +144,9 @@ public final class TocMaker {
      * @should throw IllegalArgumentException if structElement is null
      * @should throw IllegalArgumentException if toc is null
      * @should render unique PIs that match the existing anchor structure invariant
+     * @should include loaded volume and its structure when anchor is calendar eligible
+     * @should restrict sibling query to navigation path when anchor is calendar eligible
+     * @should still list sibling volumes of calendar eligible anchor when siblings requested
      * @return a linked map of view names to their TOC element lists, preserving insertion order
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -632,9 +636,13 @@ public final class TocMaker {
                         thumbnailPermissionMap.getOrDefault(topStructPi, AccessPermission.denied());
                 logger.trace("accessPermissionThumbnail: {}", accessPermissionThumbnail.isGranted());
 
+                MimeType mediaType = new MimeType(volumeMimeType);
+                Integer numPages = SolrTools.getAsInt(volumeDoc.getFieldValue(SolrConstants.NUMPAGES));
+                boolean volumeHasImages = mediaType.isAllowsImageView() && numPages != null && numPages > 0;
+
                 TOCElement tocElement =
                         new TOCElement(volumeLabel, String.valueOf(thumbPageNo), thumbPageNoLabel, volumeIddoc, volumeLogId, 1, topStructPi,
-                                thumbnailUrl, accessPermissionPdf, false, thumbnailUrl != null, volumeMimeType, docStructType, footerId);
+                                thumbnailUrl, accessPermissionPdf, false, volumeHasImages, volumeMimeType, docStructType, footerId);
                 tocElement.setAccessPermissionThumbnail(accessPermissionThumbnail);
                 tocElement.getMetadata().put(SolrConstants.DOCSTRCT, docStructType);
                 tocElement.getMetadata().put(SolrConstants.CURRENTNO, (String) volumeDoc.getFieldValue(SolrConstants.CURRENTNO));
@@ -684,21 +692,18 @@ public final class TocMaker {
     }
 
     /**
-     * Returns {@code true} when {@code doc} represents an anchor or group whose calendar widget is the
-     * primary navigation between its sibling records — in which case the TOC sibling-enumeration block
-     * in {@link #populateTocTree} should be skipped, because the calendar covers the same ground without
-     * pulling thousands of doc records over the wire.
+     * Returns {@code true} when {@code doc} represents an anchor or group whose calendar widget is the primary navigation between its sibling records
+     * — in which case the TOC sibling-enumeration block in {@link #populateTocTree} should be skipped, because the calendar covers the same ground
+     * without pulling thousands of doc records over the wire.
      *
-     * <p>Mirrors {@code ActiveDocumentBean.shouldDeferTocToCalendar} exactly: when the configured
-     * calendar docstruct whitelist is non-empty, the doc's docstruct must match; when the whitelist is
-     * empty, fall through to the multi-year check (preserves legacy "defer for any multi-year
-     * anchor/group" behaviour). Triggered for newspaper-style records where
-     * {@code GROUPID_NEWSPAPER:* +PI:*} returns the entire archive (observed: 23.705 docs returned to
-     * feed exactly one recursive call).
+     * <p>
+     * Mirrors {@code ActiveDocumentBean.shouldDeferTocToCalendar} exactly: when the configured calendar docstruct whitelist is non-empty, the doc's
+     * docstruct must match; when the whitelist is empty, fall through to the multi-year check (preserves legacy "defer for any multi-year
+     * anchor/group" behaviour). Triggered for newspaper-style records where {@code GROUPID_NEWSPAPER:* +PI:*} returns the entire archive (observed:
+     * 23.705 docs returned to feed exactly one recursive call).
      *
      * @param doc Solr document of the candidate parent node (anchor or group)
-     * @return true if the doc qualifies as a calendar-eligible parent and its TOC sibling enumeration
-     *         should be skipped
+     * @return true if the doc qualifies as a calendar-eligible parent and its TOC sibling enumeration should be skipped
      * @should return false when doc is null
      * @should return false when doc is neither anchor nor group
      * @should return false when whitelist is non empty and docstruct is not listed
@@ -750,13 +755,13 @@ public final class TocMaker {
     }
 
     /**
-     * Recursively walks the TOC structure for one ancestor-field hierarchy, building TOCElement skeletons
-     * with default permissions (Pass 1 of the two-pass buildToc flow). Every visited PI is added to
-     * {@code collectedPis} so that Pass 2 can resolve all permissions in a single batch Solr query.
+     * Recursively walks the TOC structure for one ancestor-field hierarchy, building TOCElement skeletons with default permissions (Pass 1 of the
+     * two-pass buildToc flow). Every visited PI is added to {@code collectedPis} so that Pass 2 can resolve all permissions in a single batch Solr
+     * query.
      *
      * @param ret list to which TOC elements are added
      * @param seen set of already-added elements used for deduplication
-     * @param mainDocumentChain IDDOC path from the top ancestor to the loaded record
+     * @param mainDocumentChain IDDOC path from the loaded record (index 0) up to the top ancestor
      * @param doc Solr document of the current node to process
      * @param level current depth level in the TOC tree
      * @param addChildren whether to recurse into child struct elements
@@ -840,14 +845,30 @@ public final class TocMaker {
             if (mainDocumentChain != null && !mainDocumentChain.contains(iddoc)) {
                 return;
             }
-            // Skip the sibling enumeration when this doc is itself a calendar-eligible anchor
-            // or group. The sidebar calendar widget already provides date-based navigation
-            // between siblings; loading thousands of issues here just to recurse into one is
-            // pure waste. Whitelist-gated, so non-calendar serials are unaffected.
-            // Profiling on a 23.705-issue newspaper showed this single sibling query ate 2.6s
-            // of a 3.5s navigation request.
-            if (isCalendarEligibleParent(doc)) {
-                return;
+            // Do not enumerate the siblings when this doc is itself a calendar-eligible anchor or
+            // group. The sidebar calendar widget already provides date-based navigation between
+            // siblings; loading thousands of issues here just to recurse into one is pure waste.
+            // Whitelist-gated, so non-calendar serials are unaffected. Profiling on a 23.705-issue
+            // newspaper showed this single sibling query ate 2.6s of a 3.5s navigation request.
+            //
+            // Only the enumeration is waste, though: the walk down to the loaded record still has to
+            // happen, otherwise the record itself never becomes a TOCElement and everything keyed on
+            // it (TOC.getLabel(pi), and through it the title bar label) falls back to the untranslated
+            // DOCSTRCT. Restricting the query to the IDDOCs on the navigation path keeps the walk
+            // intact and lets Solr drop the thousands of siblings server-side, so the same query
+            // returns at most as many documents as the chain is long.
+            //
+            // Restricting is only sound while the caller does not want the siblings listed: the loop
+            // below discards off-path children in that case anyway, so the narrower query cannot change
+            // the resulting TOC. With listSiblingRecords enabled the siblings are the requested output
+            // and the query has to stay open, even for a calendar-eligible anchor.
+            String mainChainRestriction = null;
+            if (!addAllSiblings && isCalendarEligibleParent(doc)) {
+                mainChainRestriction = buildMainChainRestriction(mainDocumentChain, iddoc);
+                if (mainChainRestriction == null) {
+                    // Nothing below this doc on the navigation path, so there is nothing to walk into
+                    return;
+                }
             }
             String queryValue;
             if (ancestorField.startsWith(SolrConstants.IDDOC)) {
@@ -871,6 +892,7 @@ public final class TocMaker {
                         .append(SolrConstants.PI)
                         .append(":*")
                         .append(filterQuery)
+                        .append(mainChainRestriction != null ? mainChainRestriction : "")
                         .toString();
                 logger.trace("Sibling query: {}", siblingQuery);
                 SolrDocumentList childDocs = DataManager.getInstance()
@@ -893,6 +915,42 @@ public final class TocMaker {
                 }
             }
         }
+    }
+
+    /**
+     * Builds an additional query clause that narrows a sibling query down to the documents on the current navigation path.
+     *
+     * <p>
+     * Appending this to the sibling query is what lets the walk continue into a calendar-eligible parent's children without enumerating them: the
+     * clause is evaluated by Solr, so the response holds at most as many documents as {@code mainDocumentChain} is long instead of every issue of a
+     * newspaper. All other constraints of the sibling query - the ancestor field clause above all - stay in place, so a document is still only ever
+     * attached below its real parent.
+     *
+     * <p>
+     * Note that {@code mainDocumentChain} accumulates the ancestors of every configured ancestor identifier field in one list, so it may well contain
+     * IDDOCs that are not children of {@code parentIddoc} at all. Those simply fail the query's ancestor field clause.
+     *
+     * @param mainDocumentChain IDDOC path from the loaded record (index 0) up to the top ancestor
+     * @param parentIddoc IDDOC of the document whose children are being queried; excluded from the clause
+     * @return the query clause, or null if the chain holds no IDDOC other than {@code parentIddoc}
+     * @should return clause for every chain iddoc except the parent
+     * @should return null if chain holds no other iddoc
+     * @should return null if chain is null or empty
+     */
+    static String buildMainChainRestriction(List<String> mainDocumentChain, String parentIddoc) {
+        if (mainDocumentChain == null || mainDocumentChain.isEmpty()) {
+            return null;
+        }
+
+        List<String> values = mainDocumentChain.stream()
+                .filter(chainIddoc -> chainIddoc != null && !chainIddoc.equals(parentIddoc))
+                .map(chainIddoc -> "\"" + chainIddoc + "\"")
+                .toList();
+        if (values.isEmpty()) {
+            return null;
+        }
+
+        return " +" + SolrConstants.IDDOC + ":(" + String.join(" OR ", values) + ")";
     }
 
     /**
@@ -1172,12 +1230,12 @@ public final class TocMaker {
     }
 
     /**
-     * Applies thumbnail and PDF permissions onto already-constructed TOCElements based on a per-PI batch result.
-     * Used by the two-pass buildToc flow to defer permission resolution until after structure assembly.
+     * Applies thumbnail and PDF permissions onto already-constructed TOCElements based on a per-PI batch result. Used by the two-pass buildToc flow
+     * to defer permission resolution until after structure assembly.
      *
      * @param trees list of per-ancestor-field TOCElement lists to update in place
-     * @param batch result of AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges keyed
-     *              identifier -&gt; privilege -&gt; LOGID -&gt; permission
+     * @param batch result of AccessConditionUtils.checkAccessPermissionsForPisAndPrivileges keyed identifier -&gt; privilege -&gt; LOGID -&gt;
+     *            permission
      * @param pdfNeeded whether PDF permissions should be applied
      */
     private static void applyPermissionsToTocElements(List<List<TOCElement>> trees,

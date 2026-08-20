@@ -1,0 +1,40 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:component="http://xmlns.jcp.org/jsf/composite/components">
+    <!-- Recursively renders a CMSNavigationItem tree (e.g. cmsBean.navigationMenuItems) as a nested,
+         always-visible link list for the sitemap page. Uses plain ui:include/ui:param recursion rather
+         than a self-referencing composite component: a composite component including itself triggers a
+         StackOverflowError in Mojarra's composite-component client-id tracking
+         ("Could not Resolve Variable [Overflow]: ..._TRACKED_IDS"). Plain facelet includes don't have
+         that issue since they carry no composite client-id metadata.
+         Uses c:forEach (a build-time JSTL tag) rather than ui:repeat: ui:repeat's "var" is a
+         request-scoped iteration variable resolved outside the VariableMapper chain, which is
+         incompatible with referencing it from a nested ui:param - that combination recurses infinitely
+         while resolving the var ("Could not Resolve Variable [Overflow]: navItem"). c:forEach's "var" is
+         a plain page-scope variable set at view-build time, which nested ui:include/ui:param can see
+         correctly. This is safe here since the navigation tree doesn't change within a single render. -->
+    <ul class="view-sitemap__list">
+        <c:forEach
+            var="navItem"
+            items="#{items}">
+            <h:panelGroup rendered="#{navItem.valid and navItem.shouldDisplay}">
+                <li class="view-sitemap__list-item">
+                    <component:navigationLink
+                        navItem="#{navItem}"
+                        linkClass="view-sitemap__list-link" />
+                    <h:panelGroup rendered="#{!navItem.activeChildItems.isEmpty()}">
+                        <ui:include src="/resources/components/sitemapNavTree.xhtml">
+                            <ui:param
+                                name="items"
+                                value="#{navItem.activeChildItems}" />
+                        </ui:include>
+                    </h:panelGroup>
+                </li>
+            </h:panelGroup>
+        </c:forEach>
+    </ul>
+</ui:composition>

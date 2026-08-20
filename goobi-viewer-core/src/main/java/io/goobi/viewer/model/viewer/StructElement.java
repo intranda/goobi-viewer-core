@@ -128,8 +128,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * Like {@link #StructElement(String, SolrDocument)}, but uses pre-loaded shape documents
-     * instead of issuing a per-element Solr query. Pass an empty list to signal "no shapes".
+     * Like {@link #StructElement(String, SolrDocument)}, but uses pre-loaded shape documents instead of issuing a per-element Solr query. Pass an
+     * empty list to signal "no shapes".
      *
      * @param luceneId Solr IDDOC
      * @param doc primary Solr document
@@ -224,8 +224,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
-     * Like {@link #init(SolrDocument)}, but uses pre-loaded shape documents instead of querying Solr.
-     * Pass an empty list to explicitly signal "no shapes"; pass null to fall back to a Solr query.
+     * Like {@link #init(SolrDocument)}, but uses pre-loaded shape documents instead of querying Solr. Pass an empty list to explicitly signal "no
+     * shapes"; pass null to fall back to a Solr query.
      *
      * @param solrDoc SolrDocument
      * @param preloadedShapeDocs pre-fetched SHAPE child docs keyed by IDDOC_OWNER, or null to query
@@ -860,20 +860,17 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     /**
      * Returns the group memberships with any entry whose value matches this element's anchor PI removed.
      *
-     * <p>Some indexer pipelines emit a {@code GROUPID_*} field whose value is identical to the
-     * record's {@code PI_ANCHOR} / {@code PI_PARENT}, e.g. a newspaper volume tagged with
-     * {@code GROUPID_NEWSPAPER} pointing at the same anchor that {@code PI_ANCHOR} already
-     * references. The raw {@link #getGroupMemberships()} map then contains an entry that
-     * is semantically a duplicate of the anchor relationship; UI code that renders both a
-     * group listing and an anchor link (such as {@code widget_relatedGroups.xhtml}) ends up
-     * showing the same target twice.
+     * <p>
+     * Some indexer pipelines emit a {@code GROUPID_*} field whose value is identical to the record's {@code PI_ANCHOR} / {@code PI_PARENT}, e.g. a
+     * newspaper volume tagged with {@code GROUPID_NEWSPAPER} pointing at the same anchor that {@code PI_ANCHOR} already references. The raw
+     * {@link #getGroupMemberships()} map then contains an entry that is semantically a duplicate of the anchor relationship; UI code that renders
+     * both a group listing and an anchor link (such as {@code widget_relatedGroups.xhtml}) ends up showing the same target twice.
      *
-     * <p>The raw map is left untouched for callers that depend on it (e.g.
-     * {@link io.goobi.viewer.model.viewer.ViewManager#createCalendarView()} for records
-     * indexed without {@code PI_ANCHOR}), so the dedupe is opt-in via this getter.
+     * <p>
+     * The raw map is left untouched for callers that depend on it (e.g. {@link io.goobi.viewer.model.viewer.ViewManager#createCalendarView()} for
+     * records indexed without {@code PI_ANCHOR}), so the dedupe is opt-in via this getter.
      *
-     * @return a copy of {@code groupMemberships} with anchor-equal entries filtered out;
-     *         never null
+     * @return a copy of {@code groupMemberships} with anchor-equal entries filtered out; never null
      * @should return all entries when no anchor pi is known
      * @should remove entries whose value equals the anchor pi
      */
@@ -958,8 +955,13 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             SolrDocument docChild = DataManager.getInstance()
                     .getSearchIndex()
                     .getFirstDoc(
-                            new StringBuilder("+").append(groupIdField).append(":\"").append(getPi())
-                                    .append("\" +").append(SolrConstants.ISWORK).append(":true").toString(),
+                            new StringBuilder("+").append(groupIdField)
+                                    .append(":\"")
+                                    .append(getPi())
+                                    .append("\" +")
+                                    .append(SolrConstants.ISWORK)
+                                    .append(":true")
+                                    .toString(),
                             Collections.singletonList(field), Collections.singletonList(new StringPair(groupOrderField, "asc")));
             if (docChild == null) {
                 logger.warn("Group (PI: {}) has no child element: Cannot determine appropriate value", getPi());
@@ -983,14 +985,36 @@ public class StructElement extends StructElementStub implements Comparable<Struc
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public StructElement getFirstVolume(List<String> fields) throws PresentationException, IndexUnreachableException {
+        return getFirstVolume(fields, Collections.emptyList());
+    }
+
+    /**
+     * getFirstVolume.
+     *
+     * @should return correct value
+     * @should return null if StructElement not anchor
+     * @should throw IllegalArgumentException if field is null
+     * @param fields Solr field names to include in the child document query
+     * @param requiredFields fields that must be present in the volume document; may be null or empty if there are none
+     * @return the first child volume StructElement for an anchor, or null if none is found
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public StructElement getFirstVolume(List<String> fields, List<String> requiredFields) throws PresentationException, IndexUnreachableException {
 
         if (anchor) {
             List<StringPair> sortFields = DataManager.getInstance().getConfiguration().getTocVolumeSortFieldsForTemplate(getDocStructType());
 
+            StringBuilder sbQuery = new StringBuilder("+").append(SolrConstants.PI_PARENT).append(":\"").append(getPi()).append('"');
+            if (requiredFields != null) {
+                for (String requiredField : requiredFields) {
+                    sbQuery.append(" +").append(requiredField).append(":*");
+                }
+            }
+
             SolrDocument docVolume = DataManager.getInstance()
                     .getSearchIndex()
-                    .getFirstDoc(new StringBuilder(SolrConstants.PI_PARENT).append(":\"").append(getPi()).append('"').toString(), fields,
-                            sortFields);
+                    .getFirstDoc(sbQuery.toString(), fields, sortFields);
             if (docVolume == null) {
                 logger.warn("Anchor has no child element: Cannot determine appropriate value");
             } else {
@@ -1008,8 +1032,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             String groupOrderField = groupIdField.replace(SolrConstants.PREFIX_GROUPID, SolrConstants.PREFIX_GROUPORDER);
             List<StringPair> sortFields = Collections.singletonList(new StringPair(groupOrderField, "asc"));
 
-            String query = new StringBuilder("+").append(groupIdField).append(":\"").append(getPi())
-                    .append("\" +").append(SolrConstants.ISWORK).append(":true").toString();
+            StringBuilder sbQuery = new StringBuilder("+").append(groupIdField)
+                    .append(":\"")
+                    .append(getPi())
+                    .append("\" +")
+                    .append(SolrConstants.ISWORK)
+                    .append(":true");
+            if (requiredFields != null) {
+                for (String requiredField : requiredFields) {
+                    sbQuery.append(" +").append(requiredField).append(":*");
+                }
+            }
+            String query = sbQuery.toString();
             logger.trace("Group first volume query: {}", query);
             SolrDocument docVolume = DataManager.getInstance()
                     .getSearchIndex()
@@ -1095,22 +1129,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         return ret;
     }
 
-    
     public List<ShapeMetadata> getShapeMetadata() {
         return shapeMetadata;
     }
 
-    
     public void setShapeMetadata(List<ShapeMetadata> shapeMetadata) {
         this.shapeMetadata = shapeMetadata;
     }
 
-    
     public boolean isRtl() {
         return rtl;
     }
 
-    
     public void setRtl(boolean rtl) {
         this.rtl = rtl;
     }
@@ -1151,22 +1181,18 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             this.pageNo = pageNo;
         }
 
-        
         public String getLabel() {
             return label;
         }
 
-        
         public String getShape() {
             return shape;
         }
 
-        
         public String getCoords() {
             return coords;
         }
 
-        
         public String getUrl() {
             PageType pageType =
                     Optional.ofNullable(BeanUtils.getNavigationHelper()).map(NavigationHelper::getCurrentPageType).orElse(PageType.viewImage);
@@ -1186,13 +1212,11 @@ public class StructElement extends StructElementStub implements Comparable<Struc
             return sbUrl.toString();
         }
 
-        
         public String getLogId() {
 
             return logId;
         }
 
-        
         public int getPageNo() {
             return pageNo;
         }

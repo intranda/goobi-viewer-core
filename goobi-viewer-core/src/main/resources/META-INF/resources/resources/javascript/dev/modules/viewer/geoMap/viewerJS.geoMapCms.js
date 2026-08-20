@@ -72,7 +72,7 @@ var viewerJS = (function (viewer) {
             layer.onFeatureClick.subscribe((feature) => {
                 if (feature.properties?.link && !_hasVisibleItems(feature) && !feature.properties.highlighted) {
                     $(layer.config.search.loader).show();
-                    window.location.assign(feature.properties.link);
+                    window.open(feature.properties.link, layer.config.search.linkTarget);
                 }
             });
             //link to search url on feature click
@@ -85,7 +85,7 @@ var viewerJS = (function (viewer) {
 
                         if (feature.properties?.link) {
                             $(layer.config.search.loader).show();
-                            window.open(feature.properties.link, '_self');
+                            window.open(feature.properties.link, layer.config.search.linkTarget);
                         } else if (layer.config.search?.searchUrlTemplate && feature.properties?.filterQuery) {
                             $(layer.config.search.loader).show();
                             window.open(layer.config.search.searchUrlTemplate + '?filterQuery=' + feature.properties.filterQuery, layer.config.search.linkTarget);

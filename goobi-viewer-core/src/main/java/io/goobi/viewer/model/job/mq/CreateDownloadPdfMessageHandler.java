@@ -56,8 +56,8 @@ import jakarta.mail.MessagingException;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
- * Message handler that processes requests to generate PDF download files for digitized records.
- * It delegates PDF creation to the content server and notifies the requester by e-mail upon completion.
+ * Message handler that processes requests to generate PDF download files for digitized records. It delegates PDF creation to the content server and
+ * notifies the requester by e-mail upon completion.
  */
 public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageStatus> {
 
@@ -91,10 +91,16 @@ public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageSt
             //if the file does not exist, create it
             if (!Files.exists(pdfFile)) {
                 try {
-                    job.create(work); //this takes time...                    
+                    job.create(work); //this takes time... (no-op if another thread/process is already creating the file)
                 } catch (ContentLibException | PresentationException | IOException e) {
                     Files.deleteIfExists(pdfFile);
                     throw e;
+                }
+                if (!Files.exists(pdfFile)) {
+                    //another thread/process is already creating the file; wait 5 min and try again
+                    message.setDelay(DELAY_IF_PDF_IS_BEING_CREATED_MILLIS);
+                    message.setRetryCount(message.getRetryCount() - 1);
+                    return MessageStatus.WAIT;
                 }
             }
 

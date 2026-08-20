@@ -76,7 +76,7 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
     @Column(name = "solr_query", columnDefinition = "TEXT")
     private String solrQuery = "";
     @Column(name = "sort_field", length = 40)
-    private String sortField = "RELEVANCE";
+    private String sortField = "";
     @Column(name = "grouping_field", length = 40)
     private String groupingField = "";
     @Column(name = "result_group", columnDefinition = "VARCHAR(40)")
@@ -252,15 +252,11 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
 
             Search s = createSearch(resultGroups, component);
 
-            if (StringUtils.isNotBlank(this.getSortField())) {
-                s.setSortString(getSortFieldForLanguage(locale.getLanguage()));
-                searchBean.setSortString(getSortFieldForLanguage(locale.getLanguage()));
-            } else if (StringUtils.isNotBlank(this.search.getSortString()) && !this.search.getSortString().equals("-")) {
-                s.setSortString(this.search.getSortString());
-                searchBean.setSortString(this.search.getSortString());
-            } else if (StringUtils.isEmpty(s.getSortString()) && searchBean.getSortString().equals("-")) {
-                s.setSortString(searchBean.getSortString());
-            }
+            // Resolve the sort string (explicit component sort > current search/URL sort > configured default) and apply it
+            // to both the SearchBean and the executed search. Set the SearchBean first, then copy its resolved value so a
+            // RANDOM default yields the same random_<seed> for the executed search, the result URL and the sort dropdown.
+            searchBean.setSortString(resolveSortString(this.search.getSortString(), locale.getLanguage()));
+            s.setSortString(searchBean.getSortString());
             //NOTE: Cannot sort by multivalued fields like DC.
             if (StringUtils.isNotBlank(this.getGroupingField())) {
                 String sortString = s.getSortString() == null ? "" : s.getSortString().replace("-", "");
@@ -301,13 +297,36 @@ public class CMSRecordListContent extends CMSContent implements PagedCMSContent 
         }
     }
 
+    /**
+     * Resolves the sort string to use for this record list. Priority: an explicit sort field configured on the component,
+     * then the sort currently applied via the URL / current search, and finally the configured default sort field
+     * ({@link io.goobi.viewer.controller.Configuration#getDefaultSortField(String)}) - i.e. the same source used by the sort
+     * dropdown and {@link io.goobi.viewer.managedbeans.SearchBean}.
+     *
+     * @param currentSortString sort string currently applied to the search/SearchBean (may be null, empty or "-")
+     * @param language current language, used for language-specific sort fields and for the configured default
+     * @return the resolved sort string
+     * @should return explicitly configured sort field
+     * @should return current sort string if sort field blank
+     * @should return configured default sort field if sort field and current sort blank
+     */
+    String resolveSortString(String currentSortString, String language) {
+        if (StringUtils.isNotBlank(this.getSortField())) {
+            return getSortFieldForLanguage(language);
+        }
+        if (StringUtils.isNotBlank(currentSortString) && !"-".equals(currentSortString)) {
+            return currentSortString;
+        }
+        return DataManager.getInstance().getConfiguration().getDefaultSortField(language);
+    }
+
     public Search createSearch(List<SearchResultGroup> resultGroups, CMSComponent component) {
         if (isUseFacetting(component)) {
             return new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups);
-        } else {
-            return new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups,
-                    Collections.emptyList());
         }
+        
+        return new Search(SearchHelper.SEARCH_TYPE_REGULAR, DataManager.getInstance().getConfiguration().getDefaultSearchFilter(), resultGroups,
+                Collections.emptyList());
     }
 
     private boolean isUseFacetting(CMSComponent component) {

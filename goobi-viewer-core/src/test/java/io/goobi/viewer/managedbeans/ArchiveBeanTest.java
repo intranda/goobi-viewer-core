@@ -21,10 +21,18 @@
  */
 package io.goobi.viewer.managedbeans;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractSolrEnabledTest;
+import io.goobi.viewer.exceptions.ArchiveException;
+import io.goobi.viewer.model.archives.ArchiveEntry;
+import io.goobi.viewer.model.archives.ArchiveManager;
+import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.archives.ArchiveTree;
 
 class ArchiveBeanTest extends AbstractSolrEnabledTest {
@@ -49,6 +57,37 @@ class ArchiveBeanTest extends AbstractSolrEnabledTest {
         Assertions.assertEquals("", bean.getSearchString());
         Assertions.assertNull(bean.getArchiveTree());
         Assertions.assertFalse(bean.isDatabaseLoaded());
+    }
+
+    /**
+     * @see ArchiveBean#initializeArchiveTree(String)
+     * @verifies not throw NullPointerException when archive becomes unresolvable after the null check
+     */
+    @Test
+    void initializeArchiveTree_shouldNotThrowNullPointerExceptionWhenArchiveBecomesUnresolvableAfterTheNullCheck() throws Exception {
+        ArchiveEntry rootEntry = new ArchiveEntry(0, 0, null);
+        ArchiveTree tree = new ArchiveTree();
+        tree.update(rootEntry);
+
+        ArchiveResource resource = new ArchiveResource("resource 1", "r1",
+                ZonedDateTime.of(2000, 1, 1, 1, 1, 1, 1, ZoneOffset.systemDefault()).format(ArchiveResource.DATE_TIME_FORMATTER), "10");
+
+        // The archive resolves once and is gone from the shared archive list afterwards, simulating a concurrent
+        // reload of that list in another request thread
+        ArchiveManager archiveManager = Mockito.mock(ArchiveManager.class);
+        Mockito.when(archiveManager.getArchive(Mockito.anyString())).thenReturn(resource, (ArchiveResource) null);
+        Mockito.when(archiveManager.getArchiveTree(Mockito.anyString())).thenReturn(tree);
+
+        ArchiveBean bean = new ArchiveBean(archiveManager);
+        bean.setCurrentResource("r1");
+
+        try {
+            bean.initializeArchiveTree();
+        } catch (ArchiveException e) {
+            // The CMS archive config lookup needs a database, which is not part of this test setup. Only an
+            // unchecked NullPointerException would indicate the regression under test.
+        }
+        Assertions.assertNotNull(bean.getArchiveTree());
     }
 
 }

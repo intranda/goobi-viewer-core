@@ -59,6 +59,7 @@ public enum PageType {
     expandCollection("expandCollection"),
     firstWorkInCollection("rest/redirect/toFirstWork"),
     sitelinks("sitelinks"),
+    sitemap("sitemap"),
     archives("archives"),
     archive("archive"),
     timematrix("timematrix"),

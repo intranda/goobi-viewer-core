@@ -44,6 +44,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -138,11 +139,14 @@ public class CollectionViewBean implements Serializable {
      * @return a unique string ID derived from the owning page or template and the content item ID
      */
     public static String getCollectionId(CMSCollectionContent content) {
-        String componentId = content.getOwningComponent() == null ? "component" : "component" + content.getOwningComponent().getId();
-        if (content.getOwningComponent().getOwningPage() != null) {
-            return content.getOwningComponent().getOwningPage().getId() + "_" + componentId + content.getItemId();
-        } else if (content.getOwningComponent().getOwningTemplate() != null) {
-            return content.getOwningComponent().getOwningTemplate().getId() + "_" + componentId + content.getItemId();
+        // getOwningComponent() may be null (the ternary below already anticipated it); capture once and guard every
+        // dereference to avoid a NullPointerException on the following branches (java:S2259)
+        PersistentCMSComponent owningComponent = content.getOwningComponent();
+        String componentId = owningComponent == null ? "component" : "component" + owningComponent.getId();
+        if (owningComponent != null && owningComponent.getOwningPage() != null) {
+            return owningComponent.getOwningPage().getId() + "_" + componentId + content.getItemId();
+        } else if (owningComponent != null && owningComponent.getOwningTemplate() != null) {
+            return owningComponent.getOwningTemplate().getId() + "_" + componentId + content.getItemId();
         } else {
             return componentId + "_" + content.getItemId();
         }

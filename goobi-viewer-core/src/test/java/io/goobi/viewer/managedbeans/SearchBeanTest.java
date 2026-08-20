@@ -28,6 +28,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -53,6 +54,8 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.search.AdvancedSearchFieldConfiguration;
 import io.goobi.viewer.model.search.AdvancedSearchOrigin;
+import io.goobi.viewer.model.search.FacetItem;
+import io.goobi.viewer.model.search.IFacetItem;
 import io.goobi.viewer.model.search.Search;
 import io.goobi.viewer.model.search.SearchAggregationType;
 import io.goobi.viewer.model.search.SearchFacets;
@@ -131,6 +134,43 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         }
         Assertions.assertNotNull(dcItem);
         assertEquals("col", dcItem.getValue());
+    }
+
+    /**
+     * @see SearchBean#resetSearchInCurrentItemTerm()
+     * @verifies clear the search in current item term
+     */
+    @Test
+    void resetSearchInCurrentItemTerm_shouldClearTheSearchInCurrentItemTerm() {
+        searchBean.resetAdvancedSearchParameters();
+        assertEquals(3, searchBean.getAdvancedSearchQueryGroup().getQueryItems().size());
+        searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1).setValue("foo");
+        assertEquals("foo", searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1).getValue());
+
+        searchBean.resetSearchInCurrentItemTerm();
+        assertEquals("", searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1).getValue());
+    }
+
+    /**
+     * @see SearchBean#setAdvancedSearchFieldTemplate(String)
+     * @verifies not reset query items when template unchanged
+     */
+    @Test
+    void setAdvancedSearchFieldTemplate_shouldNotResetQueryItemsWhenTemplateUnchanged() {
+        // Establish the default template ("-" resolves to the default template name)
+        searchBean.setAdvancedSearchFieldTemplate("-");
+        // Enter a value into the first query item
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setField("MD_TITLE");
+        item.setValue("foo");
+
+        // Returning to the advanced search form passes "-" again (see searchAdvanced2 mapping / back link).
+        // Since the template is already the default, this must NOT wipe the entered query items.
+        searchBean.setAdvancedSearchFieldTemplate("-");
+
+        SearchQueryItem preserved = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        assertEquals("MD_TITLE", preserved.getField());
+        assertEquals("foo", preserved.getValue());
     }
 
     /**
@@ -482,6 +522,92 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchBean#generateAdvancedSearchMainQuery()
+     * @verifies build topstruct exclusion filter query for non-hierarchical NOT item
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldBuildTopstructExclusionForNonHierarchicalNOT() {
+        searchBean.resetAdvancedSearchParameters();
+
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setOperator(SearchItemOperator.NOT);
+        item.setField("MD_TITLE");
+        item.setValue("foo");
+
+        String query = searchBean.generateAdvancedSearchMainQuery();
+        // The inline negation stays in the stored query so the NOT operator round-trips on reload/bookmark
+        Assertions.assertTrue(query.contains("-(MD_TITLE:(foo))"), query);
+        // The actual work-level exclusion is a separate topstruct-join filter query
+        assertEquals("(*:* -_query_:\"{!join from=PI_TOPSTRUCT to=PI}(MD_TITLE:(foo))\")",
+                searchBean.getAdvancedSearchNegationFilterQuery());
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchMainQuery()
+     * @verifies not build exclusion filter query when no NOT items present
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldNotBuildExclusionFilterQueryWhenNoNOTItems() {
+        searchBean.resetAdvancedSearchParameters();
+
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setOperator(SearchItemOperator.AND);
+        item.setField("MD_TITLE");
+        item.setValue("foo");
+
+        searchBean.generateAdvancedSearchMainQuery();
+        Assertions.assertNull(searchBean.getAdvancedSearchNegationFilterQuery());
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchMainQuery()
+     * @verifies include only NOT items in exclusion filter query for a mixed group
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldIncludeOnlyNOTItemsInExclusionFilterQuery() {
+        searchBean.resetAdvancedSearchParameters();
+
+        {
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+            item.setOperator(SearchItemOperator.AND);
+            item.setField("MD_TITLE");
+            item.setValue("foo");
+        }
+        {
+            SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(1);
+            item.setOperator(SearchItemOperator.NOT);
+            item.setField("MD_AUTHOR");
+            item.setValue("bar");
+        }
+
+        searchBean.generateAdvancedSearchMainQuery();
+        assertEquals("(*:* -_query_:\"{!join from=PI_TOPSTRUCT to=PI}(MD_AUTHOR:(bar))\")",
+                searchBean.getAdvancedSearchNegationFilterQuery());
+        // The positive AND item must not leak into the exclusion filter query
+        Assertions.assertFalse(searchBean.getAdvancedSearchNegationFilterQuery().contains("MD_TITLE"));
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchMainQuery()
+     * @verifies escape quotes in exclusion filter query for a phrase NOT item
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldEscapeQuotesInExclusionFilterQueryForPhrase() {
+        searchBean.resetAdvancedSearchParameters();
+
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setOperator(SearchItemOperator.NOT);
+        item.setField("MD_TITLE");
+        item.setValue("\"foo bar\"");
+
+        searchBean.generateAdvancedSearchMainQuery();
+        String negation = searchBean.getAdvancedSearchNegationFilterQuery();
+        Assertions.assertTrue(negation.startsWith("(*:* -_query_:\"{!join from=PI_TOPSTRUCT to=PI}"), negation);
+        // Inner double quotes from the phrase must be backslash-escaped so the _query_ string literal stays valid
+        Assertions.assertTrue(negation.contains("\\\""), negation);
+    }
+
+    /**
      * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
      * @verifies construct query info correctly
      */
@@ -541,6 +667,29 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
 
         assertEquals(URLEncoder.encode(SolrConstants.DC + ":foo;;" + SolrConstants.DC + ":bar;;", StringTools.DEFAULT_ENCODING),
                 searchBean.getFacets().getActiveFacetString());
+    }
+
+    /**
+     * @see SearchBean#generateAdvancedSearchMainQuery(boolean)
+     * @verifies add hierarchical NOT item as an exclusion facet
+     */
+    @Test
+    void generateAdvancedSearchMainQuery_shouldAddHierarchicalNOTItemAsExclusionFacet() throws Exception {
+        searchBean.resetAdvancedSearchParameters();
+
+        SearchQueryItem item = searchBean.getAdvancedSearchQueryGroup().getQueryItems().get(0);
+        item.setOperator(SearchItemOperator.NOT);
+        item.setField(SolrConstants.DC);
+        item.setValue("foo");
+        Assertions.assertTrue(item.isHierarchical());
+
+        searchBean.generateAdvancedSearchMainQuery();
+
+        assertEquals(URLEncoder.encode(FacetItem.EXCLUDE_PREFIX + SolrConstants.DC + ":foo;;", StringTools.DEFAULT_ENCODING),
+                searchBean.getFacets().getActiveFacetString());
+        List<IFacetItem> activeFacets = searchBean.getFacets().getActiveFacets();
+        Assertions.assertEquals(1, activeFacets.size());
+        Assertions.assertTrue(activeFacets.get(0).isExcluded());
     }
 
     /**
@@ -1275,7 +1424,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         List<SearchQueryItem> items = Arrays.asList(new SearchQueryItem(), new SearchQueryItem(), new SearchQueryItem());
         searchBean.getAdvancedSearchQueryGroup().injectItems(items);
 
-        searchBean.searchInRecord("PI_ANCHOR", "PPN456", "11.01.1895", "31.12.1895");
+        searchBean.searchInToc("PI_ANCHOR", "PPN456", "11.01.1895", "31.12.1895");
 
         Assertions.assertEquals(SolrConstants.CALENDAR_DAY, items.get(2).getField());
         Assertions.assertEquals("11.01.1895", items.get(2).getValue());
@@ -1297,7 +1446,7 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         searchBean.getAdvancedSearchQueryGroup().injectItems(items);
         items.get(1).setValue("vaduz");
 
-        searchBean.searchInRecord("PI_ANCHOR", "PPN456", "11.01.2021", "23.05.2021");
+        searchBean.searchInToc("PI_ANCHOR", "PPN456", "11.01.2021", "23.05.2021");
 
         Assertions.assertEquals("vaduz", items.get(1).getValue());
         Assertions.assertEquals(SolrConstants.CALENDAR_DAY, items.get(2).getField());
@@ -1322,12 +1471,39 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
             when(se.getDocStructType()).thenReturn("Monograph");
             mockedBeanUtils.when(BeanUtils::getActiveDocumentBean).thenReturn(adb);
 
-            searchBean.searchInRecord("PI_TOPSTRUCT", "PI_001", null, null);
+            searchBean.searchInToc("PI_TOPSTRUCT", "PI_001", null, null);
 
             AdvancedSearchOrigin origin = searchBean.getAdvancedSearchOrigin();
             Assertions.assertNotNull(origin);
             Assertions.assertEquals("PI_001", origin.getPi());
             Assertions.assertTrue(origin.isRecordOrigin());
+        }
+    }
+
+    /**
+     * @verifies not set advancedSearchOrigin when pi is blank
+     * @see SearchBean#searchInRecord(String, String, String, String)
+     */
+    @Test
+    void searchInRecord_shouldNotSetAdvancedSearchOriginWhenPiIsBlank() {
+        try (MockedStatic<BeanUtils> mockedBeanUtils = mockStatic(BeanUtils.class)) {
+            mockedBeanUtils.when(BeanUtils::getLocale).thenReturn(Locale.ENGLISH);
+            searchBean.resetAdvancedSearchParameters();
+
+            ActiveDocumentBean adb = mock(ActiveDocumentBean.class);
+            ViewManager vm = mock(ViewManager.class);
+            StructElement se = mock(StructElement.class);
+            when(adb.getViewManager()).thenReturn(vm);
+            when(vm.getTopStructElement()).thenReturn(se);
+            when(se.getLabel()).thenReturn("Test Record");
+            when(se.getDocStructType()).thenReturn("Monograph");
+            mockedBeanUtils.when(BeanUtils::getActiveDocumentBean).thenReturn(adb);
+
+            // A crawler hitting the search-in-record action without a loaded record supplies a null PI;
+            // the resulting origin has no target URL, so the bean must not expose it (would throw on render)
+            searchBean.searchInRecord("PI_TOPSTRUCT", null);
+
+            Assertions.assertNull(searchBean.getAdvancedSearchOrigin());
         }
     }
 
@@ -1356,6 +1532,27 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @verifies not set advancedSearchOrigin when cms page id is null
+     * @see SearchBean#executeSearch()
+     */
+    @Test
+    void executeSearch_shouldNotSetAdvancedSearchOriginWhenCmsPageIdIsNull() throws Exception {
+        // A transient CMS page (id == null) cannot yield a resolvable back-link, so no origin must be recorded
+        CMSPage page = new CMSPage();
+
+        NavigationHelper navHelper = mock(NavigationHelper.class);
+        when(navHelper.isCmsPage()).thenReturn(true);
+        when(navHelper.getCurrentCMSPage()).thenReturn(page);
+        when(navHelper.getSubThemeDiscriminatorQuerySuffix()).thenReturn("");
+        when(navHelper.getLocale()).thenReturn(Locale.ENGLISH);
+        searchBean.setNavigationHelper(navHelper);
+
+        searchBean.executeSearch();
+
+        Assertions.assertNull(searchBean.getAdvancedSearchOrigin());
+    }
+
+    /**
      * @verifies clear advancedSearchOrigin
      * @see SearchBean#resetSearchParameters()
      */
@@ -1380,5 +1577,110 @@ class SearchBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         }
 
         Assertions.assertNull(searchBean.getAdvancedSearchOrigin());
+    }
+
+    /**
+     * @see SearchBean#isExplicitSearchPerformed()
+     * @verifies return true if search string set
+     */
+    @Test
+    void isExplicitSearchPerformed_shouldReturnTrueIfSearchStringSet() {
+        searchBean.setSearchString("test");
+        Assertions.assertTrue(searchBean.isExplicitSearchPerformed());
+    }
+
+    /**
+     * @see SearchBean#isExplicitSearchPerformed()
+     * @verifies return false if search string empty
+     */
+    @Test
+    void isExplicitSearchPerformed_shouldReturnFalseIfSearchStringEmpty() {
+        searchBean.setSearchString("");
+        Assertions.assertFalse(searchBean.isExplicitSearchPerformed());
+    }
+
+    /**
+     * @see SearchBean#removeSearchTermAction()
+     * @verifies reset searchString correctly
+     */
+    @Test
+    void removeSearchTermAction_shouldResetSearchStringCorrectly() throws Exception {
+        searchBean.setSearchString("test");
+        searchBean.getFacets().setActiveFacetString("DC:sonstige");
+        Assertions.assertEquals(1, searchBean.getFacets().getActiveFacets().size());
+
+        searchBean.removeSearchTermAction();
+
+        assertEquals("", searchBean.getSearchString());
+        Assertions.assertFalse(searchBean.isExplicitSearchPerformed());
+        // Active facets must remain untouched
+        Assertions.assertEquals(1, searchBean.getFacets().getActiveFacets().size());
+    }
+
+    /**
+     * @see SearchBean#resetAllActiveFiltersAction()
+     * @verifies reset facets and searchString correctly
+     */
+    @Test
+    void resetAllActiveFiltersAction_shouldResetFacetsAndSearchStringCorrectly() throws Exception {
+        searchBean.setSearchString("test");
+        searchBean.getFacets().setActiveFacetString("DC:sonstige");
+        Assertions.assertEquals(1, searchBean.getFacets().getActiveFacets().size());
+
+        searchBean.resetAllActiveFiltersAction();
+
+        assertEquals("", searchBean.getSearchString());
+        Assertions.assertFalse(searchBean.isExplicitSearchPerformed());
+        Assertions.assertTrue(searchBean.getFacets().getActiveFacets().isEmpty());
+    }
+
+    /**
+     * @see SearchBean#isHasAvailableFacetFields()
+     * @verifies return false if no facet has content
+     */
+    @Test
+    void isHasAvailableFacetFields_shouldReturnFalseIfNoFacetHasContent() {
+        Assertions.assertFalse(searchBean.isHasAvailableFacetFields());
+    }
+
+    /**
+     * @see SearchBean#isHasAvailableFacetFields()
+     * @verifies return true if a field facet has sufficient values
+     */
+    @Test
+    void isHasAvailableFacetFields_shouldReturnTrueIfAFieldFacetHasSufficientValues() {
+        List<IFacetItem> items = new ArrayList<>(List.of(new FacetItem("MD_PLACEPUBLISH:a", false), new FacetItem("MD_PLACEPUBLISH:b", false)));
+        searchBean.getFacets().getAvailableFacets().put("MD_PLACEPUBLISH", items);
+        Assertions.assertTrue(searchBean.isHasAvailableFacetFields());
+    }
+
+    /**
+     * @see SearchBean#isHasAvailableFacetFields()
+     * @verifies return true if an active facet exists for a field
+     */
+    @Test
+    void isHasAvailableFacetFields_shouldReturnTrueIfAnActiveFacetExistsForAField() {
+        searchBean.getFacets().setActiveFacetString("MD_PLACEPUBLISH:foo");
+        Assertions.assertTrue(searchBean.isHasAvailableFacetFields());
+    }
+
+    /**
+     * @see SearchBean#isHasAvailableFacetFields()
+     * @verifies return true if the geo facet map is available
+     */
+    @Test
+    void isHasAvailableFacetFields_shouldReturnTrueIfTheGeoFacetMapIsAvailable() throws Exception {
+        NavigationHelper navHelper = mock(NavigationHelper.class);
+        when(navHelper.getSubThemeDiscriminatorQuerySuffix()).thenReturn("");
+        when(navHelper.getLocale()).thenReturn(Locale.ENGLISH);
+        searchBean.setNavigationHelper(navHelper);
+        searchBean.executeSearch();
+
+        String geoJson =
+                "{\"type\":\"rectangle\",\"vertices\":[[52.27468490157105,12.831527289994273],[52.78227376368535,12.831527289994273],"
+                        + "[52.78227376368535,13.864873763618117],[52.27468490157105,13.864873763618117],[52.27468490157105,12.831527289994273]]}";
+        searchBean.getFacets().setGeoFacetFeature(geoJson);
+
+        Assertions.assertTrue(searchBean.isHasAvailableFacetFields());
     }
 }

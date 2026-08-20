@@ -494,11 +494,6 @@ public class IndexResource {
         // ({!type=...}, {!parent ...} etc.) that would otherwise bypass the access-condition
         // suffix appended after this fragment.
         String finalQuery = SolrTools.cleanUpQuery(StringTools.unescapeCriticalUrlChracters(filterQuery));
-        List<String> facetQueries = new ArrayList<>();
-
-        if (StringUtils.isNotBlank(facetQuery)) {
-            facetQueries.add(facetQuery);
-        }
 
         String coordQuery = "*:*";
         if (!finalQuery.startsWith("{!join")) {
@@ -508,9 +503,11 @@ public class IndexResource {
                             .append(" +({wktField}:{wktCoords}) ".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion))
                             .append(SearchHelper.getAllSuffixes(servletRequest, true, true))
                             .toString();
+            if (StringUtils.isNotBlank(facetQuery)) {
+                coordQuery = facetQuery;
+            }
         } else {
             coordQuery = "{wktField}:{wktCoords}".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion);
-            facetQueries.add(coordQuery);
         }
 
         Collection<GeoMapFeature> features;

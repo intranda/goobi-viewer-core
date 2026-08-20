@@ -7,13 +7,13 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:util="http://goobi.io/util">
     <composite:interface />
 
     <composite:implementation>
         <!-- CITATION RECOMMENDATION -->
-        <ui:fragment
-            rendered="#{configurationBean.displaySidebarWidgetUsageCitationRecommendation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
+        <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationRecommendation and fn:length(activeDocumentBean.viewManager.citationStringHtml) > 0}">
             <h3
                 id="titleCiteRecommendation"
                 class="widget-citation__subtitle">
@@ -35,9 +35,10 @@
                         </h:selectOneMenu>
                     </div>
                     <div class="widget-citation__citerecommendation-text-wrapper">
-                        <i
-                            class="fa fa-quote-right"
-                            aria-hidden="true" />
+                        <util:icon
+                            icon="quote"
+                            styleClass="widget-citation__citerecommendation-quote-icon"
+                            svgClass="icon icon-xxxl" />
                         <button
                             type="button"
                             id="citeCopyText"

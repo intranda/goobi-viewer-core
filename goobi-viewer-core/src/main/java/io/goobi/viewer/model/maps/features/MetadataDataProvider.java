@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.maps.features;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +38,8 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 
 /**
- * Feature data provider that retrieves Solr metadata documents (DOCTYPE:METADATA) and their
- * parent top-level records for use in geo map feature generation.
+ * Feature data provider that retrieves Solr metadata documents (DOCTYPE:METADATA) and their parent top-level records for use in geo map feature
+ * generation.
  */
 public class MetadataDataProvider extends AbstractFeatureDataProvider {
 
@@ -60,9 +61,12 @@ public class MetadataDataProvider extends AbstractFeatureDataProvider {
         String topDocQuery = SearchHelper.AGGREGATION_QUERY_PREFIX + metadataQuery;
 
         Map<String, String> paramMap = SearchHelper.getExpandQueryParams(metadataQuery, MAX_METATA_PER_RECORD);
-        paramMap.put("fq", filterQuery);
 
-        return search(maxResults, topDocQuery, facetFilterQueries, paramMap);
+        List<String> filterQueries = new ArrayList<>(facetFilterQueries);
+        filterQueries.add(filterQuery);
+        //        paramMap.put("fq", filterQuery);
+
+        return search(maxResults, topDocQuery, filterQueries, paramMap);
 
     }
 

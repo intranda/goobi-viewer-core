@@ -858,28 +858,35 @@ public final class StringTools {
 
         // Collapse separators left behind by an empty placeholder (case: blank logId)
         filename = filename.replaceAll("[_-]{2,}", "_"); // duplicate separators -> single
-        filename = filename.replaceAll("[_-]+\\.", ".");  // trailing separator before extension
+        // Strips a trailing separator before the extension. The possessive quantifier [_-]++ avoids super-linear backtracking on long
+        // separator runs without a dot; it is semantically identical here because '.' is not in the [_-] class, so the engine never
+        // needs to give characters back. Sonar keeps reporting java:S8786 on the possessive form, which is a false positive.
+        filename = filename.replaceAll("[_-]++\\.", "."); //NOSONAR S8786 false positive: possessive quantifier cannot backtrack
         filename = filename.replaceAll("^[_-]+", "");      // leading separator
 
         return filename;
     }
 
     /**
-     * Sanitizes a filename so that it contains only printable ASCII characters (U+0020–U+007E). Unicode letters with diacritics are first decomposed
-     * via NFD normalization and their combining marks stripped, preserving the base Latin letter (e.g. {@code ü} → {@code u}). All remaining
-     * non-ASCII characters (such as the En-Dash U+2013) are replaced with a hyphen, and consecutive hyphens are collapsed into one.
+     * Sanitizes a filename so that it contains only printable ASCII characters (U+0020–U+007E) and none of the characters that require escaping
+     * inside an HTTP quoted-string (RFC 7230). Unicode letters with diacritics are first decomposed via NFD normalization and their combining marks
+     * stripped, preserving the base Latin letter (e.g. {@code ü} → {@code u}). All remaining non-ASCII characters (such as the En-Dash U+2013), as
+     * well as double quotes and backslashes, are replaced with a hyphen, and consecutive hyphens are collapsed into one.
      *
      * <p>
-     * HTTP response headers (e.g. {@code Content-Location}) must not contain characters outside the printable ASCII range; Tomcat rejects such
-     * headers with an {@link IllegalArgumentException}. Calling this method on the target filename during CMS media upload prevents that error.
+     * HTTP response headers (e.g. {@code Content-Location}, {@code Content-Disposition}) must not contain characters outside the printable ASCII
+     * range; Tomcat rejects such headers with an {@link IllegalArgumentException}. A double quote in the filename would additionally break out of
+     * the quoted {@code filename="..."} header parameter. Calling this method on the target filename before it is placed in a header prevents both
+     * issues.
      *
      * @param filename raw filename that may contain non-ASCII characters; may be {@code null}
-     * @return filename containing only printable ASCII characters, or {@code null} if input was {@code null}
+     * @return filename containing only printable ASCII characters minus quotes/backslashes, or {@code null} if input was {@code null}
      * @should return null for null input
      * @should preserve ascii filenames unchanged
      * @should replace en dash with hyphen
      * @should strip combining diacritical marks
      * @should collapse consecutive hyphens
+     * @should replace double quotes and backslashes with hyphen
      */
     public static String sanitizeFilenameToAscii(String filename) {
         if (filename == null) {
@@ -889,6 +896,8 @@ public final class StringTools {
         String normalized = removeDiacriticalMarks(filename);
         // Replace all remaining non-printable-ASCII characters (e.g. en-dash U+2013) with hyphen
         normalized = normalized.replaceAll("[^\\x20-\\x7E]", "-");
+        // Double quotes and backslashes must be escaped inside an HTTP quoted-string; simply drop them instead
+        normalized = normalized.replace("\"", "-").replace("\\", "-");
         // Collapse consecutive hyphens into one
         normalized = normalized.replaceAll("-{2,}", "-");
         return normalized;

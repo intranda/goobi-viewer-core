@@ -563,7 +563,6 @@ public class RecordResource {
      * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting), user comments
      * (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
      *
-     * @param pi The pi of the manifest to search
      * @param query The search query; a list of space separated terms. The search is for all complete words which match any of the query terms. Terms
      *            may contain the wildcard character '*' to represent an arbitrary number of characters within the word
      * @param motivation a space separated list of motivations of annotations to search for. Search for the following motivations is implemented:
@@ -587,7 +586,7 @@ public class RecordResource {
     @ApiResponse(responseCode = "200", description = "IIIF search result")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or query")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
-    public SearchResult searchInManifest(@PathParam("pi") String pi,
+    public SearchResult searchInManifest(
             @Parameter(description = "Search query string") @QueryParam("q") String query,
             @Parameter(description = "Space-separated list of annotation motivations to search")
                     @QueryParam("motivation") String motivation,
@@ -601,7 +600,6 @@ public class RecordResource {
     /**
      * autoCompleteInManifest.
      *
-     * @param pi persistent identifier of the record to search
      * @param query partial query string for auto-completion
      * @param motivation space-separated list of annotation motivations to filter
      * @param date date filter (not supported; passed to 'ignored' property)
@@ -618,7 +616,7 @@ public class RecordResource {
     @ApiResponse(responseCode = "200", description = "IIIF auto-suggest result")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or query")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
-    public AutoSuggestResult autoCompleteInManifest(@PathParam("pi") String pi,
+    public AutoSuggestResult autoCompleteInManifest(
             @Parameter(description = "Partial search query string for auto-completion") @QueryParam("q") String query,
             @Parameter(description = "Space-separated list of annotation motivations to search")
                     @QueryParam("motivation") String motivation,
@@ -733,7 +731,6 @@ public class RecordResource {
     }
 
     /**
-     * @param pi Record identifier
      * @param template JSON configuration template name
      * @return {@link Response}
      * @throws IndexUnreachableException
@@ -746,7 +743,7 @@ public class RecordResource {
     @ApiResponse(responseCode = "200", description = "Record metadata as JSON")
     @ApiResponse(responseCode = "400", description = "Missing record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier or template configuration not found")
-    public Response getRecordMetadataAsJson(@PathParam("pi") String pi, @PathParam("template") String template)
+    public Response getRecordMetadataAsJson(@PathParam("template") String template)
             throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}/{}", pi, template);
         if (StringUtils.isEmpty(pi)) {

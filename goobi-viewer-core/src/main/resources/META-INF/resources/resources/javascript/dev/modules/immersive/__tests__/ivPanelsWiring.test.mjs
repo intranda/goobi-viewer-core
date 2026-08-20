@@ -106,8 +106,23 @@ describe('setupPanels', () => {
 });
 
 describe('setupPanelResize', () => {
+    const WIDTH_KEY = 'immersive-panel-width';
+
+    function mountResizeMarkup() {
+        document.body.innerHTML = `
+            <div class="immersive">
+                <div class="immersive__viewer"></div>
+            </div>`;
+        const root = document.querySelector('.immersive');
+        const viewer = root.querySelector('.immersive__viewer');
+        viewer.getBoundingClientRect = () => ({ left: 0, width: 1000 });
+        return { root, viewer };
+    }
+
     afterEach(() => {
         document.body.innerHTML = '';
+        sessionStorage.clear();
+        localStorage.clear();
     });
 
     /** The handle position follows --immersive-panel-width, so the clamp must never
@@ -134,7 +149,7 @@ describe('setupPanelResize', () => {
         handle.dispatchEvent(new MouseEvent('pointermove', { clientX: 300 }));
         expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('560px');
         handle.dispatchEvent(new MouseEvent('pointerup', { clientX: 300 }));
-        expect(localStorage.getItem('immersive-panel-width')).toBe('560');
+        expect(sessionStorage.getItem(WIDTH_KEY)).toBe('560');
     });
 
     test('a panel growing beyond the width variable (annotations min-width) syncs the variable to the panel edge', () => {
@@ -191,5 +206,25 @@ describe('setupPanelResize', () => {
         handle.dispatchEvent(new MouseEvent('pointermove', { clientX: 100 }));
         expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('240px');
         handle.dispatchEvent(new MouseEvent('pointerup', { clientX: 100 }));
+    });
+
+    test('restores the stored width from sessionStorage, ignoring localStorage', () => {
+        sessionStorage.setItem(WIDTH_KEY, '300');
+        localStorage.setItem(WIDTH_KEY, '555');
+        const { root, viewer } = mountResizeMarkup();
+        setupPanelResize(root);
+        expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('300px');
+    });
+
+    test('persists the dragged width to sessionStorage only', () => {
+        const { root, viewer } = mountResizeMarkup();
+        setupPanelResize(root);
+        const handle = viewer.querySelector('.immersive__panel-resize-handle');
+        handle.setPointerCapture = jest.fn();
+        handle.releasePointerCapture = jest.fn();
+        handle.dispatchEvent(new MouseEvent('pointerdown', { clientX: 440 }));
+        handle.dispatchEvent(new MouseEvent('pointerup', { clientX: 440 }));
+        expect(sessionStorage.getItem(WIDTH_KEY)).toBe('400');
+        expect(localStorage.getItem(WIDTH_KEY)).toBeNull();
     });
 });

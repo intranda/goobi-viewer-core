@@ -243,7 +243,7 @@ public class ExternalFilesDownloader {
     static String getFileExtension(CloseableHttpResponse response) {
         String typeHeader = Optional.ofNullable(response).map(r -> r.getFirstHeader("content-type")).map(Header::getValue).orElse("");
         try {
-            return MimeType.getExtensionFromMimeType(typeHeader.toLowerCase().split(";", 2)[0].trim());
+            return MimeType.getExtensionFromMimeType(typeHeader.toLowerCase().split(";", 2)[0].trim()); //NOSONAR split() always returns >=1 element
         } catch (UnknownMimeTypeException e) {
             logger.error("No extension found for mimetype {}: {}", typeHeader, e.toString());
             return "";

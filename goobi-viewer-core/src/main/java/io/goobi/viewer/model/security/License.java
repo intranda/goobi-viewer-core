@@ -977,8 +977,10 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      */
     public ILicensee getSecondaryAccessRequirement() {
         if (licensees.size() > 1) {
-            logger.trace("Secondary access requirement found: {}", licensees.get(1).getLicensee().getName());
-            return licensees.get(1).getLicensee();
+            // getLicensee() may return null; guard the trace log to avoid a NullPointerException (java:S2259)
+            ILicensee licensee = licensees.get(1).getLicensee();
+            logger.trace("Secondary access requirement found: {}", licensee != null ? licensee.getName() : null);
+            return licensee;
         }
 
         return null;

@@ -104,19 +104,28 @@ public class ArchiveBean implements Serializable {
         initializeArchiveTree(null);
     }
 
+    /**
+     * @param selectedEntryId ID of the archive entry to select after loading; may be null
+     * @throws io.goobi.viewer.exceptions.ArchiveException if the archive database cannot be retrieved
+     * @should not throw NullPointerException when archive becomes unresolvable after the null check
+     */
     public void initializeArchiveTree(String selectedEntryId) throws ArchiveException {
         logger.trace("initializeArchiveTree: {}", selectedEntryId);
-        if (getCurrentArchive() != null) {
+        // getCurrentArchive() re-resolves the archive via ArchiveManager on each call and returns null once the
+        // archive list is reloaded in another thread; capture it once so the null check above covers all uses
+        // below (java:S2259)
+        ArchiveResource currentArchive = getCurrentArchive();
+        if (currentArchive != null) {
             try {
                 // clone the global archive tree so its state (which nodes are expanded) is not preserved between sessions
                 // if state of archive tree should be reset on each page reload, remove the if-clause or call ArchiveTree.collapseAll()
-                if (this.archiveTree == null || !this.archiveTree.getRootElement().getTopstructPi().equals(getCurrentArchive().getResourceId())) {
+                if (this.archiveTree == null || !this.archiveTree.getRootElement().getTopstructPi().equals(currentArchive.getResourceId())) {
                     if (this.archiveTree != null) {
                         logger.trace("Root PI: {}", this.archiveTree.getRootElement().getTopstructPi());
                     }
-                    logger.trace("Resource ID: {}", getCurrentArchive().getResourceId());
+                    logger.trace("Resource ID: {}", currentArchive.getResourceId());
                     this.archiveTree = new ArchiveTree(archiveManager.getArchiveTree(getCurrentResource()));
-                    logger.trace("Reloaded archive tree: {}", getCurrentArchive().getResourceId());
+                    logger.trace("Reloaded archive tree: {}", currentArchive.getResourceId());
                 }
                 this.databaseLoaded = true;
                 this.searchString = "";
@@ -125,9 +134,9 @@ public class ArchiveBean implements Serializable {
                     this.setSelectedEntryId(selectedEntryId);
                 }
                 Optional<CMSArchiveConfig> config =
-                        DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(getCurrentArchive().getResourceId());
+                        DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(currentArchive.getResourceId());
                 if (config.isPresent()) {
-                    logger.trace("Found configuration for archive resource: {}", getCurrentArchive().getResourceId());
+                    logger.trace("Found configuration for archive resource: {}", currentArchive.getResourceId());
                     this.archiveConfig = config.get();
                 }
             } catch (PresentationException | IllegalStateException | IndexUnreachableException | DAOException e) {
@@ -538,8 +547,10 @@ public class ArchiveBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.RecordNotFoundException if any.
      */
     public String reIndexArchiveAction() throws IndexUnreachableException, DAOException, RecordNotFoundException {
-        if (getCurrentArchive() != null) {
-            if (IndexerTools.reIndexRecord(getCurrentArchive().getResourceId())) {
+        // getCurrentArchive() re-resolves the archive on each call and may return null; capture once to avoid a NullPointerException (java:S2259)
+        ArchiveResource currentArchive = getCurrentArchive();
+        if (currentArchive != null) {
+            if (IndexerTools.reIndexRecord(currentArchive.getResourceId())) {
                 Messages.info("reIndexRecordSuccess");
             } else {
                 Messages.error("reIndexRecordFailure");
@@ -557,11 +568,13 @@ public class ArchiveBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
     public String deleteArchiveAction() throws IOException, IndexUnreachableException {
-        if (getCurrentArchive() == null) {
+        // getCurrentArchive() re-resolves the archive on each call; capture once to avoid a NullPointerException (java:S2259)
+        ArchiveResource currentArchive = getCurrentArchive();
+        if (currentArchive == null) {
             return "";
         }
 
-        if (IndexerTools.deleteRecord(getCurrentArchive().getResourceId(), false,
+        if (IndexerTools.deleteRecord(currentArchive.getResourceId(), false,
                 Paths.get(DataManager.getInstance().getConfiguration().getHotfolder()))) {
             Messages.info("archives__widget__action_delete_archive_success");
             return "pretty:index";

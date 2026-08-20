@@ -33,7 +33,12 @@ public interface IFacetItem {
     String getEscapedLink();
 
     String getUrlEscapedLink();
-    
+
+    /**
+     * @return the URL-encoded facet link prefixed with the exclusion marker, for building "exclude this value" links
+     */
+    String getExcludeUrlEscapedLink();
+
     FacetType getType();
 
     String getField();
@@ -71,6 +76,16 @@ public interface IFacetItem {
     IFacetItem setGroup(boolean group);
 
     boolean isHierarchial();
-    
+
     boolean isBooleanType();
+
+    /**
+     * @return true if this facet excludes (negates) matching documents instead of including them
+     */
+    boolean isExcluded();
+
+    /**
+     * @param excluded true to make this facet exclude (negate) matching documents
+     */
+    void setExcluded(boolean excluded);
 }

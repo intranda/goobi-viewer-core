@@ -63,9 +63,6 @@
                         <f:passThroughAttribute
                             name="aria-label"
                             value="#{cc.attrs.label}" />
-                        <f:ajax
-                            event="blur"
-                            render="inputGroup" />
                     </h:inputTextarea>
                     <ui:fragment rendered="#{not empty cc.attrs.helpText}">
                         <span class="admin__form-help-text">#{cc.attrs.helpText}</span>

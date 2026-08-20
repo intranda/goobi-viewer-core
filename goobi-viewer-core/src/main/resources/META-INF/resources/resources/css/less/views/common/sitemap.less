@@ -1,0 +1,57 @@
+/* ==============================================================
+   Sitemap
+   style declarations for sitemap.xhtml
+   ==============================================================*/
+/* SITEMAP */
+/* BLOCK */
+.view-sitemap {
+    /* ELEMENT */
+    &__heading {
+    }
+
+    &__nav {
+        margin-bottom: 30px;
+
+        &-heading {
+        }
+    }
+
+    &__list {
+        list-style: none;
+        margin: 0;
+        padding-left: 0;
+
+        /* indent nested levels relative to their own parent list so the indentation
+           compounds automatically with depth, without hardcoding a level count */
+        .view-sitemap__list {
+            padding-left: 15px;
+
+            /* mark submenu entries (depth 2+) as such, since the indentation alone can be subtle */
+            .view-sitemap__list-link::before {
+                content: '- ';
+            }
+        }
+    }
+
+    &__list-item {
+    }
+
+    &__list-link {
+    }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+}

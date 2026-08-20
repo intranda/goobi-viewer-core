@@ -1115,7 +1115,7 @@ public class Search implements Serializable {
      */
     public void setSortString(String sortString) {
         if (StringUtils.isNotBlank(sortString)) {
-            String s = sortString.replaceAll("[\n\r]", "_");
+            String s = sortString.replaceAll("[\n\r]", "_"); //NOSONAR sortString is guaranteed non-null inside the StringUtils.isNotBlank guard
             logger.trace("setSortString: {}", s);
         }
         this.sortString = sortString;

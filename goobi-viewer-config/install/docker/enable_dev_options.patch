@@ -1,0 +1,8 @@
+--- context.xml
++++ context.xml.new
+@@ -13 +13,5 @@
++
++    <!-- JSF developer options -->
++    <Parameter name="jakarta.faces.PROJECT_STAGE" value="Development"/>
++    <Parameter name="jakarta.faces.FACELETS_REFRESH_PERIOD" value="0"/>
+ </Context>

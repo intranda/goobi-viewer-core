@@ -164,11 +164,16 @@ public class UserBean implements Serializable {
      * @return the remaining session timeout formatted as an ISO time string
      */
     public String getSessionTimeout() {
-        long lastActityTimestamp = BeanUtils.getSession().getLastAccessedTime();
+        // getSession() returns null outside an HTTP request; without a session there is no timeout to report (java:S2259)
+        HttpSession session = BeanUtils.getSession();
+        if (session == null) {
+            return "";
+        }
+        long lastActityTimestamp = session.getLastAccessedTime();
         logger.trace("lastActityTimestamp: {}", lastActityTimestamp);
         long inactiveMillis = System.currentTimeMillis() - lastActityTimestamp;
         logger.trace("inactiveMillis: {}", inactiveMillis);
-        int maxInactiveSeconds = BeanUtils.getSession().getMaxInactiveInterval();
+        int maxInactiveSeconds = session.getMaxInactiveInterval();
         // logger.trace("maxInactiveSeconds: {}", maxInactiveSeconds); //NOSONAR Debug
         long timeoutMillis = maxInactiveSeconds * 1000 - inactiveMillis;
         logger.trace("timeoutMillis: {}", timeoutMillis);
@@ -588,6 +593,14 @@ public class UserBean implements Serializable {
             ViewerPath currentPath = oCurrentPath.get();
             if (LoginFilter.isRestrictedUri(currentPath.getCombinedUrl())) {
                 logger.trace("Redirecting to start page");
+                return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/";
+            }
+            // If the currently loaded record is access-restricted, redirect to the start page instead of back to the
+            // record URL: after logout the anonymous session may not list the record and would otherwise land on a
+            // misleading "record not found" error page.
+            ActiveDocumentBean activeDocumentBean = BeanUtils.getActiveDocumentBean();
+            if (activeDocumentBean != null && activeDocumentBean.isCurrentRecordAccessRestricted()) {
+                logger.trace("Redirecting to start page (current record is access-restricted)");
                 return ServletUtils.getServletPathWithHostAsUrlFromRequest(request) + "/";
             }
             logger.trace("Redirecting to current url {}", currentPath.getCombinedPrettyfiedUrl());

@@ -277,6 +277,17 @@ public class SolrFeatureSet extends FeatureSet {
     }
 
     /**
+     * Additional, URL-encoded Solr filter query to send along with heatmap requests. Plain {@link SolrFeatureSet}s have no such additional filter;
+     * subclasses deriving their features from a live search (e.g. {@link SearchResultFeatureSet}) may override this to restrict heatmap results by
+     * the currently active search filters.
+     *
+     * @return URL-encoded filter query; empty string if none applies
+     */
+    public String getFacetQueryEncoded() {
+        return "";
+    }
+
+    /**
      * getCoordinateSearchQueryTemplate.
      *
      * @return String

@@ -31,6 +31,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
@@ -174,6 +176,42 @@ class ArchiveManagerTest extends AbstractSolrEnabledTest {
         assertNotNull(archiveManager.getArchive("r2"));
         archiveManager.updateArchiveList();
         assertNull(archiveManager.getArchive("r2"));
+    }
+
+    /**
+     * @see ArchiveManager#updateArchiveList()
+     * @verifies keep already loaded archives resolvable while the archive list is reloaded
+     */
+    @Test
+    void updateArchiveList_shouldKeepAlreadyLoadedArchivesResolvableWhileTheArchiveListIsReloaded() {
+        assertNotNull(possibleDatabases, "No EAD record in the index.");
+        AtomicReference<ArchiveManager> managerRef = new AtomicReference<>();
+        AtomicBoolean resolvableDuringReload = new AtomicBoolean();
+
+        // getPossibleDatabases() is called from initArchives() while the archive list is being rebuilt, so querying
+        // the manager from inside it observes exactly the state that concurrent request threads see during a reload
+        SolrEADParser observingParser = new SolrEADParser() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public List<ArchiveResource> getPossibleDatabases() {
+                ArchiveManager manager = managerRef.get();
+                if (manager != null) {
+                    resolvableDuringReload.set(manager.getArchive("r1") != null);
+                }
+                return possibleDatabases;
+            }
+        };
+
+        ArchiveManager archiveManager = new ArchiveManager(observingParser);
+        assertNotNull(archiveManager.getArchive("r1"));
+
+        managerRef.set(archiveManager);
+        archiveManager.updateArchiveList();
+
+        Assertions.assertTrue(resolvableDuringReload.get(), "Archive was not resolvable while the archive list was reloaded");
+        assertNotNull(archiveManager.getArchive("r1"));
     }
 
     /**

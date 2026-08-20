@@ -154,8 +154,8 @@ initMap() {
 	            svg: true
 	        }
         }]
-    })
-
+    });
+    
     let initialView = $.extend(true, {}, DEFAULT_VIEW, this.opts.geomap.initialView);
     this.geoMap.init(initialView);
     this.geoMap.initGeocoder(this.refs.geocoder, {placeholder: Crowdsourcing.translate("ADDRESS")});

@@ -35,7 +35,10 @@
         </rule>
         <rule groupId="org.jboss.weld.servlet" artifactId="weld-servlet-shaded">
             <ignoreVersions>
+		<!-- EE 11 -->
                 <ignoreVersion type="regex">6.*</ignoreVersion>
+		<!-- EE 12 -->
+                <ignoreVersion type="regex">7.*</ignoreVersion>
             </ignoreVersions>
         </rule>
         <rule groupId="jakarta.ws.rs" artifactId="jakarta.ws.rs-api">
@@ -60,6 +63,15 @@
         </rule>
 
 
+	<!-- This is Jakarta EE 12 ...-->
+        <rule groupId="jakarta.enterprise" artifactId="jakarta.enterprise.cdi*">
+            <ignoreVersions>
+                <ignoreVersion type="regex">5.*</ignoreVersion>
+            </ignoreVersions>
+        </rule>
+	<!-- EE 12 Weld is in the block above -->
+
+
 
         <!-- Other -->
         <rule groupId="xml-apis" artifactId="xml-apis">
@@ -71,13 +83,6 @@
         <rule groupId="commons-io" artifactId="commons-io">
             <ignoreVersions>
                 <ignoreVersion>20030203.000550</ignoreVersion>
-            </ignoreVersions>
-        </rule>
-        <rule groupId="com.fasterxml.jackson" artifactId="jackson-*">
-            <ignoreVersions>
-		<!-- Release broken, see https://github.com/FasterXML/jackson/discussions/367 -->
-                <!-- We use a regex here because jackson-annotations is 2.22 and all other libs are 2.22.0-->
-                <ignoreVersion type="regex">2.22.*</ignoreVersion>
             </ignoreVersions>
         </rule>
     </rules>

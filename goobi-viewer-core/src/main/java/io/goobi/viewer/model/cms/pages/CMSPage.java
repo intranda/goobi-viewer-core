@@ -1371,6 +1371,10 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     public void setComponentOrder(CMSComponent component, int order) {
         PersistentCMSComponent persistentComponent = component.getPersistentComponent();
+        // getPersistentComponent() may return null; without it there is no order to set (java:S2259)
+        if (persistentComponent == null) {
+            return;
+        }
         Integer currentOrder = persistentComponent.getOrder();
         this.getComponents()
                 .stream()

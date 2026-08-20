@@ -1,0 +1,82 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
+    <!--
+        Accessible language switcher: renders trigger button and popup menu together
+        (WAI-ARIA APG "menu button - actions" pattern, since menu items change the
+        locale via a same-page form action rather than navigating to a new URL).
+        All ARIA attributes, ids and the accessible name are computed server-side
+        via EL, so no runtime JavaScript is needed for structure/semantics/naming -
+        only the open/close toggle and arrow-key navigation require JS
+        (see viewerJS.changeLocalMenu.js).
+    -->
+    <composite:interface>
+        <composite:attribute
+            name="id"
+            required="false"
+            default="changeLocalMenu" />
+        <composite:attribute
+            name="buttonClass"
+            required="false"
+            default="" />
+        <composite:attribute
+            name="longLanguageStrings"
+            required="false"
+            default="false" />
+    </composite:interface>
+
+    <composite:implementation>
+        <div class="change-local-menu">
+            <button
+                type="button"
+                id="#{cc.attrs.id}Button"
+                class="change-local-menu__button #{cc.attrs.buttonClass}"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="#{cc.attrs.id}List"
+                aria-label="#{msg['changeLocal_' += navigationHelper.localeString]}: #{msg.aria_label__switch_language}">
+                <h:outputText value="#{msg['changeLocal_' += navigationHelper.localeString]}" />
+            </button>
+            <h:form
+                id="#{cc.attrs.id}Form"
+                prependId="false">
+                <ul
+                    id="#{cc.attrs.id}List"
+                    role="menu"
+                    class="change-local-menu__list"
+                    hidden="hidden">
+                    <ui:repeat
+                        var="lang"
+                        value="#{navigationHelper.supportedLanguages}">
+                        <li
+                            role="none"
+                            jsf:rendered="#{navigationHelper.localeString != lang}">
+                            <button
+                                type="submit"
+                                role="menuitem"
+                                tabindex="-1"
+                                lang="#{lang}"
+                                class="change-local-menu__language-entry"
+                                jsf:action="#{navigationHelper.setLocaleString(lang)}">
+                                <h:outputText
+                                    value="#{msg['changeLocal_' += lang]}"
+                                    rendered="#{cc.attrs.longLanguageStrings == false}" />
+                                <h:outputText
+                                    styleClass="sr-only"
+                                    value=" - #{msg['changeLocal_long_' += lang]}"
+                                    rendered="#{cc.attrs.longLanguageStrings == false}" />
+                                <h:outputText
+                                    value="#{msg['changeLocal_long_' += lang]}"
+                                    rendered="#{cc.attrs.longLanguageStrings == true}" />
+                            </button>
+                        </li>
+                    </ui:repeat>
+                </ul>
+            </h:form>
+        </div>
+    </composite:implementation>
+</ui:composition>

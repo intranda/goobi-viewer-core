@@ -206,6 +206,7 @@ var viewerJS = (function (viewer) {
             field: 'WKT_COORDS',
             type: 'clusters',
             filterQuery: this.config.heatmap.filterQuery,
+            facetQuery: this.config.heatmap.facetQuery,
             labelField: this.config.heatmap.labelField,
             searchScope: this.config.heatmap.searchScope,
             queryAdapter: this.config.heatmap.queryAdapter,
@@ -410,9 +411,9 @@ var viewerJS = (function (viewer) {
     };
 
     viewer.GeoMap.featureGroup.prototype.getCount = function (properties) {
-        if (properties.entities) {
+        if (properties?.entities) {
             return properties.entities.filter((e) => e.visible !== false).length;
-        } else if (properties.count) {
+        } else if (properties?.count) {
             return properties.count;
         } else {
             return 1;

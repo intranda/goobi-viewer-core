@@ -1,0 +1,19 @@
+User-agent: *
+Disallow: /viewer/content*action=pdf
+Disallow: /viewer/rest/pdf/*
+Disallow: /viewer/api/v1/records/*/pdf/
+Disallow: /viewer/*.pdf$
+Disallow: /viewer/search/
+Disallow: /viewer/tags/
+Disallow: /viewer/term/
+Disallow: /viewer/oai
+Disallow: /viewer/nextHit/
+Disallow: /viewer/prevHit/
+Disallow: /viewer/login/
+Disallow: /viewer/crowd/
+Disallow: /viewer/error/
+Disallow: /viewer/searchadvanced/
+
+Sitemap: https://${VIEWER_HOSTNAME}/viewer/sitemap_index.xml
+
+Crawl-delay: 10

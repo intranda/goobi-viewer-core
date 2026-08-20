@@ -78,6 +78,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.event.AjaxBehaviorEvent;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 /**
@@ -1446,7 +1447,9 @@ public class AdminBean implements Serializable {
      * @return true if translations are locked by a different user; false otherwise
      */
     public boolean isTranslationLocked() {
-        return translationGroupsEditorSession != null && !translationGroupsEditorSession.equals(BeanUtils.getSession().getId());
+        // getSession() returns null outside an HTTP request; treat an unknown session as "not ours" so the lock still applies (java:S2259)
+        HttpSession session = BeanUtils.getSession();
+        return translationGroupsEditorSession != null && (session == null || !translationGroupsEditorSession.equals(session.getId()));
     }
 
     /**

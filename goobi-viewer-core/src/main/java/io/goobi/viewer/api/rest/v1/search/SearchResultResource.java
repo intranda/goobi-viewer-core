@@ -253,7 +253,8 @@ public class SearchResultResource {
         // Generate on a background thread with a timeout, mirroring the old bean's async download behaviour.
         // This uses a plain executor (not servlet/JAX-RS async), so it does not call request.startAsync() and
         // therefore does not require the servlet filter chain to support asynchronous processing.
-        int timeoutSeconds = DataManager.getInstance().getConfiguration().getExcelDownloadTimeout();
+        // Shared export timeout (config <search><export> @timeout), applies to all formats
+        int timeoutSeconds = DataManager.getInstance().getConfiguration().getSearchExportTimeout();
         String fileNameBase = exportFileNameBase(identifier);
         Future<Response> future = EXECUTOR.submit(() -> exportFormat.isXsltBased()
                 ? buildXsltExport(exportFormat, query, activeFacetString, rows, fileNameBase)

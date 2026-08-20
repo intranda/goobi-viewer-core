@@ -6,7 +6,13 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <!-- INTERFACE OPTIONS -->
-    <composite:interface />
+    <composite:interface>
+        <composite:attribute
+            name="headingLevel"
+            type="java.lang.String"
+            required="false"
+            default="2" />
+    </composite:interface>
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
@@ -18,7 +24,11 @@
             <h:form>
                 <div class="widget widget-geofacetting">
                     <div class="widget__topbar widget-geofacetting__topbar">
-                        <h2 class="widget__title widget-geofacetting__title">#{msg.widget_geofacetting__label}</h2>
+                        <h2
+                            class="widget__title widget-geofacetting__title"
+                            aria-level="#{cc.attrs.headingLevel}">
+                            #{msg.widget_geofacetting__label}
+                        </h2>
                         <div class="widget-geofacetting__item widget-geofacetting__actions">
                             <button
                                 type="button"
@@ -40,13 +50,24 @@
                                 data-geofacet="reset"
                                 title="#{msg.removeFacet}"
                                 class="widget-geofacetting__action-reset"
-                                aria-label="#{msg.fullscreen_enter}">
+                                aria-label="#{msg.removeFacet}">
                                 <util:icon
                                     icon="x"
                                     styleClass="icon icon--pad-bottom"
                                     svgClass="widget__topbar-icon-svg widget-geofacetting__topbar-icon-svg" />
                             </button>
                         </div>
+                        <!-- SECTION COLLAPSE -->
+                        <button
+                            type="button"
+                            class="btn btn--clean widget-search-facets__section-toggle"
+                            data-section-toggle="geoFacetting"
+                            aria-expanded="true"
+                            aria-label="#{msg.widget_geofacetting__label}">
+                            <util:icon
+                                icon="chevron-down"
+                                svgClass="widget-search-facets__section-toggle-icon-svg" />
+                        </button>
                     </div>
                     <div class="widget__body widget-geofacetting__body">
                         <div
@@ -94,7 +115,7 @@
                             <img
                                 src="#{request.contextPath}/resources/images/infinity_loader.svg"
                                 class="img-responsive widget-geofacetting__loader-animated-image"
-                                alt="Waiting..." />
+                                alt="" />
                             <div class="modal-backdrop show" />
                         </div>
                         <div class="widget-geofacetting__overlay-buttons-wrapper">

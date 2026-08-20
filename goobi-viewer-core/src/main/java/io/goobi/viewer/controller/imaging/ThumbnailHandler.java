@@ -887,7 +887,11 @@ public class ThumbnailHandler {
             ret = getThumbnailPath(ANCHOR_THUMB).toString();
         } else if (StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME.equals(anchorThumbnailMode)) {
             try {
-                StructElement volume = doc.getFirstVolume(new ArrayList<>(REQUIRED_SOLR_FIELDS));
+                //if possible, find volumes with thumbnail
+                StructElement volume = doc.getFirstVolume(new ArrayList<>(REQUIRED_SOLR_FIELDS), List.of(SolrConstants.THUMBNAIL));
+                if (volume == null) {
+                    volume = doc.getFirstVolume(new ArrayList<>(REQUIRED_SOLR_FIELDS));
+                }
                 if (volume != null) {
                     String volumeImagePath = getImagePath(volume);
                     if (StringUtils.isNotBlank(volumeImagePath)) {

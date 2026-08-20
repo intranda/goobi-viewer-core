@@ -97,6 +97,9 @@
 		<urnResolver>urnResolver_value</urnResolver>
 		
  		<iiif useForCmsMedia="true">https://viewer.goobi.io/api/v1/</iiif>
+		<!-- base: Base viewer URL up to the context path. Deliberately without a
+			trailing slash here to exercise the getter's slash normalization. -->
+		<base>https://viewer.goobi.io/viewer</base>
 		<rest>http://localhost:8080/viewer/api/v1/</rest>
         
         <!-- workflow: REST service URL of Goobi workflow -->
@@ -464,7 +467,7 @@
                 <field>!BOOL_PRIORITIZE</field>
             </static>
 		</sorting>
-		<facets>
+		<facets style="combined">
 			<template name="_DEFAULT">
 				<field type="hierarchical" initialElementNumber=" 4" priorityValues="collection2;collection1" descriptionKey="facet_description_dc" alwaysApplyToUnfilteredHits="true">DC</field>
 				<field type="range" minValue="-1000" maxValue="2050" labelField="MD_FIELDLABEL" sortOrder="numerical"
@@ -586,7 +589,7 @@
 			<versionLabelField>MD_VERSIONLABEL</versionLabelField>
 		</versioning>
 		<!-- Search export settings -->
-		<export>
+		<export timeout="180">
 			<format name="excel" enabled="true">
 				<!-- field: Solr fields to put into the export sheet. One element per
 					field. -->
@@ -688,8 +691,23 @@
             
         <!-- true if opening a collection containing only a single work should redirect to that work -->
         <redirectToWork>false</redirectToWork>
-    
+
 	</collections>
+
+	<!-- ##### PER-COLLECTION BAGIT ARCHIVE CONFIGURATION ##### -->
+	<collectionArchives enabled="true">
+		<storageFolder>archives_test</storageFolder>
+		<includeSubcollections>true</includeSubcollections>
+		<default field="DC">
+			<metadataSourceFormats>true</metadataSourceFormats>
+			<images>true</images>
+		</default>
+		<!-- sparse override: adds ALTO fulltexts, disables images; metadata is inherited -->
+		<collection name="bla" field="DC">
+			<fulltextAlto>true</fulltextAlto>
+			<images>false</images>
+		</collection>
+	</collectionArchives>
 
 	<metadata>
 		<!-- metadataView: whitelist with metadata fields, that are displayed 

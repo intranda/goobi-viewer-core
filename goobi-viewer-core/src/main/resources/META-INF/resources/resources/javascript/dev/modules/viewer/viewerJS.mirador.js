@@ -89,11 +89,7 @@ var viewerJS = (function (viewer) {
                 console.log('Load bookmarklist ', _getBookmarkListId());
                 miradorConfigPromise = _getUserMiradorObjects(this.config.restEndpoint, _getBookmarkListId())
                     .then((response) => response.json())
-                    .then((json) =>
-                        json.members.filter(
-                            (manifest) => manifest['@type'] == 'sc:Manifest' || manifest.type == 'Manifest'
-                        )
-                    )
+                    .then((json) => json.members.filter((manifest) => manifest['@type'] == 'sc:Manifest' || manifest.type == 'Manifest'))
                     //.then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
                     .then((members) => _getMiradorConfigForManifestUrls(members, this.config));
             } else if (_getBookmarkListKey() != null) {
@@ -101,11 +97,7 @@ var viewerJS = (function (viewer) {
                 console.log('Load bookmarklist with key ', _getBookmarkListKey());
                 miradorConfigPromise = _getSharedMiradorObjects(this.config.restEndpoint, _getBookmarkListKey())
                     .then((response) => response.json())
-                    .then((json) =>
-                        json.members.filter(
-                            (manifest) => manifest['@type'] == 'sc:Manifest' || manifest.type == 'Manifest'
-                        )
-                    )
+                    .then((json) => json.members.filter((manifest) => manifest['@type'] == 'sc:Manifest' || manifest.type == 'Manifest'))
                     //                .then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
                     .then((ids) => _getMiradorConfigForManifestUrls(ids, this.config));
             } else if (_getBookmarkListId() !== null) {
@@ -113,11 +105,7 @@ var viewerJS = (function (viewer) {
                 console.log('load session bookmark list');
                 miradorConfigPromise = _getMiradorSessionObjects(this.config.restEndpoint)
                     .then((response) => response.json())
-                    .then((json) =>
-                        json.members.filter(
-                            (manifest) => manifest['@type'] == 'sc:Manifest' || manifest.type == 'Manifest'
-                        )
-                    )
+                    .then((json) => json.members.filter((manifest) => manifest['@type'] == 'sc:Manifest' || manifest.type == 'Manifest'))
                     //.then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
                     .then((ids) => _getMiradorConfigForManifestUrls(ids, this.config));
             } else {
@@ -272,14 +260,7 @@ var viewerJS = (function (viewer) {
             annotations: {
                 //'sc:painting' and 'supplementing' excluded to hide fulltext annotations
                 //'oa:describing' must be included to display viewer (crowdsourcing) annotations
-                filteredMotivations: [
-                    'oa:commenting',
-                    'oa:tagging',
-                    'oa:describing',
-                    'commenting',
-                    'tagging',
-                    'describing',
-                ],
+                filteredMotivations: ['oa:commenting', 'oa:tagging', 'oa:describing', 'commenting', 'tagging', 'describing'],
             },
         };
         return Promise.resolve(miradorConfig);
@@ -287,3 +268,8 @@ var viewerJS = (function (viewer) {
 
     return viewer;
 })(viewerJS || {}, jQuery);
+
+// CommonJS export for Jest. No-op in the browser where `module` is undefined.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = viewerJS;
+}

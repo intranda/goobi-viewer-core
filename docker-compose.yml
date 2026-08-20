@@ -21,7 +21,7 @@ services:
       TOMCAT_SAMESITECOOKIES: strict
       STOPWORDS_LANG: "de"
       THEME_NAME: reference
-      # THEME_PATH: directory-name-of-theme-that-contains-WebContent-dir-relative-to-themes-dir
+      # THEME_DIR: directory-name-of-theme-that-contains-WebContent-dir-relative-to-themes-dir
       VIEWER_USERMAIL: goobi@intranda.com
       VIEWER_USERPASS: CHANGEME
     volumes:

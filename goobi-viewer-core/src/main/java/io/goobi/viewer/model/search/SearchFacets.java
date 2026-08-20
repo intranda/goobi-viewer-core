@@ -146,6 +146,8 @@ public class SearchFacets implements Serializable {
      * @return Generated Solr query
      * @should generate query correctly
      * @should return null if facet list is empty
+     * @should negate excluded item and add positive base when all excluded
+     * @should not add positive base when include and exclude are mixed
      */
     String generateHierarchicalFacetFilterQuery() {
         if (activeFacets.isEmpty()) {
@@ -154,6 +156,7 @@ public class SearchFacets implements Serializable {
 
         StringBuilder sbQuery = new StringBuilder();
         int count = 0;
+        boolean hasPositive = false;
         for (IFacetItem facetItem : getActiveFacetsCopy()) {
             if (!facetItem.isHierarchial()) {
                 continue;
@@ -162,6 +165,11 @@ public class SearchFacets implements Serializable {
                 sbQuery.append(SolrConstants.SOLR_QUERY_AND);
             }
             String field = SearchHelper.facetifyField(facetItem.getField());
+            if (facetItem.isExcluded()) {
+                sbQuery.append('-');
+            } else {
+                hasPositive = true;
+            }
             sbQuery.append('(')
                     .append(field)
                     .append(':')
@@ -172,6 +180,11 @@ public class SearchFacets implements Serializable {
                     .append(facetItem.getValue())
                     .append(".*)");
             count++;
+        }
+
+        // a purely negative filter query matches nothing in Solr
+        if (count > 0 && !hasPositive) {
+            sbQuery.insert(0, "*:*" + SolrConstants.SOLR_QUERY_AND);
         }
 
         return sbQuery.toString();
@@ -196,6 +209,8 @@ public class SearchFacets implements Serializable {
 
         List<String> ret = new ArrayList<>();
         Map<String, StringBuilder> queries = LinkedHashMap.newLinkedHashMap(activeFacets.size());
+        // a purely negative filter query matches nothing in Solr
+        Map<String, Boolean> fieldHasPositive = new HashMap<>(activeFacets.size());
 
         for (IFacetItem facetItem : getActiveFacetsCopy()) {
             if (facetItem.isHierarchial() || facetItem.getField().equals(SolrConstants.DOCSTRCT_SUB)
@@ -211,11 +226,16 @@ public class SearchFacets implements Serializable {
                 }
             }
             sbQuery.append(facetItem.getQueryEscapedLink());
+            fieldHasPositive.merge(facetItem.getField(), !facetItem.isExcluded(), Boolean::logicalOr);
         }
 
         for (Entry<String, StringBuilder> entry : queries.entrySet()) {
-            ret.add(entry.getValue().toString());
-            logger.trace("Added facet: {}", entry.getValue());
+            StringBuilder sbQuery = entry.getValue();
+            if (Boolean.FALSE.equals(fieldHasPositive.get(entry.getKey()))) {
+                sbQuery.insert(0, "*:*" + SolrConstants.SOLR_QUERY_AND);
+            }
+            ret.add(sbQuery.toString());
+            logger.trace("Added facet: {}", sbQuery);
         }
 
         return ret;
@@ -561,6 +581,7 @@ public class SearchFacets implements Serializable {
      * @param activeFacetString SSV-encoded string of active facet field:value pairs
      * @should create FacetItems from all links
      * @should decode slashes and backslashes
+     * @should preserve exclusion marker through round trip
      */
     public void setActiveFacetString(String activeFacetString) {
         synchronized (lock) {
@@ -583,6 +604,8 @@ public class SearchFacets implements Serializable {
      * @should create multiple items from multiple instances of same field
      * @should skip value pairs if field or value missing
      * @should skip facet links with leading semicolon caused by triple separators in URL
+     * @should parse exclusion marker correctly
+     * @should skip invalid facet links carrying an exclusion marker
      */
     static void parseFacetString(final String facetString, final List<IFacetItem> facetItems, final Map<String, String> labelMap) {
         if (facetItems == null) {
@@ -605,6 +628,12 @@ public class SearchFacets implements Serializable {
         String[] facetStringSplit = useFacetString.split(";;");
         for (final String fl : facetStringSplit) {
             String facetLink = fl != null ? fl.trim() : "";
+            // Strip the exclusion marker before validating so that invalid links hiding behind
+            // the marker (e.g. '!:foo') are caught by the guard below
+            boolean itemExcluded = facetLink.startsWith(FacetItem.EXCLUDE_PREFIX);
+            if (itemExcluded) {
+                facetLink = facetLink.substring(FacetItem.EXCLUDE_PREFIX.length());
+            }
             // Skip empty, undefined, or structurally invalid links. Also skip links with a
             // leading ';', which occur when a bot-crawled URL contains triple separators
             // (';;;') — splitting on ';;' leaves one leftover ';' at the start of the next
@@ -625,14 +654,15 @@ public class SearchFacets implements Serializable {
             }
             String facetField = facetLink.substring(0, facetLink.indexOf(":"));
             if (DataManager.getInstance().getConfiguration().getGeoFacetFields().contains(facetField)) {
+                // geo facets do not support exclusion: the marker is ignored
                 GeoFacetItem item = new GeoFacetItem(facetField);
                 item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
                 facetItems.add(item);
             } else {
                 // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
                 String label = labelMap != null && labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
-                facetItems.add(
-                        new FacetItem(facetLink, label, isFieldHierarchical(facetLink.substring(0, facetLink.indexOf(":")))));
+                String itemLink = itemExcluded ? FacetItem.EXCLUDE_PREFIX + facetLink : facetLink;
+                facetItems.add(new FacetItem(itemLink, label, isFieldHierarchical(facetField)));
             }
         }
     }
@@ -1067,7 +1097,25 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * 
+     *
+     * @return All configured facet field names in configuration order, including range and geo fields
+     * @should return all configured facet fields in configuration order
+     */
+    public List<String> getAllFacetFields() {
+        return DataManager.getInstance().getConfiguration().getAllFacetFields();
+    }
+
+    /**
+     *
+     * @return All facet field names of the type "geo"
+     * @should return all geo facet fields
+     */
+    public List<String> getGeoFacetFields() {
+        return DataManager.getInstance().getConfiguration().getGeoFacetFields();
+    }
+
+    /**
+     *
      * @return All facet field names of the type "range"
      */
     public List<String> getAllRangeFacetFields() {

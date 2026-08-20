@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Server port="8005" shutdown="SHUTDOWN">
+    <Listener className="org.apache.catalina.startup.VersionLoggerListener"/>
+    <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on"/>
+    <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
+    <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"/>
+    <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+
+    <GlobalNamingResources>
+        <Resource name="UserDatabase" auth="Container"
+                  type="org.apache.catalina.UserDatabase"
+                  description="User database that can be updated and saved"
+                  factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+                  pathname="conf/tomcat-users.xml"/>
+    </GlobalNamingResources>
+
+    <Service name="Catalina">
+
+        <!-- Plain HTTP connector, reachable directly or through a reverse proxy -->
+        <Connector address="127.0.0.1" port="8080" protocol="HTTP/1.1"
+                   server=" "
+                   connectionTimeout="20000"
+                   maxThreads="400"
+                   URIEncoding="UTF-8"
+                   enableLookups="false"
+                   disableUploadTimeout="true"/>
+
+        <Engine name="Catalina" defaultHost="localhost">
+
+            <Realm className="org.apache.catalina.realm.LockOutRealm">
+                <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+                       resourceName="UserDatabase"/>
+            </Realm>
+
+            <Host name="localhost" appBase="webapps"
+                  unpackWARs="true" autoDeploy="true">
+
+                <!-- Give crawlers/bots a single shared session instead of one per request -->
+                <Valve className="org.apache.catalina.valves.CrawlerSessionManagerValve"
+                       crawlerUserAgents=".*[bB]ot.*|.*Yahoo! Slurp.*|.*Feedfetcher-Google.*|.*Apache-HttpClient.*|.*[Ss]pider.*|.*[Cc]rawler.*|.*nagios.*|.*Yandex.*|.*facebookexternalhit.*|.*bytedance.com.*|.*Turnitin.*|.*GoogleOther.*|.*python-requests.*|.*check_http.*"
+                       sessionInactiveInterval="60"/>
+
+                <!-- Recover real client IP/scheme/host/port from the reverse proxy's X-Forwarded-* headers -->
+                <Valve className="org.apache.catalina.valves.RemoteIpValve"
+                       remoteIpHeader="X-Forwarded-For"
+                       protocolHeader="X-Forwarded-Proto"
+                       portHeader="X-Forwarded-Port"
+                       hostHeader="X-Forwarded-Host"/>
+
+                <!-- Access log; must sit after RemoteIpValve so %h is the real client, not the proxy [optional] -->
+                <!--
+                <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
+                       prefix="localhost_access_log" suffix=".txt"
+                       pattern="combined"
+                       requestAttributesEnabled="true"/>
+                -->
+
+                <!-- Keep stack traces and the Tomcat version off generated error pages (info-leak hardening) -->
+                <Valve className="org.apache.catalina.valves.ErrorReportValve"
+                       showReport="false"
+                       showServerInfo="false"/>
+
+            </Host>
+        </Engine>
+    </Service>
+
+</Server>

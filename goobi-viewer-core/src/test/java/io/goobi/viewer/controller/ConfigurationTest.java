@@ -57,6 +57,8 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationLink.CitationLinkType;
+import io.goobi.viewer.model.export.bagit.ArchiveContentType;
+import io.goobi.viewer.model.export.bagit.CollectionArchiveConfig;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.export.ExportFormat;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -1044,6 +1046,16 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getSolrUrl_shouldReturnCorrectValue() {
         assertEquals("https://viewer-testing-index.goobi.io/solr/current", DataManager.getInstance().getConfiguration().getSolrUrl());
+    }
+
+    /**
+     * @see Configuration#getViewerBaseUrl()
+     * @verifies return configured value with trailing slash
+     */
+    @Test
+    void getViewerBaseUrl_shouldReturnConfiguredValueWithTrailingSlash() {
+        // urls.base is configured without a trailing slash; the getter must append one
+        assertEquals("https://viewer.goobi.io/viewer/", DataManager.getInstance().getConfiguration().getViewerBaseUrl());
     }
 
     /**
@@ -2244,6 +2256,35 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getFacetsStyle()
+     * @verifies return correct value
+     */
+    @Test
+    void getFacetsStyle_shouldReturnCorrectValue() {
+        assertEquals("combined", DataManager.getInstance().getConfiguration().getFacetsStyle());
+    }
+
+    /**
+     * @see Configuration#getFacetsStyle()
+     * @verifies return widgets if value empty
+     */
+    @Test
+    void getFacetsStyle_shouldReturnWidgetsIfValueEmpty() {
+        DataManager.getInstance().getConfiguration().overrideValue("search.facets[@style]", "");
+        assertEquals("widgets", DataManager.getInstance().getConfiguration().getFacetsStyle());
+    }
+
+    /**
+     * @see Configuration#getFacetsStyle()
+     * @verifies return widgets if value invalid
+     */
+    @Test
+    void getFacetsStyle_shouldReturnWidgetsIfValueInvalid() {
+        DataManager.getInstance().getConfiguration().overrideValue("search.facets[@style]", "fancy");
+        assertEquals("widgets", DataManager.getInstance().getConfiguration().getFacetsStyle());
+    }
+
+    /**
      * @see Configuration#getPriorityValuesForFacetField(String)
      * @verifies return return all configured elements for regular fields
      */
@@ -3109,6 +3150,68 @@ class ConfigurationTest extends AbstractTest {
         assertTrue(ris.isXsltBased());
         assertTrue(ris.getFields().isEmpty());
         assertEquals("solr2ris.xsl", ris.getXslt());
+    }
+
+    /**
+     * @see Configuration#getSearchExportTimeout()
+     * @verifies return correct value
+     */
+    @Test
+    void getSearchExportTimeout_shouldReturnCorrectValue() {
+        assertEquals(180, DataManager.getInstance().getConfiguration().getSearchExportTimeout());
+    }
+
+    /** 
+     * @see Configuration#isCollectionArchivesEnabled()
+     * @verifies return correct value
+     */
+    @Test
+    void isCollectionArchivesEnabled_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isCollectionArchivesEnabled());
+    }
+
+    /**
+     * @see Configuration#getCollectionArchivesFolder()
+     * @verifies return correct value
+     */
+    @Test
+    void getCollectionArchivesFolder_shouldReturnCorrectValue() {
+        assertEquals("archives_test", DataManager.getInstance().getConfiguration().getCollectionArchivesFolder());
+    }
+
+    /**
+     * @see Configuration#isCollectionArchivesIncludeSubcollections()
+     * @verifies return correct value
+     */
+    @Test
+    void isCollectionArchivesIncludeSubcollections_shouldReturnCorrectValue() {
+        assertTrue(DataManager.getInstance().getConfiguration().isCollectionArchivesIncludeSubcollections());
+    }
+
+    /**
+     * @see Configuration#getCollectionArchiveConfig(String, String)
+     * @verifies return default configuration when no override exists
+     */
+    @Test
+    void getCollectionArchiveConfig_shouldReturnDefaultConfigurationWhenNoOverrideExists() {
+        CollectionArchiveConfig config = DataManager.getInstance().getConfiguration().getCollectionArchiveConfig("DC", null);
+        assertEquals(Set.of(ArchiveContentType.METADATA_SOURCE, ArchiveContentType.IMAGES), config.getEnabledTypes());
+
+        // A collection without its own override block resolves to the pure default
+        CollectionArchiveConfig unknown = DataManager.getInstance().getConfiguration().getCollectionArchiveConfig("DC", "unknown");
+        assertEquals(Set.of(ArchiveContentType.METADATA_SOURCE, ArchiveContentType.IMAGES), unknown.getEnabledTypes());
+    }
+
+    /**
+     * @see Configuration#getCollectionArchiveConfig(String, String)
+     * @verifies merge override onto default
+     */
+    @Test
+    void getCollectionArchiveConfig_shouldMergeOverrideOntoDefault() {
+        // "bla" adds ALTO fulltexts and explicitly disables images; metadata is inherited from the default
+        CollectionArchiveConfig config = DataManager.getInstance().getConfiguration().getCollectionArchiveConfig("DC", "bla");
+        assertEquals(Set.of(ArchiveContentType.METADATA_SOURCE, ArchiveContentType.FULLTEXT_ALTO), config.getEnabledTypes());
+        assertFalse(config.isEnabled(ArchiveContentType.IMAGES));
     }
 
     /**

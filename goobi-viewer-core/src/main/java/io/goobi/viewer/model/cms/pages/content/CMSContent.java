@@ -105,7 +105,9 @@ public abstract class CMSContent {
     }
 
     public CMSPage getOwningPage() {
-        return this.getOwningComponent().getOwningPage();
+        // getOwningComponent() may return null; guard to avoid a NullPointerException (java:S2259)
+        PersistentCMSComponent component = getOwningComponent();
+        return component != null ? component.getOwningPage() : null;
     }
 
     public abstract CMSContent copy();

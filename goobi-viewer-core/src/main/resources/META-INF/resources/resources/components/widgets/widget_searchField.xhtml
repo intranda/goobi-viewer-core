@@ -33,6 +33,9 @@
                 id="widgetSearchFieldForm"
                 styleClass="form-inline"
                 prependId="false">
+                <f:passThroughAttribute
+                    name="role"
+                    value="search" />
                 <div class="form-group">
                     <label
                         class="sr-only"
@@ -46,12 +49,10 @@
                                     value="#{searchBean.searchString}"
                                     items="#{searchBean.autocomplete}"
                                     placeholder="#{msg.search}"
-                                    arialabel="#{msg.searchField}"
                                     styleclass="form-control -no-outline" />
                             </c:when>
                             <c:otherwise>
                                 <h:inputText
-                                    onfocus="this.value = ''"
                                     styleClass="form-control -no-outline"
                                     value="#{searchBean.invisibleSearchString}">
                                     <f:passThroughAttribute
@@ -59,7 +60,7 @@
                                         value="#{msg.search}" />
                                     <f:passThroughAttribute
                                         name="aria-label"
-                                        value="#{msg.searchField}" />
+                                        value="#{msg.search}" />
                                 </h:inputText>
                             </c:otherwise>
                         </c:choose>

@@ -71,7 +71,9 @@ public class CMSContentItem {
 
     private final CMSComponent owningComponent;
 
-    private UIComponent uiComponent;
+    // Volatile because concurrent requests of the same HTTP session share this instance and read the
+    // lazily built component without holding a lock; see getUiComponent() for the publication rules.
+    private volatile UIComponent uiComponent;
 
     public CMSContentItem(CMSContentItem orig, CMSComponent owningComponent) {
         this.itemId = orig.itemId;
@@ -169,29 +171,48 @@ public class CMSContentItem {
         return false;
     }
 
+    /**
+     * Returns this item's JSF component tree, building it on first access.
+     *
+     * <p>Like {@link CMSComponent#getUiComponent()} the subtree is built into a local panel group and only
+     * published to {@link #uiComponent} once it is complete, so that concurrent requests sharing this
+     * instance through the session-scoped {@code CmsBean} cannot append their children to the same panel
+     * group and thereby create duplicate JSF ids. Publication happens inside a short lock that performs no
+     * I/O; a losing thread discards its own subtree. As a side effect a failed build is no longer cached.</p>
+     *
+     * @return the UI component for this content item
+     * @throws PresentationException if the JSF component cannot be built
+     */
     public UIComponent getUiComponent() throws PresentationException {
 
-        if (this.uiComponent == null) {
-            DynamicContentBuilder builder = new DynamicContentBuilder();
-            this.uiComponent = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
-            this.uiComponent.setId(FilenameUtils.getBaseName("cms_" + this.getOwningComponent().getTemplateFilename()) + "_"
-                    + this.getOwningComponent().getOrder() + "_" + this.itemId);
-            UIComponent wrapper = builder.createTag("div",
-                    Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper"));
-            wrapper.setId(this.uiComponent.getId() + "_wrapper");
-            this.uiComponent.getChildren().add(wrapper);
-            if (!this.getJsfComponent().exists()) {
-                logger.warn("No backend component available for contentItem {}", this.getContent().getBackendComponentName());
-            } else {
-                UIComponent component = builder.build(this.getJsfComponent(), wrapper, Collections.singletonMap("contentItem", this));
-                if (component == null) {
-                    throw new PresentationException("Error building jsf-component from " + this.getJsfComponent()
-                            + ". Please check that the file exists and is a valid jsf component file.");
-                }
-
-            }
+        UIComponent existing = this.uiComponent;
+        if (existing != null) {
+            return existing;
         }
-        return uiComponent;
+        DynamicContentBuilder builder = new DynamicContentBuilder();
+        UIComponent component = FacesContext.getCurrentInstance().getApplication().createComponent(HtmlPanelGroup.COMPONENT_TYPE);
+        component.setId(FilenameUtils.getBaseName("cms_" + this.getOwningComponent().getTemplateFilename()) + "_"
+                + this.getOwningComponent().getOrder() + "_" + this.itemId);
+        UIComponent wrapper = builder.createTag("div",
+                Collections.singletonMap("class", this.content.isTranslatable() ? "content-item-wrapper -translatable" : "content-item-wrapper"));
+        wrapper.setId(component.getId() + "_wrapper");
+        component.getChildren().add(wrapper);
+        if (!this.getJsfComponent().exists()) {
+            logger.warn("No backend component available for contentItem {}", this.getContent().getBackendComponentName());
+        } else {
+            UIComponent built = builder.build(this.getJsfComponent(), wrapper, Collections.singletonMap("contentItem", this));
+            if (built == null) {
+                throw new PresentationException("Error building jsf-component from " + this.getJsfComponent()
+                        + ". Please check that the file exists and is a valid jsf component file.");
+            }
+
+        }
+        synchronized (this) {
+            if (this.uiComponent == null) {
+                this.uiComponent = component;
+            }
+            return this.uiComponent;
+        }
     }
 
     public void setUiComponent(UIComponent uiComponent) {

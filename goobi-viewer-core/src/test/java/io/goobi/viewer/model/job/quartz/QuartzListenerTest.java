@@ -104,7 +104,8 @@ class QuartzListenerTest extends AbstractDatabaseEnabledTest{
         listener.contextInitialized(contextEvt);
         
         QuartzBean bean = new QuartzBean();
-        assertEquals(7, bean.getActiveJobs().size());
+        // 8 = the 7 base recurring jobs + GENERATE_COLLECTION_ARCHIVES
+        assertEquals(8, bean.getActiveJobs().size());
     }
 
 

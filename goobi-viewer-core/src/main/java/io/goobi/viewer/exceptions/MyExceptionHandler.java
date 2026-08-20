@@ -214,8 +214,12 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
                     String msg = rootCause.getClass().getSimpleName() + ": " + rootCause.getMessage();
                     handleError(msg, "general");
                 } else {
-                    // All other exceptions — show root cause class and message for better diagnostics
-                    logger.error(t.getMessage(), t);
+                    // All other exceptions — attach the same request/view/component diagnostics used
+                    // for the CME branch above (see buildDiagnosticContext) so exceptions thrown deep
+                    // inside third-party rendering code (e.g. an NPE in Mojarra's AjaxBehaviorRenderer,
+                    // whose own stack trace never names the offending page or component) can still be
+                    // traced back to the triggering view without needing to reproduce the issue.
+                    logger.error("{} {}", t.getMessage(), buildDiagnosticContext(t, context, fc), t);
                     Throwable rootCause = getCause(t);
                     String msg = rootCause.getClass().getSimpleName() + ": " + rootCause.getMessage();
                     handleError(msg, "general");

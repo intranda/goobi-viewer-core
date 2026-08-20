@@ -65,7 +65,7 @@
             styleClass="#{cc.attrs.rtl ? 'numeric-paginator -rtl' : 'numeric-paginator -ltr'} #{cc.attrs.classSuffix}"
             layout="block"
             id="#{cc.clientId}">
-            <nav aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
+            <nav role="navigation" aria-label="#{cc.attrs.positionBottom ? msg.aria_label__pagination_bottom : msg.aria_label__pagination_pages}">
                 <ul>
                     <!-- PREV / NEXT (RTL) -->
                     <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">
@@ -92,12 +92,16 @@
 
                     <h:panelGroup rendered="#{cc.attrs.itemActive gt cc.attrs.firstItem}">
                         <li class="navigate_first">
-                            <a href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem}/#{cc.attrs.urlSuffix}">#{cc.attrs.firstItem}</a>
+                            <a
+                                href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem}/#{cc.attrs.urlSuffix}"
+                                aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.firstItem}">#{cc.attrs.firstItem}</a>
                         </li>
 
                         <h:panelGroup rendered="#{cc.attrs.itemActive gt (cc.attrs.firstItem + 3)}">
                             <li>
-                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem + 1}/#{cc.attrs.urlSuffix}">#{cc.attrs.firstItem + 1}</a>
+                                <a
+                                    href="#{cc.attrs.urlPrefix}#{cc.attrs.firstItem + 1}/#{cc.attrs.urlSuffix}"
+                                    aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.firstItem + 1}">#{cc.attrs.firstItem + 1}</a>
                             </li>
                         </h:panelGroup>
                     </h:panelGroup>
@@ -172,7 +176,9 @@
                             <li
                                 class="numeric-paginator__navigate"
                                 data-page="#{cc.attrs.lastItem - 1}">
-                                <a href="#{cc.attrs.urlPrefix}#{(cc.attrs.lastItem - 1)}/#{cc.attrs.urlSuffix}">#{cc.attrs.lastItem - 1}</a>
+                                <a
+                                    href="#{cc.attrs.urlPrefix}#{(cc.attrs.lastItem - 1)}/#{cc.attrs.urlSuffix}"
+                                    aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.lastItem - 1}">#{cc.attrs.lastItem - 1}</a>
                             </li>
                         </h:panelGroup>
 
@@ -180,7 +186,9 @@
                             <li
                                 class="navigate_last numeric-paginator__navigate numeric-paginator__last-entry"
                                 data-page="#{cc.attrs.lastItem}">
-                                <a href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}">#{cc.attrs.lastItem}</a>
+                                <a
+                                    href="#{cc.attrs.urlPrefix}#{cc.attrs.lastItem}/#{cc.attrs.urlSuffix}"
+                                    aria-label="#{msg.aria__label_pagination_goto} #{cc.attrs.lastItem}">#{cc.attrs.lastItem}</a>
                             </li>
                         </h:panelGroup>
                     </h:panelGroup>

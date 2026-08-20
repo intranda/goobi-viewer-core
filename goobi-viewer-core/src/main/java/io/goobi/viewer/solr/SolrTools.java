@@ -581,7 +581,8 @@ public final class SolrTools {
             return false;
         }
 
-        return doc.containsField(SolrConstants.ISANCHOR) && doc.getFirstBooleanValue(SolrConstants.ISANCHOR);
+        // getFirstBooleanValue() returns a Boolean that may be null; Boolean.TRUE.equals avoids an unboxing NullPointerException (java:S2259)
+        return doc.containsField(SolrConstants.ISANCHOR) && Boolean.TRUE.equals(doc.getFirstBooleanValue(SolrConstants.ISANCHOR));
     }
 
     /**
@@ -607,7 +608,8 @@ public final class SolrTools {
             return false;
         }
 
-        return doc.containsField(SolrConstants.ISWORK) && doc.getFirstBooleanValue(SolrConstants.ISWORK);
+        // getFirstBooleanValue() returns a Boolean that may be null; Boolean.TRUE.equals avoids an unboxing NullPointerException (java:S2259)
+        return doc.containsField(SolrConstants.ISWORK) && Boolean.TRUE.equals(doc.getFirstBooleanValue(SolrConstants.ISWORK));
     }
 
     /**
@@ -1103,7 +1105,7 @@ public final class SolrTools {
     public static Locale getLocale(String fieldName) {
         String language = getLanguage(fieldName);
         if (StringUtils.isNotBlank(language)) {
-            return Locale.forLanguageTag(language.toLowerCase());
+            return Locale.forLanguageTag(language.toLowerCase()); //NOSONAR language is guaranteed non-null inside the StringUtils.isNotBlank guard
         }
         return null;
     }

@@ -319,6 +319,16 @@ var viewerJS = (function (viewer) {
                     $(event.currentTarget).tooltip('hide');
                 });
 
+            /* Tooltips that merely repeat the accessible name of their element are
+             * visual-only helpers: drop the aria-describedby Bootstrap sets on show
+             * so screen readers don't announce the same text twice. Opt-in per
+             * element via the data-tooltip-muted attribute. */
+            $(document)
+                .off('shown.bs.tooltip.mutedescription')
+                .on('shown.bs.tooltip.mutedescription', '[data-tooltip-muted]', function () {
+                    this.removeAttribute('aria-describedby');
+                });
+
             /* Listen for the "escape key" so tool tips can easily be hidden */
             $('body').keydown((event) => {
                 if (event.keyCode === 27) {

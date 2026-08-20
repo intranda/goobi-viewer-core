@@ -56,6 +56,9 @@ public class FacetItem implements Serializable, IFacetItem {
 
     private static final Logger logger = LogManager.getLogger(FacetItem.class);
 
+    /** Marker prepended to a serialized facet link to denote an exclusion (negated) facet. */
+    public static final String EXCLUDE_PREFIX = "!";
+
     private FacetType type = FacetType.STANDARD;
     private String field;
     private String value;
@@ -65,6 +68,7 @@ public class FacetItem implements Serializable, IFacetItem {
     private long count;
     private boolean group;
     private final boolean hierarchial;
+    private boolean excluded = false;
 
     /**
      * Constructor that doesn't parse the link; for testing purposes.
@@ -134,6 +138,7 @@ public class FacetItem implements Serializable, IFacetItem {
         int result = 1;
         result = prime * result + ((field == null) ? 0 : field.hashCode());
         result = prime * result + ((link == null) ? 0 : link.hashCode());
+        result = prime * result + (excluded ? 1231 : 1237);
         return result;
     }
 
@@ -163,7 +168,7 @@ public class FacetItem implements Serializable, IFacetItem {
         } else if (!link.equals(other.link)) {
             return false;
         }
-        return true;
+        return excluded == other.excluded;
     }
 
     /**
@@ -384,9 +389,28 @@ public class FacetItem implements Serializable, IFacetItem {
      * @should return unchanged range query link for a range facet item
      * @return the Solr filter query string for this facet item, with field and value properly escaped
      * @should return unchanged f i e l d value link for a non hierarchical facet item
+     * @should negate a non hierarchical exclusion facet item
+     * @should negate a hierarchical exclusion facet item
      */
     @Override
     public String getQueryEscapedLink() {
+        return negateIfExcluded(buildPositiveQueryEscapedLink());
+    }
+
+    /**
+     * Wraps a positive filter query in a Solr negation if this facet is an exclusion facet.
+     *
+     * @param positiveQuery the positive (non-negated) filter query
+     * @return the negated query (e.g. {@code -(FIELD:value)}) if excluded, otherwise the unchanged input
+     */
+    private String negateIfExcluded(String positiveQuery) {
+        if (!excluded || StringUtils.isEmpty(positiveQuery)) {
+            return positiveQuery;
+        }
+        return positiveQuery.startsWith("(") ? "-" + positiveQuery : "-(" + positiveQuery + ")";
+    }
+
+    private String buildPositiveQueryEscapedLink() {
         String f = SearchHelper.facetifyField(this.field);
         String escapedValue = getEscapedValue(value);
         if (hierarchial) {
@@ -485,7 +509,22 @@ public class FacetItem implements Serializable, IFacetItem {
         }
     }
 
-    
+    /**
+     * URL escaped link that adds the exclusion marker, for building "exclude this value" drill-down links.
+     *
+     * @return the URL-encoded facet link prefixed with {@link #EXCLUDE_PREFIX} (e.g. "!FIELD:value")
+     * @should prepend url encoded exclusion marker
+     */
+    @Override
+    public String getExcludeUrlEscapedLink() {
+        String ret = BeanUtils.escapeCriticalUrlChracters(EXCLUDE_PREFIX + link);
+        try {
+            return URLEncoder.encode(ret, SearchBean.URL_ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            return ret;
+        }
+    }
+
     @Override
     public FacetType getType() {
         return type;
@@ -575,25 +614,32 @@ public class FacetItem implements Serializable, IFacetItem {
      * Getter for the field <code>link</code>.
      *
      * @return the colon-separated field:value string used as the facet link
+     * @should not add exclusion marker for a regular facet item
      */
     @Override
     public String getLink() {
-        return link;
+        return excluded ? EXCLUDE_PREFIX + link : link;
     }
 
     /**
      * Setter for the field <code>link</code>.
      *
      * @param link the colon-separated field:value string used as the facet link
+     * @should detect exclusion marker and keep field and value clean
      */
     @Override
     public void setLink(String link) {
         // TODO move logic out of the setter
-        int colonIndex = link.indexOf(':');
+        String useLink = link;
+        this.excluded = useLink.startsWith(EXCLUDE_PREFIX);
+        if (this.excluded) {
+            useLink = useLink.substring(EXCLUDE_PREFIX.length());
+        }
+        int colonIndex = useLink.indexOf(':');
         if (colonIndex == -1) {
             throw new IllegalArgumentException(new StringBuilder().append("Field and value are not colon-separated: ").append(link).toString());
         }
-        this.link = link;
+        this.link = useLink;
         if (this.link.endsWith(";;")) {
             this.link = this.link.substring(0, this.link.length() - 2);
         }
@@ -698,6 +744,16 @@ public class FacetItem implements Serializable, IFacetItem {
     @Override
     public boolean isBooleanType() {
         return DataManager.getInstance().getConfiguration().getBooleanFacetFields().contains(field);
+    }
+
+    @Override
+    public boolean isExcluded() {
+        return excluded;
+    }
+
+    @Override
+    public void setExcluded(boolean excluded) {
+        this.excluded = excluded;
     }
 
     public String toString() {

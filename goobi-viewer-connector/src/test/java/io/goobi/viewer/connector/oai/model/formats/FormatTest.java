@@ -174,6 +174,19 @@ class FormatTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see Format#createListIdentifiers(RequestHandler,int,int,int,String,String)
+     * @verifies return badArgument error if metadataPrefix null
+     */
+    @Test
+    void createListIdentifiers_shouldReturnBadArgumentErrorIfMetadataPrefixNull() throws Exception {
+        // A RequestHandler without a metadataPrefix must yield a badArgument error instead of a NullPointerException (java:S2259)
+        Format format = new OAIDCFormat();
+        Element result = format.createListIdentifiers(new RequestHandler(), 0, 0, 10, null, null);
+        Assertions.assertEquals("error", result.getName());
+        Assertions.assertEquals("badArgument", result.getAttributeValue("code"));
+    }
+
+    /**
      * @see Format#deserializeResumptionToken(File)
      * @verifies deserialize token correctly
      */

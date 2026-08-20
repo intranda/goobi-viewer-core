@@ -4,17 +4,19 @@
 		<p class="widget__description-text widget-chronology-slider__description-text" ref="descriptionText" hidden></p>
 
 		<!-- START/END YEAR -->
-		<div class="widget-chronology-slider__item chronology-slider-start">
-			<input ref="inputStart" data-input='number'
-				class="widget-chronology-slider__item-input -no-outline -active-border"
-				value="{startYear}" title="{msg.enterYearStart}" data-toggle="tooltip"
-				data-placement="top" aria-label="{msg.enterYearStart}"></input>
-		</div>
-		<div class="widget-chronology-slider__item chronology-slider-end">
-			<input ref="inputEnd" data-input='number'
-				class="widget-chronology-slider__item-input -no-outline -active-border"
-				value="{endYear}" title="{msg.enterYearEnd}" data-toggle="tooltip"
-				data-placement="top" aria-label="{msg.enterYearEnd}"></input>
+		<div class="widget-chronology-slider__group" role="group" aria-labelledby="{opts.groupLabelId}">
+			<div class="widget-chronology-slider__item chronology-slider-start">
+				<input ref="inputStart" data-input='number'
+					class="widget-chronology-slider__item-input -no-outline -active-border"
+					value="{startYear}" title="{msg.enterYearStart}" data-toggle="tooltip"
+					data-placement="top" aria-label="{msg.enterYearStart}"></input>
+			</div>
+			<div class="widget-chronology-slider__item chronology-slider-end">
+				<input ref="inputEnd" data-input='number'
+					class="widget-chronology-slider__item-input -no-outline -active-border"
+					value="{endYear}" title="{msg.enterYearEnd}" data-toggle="tooltip"
+					data-placement="top" aria-label="{msg.enterYearEnd}"></input>
+			</div>
 		</div>
 	 
 		<!-- RANGE SLIDER -->

@@ -93,8 +93,10 @@
                 $('#widgetGeoMap_#{cc.attrs.geoMap.id}').show();
                 $(document).ready(() => {
                     $('#expandMap_#{cc.attrs.geoMap.id}').on('click', (e) => {
+                    	$('[data-loader="fullOverlay"]').show();
                         let oembedUrl = "#{cc.attrs.geoMap.getOEmbedURI('_parent')}";
                         viewerJS.oembed(oembedUrl).then(($node) => {
+                        	$node.on('load', () => $('[data-loader="fullOverlay"]').hide());
                             viewerJS.overlay.open($node, true, true, () => $node.remove());
                         });
                     });

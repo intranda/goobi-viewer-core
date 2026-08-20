@@ -50,6 +50,7 @@ import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.PersistentAnnotation;
@@ -808,7 +809,12 @@ public class DisplayUserGeneratedContent {
     }
 
     public String getPageUrl() {
-        return getPageUrl(BeanUtils.getNavigationHelper().getCurrentPageType());
+        // getNavigationHelper() returns null outside a FacesContext; guard to avoid a NullPointerException (java:S2259)
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        if (navigationHelper == null) {
+            return "";
+        }
+        return getPageUrl(navigationHelper.getCurrentPageType());
     }
 
     /**
@@ -818,7 +824,12 @@ public class DisplayUserGeneratedContent {
      */
     public String getPageUrl(PageType pageType) {
 
-        String pageTypeUrl = BeanUtils.getNavigationHelper().getPageUrl(pageType); //no trailing slash
+        // getNavigationHelper() returns null outside a FacesContext; guard to avoid a NullPointerException (java:S2259)
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        if (navigationHelper == null) {
+            return "";
+        }
+        String pageTypeUrl = navigationHelper.getPageUrl(pageType); //no trailing slash
         String pageUrl = pageTypeUrl + "/" + getPi() + "/";
         if (getPage() != null) {
             pageUrl = pageUrl + getPage() + "/#ugc=" + getId();

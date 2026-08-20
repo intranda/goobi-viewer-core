@@ -305,10 +305,17 @@ public abstract class Format {
      * @return a {@link org.jdom2.Element} object.
      * @throws org.apache.solr.client.solrj.SolrServerException
      * @throws IOException
+     * @should return badArgument error if metadataPrefix null
      */
     public Element createListIdentifiers(RequestHandler handler, int firstVirtualRow, int firstRawRow, int numRows, String versionDiscriminatorField,
             String filterQuerySuffix) throws SolrServerException, IOException {
         logger.debug("createListIdentifiers");
+        // Guard against a missing metadataPrefix: the OaiServlet path already checks this, but the resumption token
+        // path (handleToken) also reaches this method, so dereferencing handler.getMetadataPrefix() at line 317
+        // would throw a NullPointerException (java:S2259). A missing metadataPrefix is a badArgument per OAI-PMH.
+        if (handler.getMetadataPrefix() == null) {
+            return new ErrorCode().getBadArgument();
+        }
         Map<String, String> datestamp = Utils.filterDatestampFromRequest(handler);
 
         Element xmlListIdentifiers = new Element("ListIdentifiers", OAI_NS);

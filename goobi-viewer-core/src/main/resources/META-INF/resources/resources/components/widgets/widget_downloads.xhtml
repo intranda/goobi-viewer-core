@@ -436,7 +436,7 @@
                     <!-- MIRADOR FULL RECORD -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchRecord('{pageType:![viewFulltext, viewMetadata], contentType:[IMAGE, PDF], numPages:1, accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchRecord('{contentType:[IMAGE, PDF], numPages:1, accessCondition:GENERATE_IIIF_MANIFEST}')}">
                         <a
                             href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifManifest}&amp;page=1"
                             id="mirador"
@@ -588,7 +588,7 @@
                     <!-- MIRADOR PAGE -->
                     <ui:fragment
                         visibility-class="widget-element"
-                        rendered="#{displayConditions.matchPage('{pageType:![viewFulltext, viewMetadata], numPages:2, contentType:[IMAGE, PDF], accessCondition:GENERATE_IIIF_MANIFEST}')}">
+                        rendered="#{displayConditions.matchPage('{numPages:2, contentType:[IMAGE, PDF], accessCondition:GENERATE_IIIF_MANIFEST}')}">
                         <a
                             href="#{request.contextPath}/mirador/?manifest=#{imageDelivery.iiifPageManifest}"
                             id="mirador"

@@ -133,6 +133,20 @@ class ViewerResourceBundleTest extends AbstractTest {
     }
 
     /**
+     * @verifies fall back to base key for three character language code
+     * @see ViewerResourceBundle#getTranslation(String, Locale)
+     */
+    @Test
+    void getTranslation_shouldFallBackToBaseKeyForThreeCharacterLanguageCode() {
+        // Three-character language code with no specific variant falls back to the base key
+        Assertions.assertEquals("Zusammenfassung", ViewerResourceBundle.getTranslation("MD_ABSTRACT_LANG_ENG", Locale.GERMAN));
+        // Regression: two-character fallback still works
+        Assertions.assertEquals("Zusammenfassung", ViewerResourceBundle.getTranslation("MD_ABSTRACT_LANG_FR", Locale.GERMAN));
+        // Regression: existing two-character specific variant still resolves directly
+        Assertions.assertEquals("Zusammenfassung_DE", ViewerResourceBundle.getTranslation("MD_ABSTRACT_LANG_DE", Locale.GERMAN));
+    }
+
+    /**
      * @verifies return true for given input
      * @see ViewerResourceBundle#getTranslations(String)
      */

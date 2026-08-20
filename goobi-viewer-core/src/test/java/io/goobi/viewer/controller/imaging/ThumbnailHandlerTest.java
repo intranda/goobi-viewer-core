@@ -30,6 +30,7 @@ import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.solr.common.SolrDocument;
@@ -60,7 +61,7 @@ import io.goobi.viewer.solr.SolrConstants.MetadataGroupType;
  */
 class ThumbnailHandlerTest extends AbstractTest {
 
-    private static final String STATIC_IMAGES_PATH = "http://localhost:8080/viewer/resources/images";
+    private static final String STATIC_IMAGES_PATH = "http://localhost:8080/viewer/resources/images/";
     private ThumbnailHandler handler;
 
     /**
@@ -182,8 +183,9 @@ class ThumbnailHandlerTest extends AbstractTest {
     }
 
     /**
-     * Non-standard mime type "image/tif" (single f) must fall back to file extension lookup
-     * so that getFullImageUrl does not return an empty string for such pages.
+     * Non-standard mime type "image/tif" (single f) must fall back to file extension lookup so that getFullImageUrl does not return an empty string
+     * for such pages.
+     * 
      * @verifies fall back to file extension
      * @see ThumbnailHandler#getFullImageUrl
      */
@@ -318,6 +320,78 @@ class ThumbnailHandlerTest extends AbstractTest {
 
         String url = handler.getThumbnailUrl(docMock, 200, 300);
         Assertions.assertEquals("/api/v1/records/1234_1/files/images/a+b+c.tif/full/!200,300/0/default.jpg", url);
+    }
+
+    /**
+     * @verifies skip volumes without a thumbnail field for local anchor
+     * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
+     */
+    @Test
+    void getThumbnailUrl_shouldSkipVolumesWithoutThumbnailFieldForLocalAnchor() throws IndexUnreachableException, PresentationException {
+
+        SolrDocument solrDoc = new SolrDocument();
+        solrDoc.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        solrDoc.setField(SolrConstants.DOCSTRCT, "periodical");
+        solrDoc.setField(SolrConstants.ISANCHOR, true);
+        solrDoc.setField(SolrConstants.PI, "1234");
+        solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "1234");
+
+        // The volume actually returned once the THUMBNAIL field is required, e.g. because the true
+        // first volume (by sort order) has no THUMBNAIL field and is therefore skipped in the query.
+        SolrDocument solrDocVolume = new SolrDocument();
+        solrDocVolume.setField(SolrConstants.MIMETYPE, "image/tiff");
+        solrDocVolume.setField(SolrConstants.THUMBNAIL, "00000001.tif");
+        solrDocVolume.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        solrDocVolume.setField(SolrConstants.DOCSTRCT, "periodical_volume");
+        solrDocVolume.setField(SolrConstants.PI, "1234_2");
+        solrDocVolume.setField(SolrConstants.PI_TOPSTRUCT, "1234_2");
+        solrDocVolume.setField(SolrConstants.PI_ANCHOR, "1234");
+        solrDocVolume.setField(SolrConstants.PI_PARENT, "1234");
+        StructElement docVolume = new StructElement("3", solrDocVolume);
+
+        StructElement doc = new StructElement("1", solrDoc);
+        StructElement docMock = Mockito.spy(doc);
+        Mockito.when(docMock.getFirstVolume(Mockito.anyList(), Mockito.eq(List.of(SolrConstants.THUMBNAIL)))).thenReturn(docVolume);
+
+        String url = handler.getThumbnailUrl(docMock, 200, 300);
+        Assertions.assertEquals("/api/v1/records/1234_2/files/images/00000001.tif/full/!200,300/0/default.jpg", url);
+    }
+
+    /**
+     * @verifies return generic anchor thumbnail if no volume has a thumbnail field
+     * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
+     */
+    @Test
+    void getThumbnailUrl_shouldReturnGenericAnchorThumbnailIfNoVolumeHasThumbnailField()
+            throws IndexUnreachableException, PresentationException {
+
+        SolrDocument solrDoc = new SolrDocument();
+        solrDoc.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        solrDoc.setField(SolrConstants.DOCSTRCT, "periodical");
+        solrDoc.setField(SolrConstants.ISANCHOR, true);
+        solrDoc.setField(SolrConstants.PI, "1234");
+        solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "1234");
+
+        // Volume returned by the plain (no required fields) fallback query; it has no THUMBNAIL field.
+        SolrDocument solrDocVolume = new SolrDocument();
+        solrDocVolume.setField(SolrConstants.MIMETYPE, "unknown");
+        solrDocVolume.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        solrDocVolume.setField(SolrConstants.DOCSTRCT, "periodical_volume");
+        solrDocVolume.setField(SolrConstants.PI, "1234_1");
+        solrDocVolume.setField(SolrConstants.PI_TOPSTRUCT, "1234_1");
+        solrDocVolume.setField(SolrConstants.PI_ANCHOR, "1234");
+        solrDocVolume.setField(SolrConstants.PI_PARENT, "1234");
+        StructElement docVolume = new StructElement("2", solrDocVolume);
+
+        StructElement doc = new StructElement("1", solrDoc);
+        StructElement docMock = Mockito.spy(doc);
+        // No volume has a THUMBNAIL field, so the required-fields lookup finds nothing...
+        Mockito.when(docMock.getFirstVolume(Mockito.anyList(), Mockito.eq(List.of(SolrConstants.THUMBNAIL)))).thenReturn(null);
+        // ...and the handler falls back to the plain lookup, whose result also has no thumbnail image.
+        Mockito.when(docMock.getFirstVolume(Mockito.anyList())).thenReturn(docVolume);
+
+        String url = handler.getThumbnailUrl(docMock, 200, 300);
+        Assertions.assertEquals("http://localhost:8080/viewer/resources/images/multivolume_thumbnail.jpg", url);
     }
 
     /**

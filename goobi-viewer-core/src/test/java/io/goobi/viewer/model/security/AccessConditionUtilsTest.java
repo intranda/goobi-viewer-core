@@ -1307,4 +1307,18 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("+PI_TOPSTRUCT:\"34994703_2021_06_09\" +DOCTYPE:DOCSTRCT",
                 AccessConditionUtils.buildSinglePiPermissionQuery("34994703_2021_06_09"));
     }
+
+    /**
+     * @see AccessConditionUtils#checkContentFileAccessPermission(String,HttpServletRequest)
+     * @verifies return denied permission if identifier empty
+     */
+    @Test
+    void checkContentFileAccessPermission_shouldReturnDeniedPermissionIfIdentifierEmpty() throws Exception {
+        // All callers dereference the result directly (.isGranted()), so the method must never return null
+        for (String identifier : Arrays.asList(null, "")) {
+            AccessPermission permission = AccessConditionUtils.checkContentFileAccessPermission(identifier, null);
+            assertNotNull(permission);
+            assertFalse(permission.isGranted());
+        }
+    }
 }

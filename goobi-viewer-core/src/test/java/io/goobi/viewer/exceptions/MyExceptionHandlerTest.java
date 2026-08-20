@@ -256,6 +256,39 @@ class MyExceptionHandlerTest {
     }
 
     /**
+     * A generic exception (e.g. an NPE surfacing from third-party rendering code) must still be
+     * handled by the catch-all branch: it must redirect to the generic error page and the
+     * diagnostic context helper attached to its log line must run without throwing, even against
+     * a bare mock FacesContext that stubs none of the diagnostic accessors.
+     * @verifies handle generic exception with diagnostic context and redirect to error page
+     */
+    @Test
+    void handle_shouldHandleGenericExceptionWithDiagnosticContextAndRedirectToErrorPage() throws Exception {
+        FacesContext mockFc = ContextMocker.mockFacesContext();
+        ExternalContext mockEc = mockFc.getExternalContext();
+        HttpSession mockSession = mock(HttpSession.class);
+        Application mockApp = mock(Application.class);
+        NavigationHandler mockNav = mock(NavigationHandler.class);
+
+        Map<String, Object> requestMap = new HashMap<>();
+        when(mockFc.getCurrentPhaseId()).thenReturn(PhaseId.RENDER_RESPONSE);
+        when(mockEc.isResponseCommitted()).thenReturn(false);
+        when(mockEc.getRequestMap()).thenReturn(requestMap);
+        when(mockEc.getSession(true)).thenReturn(mockSession);
+        when(mockFc.getApplication()).thenReturn(mockApp);
+        when(mockApp.getNavigationHandler()).thenReturn(mockNav);
+
+        // Reproduce a message-less NPE, as thrown by Mojarra's AjaxBehaviorRenderer
+        NullPointerException npe = new NullPointerException();
+        MyExceptionHandler handler = new MyExceptionHandler(buildWrappedHandlerWith(mockFc, npe));
+        assertDoesNotThrow(handler::handle);
+
+        verify(mockNav).handleNavigation(eq(mockFc), eq(null), any());
+        verify(mockSession).setAttribute(eq("errorType"), eq("general"));
+        assertEquals("NullPointerException: null", requestMap.get("errMsg"));
+    }
+
+    /**
      * When no Facelet-derived exception is present in the cause chain, the helper must return
      * {@code null} rather than guessing or throwing.
      *

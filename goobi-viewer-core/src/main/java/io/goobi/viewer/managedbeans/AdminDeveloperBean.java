@@ -218,7 +218,10 @@ public class AdminDeveloperBean implements Serializable {
     }
 
     private static DateTimeFormatter getDateTimeFormatter() {
-        return DateTimeFormatter.ofPattern(BeanUtils.getNavigationHelper().getDateTimePattern());
+        // getNavigationHelper() returns null outside a FacesContext; fall back to the locale-independent default pattern (java:S2259)
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        String pattern = navigationHelper != null ? navigationHelper.getDateTimePattern() : "yyyy-MM-dd - HH:mm";
+        return DateTimeFormatter.ofPattern(pattern);
     }
 
     public String getThemeName() {

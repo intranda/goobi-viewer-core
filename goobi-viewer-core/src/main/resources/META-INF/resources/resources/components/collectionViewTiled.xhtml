@@ -3,7 +3,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html">
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:util="http://goobi.io/util">
     <composite:interface>
         <composite:attribute
             name="collection"
@@ -38,6 +39,17 @@
                                                 value="#{msg[browseDcElement.label]}"
                                                 title="#{msg[browseDcElement.label]}" />
                                         </a>
+
+                                        <!-- COLLECTION ARCHIVE DOWNLOAD (logged-in users only) -->
+                                        <h:panelGroup rendered="#{userBean.loggedIn and collectionArchiveBean.isAvailable(browseDcElement)}">
+                                            <div class="collection-tiled__archive-download">
+                                                <a
+                                                    href="#{collectionArchiveBean.getDownloadUrl(browseDcElement)}"
+                                                    title="#{msg[browseDcElement.label]}: #{msg.collectionArchive_download}">
+                                                    <util:icon icon="download" />
+                                                </a>
+                                            </div>
+                                        </h:panelGroup>
                                     </div>
                                     <div class="collection-tiled__body">
                                         <!-- WITH DESCRIPTION -->
@@ -91,6 +103,17 @@
                                                 value="#{msg[browseDcElement.label]}"
                                                 title="#{msg[browseDcElement.label]}" />
                                         </a>
+
+                                        <!-- COLLECTION ARCHIVE DOWNLOAD (logged-in users only) -->
+                                        <h:panelGroup rendered="#{userBean.loggedIn and collectionArchiveBean.isAvailable(browseDcElement)}">
+                                            <div class="collection-tiled__archive-download">
+                                                <a
+                                                    href="#{collectionArchiveBean.getDownloadUrl(browseDcElement)}"
+                                                    title="#{msg[browseDcElement.label]}: #{msg.collectionArchive_download}">
+                                                    <util:icon icon="download" />
+                                                </a>
+                                            </div>
+                                        </h:panelGroup>
                                     </div>
                                     <div class="collection-tiled__body">
                                         <!-- WITH DESCRIPTION -->

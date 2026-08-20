@@ -607,8 +607,11 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /** {@inheritDoc} */
     @Override
     public void setActiveSearchType(int type) {
-        getSearchBean().setActiveSearchType(type);
-
+        // getSearchBean() may return null; guard to avoid a NullPointerException (java:S2259)
+        SearchBean searchBean = getSearchBean();
+        if (searchBean != null) {
+            searchBean.setActiveSearchType(type);
+        }
     }
 
     /** {@inheritDoc} */
@@ -648,7 +651,9 @@ public class SearchFunctionality implements Functionality, SearchInterface {
     /** {@inheritDoc} */
     @Override
     public boolean isExplicitSearchPerformed() {
-        return StringUtils.isNotBlank(getExactSearchString().replace("-", ""));
+        // getExactSearchString() may return null; guard before replace() to avoid a NullPointerException (java:S2259)
+        String exactSearchString = getExactSearchString();
+        return exactSearchString != null && StringUtils.isNotBlank(exactSearchString.replace("-", ""));
     }
 
     @Override

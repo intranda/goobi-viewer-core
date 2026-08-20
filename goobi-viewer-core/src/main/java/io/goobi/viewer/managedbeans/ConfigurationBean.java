@@ -1342,6 +1342,14 @@ public class ConfigurationBean implements Serializable {
 
     /**
      *
+     * @return the configured display style for the search facets sidebar; either "widgets" (default) or "combined"
+     */
+    public String getFacetsStyle() {
+        return DataManager.getInstance().getConfiguration().getFacetsStyle();
+    }
+
+    /**
+     *
      * @return true if a heatmap should be used instead of individual markers for CMS map components, false otherwise
      */
     public boolean useHeatmapForCMSMaps() {

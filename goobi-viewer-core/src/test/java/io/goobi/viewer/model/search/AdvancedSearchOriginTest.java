@@ -132,7 +132,7 @@ class AdvancedSearchOriginTest {
      */
     @Test
     void getOriginUrl_shouldReturnTocUrlForRecordOrigin() {
-        AdvancedSearchOrigin origin = new AdvancedSearchOrigin("PI_001", "Test Record", "Monograph");
+        AdvancedSearchOrigin origin = new AdvancedSearchOrigin("PI_001", "Test Record", "Monograph", true);
 
         try (MockedStatic<PrettyUrlTools> mockTools = mockStatic(PrettyUrlTools.class)) {
             mockTools.when(() -> PrettyUrlTools.getAbsolutePageUrl("toc2", "PI_001", 1))
@@ -169,5 +169,66 @@ class AdvancedSearchOriginTest {
         AdvancedSearchOrigin origin = new AdvancedSearchOrigin(null, "Test", "Monograph");
 
         assertThrows(IllegalStateException.class, origin::getOriginUrl);
+    }
+
+    // --- isRecordOrigin blank handling ---
+
+    /**
+     * @verifies return false when pi is blank
+     * @see AdvancedSearchOrigin#isRecordOrigin()
+     */
+    @Test
+    void isRecordOrigin_shouldReturnFalseWhenPiIsBlank() {
+        AdvancedSearchOrigin origin = new AdvancedSearchOrigin("   ", "Test", "Monograph");
+
+        assertFalse(origin.isRecordOrigin());
+    }
+
+    // --- isValid ---
+
+    /**
+     * @verifies return false for record origin outside of toc calendar
+     * @see AdvancedSearchOrigin#isValid()
+     */
+    @Test
+    void isValid_shouldReturnFalseForRecordSearchWidgetOrigin() {
+        AdvancedSearchOrigin origin = new AdvancedSearchOrigin("PI_001", "Test Record", "Monograph");
+
+        assertFalse(origin.isValid());
+    }
+
+    /**
+     * @verifies return true for record origin outside of toc calendar
+     * @see AdvancedSearchOrigin#isValid()
+     */
+    @Test
+    void isValid_shouldReturnTrueForRecordTocOrigin() {
+        AdvancedSearchOrigin origin = new AdvancedSearchOrigin("PI_001", "Test Record", "Monograph", true);
+
+        assertTrue(origin.isValid());
+    }
+
+    /**
+     * @verifies return true for cms page origin
+     * @see AdvancedSearchOrigin#isValid()
+     */
+    @Test
+    void isValid_shouldReturnTrueForCmsPageOrigin() {
+        CMSPage page = new CMSPage();
+        page.setId(42L);
+        AdvancedSearchOrigin origin = new AdvancedSearchOrigin(page);
+
+        assertTrue(origin.isValid());
+    }
+
+    /**
+     * @verifies return false when neither pi nor cms page id is set
+     * @see AdvancedSearchOrigin#isValid()
+     */
+    @Test
+    void isValid_shouldReturnFalseWhenNeitherPiNorCmsPageIdIsSet() {
+        AdvancedSearchOrigin origin = new AdvancedSearchOrigin(null, "Test", "Monograph");
+
+        assertFalse(origin.isValid());
     }
 }

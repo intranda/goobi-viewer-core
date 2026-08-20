@@ -99,15 +99,7 @@ var cmsJS = (function (cms) {
             if (config.sortablesConfig.availableItemList.length > 0) {
                 cmsJS.sortableList.init(0, false, config);
                 config.sortablesConfig.editButton.on('click', function () {
-                    if ($(this).hasClass('fa-pencil-square-o')) {
-                        $(this).removeClass('fa-pencil-square-o').addClass('fa-times');
-                    } else {
-                        $(this).removeClass('fa-times').addClass('fa-pencil-square-o');
-                    }
-                    $(this)
-                        .parent('.sidebar-editor-widget-item-header')
-                        .next('.sidebar-editor-widget-item-body')
-                        .slideToggle();
+                    $(this).parent('.sidebar-editor-widget-item-header').next('.sidebar-editor-widget-item-body').slideToggle();
                 });
 
                 config.sortablesConfig.availableItemList.on('sortbeforestop', function (event, ui) {
