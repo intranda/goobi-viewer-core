@@ -22,14 +22,10 @@
 package io.goobi.viewer.api.rest.v1.records.media;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -145,8 +141,7 @@ public class ViewerSectionPDFResource {
 
         return out -> {
             try {
-                createPdf(job, out);
-                response.setContentLengthLong(Files.size(job.getPath()));
+                job.create(out);
             } catch (RecordNotFoundException e) {
                 throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
             } catch (PresentationException | IndexUnreachableException | ContentLibException | IOException | URISyntaxException e) {
@@ -155,14 +150,6 @@ public class ViewerSectionPDFResource {
 
         };
 
-    }
-
-    private void createPdf(PdfDownloadJob job, OutputStream out)
-            throws IOException, ContentLibException, PresentationException, IndexUnreachableException, RecordNotFoundException, URISyntaxException {
-        job.create(out);
-        try (InputStream in = Files.newInputStream(job.getPath())) {
-            IOUtils.copy(in, out);
-        }
     }
 
     @GET

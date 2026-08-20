@@ -29,19 +29,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
@@ -124,32 +121,23 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
         requestParams.put("metsSource",
                 new String[] { repository.resolve(DataManager.getInstance().getConfiguration().getIndexedMetsFolder()).toUri().toString() });
 
-        Path downloadFolder = Path.of(DataManager.getInstance().getConfiguration().getDownloadFolder("pdf"));
-        if (!Files.exists(downloadFolder)) {
-            Files.createDirectory(downloadFolder);
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getRequestURI()).thenReturn(url);
+        Mockito.when(request.getParameterMap())
+                .thenReturn(requestParams);
+
+        HttpServletResponse response = Mockito.spy(HttpServletResponse.class);
+        ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
+
+        ViewerRecordPDFResource resource = new ViewerRecordPDFResource(context, request, response, urls, PI, false);
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            resource.getPdf().write(baos);
+            assertTrue(baos.size() > 5 * 5 * 8 * 3);
         }
+        String expectedContentDisposition = "attachment; filename=\"" + PI + ".pdf" + "\"";
+        Mockito.verify(response).addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, expectedContentDisposition);
 
-        try {
-            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-            Mockito.when(request.getRequestURI()).thenReturn(url);
-            Mockito.when(request.getParameterMap())
-                    .thenReturn(requestParams);
-
-            HttpServletResponse response = Mockito.spy(HttpServletResponse.class);
-            ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
-
-            ContentServerCacheManager cacheManager = ContentServerCacheManager.noCache();
-            ViewerRecordPDFResource resource = new ViewerRecordPDFResource(context, request, response, urls, PI, false, cacheManager);
-
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                resource.getPdf().write(baos);
-                assertTrue(baos.size() > 5 * 5 * 8 * 3);
-            }
-            String expectedContentDisposition = "attachment; filename=\"" + PI + ".pdf" + "\"";
-            Mockito.verify(response).addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, expectedContentDisposition);
-        } finally {
-            FileUtils.deleteQuietly(downloadFolder.toFile());
-        }
     }
 
 }
