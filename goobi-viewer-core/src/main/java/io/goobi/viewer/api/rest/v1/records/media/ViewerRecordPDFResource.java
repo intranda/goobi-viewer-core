@@ -23,6 +23,7 @@ package io.goobi.viewer.api.rest.v1.records.media;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.List;
@@ -89,26 +90,19 @@ public class ViewerRecordPDFResource {
 
     private static final Logger logger = LogManager.getLogger(ViewerRecordPDFResource.class);
 
-    /** Maximum time to wait for a PDF that is currently being created by another thread/process before giving up on this request. */
-    private static final int MAX_WAIT_FOR_LOCK_MILLIS = 90_000;
-
     private final String pi;
     private final boolean usePdfSource;
 
-    private final HttpServletRequest request;
     private final HttpServletResponse response;
-    private final ContentServerCacheManager cacheManager;
 
     public ViewerRecordPDFResource(
             @Context ContainerRequestContext context, @Context HttpServletRequest request, @Context HttpServletResponse response,
             @Context AbstractApiUrlManager urls,
             @Parameter(description = "Persistent identifier of the record",
                     schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,
-            @Parameter(description = "allow using single page files from pdf folder to render pdf") @QueryParam("usePdfSource") Boolean usePdfSource,
-            @Context ContentServerCacheManager cacheManager) throws ContentLibException {
+            @Parameter(description = "allow using single page files from pdf folder to render pdf") @QueryParam("usePdfSource") Boolean usePdfSource)
+            throws ContentLibException {
         this.pi = requireValidPi(pi);
-        this.cacheManager = cacheManager;
-        this.request = request;
         this.response = response;
         this.usePdfSource = Optional.ofNullable(usePdfSource).orElse(ContentServerConfiguration.getInstance().getUsePdf());
         request.setAttribute("pi", pi);
@@ -126,49 +120,35 @@ public class ViewerRecordPDFResource {
     @ApiResponse(responseCode = "404", description = "Record not found")
     @ApiResponse(responseCode = "500", description = "PDF generation error")
     @ApiResponse(responseCode = "503", description = "PDF is still being created by another request, retry later")
-    public StreamingOutput getPdf()
-            throws ContentLibException, PresentationException, IOException, IndexUnreachableException, RecordNotFoundException {
+    public StreamingOutput getPdf() {
         ViewerMessage message = new ViewerMessage(PdfDownloadJob.TYPE);
         message.getProperties().put("pi", this.pi);
         message.getProperties().put("usePdfSource", Boolean.toString(this.usePdfSource));
         PdfDownloadJob job = new PdfDownloadJob(message);
 
-        int waitedMillis = 0;
-        while (!Files.exists(job.getPath())) {
-            if (job.isLocked()) {
-                //pdf is currently being created by someone else
-                if (waitedMillis >= MAX_WAIT_FOR_LOCK_MILLIS) {
-                    throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE)
-                            .header("Retry-After", "30")
-                            .entity("PDF for '" + pi + "' is still being created, please retry later")
-                            .build());
-                }
-                try {
-                    Thread.sleep(1000);
-                    waitedMillis += 1000;
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new WebApplicationException(Response.status(Response.Status.SERVICE_UNAVAILABLE)
-                            .header("Retry-After", "30")
-                            .entity("PDF creation for '" + pi + "' was interrupted, please retry later")
-                            .build());
-                }
-            } else {
-                // No-op if another thread/process wins the race to acquire the lock in the meantime (see PdfDownloadJob#create)
-                job.create();
-            }
-        }
-
         response.addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION,
                 NetTools.HTTP_HEADER_VALUE_ATTACHMENT_FILENAME + StringTools.sanitizeFilenameToAscii(job.getDownloadFilename()) + "\"");
-        response.setContentLengthLong(Files.size(job.getPath()));
 
         return out -> {
-            try (InputStream in = Files.newInputStream(job.getPath())) {
-                IOUtils.copy(in, out);
+            try {
+                createPdf(job, out);
+                response.setContentLengthLong(Files.size(job.getPath()));
+            } catch (RecordNotFoundException e) {
+                throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).build());
+            } catch (PresentationException | IndexUnreachableException | ContentLibException | IOException | URISyntaxException e) {
+                throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
             }
+
         };
 
+    }
+
+    private void createPdf(PdfDownloadJob job, OutputStream out)
+            throws IOException, ContentLibException, PresentationException, IndexUnreachableException, RecordNotFoundException, URISyntaxException {
+        job.create(out);
+        try (InputStream in = Files.newInputStream(job.getPath())) {
+            IOUtils.copy(in, out);
+        }
     }
 
     @GET

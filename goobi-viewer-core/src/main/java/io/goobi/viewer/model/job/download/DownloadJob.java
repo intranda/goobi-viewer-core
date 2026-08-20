@@ -101,9 +101,13 @@ public abstract class DownloadJob {
 
     public void create()
             throws PresentationException, IOException, IndexUnreachableException, RecordNotFoundException, ContentLibException {
+        create(getDataset());
+    }
+
+    protected Dataset getDataset() throws PresentationException, IndexUnreachableException, RecordNotFoundException, IOException {
         String cleanedPi = StringTools.cleanUserGeneratedData(getPi());
         Dataset work = DataFileTools.getDataset(cleanedPi);
-        create(work);
+        return work;
     }
 
     public abstract void create(Dataset work) throws IOException, PresentationException, ContentLibException;

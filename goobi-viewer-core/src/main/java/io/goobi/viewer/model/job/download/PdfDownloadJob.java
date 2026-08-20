@@ -23,6 +23,7 @@ package io.goobi.viewer.model.job.download;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,7 +48,9 @@ import de.unigoettingen.sub.commons.util.PathConverter;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.mq.ViewerMessage;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.viewer.Dataset;
 
 /**
@@ -131,17 +134,16 @@ public class PdfDownloadJob extends DownloadJob {
         }
         Files.deleteIfExists(getTempPath());
         try (FileOutputStream fos = new FileOutputStream(getTempPath().toFile())) {
-            MetsPdfRequest request = createPdfRequest(work,
-                    Optional.ofNullable(logId).filter(StringUtils::isNotBlank).filter(div -> !"-".equals(div)), usePdfSource, configVariant);
-            GetMetsPdfAction action = new GetMetsPdfAction(ContentServerCacheManager.getInstance());
-            action.writePdf(request, ContentServerConfiguration.getInstance(), fos, p -> {
-            });
+            create(work, fos);
             if (Files.isRegularFile(getTempPath())) {
                 Files.move(getTempPath(), getPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
             } else {
                 throw new PresentationException("Generated pdf file " + getTempPath() + " not found");
             }
         } catch (IOException e) {
+            Files.deleteIfExists(getPath());
+            throw e;
+        } catch (PresentationException e) {
             Files.deleteIfExists(getPath());
             throw e;
         } catch (URISyntaxException e) {
@@ -151,6 +153,21 @@ public class PdfDownloadJob extends DownloadJob {
             Files.deleteIfExists(getTempPath());
             releaseLock();
         }
+    }
+
+    public void create(OutputStream out)
+            throws IOException, ContentLibException, PresentationException, IndexUnreachableException, RecordNotFoundException, URISyntaxException {
+        create(getDataset(), out);
+    }
+
+    public void create(Dataset work, OutputStream out)
+            throws IOException, ContentLibException, PresentationException, URISyntaxException {
+
+        MetsPdfRequest request = createPdfRequest(work,
+                Optional.ofNullable(logId).filter(StringUtils::isNotBlank).filter(div -> !"-".equals(div)), usePdfSource, configVariant);
+        GetMetsPdfAction action = new GetMetsPdfAction(ContentServerCacheManager.getInstance());
+        action.writePdf(request, ContentServerConfiguration.getInstance(), out, p -> {
+        });
     }
 
     private Path generatePath() {
