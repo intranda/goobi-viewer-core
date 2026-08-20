@@ -43,6 +43,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -576,7 +577,13 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
         return getLinkURI(BeanUtils.getRequest());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should honor a custom collection url
+     * @should build a records search url from the request without a faces context
+     * @should return null when no query and no custom url
+     */
     @Override
     public URI getLinkURI(HttpServletRequest request) {
         if (StringUtils.isNotBlank(getCollectionUrl())) {
@@ -589,7 +596,35 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
             return applicationUri.resolve(getCollectionUrl().replaceAll("^\\/", "").trim());
         }
 
+        // No custom collection URL: default to a search listing the records matching this collection's stored query. This makes a dynamic collection
+        // usable as a collection-listing entry regardless of whether the DC_DYNAMIC search facet is configured. The URL is built directly from the
+        // request rather than via PrettyUrlTools, because this method is also called from the IIIF collection REST endpoint, which runs without a
+        // FacesContext (PrettyContext.getCurrentInstance() would throw there). The path mirrors the "newSearch5" pretty mapping
+        // /search/{context}/{query}/{page}/{sort}/{facets}/.
+        if (StringUtils.isNotBlank(getSolrQuery())) {
+            String applicationUrl = getApplicationUrl(request);
+            if (StringUtils.isNotBlank(applicationUrl)) {
+                String query = StringTools.encodeUrl(StringUtils.trimToEmpty(getSolrQuery()), true);
+                return URI.create(applicationUrl + "/search/-/" + query + "/1/-/-/");
+            }
+        }
+
         return null;
+    }
+
+    /**
+     * Resolves the application base URL (scheme, host, context path) preferring the given request, falling back to the current request and finally to
+     * the JSF context. Works both inside a JSF render and inside a REST request (which has no FacesContext).
+     *
+     * @param request the servlet request, may be null
+     * @return the application base URL, or an empty string if none could be resolved
+     */
+    private static String getApplicationUrl(HttpServletRequest request) {
+        HttpServletRequest req = request != null ? request : BeanUtils.getRequest();
+        if (req != null) {
+            return ServletUtils.getServletPathWithHostAsUrlFromRequest(req);
+        }
+        return BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
     }
 
     /** {@inheritDoc} */
