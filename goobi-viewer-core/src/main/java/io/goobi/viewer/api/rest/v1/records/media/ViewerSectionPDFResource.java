@@ -93,7 +93,7 @@ public class ViewerSectionPDFResource {
      * @param urls API URL manager for building resource URIs
      * @param pi persistent identifier of the record
      * @param divId logical div ID of the METS section
-     * @param cacheManager content server cache manager
+     * @param usePdfSource allow using single page files from pdf folder to render pdf
      * @throws ContentLibException
      */
     public ViewerSectionPDFResource(
