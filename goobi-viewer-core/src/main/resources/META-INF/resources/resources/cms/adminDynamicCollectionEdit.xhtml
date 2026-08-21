@@ -5,12 +5,13 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
             <f:event
                 type="preRenderView"
-                listener="#{navigationHelper.setCurrentPageAdmin(dynamicCollectionsBean.currentCollection.id == null ? 'adminDynamicCollectionNew' : 'adminDynamicCollectionEdit')}" />
+                listener="#{navigationHelper.setCurrentPageAdmin(dynamicCollectionsBean.currentCollection.id == null ? 'adminDynamicCollectionNew' : 'adminCmsEditCollection')}" />
             <f:event
                 type="preRenderView"
                 listener="#{cmsBean.init()}" />
@@ -28,7 +29,7 @@
                 <div class="admin__title-bar">
                     <h1 class="admin__title">
                         #{dynamicCollectionsBean.currentCollection.id == null ? msg.admin__dynamic_collections_add :
-                        msg.admin__dynamic_collections_edit}
+                        msg.cms_collection_edit}
                     </h1>
                 </div>
 
@@ -40,60 +41,66 @@
                             <h:form
                                 id="dynamicEditCollectionForm"
                                 prependId="false">
-                                <!-- IDENTIFIER (only editable on creation; shown in the info sidebar afterwards) -->
-                                <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id == null}">
-                                    <h2>#{msg.admin__dynamic_collections_identifier}</h2>
-                                    <div class="admin__default-block">
-                                        <p class="admin__boxed-entry-description">#{msg.admin__dynamic_collections_identifier_desc}</p>
-                                        <h:inputText
-                                            id="collectionIdentifier"
-                                            styleClass="form-control"
+                                <!-- IDENTIFIER -->
+                                <viewerForms:inputFormBlock title="#{msg.general}">
+                                    <!-- IDENTIFIER (only editable on creation; shown in the info sidebar afterwards) -->
+                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id == null}">
+                                        <viewerForms:inputFormField
+                                            label="#{msg.admin__dynamic_collections_identifier}"
                                             required="true"
-                                            validator="#{dynamicCollectionsBean.validateIdentifier}"
-                                            value="#{dynamicCollectionsBean.currentCollection.identifier}">
-                                            <f:ajax
-                                                execute="@this"
-                                                event="valueChange" />
-                                        </h:inputText>
-                                        <h:message
-                                            for="collectionIdentifier"
-                                            errorClass="-validation-message -danger" />
-                                    </div>
-                                </ui:fragment>
+                                            helpText="#{msg.admin__dynamic_collections_identifier_desc}">
+                                            <h:inputText
+                                                id="collectionIdentifier"
+                                                styleClass="form-control"
+                                                required="true"
+                                                validator="#{dynamicCollectionsBean.validateIdentifier}"
+                                                value="#{dynamicCollectionsBean.currentCollection.identifier}">
+                                                <f:ajax
+                                                    execute="@this"
+                                                    event="valueChange" />
+                                            </h:inputText>
+                                            <h:message
+                                                for="collectionIdentifier"
+                                                errorClass="-validation-message -danger" />
+                                        </viewerForms:inputFormField>
+                                    </ui:fragment>
 
-                                <!-- SOLR QUERY -->
-                                <h2>#{msg.admin__dynamic_collections_query}</h2>
-                                <div class="admin__default-block">
-                                    <p class="admin__boxed-entry-description">#{msg.admin__dynamic_collections_query_desc}</p>
-                                    <h:panelGroup
-                                        layout="block"
-                                        id="solrQueryGroup">
-                                        <h:inputTextarea
-                                            id="solrQuery"
-                                            styleClass="form-control"
-                                            required="true"
-                                            requiredMessage="#{msg.admin__dynamic_collections_query_required}"
-                                            value="#{dynamicCollectionsBean.currentCollection.solrQuery}">
-                                            <f:validator validatorId="solrQueryValidator" />
-                                            <f:ajax
-                                                event="blur"
-                                                listener="#{dynamicCollectionsBean.checkQuery}"
-                                                render="solrQueryGroup" />
-                                        </h:inputTextarea>
-                                        <h:message
-                                            for="solrQuery"
-                                            infoClass="admin__form-help-text in"
-                                            warnClass="-validation-message -warning"
-                                            errorClass="-validation-message -danger" />
-                                        <ui:fragment rendered="#{dynamicCollectionsBean.queryHitCount != null}">
-                                            <div class="admin__form-help-text in">
-                                                <h:outputFormat value="#{msg.admin__dynamic_collections_query_hits}">
-                                                    <f:param value="#{dynamicCollectionsBean.queryHitCount}" />
-                                                </h:outputFormat>
-                                            </div>
-                                        </ui:fragment>
-                                    </h:panelGroup>
-                                </div>
+                                    <!-- SOLR QUERY -->
+                                    <viewerForms:inputFormField
+                                        label="#{msg.admin__dynamic_collections_query}"
+                                        required="#{dynamicCollectionsBean.currentCollection.id == null}"
+                                        helpText="#{msg.admin__dynamic_collections_query_desc}">
+                                        <h:panelGroup
+                                            layout="block"
+                                            id="solrQueryGroup">
+                                            <h:inputText
+                                                id="solrQuery"
+                                                styleClass="form-control"
+                                                disabled="#{dynamicCollectionsBean.currentCollection.id != null}"
+                                                required="#{dynamicCollectionsBean.currentCollection.id == null}"
+                                                requiredMessage="#{msg.admin__dynamic_collections_query_required}"
+                                                value="#{dynamicCollectionsBean.currentCollection.solrQuery}">
+                                                <f:validator validatorId="solrQueryValidator" />
+                                                <f:ajax
+                                                    event="blur"
+                                                    listener="#{dynamicCollectionsBean.checkQuery}"
+                                                    render="solrQueryGroup" />
+                                            </h:inputText>
+                                            <h:message
+                                                for="solrQuery"
+                                                infoClass="admin__form-help-text in"
+                                                warnClass="-validation-message -warning"
+                                                errorClass="-validation-message -danger" />
+                                            <ui:fragment rendered="#{dynamicCollectionsBean.queryHitCount != null}">
+                                                <div class="admin__form-help-text in">
+                                                    <h:outputFormat value="#{msg.admin__dynamic_collections_query_hits}">
+                                                        <f:param value="#{dynamicCollectionsBean.queryHitCount}" />
+                                                    </h:outputFormat>
+                                                </div>
+                                            </ui:fragment>
+                                        </h:panelGroup>
+                                    </viewerForms:inputFormField>
+                                </viewerForms:inputFormBlock>
 
                                 <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
                                     <!-- DESCRIPTION (per language, tabs; labels are translated via the translations editor like regular collection names) -->

@@ -1171,22 +1171,16 @@
 
 
     <url-mapping id="adminCmsEditCollection">
-        <pattern value="/admin/cms/collections/edit/#{collectionName}/" />
-        <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />
+        <pattern value="/admin/cms/collections/edit/#{collectionName:cmsCollectionsBean.editCollectionName}/" />
+        <view-id value="#{cmsCollectionsBean.getCollectionEditView}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsCollectionsBean.setCollectionName(collectionName)}</action>
+        <action onPostback="false">#{cmsCollectionsBean.openCollectionForEditing}</action>
     </url-mapping>
     <url-mapping id="adminDynamicCollectionNew">
-        <pattern value="/admin/cms/collections/dynamic/new/" />
+        <pattern value="/admin/cms/collections/new/" />
         <view-id value="/resources/cms/adminDynamicCollectionEdit.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{dynamicCollectionsBean.createNewCollection}</action>
-    </url-mapping>
-    <url-mapping id="adminDynamicCollectionEdit">
-        <pattern value="/admin/cms/collections/dynamic/edit/#{collectionName}/" />
-        <view-id value="/resources/cms/adminDynamicCollectionEdit.xhtml" />
-        <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{dynamicCollectionsBean.setCollectionName(collectionName)}</action>
     </url-mapping>
     <url-mapping id="adminCmsCategories">
         <pattern value="/admin/cms/categories/" />

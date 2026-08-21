@@ -83,11 +83,15 @@ public class CmsCollectionsBean implements Serializable {
 
     @Inject
     private CollectionBrowseBean browseBean;
+    @Inject
+    private DynamicCollectionsBean dynamicCollectionsBean;
 
     private CMSCollection currentCollection;
     private CMSCollection originalCollection; //collection from database, without any edits after last save
     private String solrField = SolrConstants.DC;
     private String solrFieldValue;
+    /** Collection name path parameter of the collection edit pretty-URL, injected before the view id is resolved. */
+    private String editCollectionName;
     private List<CMSCollection> collections;
     private boolean piValid = true;
     private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
@@ -458,6 +462,46 @@ public class CmsCollectionsBean implements Serializable {
 
         originalCollection = currentCollection;
         currentCollection = new CMSCollection(originalCollection);
+    }
+
+    public String getEditCollectionName() {
+        return editCollectionName;
+    }
+
+    public void setEditCollectionName(String editCollectionName) {
+        this.editCollectionName = editCollectionName;
+    }
+
+    /**
+     * DynaView method for the collection edit pretty-URL: dynamic collections and Solr field collections share the same URL but are edited on
+     * different views.
+     *
+     * @return the view id matching the type of the collection addressed by <code>editCollectionName</code>
+     */
+    public String getCollectionEditView() {
+        try {
+            if (editCollectionName != null && DataManager.getInstance().getDao().getDynamicCollection(editCollectionName) != null) {
+                return "/resources/cms/adminDynamicCollectionEdit.xhtml";
+            }
+        } catch (DAOException e) {
+            logger.error("Error resolving collection edit view for '{}': {}", editCollectionName, e.getMessage());
+        }
+        return "/resources/cms/adminCmsEditCollection.xhtml";
+    }
+
+    /**
+     * Loads the collection addressed by <code>editCollectionName</code> for editing, delegating to {@link DynamicCollectionsBean} if a dynamic
+     * collection with that name exists. The name is taken from the field instead of an action parameter because the pretty-URL action runs in the
+     * DynaView-dispatched request, where path parameters can no longer be resolved from the URL.
+     *
+     * @throws DAOException
+     */
+    public void openCollectionForEditing() throws DAOException {
+        if (DataManager.getInstance().getDao().getDynamicCollection(editCollectionName) != null) {
+            dynamicCollectionsBean.setCollectionName(editCollectionName);
+        } else {
+            setCollectionName(editCollectionName);
+        }
     }
 
     /**
