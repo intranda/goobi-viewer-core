@@ -56,7 +56,7 @@ var viewerJS = (function (viewer) {
             enabled: true,
             heatmapUrl: '/viewer/api/v1/index/spatial/heatmap/{solrField}',
             featureUrl: '/viewer/api/v1/index/spatial/search/{solrField}',
-            mainQuery: 'BOOL_WKT_COORDS:*',
+            filterQuery: 'BOOL_WKT_COORDS:*',
             facetQuery: '',
             labelField: 'LABEL',
         },
@@ -122,10 +122,12 @@ var viewerJS = (function (viewer) {
         let hitsLayer = new viewerJS.GeoMap.featureGroup(this.geoMap, this.config.map.hitsLayer);
         hitsLayer.init(features, false);
         hitsLayer.onFeatureClick.subscribe((f) => {
-            console.log('clicked on ', f);
             if (f.properties && f.properties.link) {
                 $(this.config.search.loader).show();
                 window.location.assign(f.properties.link);
+   			 } else if (hitsLayer.config.search?.searchUrlTemplate && f.properties?.filterQuery) {
+                $(hitsLayer.config.search.loader).show();
+                window.open(hitsLayer.config.search.searchUrlTemplate + '?filterQuery=' + f.properties.filterQuery, hitsLayer.config.search.linkTarget);
             }
         });
 
@@ -133,7 +135,7 @@ var viewerJS = (function (viewer) {
     };
 
     viewer.GeoMapFacet.prototype.initHeatmap = function () {
-        let heatmapQuery = this.config.heatmap.mainQuery;
+        let heatmapQuery = this.config.heatmap.filterQuery;
         let heatmapFacetQuery = this.config.heatmap.facetQuery;
 
         let heatmap = L.solrHeatmap(this.config.heatmap.heatmapUrl, this.config.heatmap.featureUrl, this.hitsLayer, {
@@ -142,6 +144,7 @@ var viewerJS = (function (viewer) {
             filterQuery: heatmapQuery,
             facetQuery: heatmapFacetQuery,
             labelField: this.config.heatmap.labelField,
+            searchScope: this.config.heatmap.searchScope,
             queryAdapter: 'goobiViewer',
         });
         heatmap.addTo(this.geoMap.map);

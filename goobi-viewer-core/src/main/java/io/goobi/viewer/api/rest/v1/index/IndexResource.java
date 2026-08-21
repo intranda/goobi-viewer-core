@@ -506,8 +506,10 @@ public class IndexResource {
             if (StringUtils.isNotBlank(facetQuery)) {
                 coordQuery = facetQuery;
             }
-        } else {
+        } else if (StringUtils.isBlank(facetQuery)) {
             coordQuery = "{wktField}:{wktCoords}".replace("{wktField}", solrField).replace("{wktCoords}", wktRegion);
+        } else {
+            coordQuery = facetQuery;
         }
 
         Collection<GeoMapFeature> features;
@@ -553,7 +555,7 @@ public class IndexResource {
         String effectiveScope = searchScope;
         if (query.startsWith(SearchHelper.AGGREGATION_QUERY_PREFIX)) {
             effectiveQuery = query.substring(SearchHelper.AGGREGATION_QUERY_PREFIX.length());
-            effectiveScope = SolrSearchScope.RECORDS.name();
+            effectiveScope = SolrSearchScope.METADATA.name();
         }
 
         String finalQuery = "+(%s) +(%s)".formatted(effectiveQuery, coordinateQuery);
@@ -564,7 +566,7 @@ public class IndexResource {
                 new LabelCreator(DataManager.getInstance().getConfiguration().getMetadataTemplates(getItemMetadataList(labelConfig)), "");
         List<String> coordinateFields = DataManager.getInstance().getConfiguration().getGeoMapMarkerFields();
 
-        SolrSearchScope scope = SolrSearchScope.DOCSTRUCTS;
+        SolrSearchScope scope = SolrSearchScope.RECORDS;
         if (StringUtils.isNotBlank(effectiveScope) && Arrays.contains(SolrSearchScope.values(), effectiveScope.toUpperCase())) {
             scope = SolrSearchScope.valueOf(effectiveScope.toUpperCase());
         }

@@ -22,6 +22,8 @@
         <!--  WIDGET Geo facetting -->
         <ui:fragment rendered="#{searchBean.showGeoFacetMap}">
             <h:form>
+            
+            
                 <div class="widget widget-geofacetting">
                     <div class="widget__topbar widget-geofacetting__topbar">
                         <h2
@@ -163,7 +165,10 @@
                          					fillOpacity: 0.02,
                          					color: "#{configurationBean.markerForFacetting.markerColor}"
                          				},
-                    				markerIcon: (icon => icon)(#{configurationBean.markerForFacetting.toJSONString()})
+                    					markerIcon: (icon => icon)(#{configurationBean.markerForFacetting.toJSONString()}),
+                    					search: {
+                                 			searchUrlTemplate: location.origin + location.pathname
+                    					}
                          			},
                          			areaLayer: {
                          				style : {
@@ -177,13 +182,14 @@
                          			enabled: #{configurationBean.useHeatmapForFacetting()},
                          			heatmapUrl: "#{request.contextPath}/api/v1/index/spatial/heatmap/{solrField}",
                          			featureUrl: "#{request.contextPath}/api/v1/index/spatial/search/{solrField}",
-                         			mainQuery: "#{searchBean.getFinalSolrQueryEscaped()}",
+                         			filterQuery: "#{searchBean.getFinalSolrQueryEscaped('NO_AGGREGATION')}",
                          			facetQuery: "#{searchBean.getCombinedFilterQueryEscaped()}",
                          			labelField: "LABEL",
+                         			searchScope: "RECORDS",
                          		},
                          		search: {
                          			$loader: $( "[data-loader='geoFacet']" ),
-                         			$searchButton: $( "[data-geofacet='execute']" )
+                         			$searchButton: $( "[data-geofacet='execute']" ),
                          		},
                          		buttons: {
                          			$searchWithFacets: $( "[data-geofacet='trigger-execute']" ),
@@ -211,6 +217,7 @@
                     })
                     //]]>
                 </script>
+                TEST
             </h:form>
         </ui:fragment>
     </composite:implementation>

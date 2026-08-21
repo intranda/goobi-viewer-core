@@ -792,9 +792,8 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Clears the "search in current record" term (advanced query item index 1) without touching the
-     * rest of the advanced-search query group. Called on record navigation so the term does not leak
-     * from one record into the next.
+     * Clears the "search in current record" term (advanced query item index 1) without touching the rest of the advanced-search query group. Called
+     * on record navigation so the term does not leak from one record into the next.
      *
      * @should clear the search in current item term
      */
@@ -1305,6 +1304,20 @@ public class SearchBean implements SearchInterface, Serializable {
         }
 
         return new Search().generateFinalSolrQuery(null);
+    }
+
+    /**
+     * getFinalSolrQuery.
+     *
+     * @param type the aggregation type
+     * @return the final Solr query string generated from the current or an empty search
+     */
+    public String getFinalSolrQuery(SearchAggregationType type) {
+        if (this.currentSearch != null) {
+            return this.currentSearch.generateFinalSolrQuery(null, type);
+        }
+
+        return new Search().generateFinalSolrQuery(null, type);
     }
 
     /**
@@ -2000,9 +2013,9 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Shared redirect logic for actions that alter the active facets and/or the search term (e.g. removing a single facet, removing the search
-     * term or resetting all filters at once). Redirects to the current CMS page, the browse page or the appropriate search page, depending on
-     * where the action was triggered.
+     * Shared redirect logic for actions that alter the active facets and/or the search term (e.g. removing a single facet, removing the search term
+     * or resetting all filters at once). Redirects to the current CMS page, the browse page or the appropriate search page, depending on where the
+     * action was triggered.
      *
      * @return Navigation outcome
      */
@@ -3113,8 +3126,8 @@ public class SearchBean implements SearchInterface, Serializable {
     }
 
     /**
-     * Checks whether at least one of the configured facet fields (regular, range or geo) would actually render selectable content for the
-     * current search result. Used to hide the "available filters" section header when no facet has anything to offer.
+     * Checks whether at least one of the configured facet fields (regular, range or geo) would actually render selectable content for the current
+     * search result. Used to hide the "available filters" section header when no facet has anything to offer.
      *
      * @return true if at least one facet field has content to display; false otherwise
      * @should return true if a field facet has sufficient values
@@ -3528,6 +3541,10 @@ public class SearchBean implements SearchInterface, Serializable {
         return StringTools.encodeUrl(getFinalSolrQuery());
     }
 
+    public String getFinalSolrQueryEscaped(SearchAggregationType type) {
+        return StringTools.encodeUrl(getFinalSolrQuery(type));
+    }
+
     /**
      * getCombinedFilterQueryEscaped.
      *
@@ -3658,6 +3675,23 @@ public class SearchBean implements SearchInterface, Serializable {
 
     public void setQuickFilterValues(Map<String, String> quickFilterValues) {
         this.quickFilterValues = quickFilterValues;
+    }
+
+    public String getUrlQueryParams() {
+        StringBuilder sb = new StringBuilder();
+        if (this.navigationHelper != null) {
+            sb.append(this.navigationHelper.getSubThemeQueryParam());
+        }
+        String searchFilterQuery = new FilterQueryParser().getFilterQuery(this.request).orElse("");
+        if (StringUtils.isNotBlank(searchFilterQuery)) {
+            if (sb.isEmpty()) {
+                sb.append("?");
+            } else {
+                sb.append("&");
+            }
+            sb.append("filterQuery=").append(searchFilterQuery);
+        }
+        return sb.toString();
     }
 
 }

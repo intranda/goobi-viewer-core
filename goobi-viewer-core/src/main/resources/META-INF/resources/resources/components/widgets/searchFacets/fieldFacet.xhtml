@@ -131,7 +131,7 @@
                                         <h:outputLink
                                             styleClass="btn widget-search-facets__boolean-button"
                                             title="#{msg.yes} (#{searchBean.facets.getFacet(cc.attrs.field,'true').count})"
-                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(cc.attrs.field)}#{cc.attrs.field}:true/#{navigationHelper.subThemeQueryParam}">
+                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(cc.attrs.field)}#{cc.attrs.field}:true/#{searchBean.urlQueryParams}">
                                             #{msg.yes}
                                             <f:passThroughAttribute
                                                 name="data-triggerjs"
@@ -178,7 +178,7 @@
                                         <h:outputLink
                                             styleClass="btn widget-search-facets__boolean-button"
                                             title="#{msg.no} (#{searchBean.facets.getFacet(cc.attrs.field,'false').count})"
-                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(cc.attrs.field)}#{cc.attrs.field}:false/#{navigationHelper.subThemeQueryParam}">
+                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.getActiveFacetStringPrefix(cc.attrs.field)}#{cc.attrs.field}:false/#{searchBean.urlQueryParams}">
                                             #{msg.no}
                                             <f:passThroughAttribute
                                                 name="data-triggerjs"
@@ -268,7 +268,7 @@
                                         <!-- POSITIVE (INCLUDE) SELECTION -->
                                         <h:outputLink
                                             styleClass="widget-search-facets__list-item-link"
-                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/#{navigationHelper.subThemeQueryParam}">
+                                            value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.urlEscapedLink}/#{searchBean.urlQueryParams}">
                                             <span
                                                 class="widget-search-facets__list-item-control -include"
                                                 aria-hidden="true">
@@ -289,7 +289,7 @@
                                         <ui:fragment rendered="#{facet.count lt searchBean.hitsCount}">
                                             <h:outputLink
                                                 styleClass="widget-search-facets__list-item-control-link"
-                                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.excludeUrlEscapedLink}/#{navigationHelper.subThemeQueryParam}">
+                                                value="#{navigationHelper.getSearchUrl(searchBean.activeSearchType, cc.attrs.cmsPage)}/#{searchBean.activeContext}/#{searchBean.exactSearchString}/1/#{searchBean.sortString}/#{searchBean.facets.activeFacetStringPrefix}#{facet.excludeUrlEscapedLink}/#{searchBean.urlQueryParams}">
                                                 <span
                                                     class="widget-search-facets__list-item-control -exclude"
                                                     aria-hidden="true">
