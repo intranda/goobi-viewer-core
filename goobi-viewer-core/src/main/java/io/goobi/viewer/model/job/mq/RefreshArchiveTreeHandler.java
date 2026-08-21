@@ -176,6 +176,8 @@ public class RefreshArchiveTreeHandler implements MessageHandler<MessageStatus> 
 
         int count = DataManager.getInstance().getArchiveManager().unloadArchives(resourceIds);
         logger.debug("{} archive(s) unloaded due to associated records having been (re)indexed.", count);
+        int catalogCount = DataManager.getInstance().getCardCatalogManager().unloadCatalogs(resourceIds);
+        logger.debug("{} card catalog index(es) unloaded due to associated records having been (re)indexed.", catalogCount);
     }
 
     /**

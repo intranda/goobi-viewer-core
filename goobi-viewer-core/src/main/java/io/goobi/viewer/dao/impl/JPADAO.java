@@ -4664,7 +4664,7 @@ public class JPADAO implements IDAO {
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            Role o = em.getReference(Role.class, config.getId());
+            CMSArchiveConfig o = em.getReference(CMSArchiveConfig.class, config.getId());
             em.remove(o);
             commitTransaction(em);
             return true;

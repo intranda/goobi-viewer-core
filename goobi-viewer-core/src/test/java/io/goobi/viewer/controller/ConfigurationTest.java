@@ -4324,6 +4324,51 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getCardCatalogRegisterThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    void getCardCatalogRegisterThreshold_shouldReturnCorrectValue() {
+        assertEquals(2000, DataManager.getInstance().getConfiguration().getCardCatalogRegisterThreshold());
+    }
+
+    /**
+     * @see Configuration#getCardCatalogZoomFactor()
+     * @verifies return correct value
+     */
+    @Test
+    void getCardCatalogZoomFactor_shouldReturnCorrectValue() {
+        assertEquals(4, DataManager.getInstance().getConfiguration().getCardCatalogZoomFactor());
+    }
+
+    /**
+     * @see Configuration#getCardCatalogListPageSize()
+     * @verifies return correct value
+     */
+    @Test
+    void getCardCatalogListPageSize_shouldReturnCorrectValue() {
+        assertEquals(10, DataManager.getInstance().getConfiguration().getCardCatalogListPageSize());
+    }
+
+    /**
+     * @see Configuration#getCardCatalogFullViewThreshold()
+     * @verifies return correct value
+     */
+    @Test
+    void getCardCatalogFullViewThreshold_shouldReturnCorrectValue() {
+        assertEquals(12, DataManager.getInstance().getConfiguration().getCardCatalogFullViewThreshold());
+    }
+
+    /**
+     * @see Configuration#getCardCatalogRegisterChunkSize()
+     * @verifies return correct value
+     */
+    @Test
+    void getCardCatalogRegisterChunkSize_shouldReturnCorrectValue() {
+        assertEquals(50, DataManager.getInstance().getConfiguration().getCardCatalogRegisterChunkSize());
+    }
+
+    /**
      * @verifies return collection with 3 elements
      * @see Configuration#getCollectionSortOrders(String)
      */

@@ -65,6 +65,11 @@
                                     </ui:fragment>
                                 </div>
 
+                                <!-- CARD CATALOG BADGE -->
+                                <ui:fragment rendered="#{archiveWrapper.archiveConfig != null and archiveWrapper.archiveConfig.cardCatalog}">
+                                    <span class="archives-list__card-catalog-badge">#{msg.archives__card_catalog}</span>
+                                </ui:fragment>
+
                                 <!-- TITLE OVERLAY -->
                                 <div
                                     class="archives-list__image-title"

@@ -41,6 +41,7 @@ import io.goobi.viewer.dao.impl.JPADAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.ModuleMissingException;
 import io.goobi.viewer.model.archives.ArchiveManager;
+import io.goobi.viewer.model.archives.CardCatalogManager;
 import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.iiif.auth.BearerTokenManager;
@@ -115,6 +116,8 @@ public final class DataManager {
     private final TaskManager restApiJobManager;
 
     private ArchiveManager archiveManager = null;
+
+    private CardCatalogManager cardCatalogManager = null;
 
     private ClientApplicationManager clientManager = null;
 
@@ -566,6 +569,15 @@ public final class DataManager {
             }
         }
         return archiveManager;
+    }
+
+    public CardCatalogManager getCardCatalogManager() {
+        if (cardCatalogManager == null) {
+            synchronized (LOCK) {
+                cardCatalogManager = new CardCatalogManager();
+            }
+        }
+        return cardCatalogManager;
     }
 
     public ClientApplicationManager getClientManager() throws DAOException {

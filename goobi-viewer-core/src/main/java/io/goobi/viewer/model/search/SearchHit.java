@@ -114,6 +114,8 @@ public class SearchHit implements Comparable<SearchHit> {
     private String altUrl;
     /** Secondary label. */
     private String altLabel;
+    /** True if altUrl points into an archive flagged as a card catalog (affects link wording). */
+    private boolean altUrlCardCatalog = false;
     @JsonIgnore
     private final Locale locale;
     private final List<SearchHit> children = new ArrayList<>();
@@ -944,6 +946,14 @@ public class SearchHit implements Comparable<SearchHit> {
     
     public String getAltLabel() {
         return altLabel;
+    }
+
+    public boolean isAltUrlCardCatalog() {
+        return altUrlCardCatalog;
+    }
+
+    public void setAltUrlCardCatalog(boolean altUrlCardCatalog) {
+        this.altUrlCardCatalog = altUrlCardCatalog;
     }
 
     

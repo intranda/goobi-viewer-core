@@ -2626,6 +2626,14 @@
     nodeTypes/node/@name: Value of the c level="" attribute of the EAD structure
     nodeTypes/node/@icon: Name of the Tabler Icon (see https://tabler.io/icons) rendered via the util:icon component.
     nodeTypes/node/@default: If not icon was specified, this one is chosen.
+    cardCatalog/@registerThreshold: Total number of cards up to which a from-to register (computed from the card titles) is offered in the
+                                    card catalog view. Above this value only the drawer/letter entry points are shown. Default is 100000.
+    cardCatalog/@zoomFactor: Number of intervals one card catalog zoom step is divided into; zoomFactor + 1 boundary cards are displayed.
+                             Default is 8.
+    cardCatalog/@listPageSize: Number of cards one list-up/list-down step moves. Default is 16.
+    cardCatalog/@fullViewThreshold: Interval width at or below which the card catalog switches from zoom mode to the full card view.
+                                    Default is 16.
+    cardCatalog/@registerChunkSize: Number of cards covered by one computed register range. Default is 100.
     -->
     <archives lazyLoadingThreshold="1000">
         <nodeTypes>
@@ -2641,6 +2649,8 @@
         <!-- If true, clicking on an archive entry to select it also displays all its child entries. Conversely, clicking on a selected entry to
             de-select it, hides the children -->
         <expandOnSelect>true</expandOnSelect>
+        <!-- Navigation parameters of the card catalog view for archives flagged as card catalogs -->
+        <cardCatalog registerThreshold="100000" zoomFactor="8" listPageSize="16" fullViewThreshold="16" registerChunkSize="100" />
     </archives>
 
     <!-- Configuration for crowdsourcing campaigns -->

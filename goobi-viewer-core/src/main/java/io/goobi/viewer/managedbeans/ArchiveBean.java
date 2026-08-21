@@ -117,6 +117,19 @@ public class ArchiveBean implements Serializable {
         ArchiveResource currentArchive = getCurrentArchive();
         if (currentArchive != null) {
             try {
+                Optional<CMSArchiveConfig> config =
+                        DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(currentArchive.getResourceId());
+                if (config.isPresent()) {
+                    logger.trace("Found configuration for archive resource: {}", currentArchive.getResourceId());
+                    this.archiveConfig = config.get();
+                }
+                // The card catalog view loads its data via the card catalog REST API; the full
+                // archive tree (potentially hundreds of thousands of nodes) must not be built for it
+                if (isCardCatalog()) {
+                    this.databaseLoaded = true;
+                    this.searchString = "";
+                    return;
+                }
                 // clone the global archive tree so its state (which nodes are expanded) is not preserved between sessions
                 // if state of archive tree should be reset on each page reload, remove the if-clause or call ArchiveTree.collapseAll()
                 if (this.archiveTree == null || !this.archiveTree.getRootElement().getTopstructPi().equals(currentArchive.getResourceId())) {
@@ -132,12 +145,6 @@ public class ArchiveBean implements Serializable {
                 this.archiveTree.resetSearch();
                 if (StringUtils.isNotBlank(selectedEntryId)) {
                     this.setSelectedEntryId(selectedEntryId);
-                }
-                Optional<CMSArchiveConfig> config =
-                        DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(currentArchive.getResourceId());
-                if (config.isPresent()) {
-                    logger.trace("Found configuration for archive resource: {}", currentArchive.getResourceId());
-                    this.archiveConfig = config.get();
                 }
             } catch (PresentationException | IllegalStateException | IndexUnreachableException | DAOException e) {
                 logger.error("Error initializing archive tree: {}", e.getMessage());
@@ -186,6 +193,13 @@ public class ArchiveBean implements Serializable {
     
     public CMSArchiveConfig getArchiveConfig() {
         return archiveConfig;
+    }
+
+    /**
+     * @return true if the current archive resource is flagged as a card catalog in its CMS configuration
+     */
+    public boolean isCardCatalog() {
+        return archiveConfig != null && archiveConfig.isCardCatalog();
     }
 
     public void toggleEntryExpansion(ArchiveEntry entry) {

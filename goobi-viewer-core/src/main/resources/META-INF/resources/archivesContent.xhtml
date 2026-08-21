@@ -59,131 +59,154 @@
                 </div>
             </div>
 
-            <div class="archives__wrapper">
-                <!-- LEFT SIDE -->
-                <div class="archives__left-side">
-                    <ui:fragment rendered="#{archiveBean.getNumArchives() > 1}">
-                        <h:form styleClass="archives__select-database-dropdown-wrapper">
-                            <h:outputLabel
-                                for="selectArchiveDatabaseDropdown"
-                                class="archives__select-database-dropdown-label">
-                                #{msg.archives__current_collection}:
-                            </h:outputLabel>
+            <!-- CARD CATALOG VIEW (archives flagged as card catalogs) -->
+            <c:if test="#{archiveBean.cardCatalog}">
+                <ui:include src="/resources/includes/archives/archiveCardCatalogView.xhtml" />
+            </c:if>
 
-                            <div class="archives__select-database-dropdown-element">
-                                <div class="custom-control custom-control--select archives__select-database-dropdown-element-select">
-                                    <h:selectOneMenu
-                                        id="selectArchiveDatabaseDropdown"
-                                        value="#{archiveBean.currentResource}"
-                                        styleClass="archives__select-database-dropdown"
-                                        onchange="$(this).next().click()">
-                                        <f:selectItems
-                                            value="#{archiveBean.filteredDatabases}"
-                                            var="database"
-                                            itemValue="#{database.resourceId}"
-                                            itemLabel="#{database.resourceName}" />
-                                    </h:selectOneMenu>
-                                    <h:commandButton
-                                        styleClass="d-none"
-                                        action="pretty:archives1" />
-                                </div>
-                            </div>
-                        </h:form>
-                    </ui:fragment>
+            <c:if test="#{not archiveBean.cardCatalog}">
+                <div class="archives__wrapper">
+                    <!-- LEFT SIDE -->
+                    <div class="archives__left-side">
+                        <ui:fragment rendered="#{archiveBean.getNumArchives() > 1}">
+                            <h:form styleClass="archives__select-database-dropdown-wrapper">
+                                <h:outputLabel
+                                    for="selectArchiveDatabaseDropdown"
+                                    class="archives__select-database-dropdown-label">
+                                    #{msg.archives__current_collection}:
+                                </h:outputLabel>
 
-                    <div class="archives__tree-heading">
-                        <h2>#{msg.archives__archive_tree_heading}</h2>
-                        <button
-                            id="archivesSearchTrigger"
-                            class="#{not empty archiveBean.searchString ? '-active' : ''} btn"
-                            aria-label="#{msg.search}"
-                            pt:aria-expanded="#{not empty archiveBean.searchString}">
-                            <util:icon icon="search" />
-                        </button>
-                    </div>
-                    <h:panelGroup
-                        layout="block"
-                        id="treeGroup"
-                        styleClass="archives__graphic-tree">
-                        <div class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
-                            <h:form
-                                id="searchForm"
-                                prependId="false">
-                                <h:inputText
-                                    id="archivesSearchField"
-                                    styleClass="form-control filter-input archives__search-input"
-                                    value="#{archiveBean.searchString}"
-                                    immediate="true">
-                                    <f:passThroughAttribute
-                                        name="placeholder"
-                                        value="#{msg.searchFieldDemoText}" />
-                                    <f:passThroughAttribute
-                                        name="aria-label"
-                                        value="#{msg.aria_label__search_form}" />
-                                </h:inputText>
-                                <button
-                                    type="button"
-                                    class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}"
-                                    aria-label="#{msg.delete}">
-                                    <util:icon icon="x" />
-                                </button>
-                                <h:commandButton
-                                    styleClass="archives__search-submit-button"
-                                    value="#{msg.search}"
-                                    action="#{archiveBean.searchAction}" />
-                            </h:form>
-                        </div>
-                        <ui:include src="/resources/includes/archives/archiveTreeView.xhtml">
-                            <ui:param
-                                name="indent"
-                                value="#{configurationBean.tocIndentation * 1.5}" />
-                            <ui:param
-                                name="render"
-                                value="treeGroup hierarchyGroup metadataGroup" />
-                        </ui:include>
-                    </h:panelGroup>
-                </div>
-
-                <!-- RIGHT SIDE -->
-                <div class="archives__right-side">
-                    <!-- HIERARCHY OF THE CURRENT NODE -->
-                    <ui:fragment rendered="#{archiveBean.displayEntry.accessAllowed}">
-                        <h:panelGroup
-                            layout="block"
-                            id="hierarchyGroup"
-                            styleClass="archives__text-tree">
-                            <ui:repeat
-                                var="entry"
-                                value="#{archiveBean.getArchiveHierarchyForIdentifier(archiveBean.displayEntry.id)}">
-                                <!-- TODO proper level tag -->
-                                <!-- TODO bold via CSS -->
-                                <div class="archives__text-tree-entry">
-                                    <div class="archives__text-tree-level">
-                                        <h:outputText
-                                            rendered="#{entry.descriptionLevel != null}"
-                                            value="#{msg[entry.descriptionLevel]}:" />
+                                <div class="archives__select-database-dropdown-element">
+                                    <div class="custom-control custom-control--select archives__select-database-dropdown-element-select">
+                                        <h:selectOneMenu
+                                            id="selectArchiveDatabaseDropdown"
+                                            value="#{archiveBean.currentResource}"
+                                            styleClass="archives__select-database-dropdown"
+                                            onchange="$(this).next().click()">
+                                            <f:selectItems
+                                                value="#{archiveBean.filteredDatabases}"
+                                                var="database"
+                                                itemValue="#{database.resourceId}"
+                                                itemLabel="#{database.resourceName}" />
+                                        </h:selectOneMenu>
+                                        <h:commandButton
+                                            styleClass="d-none"
+                                            action="pretty:archives1" />
                                     </div>
-                                    <span class="archives__text-tree-value">#{entry.label}</span>
                                 </div>
-                            </ui:repeat>
-                        </h:panelGroup>
+                            </h:form>
+                        </ui:fragment>
+
+                        <div class="archives__tree-heading">
+                            <h2>#{msg.archives__archive_tree_heading}</h2>
+                            <button
+                                id="archivesSearchTrigger"
+                                class="#{not empty archiveBean.searchString ? '-active' : ''} btn"
+                                aria-label="#{msg.search}"
+                                pt:aria-expanded="#{not empty archiveBean.searchString}">
+                                <util:icon icon="search" />
+                            </button>
+                        </div>
                         <h:panelGroup
                             layout="block"
-                            id="metadataGroup">
-                            <ui:include src="/resources/includes/archives/archiveMetadataView.xhtml">
+                            id="treeGroup"
+                            styleClass="archives__graphic-tree">
+                            <div class="archives__search-input-wrapper #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}">
+                                <h:form
+                                    id="searchForm"
+                                    prependId="false">
+                                    <h:inputText
+                                        id="archivesSearchField"
+                                        styleClass="form-control filter-input archives__search-input"
+                                        value="#{archiveBean.searchString}"
+                                        immediate="true">
+                                        <f:passThroughAttribute
+                                            name="placeholder"
+                                            value="#{msg.searchFieldDemoText}" />
+                                        <f:passThroughAttribute
+                                            name="aria-label"
+                                            value="#{msg.aria_label__search_form}" />
+                                    </h:inputText>
+                                    <button
+                                        type="button"
+                                        class="archives__search-clear #{not empty archiveBean.searchString ? '-isNotEmpty' : ''}"
+                                        aria-label="#{msg.delete}">
+                                        <util:icon icon="x" />
+                                    </button>
+                                    <h:commandButton
+                                        styleClass="archives__search-submit-button"
+                                        value="#{msg.search}"
+                                        action="#{archiveBean.searchAction}" />
+                                </h:form>
+                            </div>
+                            <ui:include src="/resources/includes/archives/archiveTreeView.xhtml">
                                 <ui:param
-                                    name="archiveEntry"
-                                    value="#{archiveBean.displayEntry}" />
+                                    name="indent"
+                                    value="#{configurationBean.tocIndentation * 1.5}" />
+                                <ui:param
+                                    name="render"
+                                    value="treeGroup hierarchyGroup metadataGroup" />
                             </ui:include>
                         </h:panelGroup>
-                    </ui:fragment>
 
-                    <!-- (ADMIN) WIDGET FOR ARCHIVE INTERACTIONS -->
-                    <div class="archives__widget-archives-interactions-wrapper">
-                        <widgetComponent:widget_archivesInteractions />
+                        <!-- CATALOG HELP LINKS (maintained in the CMS archive configuration) -->
+                        <ui:fragment rendered="#{archiveBean.archiveConfig != null and not empty archiveBean.archiveConfig.links}">
+                            <div class="archives__helplinks">
+                                <h2 class="archives__helplinks-heading">#{msg.archives__card_catalog_help}</h2>
+                                <ui:repeat
+                                    var="link"
+                                    value="#{archiveBean.archiveConfig.links}">
+                                    <a
+                                        class="archives__helplink"
+                                        href="#{link.url}">
+                                        #{link.label.textOrDefault}
+                                    </a>
+                                </ui:repeat>
+                            </div>
+                        </ui:fragment>
+                    </div>
+
+                    <!-- RIGHT SIDE -->
+                    <div class="archives__right-side">
+                        <!-- HIERARCHY OF THE CURRENT NODE -->
+                        <ui:fragment rendered="#{archiveBean.displayEntry.accessAllowed}">
+                            <h:panelGroup
+                                layout="block"
+                                id="hierarchyGroup"
+                                styleClass="archives__text-tree">
+                                <ui:repeat
+                                    var="entry"
+                                    value="#{archiveBean.getArchiveHierarchyForIdentifier(archiveBean.displayEntry.id)}">
+                                    <!-- TODO proper level tag -->
+                                    <!-- TODO bold via CSS -->
+                                    <div class="archives__text-tree-entry">
+                                        <div class="archives__text-tree-level">
+                                            <h:outputText
+                                                rendered="#{entry.descriptionLevel != null}"
+                                                value="#{msg[entry.descriptionLevel]}:" />
+                                        </div>
+                                        <span class="archives__text-tree-value">#{entry.label}</span>
+                                    </div>
+                                </ui:repeat>
+                            </h:panelGroup>
+                            <h:panelGroup
+                                layout="block"
+                                id="metadataGroup">
+                                <ui:include src="/resources/includes/archives/archiveMetadataView.xhtml">
+                                    <ui:param
+                                        name="archiveEntry"
+                                        value="#{archiveBean.displayEntry}" />
+                                </ui:include>
+                            </h:panelGroup>
+                        </ui:fragment>
+
+                        <!-- (ADMIN) WIDGET FOR ARCHIVE INTERACTIONS -->
+                        <div class="archives__widget-archives-interactions-wrapper">
+                            <widgetComponent:widget_archivesInteractions />
+                        </div>
                     </div>
                 </div>
-            </div>
+            </c:if>
         </f:view>
     </ui:define>
 

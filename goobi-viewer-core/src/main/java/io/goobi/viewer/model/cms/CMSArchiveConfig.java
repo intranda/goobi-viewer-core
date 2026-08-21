@@ -23,7 +23,9 @@ package io.goobi.viewer.model.cms;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,13 +38,17 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaMultiHolder;
 import io.goobi.viewer.model.translations.TranslatedText;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
 /**
@@ -86,6 +92,15 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     @JoinColumn(name = "header_media_item_id")
     private CMSMediaItem headerImage;
 
+    /** If true, the archive page renders the card catalog view instead of the archive tree. */
+    @Column(name = "card_catalog", nullable = false, columnDefinition = "boolean default false")
+    private boolean cardCatalog = false;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "owner_config_id")
+    @OrderColumn(name = "link_order")
+    private List<CMSArchiveLink> links = new ArrayList<>();
+
     public CMSArchiveConfig() {
     }
 
@@ -111,6 +126,30 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
         this.description = new TranslatedText(orig.description);
         this.tileImage = orig.tileImage;
         this.headerImage = orig.headerImage;
+        this.cardCatalog = orig.cardCatalog;
+        for (CMSArchiveLink link : orig.links) {
+            this.links.add(new CMSArchiveLink(link));
+        }
+    }
+
+    public boolean isCardCatalog() {
+        return cardCatalog;
+    }
+
+    public void setCardCatalog(boolean cardCatalog) {
+        this.cardCatalog = cardCatalog;
+    }
+
+    public List<CMSArchiveLink> getLinks() {
+        return links;
+    }
+
+    public void addLink() {
+        links.add(new CMSArchiveLink());
+    }
+
+    public void removeLink(CMSArchiveLink link) {
+        links.remove(link);
     }
 
     

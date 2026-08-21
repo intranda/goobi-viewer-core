@@ -253,6 +253,8 @@ public class ViewManager implements Serializable {
     private String citationStyle = null;
     private CitationProcessorWrapper citationProcessorWrapper;
     private ArchiveResource archiveResource = null;
+
+    private boolean cardCatalogArchive = false;
     private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
@@ -321,6 +323,10 @@ public class ViewManager implements Serializable {
                 DataManager.getInstance().getArchiveManager().updateArchiveList();
                 this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
                 this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
+                if (this.archiveResource != null) {
+                    this.cardCatalogArchive =
+                            DataManager.getInstance().getCardCatalogManager().isCardCatalogResource(this.archiveResource.getResourceId());
+                }
             }
         } catch (ArchiveException e) {
             logger.error("Error creating archive link for {}: {}", this.pi, e.getMessage());
@@ -329,6 +335,13 @@ public class ViewManager implements Serializable {
 
     public Pair<Optional<String>, Optional<String>> getArchiveTreeNeighbours() {
         return archiveTreeNeighbours;
+    }
+
+    /**
+     * @return true if the archive containing this record's linked EAD node is flagged as a card catalog
+     */
+    public boolean isCardCatalogArchive() {
+        return cardCatalogArchive;
     }
 
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {

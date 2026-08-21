@@ -25,7 +25,7 @@
                 id="widgetArchives"
                 class="widget widget-archives">
                 <div class="widget__topbar widget-archives__topbar">
-                    <h2 class="widget__title widget-archives__title">#{msg.archives}</h2>
+                    <h2 class="widget__title widget-archives__title">#{activeDocumentBean.viewManager.cardCatalogArchive ? msg.archives__card_catalog : msg.archives}</h2>
                     <div class="widget-archives__header-controls">
                         <a
                             class="widget-archives__prev #{neighbours.left != null ? '':'-disabled'}"
@@ -62,7 +62,7 @@
                         <li class="widget-archives__archives-link">
                             <h:outputLink
                                 value="#{navigationHelper.applicationUrl}#{activeDocumentBean.viewManager.getArchiveUrlForIdentifier(activeDocumentBean.viewManager.archiveEntryIdentifier)}">
-                                #{msg.openArchiveView}
+                                #{activeDocumentBean.viewManager.cardCatalogArchive ? msg.archives__open_in_card_catalog : msg.openArchiveView}
                             </h:outputLink>
                         </li>
                     </ul>
