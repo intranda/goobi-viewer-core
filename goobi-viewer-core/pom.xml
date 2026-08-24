@@ -140,7 +140,7 @@
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 		<mockserver.version>7.5.0</mockserver.version>
 		<!-- mockserver-netty 7.5.0 requires the Netty 4.2.x line; see dependencyManagement below -->
-		<netty.version>4.2.16.Final</netty.version>
+		<netty.version>4.2.17.Final</netty.version>
 		<omnifaces.version>4.7.12</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.5.1</poi.version>
