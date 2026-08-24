@@ -19,13 +19,13 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v2.archives;
+package io.goobi.viewer.api.rest.v1.archives;
 
-import static io.goobi.viewer.api.rest.v2.ApiUrls.ARCHIVES_CARDCATALOG;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.ARCHIVES_CARDCATALOG_BOUNDARIES;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.ARCHIVES_CARDCATALOG_ENTRIES;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.ARCHIVES_CARDCATALOG_LOOKUP;
-import static io.goobi.viewer.api.rest.v2.ApiUrls.ARCHIVES_CARDCATALOG_REGISTER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_BOUNDARIES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_ENTRIES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_LOOKUP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_REGISTER;
 
 import java.util.List;
 import java.util.Map;
@@ -47,15 +47,17 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
-import io.goobi.viewer.model.cms.CMSArchiveLink;
 import io.goobi.viewer.model.archives.CardCatalogDrawer;
 import io.goobi.viewer.model.archives.CardCatalogEntry;
 import io.goobi.viewer.model.archives.CardCatalogIndex;
 import io.goobi.viewer.model.archives.CardCatalogManager;
 import io.goobi.viewer.model.archives.CardCatalogRegisterRange;
+import io.goobi.viewer.model.cms.CMSArchiveLink;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -64,13 +66,10 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * REST resource for the card catalog view of an archive: positional navigation over the cards of a
- * digitized card catalog (drawers, zoom boundaries, dense card ranges, computed from-to register).
- * The endpoints are independent of whether the archive is flagged as a card catalog; the flag only
+ * REST resource for the card catalog view of an archive: positional navigation over the cards of a digitized card catalog (drawers, zoom boundaries,
+ * dense card ranges, computed from-to register). The endpoints are independent of whether the archive is flagged as a card catalog; the flag only
  * controls which view the archive page renders.
  */
 @jakarta.ws.rs.Path(ARCHIVES_CARDCATALOG)
@@ -279,8 +278,10 @@ public class CardCatalogResource {
         item.setHasImage(entry.isHasImage());
         if (entry.isHasImage() && entry.getRecordPi() != null) {
             try {
-                item.setThumbnailUrl(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(entry.getRecordPi(), THUMBNAIL_SIZE,
-                        THUMBNAIL_SIZE));
+                item.setThumbnailUrl(BeanUtils.getImageDeliveryBean()
+                        .getThumbs()
+                        .getThumbnailUrl(entry.getRecordPi(), THUMBNAIL_SIZE,
+                                THUMBNAIL_SIZE));
                 if (withImageUrl) {
                     item.setImageUrl(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(entry.getRecordPi(), IMAGE_SIZE, IMAGE_SIZE));
                 }
