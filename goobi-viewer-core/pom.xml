@@ -96,7 +96,7 @@
 		<tei-conversion.version>1.4.0</tei-conversion.version>
 		<intranda-content-view.version>0.7.1</intranda-content-view.version>
 		<iiif-api-model.version>3.2.1</iiif-api-model.version>
-		<normdataimporter.version>2.1.4</normdataimporter.version>
+		<normdataimporter.version>2.1.5</normdataimporter.version>
 
 		<!-- other libraries -->
 		<activemq.version>6.3.0</activemq.version>
