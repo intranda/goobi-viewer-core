@@ -73,7 +73,10 @@ public class CMSContentItem {
 
     // Volatile because concurrent requests of the same HTTP session share this instance and read the
     // lazily built component without holding a lock; see getUiComponent() for the publication rules.
-    private volatile UIComponent uiComponent;
+    // A "thread-safe type" (AtomicReference etc.) would add nothing: what is not thread-safe is the
+    // mutable JSF component the reference points to, not the reference itself. Dropping volatile would
+    // break the unsynchronized fast path in getUiComponent().
+    private volatile UIComponent uiComponent; //NOSONAR S3077: volatile needed for DCL fast path, see comment above
 
     public CMSContentItem(CMSContentItem orig, CMSComponent owningComponent) {
         this.itemId = orig.itemId;
