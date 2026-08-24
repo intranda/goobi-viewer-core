@@ -6,13 +6,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <!-- INTERFACE OPTIONS -->
-    <composite:interface>
-        <composite:attribute
-            name="headingLevel"
-            type="java.lang.String"
-            required="false"
-            default="2" />
-    </composite:interface>
+    <composite:interface />
 
     <!-- COMPONENT CONTENT -->
     <composite:implementation>
@@ -26,11 +20,9 @@
             
                 <div class="widget widget-geofacetting">
                     <div class="widget__topbar widget-geofacetting__topbar">
-                        <h2
-                            class="widget__title widget-geofacetting__title"
-                            aria-level="#{cc.attrs.headingLevel}">
+                        <h3 class="widget__title widget-geofacetting__title">
                             #{msg.widget_geofacetting__label}
-                        </h2>
+                        </h3>
                         <div class="widget-geofacetting__item widget-geofacetting__actions">
                             <button
                                 type="button"

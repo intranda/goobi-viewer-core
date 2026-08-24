@@ -50,12 +50,13 @@ import io.goobi.viewer.model.media.voyager.VoyagerSceneBuilder;
 /**
  * Message handler that auto-generates a centered Voyager SVX scene file for a GLTF or GLB 3D object.
  *
- * <p>The bounding-box centre of the model is computed from the GLTF POSITION accessor min/max values
- * and stored as a node translation in the generated {@code *.svx.json} file.  This ensures that the
- * Voyager viewer rotates around the object's actual centre rather than the coordinate-system origin.
+ * <p>
+ * The bounding-box centre of the model is computed from the GLTF POSITION accessor min/max values and stored as a node translation in the generated
+ * {@code *.svx.json} file. This ensures that the Voyager viewer rotates around the object's actual centre rather than the coordinate-system origin.
  *
- * <p>If an {@code svx.json} file already exists for the model (e.g. from manual editing in
- * voyager-story) it is left untouched so that manual scene adjustments are preserved.
+ * <p>
+ * If an {@code svx.json} file already exists for the model (e.g. from manual editing in voyager-story) it is left untouched so that manual scene
+ * adjustments are preserved.
  */
 public class Center3DObjectHandler implements MessageHandler<MessageStatus> {
 
@@ -100,16 +101,14 @@ public class Center3DObjectHandler implements MessageHandler<MessageStatus> {
     }
 
     /**
-     * Core logic: computes the bounding-box centre of the model and writes a centered
-     * {@code *.svx.json} next to it.  Separated from {@link #call} for testability.
+     * Core logic: computes the bounding-box centre of the model and writes a centered {@code *.svx.json} next to it. Separated from {@link #call} for
+     * testability.
      *
      * @param pi persistent identifier of the record
      * @param filename 3D model filename (must be {@code .gltf} or {@code .glb})
      * @param mediaDirectory directory that contains the model file
-     * @param force if {@code true}, an existing SVX file is overwritten; if {@code false},
-     *              the task is skipped when an SVX file already exists
-     * @return {@link MessageStatus#FINISH} on success or deliberate skip,
-     *         {@link MessageStatus#ERROR} on failure
+     * @param force if {@code true}, an existing SVX file is overwritten; if {@code false}, the task is skipped when an SVX file already exists
+     * @return {@link MessageStatus#FINISH} on success or deliberate skip, {@link MessageStatus#ERROR} on failure
      */
     MessageStatus processCentering(String pi, String filename, Path mediaDirectory, boolean force) {
         String ext = FilenameUtils.getExtension(filename).toLowerCase();
@@ -143,9 +142,10 @@ public class Center3DObjectHandler implements MessageHandler<MessageStatus> {
 
             AbstractApiUrlManager urlManager = resolveUrlManager();
             URI modelUri = urlManager.path(ApiUrls.RECORDS_FILES_3D).params(pi, filename).buildURI();
+            URI relativeURI = URI.create(modelUri.getPath());
 
             String scene = new VoyagerSceneBuilder(baseFilename)
-                    .addModel(modelUri, modelFile)
+                    .addModel(relativeURI, modelFile)
                     .setTranslation(-center[0], -center[1], -center[2])
                     .setBounds(bounds[0], bounds[1])
                     .build();
@@ -176,8 +176,8 @@ public class Center3DObjectHandler implements MessageHandler<MessageStatus> {
     }
 
     /**
-     * Creates a {@link ViewerMessage} that triggers centering for the given record's 3D model.
-     * Skips the task if an SVX file already exists ({@code force=false}).
+     * Creates a {@link ViewerMessage} that triggers centering for the given record's 3D model. Skips the task if an SVX file already exists
+     * ({@code force=false}).
      *
      * @param pi persistent identifier of the record
      * @param filename 3D model filename ({@code .gltf} or {@code .glb})

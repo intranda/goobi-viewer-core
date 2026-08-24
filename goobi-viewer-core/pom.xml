@@ -96,10 +96,10 @@
 		<tei-conversion.version>1.4.0</tei-conversion.version>
 		<intranda-content-view.version>0.7.1</intranda-content-view.version>
 		<iiif-api-model.version>3.2.1</iiif-api-model.version>
-		<normdataimporter.version>2.1.4</normdataimporter.version>
+		<normdataimporter.version>2.1.5</normdataimporter.version>
 
 		<!-- other libraries -->
-		<activemq.version>6.3.0</activemq.version>
+		<activemq.version>6.3.1</activemq.version>
 		<angus-mail.version>2.0.5</angus-mail.version>
 		<citationstyles.version>26.2</citationstyles.version>
 		<citeproc-java.version>3.5.0</citeproc-java.version>
@@ -140,7 +140,7 @@
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 		<mockserver.version>7.5.0</mockserver.version>
 		<!-- mockserver-netty 7.5.0 requires the Netty 4.2.x line; see dependencyManagement below -->
-		<netty.version>4.2.16.Final</netty.version>
+		<netty.version>4.2.17.Final</netty.version>
 		<omnifaces.version>4.7.12</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.5.1</poi.version>
@@ -150,7 +150,7 @@
 		<rome.version>2.1.0</rome.version>
 		<spring.version>6.2.19</spring.version>
 		<slf4j.version>2.0.18</slf4j.version>
-		<swagger.version>2.2.53</swagger.version>
+		<swagger.version>2.2.54</swagger.version>
 		<tomcat.version>10.1.31</tomcat.version>
 		<weld-servlet-shaded.version>5.1.7.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>

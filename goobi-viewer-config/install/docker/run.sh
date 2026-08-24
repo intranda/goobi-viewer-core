@@ -53,11 +53,11 @@ if [[ "$WEBAPP_NAME" != "viewer" && -d "${CATALINA_HOME}/webapps/viewer" && ! -d
     mv "${CATALINA_HOME}/webapps/viewer" "$WEBAPP_DIR"
 fi
 
-if [[ -z "$API_TOKEN" ]]; then
+if [[ -z "${API_TOKEN:-}" ]]; then
   API_TOKEN="$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32)"
   echo "No API Token specified, using random token as fallback."
-  sed -i "s|<token>[^<]*</token>|<token>${API_TOKEN}</token>|" "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
 fi
+sed -i "s|<token>[^<]*</token>|<token>${API_TOKEN}</token>|" "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
 
 set -u
 
