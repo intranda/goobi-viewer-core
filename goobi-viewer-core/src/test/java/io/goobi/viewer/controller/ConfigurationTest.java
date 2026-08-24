@@ -541,6 +541,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isSessionCookieSecure()
+     * @verifies return correct value
+     */
+    @Test
+    void isSessionCookieSecure_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isSessionCookieSecure());
+    }
+
+    /**
      * @see Configuration#getSecurityQuestions()
      * @verifies return all configured elements
      */

@@ -164,6 +164,11 @@
         </feedbackEmailAddressList>
 	</user>
 
+	<session>
+		<!-- cookieSecure: If true, the session cookie always carries the 'Secure' flag. Default is true. -->
+		<cookieSecure>false</cookieSecure>
+	</session>
+
 	<performance>
 		<!-- pageLoaderThreshold: number of pages a record has to have to switch 
 			to a lean page loading strategy that limit memory usage (default is 1000) -->

@@ -231,7 +231,10 @@
     <session-config>
         <cookie-config>
             <http-only>true</http-only>
-            <secure>true</secure>
+            <!-- The 'secure' flag is deliberately NOT declared here: hardcoding it to true breaks every
+                 installation that is served via plain http, since browsers then never send JSESSIONID back.
+                 It is set programmatically instead, from <session><cookieSecure> in config_viewer.xml
+                 (default true), in ContextListener.contextInitialized(). -->
         </cookie-config>
         <tracking-mode>COOKIE</tracking-mode>
         <!--        <session-timeout>120</session-timeout> -->
