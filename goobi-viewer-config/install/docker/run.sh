@@ -114,15 +114,13 @@ elif [[ -n "$THEME_NAME" ]]; then
   sed -i 's/mainTheme="[^"]*"/mainTheme="'"${THEME_NAME}"'"/' "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
 fi
 
-echo "Setting viewer url from environment variable"
-BASE_URL="${VIEWER_DOMAIN}${VIEWER_BASE_PATH:+/${VIEWER_BASE_PATH}}"
-if [[ "$USE_SSL" == "true" ]]; then
-  sed -Ei "s#http://localhost:8080/viewer#https://${BASE_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
-  sed -Ei "s#http://localhost:8080/viewer#https://${BASE_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_oai.xml"
-else
-  sed -Ei "s#http://localhost:8080/viewer#http://${BASE_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
-  sed -Ei "s#http://localhost:8080/viewer#http://${BASE_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_oai.xml"
-fi
+# Deliberately not one blanket substitution across both files: three
+# config_oai.xml keys are resolved by the viewer itself over HTTP and have to stay
+# container-internal. Pointing those at the public address leaves the viewer unable
+# to reach itself, which surfaces as OAI verbs answering an empty <GetRecord/>
+# rather than an error. configure-config-urls.sh documents which keys and why.
+echo "Setting viewer urls from environment..."
+/configure-config-urls.sh "${WEBAPP_DIR}/WEB-INF/classes"
 
 export MYSQL_PWD=${DB_PASSWORD}
 while ! mysql -h "${DB_HOST}" -u "${DB_USER}" -P "${DB_PORT}" -e "SELECT 1" >/dev/null 2>&1; do
