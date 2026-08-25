@@ -100,6 +100,7 @@ io.goobi.viewer.model.crowdsourcing.campaigns
 io.goobi.viewer.model.crowdsourcing.questions
 io.goobi.viewer.model.email
 io.goobi.viewer.model.export
+io.goobi.viewer.model.export.bagit
 io.goobi.viewer.model.files.external
 io.goobi.viewer.model.files.upload
 io.goobi.viewer.model.iiif.auth
