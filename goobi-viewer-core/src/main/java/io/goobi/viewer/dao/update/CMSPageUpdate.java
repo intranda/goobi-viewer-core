@@ -188,7 +188,7 @@ public class CMSPageUpdate implements IModelUpdate {
             for (CMSPage page : templatePages) {
                 page.setTemplateId(template.getId());
                 try {
-                    if (!dao.updateCMSPage(page)) {
+                    if (dao.updateCMSPage(page) == null) {
                         throw new DAOException("Saving page failed");
                     }
                 } catch (DAOException | NullPointerException e) {

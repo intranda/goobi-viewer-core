@@ -3326,7 +3326,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addCMSPage(CMSPage page) throws DAOException {
+    public CMSPage addCMSPage(CMSPage page) throws DAOException {
         synchronized (cmsRequestLock) {
 
             preQuery();
@@ -3335,11 +3335,11 @@ public class JPADAO implements IDAO {
                 startTransaction(em);
                 em.persist(page);
                 commitTransaction(em);
-                return true;
+                return page;
             } catch (PersistenceException e) {
                 logger.error("Error adding cmsPage to database", e);
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -3348,19 +3348,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateCMSPage(CMSPage page) throws DAOException {
+    public CMSPage updateCMSPage(CMSPage page) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
             EntityManager em = getEntityManager();
             try {
                 startTransaction(em);
-                em.merge(page);
+                CMSPage mergedPage = em.merge(page);
                 commitTransaction(em);
-                return true;
+                return mergedPage;
             } catch (PersistenceException | NullPointerException e) {
                 logger.error("Error saving page ", e);
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }

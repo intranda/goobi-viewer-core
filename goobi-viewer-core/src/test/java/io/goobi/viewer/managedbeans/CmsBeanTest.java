@@ -21,7 +21,7 @@
  */
 package io.goobi.viewer.managedbeans;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -138,7 +138,7 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         CmsBean bean = new CmsBean();
 
         CMSPage page = new CMSPage();
-        assertTrue(DataManager.getInstance().getDao().addCMSPage(page));
+        assertNotNull(DataManager.getInstance().getDao().addCMSPage(page));
 
         List<CMSStaticPage> staticPages = bean.getStaticPages();
         CMSStaticPage staticPage = staticPages.get(0);
@@ -163,7 +163,8 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      * @see CmsBean#getGroupedQueryResults(List<SearchHit>, String)
      */
     @Test
-    void getGroupedQueryResults_shouldReturnCollectionWith3Elements() throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
+    void getGroupedQueryResults_shouldReturnCollectionWith3Elements()
+            throws PresentationException, IndexUnreachableException, DAOException, ViewerConfigurationException {
         CmsBean bean = new CmsBean();
 
         String groupField = "GROUPING";

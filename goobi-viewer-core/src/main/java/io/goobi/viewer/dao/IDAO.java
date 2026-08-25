@@ -816,9 +816,8 @@ public interface IDAO {
     /**
      * Returns all access tickets for the given record identifier.
      * <p>
-     * Used by the password verification flow: callers iterate the result and verify the submitted password
-     * against each ticket's stored hash via {@link AccessTicket#checkPassword(String)}. The number of tickets
-     * per record is operationally bounded.
+     * Used by the password verification flow: callers iterate the result and verify the submitted password against each ticket's stored hash via
+     * {@link AccessTicket#checkPassword(String)}. The number of tickets per record is operationally bounded.
      *
      * @param pi record identifier
      * @return list of {@link AccessTicket}s with the given pi (never null)
@@ -1430,16 +1429,21 @@ public interface IDAO {
      * @return true if CMS page was added successfully; false otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addCMSPage(CMSPage page) throws DAOException;
+    public CMSPage addCMSPage(CMSPage page) throws DAOException;
 
     /**
      * updateCMSPage.
+     * <p>
+     * The given {@code page} is merged into the persistence context and may remain detached (e.g. any cascaded child added to {@code page} before
+     * calling this method will not carry its generated id afterwards). Callers that keep working with the page across further saves - e.g. a
+     * view-scoped bean - must use the returned instance instead of {@code page} to avoid child entities being duplicated on the next save.
+     * </p>
      *
      * @param page CMS page to update in the database
-     * @return true if CMS page was updated successfully; false otherwise
+     * @return the merged, up-to-date CMS page if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateCMSPage(CMSPage page) throws DAOException;
+    public CMSPage updateCMSPage(CMSPage page) throws DAOException;
 
     /**
      * deleteCMSPage.
