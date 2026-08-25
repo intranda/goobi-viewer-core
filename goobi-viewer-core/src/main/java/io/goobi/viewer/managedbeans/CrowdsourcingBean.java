@@ -487,7 +487,7 @@ public class CrowdsourcingBean implements Serializable {
         }
 
         // Save
-        boolean success = false;
+        Campaign persistedCampaign = null;
         LocalDateTime now = LocalDateTime.now();
         if (selectedCampaign.getDateCreated() == null) {
             selectedCampaign.setDateCreated(now);
@@ -495,17 +495,21 @@ public class CrowdsourcingBean implements Serializable {
         selectedCampaign.setDateUpdated(now);
         if (selectedCampaign.getId() != null) {
             try {
-                success = dao.updateCampaign(selectedCampaign);
+                persistedCampaign = dao.updateCampaign(selectedCampaign);
             } catch (PersistenceException e) {
                 logger.error("Updating campaign {} in database failed ", selectedCampaign, e);
-                success = false;
+                persistedCampaign = null;
             }
         } else {
-            success = dao.addCampaign(selectedCampaign);
+            persistedCampaign = dao.addCampaign(selectedCampaign);
         }
-        if (success) {
+        if (persistedCampaign != null) {
             Messages.info("admin__crowdsourcing_campaign_save_success");
-            setSelectedCampaign(selectedCampaign);
+            // Continue working with a fresh copy of the persisted campaign so that questions/translations/log
+            // messages added during this edit carry their generated id for subsequent saves - assigning directly
+            // instead of going through setSelectedCampaign(), whose id-equality guard would otherwise never fire
+            // here since the argument is always the same campaign that was just saved.
+            this.selectedCampaign = new Campaign(persistedCampaign);
             lazyModelCampaigns.update();
             // Update the map of active campaigns for record identifiers (in case a new Solr query changes the set)
             updateActiveCampaigns();

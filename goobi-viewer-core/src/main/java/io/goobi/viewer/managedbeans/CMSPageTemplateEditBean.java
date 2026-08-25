@@ -252,12 +252,18 @@ public class CMSPageTemplateEditBean implements Serializable {
         selectedTemplate.setDateUpdated(LocalDateTime.now());
 
         logger.trace("update dao");
+        CMSPageTemplate mergedTemplate;
         if (selectedTemplate.getId() != null) {
-            success = this.dao.updateCMSPageTemplate(selectedTemplate);
+            mergedTemplate = this.dao.updateCMSPageTemplate(selectedTemplate);
         } else {
-            success = this.dao.addCMSPageTemplate(selectedTemplate);
+            mergedTemplate = this.dao.addCMSPageTemplate(selectedTemplate);
         }
+        success = mergedTemplate != null;
         if (success) {
+            // Continue working with a copy so changes to this.selectedTemplate are only persisted on explicit
+            // save - mirrors the isolation already established by setSelectedTemplate().
+            this.selectedTemplate = new CMSPageTemplate(mergedTemplate);
+            this.selectedTemplate.initialiseCMSComponents(templateManager);
             Messages.info("cms_pageSaveSuccess");
             logger.trace("reload cms page");
             logger.trace("update pages");

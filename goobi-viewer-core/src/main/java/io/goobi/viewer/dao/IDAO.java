@@ -709,19 +709,23 @@ public interface IDAO {
      * addLicenseType.
      *
      * @param licenseType license type to persist
-     * @return true if license type was added successfully; false otherwise
+     * @return the persisted license type if added successfully; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addLicenseType(LicenseType licenseType) throws DAOException;
+    public LicenseType addLicenseType(LicenseType licenseType) throws DAOException;
 
     /**
      * updateLicenseType.
+     * <p>
+     * Callers must continue working with the returned instance instead of {@code licenseType} - any child added to
+     * {@code imagePlaceholders} before calling this method will only carry its generated id on the returned object.
+     * </p>
      *
      * @param licenseType license type to update in the database
-     * @return true if license type was updated successfully; false otherwise
+     * @return the merged, up-to-date license type if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateLicenseType(LicenseType licenseType) throws DAOException;
+    public LicenseType updateLicenseType(LicenseType licenseType) throws DAOException;
 
     /**
      * deleteLicenseType.
@@ -780,19 +784,23 @@ public interface IDAO {
      * addLicenseType.
      *
      * @param license license to persist
-     * @return true if license was added successfully; false otherwise
+     * @return the persisted license if added successfully; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addLicense(License license) throws DAOException;
+    public License addLicense(License license) throws DAOException;
 
     /**
      * updateLicenseType.
+     * <p>
+     * Callers must continue working with the returned instance instead of {@code license} - any child added to
+     * {@code licensees} before calling this method will only carry its generated id on the returned object.
+     * </p>
      *
      * @param license license to update in the database
-     * @return true if license was updated successfully; false otherwise
+     * @return the merged, up-to-date license if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateLicense(License license) throws DAOException;
+    public License updateLicense(License license) throws DAOException;
 
     /**
      * deleteLicenseType.
@@ -946,19 +954,23 @@ public interface IDAO {
      * addIpRange.
      *
      * @param ipRange IP range to persist
-     * @return true if IP range was added successfully; false otherwise
+     * @return the persisted IP range if added successfully; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addIpRange(IpRange ipRange) throws DAOException;
+    public IpRange addIpRange(IpRange ipRange) throws DAOException;
 
     /**
      * updateIpRange.
+     * <p>
+     * Callers must continue working with the returned instance instead of {@code ipRange} - any child added to
+     * {@code licenses} before calling this method will only carry its generated id on the returned object.
+     * </p>
      *
      * @param ipRange IP range to update in the database
-     * @return true if IP range was updated successfully; false otherwise
+     * @return the merged, up-to-date IP range if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateIpRange(IpRange ipRange) throws DAOException;
+    public IpRange updateIpRange(IpRange ipRange) throws DAOException;
 
     /**
      * deleteIpRange.
@@ -1458,9 +1470,14 @@ public interface IDAO {
 
     public CMSPageTemplate getCMSPageTemplate(Long id) throws DAOException;
 
-    public boolean addCMSPageTemplate(CMSPageTemplate template) throws DAOException;
+    public CMSPageTemplate addCMSPageTemplate(CMSPageTemplate template) throws DAOException;
 
-    public boolean updateCMSPageTemplate(CMSPageTemplate template) throws DAOException;
+    /**
+     * Callers must continue working with the returned instance instead of {@code template} - any child added to
+     * {@code sidebarElements}/{@code persistentComponents} before calling this method will only carry its generated
+     * id on the returned object.
+     */
+    public CMSPageTemplate updateCMSPageTemplate(CMSPageTemplate template) throws DAOException;
 
     public boolean removeCMSPageTemplate(CMSPageTemplate template) throws DAOException;
 
@@ -1883,19 +1900,24 @@ public interface IDAO {
      * addCampaign.
      *
      * @param campaign crowdsourcing campaign to persist
-     * @return true if campaign added successfully; false otherwise
+     * @return the persisted campaign if added successfully; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addCampaign(Campaign campaign) throws DAOException;
+    public Campaign addCampaign(Campaign campaign) throws DAOException;
 
     /**
      * updateCampaign.
+     * <p>
+     * Callers must continue working with the returned instance instead of {@code campaign} - any child added to
+     * {@code translations}/{@code questions}/{@code statistics}/{@code logMessages} before calling this method will
+     * only carry its generated id on the returned object.
+     * </p>
      *
      * @param campaign crowdsourcing campaign to update in the database
-     * @return true if campaign updated successfully; false otherwise
+     * @return the merged, up-to-date campaign if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateCampaign(Campaign campaign) throws DAOException;
+    public Campaign updateCampaign(Campaign campaign) throws DAOException;
 
     /**
      * deleteCampaign.
@@ -1960,19 +1982,23 @@ public interface IDAO {
      * addCMSCollection.
      *
      * @param collection CMS collection to persist
-     * @return true if CMS collection was added successfully; false otherwise
+     * @return the persisted CMS collection if added successfully; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean addCMSCollection(CMSCollection collection) throws DAOException;
+    public CMSCollection addCMSCollection(CMSCollection collection) throws DAOException;
 
     /**
      * updateCMSCollection.
+     * <p>
+     * Callers must continue working with the returned instance instead of {@code collection} - any translation
+     * added before calling this method will only carry its generated id on the returned object.
+     * </p>
      *
      * @param collection CMS collection to update in the database
-     * @return true if CMS collection was updated successfully; false otherwise
+     * @return the merged, up-to-date CMS collection if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateCMSCollection(CMSCollection collection) throws DAOException;
+    public CMSCollection updateCMSCollection(CMSCollection collection) throws DAOException;
 
     /**
      * deleteCMSCollection.
@@ -2153,19 +2179,23 @@ public interface IDAO {
      * Adds the given map to the database if no map of the same id already exists.
      *
      * @param map geo map to add
-     * @return true if successful
+     * @return the persisted map if successful; null otherwise
      * @throws DAOException
      */
-    public boolean addGeoMap(GeoMap map) throws DAOException;
+    public GeoMap addGeoMap(GeoMap map) throws DAOException;
 
     /**
      * Updates the given {@link GeoMap} in the database.
+     * <p>
+     * Callers must continue working with the returned instance instead of {@code map} - any translation/feature set
+     * added before calling this method will only carry its generated id on the returned object.
+     * </p>
      *
      * @param map geo map to update
-     * @return true if successful
+     * @return the merged, up-to-date map if successful; null otherwise
      * @throws DAOException
      */
-    public boolean updateGeoMap(GeoMap map) throws DAOException;
+    public GeoMap updateGeoMap(GeoMap map) throws DAOException;
 
     /**
      * Deletes the given {@link GeoMap} from the database.
@@ -2402,8 +2432,6 @@ public interface IDAO {
 
     public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
 
-    public boolean updatedCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException;
-
     public PersistentCMSComponent getCMSComponent(Long id) throws DAOException;
 
     public boolean deleteViewerMessage(ViewerMessage message) throws DAOException;
@@ -2486,12 +2514,18 @@ public interface IDAO {
 
     /**
      * updateMaintenanceMode.
+     * <p>
+     * Callers must continue working with the returned instance instead of {@code maintenanceMode} - any translation
+     * added before calling this method will only carry its generated id on the returned object; since this entity's
+     * {@code translations} collection has no orphan removal, re-submitting a stale, unsynced translation on a later
+     * save would insert a duplicate row instead of updating it.
+     * </p>
      *
      * @param maintenanceMode maintenance mode entity to update in the database
-     * @return true if maintenance mode was updated successfully; false otherwise
+     * @return the merged, up-to-date maintenance mode if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateMaintenanceMode(MaintenanceMode maintenanceMode) throws DAOException;
+    public MaintenanceMode updateMaintenanceMode(MaintenanceMode maintenanceMode) throws DAOException;
 
     /**
      * Get the EntityManagerFactory created when initializing the class. Can be used to explicitly create new EntityManagers.

@@ -962,7 +962,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
             if (!licenseType.isCore()) {
                 logger.info("Adding core=true to license type '{}'...", licenseTypeName);
                 licenseType.setCore(true);
-                if (!DataManager.getInstance().getDao().updateLicenseType(licenseType)) {
+                if (DataManager.getInstance().getDao().updateLicenseType(licenseType) == null) {
                     logger.error("Could not update static license type '{}'.", licenseTypeName);
                 }
             }
@@ -978,7 +978,7 @@ public class LicenseType extends AbstractPrivilegeHolder implements ILicenseType
                 licenseType.getPrivileges().add(privName);
             }
         }
-        if (!DataManager.getInstance().getDao().addLicenseType(licenseType)) {
+        if (DataManager.getInstance().getDao().addLicenseType(licenseType) == null) {
             logger.error("Could not add static license type '{}'.", licenseTypeName);
         }
     }

@@ -283,7 +283,7 @@ public class CmsPageEditBean implements Serializable {
         template.setTitleTranslations(title);
         template.setLockComponents(lockComponents);
         template.setPublished(true);
-        return this.dao.addCMSPageTemplate(template);
+        return this.dao.addCMSPageTemplate(template) != null;
     }
 
     /**
