@@ -28,6 +28,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_CMDI_LANG;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_JSON;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYOUT_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_SEARCH;
@@ -79,6 +80,7 @@ import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.LayoutTagBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
@@ -393,6 +395,27 @@ public class RecordResource {
             throws PresentationException, IndexUnreachableException {
         NERBuilder b = new NERBuilder();
         return b.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize, servletRequest);
+    }
+
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_LAYOUT_TAGS)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records" }, summary = "Get ALTO layout tags for a record")
+    @ApiResponse(responseCode = "200", description = "Layout tags for the given record")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
+    public DocumentReference getLayoutTags(
+            @Parameter(description = "First page to get tags for",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("start") Integer start,
+            @Parameter(description = "Last page to get tags for",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("end") Integer end,
+            @Parameter(description = "Number of pages to combine into each group",
+                    schema = @Schema(minimum = "1", maximum = "2147483647")) @QueryParam("step") Integer stepSize,
+            @Parameter(description = "Layout-tag label to filter by; omit for all labels") @QueryParam("type") String label)
+            throws PresentationException, IndexUnreachableException {
+        LayoutTagBuilder b = new LayoutTagBuilder();
+        return b.getLayoutTags(pi, label, start, end, stepSize == null ? 1 : stepSize, servletRequest);
     }
 
     @GET

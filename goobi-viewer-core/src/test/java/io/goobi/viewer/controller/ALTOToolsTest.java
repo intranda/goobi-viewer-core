@@ -353,6 +353,39 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
+     * @see ALTOTools#getLayoutTags(String,String,String)
+     * @verifies return layout tags with references
+     * @verifies filter by label
+     */
+    @Test
+    void getLayoutTags_shouldReturnLayoutTagsWithReferencesAndFilterByLabel() throws Exception {
+        File file = new File("src/test/resources/data/alto_layouttags.xml");
+        Assertions.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+
+        List<TagCount> all = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, null);
+        Assertions.assertNotNull(all);
+        Set<String> values = new LinkedHashSet<>();
+        for (TagCount tc : all) {
+            values.add(tc.getValue());
+            // each label aggregates its occurrences as references with coordinates + content
+            Assertions.assertFalse(tc.getReferences().isEmpty());
+            Assertions.assertEquals(tc.getReferences().size(), tc.getCounter().intValue());
+        }
+        Assertions.assertTrue(values.contains("gr_jacob_grimm"), values.toString());
+        Assertions.assertTrue(values.contains("gr_unterstrichen"), values.toString());
+        Assertions.assertTrue(values.contains("gr_wilhelm_grimm"), values.toString());
+        // one distinct TagCount per label (occurrences merged), not one per occurrence
+        Assertions.assertEquals(values.size(), all.size());
+
+        // Label filter returns only the requested label
+        List<TagCount> underlinedOnly = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, "gr_unterstrichen");
+        Assertions.assertEquals(1, underlinedOnly.size());
+        Assertions.assertEquals("gr_unterstrichen", underlinedOnly.get(0).getValue());
+        Assertions.assertTrue(underlinedOnly.get(0).getCounter() > 1);
+    }
+
+    /**
      * @verifies find fuzzy terms
      */
     @Test

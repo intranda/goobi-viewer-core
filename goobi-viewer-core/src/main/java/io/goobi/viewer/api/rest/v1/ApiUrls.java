@@ -80,6 +80,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_MANIFEST_SEARCH = "/manifest/search";
     public static final String RECORDS_LAYER = "/layers/{name}";
     public static final String RECORDS_NER_TAGS = "/ner/tags";
+    public static final String RECORDS_LAYOUT_TAGS = "/layout/tags";
     public static final String RECORDS_PLAINTEXT = "/plaintext";
     public static final String RECORDS_PLAINTEXT_ZIP = "/plaintext.zip";
     public static final String RECORDS_ALTO = "/alto";
@@ -113,6 +114,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_PAGES_CANVAS = "/{pageNo}/canvas";
     public static final String RECORDS_PAGES_MANIFEST = "/{pageNo}/manifest";
     public static final String RECORDS_PAGES_NER_TAGS = "/{pageNo}/ner/tags";
+    public static final String RECORDS_PAGES_LAYOUT_TAGS = "/{pageNo}/layout/tags";
     public static final String RECORDS_PAGES_ANNOTATIONS = "/{pageNo}/annotations";
     public static final String RECORDS_PAGES_COMMENTS = "/{pageNo}/comments";
     public static final String RECORDS_PAGES_COMMENTS_COMMENT = "/{pageNo}/comments/{id}";

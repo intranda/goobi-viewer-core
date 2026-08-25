@@ -47,6 +47,7 @@ import org.jdom2.JDOMException;
 import de.intranda.digiverso.normdataimporter.Utils;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoTags.TagType;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 import de.intranda.digiverso.ocr.alto.model.superclasses.GeometricData;
 import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
@@ -175,6 +176,58 @@ public final class ALTOTools {
                 list.add(tag);
             }
         }
+    }
+
+    /**
+     * Extracts ALTO {@code <LayoutTag>} occurrences from the given ALTO document as a list of {@link TagCount}s (one
+     * per distinct label, its references accumulated), mirroring {@link #getNERTags(String, String, NERTag.Type)} but
+     * keyed on {@code Tag.getLabel()} and filtered to {@code TagType.LAYOUT_TAG}. Layout tags carry no NER type or
+     * authority URI, so the reused {@link TagCount} leaf uses {@link NERTag.Type#MISC} as a placeholder type (required
+     * for the value-based merge/dedupe in {@link #addTags} and in the page/range containers) and an empty URI.
+     *
+     * @param alto ALTO XML document as a string
+     * @param inCharset character encoding of the ALTO document
+     * @param label if non-null, only tags with this exact LABEL are returned; null returns all layout tags
+     * @return list of TagCounts for the document's layout tags
+     * @should return layout tags with references
+     * @should filter by label
+     */
+    public static List<TagCount> getLayoutTags(String alto, final String inCharset, String label) {
+        String charset = inCharset;
+        if (StringUtils.isBlank(charset)) {
+            charset = null;
+        }
+        List<TagCount> ret = new ArrayList<>();
+        try {
+            AltoDocument doc = AltoDocument.getDocumentFromString(alto, charset);
+            for (Tag tag : doc.getTags().getTagsAsList()) {
+                if (tag.getTagType() == TagType.LAYOUT_TAG && (label == null || label.equals(tag.getLabel()))) {
+                    addTags(createLayoutTag(tag), ret);
+                }
+            }
+        } catch (UnsupportedEncodingException e) {
+            logger.error("{}: {}", e.getMessage(), charset);
+        } catch (JDOMException | IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return ret;
+    }
+
+    /**
+     * @param tag ALTO layout tag to convert into TagCount entries (one per reference)
+     * @return List<TagCount>
+     */
+    @SuppressWarnings("rawtypes")
+    static List<TagCount> createLayoutTag(Tag tag) {
+        String value = tag.getLabel();
+        List<TagCount> ret = new ArrayList<>(tag.getReferences().size());
+        for (GeometricData reference : tag.getReferences()) {
+            ElementReference element = new ElementReference(reference.getId(), reference.getRect().getBounds(), reference.getContent(), null);
+            // Layout tags have no NER type; MISC is a placeholder so the value-based TagCount merge works (see javadoc).
+            ret.add(new TagCount(value, Type.MISC, element));
+        }
+        return ret;
     }
 
     /**

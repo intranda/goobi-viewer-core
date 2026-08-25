@@ -583,6 +583,10 @@
                 <field initialElementNumber="3">DOCSTRCT_SUB</field>
                 <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_CREATOR</field>
                 <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_PLACEPUBLISH</field>
+                <!-- ALTO layout-tag facet (values indexed per page from <LayoutTag>). Labels are collection-specific;
+                     add message-bundle keys for the raw values (e.g. gr_jacob_grimm=Jacob Grimm) or set
+                     translateLabels="false" to show the raw values. -->
+                <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_LAYOUTTAG</field>
                 <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">FULLTEXTAVAILABLE</field> -->
                 <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">BOOL_IMAGEAVAILABLE</field> -->
                 <!-- <field labelField="MD_LABEL">MD_VALUE</field> -->
@@ -1724,6 +1728,7 @@
                 <displayWidget name="search-in-current-item" />
                 <displayWidget name="archives" />
                 <displayWidget name="named-entities" />
+                <displayWidget name="layout-tags" />
                 <displayWidget name="metadata" />
                 <displayWidget name="geomap" />
                 <displayWidget name="annotations" />
@@ -1753,6 +1758,7 @@
                 <displayWidget name="search-in-current-item" />
                 <displayWidget name="statistics-usage" />
                 <displayWidget name="named-entities" />
+                <displayWidget name="layout-tags" />
                 <displayWidget name="geomap" />
                 <displayWidget name="annotations" />
                 <displayWidget name="record-notes" />
@@ -1769,6 +1775,14 @@
                 <displayWidget name="record-notes" />
                 <displayWidget name="version-history" />
             </view>
+            <view name="layout-tags">
+                <displayWidget name="views" />
+                <displayWidget name="search-result-navigation" />
+                <displayWidget name="geomap" />
+                <displayWidget name="annotations" />
+                <displayWidget name="record-notes" />
+                <displayWidget name="version-history" />
+            </view>
             <view name="object">
                 <displayWidget name="views" collapsible="false" collapsedByDefault="false" /> 
                 <displayWidget name="copyright" />
@@ -1776,6 +1790,7 @@
 				<displayWidget name="search-in-current-item" />
 				<displayWidget name="calendar" />
                 <displayWidget name="named-entities" />
+                <displayWidget name="layout-tags" />
                 <displayWidget name="metadata" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="metadata-tech" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="geomap" />
@@ -1813,6 +1828,7 @@
                 <displayWidget name="search-result-navigation" />
                 <displayWidget name="search-in-current-item" />
                 <displayWidget name="named-entities" />
+                <displayWidget name="layout-tags" />
                 <displayWidget name="metadata" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="metadata-tech" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="geomap" />

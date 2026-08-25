@@ -586,6 +586,18 @@
 		<action onPostback="false">#{activeDocumentBean.open}</action>
 	</url-mapping>
 
+	<!-- LAYOUT TAGS -->
+	<url-mapping id="layoutTags">
+		<pattern value="/layouttags/#{pi:activeDocumentBean.persistentIdentifier}/" />
+		<view-id value="/viewLayoutTagFacetting.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+	<url-mapping id="layoutTags2">
+		<pattern value="/layouttags/#{pi:activeDocumentBean.persistentIdentifier}/#{imageToShow:activeDocumentBean.imageToShow}/" />
+		<view-id value="/viewLayoutTagFacetting.xhtml" />
+		<action onPostback="false">#{activeDocumentBean.open}</action>
+	</url-mapping>
+
 	<!-- METADATA -->
 	<url-mapping id="metadata1">
 		<pattern value="/metadata/#{pi:activeDocumentBean.persistentIdentifier}/" />

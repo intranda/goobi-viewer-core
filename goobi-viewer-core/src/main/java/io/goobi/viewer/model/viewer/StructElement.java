@@ -80,6 +80,8 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     private Boolean altoAvailable = null;
     /** True if NER-enriched ALTO is available for this record. */
     private Boolean nerAvailable = null;
+    /** True if ALTO layout tags are indexed for this record. */
+    private Boolean layoutTagAvailable = null;
     /** True if this element has a child elements. */
     private Boolean hasChildren = null;
     /** Ancestor identifier fields (such as anchors). */
@@ -745,6 +747,23 @@ public class StructElement extends StructElementStub implements Comparable<Struc
         }
 
         return nerAvailable;
+    }
+
+    /**
+     * Returns true if the record has any ALTO layout tags indexed (see {@code MD_LAYOUTTAG}); false otherwise.
+     *
+     * @return true if at least one page/record doc has layout tags indexed, false otherwise
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
+    public boolean isLayoutTagAvailable() throws IndexUnreachableException, PresentationException {
+        if (layoutTagAvailable == null) {
+            layoutTagAvailable = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getHitCount(SolrConstants.PI_TOPSTRUCT + ":" + pi + " AND MD_LAYOUTTAG:*") > 0;
+        }
+
+        return layoutTagAvailable;
     }
 
     /**

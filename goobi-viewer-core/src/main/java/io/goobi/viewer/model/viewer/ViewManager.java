@@ -2670,6 +2670,16 @@ public class ViewManager implements Serializable {
 
     /**
      *
+     * @return true if the layout-tag view link may be displayed; false otherwise
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     */
+    public boolean isDisplayLayoutTagViewLink() throws IndexUnreachableException, PresentationException {
+        return topStructElement != null && topStructElement.isLayoutTagAvailable();
+    }
+
+    /**
+     *
      * @return true if NER view link may be displayed; false otherwise
      */
     public boolean isDisplayExternalResolverLink() {

@@ -233,6 +233,20 @@
                             </li>
                         </h:panelGroup>
 
+                        <!-- LAYOUT TAGS -->
+                        <h:panelGroup
+                            visibility-class="widget-element"
+                            rendered="#{activeDocumentBean.viewManager.displayLayoutTagViewLink}">
+                            <li class="#{navigationHelper.currentPage == 'layouttagfacetting' ? 'active' : ''}">
+                                <h:outputLink value="#{request.contextPath}/layouttags/#{activeDocumentBean.persistentIdentifier}/">
+                                    <h:outputText value="#{msg.widgetLayoutTagFacetting}" />
+                                    <f:passThroughAttribute
+                                        name="aria-label"
+                                        value="#{msg.view}: #{msg.widgetLayoutTagFacetting}" />
+                                </h:outputLink>
+                            </li>
+                        </h:panelGroup>
+
                         <!-- EXTERNAL URL -->
                         <h:panelGroup
                             visibility-class="widget-element"
