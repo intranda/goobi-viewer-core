@@ -238,7 +238,7 @@
                             visibility-class="widget-element"
                             rendered="#{activeDocumentBean.viewManager.displayLayoutTagViewLink}">
                             <li class="#{navigationHelper.currentPage == 'layouttagfacetting' ? 'active' : ''}">
-                                <h:outputLink value="#{request.contextPath}/layouttags/#{activeDocumentBean.persistentIdentifier}/">
+                                <h:outputLink value="#{request.contextPath}/layouttags/#{activeDocumentBean.persistentIdentifier}/#{activeDocumentBean.imageToShow}/">
                                     <h:outputText value="#{msg.widgetLayoutTagFacetting}" />
                                     <f:passThroughAttribute
                                         name="aria-label"
