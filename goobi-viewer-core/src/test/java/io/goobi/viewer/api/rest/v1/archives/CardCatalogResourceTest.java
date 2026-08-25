@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package io.goobi.viewer.api.rest.v2.archives;
+package io.goobi.viewer.api.rest.v1.archives;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -28,12 +28,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import io.goobi.viewer.api.rest.v2.AbstractRestApiTest;
+import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import jakarta.ws.rs.core.Response;
 
 /**
- * Integration tests for the card catalog endpoints against the EAD archive of the test index
- * ("Akte_Koch_-_Humboldt_Universitaet").
+ * Integration tests for the card catalog endpoints against the EAD archive of the test index ("Akte_Koch_-_Humboldt_Universitaet").
  */
 class CardCatalogResourceTest extends AbstractRestApiTest {
 
