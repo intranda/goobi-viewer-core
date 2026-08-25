@@ -151,7 +151,7 @@ public class HttpResponseFilter implements Filter {
             } else {
                 httpResponse.setHeader("Expires", "Tue, 03 Jul 2001 06:00:00 GMT");
                 httpResponse.setHeader("Last-Modified",
-                        LocalDateTime.now().atZone(ZoneId.systemDefault()).format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
+                        DateTools.now().atZone(ZoneId.systemDefault()).format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
                 httpResponse.setHeader("Cache-Control",
                         "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0");
                 httpResponse.setHeader("Pragma", "no-cache");

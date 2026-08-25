@@ -192,7 +192,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         user.setNickName("banned_admin");
         user.setComments("no");
         user.setAvatarType(UserAvatarOption.GRAVATAR);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         user.setLastLogin(now);
         user.setActive(false);
         user.setSuperuser(true);
@@ -229,7 +229,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         user.setNickName("unbanned_admin");
         user.setComments("no");
         user.setAvatarType(UserAvatarOption.GRAVATAR);
-        user.setLastLogin(LocalDateTime.now());
+        user.setLastLogin(DateTools.now());
         user.setActive(false);
         user.setSuspended(true);
         user.setSuperuser(false);
@@ -883,7 +883,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(comment);
 
         comment.setText("new comment 1 text");
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         comment.setDateModified(now);
 
         assertTrue(DataManager.getInstance().getDao().updateComment(comment));
@@ -1039,7 +1039,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         o.setSortString("SORT_FIELD");
         o.setFacetString("DOCSTRCT:Other;;DC:newcol");
         o.setNewHitsNotification(true);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         o.setDateUpdated(now);
         assertTrue(DataManager.getInstance().getDao().addSearch(o));
         assertNotNull(o.getId());
@@ -1068,7 +1068,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(o);
 
         o.setName("new name");
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         o.setDateUpdated(now);
 
         assertTrue(DataManager.getInstance().getDao().updateSearch(o));
@@ -2554,7 +2554,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         campaign.setTitle("Test titel");
         campaign.setId(2L);
         campaign.setSolrQuery("*:*");
-        campaign.setDateCreated(LocalDateTime.now());
+        campaign.setDateCreated(DateTools.now());
 
         assertTrue(DataManager.getInstance().getDao().updateCampaign(campaign));
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
@@ -2569,7 +2569,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Campaign campaign = DataManager.getInstance().getDao().getCampaign(2L);
         assertNotNull(campaign);
 
-        LogMessage message = new LogMessage("Test", 1l, LocalDateTime.now(), null);
+        LogMessage message = new LogMessage("Test", 1l, DateTools.now(), null);
         campaign.addLogMessage(message, "PI_10");
         assertEquals("Test", campaign.getLogMessages().get(0).getMessage());
 
@@ -3578,7 +3578,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(TaskType.DOWNLOAD_PDF.name(), loaded.getTaskType());
         assertEquals("0 0 0 * * ?", loaded.getScheduleExpression());
 
-        LocalDateTime triggered = LocalDateTime.now();
+        LocalDateTime triggered = DateTools.now();
         loaded.setLastTimeTriggered(triggered);
         dao.updateRecurringTaskTrigger(loaded);
 
@@ -3741,13 +3741,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         io.goobi.viewer.model.security.user.UserToken token1 = new io.goobi.viewer.model.security.user.UserToken();
         token1.setUser(user);
         token1.setTokenHash("deleteall-hash-1-" + System.nanoTime());
-        token1.setExpirationDate(LocalDateTime.now().plusDays(1));
+        token1.setExpirationDate(DateTools.now().plusDays(1));
         assertTrue(DataManager.getInstance().getDao().addUserToken(token1));
 
         io.goobi.viewer.model.security.user.UserToken token2 = new io.goobi.viewer.model.security.user.UserToken();
         token2.setUser(user);
         token2.setTokenHash("deleteall-hash-2-" + System.nanoTime());
-        token2.setExpirationDate(LocalDateTime.now().plusDays(1));
+        token2.setExpirationDate(DateTools.now().plusDays(1));
         assertTrue(DataManager.getInstance().getDao().addUserToken(token2));
 
         DataManager.getInstance().getDao().deleteAllUserTokensForUser(user);
@@ -3773,23 +3773,23 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         io.goobi.viewer.model.security.user.UserToken older = new io.goobi.viewer.model.security.user.UserToken();
         older.setUser(user);
         older.setTokenHash("older-hash-" + System.nanoTime());
-        older.setDateCreated(LocalDateTime.now().minusHours(2));
-        older.setExpirationDate(LocalDateTime.now().plusDays(1));
+        older.setDateCreated(DateTools.now().minusHours(2));
+        older.setExpirationDate(DateTools.now().plusDays(1));
         assertTrue(DataManager.getInstance().getDao().addUserToken(older));
 
         io.goobi.viewer.model.security.user.UserToken newer = new io.goobi.viewer.model.security.user.UserToken();
         newer.setUser(user);
         newer.setTokenHash("newer-hash-" + System.nanoTime());
-        newer.setDateCreated(LocalDateTime.now().minusHours(1));
-        newer.setExpirationDate(LocalDateTime.now().plusDays(1));
+        newer.setDateCreated(DateTools.now().minusHours(1));
+        newer.setExpirationDate(DateTools.now().plusDays(1));
         assertTrue(DataManager.getInstance().getDao().addUserToken(newer));
 
         // Expired token should NOT be returned
         io.goobi.viewer.model.security.user.UserToken expired = new io.goobi.viewer.model.security.user.UserToken();
         expired.setUser(user);
         expired.setTokenHash("expired-hash-" + System.nanoTime());
-        expired.setDateCreated(LocalDateTime.now().minusDays(10));
-        expired.setExpirationDate(LocalDateTime.now().minusDays(1));
+        expired.setDateCreated(DateTools.now().minusDays(10));
+        expired.setExpirationDate(DateTools.now().minusDays(1));
         assertTrue(DataManager.getInstance().getDao().addUserToken(expired));
 
         List<io.goobi.viewer.model.security.user.UserToken> active =
@@ -3814,13 +3814,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         io.goobi.viewer.model.security.user.UserToken active = new io.goobi.viewer.model.security.user.UserToken();
         active.setUser(user);
         active.setTokenHash("active-purge-" + System.nanoTime());
-        active.setExpirationDate(LocalDateTime.now().plusDays(1));
+        active.setExpirationDate(DateTools.now().plusDays(1));
         assertTrue(DataManager.getInstance().getDao().addUserToken(active));
 
         io.goobi.viewer.model.security.user.UserToken expired = new io.goobi.viewer.model.security.user.UserToken();
         expired.setUser(user);
         expired.setTokenHash("expired-purge-" + System.nanoTime());
-        expired.setExpirationDate(LocalDateTime.now().minusDays(1));
+        expired.setExpirationDate(DateTools.now().minusDays(1));
         assertTrue(DataManager.getInstance().getDao().addUserToken(expired));
 
         int deleted = DataManager.getInstance().getDao().deleteAllExpiredUserTokens();

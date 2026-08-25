@@ -71,6 +71,7 @@ import io.goobi.viewer.model.security.LicenseType;
 import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusSession;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -633,7 +634,7 @@ public class User extends AbstractLicensee implements HttpSessionBindingListener
         User user = DataManager.getInstance().getDao().getUserByEmail(email);
         // Only allow non-openID accounts
         if (user != null && user.getPasswordHash() != null && bcrypt.checkpw(password, user.getPasswordHash())) {
-            user.setLastLogin(LocalDateTime.now());
+            user.setLastLogin(DateTools.now());
             return user;
         }
 

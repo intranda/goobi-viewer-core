@@ -107,6 +107,7 @@ import io.goobi.viewer.model.statistics.usage.DailySessionUsageStatistics;
 import io.goobi.viewer.model.transkribus.TranskribusJob;
 import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.themes.ThemeConfiguration;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
@@ -687,7 +688,7 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.createQuery("DELETE FROM UserToken t WHERE t.user = :user AND t.expirationDate < :now")
                     .setParameter("user", user)
-                    .setParameter("now", java.time.LocalDateTime.now())
+                    .setParameter("now", DateTools.now())
                     .executeUpdate();
             commitTransaction(em);
         } catch (PersistenceException e) {
@@ -726,7 +727,7 @@ public class JPADAO implements IDAO {
                     "SELECT t FROM UserToken t WHERE t.user = :user AND t.expirationDate >= :now ORDER BY t.dateCreated ASC",
                     io.goobi.viewer.model.security.user.UserToken.class)
                     .setParameter("user", user)
-                    .setParameter("now", java.time.LocalDateTime.now())
+                    .setParameter("now", DateTools.now())
                     .getResultList();
         } finally {
             close(em);
@@ -741,7 +742,7 @@ public class JPADAO implements IDAO {
         try {
             startTransaction(em);
             int count = em.createQuery("DELETE FROM UserToken t WHERE t.expirationDate < :now")
-                    .setParameter("now", java.time.LocalDateTime.now())
+                    .setParameter("now", DateTools.now())
                     .executeUpdate();
             commitTransaction(em);
             return count;

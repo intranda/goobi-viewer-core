@@ -597,7 +597,7 @@ public class ConvertAbbyyToAlto {
         }
 
         ConvertAbbyyToAlto ab = new ConvertAbbyyToAlto();
-        ab.creationtime = LocalDateTime.now();
+        ab.creationtime = DateTools.now();
         Document doc = new Document();
         for (File f : inputList) {
             doc.setRootElement(ab.convert(f));

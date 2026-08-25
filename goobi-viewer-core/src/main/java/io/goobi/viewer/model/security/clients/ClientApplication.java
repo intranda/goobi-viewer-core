@@ -43,6 +43,7 @@ import io.goobi.viewer.model.security.License;
 import io.goobi.viewer.model.security.License.AccessType;
 import io.goobi.viewer.model.security.user.AbstractLicensee;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.controller.DateTools;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -117,7 +118,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
             example = "2022-05-19T11:55:16Z", type = "string", format = "date-time", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_registered", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
-    private LocalDateTime dateRegistered = LocalDateTime.now();
+    private LocalDateTime dateRegistered = DateTools.now();
 
     /**
      * The last time the client sent a request to the server.
@@ -127,7 +128,7 @@ public class ClientApplication extends AbstractLicensee implements Serializable 
             format = "date-time", accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "date_last_access", nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = IPresentationModelElement3.DATETIME_FORMAT)
-    private LocalDateTime dateLastAccess = LocalDateTime.now();
+    private LocalDateTime dateLastAccess = DateTools.now();
 
     /**
      * An IP Subnet mask. If present, the client may only log in if its current IP matches the mask

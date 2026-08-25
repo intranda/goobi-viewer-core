@@ -36,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.jms.BytesMessage;
 import jakarta.jms.JMSException;
 import jakarta.jms.Message;
@@ -56,7 +57,7 @@ public class DefaultQueueListener {
     private final MessageQueueManager messageBroker;
     private Thread thread = null;
     private volatile boolean shouldStop = false;
-    private volatile LocalDateTime lastLoopCircle = LocalDateTime.now();
+    private volatile LocalDateTime lastLoopCircle = DateTools.now();
     private final String queueType;
     private ActiveMQConnection conn = null;
 
@@ -112,7 +113,7 @@ public class DefaultQueueListener {
         try (Session sess = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
                 MessageConsumer consumer = sess.createConsumer(sess.createQueue(queueType));) {
             while (!shouldStop && !conn.isTransportFailed()) {
-                lastLoopCircle = LocalDateTime.now();
+                lastLoopCircle = DateTools.now();
                 waitForMessage(sess, consumer);
                 if (Thread.interrupted()) {
                     log.info("Queue listener for queue {} interrupted: Resuming loop", queueType);

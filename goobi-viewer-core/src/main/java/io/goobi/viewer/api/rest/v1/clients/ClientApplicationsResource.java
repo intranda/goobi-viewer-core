@@ -58,6 +58,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
+import io.goobi.viewer.controller.DateTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -298,7 +299,7 @@ public class ClientApplicationsResource {
 
         if (source.getAccessStatus() != null) {
             if (target.isRegistrationPending() && !source.isRegistrationPending()) {
-                target.setDateRegistered(LocalDateTime.now());
+                target.setDateRegistered(DateTools.now());
             }
             target.setAccessStatus(source.getAccessStatus());
 

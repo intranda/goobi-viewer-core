@@ -78,6 +78,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.PersistenceException;
 
 /**
@@ -488,7 +489,7 @@ public class CrowdsourcingBean implements Serializable {
 
         // Save
         boolean success = false;
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         if (selectedCampaign.getDateCreated() == null) {
             selectedCampaign.setDateCreated(now);
         }

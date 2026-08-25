@@ -43,6 +43,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.archives.ArchiveResource;
 import io.goobi.viewer.model.archives.ArchiveResourceWrapper;
 import io.goobi.viewer.model.cms.CMSArchiveConfig;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
@@ -145,7 +146,7 @@ public class CmsArchivesBean implements Serializable {
             return false;
         }
 
-        config.setDateUpdated(LocalDateTime.now());
+        config.setDateUpdated(DateTools.now());
         return DataManager.getInstance().getDao().saveCMSArchiveConfig(config);
     }
 

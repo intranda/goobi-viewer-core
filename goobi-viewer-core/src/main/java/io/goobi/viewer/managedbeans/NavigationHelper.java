@@ -2078,7 +2078,7 @@ public class NavigationHelper implements Serializable {
      * @return the current date as {@link LocalDate}
      */
     public LocalDate getCurrentDate() {
-        return LocalDate.now();
+        return DateTools.today();
     }
 
     /**

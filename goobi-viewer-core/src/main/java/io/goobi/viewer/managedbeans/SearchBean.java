@@ -611,7 +611,7 @@ public class SearchBean implements SearchInterface, Serializable {
         facets.resetActiveFacetString();
         generateSimpleSearchString(searchString);
 
-        searchStringInternal = SolrConstants.MONTHDAY + ":" + DateTools.FORMATTERMONTHDAYONLY.format(LocalDateTime.now());
+        searchStringInternal = SolrConstants.MONTHDAY + ":" + DateTools.FORMATTERMONTHDAYONLY.format(DateTools.now());
 
         return StringConstants.PRETTY_NEWSEARCH5;
     }
@@ -2638,7 +2638,7 @@ public class SearchBean implements SearchInterface, Serializable {
         if (ub != null) {
             currentSearch.setOwner(ub.getUser());
         }
-        currentSearch.setDateUpdated(LocalDateTime.now());
+        currentSearch.setDateUpdated(DateTools.now());
         if (DataManager.getInstance().getDao().addSearch(currentSearch)) {
             currentSearch.setSaved(true);
             Messages.info("saveSearchSuccess");

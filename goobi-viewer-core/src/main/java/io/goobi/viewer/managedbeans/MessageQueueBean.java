@@ -65,6 +65,7 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -399,7 +400,7 @@ public class MessageQueueBean implements Serializable {
         try {
             int deleteAfterDays = DataManager.getInstance().getConfiguration().getActiveMQMessagePurgeInterval();
             if (deleteAfterDays > 0) {
-                LocalDateTime before = LocalDateTime.now().minusDays(deleteAfterDays);
+                LocalDateTime before = DateTools.now().minusDays(deleteAfterDays);
                 DataManager.getInstance().getDao().deleteViewerMessagesBefore(before);
             }
         } catch (DAOException e) {

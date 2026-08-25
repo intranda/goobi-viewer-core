@@ -35,6 +35,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.model.administration.legal.Disclaimer;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * JSF backing bean for configuring and editing disclaimer texts in the admin interface.
@@ -133,7 +134,7 @@ public class DisclaimerEditBean implements Serializable {
         //this way, saving the current banner is not required, but is a save is performed, the date is not overwritten
         if (this.dao != null) {
             Disclaimer disclaimer = dao.getDisclaimer();
-            disclaimer.setRequiresConsentAfter(LocalDateTime.now());
+            disclaimer.setRequiresConsentAfter(DateTools.now());
             if (dao.saveDisclaimer(disclaimer)) {
                 if (this.disclaimerForEdit != null) {
                     this.disclaimerForEdit.setRequiresConsentAfter(disclaimer.getRequiresConsentAfter());

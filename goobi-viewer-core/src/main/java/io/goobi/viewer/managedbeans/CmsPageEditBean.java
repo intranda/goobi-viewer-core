@@ -71,6 +71,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -208,7 +209,7 @@ public class CmsPageEditBean implements Serializable {
         selectedPage.writeSelectableCategories();
         // Save
         boolean success = false;
-        selectedPage.setDateUpdated(LocalDateTime.now());
+        selectedPage.setDateUpdated(DateTools.now());
 
         logger.trace("update dao");
         if (selectedPage.getId() != null) {

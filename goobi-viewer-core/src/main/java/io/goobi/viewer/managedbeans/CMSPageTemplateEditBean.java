@@ -50,6 +50,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -249,7 +250,7 @@ public class CMSPageTemplateEditBean implements Serializable {
         selectedTemplate.writeSelectableCategories();
         // Save
         boolean success = false;
-        selectedTemplate.setDateUpdated(LocalDateTime.now());
+        selectedTemplate.setDateUpdated(DateTools.now());
 
         logger.trace("update dao");
         if (selectedTemplate.getId() != null) {

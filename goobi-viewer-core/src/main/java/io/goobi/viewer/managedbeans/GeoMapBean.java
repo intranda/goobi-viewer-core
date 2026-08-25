@@ -54,6 +54,7 @@ import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.SearchResultFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
@@ -149,13 +150,13 @@ public class GeoMapBean implements Serializable, IPolyglott {
         if (this.currentMap == null) {
             throw new IllegalArgumentException("No map selected. Cannot save");
         } else if (this.currentMap.getId() == null) {
-            this.currentMap.setDateCreated(LocalDateTime.now());
-            this.currentMap.setDateUpdated(LocalDateTime.now());
+            this.currentMap.setDateCreated(DateTools.now());
+            this.currentMap.setDateUpdated(DateTools.now());
             this.currentMap.setCreator(BeanUtils.getUserBean().getUser());
             saved = DataManager.getInstance().getDao().addGeoMap(this.currentMap);
             redirect = true;
         } else {
-            this.currentMap.setDateUpdated(LocalDateTime.now());
+            this.currentMap.setDateUpdated(DateTools.now());
             GeoMap mapToSave = new GeoMap(this.currentMap);
             saved = DataManager.getInstance().getDao().updateGeoMap(mapToSave);
         }

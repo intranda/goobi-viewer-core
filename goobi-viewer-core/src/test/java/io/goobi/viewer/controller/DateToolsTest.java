@@ -37,7 +37,7 @@ class DateToolsTest extends AbstractTest {
      */
     @Test
     void getLocalDate_shouldFormatDateUsingLocaleSpecificPatternForGermanAndEnglish() throws Exception {
-        LocalDateTime date = LocalDateTime.now()
+        LocalDateTime date = DateTools.now()
                 .withYear(1980)
                 .withMonth(7)
                 .withDayOfMonth(10)
@@ -53,7 +53,7 @@ class DateToolsTest extends AbstractTest {
      */
     @Test
     void getLocalDate_shouldUseEnglishFormatForUnknownLanguages() throws Exception {
-        LocalDateTime date = LocalDateTime.now()
+        LocalDateTime date = DateTools.now()
                 .withYear(1980)
                 .withMonth(7)
                 .withDayOfMonth(10)

@@ -41,6 +41,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -103,7 +104,7 @@ public class ViewerMessage {
     @Column(name = "last_update_time")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private LocalDateTime lastUpdateTime = LocalDateTime.now();
+    private LocalDateTime lastUpdateTime = DateTools.now();
 
     @Column(name = "delay_millis")
     private long delay = 0L;

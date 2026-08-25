@@ -42,6 +42,7 @@ import io.goobi.viewer.api.rest.model.UserJsonFacade;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * @author Florian Alpers
@@ -86,7 +87,7 @@ public class LogMessage implements Serializable, Comparable<LogMessage> {
     public LogMessage(String message, Long creatorId, HttpServletRequest request) {
         this.message = message;
         this.creatorId = creatorId;
-        this.dateCreated = LocalDateTime.now();
+        this.dateCreated = DateTools.now();
         this.loadCreator(request);
     }
 

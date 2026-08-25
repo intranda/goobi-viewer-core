@@ -67,7 +67,7 @@ public class SessionCounterFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         String id = req.getSession().getId();
         Map<String, String> metadataMap = DataManager.getInstance().getSessionMap().get(id);
-        ZonedDateTime now = LocalDateTime.now().atZone(ZoneId.systemDefault());
+        ZonedDateTime now = DateTools.now().atZone(ZoneId.systemDefault());
         if (metadataMap == null) {
             metadataMap = new LinkedHashMap<>();
             DataManager.getInstance().getSessionMap().put(id, metadataMap);

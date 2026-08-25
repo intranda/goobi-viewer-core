@@ -136,7 +136,7 @@ public abstract class PersistentAnnotation {
      * Empty constructor.
      */
     protected PersistentAnnotation() {
-        this.dateCreated = LocalDateTime.now();
+        this.dateCreated = DateTools.now();
     }
 
     /**

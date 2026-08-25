@@ -59,6 +59,7 @@ import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * Wraps a {@link HighlightData} entity to provide a view-layer object for a highlighted content
@@ -229,7 +230,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * @return true if startTime is before now (or null) and endTime is after now (or null)
      */
     public boolean isCurrent() {
-        return isCurrent(LocalDateTime.now());
+        return isCurrent(DateTools.now());
     }
 
     /**
@@ -249,7 +250,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * @should return true for given input
      */
     public boolean isPast() {
-        return isPast(LocalDateTime.now());
+        return isPast(DateTools.now());
     }
 
     /**
@@ -270,7 +271,7 @@ public class Highlight implements CMSMediaHolder, IPolyglott {
      * @should return true for given input
      */
     public boolean isFuture() {
-        return isFuture(LocalDateTime.now());
+        return isFuture(DateTools.now());
     }
 
     /**

@@ -31,6 +31,7 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -113,7 +114,7 @@ public class UsageStatisticsRecorder {
         if (sessionID != null) {
             synchronized (dailyStatisticsLock) {
                 try {
-                    LocalDate date = LocalDate.now();
+                    LocalDate date = DateTools.today();
                     DailySessionUsageStatistics stats = getStatistics(date);
                     if (stats == null) {
                         stats = initStatistics(date);

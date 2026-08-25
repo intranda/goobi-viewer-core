@@ -73,6 +73,7 @@ import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
@@ -434,7 +435,7 @@ public class UserBean implements Serializable {
 
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
-                    u.setLastLogin(LocalDateTime.now());
+                    u.setLastLogin(DateTools.now());
                     if (!DataManager.getInstance().getDao().updateUser(u)) {
                         logger.error("Could not update user in DB.");
                     }

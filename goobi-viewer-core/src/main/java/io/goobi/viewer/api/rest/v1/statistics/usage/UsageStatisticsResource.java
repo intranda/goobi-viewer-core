@@ -55,6 +55,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummary;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummaryBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummaryFilter;
+import io.goobi.viewer.controller.DateTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -151,8 +152,8 @@ public class UsageStatisticsResource {
         Period stepPeriod = getPeriod(step != null ? step : 1, stepUnit);
         LocalDate startDate = getLocalDate(start);
         LocalDate endDate = getLocalDate(end);
-        if (LocalDate.now().isBefore(endDate)) {
-            endDate = LocalDate.now();
+        if (DateTools.today().isBefore(endDate)) {
+            endDate = DateTools.today();
         }
         if (endDate.isBefore(startDate)) {
             return Response.status(Response.Status.REQUESTED_RANGE_NOT_SATISFIABLE).build();

@@ -44,6 +44,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * Task managed by the viewers {@link TaskManager} which indexes all {@link DailySessionUsageStatistics} up to the day before today. The task monitors
@@ -97,7 +98,7 @@ public class StatisticsIndexTask {
 
         List<DailySessionUsageStatistics> stats = this.dao.getAllUsageStatistics()
                 .stream()
-                .filter(stat -> stat.getDate().isBefore(LocalDate.now()))
+                .filter(stat -> stat.getDate().isBefore(DateTools.today()))
                 .toList();
         if (!stats.isEmpty()) {
             logger.info("Moving {} daily usage statistics to SOLR", stats.size());

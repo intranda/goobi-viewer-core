@@ -48,7 +48,7 @@ class UserTest extends AbstractDatabaseEnabledTest {
      */
     @Test
     void User_shouldCloneBlueprintCorrectly() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         License license = new License();
 
         User blueprint = new User();

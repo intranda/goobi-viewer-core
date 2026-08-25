@@ -34,6 +34,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * @author florian
@@ -98,7 +99,7 @@ class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
             }
         });
 
-        LocalDate date = LocalDate.now();
+        LocalDate date = DateTools.today();
         thread1.start();
         thread2.start();
 
@@ -162,7 +163,7 @@ class UsageStatisticsRecorderTest extends AbstractDatabaseEnabledTest {
             }
         });
         
-        LocalDate date = LocalDate.now();
+        LocalDate date = DateTools.today();
         thread1.start();
         thread2.start();
         

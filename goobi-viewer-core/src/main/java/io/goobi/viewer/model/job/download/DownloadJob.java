@@ -142,7 +142,7 @@ public abstract class DownloadJob {
 
     private static boolean isLockStale(Path lockFile) throws IOException {
         FileTime lastModified = Files.getLastModifiedTime(lockFile);
-        return Duration.between(lastModified.toInstant(), Instant.now()).compareTo(MAX_LOCK_AGE) > 0;
+        return Duration.between(lastModified.toInstant(), DateTools.nowInstant()).compareTo(MAX_LOCK_AGE) > 0;
     }
 
     /**

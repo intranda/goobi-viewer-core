@@ -221,7 +221,7 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
         Assertions.assertEquals(webAnno, fromDAOWebAnno);
 
-        LocalDateTime changed = LocalDateTime.now();
+        LocalDateTime changed = DateTools.now();
         fromDAO.setDateModified(changed);
         Assertions.assertTrue(DataManager.getInstance().getDao().updateAnnotation(fromDAO));
 

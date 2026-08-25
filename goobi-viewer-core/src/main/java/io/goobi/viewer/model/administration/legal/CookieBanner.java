@@ -37,6 +37,7 @@ import jakarta.persistence.Table;
 import io.goobi.viewer.dao.converter.NumberListConverter;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.translations.TranslatedText;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * Class to persist settings for the cookie banner. Only one instance of this class should be persisted in the database
@@ -73,7 +74,7 @@ public class CookieBanner implements Serializable {
      * be accepted again
      */
     @Column(name = "requires_consent_after", nullable = false)
-    private LocalDateTime requiresConsentAfter = LocalDateTime.now();
+    private LocalDateTime requiresConsentAfter = DateTools.now();
 
     /**
      * IDs of CMS Pages on which the cookie banner should not be displayed.
