@@ -114,13 +114,24 @@ elif [[ -n "$THEME_NAME" ]]; then
   sed -i 's/mainTheme="[^"]*"/mainTheme="'"${THEME_NAME}"'"/' "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
 fi
 
-# Deliberately not one blanket substitution across both files: three
-# config_oai.xml keys are resolved by the viewer itself over HTTP and have to stay
-# container-internal. Pointing those at the public address leaves the viewer unable
-# to reach itself, which surfaces as OAI verbs answering an empty <GetRecord/>
-# rather than an error. configure-config-urls.sh documents which keys and why.
 echo "Setting viewer urls from environment..."
-/configure-config-urls.sh "${WEBAPP_DIR}/WEB-INF/classes"
+PATH_SUFFIX="${VIEWER_BASE_PATH:+/${VIEWER_BASE_PATH}}"
+if [[ "$USE_SSL" == "true" ]]; then
+  FRONTEND_URL="https://${VIEWER_DOMAIN}${PATH_SUFFIX}"
+else
+  FRONTEND_URL="http://${VIEWER_DOMAIN}${PATH_SUFFIX}"
+fi
+
+CLASSES_DIR="${WEBAPP_DIR}/WEB-INF/classes"
+BACKEND_URL="http://localhost:8080${PATH_SUFFIX}"
+
+sed -i "s#http://localhost:8080/viewer#${FRONTEND_URL}#g" "${CLASSES_DIR}/config_viewer.xml" "${CLASSES_DIR}/config_oai.xml"
+
+# These three config_oai.xml keys are not handed out but fetched by the viewer from
+# itself over HTTP, so they have to stay container-internal
+for key in documentResolverUrl harvestUrl restApiUrl; do
+  sed -i "s#<${key}>${FRONTEND_URL}#<${key}>${BACKEND_URL}#" "${CLASSES_DIR}/config_oai.xml"
+done
 
 export MYSQL_PWD=${DB_PASSWORD}
 while ! mysql -h "${DB_HOST}" -u "${DB_USER}" -P "${DB_PORT}" -e "SELECT 1" >/dev/null 2>&1; do

@@ -61,7 +61,6 @@ RUN grep -qxF 'org.omnifaces.cdi.push.SocketEndpoint.level = OFF' ${CATALINA_HOM
 COPY --from=build-stage /viewer-exploded/ ${CATALINA_HOME}/webapps/viewer/
 
 COPY goobi-viewer-config/install/docker/run.sh /
-COPY goobi-viewer-config/install/docker/configure-config-urls.sh /
 COPY goobi-viewer-config/install/docker/healthcheck.sh /
 
 EXPOSE 8080
