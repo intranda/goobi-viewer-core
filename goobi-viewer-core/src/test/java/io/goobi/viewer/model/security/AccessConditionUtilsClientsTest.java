@@ -56,14 +56,14 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
         super.setUp();
         lt = new LicenseType();
         lt.setName("license type 1 name");
-        if (!DataManager.getInstance().getDao().addLicenseType(lt)) {
+        if (DataManager.getInstance().getDao().addLicenseType(lt) == null) {
             logger.error("LicenseType could not be added to the DB.");
         }
 
         license = new License();
         license.setLicenseType(lt);
         license.setPrivileges(Collections.singleton(IPrivilegeHolder.PRIV_LIST));
-        if (!DataManager.getInstance().getDao().addLicense(license)) {
+        if (DataManager.getInstance().getDao().addLicense(license) == null) {
             logger.error("License could not be added to the DB.");
         }
 
@@ -117,7 +117,7 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
     @Test
     void checkAccessPermission_shouldReturnTrueIfClientContainsLicense() throws Exception {
         license.getLicensees().get(0).setClient(client);
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateLicense(license));
+        Assertions.assertNotNull(DataManager.getInstance().getDao().updateLicense(license));
         Assertions.assertTrue(AccessConditionUtils.checkAccessPermission(Arrays.asList(lt), recordAccessConditions, IPrivilegeHolder.PRIV_LIST, null,
                 "11.22.33.44", Optional.of(client), null).isGranted());
     }
@@ -128,7 +128,7 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
     @Test
     void checkAccessPermission_shouldReturnTrueIfAllClientsContainsLicense() throws Exception {
         license.getLicensees().get(0).setClient(client);
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateLicense(license));
+        Assertions.assertNotNull(DataManager.getInstance().getDao().updateLicense(license));
 
         Set<String> conditions = new HashSet<>();
         conditions.add(lt.getName());
@@ -142,7 +142,7 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
     @Test
     void checkAccessPermission_shouldReturnFalseIfClientIsOutsideIpRange() throws Exception {
         license.getLicensees().get(0).setClient(client);
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateLicense(license));
+        Assertions.assertNotNull(DataManager.getInstance().getDao().updateLicense(license));
 
         License license2 = new License();
         license2.setLicenseType(lt);
@@ -162,7 +162,7 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
     @Test
     void checkAccessPermission_shouldReturnTrueIfClientIsInsideIpRange() throws Exception {
         license.getLicensees().get(0).setClient(client);
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateLicense(license));
+        Assertions.assertNotNull(DataManager.getInstance().getDao().updateLicense(license));
 
         License license2 = new License();
         license2.setLicenseType(lt);

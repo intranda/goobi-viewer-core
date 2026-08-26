@@ -674,14 +674,18 @@ public class AdminBean implements Serializable {
      */
     public String saveIpRangeAction() throws DAOException {
         if (getCurrentIpRange().getId() != null) {
-            if (DataManager.getInstance().getDao().updateIpRange(getCurrentIpRange())) {
+            IpRange updated = DataManager.getInstance().getDao().updateIpRange(getCurrentIpRange());
+            if (updated != null) {
+                currentIpRange = updated;
                 Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
                 return "pretty:adminIpRangeEdit";
             }
         } else {
-            if (DataManager.getInstance().getDao().addIpRange(getCurrentIpRange())) {
+            IpRange added = DataManager.getInstance().getDao().addIpRange(getCurrentIpRange());
+            if (added != null) {
+                currentIpRange = added;
                 Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -721,7 +725,12 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveMaintenanceModeAction() throws DAOException {
-        if (DataManager.getInstance().getDao().updateMaintenanceMode(getMaintenanceMode())) {
+        MaintenanceMode updated = DataManager.getInstance().getDao().updateMaintenanceMode(getMaintenanceMode());
+        if (updated != null) {
+            // Continue working with the persisted instance so translations added during this edit carry their
+            // generated id for subsequent saves in this session (no orphan removal on this collection, so a stale
+            // id-less translation would otherwise be inserted as a duplicate rather than updated).
+            this.maintenanceMode = updated;
             Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
         } else {
             Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);

@@ -318,7 +318,11 @@ public class AdminLicenseBean implements Serializable {
         }
 
         if (currentLicenseType.getId() != null) {
-            if (DataManager.getInstance().getDao().updateLicenseType(currentLicenseType)) {
+            LicenseType updated = DataManager.getInstance().getDao().updateLicenseType(currentLicenseType);
+            if (updated != null) {
+                // Continue working with the persisted instance so children added during this edit (e.g. image
+                // placeholders) carry their generated id for subsequent saves in this session.
+                currentLicenseType = updated;
                 logger.trace("License type '{}' updated successfully", currentLicenseType.getName());
                 Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
@@ -326,7 +330,9 @@ public class AdminLicenseBean implements Serializable {
                 return "pretty:adminLicenseEdit";
             }
         } else {
-            if (DataManager.getInstance().getDao().addLicenseType(currentLicenseType)) {
+            LicenseType added = DataManager.getInstance().getDao().addLicenseType(currentLicenseType);
+            if (added != null) {
+                currentLicenseType = added;
                 Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
                 Messages.error(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -558,7 +564,11 @@ public class AdminLicenseBean implements Serializable {
 
         boolean error = false;
         if (currentLicense.getId() != null) {
-            if (DataManager.getInstance().getDao().updateLicense(currentLicense)) {
+            License updated = DataManager.getInstance().getDao().updateLicense(currentLicense);
+            if (updated != null) {
+                // Continue working with the persisted instance so licensees added during this edit carry their
+                // generated id for subsequent saves in this session.
+                currentLicense = updated;
                 logger.trace("License '{}' updated successfully", currentLicense.getId());
                 Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
             } else {
@@ -566,7 +576,9 @@ public class AdminLicenseBean implements Serializable {
                 error = true;
             }
         } else {
-            if (DataManager.getInstance().getDao().addLicense(currentLicense)) {
+            License added = DataManager.getInstance().getDao().addLicense(currentLicense);
+            if (added != null) {
+                currentLicense = added;
                 Messages.info(MSG_ADMIN_LICENSE_SAVE_SUCCESS);
             } else {
                 Messages.error(MSG_ADMIN_LICENSE_SAVE_FAILURE);

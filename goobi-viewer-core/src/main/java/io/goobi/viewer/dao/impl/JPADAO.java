@@ -1682,7 +1682,7 @@ public class JPADAO implements IDAO {
      * @should invalidate the license type cache after a successful add
      */
     @Override
-    public boolean addLicenseType(LicenseType licenseType) throws DAOException {
+    public LicenseType addLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -1693,11 +1693,11 @@ public class JPADAO implements IDAO {
             DataManager.getInstance().getLicenseTypeCache().invalidate();
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return licenseType;
     }
 
     /**
@@ -1706,19 +1706,19 @@ public class JPADAO implements IDAO {
      * @should invalidate the license type cache after a successful update
      */
     @Override
-    public boolean updateLicenseType(LicenseType licenseType) throws DAOException {
+    public LicenseType updateLicenseType(LicenseType licenseType) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(licenseType);
+            LicenseType mergedLicenseType = em.merge(licenseType);
             commitTransaction(em);
             // Invalidate LicenseTypeCache after successful commit (design doc 2026-04-22).
             DataManager.getInstance().getLicenseTypeCache().invalidate();
-            return true;
+            return mergedLicenseType;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -1891,7 +1891,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addLicense(License license) throws DAOException {
+    public License addLicense(License license) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -1900,26 +1900,26 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return license;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateLicense(License license) throws DAOException {
+    public License updateLicense(License license) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(license);
+            License mergedLicense = em.merge(license);
             commitTransaction(em);
-            return true;
+            return mergedLicense;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -2234,7 +2234,7 @@ public class JPADAO implements IDAO {
      * @should invalidate the IP range cache after a successful add
      */
     @Override
-    public boolean addIpRange(IpRange ipRange) throws DAOException {
+    public IpRange addIpRange(IpRange ipRange) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -2245,11 +2245,11 @@ public class JPADAO implements IDAO {
             DataManager.getInstance().getIpRangeCache().invalidate();
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return ipRange;
     }
 
     /**
@@ -2258,19 +2258,19 @@ public class JPADAO implements IDAO {
      * @should invalidate the IP range cache after a successful update
      */
     @Override
-    public boolean updateIpRange(IpRange ipRange) throws DAOException {
+    public IpRange updateIpRange(IpRange ipRange) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(ipRange);
+            IpRange mergedIpRange = em.merge(ipRange);
             commitTransaction(em);
             // Invalidate IpRangeCache after successful commit (design doc 2026-04-22).
             DataManager.getInstance().getIpRangeCache().invalidate();
-            return true;
+            return mergedIpRange;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -3327,7 +3327,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addCMSPage(CMSPage page) throws DAOException {
+    public CMSPage addCMSPage(CMSPage page) throws DAOException {
         synchronized (cmsRequestLock) {
 
             preQuery();
@@ -3336,11 +3336,11 @@ public class JPADAO implements IDAO {
                 startTransaction(em);
                 em.persist(page);
                 commitTransaction(em);
-                return true;
+                return page;
             } catch (PersistenceException e) {
                 logger.error("Error adding cmsPage to database", e);
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -3349,19 +3349,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateCMSPage(CMSPage page) throws DAOException {
+    public CMSPage updateCMSPage(CMSPage page) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
             EntityManager em = getEntityManager();
             try {
                 startTransaction(em);
-                em.merge(page);
+                CMSPage mergedPage = em.merge(page);
                 commitTransaction(em);
-                return true;
+                return mergedPage;
             } catch (PersistenceException | NullPointerException e) {
                 logger.error("Error saving page ", e);
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -3450,27 +3450,6 @@ public class JPADAO implements IDAO {
                 return true;
             } catch (PersistenceException e) {
                 logger.error("Error adding cmsPage to database", e);
-                handleException(em);
-                return false;
-            } finally {
-                close(em);
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean updatedCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
-        synchronized (cmsRequestLock) {
-            preQuery();
-            EntityManager em = getEntityManager();
-            try {
-                startTransaction(em);
-                em.merge(persistentCMSComponent);
-                commitTransaction(em);
-                return true;
-            } catch (PersistenceException | NullPointerException e) {
-                logger.error("Error saving page ", e);
                 handleException(em);
                 return false;
             } finally {
@@ -4036,7 +4015,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addCampaign(Campaign campaign) throws DAOException {
+    public Campaign addCampaign(Campaign campaign) throws DAOException {
         synchronized (crowdsourcingRequestLock) {
             preQuery();
             EntityManager em = getEntityManager();
@@ -4044,10 +4023,10 @@ public class JPADAO implements IDAO {
                 startTransaction(em);
                 em.persist(campaign);
                 commitTransaction(em);
-                return true;
+                return campaign;
             } catch (RollbackException e) {
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -4056,7 +4035,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateCampaign(Campaign campaign) throws DAOException {
+    public Campaign updateCampaign(Campaign campaign) throws DAOException {
         // Use crowdsourcingRequestLock consistent with addCampaign/getCampaign methods
         synchronized (crowdsourcingRequestLock) {
             preQuery();
@@ -4067,7 +4046,7 @@ public class JPADAO implements IDAO {
                 commitTransaction(em);
                 //solrQueryResults remains unchanged in managed campaign even after merge. Manually reset results to account for changed solrquery
                 c.resetSolrQueryResults();
-                return true;
+                return c;
             } catch (RollbackException e) {
                 handleException(em);
                 throw new PersistenceException("Failed to persist campaign " + campaign, e);
@@ -4695,17 +4674,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addCMSCollection(CMSCollection collection) throws DAOException {
+    public CMSCollection addCMSCollection(CMSCollection collection) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(collection);
             commitTransaction(em);
-            return true;
+            return collection;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -4713,17 +4692,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateCMSCollection(CMSCollection collection) throws DAOException {
+    public CMSCollection updateCMSCollection(CMSCollection collection) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(collection);
+            CMSCollection mergedCollection = em.merge(collection);
             commitTransaction(em);
-            return true;
+            return mergedCollection;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -5670,9 +5649,9 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addGeoMap(GeoMap map) throws DAOException {
+    public GeoMap addGeoMap(GeoMap map) throws DAOException {
         if (getGeoMap(map.getId()) != null) {
-            return false;
+            return null;
         }
         preQuery();
         EntityManager em = getEntityManager();
@@ -5682,31 +5661,31 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return map;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateGeoMap(GeoMap map) throws DAOException {
+    public GeoMap updateGeoMap(GeoMap map) throws DAOException {
         if (map.getId() == null) {
-            return false;
+            return null;
         }
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(map);
+            GeoMap mergedMap = em.merge(map);
             commitTransaction(em);
-            return true;
+            return mergedMap;
         } catch (IllegalArgumentException e) {
-            return false;
+            return null;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -7091,7 +7070,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addCMSPageTemplate(CMSPageTemplate template) throws DAOException {
+    public CMSPageTemplate addCMSPageTemplate(CMSPageTemplate template) throws DAOException {
 
         preQuery();
         EntityManager em = getEntityManager();
@@ -7099,11 +7078,11 @@ public class JPADAO implements IDAO {
             startTransaction(em);
             em.persist(template);
             commitTransaction(em);
-            return true;
+            return template;
         } catch (PersistenceException e) {
             logger.error("Error adding cmsPage to database", e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -7111,17 +7090,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateCMSPageTemplate(CMSPageTemplate template) throws DAOException {
+    public CMSPageTemplate updateCMSPageTemplate(CMSPageTemplate template) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(template);
+            CMSPageTemplate mergedTemplate = em.merge(template);
             commitTransaction(em);
-            return true;
+            return mergedTemplate;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -7553,17 +7532,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateMaintenanceMode(MaintenanceMode maintenanceMode) throws DAOException {
+    public MaintenanceMode updateMaintenanceMode(MaintenanceMode maintenanceMode) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(maintenanceMode);
+            MaintenanceMode mergedMaintenanceMode = em.merge(maintenanceMode);
             commitTransaction(em);
-            return true;
+            return mergedMaintenanceMode;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }

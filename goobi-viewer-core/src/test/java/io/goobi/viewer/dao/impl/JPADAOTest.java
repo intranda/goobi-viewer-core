@@ -660,7 +660,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         ipRange.setName("ip range to add name");
         ipRange.setDescription("ip range to add desc");
         ipRange.setSubnetMask("0.0.0.0./0");
-        assertTrue(DataManager.getInstance().getDao().addIpRange(ipRange));
+        assertNotNull(DataManager.getInstance().getDao().addIpRange(ipRange));
         assertNotNull(ipRange.getId());
         assertEquals(3, DataManager.getInstance().getDao().getAllIpRanges().size());
 
@@ -684,7 +684,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         ipRange.setDescription("ip range 1 new desc");
         ipRange.setSubnetMask("0.0.0.0./0");
 
-        assertTrue(DataManager.getInstance().getDao().updateIpRange(ipRange));
+        assertNotNull(DataManager.getInstance().getDao().updateIpRange(ipRange));
         assertEquals(2, DataManager.getInstance().getDao().getAllIpRanges().size());
 
         IpRange ipRange2 = DataManager.getInstance().getDao().getIpRange(ipRange.getId());
@@ -722,7 +722,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         }
 
         // Saving the licensee should not create any extra licenses
-        assertTrue(DataManager.getInstance().getDao().updateIpRange(ipRange));
+        assertNotNull(DataManager.getInstance().getDao().updateIpRange(ipRange));
         IpRange ipRange2 = DataManager.getInstance().getDao().getIpRange(ipRange.getId());
         assertNotNull(ipRange2);
         assertEquals(1, ipRange2.getLicenses().size());
@@ -1206,7 +1206,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         licenseType.setName("license type to add name");
         licenseType.setDescription("license type to add desc");
         licenseType.getPrivileges().add("license type to add priv 1");
-        assertTrue(DataManager.getInstance().getDao().addLicenseType(licenseType));
+        assertNotNull(DataManager.getInstance().getDao().addLicenseType(licenseType));
         assertNotNull(licenseType.getId());
         assertEquals(NUM_LICENSE_TYPES + 1, DataManager.getInstance().getDao().getAllLicenseTypes().size());
 
@@ -1231,7 +1231,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         licenseType.setName("license type 1 new name");
         licenseType.setDescription("license type 1 new desc");
         licenseType.getPrivileges().add("license type 1 priv 2");
-        assertTrue(DataManager.getInstance().getDao().updateLicenseType(licenseType));
+        assertNotNull(DataManager.getInstance().getDao().updateLicenseType(licenseType));
         assertEquals(NUM_LICENSE_TYPES, DataManager.getInstance().getDao().getAllLicenseTypes().size());
 
         LicenseType licenseType2 = DataManager.getInstance().getDao().getLicenseType(licenseType.getId());
@@ -2556,7 +2556,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         campaign.setSolrQuery("*:*");
         campaign.setDateCreated(DateTools.now());
 
-        assertTrue(DataManager.getInstance().getDao().updateCampaign(campaign));
+        assertNotNull(DataManager.getInstance().getDao().updateCampaign(campaign));
         campaign = DataManager.getInstance().getDao().getCampaign(2L);
         assertEquals("Test titel", campaign.getTitle());
     }

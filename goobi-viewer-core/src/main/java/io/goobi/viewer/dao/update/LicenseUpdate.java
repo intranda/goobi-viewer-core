@@ -88,7 +88,7 @@ public class LicenseUpdate implements IModelUpdate {
                 license.setClient(null);
                 update = true;
             }
-            if (update && dao.updateLicense(license)) {
+            if (update && dao.updateLicense(license) != null) {
                 count++;
             }
 

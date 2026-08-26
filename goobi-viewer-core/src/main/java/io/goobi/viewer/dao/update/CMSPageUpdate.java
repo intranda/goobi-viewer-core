@@ -178,7 +178,7 @@ public class CMSPageUpdate implements IModelUpdate {
             CMSPageTemplate template = templateIdMap.get(entry.getKey());
             List<CMSPage> templatePages = entry.getValue();
             try {
-                if (!dao.addCMSPageTemplate(template)) {
+                if (dao.addCMSPageTemplate(template) == null) {
                     throw new DAOException("Adding template failed");
                 }
             } catch (DAOException | NullPointerException e) {
@@ -188,7 +188,7 @@ public class CMSPageUpdate implements IModelUpdate {
             for (CMSPage page : templatePages) {
                 page.setTemplateId(template.getId());
                 try {
-                    if (!dao.updateCMSPage(page)) {
+                    if (dao.updateCMSPage(page) == null) {
                         throw new DAOException("Saving page failed");
                     }
                 } catch (DAOException | NullPointerException e) {

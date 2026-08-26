@@ -192,6 +192,19 @@
     </user>
 
 
+    <!-- session: HTTP session (JSESSIONID cookie) settings -->
+    <session>
+        <!-- cookieSecure: If true, the session cookie is always sent with the 'Secure' flag, so browsers withhold it on
+             plain http requests. Default is true. Set to false ONLY for installations that must be reachable via http:
+             with 'true' the viewer cannot keep a session over http at all. Note that switching this off exposes the
+             session cookie on every http request path, e.g. to an attacker who makes the browser emit one plaintext
+             request before the http->https redirect kicks in (add a Strict-Transport-Security header to mitigate).
+             With 'false' the flag is not dropped entirely: Tomcat still sets it whenever the request itself is secure,
+             which behind a reverse proxy requires a RemoteIpValve with protocolHeader="X-Forwarded-Proto". -->
+        <cookieSecure>true</cookieSecure>
+    </session>
+
+
     <performance>
         <!-- pageLoaderThreshold: number of pages a record has to have to switch to a lean page loading strategy that limit memory usage. Default is 1000. -->
         <pageLoaderThreshold>1000</pageLoaderThreshold>
