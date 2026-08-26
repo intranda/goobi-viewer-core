@@ -806,6 +806,55 @@
     </collections>
 
 
+    <!-- collectionArchives: Per-collection BagIt archives (ZIP files with a normalized folder structure and checksums) that are
+         prepared by the scheduled task GENERATE_COLLECTION_ARCHIVES and offered for download on the collection views.
+         Only anonymously accessible content is ever packed, because an archive is generated once and then served unchanged to
+         everyone; the download itself additionally requires a logged-in user or a valid API token.
+         enabled: master switch for generation and download. Default is false. -->
+    <collectionArchives enabled="false">
+        <!-- storageFolder: folder holding the generated archives, relative to viewerHome. Default is collection_archives. -->
+        <storageFolder>collection_archives</storageFolder>
+
+        <!-- includeSubcollections: if true, every subcollection gets an archive of its own, otherwise only top level collections.
+             Default is false. -->
+        <includeSubcollections>false</includeSubcollections>
+
+        <!-- default: content types to include, per collection field (usually DC). Only fields with a <default> block are considered
+             at all, so at least one block is required for archives to be generated. All toggles default to false; a collection with
+             no enabled content type gets no archive. Inside the bag each type lives in its own subfolder below data/:
+             metadataSourceFormats -> data/metadata (record source files: METS, LIDO, DenkXweb)
+             fulltextAlto          -> data/alto
+             fulltextText          -> data/fulltext
+             fulltextTei           -> data/tei
+             images                -> data/media (image, audio and video files)
+             metadataExportCsv     -> data/export
+             metadataExportRis     -> data/export
+             metadataExportBibtex  -> data/export -->
+        <!--
+        <default field="DC">
+            <metadataSourceFormats>true</metadataSourceFormats>
+            <fulltextAlto>false</fulltextAlto>
+            <fulltextText>false</fulltextText>
+            <fulltextTei>false</fulltextTei>
+            <images>true</images>
+            <metadataExportCsv>false</metadataExportCsv>
+            <metadataExportRis>false</metadataExportRis>
+            <metadataExportBibtex>false</metadataExportBibtex>
+        </default>
+        -->
+
+        <!-- collection: sparse override for a single collection. Only the toggles actually listed here are changed, all others are
+             inherited from the <default> block of the same field; a listed toggle set to false disables a type enabled by default.
+             The example below adds ALTO fulltexts and drops the media files while keeping the inherited source files. -->
+        <!--
+        <collection name="varia" field="DC">
+            <fulltextAlto>true</fulltextAlto>
+            <images>false</images>
+        </collection>
+        -->
+    </collectionArchives>
+
+
     <metadata>
         <!-- metadataView: Each metadata view creates a metadata view for a record.
              Each view contains a whitelist with metadata fields, that are displayed
