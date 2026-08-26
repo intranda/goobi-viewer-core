@@ -31,11 +31,47 @@ import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.managedbeans.CmsCollectionsBean.CMSCollectionImageMode;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.translations.admin.MessageEntry;
 import io.goobi.viewer.solr.SolrConstants;
 
 class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
+
+    /**
+     * @verifies treat only the pseudo field as dynamic collections source
+     */
+    @Test
+    void isDynamicCollectionsSource_shouldMatchOnlyPseudoField() {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.setSolrFieldNoUpdates(SolrConstants.DC);
+        Assertions.assertFalse(bean.isDynamicCollectionsSource());
+        bean.setSolrFieldNoUpdates(SolrConstants.DC_DYNAMIC);
+        Assertions.assertTrue(bean.isDynamicCollectionsSource());
+    }
+
+    /**
+     * @verifies offer the dynamic collections source only when dynamic collections exist or it is already selected
+     */
+    @Test
+    void getSourceSelectItems_shouldOfferDynamicSourceOnlyWhenAvailable() throws Exception {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.setSolrFieldNoUpdates(SolrConstants.DC);
+        Assertions.assertTrue(bean.getSourceSelectItems().stream().noneMatch(item -> SolrConstants.DC_DYNAMIC.equals(item.getValue())));
+
+        DynamicCollection collection = new DynamicCollection("cms_source_test");
+        collection.setSolrQuery("*:*");
+        DataManager.getInstance().getDao().addDynamicCollection(collection);
+        try {
+            Assertions.assertTrue(bean.getSourceSelectItems().stream().anyMatch(item -> SolrConstants.DC_DYNAMIC.equals(item.getValue())));
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(collection);
+        }
+
+        // Selected pseudo field keeps its option even without existing collections
+        bean.setSolrFieldNoUpdates(SolrConstants.DC_DYNAMIC);
+        Assertions.assertTrue(bean.getSourceSelectItems().stream().anyMatch(item -> SolrConstants.DC_DYNAMIC.equals(item.getValue())));
+    }
 
     /**
      * @verifies set image mode to PI when representative work exists NONE when absent and IMAGE when media item is set
@@ -141,5 +177,38 @@ class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         MessageEntry entry = bean.getMessageEntryForFieldValue();
         Assertions.assertNotNull(entry);
         Assertions.assertEquals(2, entry.getValues().size());
+    }
+
+    /**
+     * @see CmsCollectionsBean#isDynamicSourceObsolete()
+     * @verifies return true only if pseudo field selected and no dynamic collections exist
+     */
+    @Test
+    void isDynamicSourceObsolete_shouldReturnTrueOnlyIfPseudoFieldSelectedAndNoDynamicCollectionsExist() throws Exception {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.setSolrFieldNoUpdates(SolrConstants.DC);
+        Assertions.assertFalse(bean.isDynamicSourceObsolete());
+
+        bean.setSolrFieldNoUpdates(SolrConstants.DC_DYNAMIC);
+        Assertions.assertTrue(bean.isDynamicSourceObsolete());
+
+        DynamicCollection collection = new DynamicCollection("cms_source_obsolete_test");
+        collection.setSolrQuery("*:*");
+        DataManager.getInstance().getDao().addDynamicCollection(collection);
+        try {
+            Assertions.assertFalse(bean.isDynamicSourceObsolete());
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(collection);
+        }
+    }
+
+    /**
+     * @see CmsCollectionsBean#getDefaultCollectionField()
+     * @verifies return first configured collection field
+     */
+    @Test
+    void getDefaultCollectionField_shouldReturnFirstConfiguredCollectionField() {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        Assertions.assertEquals(bean.getAllCollectionFields().get(0), bean.getDefaultCollectionField());
     }
 }

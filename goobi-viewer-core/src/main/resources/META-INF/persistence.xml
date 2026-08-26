@@ -41,6 +41,8 @@
         <class>io.goobi.viewer.model.cms.HighlightData</class>
         <class>io.goobi.viewer.model.cms.collections.CMSCollection</class>
         <class>io.goobi.viewer.model.cms.collections.CMSCollectionTranslation</class>
+        <class>io.goobi.viewer.model.cms.collections.DynamicCollection</class>
+        <class>io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation</class>
         <class>io.goobi.viewer.model.cms.media.CMSMediaItem</class>
         <class>io.goobi.viewer.model.cms.media.CMSMediaItemMetadata</class>
         <class>io.goobi.viewer.model.cms.pages.CMSPage</class>
@@ -186,6 +188,8 @@
         <class>io.goobi.viewer.model.cms.HighlightData</class>
         <class>io.goobi.viewer.model.cms.collections.CMSCollection</class>
         <class>io.goobi.viewer.model.cms.collections.CMSCollectionTranslation</class>
+        <class>io.goobi.viewer.model.cms.collections.DynamicCollection</class>
+        <class>io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation</class>
         <class>io.goobi.viewer.model.cms.media.CMSMediaItem</class>
         <class>io.goobi.viewer.model.cms.media.CMSMediaItemMetadata</class>
         <class>io.goobi.viewer.model.cms.pages.CMSPage</class>

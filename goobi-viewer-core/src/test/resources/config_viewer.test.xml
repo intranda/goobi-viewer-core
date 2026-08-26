@@ -172,6 +172,11 @@
         </feedbackEmailAddressList>
 	</user>
 
+	<session>
+		<!-- cookieSecure: If true, the session cookie always carries the 'Secure' flag. Default is true. -->
+		<cookieSecure>false</cookieSecure>
+	</session>
+
 	<performance>
 		<!-- pageLoaderThreshold: number of pages a record has to have to switch 
 			to a lean page loading strategy that limit memory usage (default is 1000) -->
@@ -477,6 +482,7 @@
 				<field type="geo" predicate="ISWITHIN" displayResultsOnMap="false">WKT_COORDS</field>
 	            <field groupToLength="1" alwaysApplyToUnfilteredHits="true" skipInWidget="true">MD_PERSON</field>
 	            <field type="boolean">BOOL_HASIMAGES</field>
+	            <field type="query">DC_DYNAMIC</field>
 			</template>
 			<!-- Named template exposed as quick filters on the simple search field. Note MD_CREATOR is a plain
 			     dropdown here even though it is hierarchical in _DEFAULT. -->

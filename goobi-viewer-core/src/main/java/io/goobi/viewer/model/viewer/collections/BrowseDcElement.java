@@ -42,8 +42,10 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
 import io.goobi.viewer.model.security.AccessDeniedInfoConfig;
 import io.goobi.viewer.model.security.AccessPermission;
 import io.goobi.viewer.model.security.IAccessDeniedThumbnailOutput;
@@ -184,6 +186,11 @@ public class BrowseDcElement implements Comparable<BrowseDcElement>, IAccessDeni
      * @return <code>CMSCollection</code> translation, if ava ilable; name otherwise
      */
     public String getLabel() {
+        // Dynamic collections carry their translated label in the DB, not in the message bundle, so resolve it here (the templates run the result
+        // through msg[], which passes an already-translated string through unchanged).
+        if (getInfo() instanceof DynamicCollection dynamicCollection) {
+            return dynamicCollection.getLabel(BeanUtils.getLocale());
+        }
         if (getInfo() != null) {
             return getInfo().getName();
         }

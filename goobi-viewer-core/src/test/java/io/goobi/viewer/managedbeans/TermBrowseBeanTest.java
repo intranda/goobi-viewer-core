@@ -32,15 +32,15 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.controller.DataManager;
 
-class BrowseBeanTest extends AbstractTest {
-    
+class TermBrowseBeanTest extends AbstractTest {
+
     /**
-     * @see BrowseBean#getBrowsingMenuItems(String)
+     * @see TermBrowseBean#getBrowsingMenuItems(String)
      * @verifies skip items that have skipInWidget true
      */
     @Test
     void getBrowsingMenuItems_shouldSkipItemsThatHaveSkipInWidgetTrue() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         List<String> result = bb.getBrowsingMenuItems(null);
         assertEquals(2, result.size());
         assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
@@ -48,12 +48,12 @@ class BrowseBeanTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseBean#getBrowsingMenuItems(String)
+     * @see TermBrowseBean#getBrowsingMenuItems(String)
      * @verifies skip items for languagespecific fields if no language was given
      */
     @Test
     void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfNoLanguageWasGiven() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         List<String> result = bb.getBrowsingMenuItems(null);
         assertEquals(2, result.size());
         assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
@@ -61,12 +61,12 @@ class BrowseBeanTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseBean#getBrowsingMenuItems(String)
+     * @see TermBrowseBean#getBrowsingMenuItems(String)
      * @verifies skip items for languagespecific fields if they dont match given language
      */
     @Test
     void getBrowsingMenuItems_shouldSkipItemsForLanguagespecificFieldsIfTheyDontMatchGivenLanguage() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         List<String> result = bb.getBrowsingMenuItems("en");
         assertEquals(4, result.size());
         assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
@@ -75,12 +75,12 @@ class BrowseBeanTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseBean#getBrowsingMenuItems(String)
+     * @see TermBrowseBean#getBrowsingMenuItems(String)
      * @verifies return languagespecific fields with placeholder
      */
     @Test
     void getBrowsingMenuItems_shouldReturnLanguagespecificFieldsWithPlaceholder() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         List<String> result = bb.getBrowsingMenuItems("en");
         assertEquals(4, result.size());
         assertEquals("MD_AUTHOR_UNTOKENIZED", result.get(0));
@@ -90,23 +90,12 @@ class BrowseBeanTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseBean#getCollectionHierarchy(String,String)
-     * @verifies return slash-separated ancestor chain for dot-delimited collection name
-     */
-    @Test
-    void getCollectionHierarchy_shouldReturnSlashSeparatedAncestorChainForDotDelimitedCollectionName() {
-        BrowseBean bb = new BrowseBean();
-        assertEquals("foo", bb.getCollectionHierarchy("x", "foo"));
-        assertEquals("foo / foo.bar", bb.getCollectionHierarchy("x", "foo.bar"));
-    }
-
-    /**
-     * @see BrowseBean#selectRedirectFilter()
+     * @see TermBrowseBean#selectRedirectFilter()
      * @verifies return first available alphabetical filter if available
      */
     @Test
     void selectRedirectFilter_shouldReturnFirstAvailableAlphabeticalFilterIfAvailable() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         bb.setBrowsingMenuField("foo");
         bb.getAvailableStringFiltersMap().put("FOO", new ArrayList<>(4));
         bb.getAvailableStringFilters().add("!");
@@ -117,12 +106,12 @@ class BrowseBeanTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseBean#selectRedirectFilter()
+     * @see TermBrowseBean#selectRedirectFilter()
      * @verifies return numerical filter if available
      */
     @Test
     void selectRedirectFilter_shouldReturnNumericalFilterIfAvailable() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         bb.setBrowsingMenuField("foo");
         bb.getAvailableStringFiltersMap().put("FOO", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
@@ -131,12 +120,12 @@ class BrowseBeanTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseBean#selectRedirectFilter()
+     * @see TermBrowseBean#selectRedirectFilter()
      * @verifies return first filter if no other available
      */
     @Test
     void selectRedirectFilter_shouldReturnFirstFilterIfNoOtherAvailable() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         bb.setBrowsingMenuField("foo");
         bb.getAvailableStringFiltersMap().put("FOO", new ArrayList<>(2));
         bb.getAvailableStringFilters().add("!");
@@ -145,45 +134,45 @@ class BrowseBeanTest extends AbstractTest {
     }
 
     /**
-     * @see BrowseBean#getBrowsingMenuFieldForLanguage(String)
+     * @see TermBrowseBean#getBrowsingMenuFieldForLanguage(String)
      * @verifies return field for given language if placeholder found
      */
     @Test
     void getBrowsingMenuFieldForLanguage_shouldReturnFieldForGivenLanguageIfPlaceholderFound() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         bb.setBrowsingMenuField("MD_FOO_LANG_{}");
         assertEquals("MD_FOO_LANG_EN", bb.getBrowsingMenuFieldForLanguage("en"));
     }
 
     /**
-     * @see BrowseBean#getBrowsingMenuFieldForLanguage(String)
+     * @see TermBrowseBean#getBrowsingMenuFieldForLanguage(String)
      * @verifies return browsingMenuField if no language placeholder
      */
     @Test
     void getBrowsingMenuFieldForLanguage_shouldReturnBrowsingMenuFieldIfNoLanguagePlaceholder() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         bb.setBrowsingMenuField("MD_FOO");
         assertEquals("MD_FOO", bb.getBrowsingMenuFieldForLanguage("en"));
     }
 
     /**
-     * @see BrowseBean#setBrowsingMenuField(String)
+     * @see TermBrowseBean#setBrowsingMenuField(String)
      * @verifies normalize field name to uppercase
      */
     @Test
     void setBrowsingMenuField_shouldNormalizeFieldNameToUppercase() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         bb.setBrowsingMenuField("md_allpersons_untokenized");
         assertEquals("MD_ALLPERSONS_UNTOKENIZED", bb.getBrowsingMenuField());
     }
 
     /**
-     * @see BrowseBean#generateFilterQuery()
+     * @see TermBrowseBean#generateFilterQuery(List)
      * @verifies return empty string if no filterQuery or result groups available
      */
     @Test
     void generateFilterQuery_shouldReturnEmptyStringIfNoFilterQueryOrResultGroupsAvailable() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         assertEquals("", bb.generateFilterQuery(Collections.emptyList()));
     }
 
@@ -192,7 +181,7 @@ class BrowseBeanTest extends AbstractTest {
      */
     @Test
     void generateFilterQuery_shouldGenerateFilterQueryCorrectly() {
-        BrowseBean bb = new BrowseBean();
+        TermBrowseBean bb = new TermBrowseBean();
         assertEquals("+(+( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))",
                 bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));
 
@@ -202,5 +191,4 @@ class BrowseBeanTest extends AbstractTest {
         assertEquals("+(+(FOO:bar) +( (SOURCEDOCFORMAT:LIDO) (DOCSTRCT:monograph) (+DOCSTRCT:\"cms_page\" +MD_CATEGORY:\"story\")))",
                 bb.generateFilterQuery(DataManager.getInstance().getConfiguration().getSearchResultGroups()));
     }
-
 }

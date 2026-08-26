@@ -48,11 +48,7 @@
                 width: 16px;
                 border-width: 1px;
                 opacity: 1;
-                transition:
-                    width 0.15s ease-in-out,
-                    margin 0.15s ease-in-out,
-                    opacity 0.05s linear 0.12s,
-                    background-color 0.15s ease-in-out;
+                transition: none;
 
                 &.-include {
                     margin-inline-end: 8px;
@@ -112,12 +108,7 @@
         border: 0 solid var(--facet-control-border);
         border-radius: var(--facet-control-radius);
         opacity: 0;
-        /* opacity is delayed against width so no half-revealed box shows */
-        transition:
-            width 0.15s ease-in-out 0.05s,
-            margin 0.15s ease-in-out 0.05s,
-            opacity 0.05s linear,
-            background-color 0.15s ease-in-out;
+        transition: none;
 
         &.-set {
             width: 16px;

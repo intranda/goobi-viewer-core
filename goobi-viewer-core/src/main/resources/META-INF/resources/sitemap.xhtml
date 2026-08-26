@@ -54,12 +54,16 @@
                         <li class="view-sitemap__list-item">
                             <a
                                 class="view-sitemap__list-link"
-                                href="#{adminThemesBean.getFooterUrl('legal', request.contextPath.concat('/imprint'))}">#{msg.imprint}</a>
+                                href="#{adminThemesBean.getFooterUrl('legal', request.contextPath.concat('/imprint'))}">
+                                #{msg.imprint}
+                            </a>
                         </li>
                         <li class="view-sitemap__list-item">
                             <a
                                 class="view-sitemap__list-link"
-                                href="#{adminThemesBean.getFooterUrl('privacy', request.contextPath.concat('/privacy'))}">#{msg.privacy}</a>
+                                href="#{adminThemesBean.getFooterUrl('privacy', request.contextPath.concat('/privacy'))}">
+                                #{msg.privacy}
+                            </a>
                         </li>
                         <li class="view-sitemap__list-item">
                             <h:panelGroup rendered="#{adminThemesBean.hasFooterUrl('contact')}">
@@ -67,14 +71,18 @@
                                     class="view-sitemap__list-link"
                                     target="_blank"
                                     rel="noopener"
-                                    href="#{adminThemesBean.getFooterUrl('contact', '')}">#{msg.contact}</a>
+                                    href="#{adminThemesBean.getFooterUrl('contact', '')}">
+                                    #{msg.contact}
+                                </a>
                             </h:panelGroup>
                             <h:panelGroup rendered="#{!adminThemesBean.hasFooterUrl('contact')}">
                                 <button
                                     type="button"
                                     class="btn btn--link view-sitemap__list-link"
                                     data-toggle="modal"
-                                    data-target="#feedbackModal">#{msg.contact}</button>
+                                    data-target="#feedbackModal">
+                                    #{msg.contact}
+                                </button>
                             </h:panelGroup>
                         </li>
                     </ul>

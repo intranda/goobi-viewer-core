@@ -14,7 +14,7 @@
     </composite:interface>
 
     <composite:implementation>
-        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled and configurationBean.displaySidebarBrowsingTerms}">
+        <h:panelGroup rendered="#{termBrowseBean.browsingMenuEnabled and configurationBean.displaySidebarBrowsingTerms}">
             <div
                 id="widgetBrowsing"
                 class="widget widget-browse">
@@ -26,19 +26,19 @@
                         <div class="widget__body widget-browsing__body">
                             <ul>
                                 <ui:repeat
-                                    value="#{browseBean.getBrowsingMenuItems(navigationHelper.localeString)}"
+                                    value="#{termBrowseBean.getBrowsingMenuItems(navigationHelper.localeString)}"
                                     var="item">
-                                    <h:panelGroup rendered="#{browseBean.browsingMenuField == item}">
+                                    <h:panelGroup rendered="#{termBrowseBean.browsingMenuField == item}">
                                         <li class="#{navigationHelper.currentPage == 'searchTermList' ? 'active' : ''}">
                                             <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/#{navigationHelper.subThemeQueryParam}">
                                                 <h:outputText value="#{msg[item]}" />
                                                 <h:outputText
-                                                    rendered="#{browseBean.browsingMenuField != item}"
+                                                    rendered="#{termBrowseBean.browsingMenuField != item}"
                                                     value="#{msg[item]}" />
                                             </h:outputLink>
                                         </li>
                                     </h:panelGroup>
-                                    <h:panelGroup rendered="#{browseBean.browsingMenuField != item}">
+                                    <h:panelGroup rendered="#{termBrowseBean.browsingMenuField != item}">
                                         <li>
                                             <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/#{navigationHelper.subThemeQueryParam}">
                                                 <h:outputText value="#{msg[item]}" />
@@ -74,19 +74,19 @@
                                 class="collapse">
                                 <ul>
                                     <ui:repeat
-                                        value="#{browseBean.getBrowsingMenuItems(navigationHelper.localeString)}"
+                                        value="#{termBrowseBean.getBrowsingMenuItems(navigationHelper.localeString)}"
                                         var="item">
-                                        <h:panelGroup rendered="#{browseBean.browsingMenuField == item}">
+                                        <h:panelGroup rendered="#{termBrowseBean.browsingMenuField == item}">
                                             <li class="active">
                                                 <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/#{navigationHelper.subThemeQueryParam}">
                                                     <h:outputText value="#{msg[item]}" />
                                                     <h:outputText
-                                                        rendered="#{browseBean.browsingMenuField != item}"
+                                                        rendered="#{termBrowseBean.browsingMenuField != item}"
                                                         value="#{msg[item]}" />
                                                 </h:outputLink>
                                             </li>
                                         </h:panelGroup>
-                                        <h:panelGroup rendered="#{browseBean.browsingMenuField != item}">
+                                        <h:panelGroup rendered="#{termBrowseBean.browsingMenuField != item}">
                                             <li>
                                                 <h:outputLink value="#{navigationHelper.termUrl}/#{item}/1/#{navigationHelper.subThemeQueryParam}">
                                                     <h:outputText value="#{msg[item]}" />

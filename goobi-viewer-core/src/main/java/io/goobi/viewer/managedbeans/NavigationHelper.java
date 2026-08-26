@@ -128,7 +128,9 @@ public class NavigationHelper implements Serializable {
     @Inject
     private ActiveDocumentBean activeDocumentBean;
     @Inject
-    private BrowseBean browseBean;
+    private CollectionBrowseBean collectionBrowseBean;
+    @Inject
+    private TermBrowseBean termBrowseBean;
     @Inject
     private SearchBean searchBean;
     @Inject
@@ -188,9 +190,14 @@ public class NavigationHelper implements Serializable {
         this.activeDocumentBean = activeDocumentBean;
     }
 
-    /** Setter for testing — allows injecting a mock BrowseBean without CDI. */
-    public void setBrowseBean(BrowseBean browseBean) {
-        this.browseBean = browseBean;
+    /** Setter for testing — allows injecting a mock CollectionBrowseBean without CDI. */
+    public void setCollectionBrowseBean(CollectionBrowseBean collectionBrowseBean) {
+        this.collectionBrowseBean = collectionBrowseBean;
+    }
+
+    /** Setter for testing — allows injecting a mock TermBrowseBean without CDI. */
+    public void setTermBrowseBean(TermBrowseBean termBrowseBean) {
+        this.termBrowseBean = termBrowseBean;
     }
 
     /** Setter for testing — allows injecting a mock SearchBean without CDI. */
@@ -739,10 +746,10 @@ public class NavigationHelper implements Serializable {
         // Make sure browsing terms are reloaded, so that locale-specific sorting can be applied
         if (SEARCH_TERM_LIST_PAGE.equals(getCurrentPage())) {
             // Use injected field instead of per-call BeanUtils CDI lookup
-            if (browseBean != null) {
-                browseBean.resetTerms();
+            if (termBrowseBean != null) {
+                termBrowseBean.resetTerms();
                 try {
-                    browseBean.searchTerms();
+                    termBrowseBean.searchTerms();
                 } catch (IndexUnreachableException | PresentationException e) {
                     logger.error(e.getMessage(), e);
                 } catch (RedirectException e) {
@@ -1087,8 +1094,8 @@ public class NavigationHelper implements Serializable {
         if ((StringUtils.isBlank(subThemeDiscriminatorValue) && StringUtils.isNotBlank(previousSubThemeDiscriminatorValue)
                 || (StringUtils.isNotBlank(subThemeDiscriminatorValue) && !subThemeDiscriminatorValue.equals(previousSubThemeDiscriminatorValue)))) {
             // Use injected fields instead of per-call BeanUtils CDI lookup
-            if (browseBean != null) {
-                browseBean.resetAllLists();
+            if (collectionBrowseBean != null) {
+                collectionBrowseBean.resetAllLists();
             }
             if (calendarBean != null) {
                 try {

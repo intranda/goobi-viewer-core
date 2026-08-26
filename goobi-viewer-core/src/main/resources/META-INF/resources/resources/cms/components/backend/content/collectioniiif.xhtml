@@ -18,7 +18,8 @@
         <div class="admin__content-component-collection-list">
             <cmsComponent:collection contentItem="#{cc.attrs.contentItem}" />
 
-            <!-- GROUP BY SOLR FIELD -->
+            <!-- GROUP BY SOLR FIELD (not applicable to the flat set of dynamic collections) -->
+            <ui:fragment rendered="#{cc.attrs.contentItem.content.solrField ne 'DC_DYNAMIC'}">
             <div class="admin__content-component-input-group">
                 <div class="admin__content-component-input-label">
                     <label for="groupByFieldCollection">#{msg.cms_itemGroupByField}:</label>
@@ -44,6 +45,7 @@
                     </div>
                 </div>
             </div>
+            </ui:fragment>
         </div>
     </composite:implementation>
 </ui:composition>

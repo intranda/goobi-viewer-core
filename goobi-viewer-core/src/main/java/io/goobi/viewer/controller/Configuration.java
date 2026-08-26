@@ -2921,6 +2921,20 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * isSessionCookieSecure.
+     *
+     * If true, the session cookie is always marked 'Secure', which means browsers withhold it on plain http requests. Installations that must be
+     * reachable via http have to set this to false, because otherwise no session can be maintained over http at all. Applied to the servlet container
+     * by {@link io.goobi.viewer.ContextListener#contextInitialized(jakarta.servlet.ServletContextEvent)}.
+     *
+     * @should return correct value
+     * @return true if the session cookie should always carry the 'Secure' flag, false otherwise
+     */
+    public boolean isSessionCookieSecure() {
+        return getLocalBoolean("session.cookieSecure", true);
+    }
+
+    /**
      *
      * @return the list of configured security questions for user registration
      * @should return all configured elements
@@ -3744,6 +3758,34 @@ public class Configuration extends AbstractConfiguration {
         }
 
         return ret;
+    }
+
+    /**
+     * getQueryFacetFields.
+     *
+     * @return a list of configured query-type facet field names (e.g. the dynamic-collection facet)
+     * @should return all values
+     */
+    public List<String> getQueryFacetFields() {
+        List<String> ret = new ArrayList<>();
+        for (String field : getAllFacetFields()) {
+            String type = getFacetFieldType(field);
+            if (type != null && type.equalsIgnoreCase("query")) {
+                ret.add(field);
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * isQueryFacetField.
+     *
+     * @param facetField facet field name to test
+     * @return true if the given field is configured as a query-type facet
+     */
+    public boolean isQueryFacetField(String facetField) {
+        return getQueryFacetFields().contains(facetField);
     }
 
     /**

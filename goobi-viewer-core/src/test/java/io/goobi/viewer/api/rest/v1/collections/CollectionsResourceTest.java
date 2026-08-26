@@ -91,6 +91,52 @@ class CollectionsResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * The IIIF collection endpoint (which backs the client-side accordion collection widget) must return the database-defined dynamic collections as
+     * members for the DC_DYNAMIC pseudo field. Runs through the Grizzly container, i.e. without a FacesContext, so it also guards against the
+     * regression where building the entry link via PrettyContext threw "FacesContext argument was null".
+     *
+     * @see CollectionsResource#getAllCollections
+     * @verifies return dynamic collections for dc dynamic field
+     */
+    @Test
+    void getAllCollections_shouldReturnDynamicCollections() throws Exception {
+        io.goobi.viewer.model.cms.collections.DynamicCollection dc1 =
+                new io.goobi.viewer.model.cms.collections.DynamicCollection("crt_dyncol_1");
+        dc1.setSolrQuery("ISWORK:true");
+        dc1.addLabel(new io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation("en", "Dynamic REST one"));
+        io.goobi.viewer.model.cms.collections.DynamicCollection dc2 =
+                new io.goobi.viewer.model.cms.collections.DynamicCollection("crt_dyncol_2");
+        dc2.setSolrQuery("DOCSTRCT:monograph");
+        dc2.addLabel(new io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation("en", "Dynamic REST two"));
+
+        io.goobi.viewer.controller.DataManager.getInstance().getDao().addDynamicCollection(dc1);
+        io.goobi.viewer.controller.DataManager.getInstance().getDao().addDynamicCollection(dc2);
+        try {
+            long expectedCollectionCount = io.goobi.viewer.controller.DataManager.getInstance()
+                    .getDao()
+                    .getAllDynamicCollections()
+                    .stream()
+                    .filter(dc -> dc.getSolrQuery() != null && !dc.getSolrQuery().isBlank())
+                    .count();
+
+            String url = urls.path(COLLECTIONS).params("DC_DYNAMIC").build();
+            try (Response response = target(url)
+                    .request()
+                    .accept(MediaType.APPLICATION_JSON)
+                    .get()) {
+                String entity = response.readEntity(String.class);
+                assertEquals(200, response.getStatus(), "Should return status 200; answer; " + entity);
+                JSONObject collection = new JSONObject(entity);
+                assertEquals(expectedCollectionCount, collection.getJSONArray("members").length(),
+                        "Each dynamic collection should be one member");
+            }
+        } finally {
+            io.goobi.viewer.controller.DataManager.getInstance().getDao().deleteDynamicCollection(dc1);
+            io.goobi.viewer.controller.DataManager.getInstance().getDao().deleteDynamicCollection(dc2);
+        }
+    }
+
+    /**
      * Test method for {@link io.goobi.viewer.api.rest.v1.collections.CollectionsResource#getCollection(java.lang.String, java.lang.String)}.
      * @verifies return non null result
      * @see CollectionsResource#getCollection

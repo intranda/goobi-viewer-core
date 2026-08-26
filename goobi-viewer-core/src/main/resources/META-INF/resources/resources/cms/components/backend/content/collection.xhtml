@@ -58,7 +58,12 @@
                                     var="field"
                                     itemValue="#{field}"
                                     itemLabel="#{field}" />
-                                <f:ajax render="baseCollection ignoreCollectionGroup" />
+                                <!-- DYNAMIC COLLECTIONS: offered when at least one exists, or kept when already selected so the value stays valid -->
+                                <f:selectItem
+                                    itemValue="DC_DYNAMIC"
+                                    itemLabel="#{msg.DC_DYNAMIC_DD}"
+                                    rendered="#{cmsBean.isDynamicCollectionsAvailable() or cc.attrs.contentItem.content.solrField eq 'DC_DYNAMIC'}" />
+                                <f:ajax render="collectionHierarchyOptions" />
                                 <f:passThroughAttribute
                                     name="aria-label"
                                     value="#{msg[cc.attrs.contentItem.itemLabel]}" />
@@ -67,6 +72,15 @@
                     </h:panelGroup>
                 </div>
             </div>
+
+            <!-- HIERARCHY-ONLY OPTIONS: base collection and ignore collections only apply to a real Solr collection hierarchy, not to the flat set of
+                 dynamic collections. The outer panelGroup is always rendered so it remains a valid f:ajax target when switching the source field. -->
+            <h:panelGroup
+                id="collectionHierarchyOptions"
+                layout="block">
+                <h:panelGroup
+                    layout="block"
+                    rendered="#{cc.attrs.contentItem.content.solrField ne 'DC_DYNAMIC'}">
 
             <!-- BASE COLLECTION -->
             <div class="admin__content-component-input-group">
@@ -164,6 +178,8 @@
                     </h:panelGroup>
                 </div>
             </div>
+                </h:panelGroup>
+            </h:panelGroup>
 
             <!-- SORTING MODE -->
             <div class="admin__content-component-input-group">

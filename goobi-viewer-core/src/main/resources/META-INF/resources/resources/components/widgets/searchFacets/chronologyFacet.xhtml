@@ -15,11 +15,6 @@
             name="index"
             type="java.lang.Integer"
             required="true" />
-        <composite:attribute
-            name="headingLevel"
-            type="java.lang.String"
-            required="false"
-            default="2" />
     </composite:interface>
 
     <!-- COMPONENT CONTENT -->
@@ -35,8 +30,7 @@
                     <div class="widget-chronology-slider__item chronology-slider-label">
                         <h3
                             id="chronoSliderTitle_#{cc.attrs.index}"
-                            class="widget__title widget-chronology-slider__title"
-                            aria-level="#{cc.attrs.headingLevel}">
+                            class="widget__title widget-chronology-slider__title">
                             #{msg.widgetChronology_label}: #{msg[cc.attrs.field]}
                         </h3>
                     </div>

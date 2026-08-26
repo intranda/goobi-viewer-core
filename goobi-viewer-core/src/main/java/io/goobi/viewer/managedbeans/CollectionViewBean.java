@@ -43,6 +43,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.model.cms.collections.DynamicCollectionViews;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.content.PersistentCMSComponent;
 import io.goobi.viewer.model.cms.pages.content.types.CMSCollectionContent;
@@ -50,6 +51,7 @@ import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
+import io.goobi.viewer.solr.SolrConstants;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.model.SelectItem;
 import jakarta.inject.Named;
@@ -189,11 +191,15 @@ public class CollectionViewBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException
+     * @should build a flat collection view of all dynamic collections with query hit counts and db labels
      */
     public CollectionView initializeCollection(CMSCollectionContent content, String topVisibleElement)
             throws PresentationException, IllegalRequestException, IndexUnreachableException {
         if (StringUtils.isBlank(content.getSolrField())) {
             throw new PresentationException("No solr field provided to create collection view");
+        }
+        if (SolrConstants.DC_DYNAMIC.equals(content.getSolrField())) {
+            return initializeDynamicCollection(content);
         }
         CollectionView collection = initializeCollection(content);
         collection.setBaseElementName(content.getCollectionName());
@@ -202,6 +208,22 @@ public class CollectionViewBean implements Serializable {
         collection.setShowAllHierarchyLevels(content.isOpenExpanded());
         collection.populateCollectionList();
         return collection;
+    }
+
+    /**
+     * Creates a {@link CollectionView} whose entries are the database-defined {@link DynamicCollection}s. Each entry's record count is the hit count of
+     * the collection's stored Solr query (AND-combined with the component's own filter query and subtheme), and its label, description, thumbnail and
+     * link are taken from the {@link DynamicCollection} itself.
+     *
+     * @param content collection content item configured with the {@link SolrConstants#DC_DYNAMIC} pseudo field
+     * @return the populated, flat collection view of all dynamic collections
+     * @throws IndexUnreachableException if any.
+     * @throws IllegalRequestException if any.
+     */
+    private static CollectionView initializeDynamicCollection(CMSCollectionContent content)
+            throws IndexUnreachableException, IllegalRequestException {
+        String subtheme = Optional.ofNullable(content.getOwningPage()).map(CMSPage::getSubTheme).orElse("");
+        return DynamicCollectionViews.build(subtheme, content.getCombinedFilterQuery());
     }
 
     /**
@@ -318,8 +340,12 @@ public class CollectionViewBean implements Serializable {
         String contentId = getCollectionId(content);
         Map<String, CollectionResult> map = this.collectionStatistics.get(contentId);
         if (map == null) {
-            map = SearchHelper.findAllCollectionsFromField(content.getSolrField(), null, content.getCombinedFilterQuery(), true, true,
-                    DataManager.getInstance().getConfiguration().getCollectionSplittingChar(content.getSolrField()));
+            if (SolrConstants.DC_DYNAMIC.equals(content.getSolrField())) {
+                map = DynamicCollectionViews.buildMap(content.getCombinedFilterQuery());
+            } else {
+                map = SearchHelper.findAllCollectionsFromField(content.getSolrField(), null, content.getCombinedFilterQuery(), true, true,
+                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(content.getSolrField()));
+            }
             this.collectionStatistics.put(contentId, map);
         }
         return map;

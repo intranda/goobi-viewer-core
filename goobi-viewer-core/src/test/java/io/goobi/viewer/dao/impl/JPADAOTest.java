@@ -3830,4 +3830,43 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
                 DataManager.getInstance().getDao().getActiveUserTokensForUser(user);
         assertEquals(1, remaining.size());
     }
+
+    // Dynamic collections
+
+    /**
+     * @verifies persist, retrieve, update and delete a dynamic collection with its translations
+     */
+    @Test
+    void dynamicCollection_shouldPersistRetrieveUpdateAndDelete() throws DAOException {
+        io.goobi.viewer.model.cms.collections.DynamicCollection collection =
+                new io.goobi.viewer.model.cms.collections.DynamicCollection("test_dyncol");
+        collection.setSolrQuery("DOCSTRCT:monograph");
+        collection.setSortOrder(3);
+        collection.addLabel(new io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation("en", "Test collection"));
+        collection.addDescription(new io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation("en", "A description"));
+
+        assertTrue(DataManager.getInstance().getDao().addDynamicCollection(collection));
+        assertNotNull(collection.getId());
+
+        io.goobi.viewer.model.cms.collections.DynamicCollection byName =
+                DataManager.getInstance().getDao().getDynamicCollection("test_dyncol");
+        assertNotNull(byName);
+        assertEquals("DOCSTRCT:monograph", byName.getSolrQuery());
+        assertEquals(3, byName.getSortOrder());
+        assertEquals("Test collection", byName.getLabel(java.util.Locale.ENGLISH));
+        assertEquals("A description", byName.getDescription("en"));
+
+        io.goobi.viewer.model.cms.collections.DynamicCollection byId =
+                DataManager.getInstance().getDao().getDynamicCollection(byName.getId());
+        assertNotNull(byId);
+
+        byName.setSolrQuery("DOCSTRCT:manuscript");
+        assertTrue(DataManager.getInstance().getDao().updateDynamicCollection(byName));
+        assertEquals("DOCSTRCT:manuscript", DataManager.getInstance().getDao().getDynamicCollection("test_dyncol").getSolrQuery());
+
+        int countBefore = DataManager.getInstance().getDao().getAllDynamicCollections().size();
+        assertTrue(DataManager.getInstance().getDao().deleteDynamicCollection(byName));
+        assertNull(DataManager.getInstance().getDao().getDynamicCollection("test_dyncol"));
+        assertEquals(countBefore - 1, DataManager.getInstance().getDao().getAllDynamicCollections().size());
+    }
 }

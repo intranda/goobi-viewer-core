@@ -1084,6 +1084,22 @@ public class CmsBean implements Serializable {
     }
 
     /**
+     * Whether at least one database-defined dynamic collection exists. Used to conditionally offer the {@link SolrConstants#DC_DYNAMIC} pseudo field as
+     * a source in the collection-listing component field dropdown. This is checked live against the DAO (not cached) so the option appears or
+     * disappears as soon as the set of dynamic collections changes, without requiring an application restart.
+     *
+     * @return true if at least one dynamic collection exists; false otherwise
+     */
+    public boolean isDynamicCollectionsAvailable() {
+        try {
+            return !DataManager.getInstance().getDao().getAllDynamicCollections().isEmpty();
+        } catch (DAOException e) {
+            logger.error("Error checking for dynamic collections: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Getter for the field <code>staticPages</code>.
      *
      * @return a list of all CMS static pages mapping viewer page types to CMS pages

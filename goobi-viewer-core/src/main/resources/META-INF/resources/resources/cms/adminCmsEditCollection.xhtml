@@ -196,14 +196,22 @@
                                     </h:panelGroup>
                                 </div>
 
-                                <div class="admin__final-actions mb-0">
+                                <!-- FLOATING SAVE BAR -->
+                                <div class="admin__content-component-overlay-bar">
                                     <!-- CANCEL -->
                                     <h:commandLink
                                         id="cmsEditCollectionBack"
-                                        styleClass="btn"
+                                        styleClass="btn btn--cancel"
                                         value="#{msg.cancel}"
                                         immediate="true"
                                         action="#{cmsCollectionsBean.resetCurrentCollection}" />
+                                    <!-- PREVIEW -->
+                                    <h:outputLink
+                                        styleClass="btn btn--default"
+                                        target="_blank"
+                                        value="#{cmsCollectionsBean.getSearchUrl(cmsCollectionsBean.currentCollection)}">
+                                        <h:outputText value="#{msg.admin__cms_collections_preview}" />
+                                    </h:outputLink>
                                     <!-- SAVE -->
                                     <h:commandButton
                                         disabled="#{!cmsCollectionsBean.currentCollectionValid}"
@@ -315,19 +323,6 @@
                                     <!-- 				    		<f:param value="#{cmsCollectionsBean.getSearchUrl(cmsCollectionsBean.currentCollection)}"/> -->
                                     <!-- 				    	</h:outputFormat> -->
                                     <!-- 					</div> -->
-
-                                    <!-- SHOW ALL RECORDS OF COLLECTION IN SEARCH HIT LIST -->
-                                    <div class="admin__form-help-text in mb-3 mt-4">#{msg.admin__cms_collections__link_search_results}</div>
-                                    <div class="row">
-                                        <div class="col-12 d-flex justify-content-center">
-                                            <h:outputLink
-                                                styleClass="btn btn--default"
-                                                target="_blank"
-                                                value="#{cmsCollectionsBean.getSearchUrl(cmsCollectionsBean.currentCollection)}">
-                                                <h:outputText value="#{msg.admin__cms_collections_preview}" />
-                                            </h:outputLink>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

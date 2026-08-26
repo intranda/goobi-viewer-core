@@ -588,6 +588,15 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#isSessionCookieSecure()
+     * @verifies return correct value
+     */
+    @Test
+    void isSessionCookieSecure_shouldReturnCorrectValue() {
+        assertFalse(DataManager.getInstance().getConfiguration().isSessionCookieSecure());
+    }
+
+    /**
      * @see Configuration#getSecurityQuestions()
      * @verifies return all configured elements
      */
@@ -2094,7 +2103,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAllFacetFields_shouldReturnCorrectOrder() {
         List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        assertEquals(7, result.size());
+        assertEquals(8, result.size());
         assertEquals("DC", result.get(0));
         assertEquals("YEAR", result.get(1));
         assertEquals("MD_CREATOR", result.get(2));
@@ -2102,6 +2111,7 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("WKT_COORDS", result.get(4));
         assertEquals("MD_PERSON", result.get(5));
         assertEquals("BOOL_HASIMAGES", result.get(6));
+        assertEquals("DC_DYNAMIC", result.get(7));
     }
 
     /**
@@ -2124,7 +2134,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getFacetFieldsForTemplate_shouldFallBackToDefaultTemplate() {
         List<String> result = DataManager.getInstance().getConfiguration().getFacetFieldsForTemplate("doesNotExist");
-        assertEquals(7, result.size());
+        assertEquals(8, result.size());
         assertEquals("DC", result.get(0));
     }
 
@@ -2177,6 +2187,19 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getRangeFacetFields_shouldReturnAllValues() {
         assertEquals(1, DataManager.getInstance().getConfiguration().getRangeFacetFields().size());
+    }
+
+    /**
+     * @see Configuration#getQueryFacetFields()
+     * @see Configuration#isQueryFacetField(String)
+     * @verifies return configured query facet fields
+     */
+    @Test
+    void getQueryFacetFields_shouldReturnConfiguredQueryFacetFields() {
+        assertEquals(1, DataManager.getInstance().getConfiguration().getQueryFacetFields().size());
+        assertEquals("DC_DYNAMIC", DataManager.getInstance().getConfiguration().getQueryFacetFields().get(0));
+        assertTrue(DataManager.getInstance().getConfiguration().isQueryFacetField("DC_DYNAMIC"));
+        assertFalse(DataManager.getInstance().getConfiguration().isQueryFacetField("DC"));
     }
 
     /**

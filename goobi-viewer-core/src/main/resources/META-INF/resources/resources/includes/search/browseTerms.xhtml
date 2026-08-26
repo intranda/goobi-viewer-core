@@ -10,12 +10,12 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <ui:param
         name="termList"
-        value="#{termList != null ? termList : browseBean.browseTermListEscaped}" />
+        value="#{termList != null ? termList : termBrowseBean.browseTermListEscaped}" />
     <ui:param
         name="baseUrl"
-        value="#{baseUrl != null ? baseUrl : navigationHelper.termUrl.concat('/').concat(browseBean.browsingMenuField).concat('/').concat(browseBean.filterQuery).concat('/')}" />
+        value="#{baseUrl != null ? baseUrl : navigationHelper.termUrl.concat('/').concat(termBrowseBean.browsingMenuField).concat('/').concat(termBrowseBean.filterQuery).concat('/')}" />
 
-    <ui:fragment rendered="#{!browseBean.browsingMenuFieldTranslated}">
+    <ui:fragment rendered="#{!termBrowseBean.browsingMenuFieldTranslated}">
         <viewerComponent:alphabeticPaginator baseUrl="#{baseUrl}" />
     </ui:fragment>
 
@@ -32,12 +32,12 @@
                 <!-- newSearch5 pattern link -->
                 <li>
                     <h:outputLink
-                        value="#{navigationHelper.termUrl}/-/#{browseBean.getBrowsingMenuFieldForLanguage(navigationHelper.localeString)}%3A%22#{term}%22/1/-/#{browseBean.filterQuery}/#{navigationHelper.subThemeQueryParam}"
-                        title="#{browseBean.browseTermList[status.count-1]}">
+                        value="#{navigationHelper.termUrl}/-/#{termBrowseBean.getBrowsingMenuFieldForLanguage(navigationHelper.localeString)}%3A%22#{term}%22/1/-/#{termBrowseBean.filterQuery}/#{navigationHelper.subThemeQueryParam}"
+                        title="#{termBrowseBean.browseTermList[status.count-1]}">
                         <h:outputText
-                            value="#{browseBean.browseTermList[status.count-1]}"
+                            value="#{termBrowseBean.browseTermList[status.count-1]}"
                             escape="true" />
-                        <span>(#{browseBean.browseTermHitCountList[status.count-1]})</span>
+                        <span>(#{termBrowseBean.browseTermHitCountList[status.count-1]})</span>
                     </h:outputLink>
                 </li>
             </c:forEach>
@@ -47,7 +47,7 @@
     <div class="clearfix" />
 
     <viewerComponent:simplePaginator
-        itemCount="#{browseBean.lastPage}"
-        itemActive="#{browseBean.currentPage}"
-        urlPrefix="#{baseUrl}#{browseBean.currentStringFilter}/" />
+        itemCount="#{termBrowseBean.lastPage}"
+        itemActive="#{termBrowseBean.currentPage}"
+        urlPrefix="#{baseUrl}#{termBrowseBean.currentStringFilter}/" />
 </ui:composition>

@@ -18,8 +18,8 @@
         <div class="admin__content-component-collection-list">
             <cmsComponent:collection contentItem="#{cc.attrs.contentItem}" />
 
-            <!-- GROUP BY SOLR FIELD -->
-            <ui:fragment rendered="#{cc.attrs.contentItem.owningComponent.getAttributeValue('allowGrouping')}">
+            <!-- GROUP BY SOLR FIELD (not applicable to the flat set of dynamic collections) -->
+            <ui:fragment rendered="#{cc.attrs.contentItem.owningComponent.getAttributeValue('allowGrouping') and cc.attrs.contentItem.content.solrField ne 'DC_DYNAMIC'}">
                 <div class="admin__content-component-input-group">
                     <div class="admin__content-component-input-label">
                         <label for="groupByFieldCollection">#{msg.cms_itemGroupByField}:</label>
@@ -47,7 +47,8 @@
                 </div>
             </ui:fragment>
 
-            <!-- COLLECTION EXPANDED -->
+            <!-- COLLECTION EXPANDED (not applicable to the flat set of dynamic collections) -->
+            <ui:fragment rendered="#{cc.attrs.contentItem.content.solrField ne 'DC_DYNAMIC'}">
             <div class="admin__content-component-input-group">
                 <!-- LABEL -->
                 <div class="admin__content-component-input-label">
@@ -92,6 +93,7 @@
                     </h:panelGroup>
                 </div>
             </div>
+            </ui:fragment>
         </div>
     </composite:implementation>
 </ui:composition>
