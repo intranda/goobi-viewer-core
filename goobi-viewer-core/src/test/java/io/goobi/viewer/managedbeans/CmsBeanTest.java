@@ -341,4 +341,18 @@ class CmsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertFalse(bean.isCmsWorkPageContext());
     }
 
+    /**
+     * @see CmsBean#getCurrentPageUrl()
+     * @verifies return error view id when no page is set
+     */
+    @Test
+    void getCurrentPageUrl_shouldReturnErrorViewIdWhenNoPageIsSet() {
+        // A blank return value must never leave this method: PrettyFaces resolves a blank dynaview id
+        // via PrettyConfig.isMappingId(), which matches the first url-mapping without an id attribute
+        // and then dispatches to a rebuilt URL of that unrelated mapping (in the reference theme
+        // "/id/-/"), where Mojarra fails to find a facelet.
+        CmsBean bean = new CmsBean(templateManager, navigationHelper);
+        Assertions.assertEquals("errorHttp404.xhtml", bean.getCurrentPageUrl());
+    }
+
 }

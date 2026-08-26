@@ -50,6 +50,7 @@ import io.goobi.viewer.managedbeans.SocketBean;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.websockets.UserEndpoint;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
@@ -76,6 +77,7 @@ public class ContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         logger.info("Launching {}", () -> Version.asString());
         DataManager.getInstance();
+        applySessionCookieSecureFlag(sce.getServletContext());
         ViewerResourceBundle.init(sce.getServletContext());
         logger.trace("Temp folder: {}", () -> DataManager.getInstance().getConfiguration().getTempFolder());
         //        createResources();
@@ -117,6 +119,32 @@ public class ContextListener implements ServletContextListener {
 
         // Create local message files
         ViewerResourceBundle.createLocalMessageFiles();
+    }
+
+    /**
+     * Applies <session><cookieSecure> from config_viewer.xml to the session cookie. The flag is not declared in web-fragment.xml because a hardcoded
+     * 'true' makes the viewer unusable over plain http: the browser withholds a Secure cookie on http requests, so no session survives a single
+     * request. Note that 'false' does not necessarily mean the flag is never set - the servlet container adds it for requests that are themselves
+     * secure (in Tomcat that requires a RemoteIpValve with protocolHeader="X-Forwarded-Proto" when running behind a TLS-terminating proxy).
+     *
+     * Session cookie settings may only be modified while the context is still starting up, which is the case inside contextInitialized().
+     *
+     * @param servletContext
+     */
+    private static void applySessionCookieSecureFlag(ServletContext servletContext) {
+        boolean secure = DataManager.getInstance().getConfiguration().isSessionCookieSecure();
+        try {
+            servletContext.getSessionCookieConfig().setSecure(secure);
+        } catch (IllegalStateException | UnsupportedOperationException e) {
+            logger.error("Could not set the 'Secure' flag on the session cookie: {}", e);
+            return;
+        }
+        if (secure) {
+            logger.info("Session cookie is marked 'Secure'. Sessions will not work via plain http.");
+        } else {
+            logger.warn("Session cookie is NOT marked 'Secure' (session/cookieSecure=false in config_viewer.xml). "
+                    + "This exposes the session cookie on http requests and should only be used for installations that require http access.");
+        }
     }
 
     /** {@inheritDoc} */

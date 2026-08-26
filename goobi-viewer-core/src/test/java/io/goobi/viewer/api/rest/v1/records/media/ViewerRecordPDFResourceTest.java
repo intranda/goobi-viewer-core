@@ -39,9 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
-import jakarta.ws.rs.BadRequestException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.api.rest.v1.AbstractRestApiTest;
 import io.goobi.viewer.controller.Configuration;
@@ -50,8 +48,11 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.exceptions.RecordNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 
 /**
@@ -59,7 +60,6 @@ import jakarta.ws.rs.container.ContainerRequestContext;
  *
  */
 class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
-    private static final String PI_ACCESS_RESTRICTED = "557335825";
     private static final String PI = "02008031921530";
 
     @BeforeAll
@@ -101,10 +101,14 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
     }
 
     /**
+     * @throws RecordNotFoundException
+     * @throws WebApplicationException
      * @verifies return non empty PDF stream with correct content disposition header
      */
     @Test
-    void getPdf_shouldReturnNonEmptyPdfStreamWithCorrectContentDispositionHeader() throws PresentationException, IndexUnreachableException, ContentLibException, IOException {
+    void getPdf_shouldReturnNonEmptyPdfStreamWithCorrectContentDispositionHeader()
+            throws PresentationException, IndexUnreachableException, ContentLibException, IOException, WebApplicationException,
+            RecordNotFoundException {
         String url = urls.path(RECORDS_RECORD, RECORDS_PDF).params(PI).build();
         Path repository = Path.of(DataFileTools.getDataRepositoryPathForRecord(PI));
         Map<String, String[]> requestParams = new HashMap<>();
@@ -125,8 +129,7 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
         HttpServletResponse response = Mockito.spy(HttpServletResponse.class);
         ContainerRequestContext context = Mockito.mock(ContainerRequestContext.class);
 
-        ContentServerCacheManager cacheManager = ContentServerCacheManager.noCache();
-        ViewerRecordPDFResource resource = new ViewerRecordPDFResource(context, request, response, urls, PI, cacheManager);
+        ViewerRecordPDFResource resource = new ViewerRecordPDFResource(context, request, response, urls, PI, false);
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             resource.getPdf().write(baos);
@@ -134,6 +137,7 @@ class ViewerRecordPDFResourceTest extends AbstractRestApiTest {
         }
         String expectedContentDisposition = "attachment; filename=\"" + PI + ".pdf" + "\"";
         Mockito.verify(response).addHeader(NetTools.HTTP_HEADER_CONTENT_DISPOSITION, expectedContentDisposition);
+
     }
 
 }

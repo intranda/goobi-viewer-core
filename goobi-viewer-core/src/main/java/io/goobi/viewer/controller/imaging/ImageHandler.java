@@ -207,6 +207,13 @@ public class ImageHandler {
                 .getConfiguration()
                 .getImageViewZoomScales(viewAttributes)
                 .stream()
+                .map(s -> {
+                    if ("max".equalsIgnoreCase(s)) {
+                        return Integer.valueOf(width).toString();
+                    } else {
+                        return s;
+                    }
+                })
                 .filter(s -> s.matches("\\d{1,9}"))
                 .map(Integer::parseInt)
                 .toList();

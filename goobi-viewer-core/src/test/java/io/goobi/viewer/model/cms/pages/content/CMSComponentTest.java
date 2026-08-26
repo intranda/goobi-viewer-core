@@ -23,15 +23,33 @@ package io.goobi.viewer.model.cms.pages.content;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.jsf.JsfComponent;
+import jakarta.faces.application.Application;
+import jakarta.faces.application.ResourceHandler;
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.html.HtmlPanelGroup;
+import jakarta.faces.context.FacesContext;
 
 class CMSComponentTest {
+
+    /** Name of the thread that is held inside {@code Application.createComponent()} by the mocked context. */
+    private static final String BLOCKING_THREAD_NAME = "blocking-builder";
 
     /**
      * Builds a bare component with the given template filename and no content items, avoiding any dependency
@@ -84,5 +102,95 @@ class CMSComponentTest {
         CMSComponent component1 = persistedComponent("headerslider", 10L, 2);
         CMSComponent component2 = persistedComponent("headerslider", 11L, 2);
         assertNotEquals(component1.getUniqueComponentIdSuffix(), component2.getUniqueComponentIdSuffix());
+    }
+
+    /**
+     * @see CMSComponent#getUiComponent()
+     * @verifies return the same instance to concurrent callers
+     */
+    @Test
+    void getUiComponent_shouldReturnTheSameInstanceToConcurrentCallers() throws Exception {
+        // Reproduces the production bug: two requests of the same HTTP session render the same CMS page and
+        // therefore call getUiComponent() on the same instance. The interleaving is forced by blocking the
+        // first thread inside Application.createComponent(), so both threads pass the "not yet built" check.
+        // Previously each thread stored its own panel group in the field and then used the field as the build
+        // target, so the threads saw different components and both appended their composite child to whichever
+        // panel group had been written last - resulting in two children with an identical JSF id.
+        CMSComponent component = persistedComponent("headerslider", 176L, 2);
+
+        CountDownLatch firstThreadIsBuilding = new CountDownLatch(1);
+        CountDownLatch secondThreadFinished = new CountDownLatch(1);
+        FacesContext context = mockFacesContext(firstThreadIsBuilding, secondThreadFinished);
+
+        AtomicReference<UIComponent> firstResult = new AtomicReference<>();
+        AtomicReference<UIComponent> secondResult = new AtomicReference<>();
+        AtomicReference<Throwable> error = new AtomicReference<>();
+
+        Thread first = new Thread(() -> firstResult.set(callGetUiComponent(component, context, error)), BLOCKING_THREAD_NAME);
+        first.start();
+        assertTrue(firstThreadIsBuilding.await(10, TimeUnit.SECONDS), "First thread did not reach the build step");
+
+        Thread second = new Thread(() -> secondResult.set(callGetUiComponent(component, context, error)), "second-builder");
+        second.start();
+        second.join(10_000);
+        secondThreadFinished.countDown();
+        first.join(10_000);
+
+        assertNull(error.get(), () -> "Building the component failed: " + error.get());
+        assertNotNull(secondResult.get());
+        assertSame(secondResult.get(), firstResult.get());
+        assertSame(secondResult.get(), component.getUiComponent());
+    }
+
+    /**
+     * Calls {@link CMSComponent#getUiComponent()} with the given context bound to the calling thread, recording
+     * a failure instead of throwing, because a {@link Runnable} cannot propagate checked exceptions.
+     */
+    private static UIComponent callGetUiComponent(CMSComponent component, FacesContext context, AtomicReference<Throwable> error) {
+        CurrentFacesContext.bind(context);
+        try {
+            return component.getUiComponent();
+        } catch (PresentationException e) {
+            error.compareAndSet(null, e);
+            return null;
+        } finally {
+            CurrentFacesContext.bind(null);
+        }
+    }
+
+    /**
+     * Builds a Faces context that hands out a fresh {@link HtmlPanelGroup} per call and resolves no composite
+     * component resource, so that {@link CMSComponent#getUiComponent()} runs without a Facelet environment. The
+     * thread named {@link #BLOCKING_THREAD_NAME} is parked inside {@code createComponent()} until
+     * {@code secondThreadFinished} is counted down, which forces the interleaving described in the test.
+     */
+    private static FacesContext mockFacesContext(CountDownLatch firstThreadIsBuilding, CountDownLatch secondThreadFinished) {
+        FacesContext context = Mockito.mock(FacesContext.class);
+        Application application = Mockito.mock(Application.class);
+        ResourceHandler resourceHandler = Mockito.mock(ResourceHandler.class);
+        Mockito.when(context.getApplication()).thenReturn(application);
+        Mockito.when(context.getAttributes()).thenReturn(new HashMap<>());
+        Mockito.when(application.getResourceHandler()).thenReturn(resourceHandler);
+        Mockito.when(resourceHandler.createResource(Mockito.anyString(), Mockito.anyString())).thenReturn(null);
+        Mockito.when(application.createComponent(Mockito.anyString())).thenAnswer(invocation -> {
+            if (BLOCKING_THREAD_NAME.equals(Thread.currentThread().getName())) {
+                firstThreadIsBuilding.countDown();
+                secondThreadFinished.await(10, TimeUnit.SECONDS);
+            }
+            return new HtmlPanelGroup();
+        });
+        return context;
+    }
+
+    /**
+     * Gives the test access to {@link FacesContext#setCurrentInstance(FacesContext)}, which is protected and can
+     * only be called from a subclass. Each test thread needs its own binding because the current instance is
+     * held in a thread local.
+     */
+    private abstract static class CurrentFacesContext extends FacesContext {
+
+        static void bind(FacesContext context) {
+            setCurrentInstance(context);
+        }
     }
 }

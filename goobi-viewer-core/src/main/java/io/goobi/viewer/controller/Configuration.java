@@ -2839,6 +2839,20 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * isSessionCookieSecure.
+     *
+     * If true, the session cookie is always marked 'Secure', which means browsers withhold it on plain http requests. Installations that must be
+     * reachable via http have to set this to false, because otherwise no session can be maintained over http at all. Applied to the servlet container
+     * by {@link io.goobi.viewer.ContextListener#contextInitialized(jakarta.servlet.ServletContextEvent)}.
+     *
+     * @should return correct value
+     * @return true if the session cookie should always carry the 'Secure' flag, false otherwise
+     */
+    public boolean isSessionCookieSecure() {
+        return getLocalBoolean("session.cookieSecure", true);
+    }
+
+    /**
      *
      * @return the list of configured security questions for user registration
      * @should return all configured elements

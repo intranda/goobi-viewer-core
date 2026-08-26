@@ -36,32 +36,34 @@
                 <h1 class="view-sitemap__heading">#{msg.sitemap}</h1>
 
                 <!-- MAIN NAVIGATION -->
-                <nav
-                    class="view-sitemap__nav"
-                    aria-label="#{msg.label__sitemap__main_navigation}">
+                <!-- RGAA 9.2: no <nav> in main content, landmark navs are reserved for header/footer -->
+                <section class="view-sitemap__nav">
                     <h2 class="view-sitemap__nav-heading">#{msg.label__sitemap__main_navigation}</h2>
                     <ui:include src="/resources/components/sitemapNavTree.xhtml">
                         <ui:param
                             name="items"
                             value="#{cmsBean.navigationMenuItems}" />
                     </ui:include>
-                </nav>
+                </section>
 
                 <!-- LEGAL / CONTACT PAGES (mirrors the footer link set defined via ThemeConfiguration) -->
-                <nav
-                    class="view-sitemap__nav"
-                    aria-label="#{msg.label__sitemap__additional_pages}">
+                <!-- RGAA 9.2: no <nav> in main content, landmark navs are reserved for header/footer -->
+                <section class="view-sitemap__nav">
                     <h2 class="view-sitemap__nav-heading">#{msg.label__sitemap__additional_pages}</h2>
                     <ul class="view-sitemap__list">
                         <li class="view-sitemap__list-item">
                             <a
                                 class="view-sitemap__list-link"
-                                href="#{adminThemesBean.getFooterUrl('legal', request.contextPath.concat('/imprint'))}">#{msg.imprint}</a>
+                                href="#{adminThemesBean.getFooterUrl('legal', request.contextPath.concat('/imprint'))}">
+                                #{msg.imprint}
+                            </a>
                         </li>
                         <li class="view-sitemap__list-item">
                             <a
                                 class="view-sitemap__list-link"
-                                href="#{adminThemesBean.getFooterUrl('privacy', request.contextPath.concat('/privacy'))}">#{msg.privacy}</a>
+                                href="#{adminThemesBean.getFooterUrl('privacy', request.contextPath.concat('/privacy'))}">
+                                #{msg.privacy}
+                            </a>
                         </li>
                         <li class="view-sitemap__list-item">
                             <h:panelGroup rendered="#{adminThemesBean.hasFooterUrl('contact')}">
@@ -69,18 +71,22 @@
                                     class="view-sitemap__list-link"
                                     target="_blank"
                                     rel="noopener"
-                                    href="#{adminThemesBean.getFooterUrl('contact', '')}">#{msg.contact}</a>
+                                    href="#{adminThemesBean.getFooterUrl('contact', '')}">
+                                    #{msg.contact}
+                                </a>
                             </h:panelGroup>
                             <h:panelGroup rendered="#{!adminThemesBean.hasFooterUrl('contact')}">
                                 <button
                                     type="button"
                                     class="btn btn--link view-sitemap__list-link"
                                     data-toggle="modal"
-                                    data-target="#feedbackModal">#{msg.contact}</button>
+                                    data-target="#feedbackModal">
+                                    #{msg.contact}
+                                </button>
                             </h:panelGroup>
                         </li>
                     </ul>
-                </nav>
+                </section>
             </div>
         </f:view>
     </ui:define>

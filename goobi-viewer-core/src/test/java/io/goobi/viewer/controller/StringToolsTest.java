@@ -480,6 +480,17 @@ class StringToolsTest {
     }
 
     /**
+     * @see StringTools#sanitizeFilenameToAscii(String)
+     * @verifies replace double quotes and backslashes with hyphen
+     */
+    @Test
+    void sanitizeFilenameToAscii_shouldReplaceDoubleQuotesAndBackslashesWithHyphen() {
+        // A double quote would break out of a quoted filename="..." header parameter
+        assertEquals("foo-bar.pdf", StringTools.sanitizeFilenameToAscii("foo\"bar.pdf"));
+        assertEquals("foo-bar.pdf", StringTools.sanitizeFilenameToAscii("foo\\bar.pdf"));
+    }
+
+    /**
      * @see StringTools#parseIntRange(String)
      * @verifies return range from 0 to n for integer input
      */

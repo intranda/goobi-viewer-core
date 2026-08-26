@@ -86,9 +86,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
 /**
- * JAX-RS resource that serves 3D object files (scene, auxiliary files, and scene-info JSON) for a given record.
- * Endpoints are bound under the {@code RECORDS_FILES_3D} path and enforce access-condition checks; scene metadata
- * can also be written back via PUT requests by authenticated admins.
+ * JAX-RS resource that serves 3D object files (scene, auxiliary files, and scene-info JSON) for a given record. Endpoints are bound under the
+ * {@code RECORDS_FILES_3D} path and enforce access-condition checks; scene metadata can also be written back via PUT requests by authenticated
+ * admins.
  *
  * @author Florian Alpers
  */
@@ -148,14 +148,17 @@ public class ObjectResource {
     public ObjectInfo getInfo(@Context HttpServletRequest request, @Context HttpServletResponse response)
             throws PresentationException, IndexUnreachableException {
 
-        String objectURI = request.getRequestURL().toString().replaceAll("/(info.json)?$", "");
         //        String baseURI = objectURI.replace(filename, "");
         String baseFilename = FilenameUtils.getBaseName(filename);
         Path mediaDirectory = DataFileTools.getMediaFolder(pi);
 
         try {
-            List<URI> resourceURIs = getResources(mediaDirectory.toString(), baseFilename, objectURI);
-            ObjectInfo info = new ObjectInfo(objectURI);
+            URI objectURI = new URI(request.getRequestURL().toString().replaceAll("/(info.json)?$", ""));
+            URI relativeURI = URI.create(objectURI.getPath());
+            List<URI> resourceURIs = getResources(mediaDirectory.toString(), baseFilename, objectURI.toString()).stream()
+                    .map(uri -> URI.create(uri.getPath()))
+                    .toList();
+            ObjectInfo info = new ObjectInfo(relativeURI);
             info.setResources(resourceURIs);
 
             //calculate sizes
@@ -204,7 +207,8 @@ public class ObjectResource {
             Path modelFile = mediaDirectory.resolve(FileTools.sanitizeFileName(this.filename));
             if (Files.exists(modelFile)) {
                 URI modelUri = this.urls.path(RECORDS_FILES_3D).params(this.pi, modelFile.getFileName().toString()).buildURI();
-                return Response.ok(new VoyagerSceneBuilder(baseFilename).addModel(modelUri, modelFile).build()).build();
+                String path = modelUri.getPath();
+                return Response.ok(new VoyagerSceneBuilder(baseFilename).addModel(URI.create(path), modelFile).build()).build();
             }
 
         } catch (PresentationException | IndexUnreachableException e) {
