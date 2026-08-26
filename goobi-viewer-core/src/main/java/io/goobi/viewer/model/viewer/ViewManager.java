@@ -378,16 +378,42 @@ public class ViewManager implements Serializable {
             anchorPi = groupEntry.getValue();
         }
 
-        // Calendar applicability is determined by the anchor's docstruct (e.g. "Newspaper"),
-        // not the issue/volume's own docstruct ("NewspaperIssue" etc.). For anchors the top
-        // struct is itself the anchor; for issues/volumes anchorStructElement is populated by
-        // ViewManager's constructor when topDocument.isAnchorChild() is true.
-        String calendarDocStructType = anchorStructElement != null
-                ? anchorStructElement.getDocStructType()
-                : topStructElement.getDocStructType();
         return new CalendarView(pi, anchorPi, anchorField,
                 topStructElement.isAnchor() ? null : topStructElement.getMetadataValue(SolrConstants.CALENDAR_YEAR),
-                calendarDocStructType);
+                resolveCalendarDocStructType(topStructElement, anchorStructElement));
+    }
+
+    /**
+     * Returns the docstruct type that governs calendar applicability for the given record.
+     *
+     * <p>Calendar applicability follows the parent record's docstruct (e.g. "Newspaper"), not the issue's or volume's own docstruct
+     * ("NewspaperIssue" etc.). Anchor children carry that parent in {@code anchorStructElement}; records tied to their parent by a
+     * {@code GROUPID_*} field alone have no anchor struct element, so the group record is looked up in the index instead. Anchors and group
+     * records are themselves the parent and use their own docstruct.
+     *
+     * @param topStructElement top struct element of the record; may not be null
+     * @param anchorStructElement anchor struct element, or null if the record is not an anchor child
+     * @return docstruct type to check against the calendar whitelist; may be null
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @should return anchor docstruct type when anchor struct element is given
+     * @should return group docstruct type for group members without anchor
+     * @should return own docstruct type if group record cannot be resolved
+     * @should return own docstruct type for group records themselves
+     */
+    static String resolveCalendarDocStructType(StructElement topStructElement, StructElement anchorStructElement)
+            throws IndexUnreachableException {
+        if (anchorStructElement != null) {
+            return anchorStructElement.getDocStructType();
+        }
+        if (!topStructElement.isAnchor() && !topStructElement.isGroup() && topStructElement.isGroupMember()) {
+            String groupPi = topStructElement.getGroupMemberships().values().iterator().next();
+            String groupDocStructType = topStructElement.getGroupDocStructType(groupPi);
+            if (groupDocStructType != null) {
+                return groupDocStructType;
+            }
+        }
+
+        return topStructElement.getDocStructType();
     }
 
     /**

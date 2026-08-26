@@ -558,6 +558,35 @@ public class StructElement extends StructElementStub implements Comparable<Struc
     }
 
     /**
+     * Returns the docstruct type of the group record with the given identifier.
+     *
+     * <p>Group members carry their group identifier in a {@code GROUPID_*} field but not the group's docstruct, so the group record has to be
+     * looked up in the index.
+     *
+     * @param groupIdentifier Group record identifier
+     * @return DOCSTRCT value of the group record; null if the record was not found or is unreachable
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public String getGroupDocStructType(String groupIdentifier) throws IndexUnreachableException {
+        if (groupIdentifier == null) {
+            throw new IllegalArgumentException("groupIdentifier may not be null");
+        }
+
+        try {
+            SolrDocument doc = DataManager.getInstance()
+                    .getSearchIndex()
+                    .getFirstDoc(SolrConstants.PI + ":\"" + groupIdentifier + "\"", Collections.singletonList(SolrConstants.DOCSTRCT));
+            if (doc != null) {
+                return (String) doc.getFieldValue(SolrConstants.DOCSTRCT);
+            }
+        } catch (PresentationException e) {
+            logger.debug(StringConstants.LOG_PRESENTATION_EXCEPTION_THROWN_HERE, e.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
      * isExists.
      *
      * @return true if this struct element exists in the Solr index, false otherwise
