@@ -40,9 +40,22 @@
                     <div class="admin__content-inner-content">
                         <div class="admin__content-wrapper">
                             <div class="admin__content-main">
+                                <!-- NO ARCHIVE SELECTED -->
+                                <h:panelGroup
+                                    layout="block"
+                                    rendered="#{empty cmsArchivesBean.selectedArchiveWrapper.archiveConfig}">
+                                    <p class="admin__info-text">#{msg.admin__cms_archives_not_selected}</p>
+                                    <a
+                                        class="btn btn--default"
+                                        href="#{navigationHelper.getPageUrl('adminCmsArchives')}">
+                                        #{msg.admin__cms_archives}
+                                    </a>
+                                </h:panelGroup>
+
                                 <h:form
                                     id="cmsEditArchiveConfigForm"
-                                    prependId="false">
+                                    prependId="false"
+                                    rendered="#{not empty cmsArchivesBean.selectedArchiveWrapper.archiveConfig}">
                                     <!-- TITLE -->
                                     <h2 class="admin__cms-archive-edit__section-title">#{msg.title}</h2>
                                     <div class="admin__cms-archive-edit__translation-box">
