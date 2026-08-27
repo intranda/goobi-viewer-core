@@ -1,6 +1,10 @@
 def mavenDockerImage    = 'nexus.intranda.com:4443/goobi-viewer-testing-index:latest'
 def mavenDockerArgs     = '-v $HOME/.m2:/var/maven/.m2:z -v $HOME/.config:/var/maven/.config -v $HOME/.sonar:/var/maven/.sonar -u 1000 -e _JAVA_OPTIONS=-Duser.home=/var/maven -e MAVEN_CONFIG=/var/maven/.m2'
 def nodeLabel           = 'controller'
+// checkstyle and dependency-check don't need the controller - they run in their own
+// workspace off the stashes. Leave empty to let Jenkins pick any docker-capable agent,
+// or set a label (e.g. 'docker') to restrict them.
+def verifyNodeLabel     = ''
 def nexusRegistryUrl    = 'https://nexus.intranda.com:4443/'
 def nexusRegistryCredId = 'jenkins-docker'
 
@@ -127,16 +131,20 @@ pipeline {
           }
         }
 
-        // checkstyle and dependency-check pin to the same node label so the
-        // docker image cache is reused, but get their own workspaces (so they
-        // don't collide with test's target/ writes during the parallel run).
+        // checkstyle and dependency-check get their own workspaces (so they don't
+        // collide with test's target/ writes during the parallel run) and are NOT
+        // pinned to the controller: unlike test they only need the stashes, and each
+        // one allocates its own executor. Pinning them to the controller (2 executors)
+        // deadlocked as soon as two branches reached this stage together - both builds
+        // held a controller executor for their top-level agent and then waited forever
+        // for a third one here.
         stage('checkstyle') {
           agent {
             docker {
               image mavenDockerImage
               registryUrl nexusRegistryUrl
               registryCredentialsId nexusRegistryCredId
-              label nodeLabel
+              label verifyNodeLabel
               args mavenDockerArgs
             }
           }
@@ -163,7 +171,7 @@ pipeline {
               image mavenDockerImage
               registryUrl nexusRegistryUrl
               registryCredentialsId nexusRegistryCredId
-              label nodeLabel
+              label verifyNodeLabel
               args mavenDockerArgs
             }
           }
