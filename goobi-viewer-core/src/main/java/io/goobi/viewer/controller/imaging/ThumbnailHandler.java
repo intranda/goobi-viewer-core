@@ -345,8 +345,28 @@ public class ThumbnailHandler {
      */
     public static PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        if (doc != null) {
-            StructElement struct = new StructElement((String) doc.getFirstValue(SolrConstants.IDDOC), doc);
+        return getPage(doc, order);
+    }
+
+    /**
+     * getPage.
+     *
+     * <p>
+     * Variant that reuses an already-fetched record document instead of querying Solr for it again. Callers that have
+     * loaded the top-level record document (e.g. when associating many collections with their representative works)
+     * should use this overload to avoid a redundant per-record round-trip.
+     *
+     * @param recordDoc top-level Solr document of the record whose page to load; if null, null is returned
+     * @param order physical page order number within the work
+     * @return the PhysicalElement at the given order position within the record, or null if not found
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static PhysicalElement getPage(SolrDocument recordDoc, int order)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        if (recordDoc != null) {
+            StructElement struct = new StructElement((String) recordDoc.getFirstValue(SolrConstants.IDDOC), recordDoc);
             // Pass List.of(order) so AbstractPageLoader.create() picks the LeanPageLoader and only
             // loads the single requested page. The previous create(struct) call passed an empty
             // pageNosToLoad list, which fell through to EagerPageLoader for any record below the
