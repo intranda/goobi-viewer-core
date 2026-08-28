@@ -228,7 +228,7 @@ class IndexStatisticsResourceTest {
      */
     @Test
     @SuppressWarnings("unchecked")
-    void getPublicationCenturies_shouldReturnServiceResult() throws Exception {
+    void getPublicationCenturies_shouldReturnServiceResultWithAPrivateCacheControlHeader() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
         when(svc.getPublicationCenturies(any()))
                 .thenReturn(List.of(new PublicationCenturyStatistic(19, 100)));
@@ -279,7 +279,7 @@ class IndexStatisticsResourceTest {
      */
     @Test
     @SuppressWarnings("unchecked")
-    void getLanguages_shouldReturnServiceResult() throws Exception {
+    void getLanguages_shouldReturnServiceResultWithAPrivateCacheControlHeader() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
         when(svc.getLanguages(any(), any()))
                 .thenReturn(List.of(new LanguageStatistic("en", "English", 50)));
@@ -330,7 +330,7 @@ class IndexStatisticsResourceTest {
      */
     @Test
     @SuppressWarnings("unchecked")
-    void getTopCollections_shouldReturnServiceResult() throws Exception {
+    void getTopCollections_shouldReturnServiceResultWithAPrivateCacheControlHeader() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
         when(svc.getTopCollections(eq(10), any(), any()))
                 .thenReturn(List.of(new CollectionStatistic("col1", "Coll. 1", 7)));
