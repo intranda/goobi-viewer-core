@@ -65,10 +65,12 @@ class IndexStatisticsResourceTest {
         List<PublicationTypeStatistic> body = (List<PublicationTypeStatistic>) response.getEntity();
         assertEquals(1, body.size());
         assertEquals("Monograph", body.get(0).label());
-        // Cache-Control must be present for CDN-friendliness.
+        // Cache-Control must be present for CDN-friendliness, but marked private: the result is access filtered.
         String cc = response.getHeaderString("Cache-Control");
         assertNotNull(cc);
         assertTrue(cc.contains("max-age=3600"), "Cache-Control was: " + cc);
+        assertTrue(cc.contains("private"), "Cache-Control was: " + cc);
+        assertEquals("Cookie", response.getHeaderString("Vary"));
     }
 
     /**

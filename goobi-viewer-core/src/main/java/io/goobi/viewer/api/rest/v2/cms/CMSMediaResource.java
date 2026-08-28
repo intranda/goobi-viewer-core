@@ -84,6 +84,7 @@ import de.unigoettingen.sub.commons.cache.CacheUtils;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.CSRFGuarded;
+import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
@@ -230,6 +231,7 @@ public class CMSMediaResource {
     @Operation(tags = { "media" }, summary = "Get CMS media file content as PDF")
     @ApiResponse(responseCode = "200", description = "PDF file content")
     @ApiResponse(responseCode = "404", description = "PDF media file not found")
+    @MediaResourceBinding
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -258,6 +260,7 @@ public class CMSMediaResource {
     @Operation(tags = { "media" }, summary = "Get CMS media file content as SVG")
     @ApiResponse(responseCode = "200", description = "SVG file content")
     @ApiResponse(responseCode = "404", description = "SVG media file not found")
+    @MediaResourceBinding
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -286,6 +289,7 @@ public class CMSMediaResource {
     @Operation(tags = { "media" }, summary = "Get CMS media file content as ICO")
     @ApiResponse(responseCode = "200", description = "ICO file content")
     @ApiResponse(responseCode = "404", description = "ICO media file not found")
+    @MediaResourceBinding
     public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));

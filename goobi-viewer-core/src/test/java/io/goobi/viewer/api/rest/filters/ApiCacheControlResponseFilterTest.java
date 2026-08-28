@@ -22,7 +22,9 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -37,6 +39,7 @@ import org.mockito.Mockito;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
+import io.goobi.viewer.api.rest.v1.records.media.ObjectResource;
 import io.goobi.viewer.controller.DataManager;
 
 class ApiCacheControlResponseFilterTest extends AbstractTest {
@@ -160,5 +163,44 @@ class ApiCacheControlResponseFilterTest extends AbstractTest {
         DataManager.getInstance().getConfiguration().overrideValue("performance.caching[@enabled]", false);
 
         Assertions.assertNull(runFilter("image", 200, null));
+    }
+
+    /**
+     * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
+     * @verifies find the media binding on every static media endpoint
+     */
+    @Test
+    void filter_shouldFindTheMediaBindingOnEveryStaticMediaEndpoint() throws Exception {
+        assertMediaBinding(io.goobi.viewer.api.rest.v1.cms.CMSMediaResource.class, "getSvgContent");
+        assertMediaBinding(io.goobi.viewer.api.rest.v1.cms.CMSMediaResource.class, "getIcoContent");
+        assertMediaBinding(io.goobi.viewer.api.rest.v1.cms.CMSMediaResource.class, "getPDFMediaItemContent");
+        assertMediaBinding(io.goobi.viewer.api.rest.v2.cms.CMSMediaResource.class, "getSvgContent");
+        assertMediaBinding(io.goobi.viewer.api.rest.v2.cms.CMSMediaResource.class, "getIcoContent");
+        assertMediaBinding(io.goobi.viewer.api.rest.v2.cms.CMSMediaResource.class, "getPDFMediaItemContent");
+
+        assertMediaBinding(ObjectResource.class, "getObject", HttpServletRequest.class, HttpServletResponse.class);
+        assertMediaBinding(ObjectResource.class, "getObjectResource",
+                HttpServletRequest.class, HttpServletResponse.class, String.class, String.class, String.class);
+        assertMediaBinding(ObjectResource.class, "getObjectResource2",
+                HttpServletRequest.class, HttpServletResponse.class, String.class, String.class, String.class);
+        assertMediaBinding(ObjectResource.class, "getObjectResource",
+                HttpServletRequest.class, HttpServletResponse.class, String.class, String.class, String.class, String.class);
+        assertMediaBinding(ObjectResource.class, "getObjectResource2",
+                HttpServletRequest.class, HttpServletResponse.class, String.class, String.class, String.class, String.class);
+    }
+
+    /** Fails unless exactly one method of that name carries the media binding. */
+    private static void assertMediaBinding(Class<?> resourceClass, String methodName) {
+        boolean found = Arrays.stream(resourceClass.getDeclaredMethods())
+                .filter(m -> m.getName().equals(methodName))
+                .anyMatch(m -> m.getAnnotation(MediaResourceBinding.class) != null);
+        Assertions.assertTrue(found, methodName + " on " + resourceClass.getSimpleName() + " must carry @MediaResourceBinding");
+    }
+
+    /** Fails unless the method with the given signature carries the media binding. Disambiguates overloaded method names. */
+    private static void assertMediaBinding(Class<?> resourceClass, String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
+        Method method = resourceClass.getDeclaredMethod(methodName, parameterTypes);
+        Assertions.assertNotNull(method.getAnnotation(MediaResourceBinding.class),
+                methodName + " on " + resourceClass.getSimpleName() + " must carry @MediaResourceBinding");
     }
 }

@@ -226,8 +226,8 @@ public class IndexStatisticsResource {
     private Response ok(Object body) {
         CacheControl cc = new CacheControl();
         cc.setMaxAge(CACHE_MAX_AGE_SECONDS);
-        cc.setPrivate(false);
-        return Response.ok(body, MediaType.APPLICATION_JSON).cacheControl(cc).build();
+        cc.setPrivate(true);
+        return Response.ok(body, MediaType.APPLICATION_JSON).cacheControl(cc).header("Vary", "Cookie").build();
     }
 
     private Response unavailable(StatisticsUnavailableException e) {

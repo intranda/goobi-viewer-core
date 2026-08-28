@@ -184,19 +184,6 @@
         <url-pattern>/epnresolver</url-pattern>
     </servlet-mapping>
     <servlet>
-        <display-name>ToolServlet</display-name>
-        <servlet-name>ToolServlet</servlet-name>
-        <servlet-class>io.goobi.viewer.servlets.ToolServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ToolServlet</servlet-name>
-        <url-pattern>/tools</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ToolServlet</servlet-name>
-        <url-pattern>/cache</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <display-name>HarvestServlet</display-name>
         <servlet-name>HarvestServlet</servlet-name>
         <servlet-class>io.goobi.viewer.servlets.HarvestServlet</servlet-class>
