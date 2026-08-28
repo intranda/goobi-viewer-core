@@ -37,13 +37,27 @@ import org.glassfish.jersey.test.ServletDeploymentContext;
 import org.glassfish.jersey.test.grizzly.GrizzlyWebTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainerFactory;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.Configuration;
+import io.goobi.viewer.controller.DataManager;
 
 /**
  * Verifies the override guard against a running container rather than a mock, because the
  * visibility of servlet-set headers inside a JAX-RS response filter depends on the container.
  */
 class ApiCacheControlResponseFilterContainerTest extends JerseyTest {
+
+    /**
+     * Independent of test execution order: this class does not extend {@link AbstractTest}, so nothing else
+     * resets the shared {@link DataManager} configuration between test classes.
+     */
+    @BeforeEach
+    void injectTestConfiguration() throws Exception {
+        DataManager.getInstance().injectConfiguration(new Configuration(AbstractTest.TEST_CONFIG_PATH));
+    }
 
     @Path("/guard")
     public static class GuardResource {

@@ -22,11 +22,13 @@
 package io.goobi.viewer.api.rest.filters;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -40,7 +42,9 @@ import jakarta.ws.rs.ext.Provider;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
+import io.goobi.viewer.api.rest.bindings.DownloadBinding;
 import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
+import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.controller.DataManager;
 
 /**
@@ -50,8 +54,10 @@ import io.goobi.viewer.controller.DataManager;
  * methods that only declare {@code @Produces} and for not-modified responses, so it cannot carry
  * the decision.
  *
- * <p>Responses that already carry a caching decision are left alone. That covers endpoints setting
- * their own header, the audio and video delivery which writes {@code Expires} straight onto the
+ * <p>An error or redirect response is forced to {@code no-store} before any override guard runs, so
+ * that a failing endpoint can never hand out the freshness it preset for its success path. Everything
+ * else that already carries a caching decision is left alone: endpoints setting their own header, the
+ * audio and video delivery which writes {@code Cache-Control: private, no-cache} straight onto the
  * servlet response, and any response already committed by the time this filter runs.
  */
 @Provider
@@ -72,11 +78,20 @@ public class ApiCacheControlResponseFilter implements ContainerResponseFilter {
      * @should set a short private max age for image responses
      * @should revalidate image responses when max age is zero
      * @should revalidate media responses
+     * @should revalidate image info responses
      * @should never store plain data responses
      * @should never store error responses
-     * @should keep the header of a not modified response
+     * @should override an existing header on an error response
+     * @should never store a download even when the media binding is also present
+     * @should set the image max age on a not modified response
      * @should not override a header set on the raw servlet response
+     * @should not override a header already present in the jax rs headers
+     * @should not override a response with an expires header on the raw servlet response
+     * @should not touch an already committed response
      * @should set no header when caching is disabled
+     * @should find the media binding on every static media endpoint
+     * @should vary only by cookie for a private response with a fixed format
+     * @should vary by accept and cookie for a negotiated private response
      * @should keep a header set on the raw servlet response inside a container
      * @should apply the data policy inside a container
      */
@@ -85,11 +100,18 @@ public class ApiCacheControlResponseFilter implements ContainerResponseFilter {
         if (!DataManager.getInstance().getConfiguration().isCachingEnabled()) {
             return;
         }
+        if (servletResponse != null && servletResponse.isCommitted()) {
+            return;
+        }
+        if (!isCacheableStatus(responseContext.getStatus())) {
+            responseContext.getHeaders().putSingle(HttpHeaders.CACHE_CONTROL, NO_STORE);
+            return;
+        }
         if (hasCachingDecision(responseContext)) {
             return;
         }
 
-        String value = cacheControlFor(responseContext);
+        String value = cacheControlFor();
         responseContext.getHeaders().putSingle(HttpHeaders.CACHE_CONTROL, value);
         addVary(responseContext, value);
     }
@@ -102,13 +124,19 @@ public class ApiCacheControlResponseFilter implements ContainerResponseFilter {
         if (servletResponse == null) {
             return false;
         }
-        return servletResponse.isCommitted() || servletResponse.getHeader(HttpHeaders.CACHE_CONTROL) != null
-                || servletResponse.getHeader(HttpHeaders.EXPIRES) != null;
+        return servletResponse.getHeader(HttpHeaders.CACHE_CONTROL) != null || servletResponse.getHeader(HttpHeaders.EXPIRES) != null;
     }
 
-    /** Maps the matched resource method and the response status to a Cache-Control value. */
-    private String cacheControlFor(ContainerResponseContext responseContext) {
-        if (!isCacheableStatus(responseContext.getStatus())) {
+    /**
+     * Maps the matched resource method to a Cache-Control value.
+     *
+     * <p>The download bindings outrank the media binding: a record file download and a static media
+     * delivery can sit on the very same method, but a download must never be handed out as
+     * {@code no-cache}, which still permits disk storage. An access restricted file would otherwise
+     * stay readable from a shared cache folder after the session that was allowed to fetch it ends.
+     */
+    private String cacheControlFor() {
+        if (hasBinding(RecordFileDownloadBinding.class) || hasBinding(DownloadBinding.class)) {
             return NO_STORE;
         }
         if (hasBinding(ContentServerImageBinding.class)) {
@@ -142,9 +170,12 @@ public class ApiCacheControlResponseFilter implements ContainerResponseFilter {
     /**
      * Adds {@code Vary} where the response really varies.
      *
-     * <p>{@code Accept} only matters where the resource declares more than one producible type;
-     * image endpoints pick their format from a path parameter instead. {@code Cookie} matters on
-     * every private response so that the cache key changes on login and logout.
+     * <p>{@code Accept} only matters where the resource negotiates the representation: it declares
+     * more than one producible type and does not already pin the format through a path parameter.
+     * Image tiles pick their format from a {@code {quality}.{format}} path segment instead, so a
+     * plain {@code <img>} tag, {@code fetch()} and OpenSeadragon would each fragment the cache key on
+     * their own Accept header for no reason. {@code Cookie} matters on every private response so that
+     * the cache key changes on login and logout.
      */
     private void addVary(ContainerResponseContext responseContext, String cacheControl) {
         if (NO_STORE.equals(cacheControl)) {
@@ -152,19 +183,46 @@ public class ApiCacheControlResponseFilter implements ContainerResponseFilter {
         }
         StringBuilder vary = new StringBuilder();
         Method method = resourceInfo == null ? null : resourceInfo.getResourceMethod();
-        Produces produces = method == null ? null : method.getAnnotation(Produces.class);
-        if (produces != null && produces.value().length > 1) {
+        if (variesByAccept(method)) {
             vary.append(HttpHeaders.ACCEPT);
         }
         if (cacheControl.startsWith("private")) {
             if (vary.length() > 0) {
                 vary.append(", ");
             }
-            vary.append("Cookie");
+            vary.append(HttpHeaders.COOKIE);
         }
         if (vary.length() > 0) {
             responseContext.getHeaders().putSingle(HttpHeaders.VARY, vary.toString());
         }
+    }
+
+    /** Returns true if the resource negotiates its representation via the Accept header rather than a path parameter. */
+    private static boolean variesByAccept(Method method) {
+        if (method == null || hasPathParam(method, "format")) {
+            return false;
+        }
+        return producesCount(method) > 1;
+    }
+
+    /** Returns true if one of the method's parameters is annotated {@code @PathParam(name)}. */
+    private static boolean hasPathParam(Method method, String name) {
+        for (Parameter parameter : method.getParameters()) {
+            PathParam pathParam = parameter.getAnnotation(PathParam.class);
+            if (pathParam != null && name.equals(pathParam.value())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Returns the number of media types the method produces, falling back to the declaring class. */
+    private static int producesCount(Method method) {
+        Produces produces = method.getAnnotation(Produces.class);
+        if (produces == null) {
+            produces = method.getDeclaringClass().getAnnotation(Produces.class);
+        }
+        return produces == null ? 0 : produces.value().length;
     }
 
     /** Injects the resource info in tests; the container injects it in production. */

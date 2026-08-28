@@ -26,9 +26,13 @@ import java.util.Arrays;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ResourceInfo;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 
@@ -37,8 +41,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageBinding;
+import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerImageInfoBinding;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
+import io.goobi.viewer.api.rest.bindings.RecordFileDownloadBinding;
 import io.goobi.viewer.api.rest.v1.records.media.ObjectResource;
 import io.goobi.viewer.controller.DataManager;
 
@@ -52,8 +58,29 @@ class ApiCacheControlResponseFilterTest extends AbstractTest {
             //
         }
 
+        /** Mirrors the real image tile endpoint: several producible types, but the format is pinned by a path parameter. */
+        @ContentServerImageBinding
+        @Produces({ "image/jpeg", "image/png", "image/tif" })
+        public void imageTile(@PathParam("format") String format) {
+            //
+        }
+
+        /** Mirrors the real image info endpoint: several producible types negotiated purely via Accept. */
+        @ContentServerImageInfoBinding
+        @Produces({ "application/ld+json", MediaType.APPLICATION_JSON })
+        public void imageInfo() {
+            //
+        }
+
         @MediaResourceBinding
         public void media() {
+            //
+        }
+
+        /** Mirrors RecordFileResource#getMediaFile, which carries both bindings at once. */
+        @MediaResourceBinding
+        @RecordFileDownloadBinding
+        public void mediaDownload() {
             //
         }
 
@@ -63,28 +90,55 @@ class ApiCacheControlResponseFilterTest extends AbstractTest {
     }
 
     /**
-     * Runs one response through the filter and returns the emitted Cache-Control value, or null.
+     * Runs one response through the filter and returns the resulting JAX-RS response headers.
      */
-    private static String runFilter(String methodName, int status, String presetOnRawResponse) throws Exception {
-        Method method = Endpoints.class.getMethod(methodName);
+    private static MultivaluedMap<String, Object> runFilterHeaders(String methodName, int status, String cacheControlOnRaw,
+            String expiresOnRaw, boolean committed, String cacheControlInJaxRsHeaders) throws Exception {
+        Method method = resolveEndpoint(methodName);
 
         ResourceInfo resourceInfo = Mockito.mock(ResourceInfo.class);
         Mockito.when(resourceInfo.getResourceMethod()).thenReturn(method);
 
         MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+        if (cacheControlInJaxRsHeaders != null) {
+            headers.putSingle(HttpHeaders.CACHE_CONTROL, cacheControlInJaxRsHeaders);
+        }
         ContainerResponseContext responseContext = Mockito.mock(ContainerResponseContext.class);
         Mockito.when(responseContext.getHeaders()).thenReturn(headers);
         Mockito.when(responseContext.getStatus()).thenReturn(status);
 
         HttpServletResponse servletResponse = Mockito.mock(HttpServletResponse.class);
-        Mockito.when(servletResponse.getHeader("Cache-Control")).thenReturn(presetOnRawResponse);
+        Mockito.when(servletResponse.getHeader(HttpHeaders.CACHE_CONTROL)).thenReturn(cacheControlOnRaw);
+        Mockito.when(servletResponse.getHeader(HttpHeaders.EXPIRES)).thenReturn(expiresOnRaw);
+        Mockito.when(servletResponse.isCommitted()).thenReturn(committed);
 
         ApiCacheControlResponseFilter filter = new ApiCacheControlResponseFilter();
         filter.setResourceInfoForTest(resourceInfo);
         filter.setServletResponseForTest(servletResponse);
         filter.filter(Mockito.mock(ContainerRequestContext.class), responseContext);
 
-        Object value = headers.getFirst("Cache-Control");
+        return headers;
+    }
+
+    /** Looks up the single fixture method with this name, regardless of its parameter list. */
+    private static Method resolveEndpoint(String methodName) {
+        return Arrays.stream(Endpoints.class.getMethods())
+                .filter(m -> m.getName().equals(methodName))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No such fixture endpoint: " + methodName));
+    }
+
+    /**
+     * Runs one response through the filter and returns the emitted Cache-Control value, or null.
+     */
+    private static String runFilter(String methodName, int status, String presetOnRawResponse) throws Exception {
+        Object value = runFilterHeaders(methodName, status, presetOnRawResponse, null, false, null).getFirst(HttpHeaders.CACHE_CONTROL);
+        return value == null ? null : value.toString();
+    }
+
+    /** Returns the emitted Vary value, or null. */
+    private static String vary(MultivaluedMap<String, Object> headers) {
+        Object value = headers.getFirst(HttpHeaders.VARY);
         return value == null ? null : value.toString();
     }
 
@@ -119,6 +173,15 @@ class ApiCacheControlResponseFilterTest extends AbstractTest {
 
     /**
      * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
+     * @verifies revalidate image info responses
+     */
+    @Test
+    void filter_shouldRevalidateImageInfoResponses() throws Exception {
+        Assertions.assertEquals("private, no-cache", runFilter("imageInfo", 200, null));
+    }
+
+    /**
+     * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
      * @verifies never store plain data responses
      */
     @Test
@@ -138,10 +201,28 @@ class ApiCacheControlResponseFilterTest extends AbstractTest {
 
     /**
      * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
-     * @verifies keep the header of a not modified response
+     * @verifies override an existing header on an error response
      */
     @Test
-    void filter_shouldKeepTheHeaderOfANotModifiedResponse() throws Exception {
+    void filter_shouldOverrideAnExistingHeaderOnAnErrorResponse() throws Exception {
+        Assertions.assertEquals("no-store", runFilter("image", 500, "private, max-age=300"));
+    }
+
+    /**
+     * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
+     * @verifies never store a download even when the media binding is also present
+     */
+    @Test
+    void filter_shouldNeverStoreADownloadEvenWhenTheMediaBindingIsAlsoPresent() throws Exception {
+        Assertions.assertEquals("no-store", runFilter("mediaDownload", 200, null));
+    }
+
+    /**
+     * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
+     * @verifies set the image max age on a not modified response
+     */
+    @Test
+    void filter_shouldSetTheImageMaxAgeOnANotModifiedResponse() throws Exception {
         Assertions.assertEquals("private, max-age=77", runFilter("image", 304, null));
     }
 
@@ -156,6 +237,40 @@ class ApiCacheControlResponseFilterTest extends AbstractTest {
 
     /**
      * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
+     * @verifies not override a header already present in the jax rs headers
+     */
+    @Test
+    void filter_shouldNotOverrideAHeaderAlreadyPresentInTheJaxRsHeaders() throws Exception {
+        MultivaluedMap<String, Object> headers = runFilterHeaders("data", 200, null, null, false, "public, max-age=60");
+
+        Assertions.assertEquals("public, max-age=60", headers.getFirst(HttpHeaders.CACHE_CONTROL));
+    }
+
+    /**
+     * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
+     * @verifies not override a response with an expires header on the raw servlet response
+     */
+    @Test
+    void filter_shouldNotOverrideAResponseWithAnExpiresHeaderOnTheRawServletResponse() throws Exception {
+        MultivaluedMap<String, Object> headers = runFilterHeaders("data", 200, null, "Wed, 21 Oct 2026 07:28:00 GMT", false, null);
+
+        Assertions.assertNull(headers.getFirst(HttpHeaders.CACHE_CONTROL));
+    }
+
+    /**
+     * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
+     * @verifies not touch an already committed response
+     */
+    @Test
+    void filter_shouldNotTouchAnAlreadyCommittedResponse() throws Exception {
+        MultivaluedMap<String, Object> headers = runFilterHeaders("image", 200, null, null, true, null);
+
+        Assertions.assertNull(headers.getFirst(HttpHeaders.CACHE_CONTROL));
+        Assertions.assertNull(headers.getFirst(HttpHeaders.VARY));
+    }
+
+    /**
+     * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
      * @verifies set no header when caching is disabled
      */
     @Test
@@ -163,6 +278,28 @@ class ApiCacheControlResponseFilterTest extends AbstractTest {
         DataManager.getInstance().getConfiguration().overrideValue("performance.caching[@enabled]", false);
 
         Assertions.assertNull(runFilter("image", 200, null));
+    }
+
+    /**
+     * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
+     * @verifies vary only by cookie for a private response with a fixed format
+     */
+    @Test
+    void filter_shouldVaryOnlyByCookieForAPrivateResponseWithAFixedFormat() throws Exception {
+        MultivaluedMap<String, Object> headers = runFilterHeaders("imageTile", 200, null, null, false, null);
+
+        Assertions.assertEquals("Cookie", vary(headers));
+    }
+
+    /**
+     * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
+     * @verifies vary by accept and cookie for a negotiated private response
+     */
+    @Test
+    void filter_shouldVaryByAcceptAndCookieForANegotiatedPrivateResponse() throws Exception {
+        MultivaluedMap<String, Object> headers = runFilterHeaders("imageInfo", 200, null, null, false, null);
+
+        Assertions.assertEquals("Accept, Cookie", vary(headers));
     }
 
     /**
@@ -189,7 +326,7 @@ class ApiCacheControlResponseFilterTest extends AbstractTest {
                 HttpServletRequest.class, HttpServletResponse.class, String.class, String.class, String.class, String.class);
     }
 
-    /** Fails unless exactly one method of that name carries the media binding. */
+    /** Fails unless at least one method of that name carries the media binding. */
     private static void assertMediaBinding(Class<?> resourceClass, String methodName) {
         boolean found = Arrays.stream(resourceClass.getDeclaredMethods())
                 .filter(m -> m.getName().equals(methodName))
