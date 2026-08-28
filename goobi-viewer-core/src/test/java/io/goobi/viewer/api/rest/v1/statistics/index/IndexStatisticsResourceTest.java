@@ -49,11 +49,11 @@ class IndexStatisticsResourceTest {
 
     /**
      * @see IndexStatisticsResource#getPublicationTypes(String, String)
-     * @verifies return service result with cache control header
+     * @verifies return service result with a private cache control header
      */
     @Test
     @SuppressWarnings("unchecked")
-    void getPublicationTypes_shouldReturnServiceResultWithCacheControlHeader() throws Exception {
+    void getPublicationTypes_shouldReturnServiceResultWithAPrivateCacheControlHeader() throws Exception {
         IndexStatisticsService svc = mock(IndexStatisticsService.class);
         when(svc.getPublicationTypes(any(), any()))
                 .thenReturn(List.of(new PublicationTypeStatistic("Monograph", 5, "Monograph")));
@@ -224,7 +224,7 @@ class IndexStatisticsResourceTest {
 
     /**
      * @see IndexStatisticsResource#getPublicationCenturies(String)
-     * @verifies return service result with cache control header
+     * @verifies return service result with a private cache control header
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -238,7 +238,9 @@ class IndexStatisticsResourceTest {
 
         assertEquals(200, response.getStatus());
         assertEquals(1, ((List<PublicationCenturyStatistic>) response.getEntity()).size());
-        assertNotNull(response.getHeaderString("Cache-Control"));
+        String cc = response.getHeaderString("Cache-Control");
+        assertNotNull(cc);
+        assertTrue(cc.contains("private"), "Cache-Control was: " + cc);
     }
 
     /**
@@ -273,7 +275,7 @@ class IndexStatisticsResourceTest {
 
     /**
      * @see IndexStatisticsResource#getLanguages(String, String)
-     * @verifies return service result with cache control header
+     * @verifies return service result with a private cache control header
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -287,7 +289,9 @@ class IndexStatisticsResourceTest {
 
         assertEquals(200, response.getStatus());
         assertEquals(1, ((List<LanguageStatistic>) response.getEntity()).size());
-        assertNotNull(response.getHeaderString("Cache-Control"));
+        String cc = response.getHeaderString("Cache-Control");
+        assertNotNull(cc);
+        assertTrue(cc.contains("private"), "Cache-Control was: " + cc);
     }
 
     /**
@@ -322,7 +326,7 @@ class IndexStatisticsResourceTest {
 
     /**
      * @see IndexStatisticsResource#getTopCollections(int, String, String)
-     * @verifies return service result with cache control header
+     * @verifies return service result with a private cache control header
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -336,7 +340,9 @@ class IndexStatisticsResourceTest {
 
         assertEquals(200, response.getStatus());
         assertEquals(1, ((List<CollectionStatistic>) response.getEntity()).size());
-        assertNotNull(response.getHeaderString("Cache-Control"));
+        String cc = response.getHeaderString("Cache-Control");
+        assertNotNull(cc);
+        assertTrue(cc.contains("private"), "Cache-Control was: " + cc);
     }
 
     /**

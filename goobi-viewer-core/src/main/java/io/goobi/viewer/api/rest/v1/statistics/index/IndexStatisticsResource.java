@@ -47,14 +47,15 @@ import jakarta.ws.rs.core.Response;
  * Each endpoint translates {@link StatisticsUnavailableException} (raised by {@link IndexStatisticsService} when Solr
  * is unreachable AND no cached snapshot is available) to HTTP 503 with a small JSON error body, so the frontend can
  * differentiate "really down" from "empty result". On success the response carries
- * {@code Cache-Control: public, max-age=3600}; the service layer keeps an additional day-long internal cache.
+ * {@code Cache-Control: private, max-age=3600} and {@code Vary: Cookie}, since results are access filtered;
+ * the service layer keeps an additional day-long internal cache.
  * </p>
  */
 @Path("/statistics/index")
 @ViewerRestServiceBinding
 public class IndexStatisticsResource {
 
-    /** Public CDN-cacheable for one hour; service has its own day-long internal cache on top of that. */
+    /** Private cache lifetime of one hour; service has its own day-long internal cache on top of that. */
     private static final int CACHE_MAX_AGE_SECONDS = 3600;
 
     private final IndexStatisticsService service;
@@ -95,7 +96,7 @@ public class IndexStatisticsResource {
      *            facet to a subset of the index. No validation here — the backend editor's {@code solrQueryValidator}
      *            gate-keeps before persistence, and the service wraps the value in MUST so it can only narrow.
      * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
-     * @should return service result with cache control header
+     * @should return service result with a private cache control header
      * @should return 503 when service throws StatisticsUnavailableException
      * @should forward lang query parameter to service
      * @should forward filter query parameter to service
@@ -161,7 +162,7 @@ public class IndexStatisticsResource {
      *
      * @param filter optional Lucene sub-query forwarded from the CMS-admin filter input.
      * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
-     * @should return service result with cache control header
+     * @should return service result with a private cache control header
      * @should return 503 when service throws StatisticsUnavailableException
      * @should forward filter query parameter to service
      */
@@ -183,7 +184,7 @@ public class IndexStatisticsResource {
      *            {@code #{navigationHelper.localeString}}.
      * @param filter optional Lucene sub-query forwarded from the CMS-admin filter input.
      * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
-     * @should return service result with cache control header
+     * @should return service result with a private cache control header
      * @should return 503 when service throws StatisticsUnavailableException
      * @should forward filter query parameter to service
      */
@@ -205,7 +206,7 @@ public class IndexStatisticsResource {
      * @param lang IETF BCP 47 language tag for label translation
      * @param filter optional Lucene sub-query forwarded from the CMS-admin filter input.
      * @return 200 + JSON list on success, 503 + JSON error body when the service signals unavailability
-     * @should return service result with cache control header
+     * @should return service result with a private cache control header
      * @should return 503 when service throws StatisticsUnavailableException
      * @should forward filter query parameter to service
      */
