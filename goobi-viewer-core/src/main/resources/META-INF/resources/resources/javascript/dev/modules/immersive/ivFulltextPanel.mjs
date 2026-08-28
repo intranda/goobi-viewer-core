@@ -3,7 +3,7 @@
 import { loadPageTextLevels, flattenTextLevels, loadPageLayout } from './ivManifestSource.mjs';
 import { buildTextLevels, mountTextImageLink } from './ivTextImageLink.mjs';
 import { currentOrder } from './viewerImmersive.mjs';
-import { setupAnnotationsToggle, applyTextMarkup, mountBlockAnnotations, overlayRegions } from './ivAnnotations.mjs';
+import { setupAnnotationsToggle, applyTextMarkup, applyRegionMarkup, mountBlockAnnotations, overlayRegions } from './ivAnnotations.mjs';
 
 /**
  * Wires the fulltext panel: loads the nested OCR levels for the visible page,
@@ -62,6 +62,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
         if (!annotations || !currentLayout || !panelOpen() || !fulltextBox || !fulltextBox.childElementCount) return;
         const pageNo = currentOrder(viewer) + 1;
         const els = applyTextMarkup(fulltextBox, currentLayout, pi, pageNo);
+        applyRegionMarkup(textRegionEls, currentLayout, pi, pageNo);
         clearBlockAnnotations();
         currentAnnotations = mountBlockAnnotations({
             box: fulltextBox,

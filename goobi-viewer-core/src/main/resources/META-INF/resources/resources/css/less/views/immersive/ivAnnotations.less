@@ -5,24 +5,20 @@
    ==============================================================*/
 
 @immersive-anno-margin-width: 160px;
-// html { font-size: 62.5% } => 1rem = 10px (see layout/general.less)
-@immersive-anno-font: 1.3rem; // 13px
-@immersive-anno-font-note: @fontSmall; // 12px
-@immersive-anno-font-overline: 1rem; // 10px
+@immersive-anno-font: 1.3rem;
+@immersive-anno-font-note: @fontSmall;
+@immersive-anno-font-overline: 1rem;
 @immersive-anno-margin-gap: 12px;
-// Must stay above COLLAPSE_BELOW (460, ivAnnotations.mjs) plus the panel padding
-// (2x16px), or the ResizeObserver would flip-flop between column and inline mode.
+@immersive-anno-bar: 3px;
 @immersive-anno-panel-min-width: 560px;
 
 .immersive {
-    /* ANNOTATIONS TOGGLE (right-aligned in the __fulltext-toolbar row) */
     &__anno-toggle {
         display: flex;
         align-items: center;
         gap: 8px;
         margin-left: auto;
 
-        // the server renders the row hidden until the page proves to have annotations
         &[hidden] {
             display: none;
         }
@@ -47,7 +43,6 @@
         cursor: pointer;
     }
 
-    /* WORD MARKUP (only visible while annotations are switched on) */
     &.-annotations-on &__anno-word-underline {
         text-decoration: underline;
         text-decoration-thickness: 2px;
@@ -60,9 +55,6 @@
         text-decoration-color: ~'rgb(var(--immersive-anno-strike-rgb))';
     }
 
-    /* TWO-COLUMN MODE: with annotations on, the panel enforces the width the
-       side column needs, so notes sit line-anchored NEXT to the text (customer
-       reference layout) instead of collapsing inline. Small screens fall back. */
     &.-annotations-on &__panel-fulltext {
         min-width: @immersive-anno-panel-min-width;
     }
@@ -92,28 +84,19 @@
         flex: 0 0 @immersive-anno-margin-width;
     }
 
-    /* MARGIN NOTE COLUMN (line-anchored cards right of the main text) */
-    /* __fulltext itself is styled in ivFulltext.less; the positioning context for the
-       absolute note column has to live here with the column that needs it */
     &__fulltext {
         position: relative;
     }
 
     &.-annotations-on &__fulltext:not(.-anno-collapsed) {
         padding-right: @immersive-anno-margin-width + @immersive-anno-margin-gap;
-        // set by relayout(): room for a card ABOVE the first printed line; applied
-        // only in annotations mode, so toggling the checkbox off cleans up in CSS
         padding-top: var(--immersive-anno-shift, 0px);
     }
 
-    /* annotations OFF: the printed-text column shows print only — every handwriting
-       source (running heads, callouts, insertion marks, margin sources) is hidden */
     &:not(.-annotations-on) &__anno-src {
         display: none;
     }
 
-    /* the reading-order source of a margin note is never shown: its card replaces it
-       while annotations are on, and anno-src hides all handwriting while off */
     &__anno-margin-src {
         display: none;
     }
@@ -136,7 +119,6 @@
         position: absolute;
         left: 0;
         right: 0;
-        // button reset: the entry is a real <button> (opens the detail popover)
         appearance: none;
         border: 0;
         text-align: left;
@@ -145,20 +127,15 @@
         background-color: var(--immersive-anno-note-bg);
         border-left: 3px solid @immersive-chrome-border-color;
         border-radius: 0 4px 4px 0;
-        // entry height + NOTE_GAP (ivAnnotations.mjs) must fit the print row height,
-        // or consecutive annotations get pushed off their lines
         padding: 2px 8px;
         font-size: @immersive-anno-font-note;
         line-height: 1.4;
-        // the fulltext box renders OCR lines with pre-wrap — card text must not inherit it
         white-space: normal;
         color: @immersive-chrome-fg;
         transition: top @immersive-transition;
 
         &:hover,
         &:active {
-            // the global button reset (resets.less: button:hover { color: @lowerblack })
-            // outweighs the base class — restate the chrome color for the states
             color: @immersive-chrome-fg;
             background-color: var(--immersive-anno-note-hover-bg);
         }
@@ -179,13 +156,10 @@
         display: block;
     }
 
-    /* the author name stays in the accessibility tree (part of the button's name);
-       visually the colored left border is the code, details open in the popover */
     &__anno-note-author {
         .mx-sr-only();
     }
 
-    /* strictly one line per entry — the full text lives in the click popover */
     &__anno-note-text {
         display: block;
         overflow: hidden;
@@ -193,7 +167,6 @@
         white-space: nowrap;
     }
 
-    /* DETAIL POPOVER (click on an entry; portaled into the fulltext panel) */
     &__anno-popover.popover {
         max-width: 260px;
         color: @immersive-chrome-fg;
@@ -234,25 +207,16 @@
         }
     }
 
-    /* AUTHOR COLORS: the card carries the CONFIGURED annotationTag styleClass as its
-       presentation hook — the theme colors those classes (vocabulary-specific, no
-       built-in author palette in the core; unstyled authors stay on the neutral border) */
-
-    /* hover on a note marks its anchor line in the main text */
     &.-annotations-on .is-anno-anchor {
         background-color: var(--immersive-anno-anchor-bg);
         border-radius: 3px;
     }
 
-    /* ...and hovering the anchor line highlights its note(s) in the side column */
     &.-annotations-on &__anno-note.is-anno-active {
         background-color: var(--immersive-anno-note-hover-bg);
         outline: 1px solid @immersive-accent;
     }
 
-    /* IMAGE OVERLAYS (real drawn strokes on the page, GraphicalElement boxes).
-       Toggled via visibility, NOT display: OpenSeadragon writes display:block as an
-       inline style on every overlay update, which would override any class rule. */
     &__anno-region {
         visibility: hidden;
         pointer-events: none;
@@ -262,24 +226,31 @@
         visibility: visible;
     }
 
-    &__anno-region-underline {
-        background-color: ~'rgba(var(--immersive-anno-underline-rgb), 0.35)';
-        outline: 1px solid ~'rgb(var(--immersive-anno-underline-rgb))';
+    &__text-region&__anno-word-underline.is-linked-active,
+    &__text-region&__anno-word-strike.is-linked-active {
+        background-color: transparent;
+        border-color: transparent;
     }
 
-    &__anno-region-strike {
-        background-color: ~'rgba(var(--immersive-anno-strike-rgb), 0.35)';
-        outline: 1px solid ~'rgb(var(--immersive-anno-strike-rgb))';
+    &__text-region&__anno-word-underline.is-linked-active {
+        background-image: linear-gradient(
+            to top,
+            ~'rgb(var(--immersive-anno-underline-rgb))' 0,
+            ~'rgb(var(--immersive-anno-underline-rgb))' @immersive-anno-bar,
+            transparent @immersive-anno-bar
+        );
     }
 
-    &__anno-region-mark {
-        background-color: ~'rgba(var(--immersive-anno-mark-rgb), 0.35)';
-        outline: 1px solid ~'rgb(var(--immersive-anno-mark-rgb))';
+    &__text-region&__anno-word-strike.is-linked-active {
+        background-image: linear-gradient(
+            to bottom,
+            transparent calc(50% - (@immersive-anno-bar / 2)),
+            ~'rgb(var(--immersive-anno-strike-rgb))' calc(50% - (@immersive-anno-bar / 2)),
+            ~'rgb(var(--immersive-anno-strike-rgb))' calc(50% + (@immersive-anno-bar / 2)),
+            transparent calc(50% + (@immersive-anno-bar / 2))
+        );
     }
 
-    /* margin-note regions are transparent hit areas: invisible until hovered on the
-       scan (:hover) or from their card (.is-anno-active), but always hit-testable so
-       image-to-card hover works */
     &.-annotations-on &__anno-region-note {
         visibility: visible;
         background-color: transparent;

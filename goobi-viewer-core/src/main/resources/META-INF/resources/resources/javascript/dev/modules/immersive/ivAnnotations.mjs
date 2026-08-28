@@ -310,6 +310,30 @@ export function applyTextMarkup(box, layout, pi, pageNo) {
 }
 
 /**
+ * Mirrors the word-level markup onto the page's image overlays, joined by ALTO element id.
+ * That join is exact — no geometry — so every marked word is covered. The overlays already
+ * carry the text↔image link's hover state, which lets CSS alone reveal a marking while its
+ * word is pointed at, from the scan or from the panel.
+ *
+ * @param {Map<string, HTMLElement>} regionEls  image overlay elements, keyed by annotation URI
+ * @param {{words:Array}|null} layout
+ * @param {string} pi
+ * @param {number|string} pageNo  1-based page number
+ */
+export function applyRegionMarkup(regionEls, layout, pi, pageNo) {
+    if (!regionEls || !layout) return;
+    const byElementId = new Map();
+    regionEls.forEach((el, uri) => {
+        const elementId = altoElementId(uri, pi, pageNo);
+        if (elementId) byElementId.set(elementId, el);
+    });
+    (layout.words || []).forEach((word) => {
+        const el = byElementId.get(word.id);
+        if (el) wordTypeClasses(word.types).forEach((cls) => el.classList.add(cls));
+    });
+}
+
+/**
  * A block's reading-order source elements in the panel: the block element when
  * the panel carries a real block region id, otherwise (the nesting drops
  * degenerate block levels on some pages) the rendered lines whose geometry lies

@@ -520,10 +520,7 @@ function buildStyles(changedFilePath = null) {
             })
         )
 
-        .pipe(collectProjectOutputs)
-        .pipe(gulp.dest(paths.cssDistRoot))
 
-        .pipe(collectDeployOutputs)
         .pipe(
             through.obj(function (file, enc, cb) {
                 if (file.stat) {
@@ -533,6 +530,11 @@ function buildStyles(changedFilePath = null) {
                 cb(null, file);
             })
         )
+
+        .pipe(collectProjectOutputs)
+        .pipe(gulp.dest(paths.cssDistRoot))
+
+        .pipe(collectDeployOutputs)
         .pipe(safeDest('resources/css/dist'))
 
         .on('finish', () => {

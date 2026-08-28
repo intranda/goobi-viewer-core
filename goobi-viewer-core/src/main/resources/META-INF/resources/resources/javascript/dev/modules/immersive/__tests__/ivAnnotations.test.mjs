@@ -15,6 +15,7 @@ import {
     isAboveAnchor,
     setupAnnotationsToggle,
     mountBlockAnnotations,
+    applyRegionMarkup,
 } from '../ivAnnotations.mjs';
 
 describe('readAnnotationsEnabled / writeAnnotationsEnabled', () => {
@@ -267,6 +268,41 @@ describe('rectCenterInside', () => {
     test('false without rects', () => {
         expect(rectCenterInside(null, { x: 0, y: 0, w: 1, h: 1 })).toBe(false);
         expect(rectCenterInside({ x: 0, y: 0, w: 1, h: 1 }, undefined)).toBe(false);
+    });
+});
+
+describe('applyRegionMarkup (jsdom)', () => {
+    const uri = (id) => `http://h/api/v1/annotations/alto_PPN1_5_${id}/?format=oa`;
+
+    const build = () => {
+        const regionEls = new Map();
+        ['s-2', 's-3', 'l-9'].forEach((id) => regionEls.set(uri(id), document.createElement('div')));
+        return regionEls;
+    };
+
+    test('marks every tagged word overlay via its ALTO element id', () => {
+        const regionEls = build();
+        applyRegionMarkup(
+            regionEls,
+            {
+                words: [
+                    { id: 's-2', types: ['underline'] },
+                    { id: 's-3', types: ['strikethrough'] },
+                ],
+            },
+            'PPN1',
+            5
+        );
+        expect(regionEls.get(uri('s-2')).className).toBe('immersive__anno-word-underline');
+        expect(regionEls.get(uri('s-3')).className).toBe('immersive__anno-word-strike');
+        expect(regionEls.get(uri('l-9')).className).toBe('');
+    });
+
+    test('a word without an overlay of its own is skipped, missing inputs are tolerated', () => {
+        const regionEls = build();
+        expect(() => applyRegionMarkup(regionEls, { words: [{ id: 'nope', types: ['underline'] }] }, 'PPN1', 5)).not.toThrow();
+        expect(() => applyRegionMarkup(null, { words: [] }, 'PPN1', 5)).not.toThrow();
+        expect(() => applyRegionMarkup(regionEls, null, 'PPN1', 5)).not.toThrow();
     });
 });
 
