@@ -45,7 +45,7 @@
     <composite:implementation>
         <div class="form-group form-row">
             <div class="col-2 control-label admin__form-label">
-                <label for="#{cc.attrs.clientId}_input">
+                <label for="#{cc.id}_input">
                     #{cc.attrs.label}:
                     <ui:fragment rendered="#{cc.attrs.required}">
                         <span class="admin__label-required-field">(#{msg.form__required_field})</span>
@@ -55,7 +55,7 @@
 
             <div class="col-9 cms-module__option-control admin__form-input">
                 <h:message
-                    for="#{cc.attrs.clientId}_input"
+                    for="#{cc.id}_input"
                     errorClass="-validation-message -danger" />
                 <div class="-validation-mark">
                     <i
@@ -66,7 +66,7 @@
                         aria-hidden="true" />
                 </div>
                 <h:selectOneMenu
-                    id="#{cc.attrs.clientId}_input"
+                    id="#{cc.id}_input"
                     class="form-control"
                     aria-label="#{cc.attrs.label}"
                     value="#{cc.attrs.value}"
