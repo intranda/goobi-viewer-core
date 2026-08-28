@@ -174,9 +174,17 @@
 			to a lean page loading strategy that limit memory usage (default is 1000) -->
 		<pageLoaderThreshold>1000</pageLoaderThreshold>
 
-		<!-- If true, all HTTP responses will contain attributes preventing proxies 
-			etc. from caching contents. Default is false. -->
-		<preventProxyCaching>true</preventProxyCaching>
+		<!-- caching: HTTP cache headers set by the application. See the caching
+			section of the performance documentation for the individual categories. -->
+		<caching enabled="true">
+			<static maxAge="12345"/>
+			<dynamic policy="no-store"/>
+			<api>
+				<image maxAge="77"/>
+				<media/>
+				<data/>
+			</api>
+		</caching>
         
         <!-- databaseConnectionAttempts: Number of times JPADAO will attempt to establish a connection before failing. -->
         <databaseConnectionAttempts>3</databaseConnectionAttempts>

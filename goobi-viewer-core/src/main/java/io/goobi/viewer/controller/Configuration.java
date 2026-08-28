@@ -254,6 +254,11 @@ public class Configuration extends AbstractConfiguration {
             logger.error(e.getMessage(), e);
             stopwords = HashSet.newHashSet(0);
         }
+
+        if (getLocalString("performance.preventProxyCaching") != null) {
+            logger.warn("performance.preventProxyCaching is no longer supported and was replaced by "
+                    + "performance.caching[@enabled]; the old value is ignored.");
+        }
     }
 
     /**
@@ -4963,13 +4968,52 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * isPreventProxyCaching.
+     * Returns whether the application sets HTTP cache headers at all.
      *
+     * @return true if the application manages cache headers; false to leave every response untouched
      * @should return correct value
-     * @return true if proxy caching should be prevented, false otherwise
+     * @should return the configured value when the attribute is set
+     * @should ignore the removed preventProxyCaching key
      */
-    public boolean isPreventProxyCaching() {
-        return getLocalBoolean(("performance.preventProxyCaching"), false);
+    public boolean isCachingEnabled() {
+        return getLocalBoolean("performance.caching[@enabled]", true);
+    }
+
+    /**
+     * Returns the freshness lifetime in seconds for static resources below the asset whitelist.
+     *
+     * @return max-age value in seconds
+     * @should return correct value
+     * @should return default value when the caching block has no entry
+     */
+    public int getStaticResourceCacheMaxAge() {
+        return getLocalInt("performance.caching.static[@maxAge]", 300);
+    }
+
+    /**
+     * Returns the cache policy for dynamic pages.
+     *
+     * <p>Accepted values are {@code no-cache} (emit {@code private, no-cache}), {@code no-store}
+     * and {@code off} (emit no header at all). Account-bound paths are always {@code no-store},
+     * regardless of this setting.
+     *
+     * @return configured policy token
+     * @should return correct value
+     * @should return default value when the caching block has no entry
+     */
+    public String getDynamicCachePolicy() {
+        return getLocalString("performance.caching.dynamic[@policy]", "no-cache");
+    }
+
+    /**
+     * Returns the freshness lifetime in seconds for IIIF image responses.
+     *
+     * @return max-age value in seconds; 0 means revalidate on every use
+     * @should return correct value
+     * @should return default value when the caching block has no entry
+     */
+    public int getApiImageCacheMaxAge() {
+        return getLocalInt("performance.caching.api.image[@maxAge]", 300);
     }
 
     /**
