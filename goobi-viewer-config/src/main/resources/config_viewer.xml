@@ -212,7 +212,7 @@
         <!-- caching: HTTP cache headers set by the application. The application is the single
              source of truth here; the Apache vhost must not set Expires or Cache-Control.
              enabled: master switch, read live on every request. Default is true.
-             static@maxAge: seconds, for assets below /resources/{css,javascript,images,icons,fonts}.
+             static@maxAge: seconds, for assets below /resources/{css,javascript,images,icons,fonts,xsl,opensearch}.
              dynamic@policy: no-cache (default) emits "private, no-cache" and keeps pages eligible
                  for the browsers' back/forward cache; no-store is stricter; off emits no header,
                  for installations with a CDN in front. Account bound paths are always no-store.

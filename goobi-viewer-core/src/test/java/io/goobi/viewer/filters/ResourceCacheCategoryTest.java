@@ -196,4 +196,38 @@ class ResourceCacheCategoryTest {
     void classify_shouldClassifyIncompleteThemePathsAsDynamic() {
         Assertions.assertEquals(ResourceCacheCategory.DYNAMIC, ResourceCacheCategory.classify("/resources/themes/reference"));
     }
+
+    /**
+     * @see ResourceCacheCategory#classify(String, String)
+     * @verifies classify account bound original paths as account regardless of the servlet path
+     */
+    @Test
+    void classify_shouldClassifyAccountBoundOriginalPathsAsAccountRegardlessOfTheServletPath() {
+        // the pretty url rewrite filter has already forwarded these to their backing view id
+        Assertions.assertEquals(ResourceCacheCategory.ACCOUNT,
+                ResourceCacheCategory.classify("/userBackendSearches.xhtml", "/user/searches/"));
+        Assertions.assertEquals(ResourceCacheCategory.ACCOUNT,
+                ResourceCacheCategory.classify("/bookmarkLists.xhtml", "/bookmarks/"));
+        Assertions.assertEquals(ResourceCacheCategory.ACCOUNT,
+                ResourceCacheCategory.classify("/campaigns.xhtml", "/campaigns/"));
+        // the cms backend's view ids live below /resources/cms/, not /resources/admin/
+        Assertions.assertEquals(ResourceCacheCategory.ACCOUNT,
+                ResourceCacheCategory.classify("/resources/cms/adminCmsOverview.xhtml", "/admin/cms/pages/"));
+        Assertions.assertEquals(ResourceCacheCategory.ACCOUNT,
+                ResourceCacheCategory.classify("/someView.xhtml", "/myactivity/"));
+        Assertions.assertEquals(ResourceCacheCategory.ACCOUNT,
+                ResourceCacheCategory.classify("/someView.xhtml", "/crowdsourcing/campaign/1/"));
+    }
+
+    /**
+     * @see ResourceCacheCategory#classify(String, String)
+     * @verifies fall back to the servlet path when the original path is not account bound
+     */
+    @Test
+    void classify_shouldFallBackToTheServletPathWhenTheOriginalPathIsNotAccountBound() {
+        Assertions.assertEquals(ResourceCacheCategory.DYNAMIC,
+                ResourceCacheCategory.classify("/object/PPN123/1/", "/object/PPN123/1/"));
+        Assertions.assertEquals(ResourceCacheCategory.ACCOUNT,
+                ResourceCacheCategory.classify("/admin/users/", null));
+    }
 }

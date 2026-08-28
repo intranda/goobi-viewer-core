@@ -22,6 +22,7 @@
 package io.goobi.viewer.filters;
 
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -141,5 +142,25 @@ class HttpResponseFilterTest extends AbstractTest {
         new HttpResponseFilter().doFilter(request, response, Mockito.mock(FilterChain.class));
 
         Mockito.verify(request, Mockito.never()).setCharacterEncoding(ArgumentMatchers.anyString());
+    }
+
+    /**
+     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
+     * @verifies set no store for account bound paths reached through a forward
+     */
+    @Test
+    void doFilter_shouldSetNoStoreForAccountBoundPathsReachedThroughAForward() throws Exception {
+        // the pretty url rewrite filter has already forwarded /user/searches/ to this view id by
+        // the time this filter runs, so only the preserved forward attribute still carries it
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getServletPath()).thenReturn("/userBackendSearches.xhtml");
+        Mockito.when(request.getContextPath()).thenReturn("/viewer");
+        Mockito.when(request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI)).thenReturn("/viewer/user/searches/");
+
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        new HttpResponseFilter().doFilter(request, response, Mockito.mock(FilterChain.class));
+
+        Mockito.verify(response).setHeader("Cache-Control", "no-store");
     }
 }

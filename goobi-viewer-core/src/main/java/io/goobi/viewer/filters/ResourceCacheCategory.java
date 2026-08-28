@@ -54,7 +54,14 @@ public enum ResourceCacheCategory {
             Set.of("css", "javascript", "images", "icons", "fonts", "xsl", "opensearch");
 
     /** URL prefixes whose pages are bound to a user account. */
-    private static final Set<String> ACCOUNT_PREFIXES = Set.of("/admin", "/user", "/campaigns", "/bookmarks");
+    private static final Set<String> ACCOUNT_PREFIXES = Set.of("/admin", "/user", "/campaigns", "/bookmarks", "/myactivity");
+
+    /**
+     * Additional account bound prefix that, unlike {@link #ACCOUNT_PREFIXES}, is matched without a
+     * path boundary, mirroring {@code LoginFilter#isRestrictedUri(String)}: any path starting with
+     * this prefix, not just one followed by a slash, is account bound.
+     */
+    private static final String ACCOUNT_PREFIX_CROWD = "/crowd";
 
     /** View directories below /resources that back the account bound prefixes. */
     private static final Set<String> ACCOUNT_RESOURCE_DIRECTORIES = Set.of("admin", "crowdsourcing");
@@ -106,6 +113,32 @@ public enum ResourceCacheCategory {
     }
 
     /**
+     * Returns the cache category for the given dispatch, checking the original request uri for an
+     * account bound prefix before falling back to {@link #classify(String)}.
+     *
+     * <p>The pretty url rewrite filter forwards a request such as {@code /user/searches/} to its
+     * backing view id, {@code /userBackendSearches.xhtml}, before this class ever sees the servlet
+     * path. None of the account bound prefixes match that view id, so {@link #classify(String)}
+     * alone would misclassify the page as {@code DYNAMIC}. The original, pre-forward uri still
+     * carries the pretty url and is checked first; only a path that is not account bound there
+     * falls through to the servlet path check, exactly as {@link #classify(String)} performs it on
+     * its own.
+     *
+     * @param servletPath path of the current dispatch target; may be null
+     * @param originalPath request uri before any forward rewrote it to the servlet path, without
+     *            the context path; may be null
+     * @return matching category, never null
+     * @should classify account bound original paths as account regardless of the servlet path
+     * @should fall back to the servlet path when the original path is not account bound
+     */
+    public static ResourceCacheCategory classify(String servletPath, String originalPath) {
+        if (originalPath != null && !originalPath.isEmpty() && isAccountPath(normalize(originalPath))) {
+            return ACCOUNT;
+        }
+        return classify(servletPath);
+    }
+
+    /**
      * Strips path parameters such as {@code ;jsessionid}.
      *
      * <p>The servlet container has already percent-decoded the path by the time it reaches a
@@ -132,6 +165,9 @@ public enum ResourceCacheCategory {
             if (isPrefix(path, prefix)) {
                 return true;
             }
+        }
+        if (path.startsWith(ACCOUNT_PREFIX_CROWD)) {
+            return true;
         }
         return ACCOUNT_RESOURCE_DIRECTORIES.contains(firstSegmentBelowResources(path));
     }

@@ -27,6 +27,7 @@ import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -78,6 +79,7 @@ public class HttpResponseFilter implements Filter {
      * @should set no cache headers for jsf resources and api paths
      * @should set no headers when caching is disabled
      * @should skip character encoding for api paths
+     * @should set no store for account bound paths reached through a forward
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -85,7 +87,7 @@ public class HttpResponseFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String path = httpRequest.getServletPath();
-        ResourceCacheCategory category = ResourceCacheCategory.classify(path);
+        ResourceCacheCategory category = ResourceCacheCategory.classify(path, getOriginalPath(httpRequest));
 
         // REST calls carry their own encoding negotiated by JAX-RS.
         if (category != ResourceCacheCategory.API) {
@@ -105,6 +107,33 @@ public class HttpResponseFilter implements Filter {
         }
 
         chain.doFilter(request, response);
+    }
+
+    /**
+     * Returns the request uri the current dispatch originated from, without the context path.
+     *
+     * <p>The PrettyFaces rewrite filter is ordered ahead of this one and forwards a matched pretty
+     * url to its backing view id via a genuine {@code RequestDispatcher.forward()}. From that point
+     * on {@link HttpServletRequest#getRequestURI()} reflects the forward target, i.e. the view id,
+     * not the pretty url the browser sent; the servlet container preserves the pre-forward uri in
+     * the standard {@link RequestDispatcher#FORWARD_REQUEST_URI} attribute instead, and PrettyFaces
+     * itself relies on that same attribute to recover the pretty url after its own forward. Falling
+     * back to {@link HttpServletRequest#getRequestURI()} covers a dispatch that was never forwarded,
+     * where the two are identical anyway.
+     */
+    private static String getOriginalPath(HttpServletRequest request) {
+        String uri = (String) request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI);
+        if (uri == null) {
+            uri = request.getRequestURI();
+        }
+        if (uri == null) {
+            return null;
+        }
+        String contextPath = request.getContextPath();
+        if (contextPath != null && !contextPath.isEmpty() && uri.startsWith(contextPath)) {
+            uri = uri.substring(contextPath.length());
+        }
+        return uri;
     }
 
     /** Emits the header for the given category, or nothing where another layer owns it. */
