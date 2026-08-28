@@ -21,8 +21,7 @@
  */
 package io.goobi.viewer.filters;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -48,6 +47,7 @@ public enum ResourceCacheCategory {
     private static final String JSF_RESOURCE_PREFIX = "/jakarta.faces.resource";
     private static final String RESOURCES_PREFIX = "/resources/";
     private static final String THEMES_PREFIX = "/resources/themes/";
+    private static final String PARENT_DIRECTORY_SEGMENT = "..";
 
     /** Directories below /resources that hold assets only; verified to contain no markup. */
     private static final Set<String> ASSET_DIRECTORIES =
@@ -74,9 +74,15 @@ public enum ResourceCacheCategory {
      * @should classify api paths as api regardless of file extension
      * @should not classify lookalike paths as api
      * @should classify account bound prefixes as account
-     * @should ignore path parameters and decode percent encoding
+     * @should ignore path parameters and tolerate percent encoded characters
      * @should treat null and empty path as dynamic
      * @should classify ordinary viewer pages as dynamic
+     * @should not throw on malformed percent encoded characters
+     * @should treat plus signs as literal characters
+     * @should never classify paths containing a parent directory segment as static
+     * @should treat markup extensions case insensitively
+     * @should not classify lookalike paths as account
+     * @should classify incomplete theme paths as dynamic
      */
     public static ResourceCacheCategory classify(String servletPath) {
         if (servletPath == null || servletPath.isEmpty()) {
@@ -99,14 +105,21 @@ public enum ResourceCacheCategory {
         return DYNAMIC;
     }
 
-    /** Strips path parameters such as ;jsessionid and decodes percent encoding. */
+    /**
+     * Strips path parameters such as {@code ;jsessionid}.
+     *
+     * <p>The servlet container has already percent-decoded the path by the time it reaches a
+     * filter; decoding it a second time here would turn a literal {@code +} into a space and could
+     * turn an encoded path separator into a real one, both of which would undermine the
+     * classification below.
+     */
     private static String normalize(String servletPath) {
         String path = servletPath;
         int semicolon = path.indexOf(';');
         if (semicolon >= 0) {
             path = path.substring(0, semicolon);
         }
-        return URLDecoder.decode(path, StandardCharsets.UTF_8);
+        return path;
     }
 
     /** Matches a prefix only at a path boundary, so that /apidocs does not count as /api. */
@@ -127,13 +140,30 @@ public enum ResourceCacheCategory {
      * Returns true for paths below a whitelisted asset directory.
      *
      * <p>Markup is excluded even inside those directories: a facelet served from an asset path is
-     * still a page, and caching it publicly would hand it to shared caches.
+     * still a page, and caching it publicly would hand it to shared caches. A path carrying a
+     * parent directory segment is excluded as well; a container is expected to resolve those
+     * before dispatch, but a path that reaches this method unresolved must not be treated as a
+     * fixed, whitelisted asset path.
      */
     private static boolean isWhitelistedAsset(String path) {
-        if (path.endsWith(".xhtml") || path.endsWith(".html")) {
+        String lowerCasePath = path.toLowerCase(Locale.ROOT);
+        if (lowerCasePath.endsWith(".xhtml") || lowerCasePath.endsWith(".html")) {
+            return false;
+        }
+        if (containsParentDirectorySegment(path)) {
             return false;
         }
         return ASSET_DIRECTORIES.contains(firstSegmentBelowResources(path));
+    }
+
+    /** Returns true if any path segment is a parent directory reference. */
+    private static boolean containsParentDirectorySegment(String path) {
+        for (String segment : path.split("/")) {
+            if (PARENT_DIRECTORY_SEGMENT.equals(segment)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

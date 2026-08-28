@@ -97,6 +97,7 @@ class ResourceCacheCategoryTest {
     void classify_shouldNotClassifyLookalikePathsAsApi() {
         Assertions.assertEquals(ResourceCacheCategory.DYNAMIC, ResourceCacheCategory.classify("/apidocs/index.xhtml"));
         Assertions.assertEquals(ResourceCacheCategory.DYNAMIC, ResourceCacheCategory.classify("/api-status.xhtml"));
+        Assertions.assertEquals(ResourceCacheCategory.DYNAMIC, ResourceCacheCategory.classify("/restaurant/menu"));
     }
 
     /**
@@ -111,10 +112,10 @@ class ResourceCacheCategoryTest {
 
     /**
      * @see ResourceCacheCategory#classify(String)
-     * @verifies ignore path parameters and decode percent encoding
+     * @verifies ignore path parameters and tolerate percent encoded characters
      */
     @Test
-    void classify_shouldIgnorePathParametersAndDecodePercentEncoding() {
+    void classify_shouldIgnorePathParametersAndToleratePercentEncodedCharacters() {
         Assertions.assertEquals(ResourceCacheCategory.STATIC,
                 ResourceCacheCategory.classify("/resources/css/theme.min.css;jsessionid=ABC123"));
         Assertions.assertEquals(ResourceCacheCategory.STATIC, ResourceCacheCategory.classify("/resources/images/a%20b.png"));
@@ -138,5 +139,61 @@ class ResourceCacheCategoryTest {
     void classify_shouldClassifyOrdinaryViewerPagesAsDynamic() {
         Assertions.assertEquals(ResourceCacheCategory.DYNAMIC, ResourceCacheCategory.classify("/object/PPN123/1/"));
         Assertions.assertEquals(ResourceCacheCategory.DYNAMIC, ResourceCacheCategory.classify("/search/-/foo/1/-/-/"));
+    }
+
+    /**
+     * @see ResourceCacheCategory#classify(String)
+     * @verifies not throw on malformed percent encoded characters
+     */
+    @Test
+    void classify_shouldNotThrowOnMalformedPercentEncodedCharacters() {
+        Assertions.assertEquals(ResourceCacheCategory.STATIC, ResourceCacheCategory.classify("/resources/css/bad%.css"));
+        Assertions.assertEquals(ResourceCacheCategory.DYNAMIC, ResourceCacheCategory.classify("/resources/%zz/x.css"));
+    }
+
+    /**
+     * @see ResourceCacheCategory#classify(String)
+     * @verifies treat plus signs as literal characters
+     */
+    @Test
+    void classify_shouldTreatPlusSignsAsLiteralCharacters() {
+        Assertions.assertEquals(ResourceCacheCategory.STATIC, ResourceCacheCategory.classify("/resources/images/a+b.png"));
+    }
+
+    /**
+     * @see ResourceCacheCategory#classify(String)
+     * @verifies never classify paths containing a parent directory segment as static
+     */
+    @Test
+    void classify_shouldNeverClassifyPathsContainingAParentDirectorySegmentAsStatic() {
+        Assertions.assertNotEquals(ResourceCacheCategory.STATIC,
+                ResourceCacheCategory.classify("/resources/css/../../admin/private.png"));
+    }
+
+    /**
+     * @see ResourceCacheCategory#classify(String)
+     * @verifies treat markup extensions case insensitively
+     */
+    @Test
+    void classify_shouldTreatMarkupExtensionsCaseInsensitively() {
+        Assertions.assertEquals(ResourceCacheCategory.DYNAMIC, ResourceCacheCategory.classify("/resources/css/inline.XHTML"));
+    }
+
+    /**
+     * @see ResourceCacheCategory#classify(String)
+     * @verifies not classify lookalike paths as account
+     */
+    @Test
+    void classify_shouldNotClassifyLookalikePathsAsAccount() {
+        Assertions.assertEquals(ResourceCacheCategory.DYNAMIC, ResourceCacheCategory.classify("/administration/"));
+    }
+
+    /**
+     * @see ResourceCacheCategory#classify(String)
+     * @verifies classify incomplete theme paths as dynamic
+     */
+    @Test
+    void classify_shouldClassifyIncompleteThemePathsAsDynamic() {
+        Assertions.assertEquals(ResourceCacheCategory.DYNAMIC, ResourceCacheCategory.classify("/resources/themes/reference"));
     }
 }
