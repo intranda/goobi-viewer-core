@@ -54,11 +54,15 @@ import io.goobi.viewer.controller.DataManager;
  * methods that only declare {@code @Produces} and for not-modified responses, so it cannot carry
  * the decision.
  *
+ * <p>A response already committed by the time this filter runs is left untouched outright; nothing can
+ * be set on it anymore.
+ *
  * <p>An error or redirect response is forced to {@code no-store} before any override guard runs, so
- * that a failing endpoint can never hand out the freshness it preset for its success path. Everything
- * else that already carries a caching decision is left alone: endpoints setting their own header, the
- * audio and video delivery which writes {@code Cache-Control: private, no-cache} straight onto the
- * servlet response, and any response already committed by the time this filter runs.
+ * that a failing endpoint can never hand out the freshness it preset for its success path.
+ *
+ * <p>Everything else that already carries a caching decision is left alone: endpoints setting their own
+ * header, and the audio and video delivery which writes {@code Cache-Control: private, no-cache} straight
+ * onto the servlet response.
  */
 @Provider
 @Priority(Priorities.HEADER_DECORATOR)
@@ -90,10 +94,12 @@ public class ApiCacheControlResponseFilter implements ContainerResponseFilter {
      * @should not touch an already committed response
      * @should set no header when caching is disabled
      * @should find the media binding on every static media endpoint
+     * @should find a format path parameter on every image tile endpoint
      * @should vary only by cookie for a private response with a fixed format
      * @should vary by accept and cookie for a negotiated private response
      * @should keep a header set on the raw servlet response inside a container
      * @should apply the data policy inside a container
+     * @should replace a header preset before an error response inside a container
      */
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) throws IOException {
@@ -216,12 +222,9 @@ public class ApiCacheControlResponseFilter implements ContainerResponseFilter {
         return false;
     }
 
-    /** Returns the number of media types the method produces, falling back to the declaring class. */
+    /** Returns the number of media types the resource method produces. */
     private static int producesCount(Method method) {
         Produces produces = method.getAnnotation(Produces.class);
-        if (produces == null) {
-            produces = method.getDeclaringClass().getAnnotation(Produces.class);
-        }
         return produces == null ? 0 : produces.value().length;
     }
 

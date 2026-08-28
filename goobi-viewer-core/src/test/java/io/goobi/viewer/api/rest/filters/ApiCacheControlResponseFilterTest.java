@@ -340,4 +340,29 @@ class ApiCacheControlResponseFilterTest extends AbstractTest {
         Assertions.assertNotNull(method.getAnnotation(MediaResourceBinding.class),
                 methodName + " on " + resourceClass.getSimpleName() + " must carry @MediaResourceBinding");
     }
+
+    /**
+     * The Vary suppression in {@link ApiCacheControlResponseFilter} keys off a path parameter literally
+     * named "format"; this pins that name down on the real image tile endpoints instead of only the
+     * fixture, so a rename or a differently named format parameter fails loudly here.
+     *
+     * @see ApiCacheControlResponseFilter#filter(ContainerRequestContext, ContainerResponseContext)
+     * @verifies find a format path parameter on every image tile endpoint
+     */
+    @Test
+    void filter_shouldFindAFormatPathParameterOnEveryImageTileEndpoint() throws Exception {
+        assertFormatPathParam(io.goobi.viewer.api.rest.v1.records.media.RecordsFilesImageResource.class, "getImage",
+                String.class, String.class, String.class, String.class, String.class);
+        assertFormatPathParam(io.goobi.viewer.api.rest.v2.records.media.RecordsFilesImageResource.class, "getImage",
+                String.class, String.class, String.class, String.class, String.class);
+    }
+
+    /** Fails unless one of the method's parameters carries {@code @PathParam("format")}. */
+    private static void assertFormatPathParam(Class<?> resourceClass, String methodName, Class<?>... parameterTypes)
+            throws NoSuchMethodException {
+        Method method = resourceClass.getDeclaredMethod(methodName, parameterTypes);
+        boolean found = Arrays.stream(method.getParameters())
+                .anyMatch(p -> p.isAnnotationPresent(PathParam.class) && "format".equals(p.getAnnotation(PathParam.class).value()));
+        Assertions.assertTrue(found, methodName + " on " + resourceClass.getSimpleName() + " must carry @PathParam(\"format\")");
+    }
 }

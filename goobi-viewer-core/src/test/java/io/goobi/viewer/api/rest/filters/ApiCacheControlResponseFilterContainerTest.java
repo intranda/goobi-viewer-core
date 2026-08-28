@@ -76,6 +76,14 @@ class ApiCacheControlResponseFilterContainerTest extends JerseyTest {
         public Response plain() {
             return Response.ok("{}").build();
         }
+
+        @GET
+        @Path("/preset-error")
+        @Produces(MediaType.APPLICATION_JSON)
+        public Response presetError(@Context HttpServletResponse servletResponse) {
+            servletResponse.addHeader("Cache-Control", "max-age=300");
+            return Response.serverError().build();
+        }
     }
 
     @Override
@@ -110,6 +118,24 @@ class ApiCacheControlResponseFilterContainerTest extends JerseyTest {
     void filter_shouldApplyTheDataPolicyInsideAContainer() {
         Response response = target("/guard/plain").request().get();
 
+        Assertions.assertEquals("no-store", response.getHeaderString("Cache-Control"));
+    }
+
+    /**
+     * Whether a header preset on the raw servlet response is replaced rather than merged when the
+     * endpoint then fails depends on Jersey's own header merge behavior, which a mocked unit test
+     * cannot observe.
+     *
+     * @see ApiCacheControlResponseFilter#filter(jakarta.ws.rs.container.ContainerRequestContext,
+     *      jakarta.ws.rs.container.ContainerResponseContext)
+     * @verifies replace a header preset before an error response inside a container
+     */
+    @Test
+    void filter_shouldReplaceAHeaderPresetBeforeAnErrorResponseInsideAContainer() {
+        Response response = target("/guard/preset-error").request().get();
+
+        Assertions.assertEquals(500, response.getStatus());
+        Assertions.assertEquals(1, response.getStringHeaders().get("Cache-Control").size());
         Assertions.assertEquals("no-store", response.getHeaderString("Cache-Control"));
     }
 }
