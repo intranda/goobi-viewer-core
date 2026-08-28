@@ -58,8 +58,10 @@ public enum ResourceCacheCategory {
 
     /**
      * Additional account bound prefix that, unlike {@link #ACCOUNT_PREFIXES}, is matched without a
-     * path boundary, mirroring {@code LoginFilter#isRestrictedUri(String)}: any path starting with
-     * this prefix, not just one followed by a slash, is account bound.
+     * path boundary: any path starting with this prefix, not just one followed by a slash, is
+     * account bound. Deliberately coarser than {@code LoginFilter#isRestrictedUri(String)}, which
+     * carves out an exception for crowdsourcing "about" pages; here the stricter category wins
+     * instead, which only costs those pages a shared cache, not correctness.
      */
     private static final String ACCOUNT_PREFIX_CROWD = "/crowd";
 
@@ -166,6 +168,8 @@ public enum ResourceCacheCategory {
                 return true;
             }
         }
+        // Coarser than LoginFilter's access check on purpose: no "about" page carve-out, so a
+        // false positive here only costs a page its shared cache, never account isolation.
         if (path.startsWith(ACCOUNT_PREFIX_CROWD)) {
             return true;
         }

@@ -150,6 +150,11 @@ class HttpResponseFilterTest extends AbstractTest {
      */
     @Test
     void doFilter_shouldSetNoStoreForAccountBoundPathsReachedThroughAForward() throws Exception {
+        // the dynamic policy is switched away from the test default of no-store: otherwise a page
+        // that fell through to DYNAMIC for lack of the fix would coincidentally emit the same
+        // header as ACCOUNT and the test could not tell the two codepaths apart
+        DataManager.getInstance().getConfiguration().overrideValue("performance.caching.dynamic[@policy]", "no-cache");
+
         // the pretty url rewrite filter has already forwarded /user/searches/ to this view id by
         // the time this filter runs, so only the preserved forward attribute still carries it
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
