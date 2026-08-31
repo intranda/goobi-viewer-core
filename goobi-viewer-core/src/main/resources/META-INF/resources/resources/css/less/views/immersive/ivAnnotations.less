@@ -7,10 +7,8 @@
 @immersive-anno-margin-width: 160px;
 @immersive-anno-font: 1.3rem;
 @immersive-anno-font-note: @fontSmall;
-@immersive-anno-font-overline: 1rem;
 @immersive-anno-margin-gap: 12px;
 @immersive-anno-bar: 3px;
-@immersive-anno-panel-min-width: 560px;
 
 .immersive {
     &__anno-toggle {
@@ -56,7 +54,7 @@
     }
 
     &.-annotations-on &__panel-fulltext {
-        min-width: @immersive-anno-panel-min-width;
+        min-width: 560px;
     }
 
     &__anno-columns {
@@ -65,7 +63,7 @@
         padding: 6px 0 4px;
         border-bottom: 1px solid @immersive-divider;
         margin-bottom: 6px;
-        font-size: @immersive-anno-font-overline;
+        font-size: 1rem;
         letter-spacing: 0.06em;
         text-transform: uppercase;
         color: @immersive-chrome-fg;
@@ -263,6 +261,10 @@
         background-color: ~'rgba(var(--immersive-accent-rgb), 0.15)';
         outline: 2px solid @immersive-accent;
     }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
 }
 
 /* BREAKPOINT FOR DESKTOPS */

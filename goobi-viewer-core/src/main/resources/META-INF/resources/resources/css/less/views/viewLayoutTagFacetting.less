@@ -1,59 +1,27 @@
 /* ==============================================================
-   View NER Facetting
+   View Layout Tag Facetting
    style declarations for viewLayoutTagFacetting.xhtml
    ==============================================================*/
 #layoutTagFacetting {
     float: left;
     width: 100%;
-    h2 {
-    }
+
     ul {
         margin: 0;
         padding: 0;
         list-style: none;
     }
-    .facetting-content {
-        #overview {
-            .page-tag {
-                &.empty {
-                }
-                &.PERSON {
-                    color: @personColor;
-                }
-                &.LOCATION {
-                    color: @locationColor;
-                }
-                &.CORPORATION {
-                    color: @corporateColor;
-                }
-                &.INSTITUTION {
-                    color: @corporateColor;
-                }
-            }
-        }
-        .nav-tabs {
-            li {
-                a {
-                    .fa {
-                    }
-                }
-            }
-        }
-        .tab-content {
+
+    .facetting-content .tab-content {
+        position: relative;
+
+        .tab-pane {
             position: relative;
-            .tab-pane {
-                position: relative;
-                padding: 10px;
-                &.active {
-                }
-                h3 {
-                }
-            }
+            padding: 10px;
         }
     }
 }
 
-/* LOADER */
 #layoutTagFacettingLoader {
     display: none;
     position: absolute;
@@ -68,50 +36,48 @@
     z-index: 999;
 }
 
-/* OVERVIEW & SECTION */
 #layoutTagFacetting #overview,
 #layoutTagFacetting #section {
     position: relative;
     border: 1px solid #ddd;
     border-top: none;
+
     .tag-filter-description {
         float: left;
         width: 100%;
         margin-bottom: 5px;
         font-size: @fontNormal;
     }
+
     .set-tag-range-view {
         width: 25%;
     }
+
     .filter-tags {
         margin: 0 0 15px 0;
         padding: 0;
         list-style: none;
+
         li {
             display: inline-block;
             float: left;
             font-size: @fontNormal;
             margin-right: 6px;
+
             &:last-child {
                 margin: 0;
             }
+
             a {
                 text-decoration: none;
                 color: @middlegray;
+
                 &:hover {
                     text-decoration: none;
                     color: @middlegray;
                 }
-                &.active[data-type='person'] {
-                    color: @personColor;
-                }
-                &.active[data-type='location'] {
-                    color: @locationColor;
-                }
-                &.active[data-type='corporation'] {
-                    color: @corporateColor;
-                }
             }
+
             &.reset-filter {
                 display: none;
             }
@@ -119,7 +85,6 @@
     }
 }
 
-/* OVERVIEW */
 #layoutTagFacetting #overview {
     .current-tags {
         position: absolute;
@@ -135,6 +100,7 @@
         background-color: @white;
         box-shadow: 0px 5px 7px rgba(0, 0, 0, 0.4);
         z-index: 999;
+
         &:before {
             content: '';
             position: absolute;
@@ -147,89 +113,66 @@
             border-style: solid;
             border-color: transparent transparent @gray transparent;
         }
+
         .page-tag {
             float: left;
             display: inline-block;
             margin: 0 3px 3px 0;
+
             &:hover {
                 background-color: @tagHoverColor;
             }
-            &.empty {
-            }
-            &.PERSON {
-                color: @personColor;
-            }
-            &.LOCATION {
-                color: @locationColor;
-            }
-            &.CORPORATION {
-                color: @corporateColor;
-            }
-            &.INSTITUTION {
-                color: @corporateColor;
-            }
         }
     }
+
     .overview-content {
         max-height: inherit;
         margin-top: 15px;
         overflow-x: hidden;
         overflow-y: visible;
-        .overview-scale {
-            li {
+
+        .overview-scale li {
+            float: left;
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+
+            div {
                 float: left;
-                width: 100%;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                div {
-                    float: left;
-                }
-                .page-number {
-                    width: 12%;
-                    font-size: @fontNormal;
-                    font-weight: bold;
-                    a {
+            }
+
+            .page-number {
+                width: 12%;
+                font-size: @fontNormal;
+                font-weight: bold;
+
+                a {
+                    color: @black;
+
+                    &:hover,
+                    &:active,
+                    &:focus {
+                        text-decoration: none;
                         color: @black;
-                        &:hover,
-                        &:active,
-                        &:focus {
-                            text-decoration: none;
-                            color: @black;
-                        }
                     }
                 }
-                .tag-container {
-                    width: 88%;
-                    font-size: @fontNormal;
-                    .page-tag {
-                        margin-right: 3px;
-                        white-space: nowrap;
-                        &:hover {
-                            background-color: @tagHoverColor;
-                        }
-                        &.empty {
-                        }
-                        &.PERSON {
-                            color: @personColor;
-                        }
-                        &.LOCATION {
-                            color: @locationColor;
-                        }
-                        &.CORPORATION {
-                            color: @corporateColor;
-                        }
-                        &.INSTITUTION {
-                            color: @corporateColor;
-                        }
+            }
+
+            .tag-container {
+                width: 88%;
+                font-size: @fontNormal;
+
+                .page-tag {
+                    margin-right: 3px;
+                    white-space: nowrap;
+
+                    &:hover {
+                        background-color: @tagHoverColor;
                     }
                 }
             }
         }
     }
-}
-
-/* SECTION */
-#layoutTagFacetting #section {
 }
 
 #layoutTagFacetting #sliderScale {
@@ -239,18 +182,22 @@
     margin-top: 15px;
     border-top: 1px solid @middlegray;
     border-bottom: 1px solid @middlegray;
+
     .scale-page {
         position: absolute;
         left: -8px;
         font-size: @fontMedium;
         color: @middlegray;
+
         &.start {
             top: 0;
         }
+
         &.end {
             bottom: 0;
         }
     }
+
     .slider-description {
         position: absolute;
         top: 50%;
@@ -260,10 +207,9 @@
         font-size: @fontNormal;
         text-align: center;
         color: @middlegray;
-        -ms-transform: rotate(-90deg);
-        -webkit-transform: rotate(-90deg);
         transform: rotate(-90deg);
     }
+
     .scale-stripes {
         position: absolute;
         width: 100%;
@@ -271,20 +217,24 @@
         padding: 0;
         list-style: none;
         z-index: 9;
+
         li {
             clear: both;
             float: right;
             width: 50%;
             height: 60px;
             border-bottom: 1px solid @middlegray;
+
             &.middle {
                 width: 75%;
             }
+
             &:last-child {
                 border: none;
             }
         }
     }
+
     .scale-section-stripe {
         position: absolute;
         display: block;
@@ -305,6 +255,7 @@
     border: none;
     background: @middlegray;
     z-index: 10;
+
     .ui-slider-handle {
         left: -25px;
         width: 10px;
@@ -312,6 +263,7 @@
         margin-bottom: -8px;
         border: none;
         background: @scaleHandleColor;
+
         &:after {
             content: '';
             position: absolute;
@@ -324,9 +276,11 @@
             border-style: solid;
             border-color: transparent transparent transparent @scaleHandleColor;
         }
+
         &:focus {
             outline: none;
         }
+
         .page-bubble {
             position: absolute;
             top: -3px;
@@ -338,6 +292,7 @@
             background-color: @black;
             white-space: nowrap;
             z-index: 999;
+
             &:before {
                 content: '';
                 position: absolute;
@@ -363,26 +318,17 @@
     padding-left: 3px;
     text-align: center;
     overflow-y: visible;
+
     .page-tag {
         display: inline-block;
         margin-right: 3px;
+
         &:hover {
             background-color: @tagHoverColor;
         }
+
         &.empty {
             display: none;
-        }
-        &.PERSON {
-            color: @personColor;
-        }
-        &.LOCATION {
-            color: @locationColor;
-        }
-        &.CORPORATION {
-            color: @corporateColor;
-        }
-        &.INSTITUTION {
-            color: @corporateColor;
         }
     }
 }

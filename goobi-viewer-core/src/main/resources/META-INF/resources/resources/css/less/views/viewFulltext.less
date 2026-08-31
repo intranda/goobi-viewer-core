@@ -1,13 +1,8 @@
 /* ==============================================================
    View Fulltext
-   style declarations for viewFulltext.xhtml 
+   style declarations for viewFulltext.xhtml
    ==============================================================*/
-/* VIEW FULLTEXT */
-/* BLOCK */
 .view-fulltext {
-    /* ELEMENT */
-    &__wrapper {
-    }
     &__box {
         pre {
             padding: 10px;
@@ -15,68 +10,70 @@
             border-radius: 0;
             background-color: @lightgray;
             white-space: pre-wrap;
+
             & > br:first-child {
                 display: none;
             }
         }
     }
+
     &__content {
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 0;
         background-color: #eee;
+
         & > :first-child {
             margin-top: 0;
         }
+
         img {
             max-width: 100%;
         }
     }
+
     &__alto {
         padding: 10px;
         border: 1px solid @middlegray;
         border-radius: 0;
         background-color: @lightgray;
     }
+
     &__popover-button {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 0.5rem;
         color: #222;
         vertical-align: baseline;
         background: transparent;
         padding: 0;
         border: none;
+
         &:hover {
             color: #222;
             text-decoration: none;
         }
     }
+
+    &__popover-icon .icon {
+        width: 1rem;
+        height: 1rem;
+    }
+
     &__entity-action-button {
         background: transparent;
         display: inline;
         padding: 0;
         border: none;
+
         &:not(.view-fulltext__entity-action-button[disabled]) {
             text-decoration: underline;
         }
     }
 }
 
-.view-fulltext__popover-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.view-fulltext__popover-icon .icon {
-    width: 1rem;
-    height: 1rem;
-}
-
-// ENTITY COLORING
 [data-entity-type='person'] {
-    color: #0154a3;
+    &,
     &:hover,
     &:focus,
     &:active {
@@ -85,7 +82,7 @@
 }
 
 [data-entity-type='location'] {
-    color: #ff8000;
+    &,
     &:hover,
     &:focus,
     &:active {
@@ -95,7 +92,7 @@
 
 [data-entity-type='corporation'],
 [data-entity-type='institution'] {
-    color: #1e6606;
+    &,
     &:hover,
     &:focus,
     &:active {
@@ -103,24 +100,24 @@
     }
 }
 
-// ALTO LAYOUT-TAG FULLTEXT
 .alto-fulltext {
     &__page {
         display: flex;
         align-items: flex-start;
         gap: 1.5rem;
 
-        // keep several pages / double-page views separated
         & + & {
             margin-top: 1.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid @middlegray;
         }
     }
+
     &__main {
         flex: 1 1 auto;
         min-width: 0;
     }
+
     &__margin {
         flex: 0 0 22%;
         max-width: 22%;
@@ -132,25 +129,25 @@
 
 .alto-block {
     margin: 0 0 0.75rem 0;
+
     &:last-child {
         margin-bottom: 0;
     }
 }
 
-// WORD-LEVEL LAYOUT MARKUP
 .alto-tag {
     &--underline {
         text-decoration-line: underline;
     }
+
     &--strikethrough {
         text-decoration-line: line-through;
     }
-    // combined: a word that is both underlined and struck through
+
     &--underline&--strikethrough {
         text-decoration-line: underline line-through;
     }
 }
-
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
@@ -162,10 +159,10 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    // stack the margin annotation columns below the main text
     .alto-fulltext__page {
         flex-direction: column;
     }
+
     .alto-fulltext__margin {
         flex-basis: auto;
         max-width: 100%;
