@@ -29,7 +29,10 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -56,11 +59,13 @@ import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.NERTag.Type;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder;
+import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
 import io.goobi.viewer.controller.model.alto.AltoTextReader;
 import io.goobi.viewer.controller.model.alto.CoordinateFinder;
 import io.goobi.viewer.controller.model.alto.LayoutTagEnricher;
 import io.goobi.viewer.controller.model.alto.NamedEntityEnricher;
 import io.goobi.viewer.controller.model.alto.TextEnricher;
+import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.FuzzySearchTerm;
 
 /**
@@ -310,8 +315,9 @@ public final class ALTOTools {
             throw new IllegalArgumentException("alto may not be null");
         }
         Configuration config = DataManager.getInstance().getConfiguration();
-        LayoutTagEnricher layoutEnricher = new LayoutTagEnricher(config.getAltoLayoutWordTags());
-        AltoHtmlBuilder builder = new AltoHtmlBuilder(config.getAltoLayoutPrintedLabel(), config.getAltoLayoutAnnotationTags(),
+        LayoutTagEnricher layoutEnricher = new LayoutTagEnricher(config.getAltoLayoutWordTagTypes(), config.getAltoLayoutWordTags());
+        AltoHtmlBuilder builder = new AltoHtmlBuilder(config.getAltoLayoutPrintedLabel(),
+                translateAnnotationTagNames(config.getAltoLayoutAnnotationTags(), null),
                 CHAR_CLEANUP_ENRICHER, new NamedEntityEnricher(), layoutEnricher);
         try {
             return builder.build(alto, charset != null ? charset : StringTools.DEFAULT_ENCODING);
@@ -319,6 +325,27 @@ public final class ALTOTools {
             logger.error(e.getMessage(), e);
         }
         return null;
+    }
+
+    /**
+     * Resolves the display names of the given annotation-tag mapping through the {@link ViewerResourceBundle}: a name
+     * matching a message key is replaced by its translation, any other name stays as configured.
+     *
+     * @param annotationTags mapping of layout-tag LABEL to {@link AnnotationStyle} as configured
+     * @param locale desired locale; null resolves to the current locale
+     * @return a new ordered map with the same keys and style classes and translated display names
+     * @should translate names that match a message key
+     * @should keep literal names without a message key
+     * @should pass null names through unchanged
+     */
+    public static Map<String, AnnotationStyle> translateAnnotationTagNames(Map<String, AnnotationStyle> annotationTags, Locale locale) {
+        Map<String, AnnotationStyle> ret = new LinkedHashMap<>(annotationTags.size());
+        for (Map.Entry<String, AnnotationStyle> entry : annotationTags.entrySet()) {
+            String name = entry.getValue().name();
+            ret.put(entry.getKey(), new AnnotationStyle(entry.getValue().styleClass(),
+                    name != null ? ViewerResourceBundle.getTranslation(name, locale) : null));
+        }
+        return ret;
     }
 
     public static XMLStreamReader createXmlParser(InputStream is) throws FactoryConfigurationError, XMLStreamException {

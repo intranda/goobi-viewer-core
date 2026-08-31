@@ -48,15 +48,15 @@ class AltoHtmlBuilderTest {
     private String build() throws Exception {
         // The label->markup mapping is supplied explicitly (as it would be from config_viewer.xml); the sample
         // fixture uses the gr_* labels. No NamedEntityEnricher here, to avoid its DataManager dependency.
-        Map<String, String> wordTags = Map.of(
-                "gr_unterstrichen", "alto-tag--underline",
-                "gr_durchgestrichen", "alto-tag--strikethrough");
+        Map<String, String> wordTagTypes = Map.of(
+                "gr_unterstrichen", "underline",
+                "gr_durchgestrichen", "strikethrough");
         Map<String, AnnotationStyle> annotationStyles = new LinkedHashMap<>();
         annotationStyles.put("gr_jacob_grimm", new AnnotationStyle("alto-annotation--jacob-grimm", "Jacob Grimm"));
         annotationStyles.put("gr_jacob_oder_wilhelm_grimm",
                 new AnnotationStyle("alto-annotation--jacob-oder-wilhelm-grimm", "Jacob oder Wilhelm Grimm"));
         annotationStyles.put("gr_wilhelm_grimm", new AnnotationStyle("alto-annotation--wilhelm-grimm", "Wilhelm Grimm"));
-        return new AltoHtmlBuilder("gr_printed", annotationStyles, new LayoutTagEnricher(wordTags))
+        return new AltoHtmlBuilder("gr_printed", annotationStyles, new LayoutTagEnricher(wordTagTypes, null))
                 .build(alto, StringTools.DEFAULT_ENCODING);
     }
 

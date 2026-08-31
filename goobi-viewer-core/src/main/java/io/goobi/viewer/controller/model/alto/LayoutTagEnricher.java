@@ -33,24 +33,34 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 
 /**
  * {@link TextEnricher} implementation that applies inline visual markup to ALTO word tokens carrying word-level
- * layout tags. Each mapped tag LABEL maps to a CSS class that is added to a wrapping {@code <span>}; a word carrying
- * several mapped tags gets all their classes on a single span. The mapping is supplied by the caller (from
- * configuration, see {@code Configuration.getAltoLayoutWordTags()}); there are no built-in labels, since ALTO
- * LayoutTag LABELs are specific to how a given collection's ALTO was produced.
+ * layout tags. Each mapped tag LABEL contributes CSS classes to a wrapping {@code <span>}: a class derived from the
+ * tag's semantic type ({@code alto-tag--<type>}, styled by the core) and/or the configured style class verbatim (an
+ * optional hook for theme CSS). A word carrying several mapped tags gets all their classes on a single span. Both
+ * mappings are supplied by the caller (from configuration, see {@code Configuration.getAltoLayoutWordTagTypes()} and
+ * {@code Configuration.getAltoLayoutWordTags()}); there are no built-in labels, since ALTO LayoutTag LABELs are
+ * specific to how a given collection's ALTO was produced.
  */
 public class LayoutTagEnricher implements TextEnricher {
 
+    /** Prefix of the CSS class derived from a tag's semantic type. */
+    private static final String TYPE_CLASS_PREFIX = "alto-tag--";
+
+    private final Map<String, String> labelToType;
     private final Map<String, String> labelToStyleClass;
 
-    /** Applies no markup (empty mapping). */
+    /** Applies no markup (empty mappings). */
     public LayoutTagEnricher() {
-        this(null);
+        this(null, null);
     }
 
     /**
-     * @param labelToStyleClass mapping of layout-tag LABEL to CSS style class; null is treated as empty (no markup)
+     * @param labelToType mapping of layout-tag LABEL to its semantic type (e.g. {@code underline}), rendered as
+     *            {@code alto-tag--<type>}; null is treated as empty
+     * @param labelToStyleClass mapping of layout-tag LABEL to an additional CSS style class applied verbatim; null is
+     *            treated as empty
      */
-    public LayoutTagEnricher(Map<String, String> labelToStyleClass) {
+    public LayoutTagEnricher(Map<String, String> labelToType, Map<String, String> labelToStyleClass) {
+        this.labelToType = (labelToType == null) ? Collections.emptyMap() : labelToType;
         this.labelToStyleClass = (labelToStyleClass == null) ? Collections.emptyMap() : labelToStyleClass;
     }
 
@@ -60,9 +70,12 @@ public class LayoutTagEnricher implements TextEnricher {
      * @param content the textual content of the word being enriched (possibly already wrapped by a previous enricher)
      * @param element the ALTO line element whose word content is being processed
      * @return the span-wrapped content if a mapped layout tag applies, otherwise the unchanged {@code content}
-     * @should wrap underlined words in an underline span
+     * @should derive the css class from the semantic type
      * @should wrap struck through words in a strikethrough span
      * @should combine both classes on a single span
+     * @should append the configured style class after the derived class
+     * @should apply style class only mappings without a type
+     * @should not duplicate a class mapped by both type and style class
      * @should leave untagged words unchanged
      */
     @Override
@@ -71,6 +84,10 @@ public class LayoutTagEnricher implements TextEnricher {
         for (Tag tag : element.getTags()) {
             if (tag.getTagType() != TagType.LAYOUT_TAG) {
                 continue;
+            }
+            String type = labelToType.get(tag.getLabel());
+            if (type != null && !classes.contains(TYPE_CLASS_PREFIX + type)) {
+                classes.add(TYPE_CLASS_PREFIX + type);
             }
             String styleClass = labelToStyleClass.get(tag.getLabel());
             if (styleClass != null && !classes.contains(styleClass)) {

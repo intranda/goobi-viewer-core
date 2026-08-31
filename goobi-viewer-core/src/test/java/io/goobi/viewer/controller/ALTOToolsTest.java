@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -45,6 +47,7 @@ import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
+import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -448,5 +451,42 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertFalse(coords.isEmpty());
         // Original: 1133,2549,1263,2584 → scaled ×0.5: 566,1274,631,1292
         Assertions.assertEquals("566,1274,631,1292", coords.get(0));
+    }
+
+    /**
+     * @see ALTOTools#translateAnnotationTagNames(Map,Locale)
+     * @verifies translate names that match a message key
+     */
+    @Test
+    void translateAnnotationTagNames_shouldTranslateNamesThatMatchAMessageKey() {
+        Map<String, AnnotationStyle> tags = Map.of("hand_x", new AnnotationStyle("alto-annotation--x", "MD_AUTHOR"));
+        Map<String, AnnotationStyle> ret = ALTOTools.translateAnnotationTagNames(tags, Locale.GERMAN);
+        Assertions.assertEquals("Autor", ret.get("hand_x").name());
+        Assertions.assertEquals("alto-annotation--x", ret.get("hand_x").styleClass());
+    }
+
+    /**
+     * @see ALTOTools#translateAnnotationTagNames(Map,Locale)
+     * @verifies keep literal names without a message key
+     */
+    @Test
+    void translateAnnotationTagNames_shouldKeepLiteralNamesWithoutAMessageKey() {
+        Map<String, AnnotationStyle> tags = Map.of(
+                "hand_a", new AnnotationStyle("alto-annotation--a", "Andere Handschrift"),
+                "hand_b", new AnnotationStyle("alto-annotation--b", "Einweisungszeichen"));
+        Map<String, AnnotationStyle> ret = ALTOTools.translateAnnotationTagNames(tags, Locale.GERMAN);
+        Assertions.assertEquals("Andere Handschrift", ret.get("hand_a").name());
+        Assertions.assertEquals("Einweisungszeichen", ret.get("hand_b").name());
+    }
+
+    /**
+     * @see ALTOTools#translateAnnotationTagNames(Map,Locale)
+     * @verifies pass null names through unchanged
+     */
+    @Test
+    void translateAnnotationTagNames_shouldPassNullNamesThroughUnchanged() {
+        Map<String, AnnotationStyle> tags = Map.of("hand_x", new AnnotationStyle("alto-annotation--x", null));
+        Map<String, AnnotationStyle> ret = ALTOTools.translateAnnotationTagNames(tags, Locale.GERMAN);
+        Assertions.assertNull(ret.get("hand_x").name());
     }
 }

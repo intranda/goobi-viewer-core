@@ -37,8 +37,8 @@ class LayoutTagEnricherTest {
 
     /** Explicit test mapping — the enricher has no built-in labels. */
     private final LayoutTagEnricher enricher = new LayoutTagEnricher(Map.of(
-            "gr_unterstrichen", "alto-tag--underline",
-            "gr_durchgestrichen", "alto-tag--strikethrough"));
+            "gr_unterstrichen", "underline",
+            "gr_durchgestrichen", "strikethrough"), null);
 
     private Map<String, LineElement> wordsById;
 
@@ -61,10 +61,10 @@ class LayoutTagEnricherTest {
 
     /**
      * @see LayoutTagEnricher#enrich(String,LineElement)
-     * @verifies wrap underlined words in an underline span
+     * @verifies derive the css class from the semantic type
      */
     @Test
-    void enrich_shouldWrapUnderlinedWordsInAnUnderlineSpan() {
+    void enrich_shouldDeriveTheCssClassFromTheSemanticType() {
         Assertions.assertEquals("<span class=\"alto-tag alto-tag--underline\">buͦch</span>", enricher.enrich("buͦch", word("s-143")));
     }
 
@@ -76,7 +76,7 @@ class LayoutTagEnricherTest {
      */
     @Test
     void enrich_shouldWrapStruckThroughWordsInAStrikethroughSpan() {
-        LayoutTagEnricher strikeOnly = new LayoutTagEnricher(Map.of("gr_durchgestrichen", "alto-tag--strikethrough"));
+        LayoutTagEnricher strikeOnly = new LayoutTagEnricher(Map.of("gr_durchgestrichen", "strikethrough"), null);
         Assertions.assertEquals("<span class=\"alto-tag alto-tag--strikethrough\">Dageminde</span>", strikeOnly.enrich("Dageminde", word("s-151")));
     }
 
@@ -88,6 +88,43 @@ class LayoutTagEnricherTest {
     void enrich_shouldCombineBothClassesOnASingleSpan() {
         Assertions.assertEquals("<span class=\"alto-tag alto-tag--underline alto-tag--strikethrough\">Dageminde</span>",
                 enricher.enrich("Dageminde", word("s-151")));
+    }
+
+    /**
+     * @see LayoutTagEnricher#enrich(String,LineElement)
+     * @verifies append the configured style class after the derived class
+     */
+    @Test
+    void enrich_shouldAppendTheConfiguredStyleClassAfterTheDerivedClass() {
+        LayoutTagEnricher withStyleClass = new LayoutTagEnricher(Map.of("gr_unterstrichen", "underline"),
+                Map.of("gr_unterstrichen", "my-vocab-class"));
+        Assertions.assertEquals("<span class=\"alto-tag alto-tag--underline my-vocab-class\">buͦch</span>",
+                withStyleClass.enrich("buͦch", word("s-143")));
+    }
+
+    /**
+     * @see LayoutTagEnricher#enrich(String,LineElement)
+     * @verifies apply style class only mappings without a type
+     */
+    @Test
+    void enrich_shouldApplyStyleClassOnlyMappingsWithoutAType() {
+        LayoutTagEnricher styleClassOnly = new LayoutTagEnricher(null, Map.of("gr_unterstrichen", "fulltext-underline"));
+        Assertions.assertEquals("<span class=\"alto-tag fulltext-underline\">buͦch</span>",
+                styleClassOnly.enrich("buͦch", word("s-143")));
+    }
+
+    /**
+     * Legacy configurations map the derived class directly as styleClass; the span must not carry it twice.
+     *
+     * @see LayoutTagEnricher#enrich(String,LineElement)
+     * @verifies not duplicate a class mapped by both type and style class
+     */
+    @Test
+    void enrich_shouldNotDuplicateAClassMappedByBothTypeAndStyleClass() {
+        LayoutTagEnricher redundant = new LayoutTagEnricher(Map.of("gr_unterstrichen", "underline"),
+                Map.of("gr_unterstrichen", "alto-tag--underline"));
+        Assertions.assertEquals("<span class=\"alto-tag alto-tag--underline\">buͦch</span>",
+                redundant.enrich("buͦch", word("s-143")));
     }
 
     /**

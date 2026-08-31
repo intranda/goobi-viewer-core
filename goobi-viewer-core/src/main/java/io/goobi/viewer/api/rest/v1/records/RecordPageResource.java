@@ -78,6 +78,7 @@ import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilde
 import io.goobi.viewer.api.rest.resourcebuilders.LayoutTagBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
+import io.goobi.viewer.controller.ALTOTools;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
@@ -401,7 +402,8 @@ public class RecordPageResource {
                 return empty;
             }
             Configuration config = DataManager.getInstance().getConfiguration();
-            return new AltoLayoutAnnotationBuilder(config.getAltoLayoutPrintedLabel(), config.getAltoLayoutAnnotationTags(),
+            return new AltoLayoutAnnotationBuilder(config.getAltoLayoutPrintedLabel(),
+                    ALTOTools.translateAnnotationTagNames(config.getAltoLayoutAnnotationTags(), null),
                     config.getAltoLayoutWordTagTypes()).build(alto.getOne(), alto.getTwo());
         } catch (FileNotFoundException e) {
             logger.debug("No ALTO file found for {}, page {}: {}", pi, pageNo, e.getMessage());

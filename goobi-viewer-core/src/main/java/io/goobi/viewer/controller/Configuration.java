@@ -2043,8 +2043,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Mapping of word-level ALTO layout-tag LABEL to the CSS class applied to the enclosing span in the fulltext
-     * view (e.g. underline/strikethrough markup).
+     * Mapping of word-level ALTO layout-tag LABEL to an additional CSS class applied verbatim to the enclosing span
+     * in the fulltext view — an optional hook for theme CSS. The semantic markup itself is derived from
+     * {@link #getAltoLayoutWordTagTypes()}.
      *
      * @return an ordered map of label to CSS style class; empty if none configured (callers fall back to defaults)
      * @should return configured word tags
@@ -2066,8 +2067,8 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * Mapping of word/line-level ALTO layout-tag LABEL to its semantic type ({@code underline}, {@code strikethrough}
-     * or {@code mark}), used by the immersive view to render word markup and drawn-line overlays for arbitrary
-     * customer label vocabularies.
+     * or {@code mark}), used by the immersive view to render word markup and drawn-line overlays and by the fulltext
+     * view to derive the {@code alto-tag--<type>} markup classes, for arbitrary customer label vocabularies.
      *
      * @return an ordered map of label to semantic type; empty if none configured (callers fall back to defaults)
      * @should return configured word tag types
