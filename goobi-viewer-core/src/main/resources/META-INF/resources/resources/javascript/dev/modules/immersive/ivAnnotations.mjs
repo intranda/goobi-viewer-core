@@ -85,8 +85,6 @@ export function writeAnnotationsEnabled(storage, enabled) {
  */
 export function altoElementId(regionId, pi, pageNo) {
     if (!regionId) return null;
-    // Strip query and any trailing slash: deployments build the annotation URI with a
-    // trailing slash before the query (…alto_{pi}_{page}_{element}/?format=oa).
     const id = String(regionId).split('?')[0].replace(/\/+$/, '');
     const marker = `alto_${pi}_${pageNo}_`;
     const at = id.lastIndexOf(marker);
@@ -173,19 +171,18 @@ export function nearestAnchorIndex(midY, anchors) {
 /**
  * Collision handling of the margin column: a note stays exactly at its desired
  * top (its anchor line) when it has the room. Overlapping runs merge into a
- * cluster placed at the median of its members' candidate tops, so the
- * displacement is balanced up AND down around the lines instead of
- * accumulating as an ever-growing downward drift (cards are taller than print
- * lines). Clusters are clamped to the container top and never overlap each
- * other. Expects notes sorted by desired top. Pure + tested.
+ * cluster placed at the median of its members' candidate tops (the L1-optimal
+ * placement — do NOT "simplify" to the average), so the displacement is
+ * balanced up AND down around the lines instead of accumulating as an
+ * ever-growing downward drift (cards are taller than print lines). Clusters
+ * are clamped to the container top and never overlap each other. Expects
+ * notes sorted by desired top. Pure + tested.
  *
  * @param {{top:number, height:number}[]} notes
  * @param {number} gap
  * @returns {number[]} final top offsets
  */
 export function stackNoteTops(notes, gap) {
-    // A cluster stacks its members at fixed offsets; its top is the median of
-    // the members' `desired - offset` candidates (the L1-optimal placement).
     const clusterTop = (c) => {
         const cands = c.desired.map((d, i) => d - c.offsets[i]).sort((a, b) => a - b);
         const mid = Math.floor(cands.length / 2);
@@ -195,8 +192,6 @@ export function stackNoteTops(notes, gap) {
     const clusters = [];
     (notes || []).forEach((n) => {
         clusters.push({ desired: [n.top], offsets: [0], height: n.height });
-        // Re-balancing a merged cluster can move it up into its predecessor, so
-        // keep merging backwards until the chain is overlap-free.
         while (clusters.length > 1) {
             const prev = clusters[clusters.length - 2];
             const last = clusters[clusters.length - 1];
@@ -377,6 +372,16 @@ function bindHover(el, enter, leave, registry) {
  * the bidirectional hover coupling between cards, anchor lines and the image
  * regions.
  *
+ * Implementation constraints: the outside-click listener closing the note
+ * popovers is bound in the CAPTURE phase because OpenSeadragon stops click
+ * propagation over its canvas (a bubble listener never sees clicks on the
+ * image); the notes' Escape handling calls stopPropagation so the immersive
+ * key dispatcher on document does not ALSO close the fulltext panel; and a
+ * card overflowing above the first printed line is compensated by shifting
+ * the text down via the --immersive-anno-shift padding custom property (LESS
+ * applies it only in annotations mode, so switching the checkbox off cleans
+ * the shift up without JS) instead of clamping the card onto the line.
+ *
  * @param {object} opts
  * @param {HTMLElement} opts.box     the fulltext panel content element
  * @param {object} opts.layout      the page's layout annotations
@@ -401,7 +406,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
 
     const els = givenEls || indexRegionElements(box, pi, pageNo);
 
-    // Rendered line elements with their ALTO geometry (anchoring + geometric source fallback).
     const lineEls = [];
     (flat || []).forEach((r) => {
         if (r.level !== 'line' || !r.rect) return;
@@ -411,7 +415,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
 
     const sources = markAnnotationSources(annotationBlocks, els, lineEls);
 
-    // Anchor candidates: rendered PRINT lines (annotation lines are no anchors).
     const anchors = lineEls.filter(({ el }) => !el.closest('.immersive__anno-src')).map(({ rect, el }) => ({ y: rect.y, h: rect.h, el }));
 
     const column = document.createElement('div');
@@ -429,9 +432,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
         if (target !== null) scrollContainer.scrollTop = target;
     };
 
-    // Click opens the detail popover (author + full annotation text) — Bootstrap
-    // popover per project convention, manual trigger so exactly one is open at a
-    // time. Without Bootstrap (unit tests) the entries stay inert buttons.
     const $ = typeof window !== 'undefined' ? window.$ || window.jQuery : null;
     const popoverCapable = !!($ && $.fn && typeof $.fn.popover === 'function');
     const POPOVER_TEMPLATE =
@@ -442,8 +442,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
         if (openNote && popoverCapable) $(openNote).popover('hide');
     };
 
-    // Capture phase: OpenSeadragon stops click propagation over its canvas, so a
-    // bubble listener would never see outside clicks on the image.
     const onDocumentClick = (e) => {
         if (!openNote || !(e.target instanceof Element)) return;
         if (e.target.closest('.immersive__anno-note, .immersive__anno-popover')) return;
@@ -468,8 +466,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
             hideNotePopover();
             if (!wasOpen) $(noteEl).popover('show');
         });
-        // stopPropagation: the immersive key dispatcher listens on document and would
-        // otherwise ALSO close the fulltext panel on the same Escape.
         noteEl.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && openNote === noteEl) {
                 e.preventDefault();
@@ -503,28 +499,16 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
     const notes = annotationBlocks
         .map((block) => {
             const blockSources = sources.get(block.id) || [];
-            // A real button: the entry opens the detail popover and is keyboard-reachable.
             const noteEl = document.createElement('button');
             noteEl.type = 'button';
             noteEl.className = 'immersive__anno-note';
-            // The configured styleClass is the presentation hook: themes color foreign
-            // author vocabularies purely via CSS on these classes.
-            styleClassTokens(block.styleClass).forEach((cls) => {
-                try {
-                    noteEl.classList.add(cls);
-                } catch {
-                    // malformed configured class token — skip, the card stays neutral
-                }
-            });
-            // The colored left border is the visual author code; the name stays sr-only
-            // in the entry (part of the button's accessible name) and heads the popover.
+            styleClassTokens(block.styleClass).forEach((cls) => noteEl.classList.add(cls));
             const who = document.createElement('span');
             who.className = 'immersive__anno-note-author';
             who.textContent = block.authorName || '';
             noteEl.append(who);
             const text = document.createElement('span');
             text.className = 'immersive__anno-note-text';
-            // Panel text when the join found sources, the block text from the layout JSON otherwise.
             text.textContent = blockSources.length
                 ? blockSources
                       .map((el) => el.textContent)
@@ -538,8 +522,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
             const anchor = anchorIdx >= 0 ? anchors[anchorIdx] : null;
             const aboveAnchor = isAboveAnchor(midY, anchor);
             const imageRegion = () => (getRegionEls ? getRegionEls().get(block.id) : null);
-            // An above-anchor annotation only USES its anchor for positioning — it does
-            // not belong to that line (e.g. the page number), so no line highlight.
             noteEl.addEventListener('mouseenter', () => {
                 if (anchor && !aboveAnchor) anchor.el.classList.add('is-anno-anchor');
                 const region = imageRegion();
@@ -554,8 +536,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
         })
         .sort((a, b) => a.block.rect.y - b.block.rect.y);
 
-    // Reverse coupling: hovering the anchor line in the printed text highlights its note(s)
-    // (above-anchor notes excluded — their anchor line is position-only).
     const anchorListeners = [];
     const notesByAnchor = new Map();
     notes.forEach((n) => {
@@ -572,11 +552,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
         );
     });
 
-    // ...and hovering a note on the scan highlights its card and anchor line. Bound DIRECTLY
-    // on the overlay elements (OpenSeadragon stops event propagation over its container, so
-    // document-level delegation never sees real mouse events). The note's own word/line text
-    // regions sit ON TOP of the note hit area and intercept the pointer, so they carry the
-    // coupling too; overlays are remounted per page open, hence the re-attachable binding.
     const notesById = new Map(notes.map((n) => [n.block.id, n]));
     const regionIdToNote = new Map();
     notes.forEach((note) => {
@@ -627,7 +602,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
     const inlineNotes = [];
 
     const relayout = () => {
-        // Entries move — an open popover would point at a stale position.
         hideNotePopover();
         inlineNotes.splice(0).forEach((el) => el.remove());
         column.remove();
@@ -651,10 +625,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
             column.appendChild(noteEl);
         });
         box.appendChild(column);
-        // Stack by RENDERED anchor offset, not ALTO order — the two can diverge on
-        // multi-column pages, and stackNoteTops expects tops in ascending order.
-        // Entries CENTER on the anchor's first text row: top-edge alignment sits
-        // visibly low, because the entry carries padding the print line lacks.
         const rowHeight = anchors.length ? parseFloat(getComputedStyle(anchors[0].el).lineHeight) || 0 : 0;
         const desired = notes
             .map(({ noteEl, anchor, aboveAnchor }) => {
@@ -667,12 +637,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
                 };
             })
             .sort((a, b) => a.top - b.top);
-        // A card ABOVE the first printed line needs room the box does not have:
-        // shift the text down via padding instead of clamping the card onto the
-        // line (padding moves the flowed text but not the absolute note column,
-        // and the anchors' measured offsets grow by the same amount). The value
-        // travels as a custom property that LESS only applies in annotations
-        // mode, so switching the checkbox off cleans the shift up without JS.
         const overflow = desired.length ? Math.max(0, -desired[0].top) : 0;
         if (overflow) {
             box.style.setProperty('--immersive-anno-shift', `${overflow}px`);
@@ -711,7 +675,6 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
             box.style.removeProperty('--immersive-anno-shift');
             if (columnsHead) columnsHead.hidden = true;
             els.forEach((el) => el.classList.remove('immersive__anno-margin-src', 'immersive__anno-src'));
-            // A destroy mid-hover never gets the mouseleave — clear scan highlights.
             if (getRegionEls) getRegionEls().forEach((el) => el.classList.remove('is-anno-active'));
         },
     };
@@ -737,9 +700,6 @@ export function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
     let available = false;
 
     const sync = () => {
-        // The state class gates ALL annotations styling (two-column grid, raised
-        // panel min-width) — the persisted "on" alone must not apply it on pages
-        // without annotation data.
         root.classList.toggle(STATE_CLASS, checkbox.checked && available);
     };
 
@@ -754,16 +714,11 @@ export function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
     checkbox.addEventListener('change', () => setEnabled(checkbox.checked));
 
     if (keys) {
-        // Priority 55: runs after the overlay/panel handlers (10-40) and the viewer nav keys (50).
         keys.register(55, (e) => {
             if (e.key !== 'a' || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return false;
             if (isTypingTarget(e.target)) return false;
-            // Annotations are only ever visible alongside the OPEN fulltext panel — a toggle
-            // without it would flip the persisted state with zero visible effect.
             const panel = checkbox.closest('.immersive__panel-left');
             if (checkbox.disabled || (panel && !panel.classList.contains('is-open'))) return false;
-            // Deliberately narrower than ivKeys' OVERLAY_OPEN_SELECTOR: the open fulltext
-            // panel must NOT block the shortcut (the checkbox lives inside it).
             if (document.querySelector(OVERLAY_SELECTOR_BASE)) {
                 return false;
             }
