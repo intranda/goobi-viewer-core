@@ -1,4 +1,4 @@
-/**
+e/**
  * This file is part of the Goobi viewer - a content presentation and management
  * application for digitized objects.
  *
@@ -17,7 +17,6 @@
  * program. If not, see <http://www.gnu.org/licenses/>.
  *
  * @description Represents a crowdsourcing item, consisting of a campaign and a manifest which to apply it to *
- * @version 3.7.0
  * @module Crowdsourcing.js
  * @requires jQuery
  */
@@ -35,9 +34,9 @@ var Crowdsourcing = (function (crowdsourcing) {
     crowdsourcing.Item = function (item, initialCanvasIndex) {
         if (_debug) {
             console.log('##############################');
-            console.log('Crowdsourcing.Item');
-            console.log('Crowdsourcing.Item.canvases ', canvases);
-            console.log('Crowdsourcing.Item.questions ', questions);
+            console.log('Crowdsourcing.Item', item);
+            console.log('Crowdsourcing.Item.canvases ', item.canvases);
+            console.log('Crowdsourcing.Item.questions ', item.campaign.questions);
             console.log('##############################');
         }
 
@@ -56,7 +55,7 @@ var Crowdsourcing = (function (crowdsourcing) {
         this.metadata = item.metadata;
         this.pageStatisticMode = item.pageStatisticMode;
         //maps page numbers (1-based!) to one of the following status: blank, annotate, locked, review, finished
-        this.pageStatusMap = viewerJS.parseMap(item.pageStatusMap);
+        this.pageStatusMap = _parsePageStatusMap(item.pageStatusMap);
         this.reviewActive = item.campaign.reviewMode != 'NO_REVIEW';
         this.currentUser = {};
         this.imageOpenEvents = new rxjs.Subject();
@@ -81,7 +80,7 @@ var Crowdsourcing = (function (crowdsourcing) {
         }
         this.initKeyboardEvents();
 
-        // console.log("initialized crowdsourcing item ", this);
+        if(_debug)console.log("initialized crowdsourcing item ", this);
     };
 
     crowdsourcing.Item.prototype.initKeyboardEvents = function () {
@@ -113,7 +112,7 @@ var Crowdsourcing = (function (crowdsourcing) {
             viewerJS.WebSocket.PATH_CAMPAIGN_SOCKET
         );
         this.socket.onMessage.subscribe((event) => {
-            //console.log("received message ", event.data);
+            if(_debug)console.log("received message ", event.data);
             let data = JSON.parse(event.data);
             if (data.status) {
                 this.handleMessage(data);
@@ -122,7 +121,7 @@ var Crowdsourcing = (function (crowdsourcing) {
             }
         });
         this.onImageOpen((image) => {
-            //console.log("Call websocket on image open " + this.currentCanvasIndex);
+            if(_debug)console.log("Call websocket on image open " + this.currentCanvasIndex);
             let message = {
                 campaign: this.campaignId,
                 record: this.recordIdentifier,
@@ -169,6 +168,8 @@ var Crowdsourcing = (function (crowdsourcing) {
             }
         });
     };
+	
+
 
     crowdsourcing.Item.prototype.isPageAccessible = function (index) {
         if (!this.pageStatisticMode) {
@@ -285,8 +286,10 @@ var Crowdsourcing = (function (crowdsourcing) {
     };
 
     crowdsourcing.Item.prototype.initViewer = function (imageSource) {
+		if(_debug)console.log("init viewer ", imageSource)
         this.canvases = _getCanvasList(imageSource);
         this.currentCanvasIndex = Math.max(0, Math.min(this.currentCanvasIndex, this.canvases.length - 1));
+		if(_debug)console.log("found canvases ", this.canvases, ", beginning at index ", this.currentCanvasIndex)
         //build a simple page status map now that the canvas list is known
         if (!this.pageStatisticMode) {
             this.buildPageStatusMap();
@@ -297,7 +300,7 @@ var Crowdsourcing = (function (crowdsourcing) {
         if (index == undefined) {
             return;
         }
-        //console.log("load image", this.dirty, requireConfirmation, index, this.currentCanvasIndex);
+        if(_debug)console.log("load image", this.dirty, requireConfirmation, index, this.currentCanvasIndex);
         if (this.pageStatisticMode && this.dirty && requireConfirmation && index != this.currentCanvasIndex) {
             viewerJS.notifications
                 .confirm(Crowdsourcing.translate('crowdsourcing__confirm_skip_page'))
@@ -487,7 +490,7 @@ var Crowdsourcing = (function (crowdsourcing) {
 
     crowdsourcing.Item.prototype.isReviewMode = function () {
         if (this.pageStatisticMode) {
-            //console.log('statistic mode index ' + (this.currentCanvasIndex) + ': '  + (this.pageStatusMap.get(this.currentCanvasIndex)))
+            if(_debug)console.log('statistic mode for page ' + this.currentCanvasIndex + ': '  + this.pageStatusMap.get(this.currentCanvasIndex));
             return this.pageStatusMap.get(this.currentCanvasIndex) == 'review';
         } else {
             return this.reviewMode;
@@ -541,6 +544,17 @@ var Crowdsourcing = (function (crowdsourcing) {
                 console.log('Unknown source type, cannot retrieve canvases', source);
         }
     }
+	
+	function _parsePageStatusMap(object) {
+			const rawMap = viewerJS.parseMap(object);
+	        const pageStatusMap = new Map();
+			
+			rawMap.keys().forEach(key => {
+				let status = rawMap.get(key);
+				pageStatusMap.set((parseInt(key)-1), status ? status.toLowerCase() : 'blank');
+			})
+			return pageStatusMap;
+	    };
 
     return crowdsourcing;
 })(Crowdsourcing);
