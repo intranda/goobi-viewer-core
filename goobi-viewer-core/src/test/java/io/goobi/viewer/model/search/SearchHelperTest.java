@@ -954,8 +954,9 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     void getFilterQuerySuffix_shouldComputePersonalFilterSuffixOnTheFlyWhenNoSessionIsAvailable() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getSession(false)).thenReturn(null);
-        // Use a non-localhost IP to avoid the local-full-access shortcut in getPersonalFilterQuerySuffix
-        Mockito.when(request.getHeader("x-forwarded-for")).thenReturn("8.8.8.8");
+        // Use a non-localhost IP to avoid the local-full-access shortcut in getPersonalFilterQuerySuffix.
+        // The client IP is resolved via getRemoteAddr() (X-Forwarded-For is handled by RemoteIpValve, not app code).
+        Mockito.when(request.getRemoteAddr()).thenReturn("8.8.8.8");
 
         String suffix = SearchHelper.getFilterQuerySuffix(request, IPrivilegeHolder.PRIV_LIST);
 
@@ -977,7 +978,8 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     void getAllSuffixes_shouldIncludeAccessConditionFilterWhenRequestHasNoSession() {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getSession(false)).thenReturn(null);
-        Mockito.when(request.getHeader("x-forwarded-for")).thenReturn("8.8.8.8");
+        // Non-localhost IP via getRemoteAddr() (X-Forwarded-For is handled by RemoteIpValve, not app code).
+        Mockito.when(request.getRemoteAddr()).thenReturn("8.8.8.8");
 
         String suffix = SearchHelper.getAllSuffixes(request, false, false, false, IPrivilegeHolder.PRIV_LIST);
 
