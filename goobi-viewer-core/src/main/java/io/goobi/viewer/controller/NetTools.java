@@ -780,59 +780,26 @@ public final class NetTools {
     }
 
     /**
-     * Returns the remote IP address of the given HttpServletRequest. If multiple addresses are found in x-forwarded-for, the first in the list is
-     * returned.
+     * Returns the remote IP address of the given HttpServletRequest, as resolved by the container.
+     *
+     * <p>
+     * The {@code X-Forwarded-For} chain is processed at the container level by Tomcat's {@code RemoteIpValve} (configured in the shipped
+     * {@code server.xml}), which rewrites {@code request.getRemoteAddr()} to the real client IP. Application code must therefore <b>never</b> read
+     * {@code X-Forwarded-For} itself &mdash; doing so would re-introduce IP-spoofing (see GVC-2026-12).
+     * </p>
      *
      * @param request incoming HTTP servlet request to inspect
-     * @return the resolved remote IP address of the client
-     * @should parse ip address
+     * @return the resolved remote IP address of the client, or localhost if unavailable
+     * @should return remote address
+     * @should return localhost if request is null
      */
     public static String getIpAddress(HttpServletRequest request) {
-        String address = ADDRESS_LOCALHOST_IPV4;
-        if (request != null) {
-
-            // Prefer address from x-forwarded-for
-            address = request.getHeader("x-forwarded-for");
-            if (address == null) {
-                address = request.getHeader("X-Forwarded-For");
-            }
-            if (address == null) {
-                address = request.getRemoteAddr();
-            }
+        if (request != null && request.getRemoteAddr() != null) {
+            return request.getRemoteAddr();
         }
 
-        if (address == null) {
-            address = ADDRESS_LOCALHOST_IPV4;
-            logger.warn("Could not extract remote IP address, using localhost.");
-        }
-
-        // logger.trace("Pre-parsed IP address(es): {}", address); //NOSONAR Debug
-        return parseMultipleIpAddresses(address); //NOSONAR address cannot be null here
-    }
-
-    /**
-     * parseMultipleIpAddresses. If the given string contains more than one address, return the first one, otherwise the entire string
-     *
-     * @param address IP address
-     * @return the first IP address from a comma-separated list, or the entire string if it contains only one address
-     * @should return only the first IP address from a comma-separated list
-     */
-    protected static String parseMultipleIpAddresses(final String address) {
-        if (address == null) {
-            throw new IllegalArgumentException("address may not be null");
-        }
-
-        String ret = address;
-        if (ret.contains(",")) {
-            String[] addressSplit = ret.split(",");
-            if (addressSplit.length > 0) {
-                //Use the first address. According to specification, this should be the client ip
-                ret = addressSplit[0].trim();
-            }
-        }
-
-        // logger.trace("Parsed IP address: {}", ret); //NOSONAR Debug
-        return ret;
+        logger.warn("Could not extract remote IP address, using localhost.");
+        return ADDRESS_LOCALHOST_IPV4;
     }
 
     /**
