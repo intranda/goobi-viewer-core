@@ -1205,16 +1205,21 @@ public final class SearchHelper {
      *
      * @param field Solr field name whose blacklisted values should be filtered
      * @should return negated DC filter clauses for each blacklisted collection
+     * @should resolve facetified field to configured blacklist
      * @return Solr query suffix excluding blacklisted values for the given field
      */
     protected static String generateCollectionBlacklistFilterSuffix(String field) {
         // logger.trace("Generating blacklist suffix for field '{}'...", field); //NOSONAR Debug
         StringBuilder sbQuery = new StringBuilder();
-        List<String> list = DataManager.getInstance().getConfiguration().getCollectionBlacklist(field);
+        // The config blacklist is keyed by the raw (non-facetified) collection field, but callers may pass a
+        // facetified field (e.g. FACET_DC) - normalize before lookup so the blacklist is applied for server-side
+        // collection listings too.
+        String configField = defacetifyField(field);
+        List<String> list = DataManager.getInstance().getConfiguration().getCollectionBlacklist(configField);
         if (list != null && !list.isEmpty()) {
             for (String s : list) {
                 if (StringUtils.isNotBlank(s)) {
-                    sbQuery.append(" -").append(field).append(':').append(s.trim());
+                    sbQuery.append(" -").append(configField).append(':').append(s.trim());
                 }
             }
         }

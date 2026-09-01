@@ -710,6 +710,16 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see SearchHelper#generateCollectionBlacklistFilterSuffix(String)
+     * @verifies resolve facetified field to configured blacklist
+     */
+    @Test
+    void generateCollectionBlacklistFilterSuffix_shouldResolveFacetifiedFieldToConfiguredBlacklist() {
+        String suffix = SearchHelper.generateCollectionBlacklistFilterSuffix(SolrConstants.FACET_DC);
+        Assertions.assertEquals(" -" + SolrConstants.DC + ":collection1 -" + SolrConstants.DC + ":collection2", suffix);
+    }
+
+    /**
      * @verifies return true for exact collection match and false for non matching collection
      */
     @Test
