@@ -181,8 +181,6 @@
 			<dynamic policy="no-store"/>
 			<api>
 				<image maxAge="77"/>
-				<media/>
-				<data/>
 			</api>
 		</caching>
         

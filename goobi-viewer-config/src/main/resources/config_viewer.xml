@@ -217,14 +217,13 @@
                  for the browsers' back/forward cache; no-store is stricter; off emits no header,
                  for installations with a CDN in front. Account bound paths are always no-store.
              api/image@maxAge: seconds, for IIIF image responses; 0 revalidates every time.
-             api/media and api/data have no options and document the fixed behaviour. -->
+             Not configurable: static media responses always revalidate ("private, no-cache"),
+             every other API response is "no-store". -->
         <caching enabled="true">
             <static maxAge="300"/>
             <dynamic policy="no-cache"/>
             <api>
                 <image maxAge="300"/>
-                <media/>
-                <data/>
             </api>
         </caching>
 
