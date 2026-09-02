@@ -2466,6 +2466,52 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see JPADAO#deleteCampaign(Campaign)
+     * @verifies delete campaign and its record statistics
+     */
+    @Test
+    void deleteCampaign_shouldDeleteCampaignAndItsRecordStatistics() throws Exception {
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        assertNotNull(campaign);
+        assertFalse(campaign.getStatistics().isEmpty());
+
+        assertTrue(DataManager.getInstance().getDao().deleteCampaign(campaign));
+
+        assertNull(DataManager.getInstance().getDao().getCampaign(1L));
+    }
+
+    /**
+     * Regression test for a production bug: a second cs_campaign_record_statistics row sharing the same
+     * (owner_id, pi) as an existing one is silently dropped from the {@code statistics} Map when the
+     * Campaign is loaded (Map semantics: last one wins on the "pi" key), so it used to be invisible to JPA's
+     * object-graph cascade and block the FK constraint when the campaign row itself was deleted.
+     * {@link JPADAO#deleteCampaign(Campaign)} now deletes the whole record-statistics subtree explicitly,
+     * so it must succeed even in the presence of such a duplicate row.
+     */
+    @Test
+    void deleteCampaign_shouldDeleteDuplicatePiStatisticRow() throws Exception {
+        jakarta.persistence.EntityManagerFactory emf = io.goobi.viewer.dao.impl.TestEntityManagerFactoryHolder.get();
+        jakarta.persistence.EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createNativeQuery(
+                    "INSERT INTO cs_campaign_record_statistics (owner_id, pi, status, date_created) VALUES (1, 'PI_1', 'FINISHED', '2019-08-30 00:00:00')")
+                    .executeUpdate();
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+
+        Campaign campaign = DataManager.getInstance().getDao().getCampaign(1L);
+        assertNotNull(campaign);
+        // Only one entry for PI_1 is visible via the Map, even though two rows now exist in the DB
+        assertNotNull(campaign.getStatistics().get("PI_1"));
+
+        assertTrue(DataManager.getInstance().getDao().deleteCampaign(campaign));
+        assertNull(DataManager.getInstance().getDao().getCampaign(1L));
+    }
+
+    /**
      * @see JPADAO#getCampaigns(int,int,String,boolean,Map)
      * @verifies filter campaigns correctly
      */

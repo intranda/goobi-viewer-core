@@ -4087,11 +4087,44 @@ public class JPADAO implements IDAO {
             EntityManager em = getEntityManager();
             try {
                 startTransaction(em);
+                // Record statistics (and their per-page statistics) are keyed by "pi" resp. "pi_page_key" in
+                // Campaign/CampaignRecordStatistic's Map fields. If the database ever ends up with two rows
+                // sharing the same owner and key (e.g. through a race condition), only one of them is loaded
+                // into the Map, so the other is invisible to JPA's object-graph cascade and never gets deleted,
+                // which then blocks deletion of the campaign row with a foreign key violation. Delete the whole
+                // subtree explicitly instead of relying on cascade to reach it.
+                em.createNativeQuery("DELETE FROM cs_campaign_record_page_statistic_annotators WHERE campaign_record_page_statistic_id IN "
+                        + "(SELECT campaign_record_page_statistic_id FROM cs_campaign_record_page_statistics WHERE owner_id IN "
+                        + "(SELECT campaign_record_statistic_id FROM cs_campaign_record_statistics WHERE owner_id = ?1))")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+                em.createNativeQuery("DELETE FROM cs_campaign_record_page_statistic_reviewers WHERE campaign_record_page_statistic_id IN "
+                        + "(SELECT campaign_record_page_statistic_id FROM cs_campaign_record_page_statistics WHERE owner_id IN "
+                        + "(SELECT campaign_record_statistic_id FROM cs_campaign_record_statistics WHERE owner_id = ?1))")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+                em.createNativeQuery("DELETE FROM cs_campaign_record_page_statistics WHERE owner_id IN "
+                        + "(SELECT campaign_record_statistic_id FROM cs_campaign_record_statistics WHERE owner_id = ?1)")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+                em.createNativeQuery("DELETE FROM cs_campaign_record_statistic_annotators WHERE campaign_record_statistic_id IN "
+                        + "(SELECT campaign_record_statistic_id FROM cs_campaign_record_statistics WHERE owner_id = ?1)")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+                em.createNativeQuery("DELETE FROM cs_campaign_record_statistic_reviewers WHERE campaign_record_statistic_id IN "
+                        + "(SELECT campaign_record_statistic_id FROM cs_campaign_record_statistics WHERE owner_id = ?1)")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+                em.createNativeQuery("DELETE FROM cs_campaign_record_statistics WHERE owner_id = ?1")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+
                 Campaign o = em.getReference(Campaign.class, campaign.getId());
                 em.remove(o);
                 commitTransaction(em);
                 return true;
             } catch (PersistenceException e) {
+                logger.error(e.toString(), e);
                 handleException(em);
                 return false;
             } finally {

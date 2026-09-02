@@ -135,7 +135,7 @@ public class DataRetriever {
      * @param solrField Solr field used to store the collection hierarchy
      * @return List<CollectionResult> (immutable!)
      * @throws IndexUnreachableException
-      * @should get top collections
+     * @should get top collections
      */
     public List<CollectionResult> getTopLevelCollections(String solrField) throws IndexUnreachableException {
         String splittingChar = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(solrField);
@@ -298,6 +298,21 @@ public class DataRetriever {
             }
         }
         return null;
+    }
+
+    /**
+     * get a solr document
+     * 
+     * @param pi
+     * @param fieldList
+     * @return
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    public SolrDocument getSolrDocument(String pi, List<String> fieldList) throws PresentationException, IndexUnreachableException {
+        String query = "PI:" + pi;
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, fieldList);
+        return doc;
     }
 
     /**
