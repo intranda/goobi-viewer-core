@@ -326,8 +326,8 @@ public final class StringTools {
      * @should replace tabs and line break characters with underscores
      */
     public static String stripPatternBreakingChars(String s) {
-        if (StringUtils.isEmpty(s)) {
-            return s;
+        if (s == null) {
+            return null;
         }
 
         return s.replaceAll("[\n\r\t]", "_");
