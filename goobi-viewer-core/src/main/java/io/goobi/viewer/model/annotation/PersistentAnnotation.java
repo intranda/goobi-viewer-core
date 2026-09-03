@@ -641,13 +641,15 @@ public abstract class PersistentAnnotation {
         this.publicationStatus = publicationStatus;
     }
 
+    /**
+     * Returns a hash code derived from the same fields that {@link #equals(Object)} compares.
+     *
+     * @return hash code for this annotation
+     * @should return same hash code for equal instances with different ids
+     */
     @Override
     public int hashCode() {
-        if (id == null) {
-            return 0;
-        }
-        
-        return id.hashCode();
+        return Objects.hash(body, creatorId, generatorId, motivation, accessCondition, dateModified, target, targetPageOrder, targetPI);
     }
 
     @Override

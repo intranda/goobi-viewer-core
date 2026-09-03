@@ -2901,11 +2901,13 @@ public final class SearchHelper {
      * facetifyList.
      *
      * @param sourceList list of Solr field names to convert to facet field names
-     * @return list of facetified field names * @should convert each field in the list to its FACET_ prefixed equivalent
+     * @return list of facetified field names
+     * @should convert each field in the list to its FACET_ prefixed equivalent
+     * @should return modifiable list if source list is null
      */
     public static List<String> facetifyList(List<String> sourceList) {
         if (sourceList == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<String> ret = new ArrayList<>(sourceList.size());

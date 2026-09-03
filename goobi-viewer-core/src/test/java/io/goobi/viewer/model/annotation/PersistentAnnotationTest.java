@@ -263,4 +263,24 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         assertEquals("GROSHERZOGLICH", pAnno.getContentString());
     }
 
+
+    /**
+     * @see PersistentAnnotation#hashCode()
+     * @verifies return same hash code for equal instances with different ids
+     */
+    @Test
+    void hashCode_shouldReturnSameHashCodeForEqualInstancesWithDifferentIds() {
+        CrowdsourcingAnnotation one = new CrowdsourcingAnnotation();
+        one.setId(1L);
+        one.setBody("{\"value\": \"foo\"}");
+        one.setTargetPI("PI_1");
+
+        CrowdsourcingAnnotation other = new CrowdsourcingAnnotation();
+        other.setId(2L);
+        other.setBody("{\"value\": \"foo\"}");
+        other.setTargetPI("PI_1");
+
+        assertEquals(one, other);
+        assertEquals(one.hashCode(), other.hashCode());
+    }
 }

@@ -453,6 +453,7 @@ public class ThumbnailHandler {
      * @param scale scaling parameters defining the output size
      * @param format the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
      * @return the image URL for the given page at the given scale in the given format
+     * @should return url for iiif image info path
      */
     public String getImageUrl(PhysicalElement page, Scale scale, ImageFileFormat format) {
 
@@ -465,7 +466,7 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, null, scale, null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
-            return iiifUrlHandler.getIIIFImageUrl(path, null, scale, null, null, null);
+            return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, scale, Rotation.NONE, Colortype.DEFAULT, format);
         } else {
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT,
                     format.getFileExtension());
