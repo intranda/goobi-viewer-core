@@ -4,10 +4,10 @@
  * image highlights.
  */
 import { jest } from '@jest/globals';
-import { setupLayoutTagsPanel } from '../ivLayoutTagsPanel.mjs';
-import { _clearCache } from '../ivLayoutTags.mjs';
-import { createKeyDispatcher } from '../ivKeys.mjs';
-import { Emitter } from '../ivViewer.mjs';
+import { setupLayoutTagsPanel } from '../ui/ivLayoutTagsPanel.mjs';
+import { _clearCache } from '../data/ivLayoutTags.mjs';
+import { createKeyDispatcher } from '../shared/ivKeys.mjs';
+import { Emitter } from '../engine/ivViewer.mjs';
 
 const INDEX = {
     pi: 'PI',

@@ -1,9 +1,9 @@
 /** ALTO layout-tag annotations: toggle state, inline markup, margin note column and image overlay regions. */
 
-import { isTypingTarget } from './ivPlatform.mjs';
-import { readAnnotationsEnabled, writeAnnotationsEnabled } from './ivPrefs.mjs';
-import { offsetTopWithin, scrollTopToReveal, styleClassTokens } from './ivDom.mjs';
-import { isOverlayOpen } from './ivSelectors.mjs';
+import { isTypingTarget } from '../shared/ivPlatform.mjs';
+import { readAnnotationsEnabled, writeAnnotationsEnabled } from '../shared/ivPrefs.mjs';
+import { offsetTopWithin, scrollTopToReveal, styleClassTokens } from '../shared/ivDom.mjs';
+import { isOverlayOpen } from '../shared/ivSelectors.mjs';
 
 /** localStorage key persisting the annotations toggle, following the immersive-* key convention. */
 /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */

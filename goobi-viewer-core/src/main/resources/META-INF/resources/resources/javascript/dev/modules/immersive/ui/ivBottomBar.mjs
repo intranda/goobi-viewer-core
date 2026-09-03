@@ -1,6 +1,6 @@
 /** Bottom bar and page-status wiring: indicator, chevrons, actions, fullscreen. */
 
-import { createDisposer } from './ivLifecycle.mjs';
+import { createDisposer } from '../shared/ivLifecycle.mjs';
 
 /**
  * Wires the paging UI and the bottom-bar actions: page indicator (bottom bar +

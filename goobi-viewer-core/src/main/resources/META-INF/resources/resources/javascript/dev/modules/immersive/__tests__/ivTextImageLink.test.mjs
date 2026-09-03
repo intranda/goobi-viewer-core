@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { indexById, mountTextImageLink, buildTextLevels } from '../ivTextImageLink.mjs';
+import { indexById, mountTextImageLink, buildTextLevels } from '../ui/ivTextImageLink.mjs';
 
 /** Flat line spans as test fixtures (one region per line, no nesting). */
 function lineSpans(lines) {

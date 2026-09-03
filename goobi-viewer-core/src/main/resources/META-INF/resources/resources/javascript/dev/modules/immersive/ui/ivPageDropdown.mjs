@@ -1,6 +1,6 @@
 /** Title page picker: "go to page" input plus a labelled listbox per page. */
 
-import { createDisposer, noop } from './ivLifecycle.mjs';
+import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 /**
  * Builds the title page picker: a "go to page" input plus a listbox with one

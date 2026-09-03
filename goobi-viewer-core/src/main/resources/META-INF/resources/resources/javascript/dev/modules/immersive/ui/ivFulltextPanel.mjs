@@ -1,9 +1,9 @@
 /** Fulltext panel wiring: combined block/line/word text with image hover linking and layout annotations. */
 
-import { loadPageTextLevels, flattenTextLevels, loadPageLayout } from './ivManifestSource.mjs';
+import { loadPageTextLevels, flattenTextLevels, loadPageLayout } from '../data/ivManifestSource.mjs';
 import { buildTextLevels, mountTextImageLink } from './ivTextImageLink.mjs';
 import { setupAnnotationsToggle, applyTextMarkup, applyRegionMarkup, mountBlockAnnotations, overlayRegions } from './ivAnnotations.mjs';
-import { createDisposer } from './ivLifecycle.mjs';
+import { createDisposer } from '../shared/ivLifecycle.mjs';
 
 /**
  * Wires the fulltext panel: loads the nested OCR levels for the visible page,

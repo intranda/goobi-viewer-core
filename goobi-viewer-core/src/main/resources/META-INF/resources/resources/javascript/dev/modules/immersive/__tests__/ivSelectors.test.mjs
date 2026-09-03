@@ -1,5 +1,5 @@
 /** Unit tests for the shared overlay-open check: one list for every keyboard guard. */
-import { isOverlayOpen } from '../ivSelectors.mjs';
+import { isOverlayOpen } from '../shared/ivSelectors.mjs';
 
 afterEach(() => {
     document.body.innerHTML = '';

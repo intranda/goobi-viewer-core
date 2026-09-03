@@ -1,5 +1,5 @@
 /** Unit tests for the platform and typing-context predicates. */
-import { isTypingTarget, isMacPlatform, macKeyLabel } from '../ivPlatform.mjs';
+import { isTypingTarget, isMacPlatform, macKeyLabel } from '../shared/ivPlatform.mjs';
 
 describe('isTypingTarget', function () {
     test('true for form fields (input, textarea, select)', function () {

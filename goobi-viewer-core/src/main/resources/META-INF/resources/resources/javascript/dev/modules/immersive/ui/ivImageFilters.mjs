@@ -1,6 +1,6 @@
 /** Image-filter popover wiring plus a11y for the immersive Bootstrap popovers. */
 
-import { createDisposer, noop } from './ivLifecycle.mjs';
+import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 const FILTER_TRIGGER_SELECTOR = '[data-popover-element="#immersiveFilterPopover"]';
 

@@ -16,7 +16,7 @@ import {
     parseLayoutAnnotations,
     loadPageLayout,
     _clearCache,
-} from '../ivManifestSource.mjs';
+} from '../data/ivManifestSource.mjs';
 
 const V2 = {
     sequences: [

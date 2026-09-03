@@ -1,7 +1,7 @@
 /** Search panel wiring: in-work IIIF content search with hit list and highlights. */
 
-import { search, nextIndex, prevIndex } from './ivFulltextSearch.mjs';
-import { createDisposer } from './ivLifecycle.mjs';
+import { search, nextIndex, prevIndex } from '../data/ivFulltextSearch.mjs';
+import { createDisposer } from '../shared/ivLifecycle.mjs';
 
 /**
  * Wires the in-place IIIF content search: result list in the left panel,

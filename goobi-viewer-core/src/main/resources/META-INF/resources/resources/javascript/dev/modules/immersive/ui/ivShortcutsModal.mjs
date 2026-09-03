@@ -1,9 +1,9 @@
 /** Keyboard-shortcuts help modal with platform-specific modifier keycaps. */
 
-import { isTypingTarget, isMacPlatform, macKeyLabel } from './ivPlatform.mjs';
-import { createFocusTrap } from './ivA11y.mjs';
-import { isOverlayOpen } from './ivSelectors.mjs';
-import { createDisposer, noop } from './ivLifecycle.mjs';
+import { isTypingTarget, isMacPlatform, macKeyLabel } from '../shared/ivPlatform.mjs';
+import { createFocusTrap } from '../shared/ivA11y.mjs';
+import { isOverlayOpen } from '../shared/ivSelectors.mjs';
+import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 /**
  * Keyboard-shortcuts help modal: opened via the rail button or the `?` key,

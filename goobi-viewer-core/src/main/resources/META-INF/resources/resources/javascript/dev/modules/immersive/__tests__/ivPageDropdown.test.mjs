@@ -3,9 +3,9 @@
  * keyboard navigation, the go-to-page input, and the single-page static case.
  */
 import { jest } from '@jest/globals';
-import { setupPageDropdown } from '../ivPageDropdown.mjs';
-import { createKeyDispatcher } from '../ivKeys.mjs';
-import { Emitter } from '../ivViewer.mjs';
+import { setupPageDropdown } from '../ui/ivPageDropdown.mjs';
+import { createKeyDispatcher } from '../shared/ivKeys.mjs';
+import { Emitter } from '../engine/ivViewer.mjs';
 
 function fakeViewer(total, current = [0]) {
     return {

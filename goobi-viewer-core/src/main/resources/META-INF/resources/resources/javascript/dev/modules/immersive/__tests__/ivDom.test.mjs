@@ -1,5 +1,5 @@
 /** Unit tests for the shared DOM helpers. */
-import { offsetTopWithin, scrollTopToReveal, styleClassTokens, el } from '../ivDom.mjs';
+import { offsetTopWithin, scrollTopToReveal, styleClassTokens, el } from '../shared/ivDom.mjs';
 
 describe('offsetTopWithin', () => {
     test('sums offsetTop along the offsetParent chain up to the container', () => {

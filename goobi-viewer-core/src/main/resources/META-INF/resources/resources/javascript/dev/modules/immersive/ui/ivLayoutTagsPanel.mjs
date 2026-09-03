@@ -15,9 +15,9 @@ import {
     batchRanges,
     loadLayoutTagIndex,
     loadLayoutTagDetails,
-} from './ivLayoutTags.mjs';
-import { styleClassTokens, el } from './ivDom.mjs';
-import { createDisposer, noop } from './ivLifecycle.mjs';
+} from '../data/ivLayoutTags.mjs';
+import { styleClassTokens, el } from '../shared/ivDom.mjs';
+import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 /** Number of colour dots the pick trigger shows for the selected tags. */
 const TRIGGER_DOTS = 4;

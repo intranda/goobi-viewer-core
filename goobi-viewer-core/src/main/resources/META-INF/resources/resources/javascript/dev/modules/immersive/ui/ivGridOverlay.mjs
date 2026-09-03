@@ -1,8 +1,8 @@
 /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
 
-import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX } from './ivPrefs.mjs';
-import { createFocusTrap } from './ivA11y.mjs';
-import { createDisposer } from './ivLifecycle.mjs';
+import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX } from '../shared/ivPrefs.mjs';
+import { createFocusTrap } from '../shared/ivA11y.mjs';
+import { createDisposer } from '../shared/ivLifecycle.mjs';
 
 /**
  * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal

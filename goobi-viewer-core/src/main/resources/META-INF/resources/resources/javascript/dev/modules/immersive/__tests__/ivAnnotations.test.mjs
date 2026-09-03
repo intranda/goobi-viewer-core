@@ -12,8 +12,8 @@ import {
     setupAnnotationsToggle,
     mountBlockAnnotations,
     applyRegionMarkup,
-} from '../ivAnnotations.mjs';
-import { createKeyDispatcher } from '../ivKeys.mjs';
+} from '../ui/ivAnnotations.mjs';
+import { createKeyDispatcher } from '../shared/ivKeys.mjs';
 import { jest } from '@jest/globals';
 
 describe('altoElementId', () => {

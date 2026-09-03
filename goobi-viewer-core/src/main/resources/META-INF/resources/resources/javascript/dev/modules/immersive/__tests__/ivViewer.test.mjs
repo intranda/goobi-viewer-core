@@ -10,8 +10,8 @@
  * (transform: {}). We import it explicitly from @jest/globals.
  */
 import { jest } from '@jest/globals';
-import IvViewer, { Emitter, stageMargins } from '../ivViewer.mjs';
-import { computeSpread } from '../ivImageWindow.mjs';
+import IvViewer, { Emitter, stageMargins } from '../engine/ivViewer.mjs';
+import { computeSpread } from '../engine/ivImageWindow.mjs';
 
 describe('Emitter', function () {
     test('subscriber receives the emitted value', function () {

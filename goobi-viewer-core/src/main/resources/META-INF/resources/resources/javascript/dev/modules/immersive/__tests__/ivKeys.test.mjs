@@ -3,7 +3,7 @@
  * listener, handlers consulted in priority order, first consumer wins.
  */
 import { jest } from '@jest/globals';
-import { createKeyDispatcher, registerViewerNavKeys } from '../ivKeys.mjs';
+import { createKeyDispatcher, registerViewerNavKeys } from '../shared/ivKeys.mjs';
 
 describe('createKeyDispatcher', () => {
     test('consults handlers in priority order and stops at the first consumer', () => {

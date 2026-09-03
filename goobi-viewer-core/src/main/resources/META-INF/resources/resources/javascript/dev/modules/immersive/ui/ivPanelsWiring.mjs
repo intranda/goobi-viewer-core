@@ -1,8 +1,8 @@
 /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
 
-import { offsetTopWithin } from './ivDom.mjs';
-import { isOverlayOpen } from './ivSelectors.mjs';
-import { createDisposer, noop } from './ivLifecycle.mjs';
+import { offsetTopWithin } from '../shared/ivDom.mjs';
+import { isOverlayOpen } from '../shared/ivSelectors.mjs';
+import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
 const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata', 'immersivePanelLayoutTags'];

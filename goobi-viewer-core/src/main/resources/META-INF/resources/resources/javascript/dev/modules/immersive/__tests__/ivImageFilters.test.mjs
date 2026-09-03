@@ -5,8 +5,8 @@
  * toggles) caused by the library stacking event forwarders per load().
  */
 import { jest } from '@jest/globals';
-import { bindImageFiltersRendering } from '../ivImageFilters.mjs';
-import { Emitter } from '../ivViewer.mjs';
+import { bindImageFiltersRendering } from '../ui/ivImageFilters.mjs';
+import { Emitter } from '../engine/ivViewer.mjs';
 
 function fakeOsd() {
     const handlers = {};

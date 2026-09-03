@@ -1,5 +1,13 @@
 /** Unit tests for the persisted preferences: tolerant storage round-trips. */
-import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_KEY, ANNOTATIONS_KEY, readAnnotationsEnabled, writeAnnotationsEnabled } from '../ivPrefs.mjs';
+import {
+    normalizeThumbSizeStep,
+    readThumbSizeStep,
+    writeThumbSizeStep,
+    THUMB_SIZE_KEY,
+    ANNOTATIONS_KEY,
+    readAnnotationsEnabled,
+    writeAnnotationsEnabled,
+} from '../shared/ivPrefs.mjs';
 
 describe('normalizeThumbSizeStep', function () {
     test('accepts the valid steps 0, 1 and 2 (number or numeric string)', function () {

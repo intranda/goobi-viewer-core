@@ -1,6 +1,6 @@
 // media/__tests__/ivFulltextSearch.test.mjs
 import { jest } from '@jest/globals';
-import { parseSearchHits, search, nextIndex, prevIndex } from '../ivFulltextSearch.mjs';
+import { parseSearchHits, search, nextIndex, prevIndex } from '../data/ivFulltextSearch.mjs';
 
 describe('parseSearchHits', () => {
     const list = {

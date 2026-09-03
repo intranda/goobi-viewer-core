@@ -3,7 +3,7 @@
  *
  * Tests the pure page/spread window math: computeSpread, framePages and residentPages.
  */
-import { computeSpread, framePages, residentPages } from '../ivImageWindow.mjs';
+import { computeSpread, framePages, residentPages } from '../engine/ivImageWindow.mjs';
 
 // ---------------------------------------------------------------------------
 // computeSpread — book-layout page pairing

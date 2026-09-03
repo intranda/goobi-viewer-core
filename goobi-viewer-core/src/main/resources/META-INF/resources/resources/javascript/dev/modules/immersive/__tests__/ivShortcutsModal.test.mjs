@@ -5,8 +5,8 @@
  * leave it on <body>).
  */
 import { jest } from '@jest/globals';
-import { setupShortcutsModal } from '../ivShortcutsModal.mjs';
-import { createKeyDispatcher } from '../ivKeys.mjs';
+import { setupShortcutsModal } from '../ui/ivShortcutsModal.mjs';
+import { createKeyDispatcher } from '../shared/ivKeys.mjs';
 
 function mountMarkup() {
     document.body.innerHTML = `

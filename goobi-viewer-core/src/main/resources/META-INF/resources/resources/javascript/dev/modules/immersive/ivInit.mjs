@@ -1,18 +1,18 @@
 /** Immersive view bootstrap: engine construction plus the UI wiring modules. */
 
-import IvViewer from './ivViewer.mjs';
-import { loadPageServices, loadPageLabels, loadPageAccess } from './ivManifestSource.mjs';
-import { attachUrlSync } from './ivUrlSync.mjs';
-import { createKeyDispatcher, registerViewerNavKeys } from './ivKeys.mjs';
-import { setupPanels, setupPanelResize, setupToc, setupMetadataToggle } from './ivPanelsWiring.mjs';
-import { setupShortcutsModal } from './ivShortcutsModal.mjs';
-import { setupFulltextPanel } from './ivFulltextPanel.mjs';
-import { setupLayoutTagsPanel } from './ivLayoutTagsPanel.mjs';
-import { setupSearchPanel } from './ivSearchPanel.mjs';
-import { setupPageDropdown } from './ivPageDropdown.mjs';
-import { setupOverviewGrid } from './ivGridOverlay.mjs';
-import { setupBottomBar } from './ivBottomBar.mjs';
-import { setupImageFilters, setupImmersivePopoverA11y } from './ivImageFilters.mjs';
+import IvViewer from './engine/ivViewer.mjs';
+import { loadPageServices, loadPageLabels, loadPageAccess } from './data/ivManifestSource.mjs';
+import { attachUrlSync } from './ui/ivUrlSync.mjs';
+import { createKeyDispatcher, registerViewerNavKeys } from './shared/ivKeys.mjs';
+import { setupPanels, setupPanelResize, setupToc, setupMetadataToggle } from './ui/ivPanelsWiring.mjs';
+import { setupShortcutsModal } from './ui/ivShortcutsModal.mjs';
+import { setupFulltextPanel } from './ui/ivFulltextPanel.mjs';
+import { setupLayoutTagsPanel } from './ui/ivLayoutTagsPanel.mjs';
+import { setupSearchPanel } from './ui/ivSearchPanel.mjs';
+import { setupPageDropdown } from './ui/ivPageDropdown.mjs';
+import { setupOverviewGrid } from './ui/ivGridOverlay.mjs';
+import { setupBottomBar } from './ui/ivBottomBar.mjs';
+import { setupImageFilters, setupImmersivePopoverA11y } from './ui/ivImageFilters.mjs';
 
 /** Hides the stage loading indicator at the latest after this, even without a painted tile. */
 const STAGE_LOADER_TIMEOUT_MS = 8000;

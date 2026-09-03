@@ -20,7 +20,7 @@ import {
     loadLayoutTagIndex,
     loadLayoutTagDetails,
     _clearCache,
-} from '../ivLayoutTags.mjs';
+} from '../data/ivLayoutTags.mjs';
 
 const TAGS = [
     { label: 'gr_unterstrichen', name: 'Unterstreichungen', styleClass: '', pages: [7, 8, 25, 49] },

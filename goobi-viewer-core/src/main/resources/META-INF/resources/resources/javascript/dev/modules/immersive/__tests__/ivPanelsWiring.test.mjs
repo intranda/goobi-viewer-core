@@ -4,8 +4,8 @@
  * key dispatcher.
  */
 import { jest } from '@jest/globals';
-import { setupPanels, setupPanelResize, pickActiveTocPageNo, panelIdForKeyEvent } from '../ivPanelsWiring.mjs';
-import { createKeyDispatcher } from '../ivKeys.mjs';
+import { setupPanels, setupPanelResize, pickActiveTocPageNo, panelIdForKeyEvent } from '../ui/ivPanelsWiring.mjs';
+import { createKeyDispatcher } from '../shared/ivKeys.mjs';
 
 function mountMarkup() {
     document.body.innerHTML = `

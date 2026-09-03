@@ -1,6 +1,6 @@
 /** Unit tests for the page URL sync: pure path rewriting and the DOM-bound attachUrlSync. */
 import { jest } from '@jest/globals';
-import { pageUrlPath, attachUrlSync } from '../ivUrlSync.mjs';
+import { pageUrlPath, attachUrlSync } from '../ui/ivUrlSync.mjs';
 
 describe('pageUrlPath', function () {
     test('replaces existing page-number segment in URL', function () {

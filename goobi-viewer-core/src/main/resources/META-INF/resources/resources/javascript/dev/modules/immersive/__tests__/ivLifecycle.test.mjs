@@ -1,6 +1,6 @@
 /** Unit tests for the setup-module teardown helper. */
 import { jest } from '@jest/globals';
-import { createDisposer, noop } from '../ivLifecycle.mjs';
+import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 test('listen adds a listener that dispose removes, honouring the options', () => {
     const bag = createDisposer();

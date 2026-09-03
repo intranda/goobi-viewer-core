@@ -1,7 +1,7 @@
 /** Unit tests for the search panel wiring: result rendering, stale responses, error state. */
 import { jest } from '@jest/globals';
-import { setupSearchPanel } from '../ivSearchPanel.mjs';
-import { Emitter } from '../ivViewer.mjs';
+import { setupSearchPanel } from '../ui/ivSearchPanel.mjs';
+import { Emitter } from '../engine/ivViewer.mjs';
 
 function fakeViewer() {
     return {
