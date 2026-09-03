@@ -58,8 +58,8 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 
 /**
- * This bean provides the data for collection browsing (the collection hierarchy derived from a Solr field, plus database-defined dynamic collections).
- * Term browsing is handled by {@link TermBrowseBean}.
+ * This bean provides the data for collection browsing (the collection hierarchy derived from a Solr field, plus database-defined dynamic
+ * collections). Term browsing is handled by {@link TermBrowseBean}.
  */
 @Named
 @SessionScoped

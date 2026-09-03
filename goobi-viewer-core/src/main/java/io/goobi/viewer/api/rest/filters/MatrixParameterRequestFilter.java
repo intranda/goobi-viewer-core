@@ -70,7 +70,8 @@ public class MatrixParameterRequestFilter implements ContainerRequestFilter {
                         .type(MediaType.APPLICATION_JSON)
                         .entity(new ErrorMessage(Status.BAD_REQUEST,
                                 new BadRequestException(
-                                        "Invalid request path: matrix parameters are not supported. This means that the path must not contain a ';' character."),
+                                        "Invalid request path: matrix parameters are not supported. "
+                                                + "This means that the path must not contain a ';' character."),
                                 false))
                         .build());
                 return;

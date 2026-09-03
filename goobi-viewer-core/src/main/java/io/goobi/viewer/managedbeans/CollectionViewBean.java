@@ -211,9 +211,9 @@ public class CollectionViewBean implements Serializable {
     }
 
     /**
-     * Creates a {@link CollectionView} whose entries are the database-defined {@link DynamicCollection}s. Each entry's record count is the hit count of
-     * the collection's stored Solr query (AND-combined with the component's own filter query and subtheme), and its label, description, thumbnail and
-     * link are taken from the {@link DynamicCollection} itself.
+     * Creates a {@link CollectionView} whose entries are the database-defined {@link DynamicCollection}s. Each entry's record count is the hit
+     * count of the collection's stored Solr query (AND-combined with the component's own filter query and subtheme), and its label, description,
+     * thumbnail and link are taken from the {@link DynamicCollection} itself.
      *
      * @param content collection content item configured with the {@link SolrConstants#DC_DYNAMIC} pseudo field
      * @return the populated, flat collection view of all dynamic collections
