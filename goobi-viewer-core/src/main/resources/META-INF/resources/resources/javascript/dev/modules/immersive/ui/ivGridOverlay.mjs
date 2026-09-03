@@ -3,6 +3,7 @@
 import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX } from '../shared/ivPrefs.mjs';
 import { createFocusTrap } from '../shared/ivA11y.mjs';
 import { createDisposer } from '../shared/ivLifecycle.mjs';
+import { env } from '../shared/ivEnv.mjs';
 
 /**
  * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
@@ -71,7 +72,7 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
     let gridTag = null;
     let gridOpener = null;
     let gridTrapHandler = null;
-    const gridActions = new rxjs.Subject();
+    const gridActions = new env.rxjs.Subject();
     const gridActionsSub = gridActions.subscribe((e) => {
         if (e && e.action === 'clickImage' && typeof e.value === 'number') {
             viewer.goToPage(e.value);
@@ -100,7 +101,7 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
         gridTrapHandler = createFocusTrap(gridOverlay);
         gridOverlay.addEventListener('keydown', gridTrapHandler);
         if (!gridMounted) {
-            gridTag = riot.mount('#immersiveThumbnails', 'thumbnails', {
+            gridTag = env.riot.mount('#immersiveThumbnails', 'thumbnails', {
                 source: `${apiBase}/records/${pi}/manifest`,
                 type: 'sequence',
                 actionlistener: gridActions,

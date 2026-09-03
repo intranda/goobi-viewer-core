@@ -1,6 +1,7 @@
 /** ALTO layout-tag annotations: toggle state, inline markup, margin note column and image overlay regions. */
 
 import { isTypingTarget } from '../shared/ivPlatform.mjs';
+import { env } from '../shared/ivEnv.mjs';
 import { readAnnotationsEnabled, writeAnnotationsEnabled } from '../shared/ivPrefs.mjs';
 import { offsetTopWithin, scrollTopToReveal, styleClassTokens } from '../shared/ivDom.mjs';
 import { isOverlayOpen } from '../shared/ivSelectors.mjs';
@@ -391,7 +392,7 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
         if (target !== null) scrollContainer.scrollTop = target;
     };
 
-    const $ = typeof window !== 'undefined' ? window.$ || window.jQuery : null;
+    const $ = env.$ || null;
     const popoverCapable = !!($ && $.fn && typeof $.fn.popover === 'function');
     const POPOVER_TEMPLATE =
         '<div class="popover immersive__anno-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>';

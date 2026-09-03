@@ -1,4 +1,5 @@
 import { computeSpread, residentPages } from './ivImageWindow.mjs';
+import { env } from '../shared/ivEnv.mjs';
 
 /**
  * OSD viewport margins that keep the fitted page clear of the floating chrome.
@@ -130,7 +131,7 @@ export default class IvViewer {
         this.onOpen = new Emitter();
         this.onReset = new Emitter();
 
-        this.viewer = new ImageView.Image({
+        this.viewer = new env.ImageView.Image({
             element: opts.element,
             fittingMode: 'fixed',
             margins: stageMargins(window.innerWidth),
@@ -139,8 +140,8 @@ export default class IvViewer {
             navigator: { enabled: false },
         });
         this.viewer.openseadragon.crossOriginPolicy = 'Anonymous';
-        this.zoom = new ImageView.Controls.Zoom(this.viewer);
-        this.rotation = new ImageView.Controls.Rotation(this.viewer);
+        this.zoom = new env.ImageView.Controls.Zoom(this.viewer);
+        this.rotation = new env.ImageView.Controls.Rotation(this.viewer);
 
         // Without ZOOM_IMAGES the image server caps resolution anyway; disable the
         // interactive zoom gestures so the viewer stays at the fitted page.

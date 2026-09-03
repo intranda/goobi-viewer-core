@@ -1,6 +1,7 @@
 /** Image-filter popover wiring plus a11y for the immersive Bootstrap popovers. */
 
 import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
+import { env } from '../shared/ivEnv.mjs';
 
 const FILTER_TRIGGER_SELECTOR = '[data-popover-element="#immersiveFilterPopover"]';
 
@@ -31,7 +32,7 @@ export function setupImageFilters(viewer) {
     const btn = document.querySelector(FILTER_TRIGGER_SELECTOR);
     if (!btn) return noop;
     const bag = createDisposer();
-    const $ = window.$ || window.jQuery;
+    const $ = env.$;
     if (!$) {
         mountImageFilters(viewer, bag);
         return { destroy: bag.dispose };
@@ -60,7 +61,7 @@ export function setupImageFilters(viewer) {
  * @returns {{destroy: function():void}}
  */
 export function setupImmersivePopoverA11y() {
-    const $ = window.$ || window.jQuery;
+    const $ = env.$;
     if (!$) return noop;
     const bag = createDisposer();
     const FOCUSABLE = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
@@ -124,7 +125,7 @@ export function setupImmersivePopoverA11y() {
  */
 function mountImageFilters(viewer, bag) {
     if (!document.querySelector('imageFilters') || !window.immersiveFilterConfig) return false;
-    const [tag] = riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
+    const [tag] = env.riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
     if (tag) {
         bag.add(bindImageFiltersRendering(viewer, tag));
         // "Reset view" (button and '0' key) clears the image filters as well.

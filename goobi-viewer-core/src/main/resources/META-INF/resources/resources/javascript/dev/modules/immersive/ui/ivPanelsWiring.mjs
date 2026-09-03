@@ -2,6 +2,7 @@
 
 import { offsetTopWithin } from '../shared/ivDom.mjs';
 import { isOverlayOpen, PANEL_OPEN_SELECTOR } from '../shared/ivSelectors.mjs';
+import { env } from '../shared/ivEnv.mjs';
 import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
@@ -348,8 +349,8 @@ export function setupTocSync(viewer, tocPanel = document.getElementById('immersi
             .filter((x) => Number.isFinite(x.no) && x.no >= 1);
 
     const setTocActive = (el) => {
-        if (el && el.dataset.iddoc && window.viewerJS && viewerJS.widgetToc) {
-            viewerJS.widgetToc.setActive(el.dataset.iddoc.replace('iddoc_', ''));
+        if (el && el.dataset.iddoc && env.viewerJS && env.viewerJS.widgetToc) {
+            env.viewerJS.widgetToc.setActive(el.dataset.iddoc.replace('iddoc_', ''));
             if (tocPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
             return;
         }

@@ -1,6 +1,7 @@
 /** Bottom bar and page-status wiring: indicator, chevrons, actions, fullscreen. */
 
 import { createDisposer } from '../shared/ivLifecycle.mjs';
+import { env } from '../shared/ivEnv.mjs';
 
 /**
  * Wires the paging UI and the bottom-bar actions: page indicator (bottom bar +
@@ -97,7 +98,7 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
         // on exit. Uses Bootstrap's internal `inst.config` object directly because
         // there is no public API for changing the container after construction.
         document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
-            const $trigger = window.$ && window.$(trigger);
+            const $trigger = env.$ && env.$(trigger);
             const inst = $trigger && $trigger.data('bs.popover');
             if (!inst) return;
             $trigger.popover('hide');
