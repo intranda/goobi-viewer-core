@@ -122,11 +122,12 @@ public class ThumbnailHandler {
      * getThumbnailPath.
      *
      * @param filename file name to resolve against the static images path
+     * @throws IllegalArgumentException if the given filename is empty or not a valid url string
      * @return the URI of the resolved static image path
      */
-    public URI getThumbnailPath(String filename) {
+    public URI getThumbnailPath(String filename) throws IllegalArgumentException {
         if (StringUtils.isBlank(filename)) {
-            return null;
+            throw new IllegalArgumentException("Cannot create URI from empty or null string");
         }
         URI uri;
         try {
@@ -135,8 +136,8 @@ public class ThumbnailHandler {
             return uri;
         } catch (URISyntaxException e) {
             logger.error(e.toString(), e);
+            throw new IllegalArgumentException("Cannot create URI: " + e.toString());
         }
-        return null;
     }
 
     /**
@@ -352,9 +353,9 @@ public class ThumbnailHandler {
      * getPage.
      *
      * <p>
-     * Variant that reuses an already-fetched record document instead of querying Solr for it again. Callers that have
-     * loaded the top-level record document (e.g. when associating many collections with their representative works)
-     * should use this overload to avoid a redundant per-record round-trip.
+     * Variant that reuses an already-fetched record document instead of querying Solr for it again. Callers that have loaded the top-level record
+     * document (e.g. when associating many collections with their representative works) should use this overload to avoid a redundant per-record
+     * round-trip.
      *
      * @param recordDoc top-level Solr document of the record whose page to load; if null, null is returned
      * @param order physical page order number within the work
@@ -453,6 +454,7 @@ public class ThumbnailHandler {
      * @param scale scaling parameters defining the output size
      * @param format the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
      * @return the image URL for the given page at the given scale in the given format
+     * @should return url for iiif image info path
      */
     public String getImageUrl(PhysicalElement page, Scale scale, ImageFileFormat format) {
 
@@ -465,10 +467,11 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, null, scale, null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
-            return iiifUrlHandler.getIIIFImageUrl(path, null, scale, null, null, null);
+            return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, scale, Rotation.NONE, Colortype.DEFAULT, format);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT,
-                    format.getFileExtension());
+            // Reached only with a non-null page: every caller resolves the page through ImageDeliveryBean.getCurrentPageIfExists()
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", //NOSONAR
+                    StringConstants.DEFAULT, format.getFileExtension());
         }
     }
 
@@ -503,7 +506,9 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return IIIFUrlResolver.getIIIFImageUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", StringConstants.DEFAULT, "jpg");
+            // Reached only with a non-null page: every caller resolves the page through ImageDeliveryBean.getCurrentPageIfExists()
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", //NOSONAR
+                    StringConstants.DEFAULT, "jpg");
         }
     }
 
@@ -726,7 +731,7 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(StructElement se, int size) {
         String thumbnailUrl = getImagePath(se);
-        if (StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
+        if (thumbnailUrl != null && StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
         } else if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);

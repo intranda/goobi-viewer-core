@@ -33,6 +33,7 @@ import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.imaging.MediaHandler;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -109,9 +110,13 @@ public class PhysicalResource {
     }
 
     public String getUrl() throws IllegalRequestException {
-        return BeanUtils.getImageDeliveryBean()
-                .getMedia()
-                .getMediaUrl(getMediaType().getType(), getMediaType().getSubType(), pi, getFileName());
+        // getMedia() is only populated by the container callback, so it is null on an ImageDeliveryBean built outside a CDI context
+        MediaHandler media = BeanUtils.getImageDeliveryBean().getMedia();
+        if (media == null) {
+            throw new IllegalStateException("Media handler unavailable outside a request context");
+        }
+
+        return media.getMediaUrl(getMediaType().getType(), getMediaType().getSubType(), pi, getFileName());
     }
 
     public boolean isDownloadTicketRequired() throws IndexUnreachableException, DAOException {

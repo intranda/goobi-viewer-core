@@ -56,6 +56,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * Class to create comments from a text input for a given PI and page order and to save them using a given {@link AnnotationSaver}.
@@ -166,7 +167,7 @@ public class CommentManager implements AnnotationLister<Comment> {
         Comment editedComment = new Comment(comment);
         editedComment.setText(textCleaned);
         editedComment.setPublicationStatus(publicationStatus);
-        editedComment.setDateModified(LocalDateTime.now());
+        editedComment.setDateModified(DateTools.now());
         String viewerRootUrl = BeanUtils.getServletPathWithHostAsUrlFromJsfContext();
         try {
             saver.save(editedComment);

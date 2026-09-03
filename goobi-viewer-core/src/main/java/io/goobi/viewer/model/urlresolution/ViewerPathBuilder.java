@@ -75,7 +75,8 @@ public final class ViewerPathBuilder {
      */
     public static Optional<ViewerPath> createPath(HttpServletRequest httpRequest) throws DAOException {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(httpRequest); // http://localhost:8080/viewer
-        String serviceUrl = httpRequest.getServletPath(); // /resources/.../index.xhtml
+        // /resources/.../index.xhtml
+        String serviceUrl = httpRequest.getServletPath(); //NOSONAR - request comes from the servlet container and is never null
         String serverName = httpRequest.getContextPath(); // /viewer
         String queryString = httpRequest.getQueryString();
         PrettyContext context = PrettyContext.getCurrentInstance(httpRequest);
@@ -99,7 +100,8 @@ public final class ViewerPathBuilder {
      */
     public static Optional<ViewerPath> createPath(HttpServletRequest request, String baseUrl) throws DAOException {
         String serverUrl = ServletUtils.getServletPathWithHostAsUrlFromRequest(request); // http://localhost:8080/viewer
-        String serverName = request.getContextPath(); // /viewer
+        // /viewer
+        String serverName = request.getContextPath(); //NOSONAR - request comes from the servlet container and is never null
         String serviceUrl = baseUrl;
         if (serviceUrl.startsWith(serverUrl)) {
             serviceUrl = serviceUrl.substring(serverUrl.length());

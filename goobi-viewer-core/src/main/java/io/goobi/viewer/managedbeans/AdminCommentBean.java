@@ -51,6 +51,7 @@ import io.goobi.viewer.model.annotation.comments.Comment;
 import io.goobi.viewer.model.annotation.comments.CommentGroup;
 import io.goobi.viewer.model.annotation.comments.CommentManager;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * JSF backing bean for admin comment management, providing CRUD operations for user comments in the admin interface.
@@ -272,7 +273,7 @@ public class AdminCommentBean implements Serializable {
     public String saveCommentGroupAction(CommentGroup commentGroup) throws DAOException {
         logger.trace("saveCommentGroupAction");
         if (commentGroup.getId() != null) {
-            if (DataManager.getInstance().getDao().updateCommentGroup(commentGroup)) {
+            if (DataManager.getInstance().getDao().updateCommentGroup(commentGroup) != null) {
                 Messages.info("updatedSuccessfully");
                 currentCommentGroup = null;
                 return "pretty:adminUserCommentGroups";
@@ -325,9 +326,9 @@ public class AdminCommentBean implements Serializable {
         logger.trace("saveCommentAction");
         if (comment.getId() != null) {
             // Set updated timestamp
-            comment.setDateModified(LocalDateTime.now());
+            comment.setDateModified(DateTools.now());
             logger.trace(comment.getContentString());
-            if (DataManager.getInstance().getDao().updateComment(comment)) {
+            if (DataManager.getInstance().getDao().updateComment(comment) != null) {
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);

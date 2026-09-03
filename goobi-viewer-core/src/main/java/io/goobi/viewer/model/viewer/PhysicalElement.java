@@ -65,6 +65,7 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.HtmlSanitizer;
 import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
+import io.goobi.viewer.controller.imaging.MediaHandler;
 import io.goobi.viewer.controller.imaging.ThumbnailHandler;
 import io.goobi.viewer.controller.model.ViewAttributes;
 import io.goobi.viewer.exceptions.AccessDeniedException;
@@ -1265,9 +1266,15 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
      */
     public String getMediaUrl(String format) throws IndexUnreachableException {
 
+        // getMedia() is only populated by the container callback, so it is null on an ImageDeliveryBean built outside a CDI context
+        MediaHandler media = BeanUtils.getImageDeliveryBean().getMedia();
+        if (media == null) {
+            throw new IllegalStateException("Media handler unavailable outside a request context");
+        }
+
         String url;
         try {
-            url = BeanUtils.getImageDeliveryBean().getMedia().getMediaUrl(getMediaType().getType(), format, pi, getFileNameForFormat(format));
+            url = media.getMediaUrl(getMediaType().getType(), format, pi, getFileNameForFormat(format));
         } catch (IllegalRequestException e) {
             throw new IllegalStateException("media type must be either audio or video, but is " + getMediaType().getType());
         }

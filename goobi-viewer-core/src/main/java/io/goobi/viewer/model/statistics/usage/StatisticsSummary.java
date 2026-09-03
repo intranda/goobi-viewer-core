@@ -43,6 +43,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.goobi.viewer.api.rest.model.statistics.usage.UsageStatisticsInformation;
 import io.goobi.viewer.api.rest.v1.statistics.usage.UsageStatisticsResource;
 import io.goobi.viewer.messages.ViewerResourceBundle;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * Summary of request counts for a certain date range. Used for delivering record counts to users
@@ -56,7 +57,7 @@ public class StatisticsSummary {
      * Request counts sorted by {@link RequestType}.
      */
     private final Map<RequestType, RequestTypeSummary> types;
-    private final LocalDateTime creationTime = LocalDateTime.now();
+    private final LocalDateTime creationTime = DateTools.now();
     private UsageStatisticsInformation info = null;
 
     public StatisticsSummary() {
@@ -261,7 +262,7 @@ public class StatisticsSummary {
     }
 
     public boolean isOlderThan(long num, TemporalUnit unit) {
-        return isOlderThan(num, unit, LocalDateTime.now());
+        return isOlderThan(num, unit, DateTools.now());
     }
 
     public boolean isOlderThan(long num, TemporalUnit unit, Temporal currentTime) {

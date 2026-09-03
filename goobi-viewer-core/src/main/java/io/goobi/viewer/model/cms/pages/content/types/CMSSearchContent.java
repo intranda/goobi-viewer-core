@@ -37,6 +37,7 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.itemfunctionality.Functionality;
 import io.goobi.viewer.model.cms.itemfunctionality.SearchFunctionality;
@@ -211,7 +212,10 @@ public class CMSSearchContent extends CMSContent implements PagedCMSContent {
         // getOwningPage() may return null (owning component not set); guard to avoid a NullPointerException (java:S2259)
         CMSPage owningPage = this.getOwningPage();
         this.search.search(owningPage != null ? owningPage.getSubTheme() : null);
-        BeanUtils.getNavigationHelper().addSearchUrlWithCurrentSortStringToHistory();
+        NavigationHelper navigationHelper = BeanUtils.getNavigationHelper();
+        if (navigationHelper != null) {
+            navigationHelper.addSearchUrlWithCurrentSortStringToHistory();
+        }
         return "";
     }
 

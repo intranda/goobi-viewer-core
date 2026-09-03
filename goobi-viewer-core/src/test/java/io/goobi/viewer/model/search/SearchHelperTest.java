@@ -2385,4 +2385,16 @@ class SearchHelperTest extends AbstractDatabaseAndSolrEnabledTest {
         searchTerms.put(SolrConstants.DEFAULT, new HashSet<>());
         Assertions.assertFalse(SearchHelper.hasTextSearchTerm(searchTerms));
     }
+
+    /**
+     * @see SearchHelper#facetifyList(List)
+     * @verifies return modifiable list if source list is null
+     */
+    @Test
+    void facetifyList_shouldReturnModifiableListIfSourceListIsNull() {
+        List<String> result = SearchHelper.facetifyList(null);
+        Assertions.assertTrue(result.isEmpty());
+        result.add("FACET_TEST");
+        Assertions.assertEquals(1, result.size());
+    }
 }

@@ -292,7 +292,7 @@ public class AdminBean implements Serializable {
                 }
                 user.setNewPassword(passwordOne);
             }
-            if (DataManager.getInstance().getDao().updateUser(user)) {
+            if (DataManager.getInstance().getDao().updateUser(user) != null) {
                 if (StringUtils.isNotEmpty(passwordOne)) {
                     DataManager.getInstance().getDao().deleteAllUserTokensForUser(user);
                     logger.info("Revoked all bearer tokens for user {} due to password change", user.getEmail());
@@ -434,7 +434,7 @@ public class AdminBean implements Serializable {
         currentUserGroup.setMemberships(null);
 
         if (getCurrentUserGroup().getId() != null) {
-            if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
+            if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup()) != null) {
                 Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -493,7 +493,7 @@ public class AdminBean implements Serializable {
      */
     public void saveRoleAction() throws DAOException {
         if (getCurrentRole().getId() != null) {
-            if (DataManager.getInstance().getDao().updateRole(getCurrentRole())) {
+            if (DataManager.getInstance().getDao().updateRole(getCurrentRole()) != null) {
                 Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -626,7 +626,7 @@ public class AdminBean implements Serializable {
                 }
                 if (userRole.getId() != null) {
                     // existing
-                    if (DataManager.getInstance().getDao().updateUserRole(userRole)) {
+                    if (DataManager.getInstance().getDao().updateUserRole(userRole) != null) {
                         Messages.info("userGroup_membershipUpdateSuccess");
                     } else {
                         Messages.error("userGroup_membershipUpdateFailure");
@@ -675,14 +675,18 @@ public class AdminBean implements Serializable {
      */
     public String saveIpRangeAction() throws DAOException {
         if (getCurrentIpRange().getId() != null) {
-            if (DataManager.getInstance().getDao().updateIpRange(getCurrentIpRange())) {
+            IpRange updated = DataManager.getInstance().getDao().updateIpRange(getCurrentIpRange());
+            if (updated != null) {
+                currentIpRange = updated;
                 Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
                 return "pretty:adminIpRangeEdit";
             }
         } else {
-            if (DataManager.getInstance().getDao().addIpRange(getCurrentIpRange())) {
+            IpRange added = DataManager.getInstance().getDao().addIpRange(getCurrentIpRange());
+            if (added != null) {
+                currentIpRange = added;
                 Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -722,7 +726,12 @@ public class AdminBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public String saveMaintenanceModeAction() throws DAOException {
-        if (DataManager.getInstance().getDao().updateMaintenanceMode(getMaintenanceMode())) {
+        MaintenanceMode updated = DataManager.getInstance().getDao().updateMaintenanceMode(getMaintenanceMode());
+        if (updated != null) {
+            // Continue working with the persisted instance so translations added during this edit carry their
+            // generated id for subsequent saves in this session (no orphan removal on this collection, so a stale
+            // id-less translation would otherwise be inserted as a duplicate rather than updated).
+            this.maintenanceMode = updated;
             Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
         } else {
             Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -1162,7 +1171,7 @@ public class AdminBean implements Serializable {
             throw new IllegalArgumentException("user may not be null");
         }
         user.setSuspended(!user.isSuspended());
-        if (DataManager.getInstance().getDao().updateUser(user)) {
+        if (DataManager.getInstance().getDao().updateUser(user) != null) {
             Messages.info(user.isSuspended() ? "user_accountSuspended" : "user_accountUnsuspended");
         }
 

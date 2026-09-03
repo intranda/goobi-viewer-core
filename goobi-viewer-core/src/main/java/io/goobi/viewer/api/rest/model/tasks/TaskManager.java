@@ -60,6 +60,7 @@ import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
 import io.goobi.viewer.model.sitemap.SitemapBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsIndexTask;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -100,7 +101,7 @@ public class TaskManager {
         this.tasks.values()
                 .stream()
                 .filter(
-                        job -> job.getTimeCreated().isBefore((LocalDateTime.now().minus(timeToLive))))
+                        job -> job.getTimeCreated().isBefore((DateTools.now().minus(timeToLive))))
                 .map(Task::getId)
                 .forEach(this::removeTask);
     }

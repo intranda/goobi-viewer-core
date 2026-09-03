@@ -72,6 +72,7 @@ import io.goobi.viewer.model.security.authentication.HttpHeaderProvider;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
+import io.goobi.viewer.controller.DateTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -221,7 +222,7 @@ public class AuthenticationEndpoint {
             if (expirationDays <= 0) {
                 expirationDays = 7;
             }
-            userToken.setExpirationDate(LocalDateTime.now().plusDays(expirationDays));
+            userToken.setExpirationDate(DateTools.now().plusDays(expirationDays));
             DataManager.getInstance().getDao().addUserToken(userToken);
 
             return Response.ok(new AuthenticationResponse("success", null, plaintext, null)).build();

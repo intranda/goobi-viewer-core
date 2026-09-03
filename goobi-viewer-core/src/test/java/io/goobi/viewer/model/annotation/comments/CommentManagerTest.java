@@ -49,6 +49,7 @@ import io.goobi.viewer.model.annotation.serialization.SqlAnnotationSaver;
 import io.goobi.viewer.model.annotation.serialization.SqlCommentLister;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  *
@@ -97,7 +98,7 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(OPEN_ACCESS, comment.getAccessCondition());
         assertEquals(user, comment.getCreator());
         assertEquals(PUBLISHED, comment.getPublicationStatus());
-        assertEquals(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+        assertEquals(DateTools.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
                 comment.getDateCreated().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 1000l);
         Mockito.verify(notificator, Mockito.times(1)).notifyCreation(Mockito.any(), Mockito.any(), Mockito.any());
     }
@@ -123,9 +124,9 @@ class CommentManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(OPEN_ACCESS, comment.getAccessCondition());
         assertEquals(user, comment.getCreator());
         assertEquals(PUBLISHED, comment.getPublicationStatus());
-        assertEquals(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+        assertEquals(DateTools.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
                 comment.getDateCreated().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 1000l);
-        assertEquals(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+        assertEquals(DateTools.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
                 comment.getDateModified().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(), 1000l);
         assertTrue(comment.getDateCreated().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli() < comment.getDateModified()
                 .atZone(ZoneId.systemDefault())

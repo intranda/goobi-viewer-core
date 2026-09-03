@@ -79,7 +79,7 @@ public class CommentLegacy implements Comparable<CommentLegacy> {
     private String oldText = null;
 
     @Column(name = "date_created", nullable = false)
-    private LocalDateTime dateCreated = LocalDateTime.now();
+    private LocalDateTime dateCreated = DateTools.now();
 
     @Column(name = "date_updated")
     private LocalDateTime dateUpdated;

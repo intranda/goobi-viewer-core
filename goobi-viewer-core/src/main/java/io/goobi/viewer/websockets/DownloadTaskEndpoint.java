@@ -61,6 +61,7 @@ import io.goobi.viewer.model.job.mq.DownloadExternalResourceHandler;
 import io.goobi.viewer.model.resources.download.ExternalResourceUrlService;
 import io.goobi.viewer.model.resources.download.ResourceDownload;
 import jakarta.servlet.http.HttpSession;
+import jakarta.websocket.CloseReason.CloseCodes;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
@@ -96,7 +97,13 @@ public class DownloadTaskEndpoint {
         this.httpSession = http;
         this.session = session;
         if (this.storageBean == null) {
-            this.setStorageBean(BeanUtils.getPersistentStorageBean());
+            ApplicationBean bean = BeanUtils.getPersistentStorageBean();
+            if (bean == null) {
+                logger.error("WebSocket {} rejected: application bean not available", session.getId());
+                WebSocketTools.closeSession(session, CloseCodes.UNEXPECTED_CONDITION, "service unavailable");
+                return;
+            }
+            this.setStorageBean(bean);
         }
     }
 

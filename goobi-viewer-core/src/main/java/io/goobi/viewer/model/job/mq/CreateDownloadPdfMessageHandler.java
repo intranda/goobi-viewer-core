@@ -52,6 +52,7 @@ import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadJob;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
 import io.goobi.viewer.model.viewer.Dataset;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.mail.MessagingException;
 import jakarta.ws.rs.core.UriBuilder;
 
@@ -105,7 +106,7 @@ public class CreateDownloadPdfMessageHandler implements MessageHandler<MessageSt
             }
 
             //set last modified time to reflect the last time the file was downloaded
-            Files.setLastModifiedTime(job.getPath(), FileTime.from(Instant.now()));
+            Files.setLastModifiedTime(job.getPath(), FileTime.from(DateTools.nowInstant()));
             try {
                 String viewerUrl = message.getProperties().get("viewerUrl");
                 if (StringUtils.isNotBlank(viewerUrl)) {

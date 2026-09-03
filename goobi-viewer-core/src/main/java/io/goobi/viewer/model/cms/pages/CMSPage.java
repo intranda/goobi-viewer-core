@@ -91,6 +91,7 @@ import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.misc.Harvestable;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -238,7 +239,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      * Creates a new CMSPage instance.
      */
     public CMSPage() {
-        this.dateCreated = LocalDateTime.now();
+        this.dateCreated = DateTools.now();
     }
 
     /**
@@ -303,7 +304,7 @@ public class CMSPage implements Comparable<CMSPage>, Harvestable, IPolyglott, Se
      */
     public CMSPage(CMSPageTemplate original) {
 
-        this.dateCreated = LocalDateTime.now();
+        this.dateCreated = DateTools.now();
         this.useDefaultSidebar = original.isUseDefaultSidebar();
         this.subTheme = original.getSubTheme();
         this.categories = new ArrayList<>(original.getCategories());

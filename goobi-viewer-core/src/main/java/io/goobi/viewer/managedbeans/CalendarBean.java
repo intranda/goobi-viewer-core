@@ -67,6 +67,7 @@ import io.goobi.viewer.model.calendar.CalendarRow;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.servlets.IdentifierResolver;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
@@ -81,7 +82,7 @@ public class CalendarBean implements Serializable {
 
     private static final long serialVersionUID = 1095535586988646463L;
 
-    private static final int MAX_ALLOWED_YEAR = LocalDateTime.now().getYear() + 1000;
+    private static final int MAX_ALLOWED_YEAR = DateTools.now().getYear() + 1000;
     private static final int MIN_ALLOWED_YEAR = -10_000;
 
     private static final Logger logger = LogManager.getLogger(CalendarBean.class);
@@ -363,7 +364,7 @@ public class CalendarBean implements Serializable {
         FacetField field = resp.getFacetField(SolrConstants.CALENDAR_DAY);
         List<Count> fieldValues = field.getValues() != null ? field.getValues() : new ArrayList<>();
 
-        LocalDate date = LocalDate.now().withYear(Integer.parseInt(value)).withMonth(currentMonth.getValue()).withDayOfMonth(1);
+        LocalDate date = DateTools.today().withYear(Integer.parseInt(value)).withMonth(currentMonth.getValue()).withDayOfMonth(1);
 
         int daysInMonth = date.getMonth().length(date.isLeapYear());
         for (int day = 1; day <= daysInMonth; day++) {
@@ -379,7 +380,7 @@ public class CalendarBean implements Serializable {
                 dayItem = new CalendarItemDay(String.valueOf(day), day, 0);
             }
             // date = new LocalDate(Integer.parseInt(value), currentMonth.getValue(), day, calendar);
-            date = LocalDate.now().withYear(Integer.parseInt(value)).withMonth(currentMonth.getValue()).withDayOfMonth(day);
+            date = DateTools.today().withYear(Integer.parseInt(value)).withMonth(currentMonth.getValue()).withDayOfMonth(day);
             switch (date.getDayOfWeek()) {
                 case SUNDAY:
                     dayItem.setDayOfWeek("Sunday");
@@ -559,7 +560,7 @@ public class CalendarBean implements Serializable {
      * @return the current date/time with the selected year, month, and day applied
      */
     public LocalDateTime getCurrentDate() {
-        LocalDateTime ldt = LocalDateTime.now();
+        LocalDateTime ldt = DateTools.now();
         if (currentYear != null) {
             ldt = ldt.withYear(currentYear.getValue());
         }
@@ -706,7 +707,7 @@ public class CalendarBean implements Serializable {
                         centuries.computeIfAbsent(century, cent -> new CalendarItemCentury(String.valueOf(century), century, 0));
                 centuryItem.addYearHits(year, count);
             }
-            centuries.values().forEach(c -> fillEmptyYears(c, LocalDate.now().getYear()));
+            centuries.values().forEach(c -> fillEmptyYears(c, DateTools.today().getYear()));
             this.allActiveCenturies = centuries;
         }
         return allActiveCenturies.values().stream().sorted().toList();
@@ -935,7 +936,7 @@ public class CalendarBean implements Serializable {
             weeksOfMonth.add(currentWeek);
             monthItem.setWeeksOfMonth(weeksOfMonth);
             // LocalDate date = new LocalDate(Integer.parseInt(selectYear), monthItem.getValue(), 1, calendar);
-            LocalDate date = LocalDate.now().withYear(Integer.parseInt(selectYear)).withMonth(monthItem.getValue()).withDayOfMonth(1);
+            LocalDate date = DateTools.today().withYear(Integer.parseInt(selectYear)).withMonth(monthItem.getValue()).withDayOfMonth(1);
             int daysInMonth = date.getMonth().length(date.isLeapYear());
             for (int day = 1; day <= daysInMonth; day++) {
                 StringBuilder facetBuilder = new StringBuilder();
@@ -993,7 +994,7 @@ public class CalendarBean implements Serializable {
                     dayItem = new CalendarItemDay(String.valueOf(day), day, 0);
                 }
                 //                date = new LocalDate(Integer.parseInt(selectYear), monthItem.getValue(), day, calendar);
-                date = LocalDate.now().withYear(Integer.parseInt(selectYear)).withMonth(monthItem.getValue()).withDayOfMonth(day);
+                date = DateTools.today().withYear(Integer.parseInt(selectYear)).withMonth(monthItem.getValue()).withDayOfMonth(day);
                 switch (date.getDayOfWeek()) {
                     case MONDAY:
                         dayItem.setDayOfWeek("Monday");

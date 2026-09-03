@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentExceptionMapper.ErrorMessage;
+import io.goobi.viewer.controller.StringTools;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
@@ -65,7 +66,8 @@ public class MatrixParameterRequestFilter implements ContainerRequestFilter {
         List<PathSegment> segments = requestContext.getUriInfo().getPathSegments();
         for (PathSegment segment : segments) {
             if (!segment.getMatrixParameters().isEmpty()) {
-                logger.warn("Rejecting request containing a matrix parameter (';') in its path: {}", requestContext.getUriInfo().getPath());
+                String requestPath = StringTools.cleanUserGeneratedData(requestContext.getUriInfo().getPath());
+                logger.warn("Rejecting request containing a matrix parameter (';') in its path: {}", requestPath);
                 requestContext.abortWith(Response.status(Status.BAD_REQUEST)
                         .type(MediaType.APPLICATION_JSON)
                         .entity(new ErrorMessage(Status.BAD_REQUEST,

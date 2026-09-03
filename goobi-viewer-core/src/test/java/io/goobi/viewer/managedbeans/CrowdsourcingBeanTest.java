@@ -42,6 +42,7 @@ import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign;
 import io.goobi.viewer.model.crowdsourcing.campaigns.Campaign.CampaignVisibility;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * @author florian
@@ -105,7 +106,7 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         bean.setSelectedCampaignId("1");
         Assertions.assertNotNull(bean.getSelectedCampaign());
 
-        LocalDateTime created = LocalDateTime.now();
+        LocalDateTime created = DateTools.now();
         bean.getSelectedCampaign().setDateCreated(created);
         Assertions.assertEquals(created, bean.getSelectedCampaign().getDateCreated(), "Date created does not match after setting");
         bean.saveSelectedCampaignAction();
@@ -299,7 +300,7 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         campaign.setId(1L);
         campaign.setVisibility(CampaignVisibility.PRIVATE);
         campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
-        campaign.setDateEnd(LocalDateTime.now().plusMonths(3));
+        campaign.setDateEnd(DateTools.now().plusMonths(3));
         Assertions.assertFalse(CrowdsourcingBean.isAllowed(null, campaign));
         Assertions.assertFalse(CrowdsourcingBean.isAllowed(new User(), campaign));
     }
@@ -313,7 +314,7 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         campaign.setId(1L);
         campaign.setVisibility(CampaignVisibility.PRIVATE);
         campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
-        campaign.setDateEnd(LocalDateTime.now().plusMonths(3));
+        campaign.setDateEnd(DateTools.now().plusMonths(3));
         campaign.setTimePeriodEnabled(true);
         Assertions.assertTrue(CrowdsourcingBean.isAllowed(null, campaign));
     }
@@ -327,7 +328,7 @@ class CrowdsourcingBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         campaign.setId(1L);
         campaign.setVisibility(CampaignVisibility.PRIVATE);
         campaign.setDateStart(LocalDateTime.of(2000, 1, 1, 0, 0));
-        campaign.setDateEnd(LocalDateTime.now().plusMonths(3));
+        campaign.setDateEnd(DateTools.now().plusMonths(3));
         campaign.setTimePeriodEnabled(true);
         Assertions.assertTrue(CrowdsourcingBean.isAllowed(new User(), campaign));
     }

@@ -48,6 +48,7 @@ import io.goobi.viewer.model.bookmark.SessionStoreBookmarkManager;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
 import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -155,7 +156,7 @@ public class BookmarkBean implements Serializable {
 
         logger.debug("saveBookmarkListAction: {}, ID: {}", bookmarkList.getName(), bookmarkList.getId());
 
-        bookmarkList.setDateUpdated(LocalDateTime.now());
+        bookmarkList.setDateUpdated(DateTools.now());
         if (bookmarkList.getId() == null) {
             // New bookmark list
             if (bookmarkList.getOwner() == null) {
@@ -275,7 +276,7 @@ public class BookmarkBean implements Serializable {
         UserBean userBean = BeanUtils.getUserBean();
         if (userBean != null && userBean.getUser() != null && StringUtils.isNotEmpty(currentBookmark.getName())) {
             logger.trace("saving bookmark to bookmark list");
-            currentBookmarkList.setDateUpdated(LocalDateTime.now());
+            currentBookmarkList.setDateUpdated(DateTools.now());
             try {
                 if (currentBookmarkList.getItems().contains(currentBookmark)) {
                     // TODO Do not throw error if item already in bookmark list. Instead, offer to edit or remove.

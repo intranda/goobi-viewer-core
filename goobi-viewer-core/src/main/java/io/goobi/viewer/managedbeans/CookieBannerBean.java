@@ -46,6 +46,7 @@ import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.administration.legal.CookieBanner;
 import io.goobi.viewer.model.cms.pages.CMSPage;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * JSF backing bean for enabling and configuring the cookie banner feature. This bean is view-scoped, i.e. created fresh for each new page loaded.
@@ -172,10 +173,10 @@ public class CookieBannerBean implements Serializable {
         //this way, saving the current banner is not required, but is a save is performed, the date is not overwritten
         if (this.dao != null) {
             CookieBanner banner = dao.getCookieBanner();
-            banner.setRequiresConsentAfter(LocalDateTime.now());
-            if (dao.saveCookieBanner(banner)) {
+            banner.setRequiresConsentAfter(DateTools.now());
+            if (dao.saveCookieBanner(banner) != null) {
                 if (this.editCookieBanner != null) {
-                    this.editCookieBanner.setRequiresConsentAfter(LocalDateTime.now());
+                    this.editCookieBanner.setRequiresConsentAfter(DateTools.now());
                     this.editCookieBanner.setId(banner.getId());
                 }
                 Messages.info("admin__legal__reset_cookie_banner_consent__success");

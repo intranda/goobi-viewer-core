@@ -163,7 +163,7 @@ public class LitteraProvider extends HttpAuthenticationProvider {
                     throw new AuthenticationProviderException("Could not add user to DB.");
                 }
             } else {
-                if (!DataManager.getInstance().getDao().updateUser(user)) {
+                if (DataManager.getInstance().getDao().updateUser(user) == null) {
                     throw new AuthenticationProviderException("Could not update user in DB.");
                 }
             }

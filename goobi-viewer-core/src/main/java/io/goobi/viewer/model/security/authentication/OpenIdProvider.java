@@ -287,7 +287,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                         logger.error("Could not add user to DB.");
                     }
                 } else {
-                    if (!DataManager.getInstance().getDao().updateUser(user)) {
+                    if (DataManager.getInstance().getDao().updateUser(user) == null) {
                         logger.error("Could not update user in DB.");
                     }
                 }

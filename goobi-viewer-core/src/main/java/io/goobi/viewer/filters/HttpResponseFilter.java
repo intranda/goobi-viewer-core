@@ -23,6 +23,7 @@ package io.goobi.viewer.filters;
 
 import java.io.IOException;
 
+import io.goobi.viewer.controller.DataManager;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -34,27 +35,26 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import io.goobi.viewer.controller.DataManager;
-
 /**
  * Servlet filter that controls HTTP response caching for the viewer webapp.
  *
- * <p>Requests are classified by {@link ResourceCacheCategory}; each category maps to one
- * {@code Cache-Control} value:
+ * <p>
+ * Requests are classified by {@link ResourceCacheCategory}; each category maps to one {@code Cache-Control} value:
  *
  * <ul>
- *   <li>{@code STATIC}: {@code public, max-age=<performance.caching.static[@maxAge]>}
- *   <li>{@code ACCOUNT}: {@code no-store}, regardless of the dynamic policy
- *   <li>{@code DYNAMIC}: per {@code performance.caching.dynamic[@policy]}
- *   <li>{@code API}: nothing, {@code ApiCacheControlResponseFilter} owns those responses
- *   <li>{@code SKIP}: nothing, Mojarra owns JSF resource responses via
- *       {@code com.sun.faces.defaultResourceMaxAge}
+ * <li>{@code STATIC}: {@code public, max-age=<performance.caching.static[@maxAge]>}
+ * <li>{@code ACCOUNT}: {@code no-store}, regardless of the dynamic policy
+ * <li>{@code DYNAMIC}: per {@code performance.caching.dynamic[@policy]}
+ * <li>{@code API}: nothing, {@code ApiCacheControlResponseFilter} owns those responses
+ * <li>{@code SKIP}: nothing, Mojarra owns JSF resource responses via {@code com.sun.faces.defaultResourceMaxAge}
  * </ul>
  *
- * <p>On an {@code ERROR} dispatch the filter always emits {@code no-store}: a response whose
- * status is not a success must not inherit the freshness of the path it was requested under.
+ * <p>
+ * On an {@code ERROR} dispatch the filter always emits {@code no-store}: a response whose status is not a success must not inherit the freshness of
+ * the path it was requested under.
  *
- * <p>The filter also normalises request and response character encoding to UTF-8 for non-API paths.
+ * <p>
+ * The filter also normalises request and response character encoding to UTF-8 for non-API paths.
  */
 public class HttpResponseFilter implements Filter {
 
@@ -112,14 +112,13 @@ public class HttpResponseFilter implements Filter {
     /**
      * Returns the request uri the current dispatch originated from, without the context path.
      *
-     * <p>The PrettyFaces rewrite filter is ordered ahead of this one and forwards a matched pretty
-     * url to its backing view id via a genuine {@code RequestDispatcher.forward()}. From that point
-     * on {@link HttpServletRequest#getRequestURI()} reflects the forward target, i.e. the view id,
-     * not the pretty url the browser sent; the servlet container preserves the pre-forward uri in
-     * the standard {@link RequestDispatcher#FORWARD_REQUEST_URI} attribute instead, and PrettyFaces
-     * itself relies on that same attribute to recover the pretty url after its own forward. Falling
-     * back to {@link HttpServletRequest#getRequestURI()} covers a dispatch that was never forwarded,
-     * where the two are identical anyway.
+     * <p>
+     * The PrettyFaces rewrite filter is ordered ahead of this one and forwards a matched pretty url to its backing view id via a genuine
+     * {@code RequestDispatcher.forward()}. From that point on {@link HttpServletRequest#getRequestURI()} reflects the forward target, i.e. the view
+     * id, not the pretty url the browser sent; the servlet container preserves the pre-forward uri in the standard
+     * {@link RequestDispatcher#FORWARD_REQUEST_URI} attribute instead, and PrettyFaces itself relies on that same attribute to recover the pretty url
+     * after its own forward. Falling back to {@link HttpServletRequest#getRequestURI()} covers a dispatch that was never forwarded, where the two are
+     * identical anyway.
      */
     private static String getOriginalPath(HttpServletRequest request) {
         String uri = (String) request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI);
@@ -158,9 +157,9 @@ public class HttpResponseFilter implements Filter {
     /**
      * Emits the dynamic page header.
      *
-     * <p>{@code private, no-cache} is the default rather than {@code no-store} because
-     * {@code no-store} disqualifies a page from the browsers' back/forward cache, which turns every
-     * backward navigation into a full request.
+     * <p>
+     * {@code private, no-cache} is the default rather than {@code no-store} because {@code no-store} disqualifies a page from the browsers'
+     * back/forward cache, which turns every backward navigation into a full request.
      */
     private static void applyDynamicPolicy(HttpServletResponse response) {
         String policy = DataManager.getInstance().getConfiguration().getDynamicCachePolicy();

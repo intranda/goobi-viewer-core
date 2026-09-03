@@ -326,8 +326,8 @@ public final class StringTools {
      * @should replace tabs and line break characters with underscores
      */
     public static String stripPatternBreakingChars(String s) {
-        if (StringUtils.isBlank(s)) {
-            return s;
+        if (s == null) {
+            return null;
         }
 
         return s.replaceAll("[\n\r\t]", "_");
@@ -657,8 +657,8 @@ public final class StringTools {
     }
 
     /**
-     * Generates a URL-safe random token of the requested byte length, encoded as Base64 without padding.
-     * Suitable for passwords, activation keys, and other security tokens that must come from a CSPRNG.
+     * Generates a URL-safe random token of the requested byte length, encoded as Base64 without padding. Suitable for passwords, activation keys, and
+     * other security tokens that must come from a CSPRNG.
      *
      * @param byteCount number of random bytes to draw (e.g. 16 for a 128-bit password)
      * @return URL-safe Base64 string
@@ -671,8 +671,8 @@ public final class StringTools {
     }
 
     /**
-     * Compares two strings for equality in constant time, to avoid leaking the length of the common
-     * prefix via timing. Returns {@code false} if either argument is {@code null}.
+     * Compares two strings for equality in constant time, to avoid leaking the length of the common prefix via timing. Returns {@code false} if
+     * either argument is {@code null}.
      *
      * @param a first string (e.g. user-supplied secret)
      * @param b second string (e.g. stored secret)
@@ -862,7 +862,7 @@ public final class StringTools {
         // separator runs without a dot; it is semantically identical here because '.' is not in the [_-] class, so the engine never
         // needs to give characters back. Sonar keeps reporting java:S8786 on the possessive form, which is a false positive.
         filename = filename.replaceAll("[_-]++\\.", "."); //NOSONAR S8786 false positive: possessive quantifier cannot backtrack
-        filename = filename.replaceAll("^[_-]+", "");      // leading separator
+        filename = filename.replaceAll("^[_-]+", ""); // leading separator
 
         return filename;
     }
@@ -875,8 +875,8 @@ public final class StringTools {
      *
      * <p>
      * HTTP response headers (e.g. {@code Content-Location}, {@code Content-Disposition}) must not contain characters outside the printable ASCII
-     * range; Tomcat rejects such headers with an {@link IllegalArgumentException}. A double quote in the filename would additionally break out of
-     * the quoted {@code filename="..."} header parameter. Calling this method on the target filename before it is placed in a header prevents both
+     * range; Tomcat rejects such headers with an {@link IllegalArgumentException}. A double quote in the filename would additionally break out of the
+     * quoted {@code filename="..."} header parameter. Calling this method on the target filename before it is placed in a header prevents both
      * issues.
      *
      * @param filename raw filename that may contain non-ASCII characters; may be {@code null}
