@@ -458,9 +458,9 @@ describe('loadPageLines', () => {
         expect(lines[1]).toEqual({ id: 'line-1', chars: 'ohne Box', rect: null });
     });
 
-    test('returns [] on a non-ok response', async () => {
+    test('rejects on a non-ok response (an error is not "no text")', async () => {
         const fetchFn = jest.fn().mockResolvedValue({ ok: false, status: 404 });
-        expect(await loadPageLines('PPN1', 'https://h/api', 0, fetchFn)).toEqual([]);
+        await expect(loadPageLines('PPN1', 'https://h/api', 0, fetchFn)).rejects.toThrow();
     });
 });
 
@@ -604,6 +604,11 @@ describe('loadPageTextLevels', () => {
         expect(blocks[0].id).toBeNull();
         expect(blocks[0].lines.map((l) => l.id)).toEqual(['l1']);
         expect(blocks[0].lines[0].words).toEqual([]);
+    });
+
+    test('a failing line request rejects instead of pretending the page has no text', async () => {
+        const fetchFn = jest.fn((url) => Promise.resolve(url.includes('granularity') ? okResponse(LIST_FOR['?granularity=block']) : { ok: false, status: 503 }));
+        await expect(loadPageTextLevels('PPN1', 'https://h/api', 2, fetchFn)).rejects.toThrow();
     });
 });
 

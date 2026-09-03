@@ -27,8 +27,10 @@ export function pageUrlPath(pathname, pi, pageNo) {
 }
 
 /**
- * URL-sync feature: pushes a history entry on page change (deep-linkable,
- * back/forward steps through pages) and navigates the viewer on popstate.
+ * URL-sync feature: pushes a history entry per new page (deep-linkable,
+ * back/forward steps through pages) and navigates the viewer on popstate. An
+ * emit for the page already in the URL (initial open, double-page toggle, a
+ * popstate-driven change) replaces the entry instead of pushing a duplicate.
  * The viewer uses 0-based page orders; URLs use 1-based page numbers.
  *
  * @param {{onPageChange:{subscribe:Function}, goToPage:Function}} viewer
@@ -39,7 +41,8 @@ export function attachUrlSync(viewer, pi) {
     const unsubscribe = viewer.onPageChange.subscribe((order) => {
         const url = new URL(window.location.href);
         url.pathname = pageUrlPath(url.pathname, pi, order + 1);
-        window.history.pushState({ order }, '', url.toString());
+        if (url.pathname === window.location.pathname) window.history.replaceState({ order }, '', url.toString());
+        else window.history.pushState({ order }, '', url.toString());
     });
     const onPopState = (e) => {
         if (e.state && typeof e.state.order === 'number') {

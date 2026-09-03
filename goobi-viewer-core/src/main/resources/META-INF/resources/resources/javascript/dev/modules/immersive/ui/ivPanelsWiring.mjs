@@ -6,7 +6,7 @@ import { env } from '../shared/ivEnv.mjs';
 import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
-const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata', 'immersivePanelLayoutTags'];
+export const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata', 'immersivePanelLayoutTags'];
 
 /**
  * The rail panel an Alt+digit shortcut toggles: Alt+1-5 address the panels in
@@ -69,15 +69,15 @@ export function setupPanels(immersiveRoot, keys) {
     document.querySelectorAll('.immersive__panel-left').forEach((p) => (p.inert = true));
     const syncPanelOpenFlag = () => {
         if (immersiveRoot) {
-            immersiveRoot.classList.toggle('-panel-open', !!document.querySelector('.immersive__panel-left.is-open'));
+            immersiveRoot.classList.toggle('-panel-open', !!document.querySelector(PANEL_OPEN_SELECTOR));
         }
     };
     const closeHooks = [];
     let activePanelBtn = null;
     const closePanels = (restoreFocus = false) => {
         closeHooks.forEach((hook) => hook());
-        const closedAny = !!document.querySelector('.immersive__panel-left.is-open');
-        document.querySelectorAll('.immersive__panel-left.is-open').forEach((p) => {
+        const closedAny = !!document.querySelector(PANEL_OPEN_SELECTOR);
+        document.querySelectorAll(PANEL_OPEN_SELECTOR).forEach((p) => {
             p.classList.remove('is-open');
             p.setAttribute('aria-hidden', 'true');
             p.inert = true;
@@ -129,7 +129,7 @@ export function setupPanels(immersiveRoot, keys) {
 
     const unregisterKeys = keys.register(40, (e) => {
         if (e.key === 'Escape') {
-            if (!document.querySelector('.immersive__panel-left.is-open')) return false;
+            if (!document.querySelector(PANEL_OPEN_SELECTOR)) return false;
             closePanels(true);
             return true;
         }
@@ -181,7 +181,7 @@ export function setupPanelResize(immersiveRoot) {
     // clamp floor must include the open panel's own min-width (raised in the
     // annotations two-column mode), or the handle would detach from the panel.
     const minWidth = () => {
-        const open = immersiveRoot.querySelector('.immersive__panel-left.is-open');
+        const open = immersiveRoot.querySelector(PANEL_OPEN_SELECTOR);
         const panelMin = open ? parseFloat(getComputedStyle(open).minWidth) || 0 : 0;
         return Math.max(MIN_WIDTH, panelMin);
     };
@@ -207,7 +207,7 @@ export function setupPanelResize(immersiveRoot) {
     let observer = null;
     if (typeof ResizeObserver !== 'undefined') {
         observer = new ResizeObserver(() => {
-            const open = immersiveViewer.querySelector('.immersive__panel-left.is-open');
+            const open = immersiveViewer.querySelector(PANEL_OPEN_SELECTOR);
             if (!open || !handle.offsetParent) return;
             const panelWidth = open.getBoundingClientRect().width;
             const handleRect = handle.getBoundingClientRect();

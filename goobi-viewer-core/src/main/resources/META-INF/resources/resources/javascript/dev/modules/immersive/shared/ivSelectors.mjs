@@ -17,3 +17,12 @@ export const PANEL_OPEN_SELECTOR = '.immersive__panel-left.is-open';
 export function isOverlayOpen({ panels = false } = {}) {
     return !!document.querySelector(panels ? `${OVERLAY_OPEN_SELECTOR}, ${PANEL_OPEN_SELECTOR}` : OVERLAY_OPEN_SELECTOR);
 }
+
+/** The OpenSeadragon mount; while it holds focus, OSD owns the single-letter keys (WASD panning). */
+export const STAGE_SELECTOR = '[data-immersive-image]';
+
+/** @returns {boolean} whether keyboard focus sits inside the image stage */
+export function isStageFocused() {
+    const stage = document.querySelector(STAGE_SELECTOR);
+    return !!stage && stage.contains(document.activeElement);
+}

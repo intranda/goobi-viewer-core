@@ -130,9 +130,9 @@ describe('range and hit derivation', () => {
         const loaded = { 8: { gr_unterstrichen: [{}, {}], gr_jacob_grimm: [] } };
         const occurrencesOf = (page, label) => (loaded[page] ? loaded[page][label] || [] : undefined);
         expect(flatEntries([TAGS[0], TAGS[1]], 7, 8, occurrencesOf)).toEqual([
-            { page: 7, label: 'gr_unterstrichen', pending: true, count: 0 },
-            { page: 8, label: 'gr_unterstrichen', pending: false, count: 2 },
-            { page: 8, label: 'gr_jacob_grimm', pending: false, count: 0 },
+            { page: 7, label: 'gr_unterstrichen', pending: true, failed: false, count: 0 },
+            { page: 8, label: 'gr_unterstrichen', pending: false, failed: false, count: 2 },
+            { page: 8, label: 'gr_jacob_grimm', pending: false, failed: false, count: 0 },
         ]);
     });
 
@@ -228,5 +228,15 @@ describe('loaders (injected fetchFn)', () => {
     test('loadLayoutTagDetails rejects on HTTP errors', async () => {
         const fetchFn = () => Promise.resolve({ ok: false, status: 403 });
         await expect(loadLayoutTagDetails('PI', 'http://api', 1, 1, fetchFn)).rejects.toThrow('HTTP 403');
+    });
+});
+
+describe('flatEntries with failed pages', () => {
+    test('a page whose details failed is neither pending nor counted, and flagged', () => {
+        const tags = [{ label: 't', pages: [1, 2] }];
+        const occurrencesOf = (page) => (page === 1 ? null : undefined);
+        const [failed, pending] = flatEntries(tags, 1, 2, occurrencesOf);
+        expect(failed).toEqual(expect.objectContaining({ page: 1, pending: false, failed: true, count: 0 }));
+        expect(pending).toEqual(expect.objectContaining({ page: 2, pending: true, failed: false }));
     });
 });

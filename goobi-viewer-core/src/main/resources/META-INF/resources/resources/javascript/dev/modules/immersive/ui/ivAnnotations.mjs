@@ -4,9 +4,8 @@ import { isTypingTarget } from '../shared/ivPlatform.mjs';
 import { env } from '../shared/ivEnv.mjs';
 import { readAnnotationsEnabled, writeAnnotationsEnabled } from '../shared/ivPrefs.mjs';
 import { offsetTopWithin, scrollTopToReveal, styleClassTokens } from '../shared/ivDom.mjs';
-import { isOverlayOpen } from '../shared/ivSelectors.mjs';
+import { isOverlayOpen, isStageFocused } from '../shared/ivSelectors.mjs';
 
-/** localStorage key persisting the annotations toggle, following the immersive-* key convention. */
 /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */
 const STATE_CLASS = '-annotations-on';
 
@@ -678,7 +677,7 @@ export function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
     if (keys) {
         unregisterKeys = keys.register(55, (e) => {
             if (e.key !== 'a' || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return false;
-            if (isTypingTarget(e.target)) return false;
+            if (isTypingTarget(e.target) || isStageFocused()) return false;
             const panel = checkbox.closest('.immersive__panel-left');
             if (checkbox.disabled || (panel && !panel.classList.contains('is-open'))) return false;
             if (isOverlayOpen()) return false;

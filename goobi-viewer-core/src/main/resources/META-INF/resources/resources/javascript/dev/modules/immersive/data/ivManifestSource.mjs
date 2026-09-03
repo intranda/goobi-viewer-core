@@ -305,7 +305,7 @@ export function parsePageLines(annotationList) {
 async function _fetchPageLines(pi, apiBase, order, fetchFn, query = '') {
     const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/${query}`);
     if (!res.ok) {
-        return [];
+        return null;
     }
     return parsePageLines(await res.json());
 }
@@ -317,10 +317,12 @@ async function _fetchPageLines(pi, apiBase, order, fetchFn, query = '') {
  * @param {string} apiBase
  * @param {number} order    0-based page order; the endpoint is 1-based, so order + 1
  * @param {Function} fetchFn
- * @returns {Promise<{id:string, chars:string, rect:object|null}[]>} lines, or [] on failure
+ * @returns {Promise<{id:string, chars:string, rect:object|null}[]>} lines; rejects when the page text is unavailable
  */
-export function loadPageLines(pi, apiBase, order, fetchFn = fetch) {
-    return _fetchPageLines(pi, apiBase, order, fetchFn);
+export async function loadPageLines(pi, apiBase, order, fetchFn = fetch) {
+    const lines = await _fetchPageLines(pi, apiBase, order, fetchFn);
+    if (lines === null) throw new Error('page text unavailable');
+    return lines;
 }
 
 /** Whether the rect's centre point lies inside `outer`. */
@@ -440,7 +442,9 @@ export async function loadPageTextLevels(pi, apiBase, order, fetchFn = fetch) {
         _fetchPageLines(pi, apiBase, order, fetchFn),
         _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=word'),
     ]);
-    return nestTextLevels({ blocks, lines, words });
+    // Lines are the backbone: missing block/word granularity degrades, a missing line request is an error.
+    if (lines === null) throw new Error('page text unavailable');
+    return nestTextLevels({ blocks: blocks || [], lines, words: words || [] });
 }
 
 /**

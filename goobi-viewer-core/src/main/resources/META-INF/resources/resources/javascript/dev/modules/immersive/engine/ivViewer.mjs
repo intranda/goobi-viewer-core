@@ -436,6 +436,7 @@ export default class IvViewer {
     _crossfadeTo(target) {
         this._withNavLock(async () => {
             const previous = this.currentItem;
+            const from = this.current;
             this.current = target;
             // Restricted page: skip the doomed tile load (it would 403 and _acquire
             // would reject, never emitting); drop the previous page and show the overlay.
@@ -446,9 +447,17 @@ export default class IvViewer {
                 this._refreshPreload();
                 return;
             }
-            const item = await this._acquire(target, this._anchor);
-            this._preloaded.delete(target);
-            await this._whenContent(item);
+            let item;
+            try {
+                item = await this._acquire(target, this._anchor);
+                this._preloaded.delete(target);
+                await this._whenContent(item);
+            } catch (e) {
+                // The tile source failed: keep reporting the page that is actually shown.
+                this.current = from;
+                this._preloaded.delete(target);
+                throw e;
+            }
             await _crossfade(item, previous, this._fadeMs);
             if (previous) this.viewer.openseadragon.world.removeItem(previous);
             this.currentItem = item;

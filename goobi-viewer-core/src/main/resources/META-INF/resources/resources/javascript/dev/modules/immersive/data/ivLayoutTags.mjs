@@ -129,8 +129,8 @@ export function hitPages(tags, from, to) {
  * @param {{label:string, pages:number[]}[]} tags  the selected tags
  * @param {number} from
  * @param {number} to
- * @param {(page:number, label:string) => Array|undefined} occurrencesOf
- * @returns {{page:number, label:string, pending:boolean, count:number}[]}
+ * @param {(page:number, label:string) => Array|null|undefined} occurrencesOf  undefined = pending, null = failed
+ * @returns {{page:number, label:string, pending:boolean, failed:boolean, count:number}[]}
  */
 export function flatEntries(tags, from, to, occurrencesOf) {
     const out = [];
@@ -138,7 +138,7 @@ export function flatEntries(tags, from, to, occurrencesOf) {
         tags.forEach((tag) => {
             if (!tag.pages.includes(page)) return;
             const occ = occurrencesOf(page, tag.label);
-            out.push({ page, label: tag.label, pending: occ === undefined, count: occ ? occ.length : 0 });
+            out.push({ page, label: tag.label, pending: occ === undefined, failed: occ === null, count: occ ? occ.length : 0 });
         });
     });
     return out;

@@ -311,6 +311,23 @@ describe('setupAnnotationsToggle (jsdom)', () => {
         expect(root.classList.contains('-annotations-on')).toBe(false);
     });
 
+    test("the 'a' shortcut leaves the key to OpenSeadragon while the stage has focus (WASD panning)", () => {
+        const { root, checkbox } = buildToggle();
+        document.body.appendChild(root);
+        document.body.insertAdjacentHTML('beforeend', '<div data-immersive-image><div id="osdCanvas" tabindex="0"></div></div>');
+        const keys = createKeyDispatcher();
+        const toggle = setupAnnotationsToggle({ root, checkbox, storage, keys });
+        toggle.setPageData({ blocks: [{ id: 'b-1', author: 'gr_jacob_grimm' }], words: [], lines: [] });
+        const canvas = document.getElementById('osdCanvas');
+        canvas.focus();
+        expect(keys.handleEvent({ key: 'a', target: canvas })).toBe(false);
+        expect(checkbox.checked).toBe(false);
+        canvas.blur();
+        expect(keys.handleEvent({ key: 'a', target: document.body })).toBe(true);
+        expect(checkbox.checked).toBe(true);
+        document.body.innerHTML = '';
+    });
+
     test('onChange returns an unsubscribe; destroy detaches checkbox and shortcut', () => {
         const { root, checkbox } = buildToggle();
         const keys = createKeyDispatcher();

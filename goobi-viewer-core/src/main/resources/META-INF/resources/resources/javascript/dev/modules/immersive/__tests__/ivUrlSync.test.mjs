@@ -71,3 +71,36 @@ describe('attachUrlSync', function () {
         expect(viewer.goToPage).not.toHaveBeenCalled();
     });
 });
+
+describe('attachUrlSync history hygiene', function () {
+    const emitter = () => {
+        const subs = new Set();
+        return { subscribe: (fn) => (subs.add(fn), () => subs.delete(fn)), emit: (v) => subs.forEach((fn) => fn(v)) };
+    };
+
+    test('an emit for the page already in the URL replaces the entry instead of pushing a duplicate', function () {
+        window.history.replaceState(null, '', '/viewer/immersive/PPN123/1/');
+        const length = window.history.length;
+        const viewer = { onPageChange: emitter(), goToPage: jest.fn() };
+        attachUrlSync(viewer, 'PPN123');
+        viewer.onPageChange.emit(0);
+        expect(window.location.pathname).toBe('/viewer/immersive/PPN123/1/');
+        expect(window.history.length).toBe(length);
+        expect(window.history.state).toEqual({ order: 0 });
+        viewer.onPageChange.emit(4);
+        expect(window.location.pathname).toBe('/viewer/immersive/PPN123/5/');
+        expect(window.history.length).toBe(length + 1);
+    });
+
+    test('a popstate-driven page change does not push (the browser already restored the URL)', function () {
+        window.history.replaceState({ order: 2 }, '', '/viewer/immersive/PPN123/3/');
+        const length = window.history.length;
+        const viewer = { onPageChange: emitter(), goToPage: jest.fn() };
+        attachUrlSync(viewer, 'PPN123');
+        window.dispatchEvent(new PopStateEvent('popstate', { state: { order: 2 } }));
+        expect(viewer.goToPage).toHaveBeenCalledWith(2);
+        viewer.onPageChange.emit(2);
+        expect(window.location.pathname).toBe('/viewer/immersive/PPN123/3/');
+        expect(window.history.length).toBe(length);
+    });
+});

@@ -28,7 +28,7 @@ function mountMarkup() {
                 <div class="immersive__anno-toggle" hidden><input type="checkbox" id="immersiveAnnotationsToggle" /></div>
                 <div id="immersiveAnnotationsColumns" hidden></div>
                 <div id="immersiveFulltextLoader" hidden></div>
-                <div id="immersiveFulltext" data-label-empty="Kein Volltext vorhanden"></div>
+                <div id="immersiveFulltext" data-label-empty="Kein Volltext vorhanden" data-label-error="Volltext nicht ladbar"></div>
             </aside>
         </div>`;
     const viewer = fakeViewer();
@@ -49,8 +49,8 @@ afterEach(() => {
     document.body.innerHTML = '';
 });
 
-test('opening the panel loads the page text; without text the empty label is shown', async () => {
-    global.fetch = jest.fn(async () => ({ ok: false, status: 404, text: async () => '', json: async () => ({}) }));
+test('opening the panel loads the page text; a page without text shows the empty label', async () => {
+    global.fetch = jest.fn(async () => ({ ok: true, status: 200, json: async () => ({ resources: [] }) }));
     const { open, box } = mountMarkup();
     open();
     await flush();
@@ -59,7 +59,18 @@ test('opening the panel loads the page text; without text the empty label is sho
     expect(global.fetch.mock.calls[0][0]).toContain('/records/PI/');
     expect(box.textContent).toBe('Kein Volltext vorhanden');
     expect(box.classList.contains('-empty')).toBe(true);
+    expect(box.classList.contains('-error')).toBe(false);
     expect(document.getElementById('immersiveFulltextLoader').hidden).toBe(true);
+});
+
+test('a failed text request shows the error label, not "no full text"', async () => {
+    global.fetch = jest.fn(async () => ({ ok: false, status: 503, json: async () => ({}) }));
+    const { open, box } = mountMarkup();
+    open();
+    await flush();
+    await flush();
+    expect(box.textContent).toBe('Volltext nicht ladbar');
+    expect(box.classList.contains('-error')).toBe(true);
 });
 
 test('double-page mode disables the rail button and closes an open fulltext panel', () => {

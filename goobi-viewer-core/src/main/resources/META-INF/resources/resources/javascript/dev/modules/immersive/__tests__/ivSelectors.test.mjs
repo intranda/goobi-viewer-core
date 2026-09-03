@@ -1,5 +1,5 @@
 /** Unit tests for the shared overlay-open check: one list for every keyboard guard. */
-import { isOverlayOpen } from '../shared/ivSelectors.mjs';
+import { isOverlayOpen, isStageFocused } from '../shared/ivSelectors.mjs';
 
 afterEach(() => {
     document.body.innerHTML = '';
@@ -29,4 +29,13 @@ test('an open left panel counts only when asked for', () => {
     document.body.innerHTML = '<aside class="immersive__panel-left is-open"></aside>';
     expect(isOverlayOpen()).toBe(false);
     expect(isOverlayOpen({ panels: true })).toBe(true);
+});
+
+test('isStageFocused is true only while focus sits inside the image mount', () => {
+    document.body.innerHTML = '<div data-immersive-image><button id="inside"></button></div><button id="outside"></button>';
+    expect(isStageFocused()).toBe(false);
+    document.getElementById('inside').focus();
+    expect(isStageFocused()).toBe(true);
+    document.getElementById('outside').focus();
+    expect(isStageFocused()).toBe(false);
 });

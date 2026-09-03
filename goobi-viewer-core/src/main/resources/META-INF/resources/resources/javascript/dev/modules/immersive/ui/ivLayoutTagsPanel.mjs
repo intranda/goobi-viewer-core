@@ -74,7 +74,6 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         cursorKey: null,
         details: new Map(),
         inFlight: new Set(),
-        loadToken: 0,
     };
 
     const panelOpen = () => panel.classList.contains('is-open');
@@ -86,7 +85,7 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
     const occurrencesOf = (page, label) => {
         if (!state.details.has(page)) return undefined;
         const byLabel = state.details.get(page);
-        return byLabel ? byLabel[label] || [] : [];
+        return byLabel ? byLabel[label] || [] : null;
     };
     const entries = () => flatEntries(selectedTags(), state.from, state.to, occurrencesOf);
     const displayName = (label) => {
@@ -269,11 +268,10 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
 
     /* DETAIL LOADING */
 
-    /** Fetches the details of the given pages in contiguous range batches; stale responses are dropped. */
+    /** Fetches the details of the given pages in contiguous range batches; a failed batch marks its pages as failed. */
     const loadPages = (pages) => {
         const missing = pages.filter((p) => !state.details.has(p) && !state.inFlight.has(p));
         if (!missing.length) return;
-        const token = state.loadToken;
         batchRanges(missing, VISIBLE_BATCH).forEach(({ start, end }) => {
             const span = [];
             for (let p = start; p <= end; p++) {
@@ -283,17 +281,14 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
             loadLayoutTagDetails(pi, apiBase, start, end)
                 .then((details) => {
                     span.forEach((p) => state.inFlight.delete(p));
-                    if (token !== state.loadToken) return;
                     span.forEach((p) => state.details.set(p, details.get(p) || {}));
                 })
                 .catch((e) => {
                     span.forEach((p) => state.inFlight.delete(p));
-                    if (token !== state.loadToken) return;
                     console.warn('immersive layout tags failed', e);
                     span.forEach((p) => state.details.set(p, null));
                 })
                 .then(() => {
-                    if (token !== state.loadToken) return;
                     if (!state.cursorKey) preferCursorOnCurrentPage();
                     render();
                     renderHighlights();
@@ -390,10 +385,13 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
             const count = occ ? occ.length : 0;
             const countEl = btn.querySelector('.immersive__layout-tags-hit-count');
             btn.classList.toggle('-pending', occ === undefined);
-            countEl.textContent = occ === undefined ? '…' : count > 1 ? `(${count})` : '';
+            btn.classList.toggle('-error', occ === null);
+            countEl.textContent = occ === undefined ? '…' : occ === null ? '!' : count > 1 ? `(${count})` : '';
             let name = `${displayName(label)}, ${labels.labelPage || ''} ${page}`;
-            if (occ !== undefined && count > 1) name += `, ${formatMessage(labels.labelOccurrences, count)}`;
+            if (occ === null) name += `, ${labels.labelError || ''}`;
+            else if (occ !== undefined && count > 1) name += `, ${formatMessage(labels.labelOccurrences, count)}`;
             btn.setAttribute('aria-label', name);
+            btn.title = occ === null ? labels.labelError || '' : '';
         });
     };
 
@@ -480,8 +478,10 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         if (progress) {
             const pages = hitPages(selectedTags(), state.from, state.to);
             const loaded = pages.filter((p) => state.details.has(p)).length;
+            const failed = pages.some((p) => state.details.get(p) === null);
             let text = '';
-            if (pages.length && loaded < pages.length) text = formatMessage(labels.labelProgressLoading, loaded, pages.length);
+            if (failed) text = labels.labelError || '';
+            else if (pages.length && loaded < pages.length) text = formatMessage(labels.labelProgressLoading, loaded, pages.length);
             else if (pages.length === 1) text = labels.labelProgressDoneOne || '';
             else if (pages.length) text = formatMessage(labels.labelProgressDone, pages.length);
             progress.textContent = text;

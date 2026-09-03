@@ -160,12 +160,13 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
             const req = ++fulltextReq;
             if (fulltextLoader) fulltextLoader.hidden = false;
             fulltextBox.textContent = '';
-            fulltextBox.classList.remove('-empty');
+            fulltextBox.classList.remove('-empty', '-error');
             let blocks = null;
+            let failed = false;
             try {
                 blocks = await loadPageTextLevels(pi, apiBase, order);
             } catch {
-                blocks = null;
+                failed = true;
             }
             if (req !== fulltextReq) return;
             if (fulltextLoader) fulltextLoader.hidden = true;
@@ -181,8 +182,9 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
                 decorate();
             } else {
                 currentFlat = null;
-                fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
+                fulltextBox.textContent = (failed ? fulltextBox.dataset.labelError : fulltextBox.dataset.labelEmpty) || '';
                 fulltextBox.classList.add('-empty');
+                fulltextBox.classList.toggle('-error', failed);
             }
         };
 

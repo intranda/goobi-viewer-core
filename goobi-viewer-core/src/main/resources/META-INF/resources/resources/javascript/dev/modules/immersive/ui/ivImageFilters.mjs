@@ -2,6 +2,7 @@
 
 import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 import { env } from '../shared/ivEnv.mjs';
+import { FOCUSABLE_SELECTOR } from '../shared/ivA11y.mjs';
 
 const FILTER_TRIGGER_SELECTOR = '[data-popover-element="#immersiveFilterPopover"]';
 
@@ -64,7 +65,6 @@ export function setupImmersivePopoverA11y() {
     const $ = env.$;
     if (!$) return noop;
     const bag = createDisposer();
-    const FOCUSABLE = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
     const selectors = ['#immersiveSharePopover', '#immersiveCitationPopover', '#immersiveFilterPopover'];
     selectors.forEach((sel) => {
         const trigger = document.querySelector(`[data-popover-element="${sel}"]`);
@@ -83,14 +83,17 @@ export function setupImmersivePopoverA11y() {
             trigger.setAttribute('aria-expanded', 'true');
             const pop = popoverEl();
             if (!pop) return;
-            pop.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    e.preventDefault();
-                    $(trigger).popover('hide');
-                    trigger.focus();
-                }
-            });
-            const first = pop.querySelector(FOCUSABLE);
+            if (!pop.dataset.ivEscBound) {
+                pop.dataset.ivEscBound = '1';
+                pop.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        e.preventDefault();
+                        $(trigger).popover('hide');
+                        trigger.focus();
+                    }
+                });
+            }
+            const first = pop.querySelector(FOCUSABLE_SELECTOR);
             if (first) {
                 const $first = $(first);
                 const hasTip = typeof $first.tooltip === 'function' && !!$first.data('bs.tooltip');

@@ -374,6 +374,28 @@ describe('setupLayoutTagsPanel', () => {
         errorSpy.mockRestore();
     });
 
+    test('a failed detail batch marks its rows as errors instead of "no occurrences"', async () => {
+        const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        global.fetch = jest.fn((url) => {
+            if (url.includes('/layout/tags/index')) return Promise.resolve({ ok: true, json: () => Promise.resolve(INDEX) });
+            const m = url.match(/start=(\d+)&end=(\d+)/);
+            if (m[1] === '7') return Promise.resolve({ ok: false, status: 500 });
+            return Promise.resolve({ ok: true, json: () => Promise.resolve(detailsResponse(Number(m[1]), Number(m[2]))) });
+        });
+        const panel = mountMarkup();
+        setupLayoutTagsPanel(fakeViewer(), 'PI', '/api', fakePanels(), createKeyDispatcher());
+        await openPanel(panel);
+        checkbox('gr_unterstrichen').click();
+        await flush();
+        const page7 = hits().find((b) => b.dataset.pageNo === '7');
+        expect(page7.classList.contains('-error')).toBe(true);
+        expect(page7.classList.contains('-pending')).toBe(false);
+        expect(page7.querySelector('.immersive__layout-tags-hit-count').textContent).toBe('!');
+        expect(page7.getAttribute('aria-label')).toBe('Unterstreichungen, Seite 7, Fehler.');
+        expect(document.querySelector('[data-immersive-layout-tags="progress"]').textContent).toBe('Fehler.');
+        warn.mockRestore();
+    });
+
     test('bails without the panel markup', () => {
         document.body.innerHTML = '<div class="immersive"></div>';
         expect(() => setupLayoutTagsPanel(fakeViewer(), 'PI', '/api', fakePanels(), createKeyDispatcher())).not.toThrow();

@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PANEL_SHORTCUT_IDS } from '../ui/ivPanelsWiring.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const JS_ROOT = path.resolve(HERE, '..');
@@ -58,4 +59,16 @@ test('the markup carries no data-immersive-* or data-label-* attribute the JS ne
     const readLabels = new Set(matches(js, /(?:dataset|labels)\.(label[A-Z]\w*)/g).map((n) => 'data-' + kebab(n)));
     const unused = [...xhtmlAttrNames].filter((a) => (a.startsWith('data-immersive-') && !readImmersive.has(a)) || (a.startsWith('data-label-') && !readLabels.has(a)));
     expect(unused).toEqual([]);
+});
+
+test('Alt+digit order equals the rail button order and the shortcuts-modal rows', () => {
+    const toolbar = fs.readFileSync(path.join(RESOURCES, 'includes/immersive/iv_toolbar_left.xhtml'), 'utf8');
+    const modal = fs.readFileSync(path.join(RESOURCES, 'includes/immersive/iv_shortcuts_modal.xhtml'), 'utf8');
+    const rail = Array.from(toolbar.matchAll(/data-immersive-panel="(\w+)"[^>]*title="#\{msg\.(\w+)\}"/g), (m) => ({ id: m[1], msg: m[2] }));
+    expect(rail.map((r) => r.id)).toEqual(PANEL_SHORTCUT_IDS);
+    const altRows = modal
+        .split('<tr>')
+        .filter((row) => row.includes('data-key="alt"'))
+        .map((row) => ({ msg: row.match(/#\{msg\.(\w+)\}/)[1], digit: Number(row.match(/<kbd>(\d)<\/kbd>/)[1]) }));
+    expect(altRows).toEqual(rail.map((r, i) => ({ msg: r.msg, digit: i + 1 })));
 });

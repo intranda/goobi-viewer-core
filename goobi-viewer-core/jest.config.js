@@ -32,9 +32,11 @@ module.exports = {
 
     // Aggregated coverage for both projects in a single Maven-friendly location.
     coverageDirectory: path.join(__dirname, 'target/jest-coverage'),
+    coverageProvider: 'v8',
     coverageReporters: ['text-summary', 'lcov', 'html'],
     collectCoverageFrom: [
         'goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/**/*.js',
+        'goobi-viewer-core/src/main/resources/META-INF/resources/resources/javascript/dev/modules/**/*.mjs',
         'scripts/pre-commit/*.js',
         'goobi-viewer-core/gulp/*.js',
         '!**/__tests__/**',

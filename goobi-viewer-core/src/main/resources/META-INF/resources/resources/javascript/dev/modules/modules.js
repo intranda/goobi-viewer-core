@@ -1323,6 +1323,7 @@
         _crossfadeTo(target) {
             this._withNavLock(async () => {
                 const previous = this.currentItem;
+                const from = this.current;
                 this.current = target;
                 // Restricted page: skip the doomed tile load (it would 403 and _acquire
                 // would reject, never emitting); drop the previous page and show the overlay.
@@ -1333,9 +1334,17 @@
                     this._refreshPreload();
                     return;
                 }
-                const item = await this._acquire(target, this._anchor);
-                this._preloaded.delete(target);
-                await this._whenContent(item);
+                let item;
+                try {
+                    item = await this._acquire(target, this._anchor);
+                    this._preloaded.delete(target);
+                    await this._whenContent(item);
+                } catch (e) {
+                    // The tile source failed: keep reporting the page that is actually shown.
+                    this.current = from;
+                    this._preloaded.delete(target);
+                    throw e;
+                }
                 await _crossfade(item, previous, this._fadeMs);
                 if (previous) this.viewer.openseadragon.world.removeItem(previous);
                 this.currentItem = item;
@@ -1851,7 +1860,7 @@
     async function _fetchPageLines(pi, apiBase, order, fetchFn, query = '') {
         const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/${query}`);
         if (!res.ok) {
-            return [];
+            return null;
         }
         return parsePageLines(await res.json());
     }
@@ -1973,7 +1982,9 @@
             _fetchPageLines(pi, apiBase, order, fetchFn),
             _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=word'),
         ]);
-        return nestTextLevels({ blocks, lines, words });
+        // Lines are the backbone: missing block/word granularity degrades, a missing line request is an error.
+        if (lines === null) throw new Error('page text unavailable');
+        return nestTextLevels({ blocks: blocks || [], lines, words: words || [] });
     }
 
     /**
@@ -2041,8 +2052,10 @@
     }
 
     /**
-     * URL-sync feature: pushes a history entry on page change (deep-linkable,
-     * back/forward steps through pages) and navigates the viewer on popstate.
+     * URL-sync feature: pushes a history entry per new page (deep-linkable,
+     * back/forward steps through pages) and navigates the viewer on popstate. An
+     * emit for the page already in the URL (initial open, double-page toggle, a
+     * popstate-driven change) replaces the entry instead of pushing a duplicate.
      * The viewer uses 0-based page orders; URLs use 1-based page numbers.
      *
      * @param {{onPageChange:{subscribe:Function}, goToPage:Function}} viewer
@@ -2053,7 +2066,8 @@
         const unsubscribe = viewer.onPageChange.subscribe((order) => {
             const url = new URL(window.location.href);
             url.pathname = pageUrlPath(url.pathname, pi, order + 1);
-            window.history.pushState({ order }, '', url.toString());
+            if (url.pathname === window.location.pathname) window.history.replaceState({ order }, '', url.toString());
+            else window.history.pushState({ order }, '', url.toString());
         });
         const onPopState = (e) => {
             if (e.state && typeof e.state.order === 'number') {
@@ -2132,6 +2146,15 @@
      */
     function isOverlayOpen({ panels = false } = {}) {
         return !!document.querySelector(panels ? `${OVERLAY_OPEN_SELECTOR}, ${PANEL_OPEN_SELECTOR}` : OVERLAY_OPEN_SELECTOR);
+    }
+
+    /** The OpenSeadragon mount; while it holds focus, OSD owns the single-letter keys (WASD panning). */
+    const STAGE_SELECTOR = '[data-immersive-image]';
+
+    /** @returns {boolean} whether keyboard focus sits inside the image stage */
+    function isStageFocused() {
+        const stage = document.querySelector(STAGE_SELECTOR);
+        return !!stage && stage.contains(document.activeElement);
     }
 
     /** Central keydown dispatcher for the immersive view. */
@@ -2390,15 +2413,15 @@
         document.querySelectorAll('.immersive__panel-left').forEach((p) => (p.inert = true));
         const syncPanelOpenFlag = () => {
             if (immersiveRoot) {
-                immersiveRoot.classList.toggle('-panel-open', !!document.querySelector('.immersive__panel-left.is-open'));
+                immersiveRoot.classList.toggle('-panel-open', !!document.querySelector(PANEL_OPEN_SELECTOR));
             }
         };
         const closeHooks = [];
         let activePanelBtn = null;
         const closePanels = (restoreFocus = false) => {
             closeHooks.forEach((hook) => hook());
-            const closedAny = !!document.querySelector('.immersive__panel-left.is-open');
-            document.querySelectorAll('.immersive__panel-left.is-open').forEach((p) => {
+            const closedAny = !!document.querySelector(PANEL_OPEN_SELECTOR);
+            document.querySelectorAll(PANEL_OPEN_SELECTOR).forEach((p) => {
                 p.classList.remove('is-open');
                 p.setAttribute('aria-hidden', 'true');
                 p.inert = true;
@@ -2450,7 +2473,7 @@
 
         const unregisterKeys = keys.register(40, (e) => {
             if (e.key === 'Escape') {
-                if (!document.querySelector('.immersive__panel-left.is-open')) return false;
+                if (!document.querySelector(PANEL_OPEN_SELECTOR)) return false;
                 closePanels(true);
                 return true;
             }
@@ -2502,7 +2525,7 @@
         // clamp floor must include the open panel's own min-width (raised in the
         // annotations two-column mode), or the handle would detach from the panel.
         const minWidth = () => {
-            const open = immersiveRoot.querySelector('.immersive__panel-left.is-open');
+            const open = immersiveRoot.querySelector(PANEL_OPEN_SELECTOR);
             const panelMin = open ? parseFloat(getComputedStyle(open).minWidth) || 0 : 0;
             return Math.max(MIN_WIDTH, panelMin);
         };
@@ -2528,7 +2551,7 @@
         let observer = null;
         if (typeof ResizeObserver !== 'undefined') {
             observer = new ResizeObserver(() => {
-                const open = immersiveViewer.querySelector('.immersive__panel-left.is-open');
+                const open = immersiveViewer.querySelector(PANEL_OPEN_SELECTOR);
                 if (!open || !handle.offsetParent) return;
                 const panelWidth = open.getBoundingClientRect().width;
                 const handleRect = handle.getBoundingClientRect();
@@ -2718,7 +2741,7 @@
 
     /** Shared accessibility utilities for the immersive view. */
 
-    const FOCUSABLE_QUERY = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
+    const FOCUSABLE_SELECTOR = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
 
     /**
      * Returns a keydown handler that traps Tab focus within `container`: reaching
@@ -2732,7 +2755,7 @@
     function createFocusTrap(container) {
         return function trapFocus(e) {
             if (e.key !== 'Tab') return;
-            const f = Array.from(container.querySelectorAll(FOCUSABLE_QUERY)).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
+            const f = Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
             if (!f.length) return;
             const first = f[0];
             const last = f[f.length - 1];
@@ -3061,7 +3084,6 @@
 
     /** ALTO layout-tag annotations: toggle state, inline markup, margin note column and image overlay regions. */
 
-    /** localStorage key persisting the annotations toggle, following the immersive-* key convention. */
     /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */
     const STATE_CLASS = '-annotations-on';
 
@@ -3733,7 +3755,7 @@
         if (keys) {
             unregisterKeys = keys.register(55, (e) => {
                 if (e.key !== 'a' || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return false;
-                if (isTypingTarget(e.target)) return false;
+                if (isTypingTarget(e.target) || isStageFocused()) return false;
                 const panel = checkbox.closest('.immersive__panel-left');
                 if (checkbox.disabled || (panel && !panel.classList.contains('is-open'))) return false;
                 if (isOverlayOpen()) return false;
@@ -3928,12 +3950,13 @@
                 const req = ++fulltextReq;
                 if (fulltextLoader) fulltextLoader.hidden = false;
                 fulltextBox.textContent = '';
-                fulltextBox.classList.remove('-empty');
+                fulltextBox.classList.remove('-empty', '-error');
                 let blocks = null;
+                let failed = false;
                 try {
                     blocks = await loadPageTextLevels(pi, apiBase, order);
                 } catch {
-                    blocks = null;
+                    failed = true;
                 }
                 if (req !== fulltextReq) return;
                 if (fulltextLoader) fulltextLoader.hidden = true;
@@ -3949,8 +3972,9 @@
                     decorate();
                 } else {
                     currentFlat = null;
-                    fulltextBox.textContent = fulltextBox.dataset.labelEmpty || '';
+                    fulltextBox.textContent = (failed ? fulltextBox.dataset.labelError : fulltextBox.dataset.labelEmpty) || '';
                     fulltextBox.classList.add('-empty');
+                    fulltextBox.classList.toggle('-error', failed);
                 }
             };
 
@@ -4114,8 +4138,8 @@
      * @param {{label:string, pages:number[]}[]} tags  the selected tags
      * @param {number} from
      * @param {number} to
-     * @param {(page:number, label:string) => Array|undefined} occurrencesOf
-     * @returns {{page:number, label:string, pending:boolean, count:number}[]}
+     * @param {(page:number, label:string) => Array|null|undefined} occurrencesOf  undefined = pending, null = failed
+     * @returns {{page:number, label:string, pending:boolean, failed:boolean, count:number}[]}
      */
     function flatEntries(tags, from, to, occurrencesOf) {
         const out = [];
@@ -4123,7 +4147,7 @@
             tags.forEach((tag) => {
                 if (!tag.pages.includes(page)) return;
                 const occ = occurrencesOf(page, tag.label);
-                out.push({ page, label: tag.label, pending: occ === undefined, count: occ ? occ.length : 0 });
+                out.push({ page, label: tag.label, pending: occ === undefined, failed: occ === null, count: occ ? occ.length : 0 });
             });
         });
         return out;
@@ -4345,7 +4369,7 @@
         const occurrencesOf = (page, label) => {
             if (!state.details.has(page)) return undefined;
             const byLabel = state.details.get(page);
-            return byLabel ? byLabel[label] || [] : [];
+            return byLabel ? byLabel[label] || [] : null;
         };
         const entries = () => flatEntries(selectedTags(), state.from, state.to, occurrencesOf);
         const displayName = (label) => {
@@ -4528,7 +4552,7 @@
 
         /* DETAIL LOADING */
 
-        /** Fetches the details of the given pages in contiguous range batches; stale responses are dropped. */
+        /** Fetches the details of the given pages in contiguous range batches; a failed batch marks its pages as failed. */
         const loadPages = (pages) => {
             const missing = pages.filter((p) => !state.details.has(p) && !state.inFlight.has(p));
             if (!missing.length) return;
@@ -4645,10 +4669,13 @@
                 const count = occ ? occ.length : 0;
                 const countEl = btn.querySelector('.immersive__layout-tags-hit-count');
                 btn.classList.toggle('-pending', occ === undefined);
-                countEl.textContent = occ === undefined ? '…' : count > 1 ? `(${count})` : '';
+                btn.classList.toggle('-error', occ === null);
+                countEl.textContent = occ === undefined ? '…' : occ === null ? '!' : count > 1 ? `(${count})` : '';
                 let name = `${displayName(label)}, ${labels.labelPage || ''} ${page}`;
-                if (occ !== undefined && count > 1) name += `, ${formatMessage(labels.labelOccurrences, count)}`;
+                if (occ === null) name += `, ${labels.labelError || ''}`;
+                else if (occ !== undefined && count > 1) name += `, ${formatMessage(labels.labelOccurrences, count)}`;
                 btn.setAttribute('aria-label', name);
+                btn.title = occ === null ? labels.labelError || '' : '';
             });
         };
 
@@ -4735,8 +4762,10 @@
             if (progress) {
                 const pages = hitPages(selectedTags(), state.from, state.to);
                 const loaded = pages.filter((p) => state.details.has(p)).length;
+                const failed = pages.some((p) => state.details.get(p) === null);
                 let text = '';
-                if (pages.length && loaded < pages.length) text = formatMessage(labels.labelProgressLoading, loaded, pages.length);
+                if (failed) text = labels.labelError || '';
+                else if (pages.length && loaded < pages.length) text = formatMessage(labels.labelProgressLoading, loaded, pages.length);
                 else if (pages.length === 1) text = labels.labelProgressDoneOne || '';
                 else if (pages.length) text = formatMessage(labels.labelProgressDone, pages.length);
                 progress.textContent = text;
@@ -5666,7 +5695,6 @@
         const $ = env.$;
         if (!$) return noop;
         const bag = createDisposer();
-        const FOCUSABLE = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
         const selectors = ['#immersiveSharePopover', '#immersiveCitationPopover', '#immersiveFilterPopover'];
         selectors.forEach((sel) => {
             const trigger = document.querySelector(`[data-popover-element="${sel}"]`);
@@ -5685,14 +5713,17 @@
                 trigger.setAttribute('aria-expanded', 'true');
                 const pop = popoverEl();
                 if (!pop) return;
-                pop.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') {
-                        e.preventDefault();
-                        $(trigger).popover('hide');
-                        trigger.focus();
-                    }
-                });
-                const first = pop.querySelector(FOCUSABLE);
+                if (!pop.dataset.ivEscBound) {
+                    pop.dataset.ivEscBound = '1';
+                    pop.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape') {
+                            e.preventDefault();
+                            $(trigger).popover('hide');
+                            trigger.focus();
+                        }
+                    });
+                }
+                const first = pop.querySelector(FOCUSABLE_SELECTOR);
                 if (first) {
                     const $first = $(first);
                     const hasTip = typeof $first.tooltip === 'function' && !!$first.data('bs.tooltip');

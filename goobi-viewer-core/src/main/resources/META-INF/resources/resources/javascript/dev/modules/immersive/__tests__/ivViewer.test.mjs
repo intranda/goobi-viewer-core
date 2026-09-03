@@ -137,6 +137,21 @@ describe('IvViewer construction', () => {
         expect(seen).not.toHaveBeenCalled();
     });
 
+    test('a failed page load keeps the shown page, emits nothing and releases the lock', async () => {
+        const v = new IvViewer({ element: {}, services: services(5), startOrder: 1 });
+        opens.shift()();
+        await flush();
+        jest.spyOn(v, '_acquire').mockRejectedValue(new Error('tile source 404'));
+        const seen = jest.fn();
+        v.onPageChange.subscribe(seen);
+        v.goToPage(3);
+        await flush();
+        await flush();
+        expect(v.getCurrentOrder()).toBe(1);
+        expect(seen).not.toHaveBeenCalled();
+        expect(v._navigating).toBe(false);
+    });
+
     test('each instance gets its own sequence config (no shared module state)', () => {
         const a = new IvViewer({ element: {}, services: services(3) });
         const b = new IvViewer({ element: {}, services: services(3) });
