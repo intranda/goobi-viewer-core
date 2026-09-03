@@ -55,7 +55,6 @@ public class MediaDeliveryService {
 
     private static final String CONTENT_RANGE_HEADER = "Content-Range";
     private static final int DEFAULT_BUFFER_SIZE = 10240; // ..bytes = 10KB.
-    private static final long DEFAULT_EXPIRE_TIME = 604800000L; // ..ms = 1 week.
     private static final String MULTIPART_BOUNDARY = "MULTIPART_BYTERANGES";
 
     /**
@@ -226,7 +225,7 @@ public class MediaDeliveryService {
      * @param eTag unique entity tag string for cache validation
      * @param disposition content disposition value, either "inline" or "attachment"
      * @should not call reset or setBufferSize on the response
-     * @should set content-disposition, accept-ranges, etag, last-modified and expires headers
+     * @should set content-disposition, accept-ranges, etag, last-modified and cache-control headers
      */
     // Visibility widened from private to package-private so the method can be exercised from the
     // unit test without reflection.
@@ -246,7 +245,9 @@ public class MediaDeliveryService {
         response.setHeader("Accept-Ranges", "bytes");
         response.setHeader("ETag", eTag);
         response.setDateHeader("Last-Modified", lastModified);
-        response.setDateHeader("Expires", System.currentTimeMillis() + DEFAULT_EXPIRE_TIME);
+        // Delivered files can be access restricted; a positive freshness lifetime without "private"
+        // would let a shared cache serve them to a different, unauthorized requester.
+        response.setHeader("Cache-Control", "private, no-cache");
     }
 
     /**

@@ -22,159 +22,160 @@
 package io.goobi.viewer.filters;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import io.goobi.viewer.controller.DataManager;
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.controller.DateTools;
-
 /**
  * Servlet filter that controls HTTP response caching for the viewer webapp.
  *
- * <p>Behavior is gated by {@code performance.preventProxyCaching} (default
- * {@code false}). When the option is enabled, the filter splits requests
- * into two groups:</p>
+ * <p>
+ * Requests are classified by {@link ResourceCacheCategory}; each category maps to one {@code Cache-Control} value:
  *
  * <ul>
- *   <li><b>Dynamic responses</b> (XHTML pages, REST/JSON, anything else):
- *       receive {@code Cache-Control: no-store, no-cache, must-revalidate,
- *       max-age=0, post-check=0, pre-check=0} plus {@code Pragma: no-cache}
- *       and a stale {@code Expires}. This prevents stale JSF view-state,
- *       stale post-redirect content, and shared-proxy caching of
- *       personalized responses.</li>
- *   <li><b>Static, content-addressable resources</b> (matched by
- *       {@link #ALWAYS_CACHE_PATTERN} — e.g. {@code .js}, {@code .css},
- *       {@code .svg}, {@code .woff}, {@code .png}, ...): receive
- *       {@code Cache-Control: public, max-age=2592000} so browsers can
- *       cache them for 30 days without revalidation. The TTL matches the
- *       historical Apache {@code mod_expires} default for image types and
- *       the IIIF image endpoint.</li>
+ * <li>{@code STATIC}: {@code public, max-age=<performance.caching.static[@maxAge]>}
+ * <li>{@code ACCOUNT}: {@code no-store}, regardless of the dynamic policy
+ * <li>{@code DYNAMIC}: per {@code performance.caching.dynamic[@policy]}
+ * <li>{@code API}: nothing, {@code ApiCacheControlResponseFilter} owns those responses
+ * <li>{@code SKIP}: nothing, Mojarra owns JSF resource responses via {@code com.sun.faces.defaultResourceMaxAge}
  * </ul>
  *
- * <p>The filter also normalises the request and response character
- * encoding to UTF-8 for non-API paths.</p>
+ * <p>
+ * On an {@code ERROR} dispatch the filter always emits {@code no-store}: a response whose status is not a success must not inherit the freshness of
+ * the path it was requested under.
  *
- * <p>The {@code preventProxyCaching} flag is read live from
- * {@link io.goobi.viewer.controller.Configuration} on every request, so
- * administrators can change the value in {@code config_viewer.xml} without
- * restarting Tomcat. Apache Commons Configuration's reloading strategy
- * stat()s the file only when the strategy says it's time (poll-based,
- * not on every read), so the per-request cost is a HashMap lookup.</p>
+ * <p>
+ * The filter also normalises request and response character encoding to UTF-8 for non-API paths.
  */
 public class HttpResponseFilter implements Filter {
 
-    private static final Logger logger = LogManager.getLogger(HttpResponseFilter.class);
+    private static final String HEADER_CACHE_CONTROL = "Cache-Control";
+    private static final String NO_STORE = "no-store";
+    private static final String POLICY_NO_STORE = "no-store";
+    private static final String POLICY_OFF = "off";
 
-    // Skip-list for static, content-addressable resources. Substring matches
-    // (`/css`, `jquery`, `primefaces`) preserve backward compatibility with
-    // JSF resource URLs that have no file extension. Extension matches cover
-    // all modern static formats served by the viewer and its themes.
-    //
-    // Extension tokens are followed by `\b` (word boundary) to prevent false
-    // matches where a known extension is a substring of a longer word — most
-    // importantly to keep `.js` from matching the `.js` substring of `.json`,
-    // which would route REST-API responses into the long-term cache branch.
-    private static String alwaysCacheRegex =
-            "/css|jquery|primefaces"
-                    + "|\\.(?:js|css|map|gif|png|ico|jpg|jpeg"
-                    + "|svg|woff2|woff|ttf|eot|otf)\\b";
-    // Pre-compiled pattern for cache regex — avoids Pattern.compile() on every HTTP request
-    private static final Pattern ALWAYS_CACHE_PATTERN = Pattern.compile(alwaysCacheRegex);
-
-    /**
-     * Positive Cache-Control header value for static resources matched by
-     * {@link #ALWAYS_CACHE_PATTERN}. 30 days mirrors the existing IIIF image
-     * endpoint TTL and the historical mod_expires setting for image types —
-     * long enough to materially reduce repeat traffic, short enough to
-     * recover from a bad asset deploy without forcing users to clear their
-     * cache. If production HARs ever show 30 days is wrong, expose this as
-     * a config option in {@code <performance><staticResourceCacheMaxAge>}.
-     */
-    private static final String STATIC_RESOURCE_CACHE_CONTROL =
-            "public, max-age=2592000";
+    /** {@inheritDoc} */
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        //
+    }
 
     /**
      * {@inheritDoc}
      *
-     * @should set no-store cache headers for dynamic XHTML responses
-     * @should set long-term cache headers for modern static resource extensions
-     * @should set long-term cache headers for already matched static resource
-     *         extensions
-     * @should set long-term cache headers for path substring matches
-     * @should set no-store cache headers for api json responses
-     * @should not set any cache headers when prevent proxy caching is disabled
+     * @should set long term cache headers for whitelisted assets
+     * @should set no store for account bound paths
+     * @should set no store for account bound paths even when dynamic caching is off
+     * @should apply the configured policy to dynamic pages
+     * @should set no cache headers for jsf resources and api paths
+     * @should set no headers when caching is disabled
+     * @should skip character encoding for api paths
+     * @should set no store for account bound paths reached through a forward
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        //rest calls should not carry character encoding
         String path = httpRequest.getServletPath();
-        if (!path.startsWith("/api/") && !path.equals("/rest")) {
+        ResourceCacheCategory category = ResourceCacheCategory.classify(path, getOriginalPath(httpRequest));
+
+        // REST calls carry their own encoding negotiated by JAX-RS.
+        if (category != ResourceCacheCategory.API) {
             request.setCharacterEncoding("UTF-8");
             response.setCharacterEncoding("UTF-8");
         }
 
-        // Read the flag live per request so admins can flip
-        // <preventProxyCaching> in config_viewer.xml without restarting
-        // Tomcat. Apache Commons Configuration's reloading strategy stat()s
-        // the file only when the strategy says it's time (poll-based, not on
-        // every read), so the per-request cost is a HashMap lookup. If
-        // profiling later shows this as a hotspot, a TTL cache local to the
-        // filter is the obvious mitigation.
-        if (DataManager.getInstance().getConfiguration()
-                .isPreventProxyCaching()) {
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
-            // Static, content-addressable URIs get a positive long-term cache
-            // header so that browsers do not have to revalidate them on every
-            // navigation. Dynamic URIs get the protective no-store/no-cache
-            // trio that prevents JSF view-state corruption and stale
-            // post-redirect content.
-            Matcher m = ALWAYS_CACHE_PATTERN.matcher(httpRequest.getRequestURI());
-            if (m.find()) {
-                httpResponse.setHeader("Cache-Control",
-                        STATIC_RESOURCE_CACHE_CONTROL);
+        // Read the flag live per request so admins can change the configuration without
+        // restarting Tomcat. Commons Configuration polls the file, so the per-request cost is a
+        // map lookup.
+        if (DataManager.getInstance().getConfiguration().isCachingEnabled()) {
+            if (DispatcherType.ERROR.equals(request.getDispatcherType())) {
+                httpResponse.setHeader(HEADER_CACHE_CONTROL, NO_STORE);
             } else {
-                httpResponse.setHeader("Expires", "Tue, 03 Jul 2001 06:00:00 GMT");
-                httpResponse.setHeader("Last-Modified",
-                        DateTools.now().atZone(ZoneId.systemDefault()).format(DateTools.FORMATTERJAVAUTILDATETOSTRING));
-                httpResponse.setHeader("Cache-Control",
-                        "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0");
-                httpResponse.setHeader("Pragma", "no-cache");
+                applyCacheControl(httpResponse, category);
             }
         }
+
         chain.doFilter(request, response);
-        //        chain.doFilter(request, new HttpServletResponseWrapper((HttpServletResponse) response) {
-        //            public void setHeader(String name, String value) {
-        //                if (!"etag".equalsIgnoreCase(name)) {
-        //                    super.setHeader(name, value);
-        //                }
-        //            }
-        //        });
+    }
+
+    /**
+     * Returns the request uri the current dispatch originated from, without the context path.
+     *
+     * <p>
+     * The PrettyFaces rewrite filter is ordered ahead of this one and forwards a matched pretty url to its backing view id via a genuine
+     * {@code RequestDispatcher.forward()}. From that point on {@link HttpServletRequest#getRequestURI()} reflects the forward target, i.e. the view
+     * id, not the pretty url the browser sent; the servlet container preserves the pre-forward uri in the standard
+     * {@link RequestDispatcher#FORWARD_REQUEST_URI} attribute instead, and PrettyFaces itself relies on that same attribute to recover the pretty url
+     * after its own forward. Falling back to {@link HttpServletRequest#getRequestURI()} covers a dispatch that was never forwarded, where the two are
+     * identical anyway.
+     */
+    private static String getOriginalPath(HttpServletRequest request) {
+        String uri = (String) request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI);
+        if (uri == null) {
+            uri = request.getRequestURI();
+        }
+        if (uri == null) {
+            return null;
+        }
+        String contextPath = request.getContextPath();
+        if (contextPath != null && !contextPath.isEmpty() && uri.startsWith(contextPath)) {
+            uri = uri.substring(contextPath.length());
+        }
+        return uri;
+    }
+
+    /** Emits the header for the given category, or nothing where another layer owns it. */
+    private static void applyCacheControl(HttpServletResponse response, ResourceCacheCategory category) {
+        switch (category) {
+            case STATIC:
+                response.setHeader(HEADER_CACHE_CONTROL,
+                        "public, max-age=" + DataManager.getInstance().getConfiguration().getStaticResourceCacheMaxAge());
+                break;
+            case ACCOUNT:
+                // Not subject to the dynamic policy: account bound pages must never be written to disk.
+                response.setHeader(HEADER_CACHE_CONTROL, NO_STORE);
+                break;
+            case DYNAMIC:
+                applyDynamicPolicy(response);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Emits the dynamic page header.
+     *
+     * <p>
+     * {@code private, no-cache} is the default rather than {@code no-store} because {@code no-store} disqualifies a page from the browsers'
+     * back/forward cache, which turns every backward navigation into a full request.
+     */
+    private static void applyDynamicPolicy(HttpServletResponse response) {
+        String policy = DataManager.getInstance().getConfiguration().getDynamicCachePolicy();
+        if (POLICY_OFF.equalsIgnoreCase(policy)) {
+            return;
+        }
+        if (POLICY_NO_STORE.equalsIgnoreCase(policy)) {
+            response.setHeader(HEADER_CACHE_CONTROL, NO_STORE);
+            return;
+        }
+        response.setHeader(HEADER_CACHE_CONTROL, "private, no-cache");
     }
 
     /** {@inheritDoc} */
     @Override
     public void destroy() {
+        //
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public void init(FilterConfig arg0) throws ServletException {
-    }
-
 }

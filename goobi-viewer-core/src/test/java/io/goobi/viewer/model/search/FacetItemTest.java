@@ -80,6 +80,33 @@ class FacetItemTest extends AbstractTest {
     }
 
     /**
+     * @see FacetItem#buildQueryFacetItem(String,String,String,String,long)
+     * @verifies use the stored solr query as filter query and the name as value
+     */
+    @Test
+    void buildQueryFacetItem_shouldUseStoredSolrQueryAsFilterQuery() {
+        FacetItem item = FacetItem.buildQueryFacetItem(SolrConstants.DC_DYNAMIC, "mycol", "My collection", "DOCSTRCT:monograph", 5);
+        Assertions.assertEquals(FacetItem.FacetType.QUERY, item.getType());
+        Assertions.assertEquals(SolrConstants.DC_DYNAMIC, item.getField());
+        Assertions.assertEquals("mycol", item.getValue());
+        Assertions.assertEquals("My collection", item.getLabel());
+        Assertions.assertEquals(5, item.getCount());
+        // The filter query must be the raw stored query wrapped in parentheses, NOT DC_DYNAMIC:mycol facetified
+        Assertions.assertEquals("(DOCSTRCT:monograph)", item.getQueryEscapedLink());
+    }
+
+    /**
+     * @see FacetItem#getQueryEscapedLink()
+     * @verifies negate the stored solr query for an excluded query facet item
+     */
+    @Test
+    void getQueryEscapedLink_shouldNegateStoredSolrQueryForExcludedQueryFacetItem() {
+        FacetItem item = FacetItem.buildQueryFacetItem(SolrConstants.DC_DYNAMIC, "mycol", "My collection", "DOCSTRCT:monograph", 5);
+        item.setExcluded(true);
+        Assertions.assertEquals("-(DOCSTRCT:monograph)", item.getQueryEscapedLink());
+    }
+
+    /**
      * @see FacetItem#getQueryEscapedLink()
      * @verifies escape values containing whitespaces
      */

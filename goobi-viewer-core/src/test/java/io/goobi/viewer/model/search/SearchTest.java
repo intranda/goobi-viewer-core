@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.model.maps.IArea;
 import io.goobi.viewer.model.maps.Location;
@@ -130,5 +131,36 @@ class SearchTest extends AbstractDatabaseAndSolrEnabledTest {
         // every record in the test index has a DC value, so it must appear in availableFacets.
         Assertions.assertTrue(facets.getAvailableFacets().containsKey("DC"),
                 "DC should appear in available facets after execute()");
+    }
+
+    /**
+     * Verifies that a database-defined dynamic collection configured as a query facet (DC_DYNAMIC) is faceted via Solr facet.query and its count is
+     * surfaced as an available facet item.
+     *
+     * @verifies populate dynamic collection query facets
+     */
+    @Test
+    void execute_shouldPopulateDynamicCollectionQueryFacets() throws Exception {
+        io.goobi.viewer.model.cms.collections.DynamicCollection dc =
+                new io.goobi.viewer.model.cms.collections.DynamicCollection("search_dyncol_test");
+        // Match all top-level records in the test index
+        dc.setSolrQuery("ISWORK:true");
+        DataManager.getInstance().getDao().addDynamicCollection(dc);
+        try {
+            Search search = new Search();
+            search.setQuery("");
+            SearchFacets facets = new SearchFacets();
+
+            search.execute(facets, null, 10, Locale.ENGLISH);
+
+            Assertions.assertTrue(facets.getAvailableFacets().containsKey(SolrConstants.DC_DYNAMIC),
+                    "DC_DYNAMIC should appear in available facets after execute()");
+            java.util.List<IFacetItem> items = facets.getAvailableFacets().get(SolrConstants.DC_DYNAMIC);
+            Assertions.assertEquals(1, items.size());
+            Assertions.assertEquals("search_dyncol_test", items.get(0).getValue());
+            Assertions.assertTrue(items.get(0).getCount() > 0, "The dynamic collection facet should report a positive hit count");
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(dc);
+        }
     }
 }

@@ -80,24 +80,30 @@
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-		<action onPostback="false">#{browseBean.setCollectionField('DC')}</action>
+		<action onPostback="false">#{collectionBrowseBean.setCollectionField('DC')}</action>
 	</url-mapping>
 	<url-mapping id="browseTopics">
 		<pattern value="/browseTopics/" />
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{browseBean.setCollectionField('MD_TOPIC')}</action>
+		<action onPostback="false">#{collectionBrowseBean.setCollectionField('MD_TOPIC')}</action>
 	</url-mapping>
 	<url-mapping id="browseHierarchy">
 		<pattern value="/browseHierarchy/" />
 		<view-id value="/browse.xhtml" />
-		<action onPostback="false">#{browseBean.setCollectionField('MD_HIERARCHY')}</action>
+		<action onPostback="false">#{collectionBrowseBean.setCollectionField('MD_HIERARCHY')}</action>
 	</url-mapping>
 	<url-mapping id="browseFirstRecord">
-		<pattern value="/browse/#{browseBean.collectionField}/#{browseBean.targetCollection}/record/" />
+		<pattern value="/browse/#{collectionBrowseBean.collectionField}/#{collectionBrowseBean.targetCollection}/record/" />
 		<view-id value="/browse.xhtml" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
-		<action onPostback="false">#{browseBean.openWorkInTargetCollection()}</action>
+		<action onPostback="false">#{collectionBrowseBean.openWorkInTargetCollection()}</action>
+	</url-mapping>
+	<url-mapping id="browseDynamicCollection">
+		<pattern value="/browse/dynamic/#{collectionBrowseBean.dynamicCollectionName}/" />
+		<view-id value="/browse.xhtml" />
+		<action onPostback="false">#{navigationHelper.resetTheme}</action>
+		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 	</url-mapping>
 
 	<!-- TIMEMATRIX -->
@@ -265,34 +271,34 @@
 
     <!-- TERM BROWSING -->
 	<url-mapping id="searchTerm2">
-		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{page:browseBean.currentPage}/" />
+		<pattern value="/term/#{field:termBrowseBean.browsingMenuField}/#{page:termBrowseBean.currentPage}/" />
 		<view-id value="/searchTermsList.xhtml" />
 		<query-param name="subtheme" onPostback="false" >#{subtheme}</query-param>
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
-		<action onPostback="false">#{browseBean.setCurrentStringFilter('-')}</action>
-        <action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
+		<action onPostback="false">#{termBrowseBean.setCurrentStringFilter('-')}</action>
+        <action onPostback="false">#{termBrowseBean.setFilterQuery(null)}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
-		<action onPostback="false">#{browseBean.searchTermsAction}</action>
+		<action onPostback="false">#{termBrowseBean.searchTermsAction}</action>
 	</url-mapping>
 	<url-mapping id="searchTerm3">
-		<pattern value="/term/#{field:browseBean.browsingMenuField}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
+		<pattern value="/term/#{field:termBrowseBean.browsingMenuField}/#{filter:termBrowseBean.currentStringFilter}/#{page:termBrowseBean.currentPage}/" />
 		<view-id value="/searchTermsList.xhtml" />
 		<query-param name="subtheme" onPostback="false" >#{subtheme}</query-param>
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
-		<action onPostback="false">#{browseBean.setFilterQuery(null)}</action>
+		<action onPostback="false">#{termBrowseBean.setFilterQuery(null)}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
-		<action onPostback="false">#{browseBean.searchTermsAction}</action>
+		<action onPostback="false">#{termBrowseBean.searchTermsAction}</action>
 	</url-mapping>
     <url-mapping id="searchTerm4">
-        <pattern value="/term/#{field:browseBean.browsingMenuField}/#{filterQuery:browseBean.filterQuery}/#{filter:browseBean.currentStringFilter}/#{page:browseBean.currentPage}/" />
+        <pattern value="/term/#{field:termBrowseBean.browsingMenuField}/#{filterQuery:termBrowseBean.filterQuery}/#{filter:termBrowseBean.currentStringFilter}/#{page:termBrowseBean.currentPage}/" />
         <view-id value="/searchTermsList.xhtml" />
         <query-param name="subtheme" onPostback="false" >#{subtheme}</query-param>
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
-        <action onPostback="false">#{browseBean.searchTermsAction}</action>
+        <action onPostback="false">#{termBrowseBean.searchTermsAction}</action>
     </url-mapping>
     <!-- searchTerm5: Pattern for search results (not term listing) while preserving search mode. Needed for correct filtering via active result group. -->
     <url-mapping id="searchTerm5">
@@ -1165,10 +1171,16 @@
 
 
     <url-mapping id="adminCmsEditCollection">
-        <pattern value="/admin/cms/collections/edit/#{collectionName}/" />
-        <view-id value="/resources/cms/adminCmsEditCollection.xhtml" />
+        <pattern value="/admin/cms/collections/edit/#{collectionName:cmsCollectionsBean.editCollectionName}/" />
+        <view-id value="#{cmsCollectionsBean.getCollectionEditView}" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
-        <action onPostback="false">#{cmsCollectionsBean.setCollectionName(collectionName)}</action>
+        <action onPostback="false">#{cmsCollectionsBean.openCollectionForEditing}</action>
+    </url-mapping>
+    <url-mapping id="adminDynamicCollectionNew">
+        <pattern value="/admin/cms/collections/new/" />
+        <view-id value="/resources/cms/adminDynamicCollectionEdit.xhtml" />
+        <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{dynamicCollectionsBean.createNewCollection}</action>
     </url-mapping>
     <url-mapping id="adminCmsCategories">
         <pattern value="/admin/cms/categories/" />
@@ -1300,7 +1312,7 @@
 	</url-mapping>
 
 	<url-mapping id="cmsBrowse3">
-		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{filter:browseBean.currentStringFilter}/#{page:cmsBean.currentPage.listPage}/" />
+		<pattern value="/cms/#{page:cmsBean.currentPageId}/#{filter:termBrowseBean.currentStringFilter}/#{page:cmsBean.currentPage.listPage}/" />
 		<view-id value="#{cmsBean.getCurrentPageUrl}" />
 		<action onPostback="false">#{navigationHelper.resetTheme}</action>
 		<action onPostback="false">#{cmsBean.cmsContextAction(false)}</action>

@@ -22,6 +22,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -30,6 +31,7 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.model.SelectItem;
 import jakarta.faces.validator.ValidatorException;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -80,12 +82,16 @@ public class CmsCollectionsBean implements Serializable {
     private static final Logger logger = LogManager.getLogger(CmsCollectionsBean.class);
 
     @Inject
-    private BrowseBean browseBean;
+    private CollectionBrowseBean browseBean;
+    @Inject
+    private DynamicCollectionsBean dynamicCollectionsBean;
 
     private CMSCollection currentCollection;
     private CMSCollection originalCollection; //collection from database, without any edits after last save
     private String solrField = SolrConstants.DC;
     private String solrFieldValue;
+    /** Collection name path parameter of the collection edit pretty-URL, injected before the view id is resolved. */
+    private String editCollectionName;
     private List<CMSCollection> collections;
     private boolean piValid = true;
     private CMSCollectionImageMode imageMode = CMSCollectionImageMode.NONE;
@@ -175,11 +181,11 @@ public class CmsCollectionsBean implements Serializable {
 
     /**
      *
-     * @return true if number of available collections is greater than 1; false otherwise
+     * @return true if there is more than one source option (configured collection fields plus the dynamic collections entry); false otherwise
      * @should return false if only one collection field is configured
      */
     public boolean isDisplaySolrFieldSelectionWidget() {
-        return getAllCollectionFields().size() > 1;
+        return getSourceSelectItems().size() > 1;
     }
 
     /**
@@ -324,6 +330,10 @@ public class CmsCollectionsBean implements Serializable {
      */
     public void setSolrField(String solrField) {
         this.solrField = solrField;
+        if (isDynamicCollectionsSource()) {
+            // The dynamic collections source has no Solr collection tree to load
+            return;
+        }
         try {
             updateCollections();
             loadCollection(solrField);
@@ -331,6 +341,65 @@ public class CmsCollectionsBean implements Serializable {
         } catch (DAOException | IndexUnreachableException | IllegalRequestException e) {
             logger.error(e.getMessage());
             collections = Collections.emptyList();
+        }
+    }
+
+    /**
+     * Whether the collection source dropdown is set to the database-defined dynamic collections instead of a Solr field.
+     *
+     * @return true if the {@link SolrConstants#DC_DYNAMIC} pseudo field is selected as the collection source; false otherwise
+     */
+    public boolean isDynamicCollectionsSource() {
+        return SolrConstants.DC_DYNAMIC.equals(solrField);
+    }
+
+    /**
+     * Options for the collection source dropdown: all configured collection Solr fields plus the dynamic collections pseudo field. The dynamic
+     * entry only appears once at least one dynamic collection exists (or while it is the selected source, so the selection stays valid after the
+     * last collection is deleted).
+     *
+     * @return the source options for the sidebar widget
+     */
+    public List<SelectItem> getSourceSelectItems() {
+        List<SelectItem> items = new ArrayList<>();
+        for (String field : getAllCollectionFields()) {
+            items.add(new SelectItem(field, field));
+        }
+        if (isDynamicCollectionsSource() || hasDynamicCollections()) {
+            items.add(new SelectItem(SolrConstants.DC_DYNAMIC, ViewerResourceBundle.getTranslation(SolrConstants.DC_DYNAMIC + "_DD", null)));
+        }
+        return items;
+    }
+
+    /**
+     * Whether the dynamic collections source is selected although no dynamic collections exist any more, e.g. after deleting the last one.
+     *
+     * @return true if the selected source is no longer available; false otherwise
+     * @should return true only if pseudo field selected and no dynamic collections exist
+     */
+    public boolean isDynamicSourceObsolete() {
+        return isDynamicCollectionsSource() && !hasDynamicCollections();
+    }
+
+    /**
+     * Collection source to fall back to when the selected source is no longer available.
+     *
+     * @return the first configured collection field; {@link SolrConstants#DC} if none are configured
+     * @should return first configured collection field
+     */
+    public String getDefaultCollectionField() {
+        return getAllCollectionFields().stream().findFirst().orElse(SolrConstants.DC);
+    }
+
+    /**
+     * @return true if at least one database-defined dynamic collection exists; false otherwise
+     */
+    private static boolean hasDynamicCollections() {
+        try {
+            return !DataManager.getInstance().getDao().getAllDynamicCollections().isEmpty();
+        } catch (DAOException e) {
+            logger.error("Error checking for dynamic collections: {}", e.getMessage());
+            return false;
         }
     }
 
@@ -395,6 +464,46 @@ public class CmsCollectionsBean implements Serializable {
         currentCollection = new CMSCollection(originalCollection);
     }
 
+    public String getEditCollectionName() {
+        return editCollectionName;
+    }
+
+    public void setEditCollectionName(String editCollectionName) {
+        this.editCollectionName = editCollectionName;
+    }
+
+    /**
+     * DynaView method for the collection edit pretty-URL: dynamic collections and Solr field collections share the same URL but are edited on
+     * different views.
+     *
+     * @return the view id matching the type of the collection addressed by <code>editCollectionName</code>
+     */
+    public String getCollectionEditView() {
+        try {
+            if (editCollectionName != null && DataManager.getInstance().getDao().getDynamicCollection(editCollectionName) != null) {
+                return "/resources/cms/adminDynamicCollectionEdit.xhtml";
+            }
+        } catch (DAOException e) {
+            logger.error("Error resolving collection edit view for '{}': {}", editCollectionName, e.getMessage());
+        }
+        return "/resources/cms/adminCmsEditCollection.xhtml";
+    }
+
+    /**
+     * Loads the collection addressed by <code>editCollectionName</code> for editing, delegating to {@link DynamicCollectionsBean} if a dynamic
+     * collection with that name exists. The name is taken from the field instead of an action parameter because the pretty-URL action runs in the
+     * DynaView-dispatched request, where path parameters can no longer be resolved from the URL.
+     *
+     * @throws DAOException
+     */
+    public void openCollectionForEditing() throws DAOException {
+        if (DataManager.getInstance().getDao().getDynamicCollection(editCollectionName) != null) {
+            dynamicCollectionsBean.setCollectionName(editCollectionName);
+        } else {
+            setCollectionName(editCollectionName);
+        }
+    }
+
     /**
      * getAllCollectionFields.
      *
@@ -436,7 +545,7 @@ public class CmsCollectionsBean implements Serializable {
             return;
         }
         // getBrowseBean()/getCollectionViewBean() return null outside a FacesContext; guard both (java:S2259)
-        BrowseBean browseBean = BeanUtils.getBrowseBean();
+        CollectionBrowseBean browseBean = BeanUtils.getCollectionBrowseBean();
         if (browseBean != null) {
             CollectionView collectionView = browseBean.getCollection(collection.getSolrField());
             if (collectionView != null) {
@@ -459,7 +568,7 @@ public class CmsCollectionsBean implements Serializable {
             return;
         }
         // getBrowseBean()/getCollectionViewBean() return null outside a FacesContext; guard both (java:S2259)
-        BrowseBean browseBean = BeanUtils.getBrowseBean();
+        CollectionBrowseBean browseBean = BeanUtils.getCollectionBrowseBean();
         if (browseBean != null) {
             CollectionView collectionView = browseBean.getCollection(collection.getSolrField());
             if (collectionView != null) {
@@ -697,7 +806,10 @@ public class CmsCollectionsBean implements Serializable {
      * @throws IndexUnreachableException
      */
     public void initSolrField() throws IllegalRequestException, IndexUnreachableException {
-        if (browseBean.getCollection(solrField) == null) {
+        if (isDynamicSourceObsolete()) {
+            setSolrField(getDefaultCollectionField());
+        }
+        if (!isDynamicCollectionsSource() && browseBean.getCollection(solrField) == null) {
             loadCollection(solrField);
         }
     }

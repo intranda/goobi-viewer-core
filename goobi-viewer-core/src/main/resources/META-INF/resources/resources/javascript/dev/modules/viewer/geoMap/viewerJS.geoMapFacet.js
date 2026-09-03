@@ -125,7 +125,7 @@ var viewerJS = (function (viewer) {
             if (f.properties && f.properties.link) {
                 $(this.config.search.loader).show();
                 window.location.assign(f.properties.link);
-   			 } else if (hitsLayer.config.search?.searchUrlTemplate && f.properties?.filterQuery) {
+            } else if (hitsLayer.config.search?.searchUrlTemplate && f.properties?.filterQuery) {
                 $(hitsLayer.config.search.loader).show();
                 window.open(hitsLayer.config.search.searchUrlTemplate + '?filterQuery=' + f.properties.filterQuery, hitsLayer.config.search.linkTarget);
             }

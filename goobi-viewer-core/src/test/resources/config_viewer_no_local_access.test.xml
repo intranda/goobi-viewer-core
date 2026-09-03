@@ -153,11 +153,8 @@
 		<!-- pageLoaderThreshold: number of pages a record has to have to switch 
 			to a lean page loading strategy that limit memory usage (default is 1000) -->
 		<pageLoaderThreshold>1000</pageLoaderThreshold>
+		<caching enabled="false"/>
 
-		<!-- If true, all HTTP responses will contain attributes preventing proxies 
-			etc. from caching contents. Default is false. -->
-		<preventProxyCaching>true</preventProxyCaching>
-		
         <solr>
             <!-- compressionEnabled: Enables compression for the Solr HTTP client. Default is true. -->
             <compressionEnabled>false</compressionEnabled>

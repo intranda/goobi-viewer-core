@@ -56,6 +56,7 @@ import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.bindings.AccessConditionBinding;
 import io.goobi.viewer.api.rest.bindings.AdminLoggedInBinding;
+import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
 import io.goobi.viewer.api.rest.model.MediaResourceHelper;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataFileTools;
@@ -265,6 +266,7 @@ public class ObjectResource {
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Object file not found")
     @ApiResponse(responseCode = "500", description = "Error reading object file")
+    @MediaResourceBinding
     public StreamingOutput getObject(@Context HttpServletRequest request, @Context HttpServletResponse response)
             throws IOException, PresentationException, IndexUnreachableException {
 
@@ -318,6 +320,7 @@ public class ObjectResource {
             content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
+    @MediaResourceBinding
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder, @PathParam("auxfilename") final String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {
@@ -354,6 +357,7 @@ public class ObjectResource {
             content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
+    @MediaResourceBinding
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder, @PathParam("auxfilename") final String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {
@@ -382,6 +386,7 @@ public class ObjectResource {
             content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
+    @MediaResourceBinding
     public StreamingOutput getObjectResource(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder1, @PathParam("subsubfolder") String subfolder2, @PathParam("auxfilename") String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {
@@ -420,6 +425,7 @@ public class ObjectResource {
             content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Auxiliary file not found")
+    @MediaResourceBinding
     public StreamingOutput getObjectResource2(@Context HttpServletRequest request, @Context HttpServletResponse response, @PathParam("pi") String pi,
             @PathParam("subfolder") String subfolder1, @PathParam("subsubfolder") String subfolder2, @PathParam("auxfilename") String auxfilename)
             throws IOException, PresentationException, IndexUnreachableException {

@@ -33,11 +33,11 @@
                 id="search_termlist"
                 class="search-termlist">
                 <h1>
-                    <h:outputText value="#{msg.browseBy} #{msg[browseBean.browsingMenuField]}" />
+                    <h:outputText value="#{msg.browseBy} #{msg[termBrowseBean.browsingMenuField]}" />
                 </h1>
 
                 <!-- MESSAGE -->
-                <h:panelGroup rendered="#{!browseBean.browsingMenuEnabled}">
+                <h:panelGroup rendered="#{!termBrowseBean.browsingMenuEnabled}">
                     <div
                         class="alert alert-warning"
                         role="alert">
@@ -45,7 +45,7 @@
                     </div>
                 </h:panelGroup>
 
-                <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+                <h:panelGroup rendered="#{termBrowseBean.browsingMenuEnabled}">
                     <ui:include src="/resources/includes/search/browseTerms.xhtml" />
                 </h:panelGroup>
             </div>
@@ -53,7 +53,7 @@
     </ui:define>
 
     <ui:define name="sidebar">
-        <h:panelGroup rendered="#{browseBean.browsingMenuEnabled}">
+        <h:panelGroup rendered="#{termBrowseBean.browsingMenuEnabled}">
             <widgetComponent:widget_browsing />
         </h:panelGroup>
         <widgetComponent:widget_rssFeed />

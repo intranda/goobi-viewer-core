@@ -70,6 +70,7 @@ import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
@@ -4066,11 +4067,44 @@ public class JPADAO implements IDAO {
             EntityManager em = getEntityManager();
             try {
                 startTransaction(em);
+                // Record statistics (and their per-page statistics) are keyed by "pi" resp. "pi_page_key" in
+                // Campaign/CampaignRecordStatistic's Map fields. If the database ever ends up with two rows
+                // sharing the same owner and key (e.g. through a race condition), only one of them is loaded
+                // into the Map, so the other is invisible to JPA's object-graph cascade and never gets deleted,
+                // which then blocks deletion of the campaign row with a foreign key violation. Delete the whole
+                // subtree explicitly instead of relying on cascade to reach it.
+                em.createNativeQuery("DELETE FROM cs_campaign_record_page_statistic_annotators WHERE campaign_record_page_statistic_id IN "
+                        + "(SELECT campaign_record_page_statistic_id FROM cs_campaign_record_page_statistics WHERE owner_id IN "
+                        + "(SELECT campaign_record_statistic_id FROM cs_campaign_record_statistics WHERE owner_id = ?1))")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+                em.createNativeQuery("DELETE FROM cs_campaign_record_page_statistic_reviewers WHERE campaign_record_page_statistic_id IN "
+                        + "(SELECT campaign_record_page_statistic_id FROM cs_campaign_record_page_statistics WHERE owner_id IN "
+                        + "(SELECT campaign_record_statistic_id FROM cs_campaign_record_statistics WHERE owner_id = ?1))")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+                em.createNativeQuery("DELETE FROM cs_campaign_record_page_statistics WHERE owner_id IN "
+                        + "(SELECT campaign_record_statistic_id FROM cs_campaign_record_statistics WHERE owner_id = ?1)")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+                em.createNativeQuery("DELETE FROM cs_campaign_record_statistic_annotators WHERE campaign_record_statistic_id IN "
+                        + "(SELECT campaign_record_statistic_id FROM cs_campaign_record_statistics WHERE owner_id = ?1)")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+                em.createNativeQuery("DELETE FROM cs_campaign_record_statistic_reviewers WHERE campaign_record_statistic_id IN "
+                        + "(SELECT campaign_record_statistic_id FROM cs_campaign_record_statistics WHERE owner_id = ?1)")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+                em.createNativeQuery("DELETE FROM cs_campaign_record_statistics WHERE owner_id = ?1")
+                        .setParameter(1, campaign.getId())
+                        .executeUpdate();
+
                 Campaign o = em.getReference(Campaign.class, campaign.getId());
                 em.remove(o);
                 commitTransaction(em);
                 return true;
             } catch (PersistenceException e) {
+                logger.error(e.toString(), e);
                 handleException(em);
                 return false;
             } finally {
@@ -4731,6 +4765,103 @@ public class JPADAO implements IDAO {
         try {
             startTransaction(em);
             CMSCollection u = em.getReference(CMSCollection.class, collection.getId());
+            em.remove(u);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<DynamicCollection> getAllDynamicCollections() throws DAOException {
+        synchronized (cmsRequestLock) {
+            preQuery();
+            EntityManager em = getEntityManager();
+            try {
+                Query q = em.createQuery("SELECT c FROM DynamicCollection c ORDER BY c.sortOrder");
+                return q.getResultList();
+            } finally {
+                close(em);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DynamicCollection getDynamicCollection(Long id) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            return em.find(DynamicCollection.class, id);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public DynamicCollection getDynamicCollection(String identifier) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            Query q = em.createQuery("SELECT c FROM DynamicCollection c WHERE c.identifier = :identifier");
+            q.setParameter("identifier", identifier);
+            return (DynamicCollection) getSingleResult(q).orElse(null);
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean addDynamicCollection(DynamicCollection collection) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.persist(collection);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean updateDynamicCollection(DynamicCollection collection) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            em.merge(collection);
+            commitTransaction(em);
+            return true;
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean deleteDynamicCollection(DynamicCollection collection) throws DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            DynamicCollection u = em.getReference(DynamicCollection.class, collection.getId());
             em.remove(u);
             commitTransaction(em);
             return true;

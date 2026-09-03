@@ -1,0 +1,396 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
+    template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:event
+                type="preRenderView"
+                listener="#{navigationHelper.setCurrentPageAdmin(dynamicCollectionsBean.currentCollection.id == null ? 'adminDynamicCollectionNew' : 'adminCmsEditCollection')}" />
+            <f:event
+                type="preRenderView"
+                listener="#{cmsBean.init()}" />
+        </f:metadata>
+    </ui:define>
+
+    <!-- CONTENT -->
+    <ui:define name="content">
+        <ui:fragment
+            id="dynamicCollectionsAccessControl"
+            rendered="#{userBean.user.isHasCmsPrivilege('CMS_COLLECTIONS')}">
+            <div
+                id="dynamicEditCollection"
+                class="cms-edit-collection">
+                <div class="admin__title-bar">
+                    <h1 class="admin__title">
+                        #{dynamicCollectionsBean.currentCollection.id == null ? msg.admin__dynamic_collections_add :
+                        msg.cms_collection_edit}
+                    </h1>
+                </div>
+
+                <viewerComponent:adminBreadcrumbs />
+
+                <div class="admin__content-inner-content">
+                    <div class="admin__content-wrapper">
+                        <div class="admin__content-main #{dynamicCollectionsBean.currentCollection.id == null ? '-full' : ''}">
+                            <h:form
+                                id="dynamicEditCollectionForm"
+                                prependId="false">
+                                <!-- IDENTIFIER -->
+                                <viewerForms:inputFormBlock title="#{msg.general}">
+                                    <!-- IDENTIFIER (only editable on creation; shown in the info sidebar afterwards) -->
+                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id == null}">
+                                        <viewerForms:inputFormField
+                                            label="#{msg.admin__dynamic_collections_identifier}"
+                                            required="true"
+                                            helpText="#{msg.admin__dynamic_collections_identifier_desc}">
+                                            <h:inputText
+                                                id="collectionIdentifier"
+                                                styleClass="form-control"
+                                                required="true"
+                                                validator="#{dynamicCollectionsBean.validateIdentifier}"
+                                                value="#{dynamicCollectionsBean.currentCollection.identifier}">
+                                                <f:ajax
+                                                    execute="@this"
+                                                    event="valueChange" />
+                                            </h:inputText>
+                                            <h:message
+                                                for="collectionIdentifier"
+                                                errorClass="-validation-message -danger" />
+                                        </viewerForms:inputFormField>
+                                    </ui:fragment>
+
+                                    <!-- SOLR QUERY -->
+                                    <viewerForms:inputFormField
+                                        label="#{msg.admin__dynamic_collections_query}"
+                                        required="#{dynamicCollectionsBean.currentCollection.id == null}"
+                                        helpText="#{msg.admin__dynamic_collections_query_desc}">
+                                        <h:panelGroup
+                                            layout="block"
+                                            id="solrQueryGroup">
+                                            <h:inputText
+                                                id="solrQuery"
+                                                styleClass="form-control"
+                                                disabled="#{dynamicCollectionsBean.currentCollection.id != null}"
+                                                required="#{dynamicCollectionsBean.currentCollection.id == null}"
+                                                requiredMessage="#{msg.admin__dynamic_collections_query_required}"
+                                                value="#{dynamicCollectionsBean.currentCollection.solrQuery}">
+                                                <f:validator validatorId="solrQueryValidator" />
+                                                <f:ajax
+                                                    event="blur"
+                                                    listener="#{dynamicCollectionsBean.checkQuery}"
+                                                    render="solrQueryGroup" />
+                                            </h:inputText>
+                                            <h:message
+                                                for="solrQuery"
+                                                infoClass="admin__form-help-text in"
+                                                warnClass="-validation-message -warning"
+                                                errorClass="-validation-message -danger" />
+                                            <ui:fragment rendered="#{dynamicCollectionsBean.queryHitCount != null}">
+                                                <div class="admin__form-help-text in">
+                                                    <h:outputFormat value="#{msg.admin__dynamic_collections_query_hits}">
+                                                        <f:param value="#{dynamicCollectionsBean.queryHitCount}" />
+                                                    </h:outputFormat>
+                                                </div>
+                                            </ui:fragment>
+                                        </h:panelGroup>
+                                    </viewerForms:inputFormField>
+                                </viewerForms:inputFormBlock>
+
+                                <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
+                                    <!-- DESCRIPTION (per language, tabs; labels are translated via the translations editor like regular collection names) -->
+                                    <h2>#{msg.description}</h2>
+                                    <div class="admin__cms-edit-collection-translation-box">
+                                        <h:panelGroup id="translationsGroup">
+                                            <!-- LANGUAGE TABS -->
+                                            <div class="admin__language-tabs">
+                                                <viewerComponent:localeSelector
+                                                    object="#{dynamicCollectionsBean.currentCollection}"
+                                                    render="translationsGroup"
+                                                    execute="translationsGroup" />
+                                            </div>
+
+                                            <div class="admin__default-block">
+                                                <h:inputTextarea
+                                                    id="collectionDescription"
+                                                    value="#{dynamicCollectionsBean.currentCollection.descriptionAsTranslation.translationValue}"
+                                                    styleClass="form-control tinyMCE -validation-input">
+                                                    <f:passThroughAttribute
+                                                        name="aria-label"
+                                                        value="#{msg.aria_label__collections_description}" />
+                                                    <f:ajax
+                                                        execute="@this"
+                                                        event="valueChange" />
+                                                </h:inputTextarea>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+
+                                    <!-- LINK -->
+                                    <h2>#{msg.cms_collections_link}</h2>
+                                    <div class="admin__default-block">
+                                        <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_link_desc}</p>
+                                        <h:inputText
+                                            id="textControlUrl"
+                                            styleClass="form-control"
+                                            value="#{dynamicCollectionsBean.currentCollection.collectionUrl}">
+                                            <f:ajax
+                                                execute="@this"
+                                                event="valueChange" />
+                                        </h:inputText>
+                                    </div>
+
+                                    <!-- IMAGE -->
+                                    <h2>#{msg.cms_collections_image}</h2>
+                                    <div class="admin__default-block">
+                                        <p class="admin__boxed-entry-description">#{msg.admin__cms_collections_image_desc}</p>
+
+                                        <h:panelGroup
+                                            layout="block"
+                                            id="imageModeGroup"
+                                            styleClass="admin__cms-edit-collection-image-actions-wrapper">
+                                            <div class="form-group admin__cms-edit-collection-connected-radio-buttons">
+                                                <div class="connected-top">
+                                                    <h:selectOneRadio
+                                                        group="imageModeRadio"
+                                                        value="#{dynamicCollectionsBean.imageMode}"
+                                                        immediate="true">
+                                                        <f:selectItem
+                                                            itemValue="NONE"
+                                                            itemLabel="#{msg.admin__cms_collections_image_mode_none}" />
+                                                        <f:ajax render="imageModeGroup" />
+                                                    </h:selectOneRadio>
+                                                </div>
+                                                <div class="connected-middle">
+                                                    <h:selectOneRadio
+                                                        group="imageModeRadio"
+                                                        value="#{dynamicCollectionsBean.imageMode}"
+                                                        immediate="true">
+                                                        <f:selectItem
+                                                            itemValue="IMAGE"
+                                                            itemLabel="#{msg.admin__cms_collections_image_mode_upload}" />
+                                                        <f:ajax render="imageModeGroup" />
+                                                    </h:selectOneRadio>
+                                                </div>
+                                                <div class="connected-bottom">
+                                                    <h:selectOneRadio
+                                                        group="imageModeRadio"
+                                                        value="#{dynamicCollectionsBean.imageMode}"
+                                                        immediate="true">
+                                                        <f:selectItem
+                                                            itemValue="PI"
+                                                            itemLabel="#{msg.admin__cms_collections_image_mode_record}" />
+                                                        <f:ajax render="imageModeGroup" />
+                                                    </h:selectOneRadio>
+                                                </div>
+                                            </div>
+
+                                            <h:panelGroup
+                                                layout="block"
+                                                styleClass="admin__cms-edit-collection-wrapper-choose-image"
+                                                id="mediaGroup"
+                                                rendered="#{dynamicCollectionsBean.imageMode == 'IMAGE'}">
+                                                <!-- THUMBNAIL -->
+                                                <div class="admin__cms-edit-collection-image-thumbnail">
+                                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.hasImage()}">
+                                                        <img
+                                                            src="#{dynamicCollectionsBean.currentCollection.iconURI}"
+                                                            class="img-fluid"
+                                                            alt="" />
+                                                    </ui:fragment>
+                                                    <ui:fragment rendered="#{!dynamicCollectionsBean.currentCollection.hasImage()}">
+                                                        <img
+                                                            src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
+                                                            data-viewer-thumbnail="thumbnail"
+                                                            class="img-fluid"
+                                                            alt="" />
+                                                    </ui:fragment>
+                                                </div>
+
+                                                <!-- ACTIONS -->
+                                                <div class="admin__cms-edit-collection-image-actions">
+                                                    <h:commandLink
+                                                        action="#{cmsBean.setSelectedMediaHolder(dynamicCollectionsBean.currentCollection)}"
+                                                        value="#{dynamicCollectionsBean.currentCollection.getMediaItem() == null ? msg.cms_selectMedia : msg.cms_media_editFile}"
+                                                        class="#{dynamicCollectionsBean.currentCollection.getMediaItem() == null ? 'btn btn--default' : ''}"
+                                                        role="button">
+                                                        <f:ajax
+                                                            execute="@form"
+                                                            render="mediaSelectPanel" />
+                                                    </h:commandLink>
+                                                    <h:commandLink
+                                                        rendered="#{dynamicCollectionsBean.currentCollection.getMediaItem() != null}"
+                                                        action="#{dynamicCollectionsBean.currentCollection.setMediaItem(null)}"
+                                                        value="#{msg.cms_selectMediaItem_deselect}"
+                                                        class="-redlink"
+                                                        role="button">
+                                                        <f:ajax render="mediaGroup" />
+                                                    </h:commandLink>
+                                                </div>
+                                            </h:panelGroup>
+
+                                            <h:panelGroup
+                                                layout="block"
+                                                styleClass="admin__cms-collections-wrapper-identifier"
+                                                id="piGroup"
+                                                rendered="#{dynamicCollectionsBean.imageMode == 'PI'}">
+                                                <div class="cms-edit-collection__text-control">
+                                                    <h:inputText
+                                                        id="workPI"
+                                                        styleClass="form-control"
+                                                        validator="#{dynamicCollectionsBean.validatePI}"
+                                                        value="#{dynamicCollectionsBean.currentCollection.representativeWorkPI}">
+                                                        <f:ajax render="@all" />
+                                                    </h:inputText>
+                                                </div>
+                                            </h:panelGroup>
+                                        </h:panelGroup>
+                                    </div>
+                                </ui:fragment>
+
+                                <!-- FLOATING SAVE BAR -->
+                                <div class="admin__content-component-overlay-bar">
+                                    <!-- CANCEL -->
+                                    <h:commandLink
+                                        id="dynamicEditCollectionBack"
+                                        styleClass="btn btn--cancel"
+                                        value="#{msg.cancel}"
+                                        immediate="true"
+                                        action="#{dynamicCollectionsBean.resetCurrentCollection}" />
+                                    <!-- PREVIEW -->
+                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
+                                        <h:outputLink
+                                            styleClass="btn btn--default"
+                                            target="_blank"
+                                            value="#{dynamicCollectionsBean.getSearchUrl(dynamicCollectionsBean.currentCollection)}">
+                                            <h:outputText value="#{msg.admin__cms_collections_preview}" />
+                                        </h:outputLink>
+                                    </ui:fragment>
+                                    <!-- DELETE -->
+                                    <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
+                                        <button
+                                            id="deleteCollectionButton"
+                                            class="btn btn--danger"
+                                            data-require-confirmation="true"
+                                            data-confirmation-text="#{navigationHelper.getTranslationWithParamsUnescaped(msg.confirm__delete_dynamic_collection, dynamicCollectionsBean.currentCollection.identifier)}"
+                                            jsf:action="#{dynamicCollectionsBean.deleteCurrentCollection}"
+                                            aria-label="#{msg.delete}: #{dynamicCollectionsBean.currentCollection.identifier}">
+                                            #{msg.delete}
+                                        </button>
+                                    </ui:fragment>
+                                    <!-- SAVE -->
+                                    <h:commandButton
+                                        disabled="#{!dynamicCollectionsBean.currentCollectionValid}"
+                                        styleClass="btn btn--success"
+                                        id="saveCollection"
+                                        value="#{msg.save}"
+                                        action="#{dynamicCollectionsBean.saveCurrentCollection()}" />
+                                </div>
+                            </h:form>
+
+                            <h:panelGroup id="mediaSelectPanel">
+                                <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
+                                    <div class="admin-cms-media-select-overlay">
+                                        <!-- SELECT MEDIA ITEM OVERLAY -->
+                                        <div class="admin-cms-media__select-overlay" />
+
+                                        <!-- SELECT MEDIA ITEM -->
+                                        <div class="admin-cms-media__select">
+                                            <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
+                                                <ui:param
+                                                    name="mediaDisplayPanel"
+                                                    value="mediaGroup" />
+                                                <ui:param
+                                                    name="fileTypes"
+                                                    value="#{cmsMediaBean.getImageTypes()}" />
+                                                <ui:param
+                                                    name="fileTypeValidator"
+                                                    value="#{dynamicCollectionsBean.currentCollection.getMediaFilter()}" />
+                                            </ui:include>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+                            </h:panelGroup>
+                        </div>
+
+                        <!-- INFO SIDEBAR (existing collections only) -->
+                        <ui:fragment rendered="#{dynamicCollectionsBean.currentCollection.id != null}">
+                            <div class="admin__content-side -sticky -refreshHCsticky">
+                                <!-- TRANSLATION HINT -->
+                                <ui:fragment rendered="#{!dynamicCollectionsBean.currentLabelsComplete}">
+                                    <div class="admin__default-block -warning">
+                                        <h2>#{msg.admin__cms_collections_translation}</h2>
+                                        <div class="admin__form-help-text in mb-3">#{msg.admin__cms_collections_translation_desc}</div>
+                                        <!-- TRANSLATION ACTION: opens the translations editor on the dynamic collections group -->
+                                        <div class="row">
+                                            <div class="col-12 d-flex justify-content-center">
+                                                <a
+                                                    class="btn btn--full"
+                                                    href="#{navigationHelper.applicationUrl}admin/translations/edit/#{adminBean.dynamicCollectionsTranslationGroupId}/#{dynamicCollectionsBean.currentCollection.identifier}/"
+                                                    aria-label="#{msg.admin__translations_translate}: #{dynamicCollectionsBean.currentCollection.identifier}">
+                                                    #{msg.admin__translations_translate}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ui:fragment>
+
+                                <div class="admin__default-block">
+                                    <h2>#{msg.admin__cms_collections_information}</h2>
+                                    <div class="admin__cms-edit-collection-info-box">
+                                        <!-- IDENTIFIER (immutable) -->
+                                        <div class="admin__cms-edit-collection-data-wrapper">
+                                            <div class="admin__cms-edit-collection-data-type mb-4">#{msg.admin__cms_collections_info_internal_name}</div>
+                                            <div class="admin__cms-edit-collection-data-value mb-4">#{dynamicCollectionsBean.currentCollection.identifier}</div>
+                                        </div>
+                                        <!-- LABELS PER LANGUAGE -->
+                                        <ui:repeat
+                                            var="labelTranslation"
+                                            value="#{dynamicCollectionsBean.currentCollection.labels}">
+                                            <div class="admin__cms-edit-collection-data-wrapper">
+                                                <div class="admin__cms-edit-collection-data-type">#{msg[labelTranslation.language]}</div>
+                                                <div class="admin__cms-edit-collection-data-value">
+                                                    #{empty labelTranslation.translationValue ? '-/-' : labelTranslation.translationValue}
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+                                        <!-- QUERY HIT COUNT -->
+                                        <ui:fragment rendered="#{dynamicCollectionsBean.queryHitCount != null}">
+                                            <div class="admin__cms-edit-collection-data-wrapper">
+                                                <div class="admin__cms-edit-collection-data-type">#{msg.hits}</div>
+                                                <div class="admin__cms-edit-collection-data-value">#{dynamicCollectionsBean.queryHitCount}</div>
+                                            </div>
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+                            </div>
+                        </ui:fragment>
+
+                        <script>
+                            // Warn before leaving the page with unsaved changes (native browser dialog, cf. adminJS.configEditor).
+                            // TinyMCE edits arrive as change events on the underlying textarea (viewerJS.tinyMce setup).
+                            let dynamicCollectionDirty = false;
+                            $('#dynamicEditCollectionForm').on('change input', () => {
+                                dynamicCollectionDirty = true;
+                            });
+                            // Save, cancel and delete leave the page intentionally
+                            $('#saveCollection, #dynamicEditCollectionBack, #deleteCollectionButton').on('click', () => {
+                                dynamicCollectionDirty = false;
+                            });
+                            window.addEventListener('beforeunload', (event) => {
+                                if (dynamicCollectionDirty) {
+                                    event.returnValue = false;
+                                }
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </ui:fragment>
+    </ui:define>
+</ui:composition>

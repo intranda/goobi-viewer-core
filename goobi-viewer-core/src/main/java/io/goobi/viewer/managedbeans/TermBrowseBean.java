@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,30 +39,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.util.ClientUtils;
 
-import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
-import io.goobi.viewer.exceptions.RecordDeletedException;
-import io.goobi.viewer.exceptions.RecordLimitExceededException;
-import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.exceptions.RedirectException;
-import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
 import io.goobi.viewer.messages.ViewerResourceBundle;
-import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.search.SearchResultGroup;
 import io.goobi.viewer.model.termbrowsing.BrowseTerm;
 import io.goobi.viewer.model.termbrowsing.BrowseTermComparator;
 import io.goobi.viewer.model.termbrowsing.BrowsingMenuFieldConfig;
-import io.goobi.viewer.model.viewer.PageType;
-import io.goobi.viewer.model.viewer.StringPair;
-import io.goobi.viewer.model.viewer.collections.BrowseDcElement;
-import io.goobi.viewer.model.viewer.collections.CollectionView;
-import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import jakarta.enterprise.context.SessionScoped;
@@ -71,15 +58,15 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 /**
- * This bean provides the data for collection and term browsing.
+ * This bean provides the data for alphabetical term browsing (the browsing menu). Collection browsing is handled by {@link CollectionBrowseBean}.
  */
 @Named
 @SessionScoped
-public class BrowseBean implements Serializable {
+public class TermBrowseBean implements Serializable {
 
-    private static final long serialVersionUID = 7613678633319477862L;
+    private static final long serialVersionUID = -6621885986357126555L;
 
-    private static final Logger logger = LogManager.getLogger(BrowseBean.class);
+    private static final Logger logger = LogManager.getLogger(TermBrowseBean.class);
 
     private static final String MSG_ERR_FIELDS_NOT_CONFIGURED = "browse_errFieldNotConfigured";
 
@@ -87,16 +74,9 @@ public class BrowseBean implements Serializable {
     private NavigationHelper navigationHelper;
     @Inject
     private BreadcrumbBean breadcrumbBean;
-    //    @Inject
-    //    private SearchBean searchBean;
 
     /** Hits per page in the browsing menu. */
     private int browsingMenuHitsPerPage = DataManager.getInstance().getConfiguration().getBrowsingMenuHitsPerPage();
-
-    /** Pretty URL variable. */
-    private String collectionToExpand = null;
-    private String topVisibleCollection = null;
-    private String targetCollection = null;
 
     /** Solr field to browse. */
     private String browsingMenuField = null;
@@ -115,13 +95,10 @@ public class BrowseBean implements Serializable {
     private int hitsCount = 0;
     private int currentPage = -1;
 
-    private Map<String, CollectionView> collections = new HashMap<>();
-    private String collectionField = SolrConstants.DC;
-
     /**
      * Empty constructor.
      */
-    public BrowseBean() {
+    public TermBrowseBean() {
         // the emptiness inside
     }
 
@@ -146,171 +123,6 @@ public class BrowseBean implements Serializable {
         browseTermHitCountList = null;
         if (availableStringFilters != null) {
             availableStringFilters.clear();
-        }
-    }
-
-    /**
-     * resetAllLists.
-     */
-    public void resetAllLists() {
-        for (Entry<String, CollectionView> entry : collections.entrySet()) {
-            entry.getValue().resetCollectionList();
-        }
-    }
-
-    /**
-     * resetDcList.
-     */
-    public void resetDcList() {
-        logger.trace("resetDcList");
-        resetList(SolrConstants.DC);
-    }
-
-    /**
-     * resetList.
-     *
-     * @param field Solr field name identifying the collection to reset
-     */
-    public void resetList(String field) {
-        if (field == null) {
-            throw new IllegalArgumentException("field may not be null");
-        }
-        if (collections.get(field) != null) {
-            collections.get(field).resetCollectionList();
-        }
-    }
-
-    /**
-     * getDcList.
-     *
-     * @return the dcList (Collections)
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public List<BrowseDcElement> getDcList() throws IndexUnreachableException {
-        return getList(SolrConstants.DC);
-    }
-
-    /**
-     * getList.
-     *
-     * @param field Solr field name identifying the collection
-     * @return a list of BrowseDcElement objects for all collections in the given Solr field, expanded to unlimited depth
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     */
-    public List<BrowseDcElement> getList(String field) throws IndexUnreachableException {
-        return getList(field, -1);
-    }
-
-    /**
-     * getList.
-     *
-     * @param field Solr field name identifying the collection
-     * @param depth maximum hierarchy depth to expand; -1 for unlimited
-     * @return a list of BrowseDcElement objects for all visible collections in the given Solr field up to the specified depth
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
-     */
-    public List<BrowseDcElement> getList(String field, int depth) throws IndexUnreachableException {
-        logger.trace("getlist: {}", field);
-        try {
-            if (collections.get(field) == null) {
-                initializeCollection(field, null);
-                populateCollection(field);
-            }
-            if (collections.get(field) != null) {
-                CollectionView collection = collections.get(field);
-                // Loading CMS collection descriptions is expensive, therefore 'false'
-                collection.expandAll(depth, false);
-                collection.calculateVisibleDcElements(false);
-                return new ArrayList<>(collection.getVisibleDcElements());
-            }
-        } catch (IllegalRequestException e) {
-            logger.error(e.toString(), e);
-        }
-
-        return Collections.emptyList();
-    }
-
-    /**
-     * populateCollection.
-     *
-     * @param field Solr field name identifying the collection to populate
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
-     */
-    public void populateCollection(String field) throws IndexUnreachableException, IllegalRequestException {
-        if (collections.containsKey(field)) {
-            collections.get(field).populateCollectionList();
-        }
-    }
-
-    /**
-     * Getter for the field <code>collectionToExpand</code>.
-     *
-     * @return the name of the collection currently marked for expansion in the view
-     */
-    public String getCollectionToExpand() {
-        synchronized (this) {
-            return collectionToExpand;
-        }
-    }
-
-    /**
-     * Setter for the field <code>collectionToExpand</code>.
-     *
-     * @param collectionToExpand name of the collection to expand in the view
-     */
-    public void setCollectionToExpand(String collectionToExpand) {
-        synchronized (this) {
-            this.collectionToExpand = collectionToExpand;
-            this.topVisibleCollection = collectionToExpand;
-        }
-    }
-
-    /**
-     * Getter for the field <code>topVisibleCollection</code>.
-     *
-     * @return the name of the top-level collection currently visible in the collection view, or the collection to expand if not yet set
-     */
-    public String getTopVisibleCollection() {
-        if (topVisibleCollection == null && collectionToExpand != null) {
-            return collectionToExpand;
-        }
-        return topVisibleCollection;
-    }
-
-    /**
-     * Setter for the field <code>topVisibleCollection</code>.
-     *
-     * @param topVisibleCollecion name of the top-level collection currently visible in the collection view
-     */
-    public void setTopVisibleCollection(String topVisibleCollecion) {
-        this.topVisibleCollection = topVisibleCollecion;
-    }
-
-    /**
-     * Use this method of a certain collections needs to be expanded via URL.
-     *
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
-     */
-    public void expandCollection() throws IndexUnreachableException, IllegalRequestException {
-        expandCollection(SolrConstants.DC, null);
-    }
-
-    /**
-     * expandCollection.
-     *
-     * @param collectionField Solr field name identifying the collection to expand
-     * @param facetField Solr field used for grouping or faceting within the collection
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws IllegalRequestException
-     */
-    public void expandCollection(String collectionField, String facetField) throws IndexUnreachableException, IllegalRequestException {
-        synchronized (this) {
-            initializeCollection(collectionField, facetField);
-            collections.get(collectionField).setBaseElementName(getCollectionToExpand());
-            collections.get(collectionField).populateCollectionList();
         }
     }
 
@@ -347,12 +159,6 @@ public class BrowseBean implements Serializable {
             if (breadcrumbBean != null) {
                 breadcrumbBean.updateBreadcrumbsWithCurrentUrl("browseTitle", BreadcrumbBean.WEIGHT_SEARCH_TERMS);
             }
-
-            // This shouldn't be necessary and costs some cycles
-            //            if (searchBean != null) {
-            //                searchBean.setSearchString("");
-            //                searchBean.resetSearchParameters(true);
-            //            }
 
             hitsCount = 0;
 
@@ -529,7 +335,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @param language Requested language
      * @return browsingMenuField (modified for given language if placeholder found)
      * @should return field for given language if placeholder found
@@ -693,8 +499,8 @@ public class BrowseBean implements Serializable {
 
     /**
      * Getter for unit tests.
-     * 
-     * 
+     *
+     * @return the map of available string filters keyed by browse field
      */
     Map<String, List<String>> getAvailableStringFiltersMap() {
         return availableStringFilters;
@@ -788,7 +594,6 @@ public class BrowseBean implements Serializable {
             answer++;
         }
 
-        //        logger.trace(hitsCount + "/" + hitsPerPageLocal + "=" + answer); //NOSONAR Debug
         return answer;
     }
 
@@ -819,13 +624,11 @@ public class BrowseBean implements Serializable {
         List<String> ret = new ArrayList<>();
         for (BrowsingMenuFieldConfig bmfc : DataManager.getInstance().getConfiguration().getBrowsingMenuFields()) {
             if (bmfc.isSkipInWidget()) {
-                // logger.trace("Browsing field {} is configured to be skipped in the menu.", bmfc.getField());
                 continue;
             }
             if (bmfc.getField().contains(SolrConstants.MIDFIX_LANG)
                     && (useLanguage == null || !(bmfc.getField().contains(SolrConstants.MIDFIX_LANG + useLanguage)
                             || bmfc.getField().contains(SolrConstants.MIDFIX_LANG + "{}")))) {
-                // logger.trace("Skipped term browsing field {} due to language mismatch.", bmfc.getField());
                 continue;
             }
             ret.add(bmfc.getField());
@@ -835,7 +638,7 @@ public class BrowseBean implements Serializable {
     }
 
     /**
-     * 
+     *
      * @return List of configured browsing menu fields
      */
     public List<String> getConfiguredBrowsingMenuFields() {
@@ -845,213 +648,5 @@ public class BrowseBean implements Serializable {
         }
 
         return ret;
-    }
-
-    /**
-     * Getter for the field <code>targetCollection</code>.
-     *
-     * @return the name of the target collection whose first record should be opened
-     */
-    public String getTargetCollection() {
-        return targetCollection;
-    }
-
-    /**
-     * Setter for the field <code>targetCollection</code>.
-     *
-     * @param targetCollection collection name whose first record should be opened
-     */
-    public void setTargetCollection(String targetCollection) {
-        this.targetCollection = targetCollection;
-    }
-
-    /**
-     * openWorkInTargetCollection.
-     *
-     * @return the navigation URL to the first record in the target collection, or null if none found
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws ViewerConfigurationException
-     * @throws DAOException
-     * @throws RecordDeletedException
-     * @throws RecordLimitExceededException
-     */
-    public String openWorkInTargetCollection()
-            throws IndexUnreachableException, PresentationException, RecordDeletedException, DAOException, ViewerConfigurationException,
-            RecordLimitExceededException {
-        if (StringUtils.isBlank(getTargetCollection())) {
-            return null;
-        }
-
-        StringPair result =
-                SearchHelper.getFirstRecordPiAndPageType(getCollectionField(), getTargetCollection(), true, true,
-                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(getCollectionField()));
-        if (result == null) {
-            return null;
-        }
-
-        try {
-            ActiveDocumentBean adb = BeanUtils.getActiveDocumentBean();
-            if (adb != null) {
-                adb.setPersistentIdentifier(result.getOne());
-                adb.open(); // open to persist PI on ViewManager
-            }
-
-            PageType pageType = PageType.getByName(result.getTwo());
-            switch (pageType) {
-                case viewToc:
-                    return "pretty:toc1";
-                case viewMetadata:
-                    return "pretty:metadata1";
-                default:
-                    return "pretty:object1";
-            }
-            // TODO Return and forward to foo URL instead of switch+pretty
-        } catch (RecordNotFoundException e) {
-            logger.error("No record found for ID: {}", result.getOne());
-            return null;
-        }
-    }
-
-    /**
-     * getDcCollection.
-     *
-     * @return the CollectionView for the DC (Dublin Core) collection field
-     */
-    public CollectionView getDcCollection() {
-        return getCollection(SolrConstants.DC);
-    }
-
-    /**
-     * getCollection.
-     *
-     * @param field Solr field name identifying the collection
-     * @return the CollectionView for the given Solr field, or null if not initialized
-     */
-    public CollectionView getCollection(String field) {
-        return collections.get(field);
-    }
-
-    /**
-     *
-     * @param field Solr field name identifying the collection
-     * @return {@link CollectionView}
-     */
-    public CollectionView getOrCreateCollection(String field) {
-        CollectionView collection = getCollection(field);
-        if (collection == null) {
-            initializeCollection(field, null);
-            collection = getCollection(field);
-        }
-        return collection;
-    }
-
-    /**
-     * initializeDCCollection.
-     */
-    public void initializeDCCollection() {
-        initializeCollection(SolrConstants.DC, null);
-    }
-
-    public void initializeCollection(final String collectionField) {
-        initializeCollection(collectionField, null);
-    }
-
-    /**
-     * Adds a CollectionView object for the given field to the map and populates its values.
-     *
-     * @param collectionField Solr field name identifying the collection
-     * @param groupingField Solr field used to group collection results; may be null
-     */
-    public void initializeCollection(final String collectionField, final String groupingField) {
-        logger.trace("initializeCollection: {}", collectionField);
-        collections.put(collectionField, new CollectionView(collectionField, new BrowseDataProvider() {
-
-            @Override
-            public Map<String, CollectionResult> getData() throws IndexUnreachableException {
-                return SearchHelper.findAllCollectionsFromField(collectionField, groupingField, null, true, true,
-                        DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField));
-            }
-        }));
-    }
-
-    /**
-     * Getter for the field <code>collectionField</code>.
-     *
-     * @return the Solr field name used to identify the collection hierarchy
-     */
-    public String getCollectionField() {
-        return collectionField;
-    }
-
-    /**
-     * Setter for the field <code>collectionField</code>.
-     *
-     * @param collectionField Solr field name used to identify the collection hierarchy
-     */
-    public void setCollectionField(String collectionField) {
-        this.collectionField = collectionField;
-    }
-
-    /**
-     * TODO translation from DB.
-     *
-     * @param collectionField Solr field name of the collection
-     * @param collectionValue Raw collection value (may be hierarchical)
-     * @return {@link String}
-     * @should return slash-separated ancestor chain for dot-delimited collection name
-     */
-    public String getCollectionHierarchy(String collectionField, String collectionValue) {
-        logger.trace("getCollectionHierarchy: {}:{}", collectionField, collectionValue);
-        if (StringUtils.isEmpty(collectionField) || StringUtils.isEmpty(collectionValue)) {
-            return "";
-        }
-        String separator = DataManager.getInstance().getConfiguration().getCollectionSplittingChar(collectionField);
-        if (separator.equals(".")) {
-            separator = "\\.";
-        }
-        String[] valueSplit = collectionValue.split(separator);
-        if (valueSplit.length == 0) {
-            return ViewerResourceBundle.getTranslation(collectionValue, null);
-        }
-
-        StringBuilder sb = new StringBuilder();
-        StringBuilder sbCollectionName = new StringBuilder();
-        for (String value : valueSplit) {
-            if (sb.length() > 0) {
-                sb.append(" / ");
-                sbCollectionName.append('.');
-            }
-            sbCollectionName.append(value);
-            sb.append(ViewerResourceBundle.getTranslation(sbCollectionName.toString(), null));
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     *
-     * @param field Collection field name
-     * @param value Collection raw name
-     * @return Translated collection name
-     */
-    public String getTranslationForCollectionName(String field, String value) {
-        logger.trace("getTranslationForCollectionName: {}:{}", field, value);
-        if (field == null || value == null) {
-            return null;
-        }
-        CollectionView collectionView = collections.get(field);
-        if (collectionView != null && collectionView.getCompleteList() != null) {
-            return collectionView.getTranslationForName(value);
-        }
-
-        return null;
-    }
-
-    public long getRecordCount(String collectionField, String collectionName) {
-        CollectionView view = this.getOrCreateCollection(collectionField);
-        return Optional.ofNullable(view.getCollectionElement(collectionName))
-                .map(BrowseDcElement::getNumberOfVolumes)
-                .orElse(0L);
     }
 }

@@ -114,10 +114,10 @@ class MediaDeliveryServiceTest {
 
     /**
      * @see MediaDeliveryService#initResponse(HttpServletResponse, String, long, String, String)
-     * @verifies set content-disposition, accept-ranges, etag, last-modified and expires headers
+     * @verifies set content-disposition, accept-ranges, etag, last-modified and cache-control headers
      */
     @Test
-    void initResponse_shouldSetContentDispositionAcceptRangesEtagLastModifiedAndExpiresHeaders() {
+    void initResponse_shouldSetContentDispositionAcceptRangesEtagLastModifiedAndCacheControlHeaders() {
         HttpServletResponse response = mock(HttpServletResponse.class);
         long lastModified = 1_700_000_000_000L;
         String eTag = "movie.mp4_1234_1700000000000";
@@ -128,6 +128,6 @@ class MediaDeliveryServiceTest {
         verify(response).setHeader("Accept-Ranges", "bytes");
         verify(response).setHeader("ETag", eTag);
         verify(response).setDateHeader(ArgumentMatchers.eq("Last-Modified"), ArgumentMatchers.eq(lastModified));
-        verify(response).setDateHeader(ArgumentMatchers.eq("Expires"), ArgumentMatchers.anyLong());
+        verify(response).setHeader("Cache-Control", "private, no-cache");
     }
 }

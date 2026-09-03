@@ -92,22 +92,22 @@
 
 		<!-- intranda libraries -->
 		<alto.version>1.8.0</alto.version>
-		<ics.version>4.4.4</ics.version>
+		<ics.version>4.6.0</ics.version>
 		<tei-conversion.version>1.4.0</tei-conversion.version>
 		<intranda-content-view.version>0.7.1</intranda-content-view.version>
-		<iiif-api-model.version>3.2.1</iiif-api-model.version>
+		<iiif-api-model.version>3.3.0</iiif-api-model.version>
 		<normdataimporter.version>2.1.5</normdataimporter.version>
 
 		<!-- other libraries -->
 		<activemq.version>6.3.1</activemq.version>
 		<angus-mail.version>2.0.5</angus-mail.version>
-		<citationstyles.version>26.2</citationstyles.version>
-		<citeproc-java.version>3.5.0</citeproc-java.version>
-		<commons-collections4.version>4.5.0</commons-collections4.version>
+		<citationstyles.version>26.8</citationstyles.version>
+		<citeproc-java.version>3.5.2</citeproc-java.version>
+		<commons-collections4.version>4.6.0</commons-collections4.version>
 		<commons-net.version>3.13.0</commons-net.version>
 		<commons-text.version>1.15.0</commons-text.version>
 		<cron-expression-descriptor.version>1.2.10</cron-expression-descriptor.version>
-		<dbunit.version>3.4.0</dbunit.version>
+		<dbunit.version>3.5.1</dbunit.version>
 		<eclipselink.version>4.0.9</eclipselink.version>
 		<h2.version>2.4.240</h2.version>
 		<httpmime.version>4.5.14</httpmime.version>
@@ -134,14 +134,14 @@
 		<jaxb-runtime.version>4.0.9</jaxb-runtime.version>
 		<jersey.version>3.1.12</jersey.version>
 		<jersey-guava.version>2.26-b03</jersey-guava.version>
-		<jsoup.version>1.23.1</jsoup.version>
+		<jsoup.version>1.23.2</jsoup.version>
 		<mariadb-java-client.version>3.5.10</mariadb-java-client.version>
 		<mockito.version>5.23.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
-		<mockserver.version>7.5.0</mockserver.version>
+		<mockserver.version>7.6.0</mockserver.version>
 		<!-- mockserver-netty 7.5.0 requires the Netty 4.2.x line; see dependencyManagement below -->
 		<netty.version>4.2.17.Final</netty.version>
-		<omnifaces.version>4.7.12</omnifaces.version>
+		<omnifaces.version>4.7.13</omnifaces.version>
 		<openpdf.version>2.2.4</openpdf.version>
 		<poi.version>5.5.1</poi.version>
 		<prettyfaces.version>10.0.2.Final</prettyfaces.version>

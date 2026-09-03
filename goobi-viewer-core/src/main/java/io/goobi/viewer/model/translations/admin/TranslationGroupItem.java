@@ -64,6 +64,8 @@ public abstract class TranslationGroupItem {
                 return new SolrFieldValueTranslationGroupItem(key, regex);
             case LOCAL_STRINGS:
                 return new LocalMessagesTranslationGroupItem(key, regex);
+            case DYNAMIC_COLLECTIONS:
+                return new DynamicCollectionsTranslationGroupItem(key, regex);
             default:
                 return new CoreMessagesTranslationGroupItem(key, regex);
         }

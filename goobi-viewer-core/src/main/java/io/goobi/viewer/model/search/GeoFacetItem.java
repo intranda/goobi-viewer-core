@@ -193,6 +193,11 @@ public class GeoFacetItem implements IFacetItem {
     }
 
     @Override
+    public void setFacetQuery(String facetQuery) {
+        //NOOP: geo facets derive their query from the geo feature, see getFacetQuery()
+    }
+
+    @Override
     public String getField() {
         return getSolrField();
     }

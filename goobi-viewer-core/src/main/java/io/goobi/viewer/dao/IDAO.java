@@ -46,6 +46,7 @@ import io.goobi.viewer.model.cms.CMSSlider;
 import io.goobi.viewer.model.cms.CMSStaticPage;
 import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.pages.CMSPage;
 import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
@@ -2018,6 +2019,59 @@ public interface IDAO {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
     public CMSCollection getCMSCollection(String solrField, String solrFieldValue) throws DAOException;
+
+    /**
+     * getAllDynamicCollections.
+     *
+     * @return all dynamic collections ordered by their sort order
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public List<DynamicCollection> getAllDynamicCollections() throws DAOException;
+
+    /**
+     * getDynamicCollection.
+     *
+     * @param id database primary key of the dynamic collection
+     * @return the matching dynamic collection, or null if not found
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public DynamicCollection getDynamicCollection(Long id) throws DAOException;
+
+    /**
+     * getDynamicCollection.
+     *
+     * @param identifier unique identifier of the dynamic collection
+     * @return the matching dynamic collection, or null if not found
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public DynamicCollection getDynamicCollection(String identifier) throws DAOException;
+
+    /**
+     * addDynamicCollection.
+     *
+     * @param collection dynamic collection to persist
+     * @return true if the dynamic collection was added successfully; false otherwise
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean addDynamicCollection(DynamicCollection collection) throws DAOException;
+
+    /**
+     * updateDynamicCollection.
+     *
+     * @param collection dynamic collection to update in the database
+     * @return true if the dynamic collection was updated successfully; false otherwise
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean updateDynamicCollection(DynamicCollection collection) throws DAOException;
+
+    /**
+     * deleteDynamicCollection.
+     *
+     * @param collection dynamic collection to delete from the database
+     * @return true if the dynamic collection was deleted successfully; false otherwise
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public boolean deleteDynamicCollection(DynamicCollection collection) throws DAOException;
 
     /**
      * Annotations *.

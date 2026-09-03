@@ -114,15 +114,24 @@ elif [[ -n "$THEME_NAME" ]]; then
   sed -i 's/mainTheme="[^"]*"/mainTheme="'"${THEME_NAME}"'"/' "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
 fi
 
-echo "Setting viewer url from environment variable"
-BASE_URL="${VIEWER_DOMAIN}${VIEWER_BASE_PATH:+/${VIEWER_BASE_PATH}}"
+echo "Setting viewer urls from environment..."
+PATH_SUFFIX="${VIEWER_BASE_PATH:+/${VIEWER_BASE_PATH}}"
 if [[ "$USE_SSL" == "true" ]]; then
-  sed -Ei "s#http://localhost:8080/viewer#https://${BASE_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
-  sed -Ei "s#http://localhost:8080/viewer#https://${BASE_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_oai.xml"
+  FRONTEND_URL="https://${VIEWER_DOMAIN}${PATH_SUFFIX}"
 else
-  sed -Ei "s#http://localhost:8080/viewer#http://${BASE_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_viewer.xml"
-  sed -Ei "s#http://localhost:8080/viewer#http://${BASE_URL}#g" "${WEBAPP_DIR}/WEB-INF/classes/config_oai.xml"
+  FRONTEND_URL="http://${VIEWER_DOMAIN}${PATH_SUFFIX}"
 fi
+
+CLASSES_DIR="${WEBAPP_DIR}/WEB-INF/classes"
+BACKEND_URL="http://localhost:8080${PATH_SUFFIX}"
+
+sed -i "s#http://localhost:8080/viewer#${FRONTEND_URL}#g" "${CLASSES_DIR}/config_viewer.xml" "${CLASSES_DIR}/config_oai.xml"
+
+# These three config_oai.xml keys are not handed out but fetched by the viewer from
+# itself over HTTP, so they have to stay container-internal
+for key in documentResolverUrl harvestUrl restApiUrl; do
+  sed -i "s#<${key}>${FRONTEND_URL}#<${key}>${BACKEND_URL}#" "${CLASSES_DIR}/config_oai.xml"
+done
 
 export MYSQL_PWD=${DB_PASSWORD}
 while ! mysql -h "${DB_HOST}" -u "${DB_USER}" -P "${DB_PORT}" -e "SELECT 1" >/dev/null 2>&1; do

@@ -22,12 +22,12 @@
 package io.goobi.viewer.filters;
 
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractTest;
@@ -36,14 +36,12 @@ import io.goobi.viewer.controller.DataManager;
 class HttpResponseFilterTest extends AbstractTest {
 
     /**
-     * Builds a request mock with the given URI and runs it through a fresh filter instance.
-     * Returns the response mock so callers can verify which headers were set.
+     * Runs a request with the given servlet path through a fresh filter instance and returns the
+     * response mock, so callers can verify which headers were set.
      */
-    private static HttpServletResponse runFilter(String requestUri) throws Exception {
+    private static HttpServletResponse runFilter(String servletPath) throws Exception {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getRequestURI()).thenReturn(requestUri);
-        // getServletPath is consulted for the API-charset short-circuit only; default to a non-API path
-        Mockito.when(request.getServletPath()).thenReturn(requestUri);
+        Mockito.when(request.getServletPath()).thenReturn(servletPath);
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
         FilterChain chain = Mockito.mock(FilterChain.class);
@@ -54,121 +52,120 @@ class HttpResponseFilterTest extends AbstractTest {
 
     /**
      * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
-     * @verifies set no-store cache headers for dynamic XHTML responses
+     * @verifies set long term cache headers for whitelisted assets
      */
     @Test
-    void doFilter_shouldSetNoStoreCacheHeadersForDynamicXhtmlResponses() throws Exception {
-        HttpServletResponse response = runFilter("/viewer/somepage.xhtml");
+    void doFilter_shouldSetLongTermCacheHeadersForWhitelistedAssets() throws Exception {
+        HttpServletResponse response = runFilter("/resources/css/dist/viewer.min.css");
 
-        Mockito.verify(response).setHeader("Cache-Control",
-                "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0");
-        Mockito.verify(response).setHeader("Pragma", "no-cache");
+        Mockito.verify(response).setHeader("Cache-Control", "public, max-age=12345");
     }
 
     /**
      * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
-     * @verifies set long-term cache headers for modern static resource extensions
-     */
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "/viewer/resources/icons/outline/arrow.svg",
-            "/viewer/resources/themes/zlb/fonts/DejaVuSans-webfont.woff",
-            "/viewer/resources/themes/zlb/fonts/Foo.woff2",
-            "/viewer/resources/themes/zlb/fonts/Foo.ttf",
-            "/viewer/resources/themes/zlb/fonts/Foo.eot",
-            "/viewer/resources/themes/zlb/fonts/Foo.otf",
-            "/viewer/resources/styles/main.css",
-            "/viewer/resources/javascript/dist/viewer.min.js.map"
-    })
-    void doFilter_shouldSetLongTermCacheHeadersForModernStaticResourceExtensions(String uri) throws Exception {
-        HttpServletResponse response = runFilter(uri);
-
-        Mockito.verify(response).setHeader("Cache-Control", "public, max-age=2592000");
-        Mockito.verify(response, Mockito.never()).setHeader(
-                Mockito.eq("Cache-Control"),
-                Mockito.argThat(v -> v != null && v.contains("no-store")));
-    }
-
-    /**
-     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
-     * @verifies set long-term cache headers for already matched static resource extensions
-     */
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "/viewer/resources/javascript/libs/jquery/jquery.min.js",
-            "/viewer/resources/themes/zlb/images/template/fullscreen_logo.png",
-            "/viewer/resources/themes/zlb/images/example.gif",
-            "/viewer/resources/themes/zlb/images/example.jpg",
-            "/viewer/resources/themes/zlb/images/example.jpeg",
-            "/viewer/resources/themes/zlb/images/favicon.ico"
-    })
-    void doFilter_shouldSetLongTermCacheHeadersForAlreadyMatchedStaticResourceExtensions(String uri) throws Exception {
-        HttpServletResponse response = runFilter(uri);
-
-        Mockito.verify(response).setHeader("Cache-Control", "public, max-age=2592000");
-        // Symmetry with the modern-extensions test: ensure no-store cannot sneak in via
-        // a future regex regression that reorders the if/else branches.
-        Mockito.verify(response, Mockito.never()).setHeader(
-                Mockito.eq("Cache-Control"),
-                Mockito.argThat(v -> v != null && v.contains("no-store")));
-    }
-
-    /**
-     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
-     * @verifies set long-term cache headers for path substring matches
-     */
-    @ParameterizedTest
-    @ValueSource(strings = {
-            "/viewer/resources/javascript/libs/jquery/jquery-no-extension",
-            "/viewer/javax.faces.resource/primefaces.css.xhtml",
-            "/viewer/css/something-without-extension"
-    })
-    void doFilter_shouldSetLongTermCacheHeadersForPathSubstringMatches(String uri) throws Exception {
-        HttpServletResponse response = runFilter(uri);
-
-        Mockito.verify(response).setHeader("Cache-Control", "public, max-age=2592000");
-        Mockito.verify(response, Mockito.never()).setHeader(
-                Mockito.eq("Cache-Control"),
-                Mockito.argThat(v -> v != null && v.contains("no-store")));
-    }
-
-    /**
-     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
-     * @verifies set no-store cache headers for api json responses
+     * @verifies set no store for account bound paths
      */
     @Test
-    void doFilter_shouldSetNoStoreCacheHeadersForApiJsonResponses() throws Exception {
-        // /api/* paths are dynamic — REST responses must not be long-term cached even though
-        // their URI carries a familiar-looking ".json" suffix.
+    void doFilter_shouldSetNoStoreForAccountBoundPaths() throws Exception {
+        HttpServletResponse response = runFilter("/admin/users/");
+
+        Mockito.verify(response).setHeader("Cache-Control", "no-store");
+    }
+
+    /**
+     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
+     * @verifies set no store for account bound paths even when dynamic caching is off
+     */
+    @Test
+    void doFilter_shouldSetNoStoreForAccountBoundPathsEvenWhenDynamicCachingIsOff() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("performance.caching.dynamic[@policy]", "off");
+
+        HttpServletResponse response = runFilter("/user/dashboard/");
+
+        Mockito.verify(response).setHeader("Cache-Control", "no-store");
+    }
+
+    /**
+     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
+     * @verifies apply the configured policy to dynamic pages
+     */
+    @Test
+    void doFilter_shouldApplyTheConfiguredPolicyToDynamicPages() throws Exception {
+        HttpServletResponse noStore = runFilter("/object/PPN123/1/");
+        Mockito.verify(noStore).setHeader("Cache-Control", "no-store");
+
+        DataManager.getInstance().getConfiguration().overrideValue("performance.caching.dynamic[@policy]", "no-cache");
+        HttpServletResponse noCache = runFilter("/object/PPN123/1/");
+        Mockito.verify(noCache).setHeader("Cache-Control", "private, no-cache");
+
+        DataManager.getInstance().getConfiguration().overrideValue("performance.caching.dynamic[@policy]", "off");
+        HttpServletResponse off = runFilter("/object/PPN123/1/");
+        Mockito.verify(off, Mockito.never()).setHeader(ArgumentMatchers.eq("Cache-Control"), ArgumentMatchers.anyString());
+    }
+
+    /**
+     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
+     * @verifies set no cache headers for jsf resources and api paths
+     */
+    @Test
+    void doFilter_shouldSetNoCacheHeadersForJsfResourcesAndApiPaths() throws Exception {
+        HttpServletResponse jsf = runFilter("/jakarta.faces.resource/viewer.css.xhtml");
+        Mockito.verify(jsf, Mockito.never()).setHeader(ArgumentMatchers.eq("Cache-Control"), ArgumentMatchers.anyString());
+
+        HttpServletResponse api = runFilter("/api/v1/records/PPN123/manifest/");
+        Mockito.verify(api, Mockito.never()).setHeader(ArgumentMatchers.eq("Cache-Control"), ArgumentMatchers.anyString());
+    }
+
+    /**
+     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
+     * @verifies set no headers when caching is disabled
+     */
+    @Test
+    void doFilter_shouldSetNoHeadersWhenCachingIsDisabled() throws Exception {
+        DataManager.getInstance().getConfiguration().overrideValue("performance.caching[@enabled]", false);
+
+        HttpServletResponse response = runFilter("/resources/css/dist/viewer.min.css");
+
+        Mockito.verify(response, Mockito.never()).setHeader(ArgumentMatchers.eq("Cache-Control"), ArgumentMatchers.anyString());
+    }
+
+    /**
+     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
+     * @verifies skip character encoding for api paths
+     */
+    @Test
+    void doFilter_shouldSkipCharacterEncodingForApiPaths() throws Exception {
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getRequestURI()).thenReturn("/viewer/api/v1/records/123.json");
-        Mockito.when(request.getServletPath()).thenReturn("/api/v1/records/123.json");
+        Mockito.when(request.getServletPath()).thenReturn("/api/v1/records/PPN123/manifest/");
+        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+
+        new HttpResponseFilter().doFilter(request, response, Mockito.mock(FilterChain.class));
+
+        Mockito.verify(request, Mockito.never()).setCharacterEncoding(ArgumentMatchers.anyString());
+    }
+
+    /**
+     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
+     * @verifies set no store for account bound paths reached through a forward
+     */
+    @Test
+    void doFilter_shouldSetNoStoreForAccountBoundPathsReachedThroughAForward() throws Exception {
+        // the dynamic policy is switched away from the test default of no-store: otherwise a page
+        // that fell through to DYNAMIC for lack of the fix would coincidentally emit the same
+        // header as ACCOUNT and the test could not tell the two codepaths apart
+        DataManager.getInstance().getConfiguration().overrideValue("performance.caching.dynamic[@policy]", "no-cache");
+
+        // the pretty url rewrite filter has already forwarded /user/searches/ to this view id by
+        // the time this filter runs, so only the preserved forward attribute still carries it
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getServletPath()).thenReturn("/userBackendSearches.xhtml");
+        Mockito.when(request.getContextPath()).thenReturn("/viewer");
+        Mockito.when(request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI)).thenReturn("/viewer/user/searches/");
 
         HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        FilterChain chain = Mockito.mock(FilterChain.class);
 
-        new HttpResponseFilter().doFilter(request, response, chain);
+        new HttpResponseFilter().doFilter(request, response, Mockito.mock(FilterChain.class));
 
-        Mockito.verify(response).setHeader("Cache-Control",
-                "no-store, no-cache, must-revalidate, max-age=0, post-check=0, pre-check=0");
-        // Charset short-circuit: API paths must skip setCharacterEncoding on the request
-        Mockito.verify(request, Mockito.never()).setCharacterEncoding(Mockito.anyString());
-    }
-
-    /**
-     * @see HttpResponseFilter#doFilter(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse, jakarta.servlet.FilterChain)
-     * @verifies not set any cache headers when prevent proxy caching is disabled
-     */
-    @Test
-    void doFilter_shouldNotSetAnyCacheHeadersWhenPreventProxyCachingIsDisabled() throws Exception {
-        // Flip the runtime config off — the filter must read the live value, not a value
-        // it cached at class-load time.
-        DataManager.getInstance().getConfiguration().overrideValue("performance.preventProxyCaching", false);
-
-        HttpServletResponse response = runFilter("/viewer/somepage.xhtml");
-
-        Mockito.verify(response, Mockito.never()).setHeader(Mockito.eq("Cache-Control"), Mockito.anyString());
-        Mockito.verify(response, Mockito.never()).setHeader(Mockito.eq("Pragma"), Mockito.anyString());
-        Mockito.verify(response, Mockito.never()).setHeader(Mockito.eq("Expires"), Mockito.anyString());
+        Mockito.verify(response).setHeader("Cache-Control", "no-store");
     }
 }

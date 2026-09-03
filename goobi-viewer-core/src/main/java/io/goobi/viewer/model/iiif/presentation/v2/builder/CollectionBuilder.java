@@ -54,6 +54,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollectionViews;
 import io.goobi.viewer.model.iiif.presentation.v2.builder.LinkingProperty.LinkingTarget;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.viewer.collections.BrowseElementInfo;
@@ -111,6 +113,7 @@ public class CollectionBuilder extends AbstractBuilder {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.ViewerConfigurationException if any.
      * @throws IllegalRequestException if the top element is not empty and is not a collection
+     * @should build an iiif collection of dynamic collections for the dc dynamic field
      */
     public Collection2 generateCollection(String collectionField, final String topElement, final String facetField, final String splittingChar,
             final List<String> ignoreCollections)
@@ -250,10 +253,16 @@ public class CollectionBuilder extends AbstractBuilder {
             if (baseElement != null) {
 
                 BrowseElementInfo info = baseElement.getInfo();
-                if (info instanceof CMSCollection) {
+                if (info instanceof DynamicCollection) {
+                    // Dynamic collections carry their label and description in the DB, not in the message bundle
                     collection.setDescription(info.getTranslationsForDescription());
+                    collection.setLabel(info.getTranslationsForName());
+                } else {
+                    if (info instanceof CMSCollection) {
+                        collection.setDescription(info.getTranslationsForDescription());
+                    }
+                    collection.setLabel(getLabel(baseElement.getName()));
                 }
-                collection.setLabel(getLabel(baseElement.getName()));
 
                 URI thumbURI = absolutize(baseElement.getInfo().getIconURI());
                 if (thumbURI != null) {
@@ -391,9 +400,15 @@ public class CollectionBuilder extends AbstractBuilder {
      */
     public CollectionView createCollectionView(String collectionField, final String facetField, final String splittingChar)
             throws IndexUnreachableException, IllegalRequestException {
-        CollectionView view = new CollectionView(collectionField,
-                () -> SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, splittingChar));
-        view.populateCollectionList();
+        CollectionView view;
+        if (SolrConstants.DC_DYNAMIC.equals(collectionField)) {
+            // The DC_DYNAMIC pseudo field is backed by the database-defined dynamic collections, not by a real Solr field
+            view = DynamicCollectionViews.build("", null);
+        } else {
+            view = new CollectionView(collectionField,
+                    () -> SearchHelper.findAllCollectionsFromField(collectionField, facetField, null, true, true, splittingChar));
+            view.populateCollectionList();
+        }
 
         String key = collectionField + "::" + facetField;
         BeanUtils.getSessionBean().put(key, view);

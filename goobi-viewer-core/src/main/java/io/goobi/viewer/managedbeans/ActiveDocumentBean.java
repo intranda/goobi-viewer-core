@@ -60,6 +60,7 @@ import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.controller.GeoCoordinateConverter;
 import io.goobi.viewer.controller.IndexerTools;
 import io.goobi.viewer.controller.NetTools;
@@ -95,7 +96,6 @@ import io.goobi.viewer.model.maps.GeoMapFeature;
 import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.RecordGeoMap;
 import io.goobi.viewer.model.maps.coordinates.CoordinateReaderProvider;
-import io.goobi.viewer.controller.FileSizeCalculator;
 import io.goobi.viewer.model.pdf.PdfSizeCalculator;
 import io.goobi.viewer.model.search.BrowseElement;
 import io.goobi.viewer.model.search.SearchHelper;
@@ -116,10 +116,10 @@ import io.goobi.viewer.model.viewer.PageType;
 import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.ViewManager;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.record.relatedgroups.GroupMemberDetail;
 import io.goobi.viewer.model.viewer.record.relatedgroups.RecommendationsResolver;
 import io.goobi.viewer.model.viewer.record.relatedgroups.RelatedGroupsResolver;
-import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
@@ -135,17 +135,18 @@ import jakarta.servlet.http.HttpSession;
 import mil.nga.sf.geojson.Geometry;
 
 /**
- * JSF session-scoped backing bean that opens the requested record and provides all data relevant
- * to it. Owns the {@link io.goobi.viewer.model.viewer.ViewManager} for the current record and
- * coordinates access to its structure elements, physical pages, TOC, and download jobs.
+ * JSF session-scoped backing bean that opens the requested record and provides all data relevant to it. Owns the
+ * {@link io.goobi.viewer.model.viewer.ViewManager} for the current record and coordinates access to its structure elements, physical pages, TOC, and
+ * download jobs.
  *
- * <p><b>Lifecycle:</b> Created once per HTTP session; a new {@code ViewManager} is instantiated
- * each time a different record PI is requested. The bean is destroyed when the session expires.
+ * <p>
+ * <b>Lifecycle:</b> Created once per HTTP session; a new {@code ViewManager} is instantiated each time a different record PI is requested. The bean
+ * is destroyed when the session expires.
  *
- * <p><b>Thread safety:</b> Explicitly synchronised. Multiple {@code synchronized(this)} and
- * {@code synchronized(lock)} blocks guard concurrent access to shared record state, since JSF
- * AJAX requests and background threads (PDF/EPUB generation, TOC building) may run concurrently
- * within the same session.
+ * <p>
+ * <b>Thread safety:</b> Explicitly synchronised. Multiple {@code synchronized(this)} and {@code synchronized(lock)} blocks guard concurrent access to
+ * shared record state, since JSF AJAX requests and background threads (PDF/EPUB generation, TOC building) may run concurrently within the same
+ * session.
  */
 @Named
 @SessionScoped
@@ -295,13 +296,12 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * Resets the bean state when a record is unloaded: discards the current {@link ViewManager},
-     * clears navigation state (logid, action, prev/next hit, docstruct URL caches), and notifies
-     * all registered modules.
+     * Resets the bean state when a record is unloaded: discards the current {@link ViewManager}, clears navigation state (logid, action, prev/next
+     * hit, docstruct URL caches), and notifies all registered modules.
      *
-     * <p><b>Warning:</b> Although this method is fully {@code synchronized(this)}, calling it
-     * while {@code update()} is running on another thread may still cause NPEs, because
-     * {@code update()} holds the lock only in discrete blocks and not for its entire duration.
+     * <p>
+     * <b>Warning:</b> Although this method is fully {@code synchronized(this)}, calling it while {@code update()} is running on another thread may
+     * still cause NPEs, because {@code update()} holds the lock only in discrete blocks and not for its entire duration.
      *
      * @throws IndexUnreachableException if a module's cleanup requires Solr and Solr is unavailable
      * @should reset lastReceivedIdentifier
@@ -736,23 +736,18 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * Decides whether building the issue-list TOC can be skipped because the calendar TOC
-     * view will be rendered instead.
+     * Decides whether building the issue-list TOC can be skipped because the calendar TOC view will be rendered instead.
      *
-     * <p>Used as a cheap probe in {@link #createTOC()} to avoid loading hundreds of
-     * thousands of issue documents for newspaper-style group records. The calendar
-     * branch in {@code viewToc.xhtml} renders independently of TOC data and issues
-     * its own per-year calendar facet queries.
+     * <p>
+     * Used as a cheap probe in {@link #createTOC()} to avoid loading hundreds of thousands of issue documents for newspaper-style group records. The
+     * calendar branch in {@code viewToc.xhtml} renders independently of TOC data and issues its own per-year calendar facet queries.
      *
-     * <p>The probe is "the record's docstruct is configured for the calendar view AND
-     * more than one calendar year is present in the index". The year-count condition is
-     * a sufficient condition for {@link CalendarView#isDisplay()} that does not require
-     * populating an entire year's day grid. The docstruct gate
-     * ({@link io.goobi.viewer.controller.Configuration#getCalendarDocStructTypes()})
-     * ensures the deferral fires only for record types where the calendar view actually
-     * applies — multi-year date metadata alone (e.g. on a podcast anchor) is not enough
-     * to warrant skipping the issue-list build, because nothing else would render in its
-     * place. An empty whitelist preserves legacy behavior (defer for any multi-year
+     * <p>
+     * The probe is "the record's docstruct is configured for the calendar view AND more than one calendar year is present in the index". The
+     * year-count condition is a sufficient condition for {@link CalendarView#isDisplay()} that does not require populating an entire year's day grid.
+     * The docstruct gate ({@link io.goobi.viewer.controller.Configuration#getCalendarDocStructTypes()}) ensures the deferral fires only for record
+     * types where the calendar view actually applies — multi-year date metadata alone (e.g. on a podcast anchor) is not enough to warrant skipping
+     * the issue-list build, because nothing else would render in its place. An empty whitelist preserves legacy behavior (defer for any multi-year
      * anchor/group).
      *
      * @param vm the active view manager; must not be null
@@ -1477,8 +1472,8 @@ public class ActiveDocumentBean implements Serializable {
      * @param step number of pages to go back
      * @return the absolute URL to the page that is the given number of steps before the current page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-      * @should decrease image number by given step
-      * @should go no lower than first page order
+     * @should decrease image number by given step
+     * @should go no lower than first page order
      */
     public String getPreviousPageUrl(int step) throws IndexUnreachableException {
         return getPageUrlRelativeToCurrentPage(step * -1);
@@ -1699,8 +1694,8 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Checks whether the currently loaded record is access-restricted, i.e. carries at least one access condition other than open access.
      * <p>
-     * Added so that the logout redirect (see {@link UserBean#logout()}) can send the user to the start page instead of back to a restricted
-     * record URL that would be unavailable to the now anonymous session and would otherwise trigger a misleading "record not found" error page.
+     * Added so that the logout redirect (see {@link UserBean#logout()}) can send the user to the start page instead of back to a restricted record
+     * URL that would be unavailable to the now anonymous session and would otherwise trigger a misleading "record not found" error page.
      *
      * @return true if a record is loaded and it has a restricting access condition; false otherwise
      * @should return false when no record is loaded
@@ -2050,7 +2045,8 @@ public class ActiveDocumentBean implements Serializable {
         }
         try {
             String query = "+" + SolrConstants.PI_TOPSTRUCT + ":" + currentPi + " +" + SolrConstants.DOCTYPE + ":PAGE";
-            List<SolrDocument> pageDocs = DataManager.getInstance().getSearchIndex()
+            List<SolrDocument> pageDocs = DataManager.getInstance()
+                    .getSearchIndex()
                     .getDocs(query, List.of(SolrConstants.MDNUM_FILESIZE));
             long totalBytes = 0;
             if (pageDocs != null) {
@@ -2450,7 +2446,8 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * getRelatedItems.
      *
-     * <p>TODO Is this still in use?
+     * <p>
+     * TODO Is this still in use?
      *
      * @param identifierField Index field containing related item identifiers
      * @return List of related items as SearchHit objects.
@@ -2510,11 +2507,11 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Returns detailed information about related records for the related-groups widget/section.
      *
-     * <p>Delegates the actual Solr query and card construction to {@link RelatedGroupsResolver}.
-     * Adds session-scope caching with a double-checked-locking pattern (analogous to
-     * {@link #getRecordDataset()}): the cached value is only published when the PI at query
-     * time still matches the current PI, so a concurrent {@link #reset()} cannot leave stale
-     * data behind. Errors from the resolver are caught here so the view never sees them.
+     * <p>
+     * Delegates the actual Solr query and card construction to {@link RelatedGroupsResolver}. Adds session-scope caching with a
+     * double-checked-locking pattern (analogous to {@link #getRecordDataset()}): the cached value is only published when the PI at query time still
+     * matches the current PI, so a concurrent {@link #reset()} cannot leave stale data behind. Errors from the resolver are caught here so the view
+     * never sees them.
      *
      * @return List of GroupMemberDetail objects; empty if no related records, no record loaded, or on error
      * @should return empty list if viewManager is null
@@ -2586,9 +2583,10 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Returns recommended records for the "Das könnte Sie auch interessieren" section.
      *
-     * <p>Delegates to {@link RecommendationsResolver} and applies the same PI-guarded
-     * double-checked-locking cache as {@link #getGroupMembershipDetails()} so a concurrent
-     * {@link #reset()} cannot publish stale data. Errors are caught here so the view never sees them.
+     * <p>
+     * Delegates to {@link RecommendationsResolver} and applies the same PI-guarded double-checked-locking cache as
+     * {@link #getGroupMembershipDetails()} so a concurrent {@link #reset()} cannot publish stale data. Errors are caught here so the view never sees
+     * them.
      *
      * @return List of GroupMemberDetail objects; empty if none, no record loaded, or on error
      */
@@ -3197,7 +3195,7 @@ public class ActiveDocumentBean implements Serializable {
             ViewAttributes viewAttributes = new ViewAttributes(viewManager, pageType);
             PageNavigation defaultPageNavigation = getDefaultPageNavigation(viewAttributes);
             PageNavigation currentPageNavigation =
-                    Optional.ofNullable(this.viewManager).map(ViewManager::getPageNavigation).orElse(PageNavigation.SINGLE);
+                    Optional.ofNullable(this.viewManager).map(ViewManager::getPageNavigation).orElse(defaultPageNavigation);
             if (currentPageNavigation == defaultPageNavigation) {
                 return currentPageNavigation;
             } else if (defaultPageNavigation == PageNavigation.SEQUENCE) {

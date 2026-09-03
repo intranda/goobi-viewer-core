@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -1203,14 +1204,60 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * All available translation groups: the groups configured in config_viewer.xml plus — once at least one database-defined dynamic collection
+     * exists — a synthetic group for translating dynamic collection labels. The synthetic group is appended at the end, so the config-index-based
+     * group ids stay stable.
+     *
+     * @return List of all translation groups
+     */
+    public static List<TranslationGroup> getAllTranslationGroups() {
+        List<TranslationGroup> ret = new ArrayList<>(DataManager.getInstance().getConfiguration().getTranslationGroups());
+        try {
+            if (!DataManager.getInstance().getDao().getAllDynamicCollections().isEmpty()) {
+                TranslationGroup group = TranslationGroup.create(ret.size(), TranslationGroupType.DYNAMIC_COLLECTIONS,
+                        "admin__dynamic_collections", "admin__dynamic_collections_desc", 1);
+                group.getItems().add(TranslationGroupItem.create(TranslationGroupType.DYNAMIC_COLLECTIONS, SolrConstants.DC_DYNAMIC, false));
+                ret.add(group);
+            }
+        } catch (DAOException e) {
+            logger.error("Error checking for dynamic collections: {}", e.getMessage());
+        }
+        return ret;
+    }
+
+    /**
+     * getDynamicCollectionsTranslationGroupId.
+     *
+     * @return id of the synthetic dynamic collections translation group; -1 if it is not available
+     */
+    public int getDynamicCollectionsTranslationGroupId() {
+        for (TranslationGroup group : getAllTranslationGroups()) {
+            if (TranslationGroupType.DYNAMIC_COLLECTIONS.equals(group.getType())) {
+                return group.getId();
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * getDynamicCollectionsTranslationGroups.
+     *
+     * @return List containing the synthetic dynamic collections translation group; empty if no dynamic collections exist
+     */
+    public List<TranslationGroup> getDynamicCollectionsTranslationGroups() {
+        return getAllTranslationGroups().stream()
+                .filter(group -> TranslationGroupType.DYNAMIC_COLLECTIONS.equals(group.getType()))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * getConfiguredTranslationGroupsCount.
      *
      * @return Number of configured translation grouns
      */
     public long getConfiguredTranslationGroupsCount() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getTranslationGroups()
+        return getAllTranslationGroups()
                 .stream()
                 .filter(g -> !g.isLoadError())
                 .filter(g -> g.getEntryCount() - g.getFullyTranslatedEntryCount() > 0)
@@ -1224,7 +1271,7 @@ public class AdminBean implements Serializable {
      */
     public List<TranslationGroup> getConfiguredTranslationGroups() {
         synchronized (TRANSLATION_LOCK) {
-            List<TranslationGroup> ret = DataManager.getInstance().getConfiguration().getTranslationGroups();
+            List<TranslationGroup> ret = getAllTranslationGroups();
             logger.trace("groups: {}", ret.size());
             return ret;
         }
@@ -1415,7 +1462,7 @@ public class AdminBean implements Serializable {
      * @param id Looks up and loads <code>currentTranslationGroup</code> that matches the given id
      */
     public void setCurrentTranslationGroupId(int id) {
-        List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
+        List<TranslationGroup> groups = getAllTranslationGroups();
         if (id >= 0 && groups.size() > id) {
             TranslationGroup group = groups.get(id);
             if (!group.equals(currentTranslationGroup)) {

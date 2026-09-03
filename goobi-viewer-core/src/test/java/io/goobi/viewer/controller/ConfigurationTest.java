@@ -1459,12 +1459,90 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isPreventProxyCaching()
+     * @see Configuration#isCachingEnabled()
      * @verifies return correct value
      */
     @Test
-    void isPreventProxyCaching_shouldReturnCorrectValue() {
-        assertEquals(true, DataManager.getInstance().getConfiguration().isPreventProxyCaching());
+    void isCachingEnabled_shouldReturnCorrectValue() {
+        Assertions.assertTrue(DataManager.getInstance().getConfiguration().isCachingEnabled());
+    }
+
+    /**
+     * @see Configuration#getStaticResourceCacheMaxAge()
+     * @verifies return correct value
+     */
+    @Test
+    void getStaticResourceCacheMaxAge_shouldReturnCorrectValue() {
+        Assertions.assertEquals(12345, DataManager.getInstance().getConfiguration().getStaticResourceCacheMaxAge());
+    }
+
+    /**
+     * @see Configuration#getDynamicCachePolicy()
+     * @verifies return correct value
+     */
+    @Test
+    void getDynamicCachePolicy_shouldReturnCorrectValue() {
+        Assertions.assertEquals("no-store", DataManager.getInstance().getConfiguration().getDynamicCachePolicy());
+    }
+
+    /**
+     * @see Configuration#getApiImageCacheMaxAge()
+     * @verifies return correct value
+     */
+    @Test
+    void getApiImageCacheMaxAge_shouldReturnCorrectValue() {
+        Assertions.assertEquals(77, DataManager.getInstance().getConfiguration().getApiImageCacheMaxAge());
+    }
+
+    /**
+     * @see Configuration#isCachingEnabled()
+     * @verifies return the configured value when the attribute is set
+     */
+    @Test
+    void isCachingEnabled_shouldReturnTheConfiguredValueWhenTheAttributeIsSet() {
+        Configuration config = new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath());
+        Assertions.assertFalse(config.isCachingEnabled());
+    }
+
+    /**
+     * @see Configuration#getStaticResourceCacheMaxAge()
+     * @verifies return default value when the caching block has no entry
+     */
+    @Test
+    void getStaticResourceCacheMaxAge_shouldReturnDefaultValueWhenTheCachingBlockHasNoEntry() {
+        Configuration config = new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath());
+        Assertions.assertEquals(300, config.getStaticResourceCacheMaxAge());
+    }
+
+    /**
+     * @see Configuration#getDynamicCachePolicy()
+     * @verifies return default value when the caching block has no entry
+     */
+    @Test
+    void getDynamicCachePolicy_shouldReturnDefaultValueWhenTheCachingBlockHasNoEntry() {
+        Configuration config = new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath());
+        Assertions.assertEquals("no-cache", config.getDynamicCachePolicy());
+    }
+
+    /**
+     * @see Configuration#getApiImageCacheMaxAge()
+     * @verifies return default value when the caching block has no entry
+     */
+    @Test
+    void getApiImageCacheMaxAge_shouldReturnDefaultValueWhenTheCachingBlockHasNoEntry() {
+        Configuration config = new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath());
+        Assertions.assertEquals(300, config.getApiImageCacheMaxAge());
+    }
+
+    /**
+     * @see Configuration#isCachingEnabled()
+     * @verifies ignore the removed preventProxyCaching key
+     */
+    @Test
+    void isCachingEnabled_shouldIgnoreTheRemovedPreventProxyCachingKey() {
+        Configuration config =
+                new Configuration(new File("src/test/resources/localConfig/config_viewer_broken.test.xml").getAbsolutePath());
+        Assertions.assertTrue(config.isCachingEnabled());
     }
 
     /**
@@ -2056,7 +2134,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getAllFacetFields_shouldReturnCorrectOrder() {
         List<String> result = DataManager.getInstance().getConfiguration().getAllFacetFields();
-        assertEquals(7, result.size());
+        assertEquals(8, result.size());
         assertEquals("DC", result.get(0));
         assertEquals("YEAR", result.get(1));
         assertEquals("MD_CREATOR", result.get(2));
@@ -2064,6 +2142,7 @@ class ConfigurationTest extends AbstractTest {
         assertEquals("WKT_COORDS", result.get(4));
         assertEquals("MD_PERSON", result.get(5));
         assertEquals("BOOL_HASIMAGES", result.get(6));
+        assertEquals("DC_DYNAMIC", result.get(7));
     }
 
     /**
@@ -2086,7 +2165,7 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getFacetFieldsForTemplate_shouldFallBackToDefaultTemplate() {
         List<String> result = DataManager.getInstance().getConfiguration().getFacetFieldsForTemplate("doesNotExist");
-        assertEquals(7, result.size());
+        assertEquals(8, result.size());
         assertEquals("DC", result.get(0));
     }
 
@@ -2139,6 +2218,19 @@ class ConfigurationTest extends AbstractTest {
     @Test
     void getRangeFacetFields_shouldReturnAllValues() {
         assertEquals(1, DataManager.getInstance().getConfiguration().getRangeFacetFields().size());
+    }
+
+    /**
+     * @see Configuration#getQueryFacetFields()
+     * @see Configuration#isQueryFacetField(String)
+     * @verifies return configured query facet fields
+     */
+    @Test
+    void getQueryFacetFields_shouldReturnConfiguredQueryFacetFields() {
+        assertEquals(1, DataManager.getInstance().getConfiguration().getQueryFacetFields().size());
+        assertEquals("DC_DYNAMIC", DataManager.getInstance().getConfiguration().getQueryFacetFields().get(0));
+        assertTrue(DataManager.getInstance().getConfiguration().isQueryFacetField("DC_DYNAMIC"));
+        assertFalse(DataManager.getInstance().getConfiguration().isQueryFacetField("DC"));
     }
 
     /**
