@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { indexById, mountTextImageLink, buildTextLevels } from '../ui/ivTextImageLink.mjs';
+import { indexById, mountTextImageLink, buildTextLevels } from '../ui/fulltext/ivTextImageLink.mjs';
 
 /** Flat line spans as test fixtures (one region per line, no nesting). */
 function lineSpans(lines) {
@@ -36,7 +36,6 @@ describe('mountTextImageLink', () => {
         );
         const overlayA = document.createElement('div');
         overlayA.dataset.ivRegionId = 'a';
-        // 'b' intentionally has no overlay (line without #xywh)
         const regionEls = new Map([['a', overlayA]]);
         const link = mountTextImageLink({ box, regionEls });
         const spanA = box.querySelector('[data-iv-region-id="a"]');
@@ -80,7 +79,6 @@ describe('mountTextImageLink', () => {
         expect(overlayA.classList.contains('is-linked-active')).toBe(false);
     });
 
-    // jsdom has no layout: stub the offset/scroll metrics the reveal path reads.
     function setupWithScrollContainer({ spanOffsetTop }) {
         const scrollContainer = document.createElement('div');
         Object.defineProperty(scrollContainer, 'clientHeight', { value: 200 });
@@ -248,7 +246,6 @@ describe('mountTextImageLink with parent cascade', () => {
         expect(overlays.get('l1').classList.contains('is-linked-active')).toBe(false);
     });
 
-    // jsdom has no layout: stub the metrics the reveal path reads.
     function setupCascadeWithScroll() {
         const scrollContainer = document.createElement('div');
         Object.defineProperty(scrollContainer, 'clientHeight', { value: 200 });

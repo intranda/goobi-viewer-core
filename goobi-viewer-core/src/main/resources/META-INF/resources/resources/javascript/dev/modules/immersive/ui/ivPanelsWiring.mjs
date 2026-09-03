@@ -3,6 +3,7 @@
 import { offsetTopWithin } from '../shared/ivDom.mjs';
 import { isOverlayOpen, PANEL_OPEN_SELECTOR } from '../shared/ivSelectors.mjs';
 import { env } from '../shared/ivEnv.mjs';
+import { KEY_PRIORITY } from '../shared/ivKeys.mjs';
 import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
@@ -106,7 +107,6 @@ export function setupPanels(immersiveRoot, keys) {
                 activePanelBtn = btn;
                 syncPanelOpenFlag();
                 panel.dispatchEvent(new CustomEvent('immersive:panel-open', { bubbles: false }));
-                // Scroll via offset math, not scrollIntoView, so the page itself never moves.
                 const active = panel.querySelector('.widget-toc__element.active');
                 if (active) {
                     panel.scrollTop = Math.max(0, offsetTopWithin(active, panel) - panel.clientHeight / 2);
@@ -127,7 +127,7 @@ export function setupPanels(immersiveRoot, keys) {
         });
     });
 
-    const unregisterKeys = keys.register(40, (e) => {
+    const unregisterKeys = keys.register(KEY_PRIORITY.panels, (e) => {
         if (e.key === 'Escape') {
             if (!document.querySelector(PANEL_OPEN_SELECTOR)) return false;
             closePanels(true);
@@ -177,9 +177,6 @@ export function setupPanelResize(immersiveRoot) {
     const MIN_WIDTH = 240;
     const MAX_WIDTH_RATIO = 0.8;
     const maxWidth = () => immersiveViewer.getBoundingClientRect().width * MAX_WIDTH_RATIO;
-    // The handle is positioned by the width variable, not the panel edge — so the
-    // clamp floor must include the open panel's own min-width (raised in the
-    // annotations two-column mode), or the handle would detach from the panel.
     const minWidth = () => {
         const open = immersiveRoot.querySelector(PANEL_OPEN_SELECTOR);
         const panelMin = open ? parseFloat(getComputedStyle(open).minWidth) || 0 : 0;
@@ -197,13 +194,6 @@ export function setupPanelResize(immersiveRoot) {
     handle.className = 'immersive__panel-resize-handle';
     handle.setAttribute('aria-hidden', 'true');
     immersiveViewer.appendChild(handle);
-    // A panel can grow beyond the width variable without a drag (the annotations
-    // two-column mode raises its min-width, e.g. when the checkbox is toggled).
-    // Sync the variable up to the real panel width in that case, or the handle
-    // would sit unreachable inside the panel instead of on its edge. The current
-    // variable value is read off the handle's GEOMETRY (it is positioned by the
-    // variable) — the inline style alone misses the CSS fallback, media-query
-    // and fullscreen values a first-time visitor runs on.
     let observer = null;
     if (typeof ResizeObserver !== 'undefined') {
         observer = new ResizeObserver(() => {
@@ -221,7 +211,6 @@ export function setupPanelResize(immersiveRoot) {
         handle.setPointerCapture(e.pointerId);
         immersiveRoot.classList.add('-resizing');
         const viewerLeft = immersiveViewer.getBoundingClientRect().left;
-        // Bounds are fixed for the duration of a drag — no style recalc per move.
         const dragMin = minWidth();
         const dragMax = maxWidth();
         const widthAt = (ev) => Math.min(Math.max(ev.clientX - viewerLeft - RAIL_WIDTH, dragMin), dragMax);
@@ -344,7 +333,7 @@ export function setupTocSync(viewer, tocPanel = document.getElementById('immersi
     const bag = createDisposer();
     const tocEntries = () =>
         Array.from(tocPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
-            .filter((el) => el.dataset.level !== '0') // skip the hidden record root
+            .filter((el) => el.dataset.level !== '0')
             .map((el) => ({ el, no: Number(el.dataset.pageNo) }))
             .filter((x) => Number.isFinite(x.no) && x.no >= 1);
 

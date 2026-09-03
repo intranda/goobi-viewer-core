@@ -3,6 +3,17 @@
 import { isTypingTarget } from './ivPlatform.mjs';
 import { isOverlayOpen } from './ivSelectors.mjs';
 
+/** Dispatcher priorities of every immersive key handler, lowest runs first; the single place that defines who wins a key. */
+export const KEY_PRIORITY = Object.freeze({
+    shortcutsModal: 10,
+    gridOverlay: 20,
+    pageDropdown: 30,
+    layoutTagsPick: 35,
+    panels: 40,
+    viewerNav: 50,
+    annotationsToggle: 55,
+});
+
 /**
  * Creates the immersive key dispatcher: one document-level keydown listener,
  * handlers consulted in ascending priority order, the first handler that
@@ -69,10 +80,10 @@ export function createKeyDispatcher() {
  * @param {{register: Function}} keys  the immersive key dispatcher
  * @param {IvViewer} viewer
  * @param {HTMLElement} stageEl        the OSD mount element ([data-immersive-image])
- * @param {number} [priority=50]       runs after modal (10), grid (20), dropdown (30), panels (40)
+ * @param {number} [priority=KEY_PRIORITY.viewerNav]
  * @returns {{destroy: function():void}}
  */
-export function registerViewerNavKeys(keys, viewer, stageEl, priority = 50) {
+export function registerViewerNavKeys(keys, viewer, stageEl, priority = KEY_PRIORITY.viewerNav) {
     const unregister = keys.register(priority, (e) => {
         if (e.ctrlKey || e.metaKey || e.altKey) return false;
         const key = e.key;

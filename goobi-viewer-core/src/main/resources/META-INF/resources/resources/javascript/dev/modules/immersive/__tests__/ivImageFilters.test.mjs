@@ -92,7 +92,6 @@ describe('bindImageFiltersRendering', () => {
         filterB.start();
         filterA.start();
         osd.fire('update-viewport');
-        // filterA received the original data even though filterB returned undefined
         expect(filterA.filterMethod).toHaveBeenCalledWith({ data: 'pixels' });
         expect(context.putImageData).toHaveBeenCalledWith({ data: 'pixels' }, 0, 0);
     });
@@ -106,8 +105,8 @@ describe('setupImmersivePopoverA11y', () => {
     test('binds the Escape handler once per popover element and moves focus into it on every show', async () => {
         const { setupImmersivePopoverA11y } = await import('../ui/ivImageFilters.mjs');
         document.body.innerHTML = `
-            <button data-popover-element="#immersiveSharePopover" aria-describedby="pop1" aria-expanded="false"></button>
-            <div id="pop1" class="popover show"><a href="#" id="link">x</a></div>`;
+            <button data-popover-element="#immersiveSharePopover" aria-describedby="pop1" aria-expanded="false" aria-label="Teilen"></button>
+            <div id="pop1" class="popover show" role="tooltip"><a href="#" id="link">x</a></div>`;
         const trigger = document.querySelector('[data-popover-element]');
         const pop = document.getElementById('pop1');
         const addListener = jest.spyOn(pop, 'addEventListener');
@@ -116,6 +115,8 @@ describe('setupImmersivePopoverA11y', () => {
         window.$(trigger).trigger('shown.bs.popover');
         expect(addListener.mock.calls.filter((c) => c[0] === 'keydown')).toHaveLength(1);
         expect(trigger.getAttribute('aria-expanded')).toBe('true');
+        expect(pop.getAttribute('role')).toBe('dialog');
+        expect(pop.getAttribute('aria-label')).toBe('Teilen');
         expect(document.activeElement).toBe(document.getElementById('link'));
         a11y.destroy();
         window.$(trigger).trigger('hidden.bs.popover');

@@ -3,7 +3,7 @@
  * listener, handlers consulted in priority order, first consumer wins.
  */
 import { jest } from '@jest/globals';
-import { createKeyDispatcher, registerViewerNavKeys } from '../shared/ivKeys.mjs';
+import { createKeyDispatcher, registerViewerNavKeys, KEY_PRIORITY } from '../shared/ivKeys.mjs';
 
 describe('createKeyDispatcher', () => {
     test('consults handlers in priority order and stops at the first consumer', () => {
@@ -92,7 +92,6 @@ describe('registerViewerNavKeys', () => {
     test('resets on 0 and zooms on the +/- keys of either layout', () => {
         expect(dispatch('0')).toBe(true);
         expect(viewer.resetView).toHaveBeenCalledTimes(1);
-        // German '+' and US 'Shift+=' both arrive as '+' / '='; both zoom in
         expect(dispatch('+')).toBe(true);
         expect(dispatch('=')).toBe(true);
         expect(viewer.zoomIn).toHaveBeenCalledTimes(2);
@@ -127,7 +126,6 @@ describe('registerViewerNavKeys', () => {
         expect(dispatch('ArrowUp', { shiftKey: true })).toBe(false);
         expect(viewer.zoomIn).not.toHaveBeenCalled();
         expect(viewer.zoomOut).not.toHaveBeenCalled();
-        // paging stays available without zoom rights
         expect(dispatch('ArrowRight')).toBe(true);
         expect(viewer.next).toHaveBeenCalledTimes(1);
     });
@@ -205,5 +203,20 @@ describe('createKeyDispatcher teardown', () => {
         nav.destroy();
         expect(keys.handleEvent({ key: 'ArrowRight', target: document.body })).toBe(false);
         expect(viewer.next).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe('KEY_PRIORITY', () => {
+    test('is one ascending ladder without duplicates, and the viewer keys default to their slot', () => {
+        const values = Object.values(KEY_PRIORITY);
+        expect(values).toEqual([...values].sort((a, b) => a - b));
+        expect(new Set(values).size).toBe(values.length);
+        const keys = createKeyDispatcher();
+        const order = [];
+        keys.register(KEY_PRIORITY.viewerNav + 1, () => (order.push('after'), false));
+        registerViewerNavKeys(keys, { next: jest.fn(), allowZoom: true }, null);
+        keys.register(KEY_PRIORITY.viewerNav - 1, () => (order.push('before'), false));
+        keys.handleEvent({ key: 'ArrowRight', target: document.body });
+        expect(order).toEqual(['before']);
     });
 });

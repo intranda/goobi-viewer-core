@@ -16,12 +16,12 @@ const XHTML_FILES = [
 ];
 
 const readAll = (files) => files.map((f) => fs.readFileSync(f, 'utf8')).join('\n');
-const jsFiles = ['shared', 'data', 'engine', 'ui', '.'].flatMap((dir) =>
-    fs
-        .readdirSync(path.join(JS_ROOT, dir))
-        .filter((f) => f.endsWith('.mjs'))
-        .map((f) => path.join(JS_ROOT, dir, f))
-);
+const listModules = (dir) =>
+    fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+        if (entry.isDirectory()) return entry.name === '__tests__' ? [] : listModules(path.join(dir, entry.name));
+        return entry.name.endsWith('.mjs') ? [path.join(dir, entry.name)] : [];
+    });
+const jsFiles = listModules(JS_ROOT);
 const js = readAll(jsFiles);
 const xhtml = readAll(XHTML_FILES);
 const kebab = (s) => s.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
@@ -31,7 +31,6 @@ const xhtmlIds = new Set(matches(xhtml, /\bid="([^"#{]+)"/g));
 const xhtmlAttrs = Array.from(xhtml.matchAll(/(data-[a-z-]+)(?:="([^"]*)")?/g), (m) => ({ name: m[1], value: m[2] || '' }));
 const xhtmlAttrNames = new Set(xhtmlAttrs.map((a) => a.name));
 const xhtmlAttrPairs = new Set(xhtmlAttrs.filter((a) => a.value).map((a) => `${a.name}=${a.value}`));
-// Attributes the JS writes itself live on generated elements and are not part of the markup contract.
 const jsOwned = new Set(matches(js, /\.dataset\.([a-zA-Z]+)\s*=[^=]/g).map((n) => 'data-' + kebab(n)));
 
 test('every id the JS looks up is rendered by the immersive includes', () => {

@@ -32,8 +32,6 @@ function mountMarkup(viewer) {
             <section class="immersive__viewer">
                 <span class="immersive__title-text">Werk</span><span id="immersiveTitlePage"></span>
                 <div data-immersive-image><div class="openseadragon-canvas"></div></div>
-                <button class="immersive__chevron" data-immersive-page="prev"></button>
-                <button class="immersive__chevron" data-immersive-page="next"></button>
                 <button class="immersive__btn-double-page" data-immersive-action="double-page" aria-pressed="false"></button>
                 <button data-immersive-action="overview"></button>
                 <button data-immersive-action="fullscreen" data-label-enter="Vollbild" data-label-exit="Vollbild verlassen" aria-label="Vollbild"></button>
@@ -65,18 +63,6 @@ test('writes the page indicator, title pill and canvas label and follows page ch
     expect(document.querySelector('.openseadragon-canvas').getAttribute('aria-label')).toBe('Werk, 1 / 5');
     viewer.show([2, 3]);
     expect(indicator.textContent).toBe('3–4 / 5');
-});
-
-test('hides the chevron that cannot page any further', () => {
-    const viewer = fakeViewer();
-    mountMarkup(viewer);
-    const prev = document.querySelector('.immersive__chevron[data-immersive-page="prev"]');
-    const next = document.querySelector('.immersive__chevron[data-immersive-page="next"]');
-    expect(prev.hidden).toBe(true);
-    expect(next.hidden).toBe(false);
-    viewer.show([4]);
-    expect(prev.hidden).toBe(false);
-    expect(next.hidden).toBe(true);
 });
 
 test('the buttons drive the viewer and the hooks', () => {

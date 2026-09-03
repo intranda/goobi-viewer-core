@@ -83,6 +83,9 @@ export function setupImmersivePopoverA11y() {
             trigger.setAttribute('aria-expanded', 'true');
             const pop = popoverEl();
             if (!pop) return;
+            pop.setAttribute('role', 'dialog');
+            const name = trigger.getAttribute('aria-label') || trigger.getAttribute('title');
+            if (name) pop.setAttribute('aria-label', name);
             if (!pop.dataset.ivEscBound) {
                 pop.dataset.ivEscBound = '1';
                 pop.addEventListener('keydown', (e) => {
@@ -134,7 +137,6 @@ function mountImageFilters(viewer, bag) {
             if (typeof tag.unmount === 'function') tag.unmount(true);
         });
         bag.add(bindImageFiltersRendering(viewer, tag));
-        // "Reset view" (button and '0' key) clears the image filters as well.
         bag.add(viewer.onReset.subscribe(() => tag.resetAll()));
     }
     return true;

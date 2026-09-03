@@ -1,4 +1,8 @@
 import { computeSpread, residentPages } from './ivImageWindow.mjs';
+import { crossfade, heightBand, snapshotOverlay, fadeOverlay } from './ivTransitions.mjs';
+import { createNavLock } from './ivNavLock.mjs';
+import { IvOverlays } from './ivOverlays.mjs';
+import { createAccessOverlay } from './ivAccessOverlay.mjs';
 import { env } from '../shared/ivEnv.mjs';
 
 /**
@@ -40,44 +44,6 @@ function toTileSource(serviceId) {
 }
 
 /**
- * Runs a rAF tween over `durationMs`, calling `onFrame` with the progress 0→1
- * each frame (a non-positive duration jumps straight to 1). Resolves when done.
- */
-function _tween(durationMs, onFrame) {
-    return new Promise((resolve) => {
-        let start = null;
-        const step = (ts) => {
-            if (start === null) start = ts;
-            const t = durationMs <= 0 ? 1 : Math.min(1, (ts - start) / durationMs);
-            onFrame(t);
-            if (t < 1) requestAnimationFrame(step);
-            else resolve();
-        };
-        requestAnimationFrame(step);
-    });
-}
-
-/** Tweens one TiledImage's opacity 0→1 while fading another 1→0 (rAF). */
-function _crossfade(incoming, outgoing, durationMs) {
-    return _tween(durationMs, (t) => {
-        if (incoming) incoming.setOpacity(t);
-        if (outgoing) outgoing.setOpacity(1 - t);
-    });
-}
-
-/**
- * Widens a bounds rect to a tall band (same y/height, 3x width, same centre).
- * As a fitBounds anchor this makes OSD fit by HEIGHT, so pages of differing scan
- * aspect render at a uniform height and paging never jumps vertically.
- */
-function _heightBand(rect) {
-    const band = rect.clone();
-    band.x = rect.x - rect.width;
-    band.width = rect.width * 3;
-    return band;
-}
-
-/**
  * Default single-image sequence config (mirrors zoomableImage.mjs); _arrangeImageSequence
  * reads it on every open(). Copied per instance because _open() mutates `columns`.
  */
@@ -107,24 +73,23 @@ export default class IvViewer {
      * @param {string[]} opts.services     ordered IIIF image-service URLs (all pages)
      * @param {number} [opts.startOrder=0] initial 0-based page index
      * @param {number} [opts.maxZoom]
+     * @param {HTMLElement} [opts.deniedContent]  server-rendered placeholder content for image-restricted pages
      */
     constructor(opts) {
         this.services = opts.services;
         this.total = opts.services.length;
         this.current = Math.max(0, Math.min(opts.startOrder ?? 0, this.total - 1));
         this.allowZoom = opts.allowZoom !== false;
-        // Per-page "image restricted" flags (auth service present -> tiles 403).
         this.restricted = Array.isArray(opts.restricted) ? opts.restricted : [];
         this.deniedText = opts.deniedText || '';
         this.double = false;
         this.currentItem = null;
         this._anchor = null;
         this._preloaded = new Map();
-        this._navigating = false;
         this._queuedNav = null;
         this._queuedReopen = false;
-        this._navWatchdogMs = opts.navWatchdogMs ?? NAV_WATCHDOG_MS;
-        this._highlights = new Map();
+        this._lock = createNavLock(opts.navWatchdogMs ?? NAV_WATCHDOG_MS);
+        this._lock.onRelease(() => this._runQueued());
         this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
         this.onPageChange = new Emitter();
         this.onLoaded = new Emitter();
@@ -142,9 +107,13 @@ export default class IvViewer {
         this.viewer.openseadragon.crossOriginPolicy = 'Anonymous';
         this.zoom = new env.ImageView.Controls.Zoom(this.viewer);
         this.rotation = new env.ImageView.Controls.Rotation(this.viewer);
+        this._overlays = new IvOverlays({
+            osd: () => this.viewer.openseadragon,
+            itemFor: (order) => this._itemForOrder(order),
+            currentItem: () => this.currentItem || this.viewer.openseadragon.world.getItemAt(0),
+        });
+        this._access = createAccessOverlay({ host: this.viewer.element, template: opts.deniedContent || null, text: this.deniedText });
 
-        // Without ZOOM_IMAGES the image server caps resolution anyway; disable the
-        // interactive zoom gestures so the viewer stays at the fitted page.
         if (!this.allowZoom) {
             const osd = this.viewer.openseadragon;
             osd.zoomPerScroll = 1;
@@ -165,17 +134,12 @@ export default class IvViewer {
             if (key === 'ArrowRight') this.next();
             else if (key === 'ArrowLeft') this.prev();
             else if (key === '0') {
-                // Block OSD's built-in '0' → goHome (raw FILL) so our fitted resetView is not overwritten.
                 this.resetView();
                 e.preventDefaultAction = true;
                 e.originalEvent.preventDefault();
             }
-            // Horizontal arrows are handled by custom navigation — block OSD's pan.
-            // Vertical arrows must NOT block OSD so the image still pans up/down.
-            // All four arrows suppress native page scroll.
             if (['ArrowLeft', 'ArrowRight'].includes(key)) e.preventDefaultAction = true;
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) e.originalEvent.preventDefault();
-            // Block OSD's built-in keyboard zoom when zooming is not permitted.
             if (!this.allowZoom && ['-', '_', '+', '='].includes(key)) e.preventDefaultAction = true;
         });
 
@@ -200,99 +164,32 @@ export default class IvViewer {
         return this.double ? osd.world.getItemAt(idx) : this.currentItem || osd.world.getItemAt(0);
     }
 
-    /**
-     * Draws highlight rectangles for `owner` (search hits, layout-tag occurrences);
-     * every owner keeps its own set, so one panel never wipes another's marks. Rect
-     * coordinates are image pixels of the page given by `rect.order`, so spread hits
-     * land on the right half of a double-page view; rects for pages outside the
-     * current view are skipped. An optional `className` per rect is appended (e.g. a
-     * layout-tag style class that the theme maps to a colour).
-     */
+    /** Highlight rectangles for `owner` (search hits, layout-tag occurrences); see IvOverlays. */
     setHighlights(rects, owner = 'default') {
-        this.clearHighlights(owner);
-        const osd = this.viewer.openseadragon;
-        const els = (rects || []).flatMap((r) => {
-            const item = this._itemForOrder(r.order);
-            if (!item) return [];
-            const el = document.createElement('div');
-            el.className = ['immersive__highlight', r.active ? '-active' : '', r.className || ''].filter(Boolean).join(' ');
-            osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
-            return [el];
-        });
-        this._highlights.set(owner, els);
+        this._overlays.setHighlights(rects, owner);
     }
 
-    /** Removes the highlight overlays of `owner`, or of every owner when omitted (text regions stay). */
+    /** Removes the highlights of `owner`, or of every owner when omitted. */
     clearHighlights(owner) {
-        const osd = this.viewer.openseadragon;
-        const owners = owner === undefined ? Array.from(this._highlights.keys()) : [owner];
-        owners.forEach((key) => {
-            (this._highlights.get(key) || []).forEach((el) => osd.removeOverlay(el));
-            this._highlights.delete(key);
-        });
+        this._overlays.clearHighlights(owner);
     }
 
-    /**
-     * Draws OCR boxes (image pixels) as hoverable, id-tagged overlays and
-     * returns a Map id → overlay element. A region's optional `level`
-     * ('block' | 'line' | 'word') becomes a class modifier; pass regions in
-     * block → line → word order so words stack on top and win pointer hits.
-     * Regions without a `rect` are skipped.
-     */
+    /** OCR boxes as hoverable, id-tagged overlays; returns a Map id → element. */
     setTextRegions(regions) {
-        this.clearTextRegions();
-        const osd = this.viewer.openseadragon;
-        const item = this.currentItem || osd.world.getItemAt(0);
-        const map = new Map();
-        if (!item) return map;
-        (regions || []).forEach((r) => {
-            if (!r.rect) return;
-            const el = document.createElement('div');
-            el.className = r.level ? `immersive__text-region immersive__text-region-${r.level}` : 'immersive__text-region';
-            el.dataset.ivRegionId = r.id;
-            osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
-            map.set(r.id, el);
-        });
-        this._textRegions = Array.from(map.values());
-        return map;
+        return this._overlays.setTextRegions(regions);
     }
 
-    /** Removes all text-region overlays (leaves search highlights untouched). */
     clearTextRegions() {
-        const osd = this.viewer.openseadragon;
-        (this._textRegions || []).forEach((el) => osd.removeOverlay(el));
-        this._textRegions = [];
+        this._overlays.clearTextRegions();
     }
 
-    /**
-     * Draws ALTO layout annotations (drawn underlines/strikethroughs/marks, image
-     * pixels) as overlays; each region's `modifier` becomes a class suffix. The
-     * overlays only become visible while the root carries the annotations state
-     * class, so toggling the checkbox never touches OSD.
-     */
+    /** ALTO layout annotations (drawn lines, note areas) as overlays; returns a Map id → element. */
     setAnnotationRegions(regions) {
-        this.clearAnnotationRegions();
-        const osd = this.viewer.openseadragon;
-        const item = this.currentItem || osd.world.getItemAt(0);
-        const map = new Map();
-        if (!item) return map;
-        (regions || []).forEach((r) => {
-            if (!r.rect) return;
-            const el = document.createElement('div');
-            el.className = `immersive__anno-region immersive__anno-region-${r.modifier}`;
-            el.dataset.ivAnnoId = r.id;
-            osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
-            this._annoRegions.push(el);
-            map.set(r.id, el);
-        });
-        return map;
+        return this._overlays.setAnnotationRegions(regions);
     }
 
-    /** Removes all layout-annotation overlays (text regions and highlights stay). */
     clearAnnotationRegions() {
-        const osd = this.viewer.openseadragon;
-        (this._annoRegions || []).forEach((el) => osd.removeOverlay(el));
-        this._annoRegions = [];
+        this._overlays.clearAnnotationRegions();
     }
 
     /** Current 0-based page order (the spread leader in double mode). */
@@ -347,43 +244,26 @@ export default class IvViewer {
         this.goToPage(this.current - 1);
     }
 
-    /**
-     * Runs exactly one navigation at a time and ALWAYS releases the lock afterwards. `run`
-     * returns the settle promise; `onStuck` (optional) cleans up if the watchdog fires. A
-     * request that arrived while busy is honoured on release: a queued mode reopen first,
-     * else the latest queued page target -- so rapid clicks converge on the last one and a
-     * lost OSD 'open' can never leave the viewer permanently frozen.
-     */
+    /** Whether a navigation is in flight (queued targets wait for the release). */
+    get _navigating() {
+        return this._lock.busy;
+    }
+
+    /** Runs `run` under the navigation lock; `onStuck` cleans up if the watchdog fires (see ivNavLock). */
     _withNavLock(run, onStuck) {
-        this._navigating = true;
-        let released = false;
-        const release = () => {
-            if (released) return;
-            released = true;
-            clearTimeout(this._navWatchdog);
-            this._navigating = false;
-            if (this._queuedReopen) {
-                this._queuedReopen = false;
-                this._reopen();
-                return;
-            }
-            const next = this._queuedNav;
-            this._queuedNav = null;
-            if (next != null) this.goToPage(next);
-        };
-        this._navWatchdog = setTimeout(() => {
-            try {
-                if (onStuck) onStuck();
-            } catch {}
-            release();
-        }, this._navWatchdogMs);
-        try {
-            Promise.resolve(run())
-                .catch(() => {})
-                .finally(release);
-        } catch {
-            release();
+        this._lock.run(run, onStuck);
+    }
+
+    /** After a release: a queued mode reopen first, else the latest queued page target. */
+    _runQueued() {
+        if (this._queuedReopen) {
+            this._queuedReopen = false;
+            this._reopen();
+            return;
         }
+        const next = this._queuedNav;
+        this._queuedNav = null;
+        if (next != null) this.goToPage(next);
     }
 
     /** Re-opens the current position in the current mode, serialised through the nav lock. */
@@ -443,8 +323,6 @@ export default class IvViewer {
             const previous = this.currentItem;
             const from = this.current;
             this.current = target;
-            // Restricted page: skip the doomed tile load (it would 403 and _acquire
-            // would reject, never emitting); drop the previous page and show the overlay.
             if (this.isPageRestricted(target)) {
                 if (previous) this.viewer.openseadragon.world.removeItem(previous);
                 this.currentItem = null;
@@ -458,12 +336,11 @@ export default class IvViewer {
                 this._preloaded.delete(target);
                 await this._whenContent(item);
             } catch (e) {
-                // The tile source failed: keep reporting the page that is actually shown.
                 this.current = from;
                 this._preloaded.delete(target);
                 throw e;
             }
-            await _crossfade(item, previous, this._fadeMs);
+            await crossfade(item, previous, this._fadeMs);
             if (previous) this.viewer.openseadragon.world.removeItem(previous);
             this.currentItem = item;
             this._emit();
@@ -524,9 +401,9 @@ export default class IvViewer {
         const keep = new Set(residentPages(this.current, this.total, { double: this.double }));
         for (const order of keep) {
             if (order === this.current) continue;
-            if (this.isPageRestricted(order)) continue; // tiles would 403; don't prefetch
+            if (this.isPageRestricted(order)) continue;
             if (!this._preloaded.has(order)) {
-                this._acquire(order, this._anchor);
+                this._acquire(order, this._anchor).catch(() => this._preloaded.delete(order));
             }
         }
         for (const [order, p] of this._preloaded) {
@@ -547,51 +424,18 @@ export default class IvViewer {
      * out. Neighbour spreads are tile-prewarmed for near-instant sharpness.
      */
     _navigateSpread(leader) {
-        const overlay = this._snapshotOverlay();
+        const overlay = snapshotOverlay(this.viewer.openseadragon, this.viewer.element);
         this.current = leader;
         this._withNavLock(
             async () => {
                 await this._open(leader);
-                this._fadeOverlay(overlay);
+                fadeOverlay(overlay, this._fadeMs);
                 this._prewarmSpreads();
             },
-            // onStuck: drop the frozen snapshot if the reopen never settles.
             () => {
                 if (overlay) overlay.remove();
             }
         );
-    }
-
-    /**
-     * Copies the current OSD canvas into an opacity overlay covering the viewer so the
-     * fresh load() underneath stays hidden until faded out. Uses canvas drawImage (not
-     * toDataURL) so cross-origin IIIF tiles don't taint the canvas.
-     */
-    _snapshotOverlay() {
-        const osd = this.viewer.openseadragon;
-        const src = osd.drawer && osd.drawer.canvas;
-        const host = this.viewer.element;
-        if (!src || !host) return null;
-        const overlay = document.createElement('canvas');
-        overlay.width = src.width;
-        overlay.height = src.height;
-        overlay.className = 'immersive__xfade';
-        try {
-            overlay.getContext('2d').drawImage(src, 0, 0);
-        } catch {
-            return null;
-        }
-        if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
-        host.appendChild(overlay);
-        return overlay;
-    }
-
-    /** Fades an overlay element out over `_fadeMs`, then removes it. */
-    _fadeOverlay(overlay) {
-        if (!overlay) return;
-        _tween(this._fadeMs, (t) => {
-            overlay.style.opacity = String(1 - t);
-        }).then(() => overlay.remove());
     }
 
     /**
@@ -605,7 +449,7 @@ export default class IvViewer {
         const osd = this.viewer.openseadragon;
         for (const p of new Set(neighbours)) {
             if (p < 0 || p >= this.total || here.includes(p)) continue;
-            if (this.isPageRestricted(p)) continue; // tiles would 403; don't prewarm
+            if (this.isPageRestricted(p)) continue;
             osd.addTiledImage({ tileSource: toTileSource(this.services[p]), opacity: 0, preload: true });
         }
     }
@@ -621,13 +465,11 @@ export default class IvViewer {
         const pages = this.double ? computeSpread(order, this.total) : [order];
         this.viewer.config.sequence.columns = pages.length;
         const sources = pages.map((p) => toTileSource(this.services[p]));
-        // Runs on load success AND failure: a restricted page's tiles 403 so load()
-        // rejects — still emit + sync the overlay instead of leaving a blank, stuck stage.
         const settle = () => {
             const world = this.viewer.openseadragon.world;
             this.currentItem = world.getItemCount() > 0 ? world.getItemAt(0) : null;
             if (!this.double && this.currentItem) {
-                this._anchor = _heightBand(this.currentItem.getBounds());
+                this._anchor = heightBand(this.currentItem.getBounds());
             }
             this._preloaded.clear();
             this._emit();
@@ -659,43 +501,8 @@ export default class IvViewer {
         return this.restricted[order] === true;
     }
 
-    /**
-     * Shows/hides the access-denied overlay when any displayed page is image-restricted.
-     * Purely cosmetic — the tiles 403 server-side (no leak); this just replaces the blank
-     * canvas. Toggled from _emit as a thin layer, not woven into the load/crossfade paths.
-     */
     _syncAccessOverlay() {
-        const host = this.viewer.element;
-        if (!host) return;
-        const denied = this.getCurrentPages().some((o) => this.isPageRestricted(o));
-        let overlay = this._accessOverlay;
-        if (!denied) {
-            if (overlay) overlay.hidden = true;
-            return;
-        }
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.className = 'immersive__page-denied';
-            overlay.setAttribute('role', 'status');
-            const inner = document.createElement('div');
-            inner.className = 'immersive__page-denied-inner';
-            // Prefer the server-rendered, admin-configured placeholder (image + rich text
-            // of the record's restricted condition); fall back to the generic message.
-            const template = document.getElementById('immersiveDeniedContent');
-            if (template && template.children.length) {
-                for (const child of template.children) inner.appendChild(child.cloneNode(true));
-            } else {
-                const text = document.createElement('span');
-                text.className = 'immersive__page-denied-text';
-                text.textContent = this.deniedText;
-                inner.appendChild(text);
-            }
-            overlay.appendChild(inner);
-            if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
-            host.appendChild(overlay);
-            this._accessOverlay = overlay;
-        }
-        overlay.hidden = false;
+        this._access.sync(this.getCurrentPages().some((o) => this.isPageRestricted(o)));
     }
 
     /** Runs `fn` once when the first tile has been painted. */
@@ -748,10 +555,10 @@ export default class IvViewer {
 
     /** Releases the OpenSeadragon instance, the access overlay and all subscriptions. */
     destroy() {
-        clearTimeout(this._navWatchdog);
+        this._lock.destroy();
         this._preloaded.clear();
-        if (this._accessOverlay) this._accessOverlay.remove();
-        // The library's own teardown (its subjects, its ResizeObserver) before the OSD instance goes.
+        this._access.remove();
+        this._overlays.destroy();
         if (typeof this.viewer.close === 'function') this.viewer.close();
         const osd = this.viewer.openseadragon;
         if (osd && typeof osd.destroy === 'function') osd.destroy();

@@ -4,7 +4,7 @@
  * image highlights.
  */
 import { jest } from '@jest/globals';
-import { setupLayoutTagsPanel } from '../ui/ivLayoutTagsPanel.mjs';
+import { setupLayoutTagsPanel } from '../ui/layoutTags/ivLayoutTagsPanel.mjs';
 import { _clearCache } from '../data/ivLayoutTags.mjs';
 import { createKeyDispatcher } from '../shared/ivKeys.mjs';
 import { Emitter } from '../engine/ivViewer.mjs';
@@ -135,7 +135,6 @@ describe('setupLayoutTagsPanel', () => {
 
     beforeEach(() => {
         _clearCache();
-        // jsdom has no layout: report every element as inside a 500px tall panel so the visibility pump fires.
         rectSpy = jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ top: 0, bottom: 500, left: 0, right: 300, width: 300, height: 500 });
     });
 

@@ -75,7 +75,7 @@
     &__fulltext-line {
         display: block;
         border-radius: 2px;
-        transition: background-color 0.1s ease;
+        transition: background-color @immersive-transition;
 
         &.is-linked-active {
             background-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.16)';
@@ -84,7 +84,7 @@
 
     &__fulltext-word {
         border-radius: 2px;
-        transition: background-color 0.1s ease;
+        transition: background-color @immersive-transition;
 
         &.is-linked-active {
             background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.9)';

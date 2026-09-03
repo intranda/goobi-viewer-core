@@ -3,6 +3,7 @@
 import { isTypingTarget, isMacPlatform, macKeyLabel } from '../shared/ivPlatform.mjs';
 import { createFocusTrap } from '../shared/ivA11y.mjs';
 import { isOverlayOpen } from '../shared/ivSelectors.mjs';
+import { KEY_PRIORITY } from '../shared/ivKeys.mjs';
 import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 /**
@@ -23,9 +24,6 @@ export function setupShortcutsModal(closePanels, keys) {
     const trigger = document.querySelector('[data-immersive-shortcuts-trigger]');
     if (!overlay || !trigger) return noop;
     const bag = createDisposer();
-    // On Apple platforms modifiers are conventionally shown as symbols (⌥, ⇧);
-    // the accessible name keeps the spoken key name. The symbol gets its own
-    // span so the flex keycap centers the glyph instead of baseline-aligning it.
     if (isMacPlatform(navigator.userAgentData?.platform ?? navigator.platform)) {
         overlay.querySelectorAll('kbd[data-key]').forEach((kbd) => {
             const mac = macKeyLabel(kbd.dataset.key);
@@ -58,8 +56,6 @@ export function setupShortcutsModal(closePanels, keys) {
             overlay.removeEventListener('keydown', trapHandler);
             trapHandler = null;
         }
-        // A '?'-opened dialog has no focused opener (activeElement is <body>);
-        // falling back to the trigger keeps keyboard users at a sensible spot.
         const restore = opener && opener !== document.body ? opener : trigger;
         opener = null;
         if (restore && typeof restore.focus === 'function') restore.focus();
@@ -76,7 +72,7 @@ export function setupShortcutsModal(closePanels, keys) {
     bag.listen(overlay, 'click', (e) => {
         if (dialog && !dialog.contains(e.target)) closeShortcuts();
     });
-    const unregisterKeys = keys.register(10, (e) => {
+    const unregisterKeys = keys.register(KEY_PRIORITY.shortcutsModal, (e) => {
         if (e.key === 'Escape' && !overlay.hidden) {
             closeShortcuts();
             return true;

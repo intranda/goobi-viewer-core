@@ -1,10 +1,13 @@
 /** Fulltext panel wiring: combined block/line/word text with image hover linking and layout annotations. */
 
-import { loadPageTextLevels, flattenTextLevels, loadPageLayout } from '../data/ivManifestSource.mjs';
+import { loadPageTextLevels, flattenTextLevels, loadPageLayout } from '../../data/ivManifestSource.mjs';
 import { buildTextLevels, mountTextImageLink } from './ivTextImageLink.mjs';
-import { setupAnnotationsToggle, applyTextMarkup, applyRegionMarkup, mountBlockAnnotations, overlayRegions } from './ivAnnotations.mjs';
-import { createDisposer } from '../shared/ivLifecycle.mjs';
-import { localStore } from '../shared/ivPrefs.mjs';
+import { setupAnnotationsToggle } from './ivAnnotations.mjs';
+import { applyTextMarkup, applyRegionMarkup } from './ivAnnotationMarkup.mjs';
+import { mountBlockAnnotations } from './ivAnnotationNotes.mjs';
+import { overlayRegions } from '../../data/ivAnnotationModel.mjs';
+import { createDisposer } from '../../shared/ivLifecycle.mjs';
+import { localStore } from '../../shared/ivPrefs.mjs';
 
 /**
  * Wires the fulltext panel: loads the nested OCR levels for the visible page,
@@ -83,7 +86,6 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     let textRegionEls = new Map();
     const mountOverlays = () => {
         overlayEls = viewer.setAnnotationRegions(panelOpen() ? overlayRegions(currentLayout) : []);
-        // OSD rebuilds its overlays per page open — the note-region hover bindings go stale.
         if (currentAnnotations) currentAnnotations.attachRegions(overlayEls, textRegionEls);
     };
 
@@ -95,8 +97,6 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     const refreshLayout = async () => {
         if (!annotations) return;
         const req = ++layoutReq;
-        // Invalidate immediately: loadFulltext may re-render and decorate() before this
-        // fetch resolves, and ALTO element ids collide across pages.
         currentLayout = null;
         if (!panelOpen() || viewer.isDoublePage()) {
             mountOverlays();
@@ -118,7 +118,6 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     if (annotations) {
         bag.add(viewer.onPageChange.subscribe(refreshLayout));
         bag.add(viewer.onOpen.subscribe(mountOverlays));
-        // Note positions depend on rendered geometry, which is only measurable while visible.
         bag.add(
             annotations.onChange((on) => {
                 if (on && currentAnnotations) requestAnimationFrame(() => currentAnnotations && currentAnnotations.relayout());
@@ -131,9 +130,6 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
         let currentLink = null;
 
         const clearFulltextLink = () => {
-            // Also invalidates an in-flight loadFulltext: without the bump, a slow fetch
-            // resolving after panel close would re-render into the closed panel and
-            // remount the image overlays the close just removed.
             fulltextReq++;
             if (currentLink) {
                 currentLink.destroy();
@@ -203,7 +199,6 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
         fulltextBtn.setAttribute('title', title);
         fulltextBtn.setAttribute('aria-label', title);
         if (doublePage && panelOpen()) panels.closePanels();
-        // Annotations follow the fulltext availability: no data/overlays in double-page mode.
         if (annotations) refreshLayout();
     };
     updateFulltextAvail();

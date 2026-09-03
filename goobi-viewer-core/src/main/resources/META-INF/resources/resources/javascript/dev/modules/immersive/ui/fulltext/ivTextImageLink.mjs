@@ -1,6 +1,6 @@
 /** OCR text ↔ image region hover linking for the immersive fulltext panel (block > line > word). */
 
-import { offsetTopWithin, scrollTopToReveal } from '../shared/ivDom.mjs';
+import { offsetTopWithin, scrollTopToReveal } from '../../shared/ivDom.mjs';
 
 const ACTIVE_CLASS = 'is-linked-active';
 

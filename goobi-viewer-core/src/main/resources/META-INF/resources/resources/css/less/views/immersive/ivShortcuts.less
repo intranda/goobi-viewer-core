@@ -7,7 +7,6 @@
 @immersive-z-shortcuts: 400;
 
 .immersive {
-    // pins the trigger to the bottom of the left rail (flex column)
     &__shortcuts-btn {
         margin-top: auto;
         margin-bottom: @immersive-edge-inset;
@@ -23,7 +22,6 @@
         padding: calc(2 * @immersive-edge-inset);
         background-color: rgba(0, 0, 0, 0.4);
 
-        // the display: flex above would otherwise override the UA [hidden] rule
         &[hidden] {
             display: none;
         }
@@ -69,12 +67,11 @@
 
         thead th {
             padding-top: 0;
-            color: @immersive-chrome-fg;
+            color: @immersive-chrome-fg-muted;
             font-size: @fontSmall;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            opacity: 0.7;
             border-bottom: 1px solid @immersive-divider;
         }
 
@@ -95,7 +92,6 @@
         font-size: @fontNormal;
         white-space: nowrap;
 
-        // fully replaces Bootstrap's kbd defaults (white on #212529, rem padding)
         kbd {
             display: inline-flex;
             align-items: center;
@@ -113,8 +109,6 @@
         }
     }
 
-    /* Own flex item inside the keycap: centered by the box, not the glyph's
-       baseline (the ⌥/⇧ fallback glyphs sit high above the text otherwise). */
     &__shortcuts-key-symbol {
         margin-right: 4px;
         line-height: 1;

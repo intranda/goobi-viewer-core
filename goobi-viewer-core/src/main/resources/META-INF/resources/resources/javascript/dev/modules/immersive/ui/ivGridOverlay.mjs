@@ -4,6 +4,7 @@ import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SI
 import { createFocusTrap } from '../shared/ivA11y.mjs';
 import { createDisposer } from '../shared/ivLifecycle.mjs';
 import { env } from '../shared/ivEnv.mjs';
+import { KEY_PRIORITY } from '../shared/ivKeys.mjs';
 
 /**
  * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
@@ -22,7 +23,6 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
     const bag = createDisposer();
     const GRID_LOADER_TIMEOUT_MS = 8000;
     const GRID_TOP_VISIBLE_AFTER_PX = 200;
-    // IIIF size; must cover the largest grid step (230x330 CSS px) on HiDPI
     const GRID_THUMB_IMAGE_SIZE = '!400,560';
     const gridOverlay = document.getElementById('immersiveGridOverlay');
     const gridLoader = document.getElementById('immersiveGridLoader');
@@ -120,8 +120,6 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
             const thumbsMount = document.getElementById('immersiveThumbnails');
             if (thumbsMount) {
                 bag.listen(thumbsMount, 'load', hideGridLoader, { capture: true, once: true });
-                // Restricted pages' thumbnails 403; swap the broken <img> for the denied
-                // template's image (admin-configured, else the bundled fallback asset).
                 const templateImg = document.querySelector('#immersiveDeniedContent .immersive__page-denied-img');
                 const deniedThumb = (templateImg && templateImg.getAttribute('src')) || `${apiBase.replace(/\/api\/v1\/?$/, '')}/resources/images/access_denied.png`;
                 bag.listen(
@@ -130,7 +128,7 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
                     (e) => {
                         const t = e.target;
                         if (t && t.tagName === 'IMG' && !t.dataset.ivDenied) {
-                            t.dataset.ivDenied = '1'; // guard: the placeholder load must not re-trigger
+                            t.dataset.ivDenied = '1';
                             t.classList.add('immersive__grid-thumb--denied');
                             t.src = deniedThumb;
                         }
@@ -164,7 +162,7 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
     };
 
     bag.add(
-        keys.register(20, (e) => {
+        keys.register(KEY_PRIORITY.gridOverlay, (e) => {
             if (e.key !== 'Escape' || !gridOverlay || gridOverlay.hidden) return false;
             closeGrid();
             return true;

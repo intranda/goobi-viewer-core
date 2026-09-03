@@ -1,41 +1,9 @@
 /* ==============================================================
    Immersive View: Bottom Navigation
-   style declarations for viewImmersive.xhtml (bottom bar and page chevrons)
+   style declarations for viewImmersive.xhtml (bottom bar)
    ==============================================================*/
 
 .immersive {
-    &__chevron {
-        .mx-immersive-overlay-button(48px);
-        display: none;
-        position: absolute;
-        top: 50%;
-        z-index: 100;
-        border-radius: 50%;
-        background-color: transparent;
-        transform: translateY(-50%);
-        transition:
-            opacity @immersive-transition,
-            transform @immersive-transition;
-
-        &:hover {
-            color: @immersive-canvas-fg;
-        }
-        &[hidden] {
-            display: none;
-        }
-        &-left {
-            left: calc(@immersive-rail-width + @immersive-edge-inset);
-        }
-        &-right {
-            right: @immersive-edge-inset;
-        }
-    }
-
-    &__chevron-icon {
-        width: 32px;
-        height: 32px;
-    }
-
     &__bottombar {
         position: absolute;
         bottom: @immersive-edge-inset;

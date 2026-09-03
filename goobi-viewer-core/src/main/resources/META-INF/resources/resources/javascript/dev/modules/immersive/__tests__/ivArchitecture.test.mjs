@@ -8,13 +8,20 @@ const RANK = { shared: 0, data: 1, engine: 2, ui: 3, '.': 4 };
 
 function modules() {
     const out = [];
-    for (const layer of Object.keys(RANK)) {
-        const dir = path.join(ROOT, layer);
-        for (const file of fs.readdirSync(dir)) {
-            if (file.endsWith('.mjs')) out.push({ layer, file: path.join(dir, file) });
+    const walk = (dir, layer) => {
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            if (entry.isDirectory() && layer !== '.' && entry.name !== '__tests__') walk(path.join(dir, entry.name), layer);
+            else if (entry.isFile() && entry.name.endsWith('.mjs')) out.push({ layer, file: path.join(dir, entry.name) });
         }
-    }
+    };
+    for (const layer of Object.keys(RANK)) walk(path.join(ROOT, layer), layer);
     return out;
+}
+
+/** ui/<feature>/ folders expose exactly one entry, iv<Feature>Panel.mjs; everything else in them is private to the folder. */
+function featureFolder(file) {
+    const rel = path.relative(ROOT, file).split(path.sep);
+    return rel[0] === 'ui' && rel.length === 3 ? rel[1] : null;
 }
 
 function importsOf(file) {
@@ -59,4 +66,17 @@ test('the import graph has no cycles', () => {
     };
     for (const file of graph.keys()) visit(file, []);
     expect(cycles).toEqual([]);
+});
+
+test('private modules of a ui feature folder are imported only from inside that folder', () => {
+    const violations = [];
+    for (const [file, { imports }] of graph) {
+        for (const target of imports) {
+            const feature = featureFolder(target);
+            if (!feature || featureFolder(file) === feature) continue;
+            const entry = `iv${feature[0].toUpperCase()}${feature.slice(1)}Panel.mjs`;
+            if (path.basename(target) !== entry) violations.push(`${path.relative(ROOT, file)} -> ${path.relative(ROOT, target)}`);
+        }
+    }
+    expect(violations).toEqual([]);
 });

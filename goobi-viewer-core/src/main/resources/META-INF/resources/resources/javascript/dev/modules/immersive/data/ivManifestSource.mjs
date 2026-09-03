@@ -442,7 +442,6 @@ export async function loadPageTextLevels(pi, apiBase, order, fetchFn = fetch) {
         _fetchPageLines(pi, apiBase, order, fetchFn),
         _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=word'),
     ]);
-    // Lines are the backbone: missing block/word granularity degrades, a missing line request is an error.
     if (lines === null) throw new Error('page text unavailable');
     return nestTextLevels({ blocks: blocks || [], lines, words: words || [] });
 }

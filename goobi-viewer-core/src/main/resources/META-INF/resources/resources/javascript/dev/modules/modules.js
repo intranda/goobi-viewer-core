@@ -863,6 +863,309 @@
         return [...new Set([...prev, ...here, ...next])].filter((p) => p >= 0 && p < total).sort((a, b) => a - b);
     }
 
+    /** Frame-based transitions for the stage: tweens, tile crossfades, the frozen snapshot overlay and the height-fit band. */
+
+    /**
+     * Runs a rAF tween over `durationMs`, calling `onFrame` with the progress 0→1
+     * each frame (a non-positive duration jumps straight to 1). Resolves when done.
+     *
+     * @param {number} durationMs
+     * @param {(t: number) => void} onFrame
+     * @returns {Promise<void>}
+     */
+    function tween(durationMs, onFrame) {
+        return new Promise((resolve) => {
+            let start = null;
+            const step = (ts) => {
+                if (start === null) start = ts;
+                const t = durationMs <= 0 ? 1 : Math.min(1, (ts - start) / durationMs);
+                onFrame(t);
+                if (t < 1) requestAnimationFrame(step);
+                else resolve();
+            };
+            requestAnimationFrame(step);
+        });
+    }
+
+    /** Tweens one TiledImage's opacity 0→1 while fading another 1→0. */
+    function crossfade(incoming, outgoing, durationMs) {
+        return tween(durationMs, (t) => {
+            if (incoming) incoming.setOpacity(t);
+            if (outgoing) outgoing.setOpacity(1 - t);
+        });
+    }
+
+    /**
+     * Widens a bounds rect to a tall band (same y/height, 3x width, same centre).
+     * As a fitBounds anchor this makes OSD fit by height, so pages of differing scan
+     * aspect render at a uniform height and paging never jumps vertically.
+     */
+    function heightBand(rect) {
+        const band = rect.clone();
+        band.x = rect.x - rect.width;
+        band.width = rect.width * 3;
+        return band;
+    }
+
+    /**
+     * Copies the current OSD canvas into an opacity overlay covering `host`, so a
+     * fresh load underneath stays hidden until faded out. Uses drawImage (not
+     * toDataURL) so cross-origin IIIF tiles do not taint the canvas.
+     *
+     * @returns {HTMLCanvasElement|null}
+     */
+    function snapshotOverlay(osd, host) {
+        const src = osd.drawer && osd.drawer.canvas;
+        if (!src || !host) return null;
+        const overlay = document.createElement('canvas');
+        overlay.width = src.width;
+        overlay.height = src.height;
+        overlay.className = 'immersive__xfade';
+        try {
+            overlay.getContext('2d').drawImage(src, 0, 0);
+        } catch {
+            return null;
+        }
+        if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+        host.appendChild(overlay);
+        return overlay;
+    }
+
+    /** Fades an overlay element out over `durationMs`, then removes it. */
+    function fadeOverlay(overlay, durationMs) {
+        if (!overlay) return Promise.resolve();
+        return tween(durationMs, (t) => {
+            overlay.style.opacity = String(1 - t);
+        }).then(() => overlay.remove());
+    }
+
+    /** Serialises page navigations: one at a time, always released, with a watchdog against a lost library event. */
+
+    /**
+     * @param {number} watchdogMs  last-resort release when a navigation never settles
+     * @returns {{busy: boolean, run: Function, onRelease: Function, destroy: Function}}
+     */
+    function createNavLock(watchdogMs) {
+        let busy = false;
+        let watchdog = null;
+        const releaseHooks = [];
+        return {
+            get busy() {
+                return busy;
+            },
+            /**
+             * Runs `task` (returns the settle promise) under the lock; `onStuck` cleans up if the watchdog fires first.
+             *
+             * @param {() => Promise|any} task
+             * @param {Function} [onStuck]
+             */
+            run(task, onStuck) {
+                busy = true;
+                let released = false;
+                const release = () => {
+                    if (released) return;
+                    released = true;
+                    clearTimeout(watchdog);
+                    busy = false;
+                    releaseHooks.forEach((hook) => hook());
+                };
+                watchdog = setTimeout(() => {
+                    try {
+                        if (onStuck) onStuck();
+                    } catch {}
+                    release();
+                }, watchdogMs);
+                try {
+                    Promise.resolve(task())
+                        .catch(() => {})
+                        .finally(release);
+                } catch {
+                    release();
+                }
+            },
+            /** Registers a callback that runs after every release (queued navigations pick up here). */
+            onRelease(fn) {
+                releaseHooks.push(fn);
+            },
+            destroy() {
+                clearTimeout(watchdog);
+            },
+        };
+    }
+
+    /** Overlay layers on the OpenSeadragon world: highlight sets per owner, OCR text regions and drawn annotation regions. */
+
+    class IvOverlays {
+        /**
+         * @param {object} opts
+         * @param {() => object} opts.osd          the live OpenSeadragon instance
+         * @param {(order: number) => object|null} opts.itemFor  TiledImage showing a page order, or null
+         * @param {() => object|null} opts.currentItem  the TiledImage of the current page
+         */
+        constructor({ osd, itemFor, currentItem }) {
+            this._osd = osd;
+            this._itemFor = itemFor;
+            this._currentItem = currentItem;
+            this._highlights = new Map();
+            this._textRegions = [];
+            this._annoRegions = [];
+        }
+
+        _place(el, item, rect) {
+            this._osd().addOverlay({ element: el, location: item.imageToViewportRectangle(rect.x, rect.y, rect.w, rect.h) });
+        }
+
+        _drop(els) {
+            const osd = this._osd();
+            els.forEach((el) => osd.removeOverlay(el));
+        }
+
+        /**
+         * Draws highlight rectangles for `owner`; every owner keeps its own set, so one
+         * panel never wipes another's marks. Rect coordinates are image pixels of the
+         * page given by `rect.order`; rects for pages outside the current view are
+         * skipped. An optional `className` per rect is appended.
+         */
+        setHighlights(rects, owner = 'default') {
+            this.clearHighlights(owner);
+            const els = (rects || []).flatMap((r) => {
+                const item = this._itemFor(r.order);
+                if (!item) return [];
+                const el = document.createElement('div');
+                el.className = ['immersive__highlight', r.active ? '-active' : '', r.className || ''].filter(Boolean).join(' ');
+                this._place(el, item, r);
+                return [el];
+            });
+            this._highlights.set(owner, els);
+        }
+
+        /** Removes the highlights of `owner`, or of every owner when omitted. */
+        clearHighlights(owner) {
+            const owners = owner === undefined ? Array.from(this._highlights.keys()) : [owner];
+            owners.forEach((key) => {
+                this._drop(this._highlights.get(key) || []);
+                this._highlights.delete(key);
+            });
+        }
+
+        /**
+         * Draws OCR boxes as hoverable, id-tagged overlays and returns a Map id → element.
+         * A region's `level` ('block' | 'line' | 'word') becomes a class modifier; pass
+         * regions block → line → word so words stack on top and win pointer hits.
+         */
+        setTextRegions(regions) {
+            this.clearTextRegions();
+            const item = this._currentItem();
+            const map = new Map();
+            if (!item) return map;
+            (regions || []).forEach((r) => {
+                if (!r.rect) return;
+                const el = document.createElement('div');
+                el.className = r.level ? `immersive__text-region immersive__text-region-${r.level}` : 'immersive__text-region';
+                el.dataset.ivRegionId = r.id;
+                this._place(el, item, r.rect);
+                map.set(r.id, el);
+            });
+            this._textRegions = Array.from(map.values());
+            return map;
+        }
+
+        clearTextRegions() {
+            this._drop(this._textRegions);
+            this._textRegions = [];
+        }
+
+        /** Draws ALTO layout annotations (drawn lines, note areas) as overlays; each region's `modifier` becomes a class suffix. */
+        setAnnotationRegions(regions) {
+            this.clearAnnotationRegions();
+            const item = this._currentItem();
+            const map = new Map();
+            if (!item) return map;
+            (regions || []).forEach((r) => {
+                if (!r.rect) return;
+                const el = document.createElement('div');
+                el.className = `immersive__anno-region immersive__anno-region-${r.modifier}`;
+                el.dataset.ivAnnoId = r.id;
+                this._place(el, item, r.rect);
+                this._annoRegions.push(el);
+                map.set(r.id, el);
+            });
+            return map;
+        }
+
+        clearAnnotationRegions() {
+            this._drop(this._annoRegions);
+            this._annoRegions = [];
+        }
+
+        destroy() {
+            this.clearHighlights();
+            this.clearTextRegions();
+            this.clearAnnotationRegions();
+        }
+    }
+
+    /** The stage placeholder for pages the user may not see, and for a stage that could not be loaded. */
+
+    /**
+     * Builds the placeholder box: the server-rendered template's children when given, else a plain text.
+     *
+     * @param {object} opts
+     * @param {HTMLElement|null} [opts.template]  element whose children are cloned (admin-configured image and text)
+     * @param {string} [opts.text]  fallback text
+     * @param {string} [opts.role='status']
+     * @returns {HTMLElement}
+     */
+    function buildDeniedPlaceholder({ template, text, role = 'status' }) {
+        const box = document.createElement('div');
+        box.className = 'immersive__page-denied';
+        box.setAttribute('role', role);
+        const inner = document.createElement('div');
+        inner.className = 'immersive__page-denied-inner';
+        if (template && template.children.length) {
+            for (const child of template.children) inner.appendChild(child.cloneNode(true));
+        } else {
+            const span = document.createElement('span');
+            span.className = 'immersive__page-denied-text';
+            span.textContent = text || '';
+            inner.appendChild(span);
+        }
+        box.appendChild(inner);
+        return box;
+    }
+
+    /**
+     * The access-denied overlay of the stage: built once on first need, then toggled.
+     *
+     * @param {object} opts
+     * @param {HTMLElement|null} opts.host  the OSD mount element
+     * @param {HTMLElement|null} [opts.template]
+     * @param {string} [opts.text]
+     * @returns {{sync: (denied: boolean) => void, remove: Function}}
+     */
+    function createAccessOverlay({ host, template, text }) {
+        let overlay = null;
+        return {
+            sync(denied) {
+                if (!host) return;
+                if (!denied) {
+                    if (overlay) overlay.hidden = true;
+                    return;
+                }
+                if (!overlay) {
+                    overlay = buildDeniedPlaceholder({ template, text });
+                    if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+                    host.appendChild(overlay);
+                }
+                overlay.hidden = false;
+            },
+            remove() {
+                if (overlay) overlay.remove();
+                overlay = null;
+            },
+        };
+    }
+
     /** Browser libraries the immersive view relies on, read lazily from window so tests can stub them. */
 
     const win = () => (typeof window !== 'undefined' ? window : {});
@@ -931,44 +1234,6 @@
     }
 
     /**
-     * Runs a rAF tween over `durationMs`, calling `onFrame` with the progress 0→1
-     * each frame (a non-positive duration jumps straight to 1). Resolves when done.
-     */
-    function _tween(durationMs, onFrame) {
-        return new Promise((resolve) => {
-            let start = null;
-            const step = (ts) => {
-                if (start === null) start = ts;
-                const t = durationMs <= 0 ? 1 : Math.min(1, (ts - start) / durationMs);
-                onFrame(t);
-                if (t < 1) requestAnimationFrame(step);
-                else resolve();
-            };
-            requestAnimationFrame(step);
-        });
-    }
-
-    /** Tweens one TiledImage's opacity 0→1 while fading another 1→0 (rAF). */
-    function _crossfade(incoming, outgoing, durationMs) {
-        return _tween(durationMs, (t) => {
-            if (incoming) incoming.setOpacity(t);
-            if (outgoing) outgoing.setOpacity(1 - t);
-        });
-    }
-
-    /**
-     * Widens a bounds rect to a tall band (same y/height, 3x width, same centre).
-     * As a fitBounds anchor this makes OSD fit by HEIGHT, so pages of differing scan
-     * aspect render at a uniform height and paging never jumps vertically.
-     */
-    function _heightBand(rect) {
-        const band = rect.clone();
-        band.x = rect.x - rect.width;
-        band.width = rect.width * 3;
-        return band;
-    }
-
-    /**
      * Default single-image sequence config (mirrors zoomableImage.mjs); _arrangeImageSequence
      * reads it on every open(). Copied per instance because _open() mutates `columns`.
      */
@@ -998,24 +1263,23 @@
          * @param {string[]} opts.services     ordered IIIF image-service URLs (all pages)
          * @param {number} [opts.startOrder=0] initial 0-based page index
          * @param {number} [opts.maxZoom]
+         * @param {HTMLElement} [opts.deniedContent]  server-rendered placeholder content for image-restricted pages
          */
         constructor(opts) {
             this.services = opts.services;
             this.total = opts.services.length;
             this.current = Math.max(0, Math.min(opts.startOrder ?? 0, this.total - 1));
             this.allowZoom = opts.allowZoom !== false;
-            // Per-page "image restricted" flags (auth service present -> tiles 403).
             this.restricted = Array.isArray(opts.restricted) ? opts.restricted : [];
             this.deniedText = opts.deniedText || '';
             this.double = false;
             this.currentItem = null;
             this._anchor = null;
             this._preloaded = new Map();
-            this._navigating = false;
             this._queuedNav = null;
             this._queuedReopen = false;
-            this._navWatchdogMs = opts.navWatchdogMs ?? NAV_WATCHDOG_MS;
-            this._highlights = new Map();
+            this._lock = createNavLock(opts.navWatchdogMs ?? NAV_WATCHDOG_MS);
+            this._lock.onRelease(() => this._runQueued());
             this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
             this.onPageChange = new Emitter();
             this.onLoaded = new Emitter();
@@ -1033,9 +1297,13 @@
             this.viewer.openseadragon.crossOriginPolicy = 'Anonymous';
             this.zoom = new env.ImageView.Controls.Zoom(this.viewer);
             this.rotation = new env.ImageView.Controls.Rotation(this.viewer);
+            this._overlays = new IvOverlays({
+                osd: () => this.viewer.openseadragon,
+                itemFor: (order) => this._itemForOrder(order),
+                currentItem: () => this.currentItem || this.viewer.openseadragon.world.getItemAt(0),
+            });
+            this._access = createAccessOverlay({ host: this.viewer.element, template: opts.deniedContent || null, text: this.deniedText });
 
-            // Without ZOOM_IMAGES the image server caps resolution anyway; disable the
-            // interactive zoom gestures so the viewer stays at the fitted page.
             if (!this.allowZoom) {
                 const osd = this.viewer.openseadragon;
                 osd.zoomPerScroll = 1;
@@ -1056,17 +1324,12 @@
                 if (key === 'ArrowRight') this.next();
                 else if (key === 'ArrowLeft') this.prev();
                 else if (key === '0') {
-                    // Block OSD's built-in '0' → goHome (raw FILL) so our fitted resetView is not overwritten.
                     this.resetView();
                     e.preventDefaultAction = true;
                     e.originalEvent.preventDefault();
                 }
-                // Horizontal arrows are handled by custom navigation — block OSD's pan.
-                // Vertical arrows must NOT block OSD so the image still pans up/down.
-                // All four arrows suppress native page scroll.
                 if (['ArrowLeft', 'ArrowRight'].includes(key)) e.preventDefaultAction = true;
                 if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) e.originalEvent.preventDefault();
-                // Block OSD's built-in keyboard zoom when zooming is not permitted.
                 if (!this.allowZoom && ['-', '_', '+', '='].includes(key)) e.preventDefaultAction = true;
             });
 
@@ -1091,99 +1354,32 @@
             return this.double ? osd.world.getItemAt(idx) : this.currentItem || osd.world.getItemAt(0);
         }
 
-        /**
-         * Draws highlight rectangles for `owner` (search hits, layout-tag occurrences);
-         * every owner keeps its own set, so one panel never wipes another's marks. Rect
-         * coordinates are image pixels of the page given by `rect.order`, so spread hits
-         * land on the right half of a double-page view; rects for pages outside the
-         * current view are skipped. An optional `className` per rect is appended (e.g. a
-         * layout-tag style class that the theme maps to a colour).
-         */
+        /** Highlight rectangles for `owner` (search hits, layout-tag occurrences); see IvOverlays. */
         setHighlights(rects, owner = 'default') {
-            this.clearHighlights(owner);
-            const osd = this.viewer.openseadragon;
-            const els = (rects || []).flatMap((r) => {
-                const item = this._itemForOrder(r.order);
-                if (!item) return [];
-                const el = document.createElement('div');
-                el.className = ['immersive__highlight', r.active ? '-active' : '', r.className || ''].filter(Boolean).join(' ');
-                osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
-                return [el];
-            });
-            this._highlights.set(owner, els);
+            this._overlays.setHighlights(rects, owner);
         }
 
-        /** Removes the highlight overlays of `owner`, or of every owner when omitted (text regions stay). */
+        /** Removes the highlights of `owner`, or of every owner when omitted. */
         clearHighlights(owner) {
-            const osd = this.viewer.openseadragon;
-            const owners = owner === undefined ? Array.from(this._highlights.keys()) : [owner];
-            owners.forEach((key) => {
-                (this._highlights.get(key) || []).forEach((el) => osd.removeOverlay(el));
-                this._highlights.delete(key);
-            });
+            this._overlays.clearHighlights(owner);
         }
 
-        /**
-         * Draws OCR boxes (image pixels) as hoverable, id-tagged overlays and
-         * returns a Map id → overlay element. A region's optional `level`
-         * ('block' | 'line' | 'word') becomes a class modifier; pass regions in
-         * block → line → word order so words stack on top and win pointer hits.
-         * Regions without a `rect` are skipped.
-         */
+        /** OCR boxes as hoverable, id-tagged overlays; returns a Map id → element. */
         setTextRegions(regions) {
-            this.clearTextRegions();
-            const osd = this.viewer.openseadragon;
-            const item = this.currentItem || osd.world.getItemAt(0);
-            const map = new Map();
-            if (!item) return map;
-            (regions || []).forEach((r) => {
-                if (!r.rect) return;
-                const el = document.createElement('div');
-                el.className = r.level ? `immersive__text-region immersive__text-region-${r.level}` : 'immersive__text-region';
-                el.dataset.ivRegionId = r.id;
-                osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
-                map.set(r.id, el);
-            });
-            this._textRegions = Array.from(map.values());
-            return map;
+            return this._overlays.setTextRegions(regions);
         }
 
-        /** Removes all text-region overlays (leaves search highlights untouched). */
         clearTextRegions() {
-            const osd = this.viewer.openseadragon;
-            (this._textRegions || []).forEach((el) => osd.removeOverlay(el));
-            this._textRegions = [];
+            this._overlays.clearTextRegions();
         }
 
-        /**
-         * Draws ALTO layout annotations (drawn underlines/strikethroughs/marks, image
-         * pixels) as overlays; each region's `modifier` becomes a class suffix. The
-         * overlays only become visible while the root carries the annotations state
-         * class, so toggling the checkbox never touches OSD.
-         */
+        /** ALTO layout annotations (drawn lines, note areas) as overlays; returns a Map id → element. */
         setAnnotationRegions(regions) {
-            this.clearAnnotationRegions();
-            const osd = this.viewer.openseadragon;
-            const item = this.currentItem || osd.world.getItemAt(0);
-            const map = new Map();
-            if (!item) return map;
-            (regions || []).forEach((r) => {
-                if (!r.rect) return;
-                const el = document.createElement('div');
-                el.className = `immersive__anno-region immersive__anno-region-${r.modifier}`;
-                el.dataset.ivAnnoId = r.id;
-                osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.rect.x, r.rect.y, r.rect.w, r.rect.h) });
-                this._annoRegions.push(el);
-                map.set(r.id, el);
-            });
-            return map;
+            return this._overlays.setAnnotationRegions(regions);
         }
 
-        /** Removes all layout-annotation overlays (text regions and highlights stay). */
         clearAnnotationRegions() {
-            const osd = this.viewer.openseadragon;
-            (this._annoRegions || []).forEach((el) => osd.removeOverlay(el));
-            this._annoRegions = [];
+            this._overlays.clearAnnotationRegions();
         }
 
         /** Current 0-based page order (the spread leader in double mode). */
@@ -1238,43 +1434,26 @@
             this.goToPage(this.current - 1);
         }
 
-        /**
-         * Runs exactly one navigation at a time and ALWAYS releases the lock afterwards. `run`
-         * returns the settle promise; `onStuck` (optional) cleans up if the watchdog fires. A
-         * request that arrived while busy is honoured on release: a queued mode reopen first,
-         * else the latest queued page target -- so rapid clicks converge on the last one and a
-         * lost OSD 'open' can never leave the viewer permanently frozen.
-         */
+        /** Whether a navigation is in flight (queued targets wait for the release). */
+        get _navigating() {
+            return this._lock.busy;
+        }
+
+        /** Runs `run` under the navigation lock; `onStuck` cleans up if the watchdog fires (see ivNavLock). */
         _withNavLock(run, onStuck) {
-            this._navigating = true;
-            let released = false;
-            const release = () => {
-                if (released) return;
-                released = true;
-                clearTimeout(this._navWatchdog);
-                this._navigating = false;
-                if (this._queuedReopen) {
-                    this._queuedReopen = false;
-                    this._reopen();
-                    return;
-                }
-                const next = this._queuedNav;
-                this._queuedNav = null;
-                if (next != null) this.goToPage(next);
-            };
-            this._navWatchdog = setTimeout(() => {
-                try {
-                    if (onStuck) onStuck();
-                } catch {}
-                release();
-            }, this._navWatchdogMs);
-            try {
-                Promise.resolve(run())
-                    .catch(() => {})
-                    .finally(release);
-            } catch {
-                release();
+            this._lock.run(run, onStuck);
+        }
+
+        /** After a release: a queued mode reopen first, else the latest queued page target. */
+        _runQueued() {
+            if (this._queuedReopen) {
+                this._queuedReopen = false;
+                this._reopen();
+                return;
             }
+            const next = this._queuedNav;
+            this._queuedNav = null;
+            if (next != null) this.goToPage(next);
         }
 
         /** Re-opens the current position in the current mode, serialised through the nav lock. */
@@ -1334,8 +1513,6 @@
                 const previous = this.currentItem;
                 const from = this.current;
                 this.current = target;
-                // Restricted page: skip the doomed tile load (it would 403 and _acquire
-                // would reject, never emitting); drop the previous page and show the overlay.
                 if (this.isPageRestricted(target)) {
                     if (previous) this.viewer.openseadragon.world.removeItem(previous);
                     this.currentItem = null;
@@ -1349,12 +1526,11 @@
                     this._preloaded.delete(target);
                     await this._whenContent(item);
                 } catch (e) {
-                    // The tile source failed: keep reporting the page that is actually shown.
                     this.current = from;
                     this._preloaded.delete(target);
                     throw e;
                 }
-                await _crossfade(item, previous, this._fadeMs);
+                await crossfade(item, previous, this._fadeMs);
                 if (previous) this.viewer.openseadragon.world.removeItem(previous);
                 this.currentItem = item;
                 this._emit();
@@ -1415,9 +1591,9 @@
             const keep = new Set(residentPages(this.current, this.total, { double: this.double }));
             for (const order of keep) {
                 if (order === this.current) continue;
-                if (this.isPageRestricted(order)) continue; // tiles would 403; don't prefetch
+                if (this.isPageRestricted(order)) continue;
                 if (!this._preloaded.has(order)) {
-                    this._acquire(order, this._anchor);
+                    this._acquire(order, this._anchor).catch(() => this._preloaded.delete(order));
                 }
             }
             for (const [order, p] of this._preloaded) {
@@ -1438,51 +1614,18 @@
          * out. Neighbour spreads are tile-prewarmed for near-instant sharpness.
          */
         _navigateSpread(leader) {
-            const overlay = this._snapshotOverlay();
+            const overlay = snapshotOverlay(this.viewer.openseadragon, this.viewer.element);
             this.current = leader;
             this._withNavLock(
                 async () => {
                     await this._open(leader);
-                    this._fadeOverlay(overlay);
+                    fadeOverlay(overlay, this._fadeMs);
                     this._prewarmSpreads();
                 },
-                // onStuck: drop the frozen snapshot if the reopen never settles.
                 () => {
                     if (overlay) overlay.remove();
                 }
             );
-        }
-
-        /**
-         * Copies the current OSD canvas into an opacity overlay covering the viewer so the
-         * fresh load() underneath stays hidden until faded out. Uses canvas drawImage (not
-         * toDataURL) so cross-origin IIIF tiles don't taint the canvas.
-         */
-        _snapshotOverlay() {
-            const osd = this.viewer.openseadragon;
-            const src = osd.drawer && osd.drawer.canvas;
-            const host = this.viewer.element;
-            if (!src || !host) return null;
-            const overlay = document.createElement('canvas');
-            overlay.width = src.width;
-            overlay.height = src.height;
-            overlay.className = 'immersive__xfade';
-            try {
-                overlay.getContext('2d').drawImage(src, 0, 0);
-            } catch {
-                return null;
-            }
-            if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
-            host.appendChild(overlay);
-            return overlay;
-        }
-
-        /** Fades an overlay element out over `_fadeMs`, then removes it. */
-        _fadeOverlay(overlay) {
-            if (!overlay) return;
-            _tween(this._fadeMs, (t) => {
-                overlay.style.opacity = String(1 - t);
-            }).then(() => overlay.remove());
         }
 
         /**
@@ -1496,7 +1639,7 @@
             const osd = this.viewer.openseadragon;
             for (const p of new Set(neighbours)) {
                 if (p < 0 || p >= this.total || here.includes(p)) continue;
-                if (this.isPageRestricted(p)) continue; // tiles would 403; don't prewarm
+                if (this.isPageRestricted(p)) continue;
                 osd.addTiledImage({ tileSource: toTileSource(this.services[p]), opacity: 0, preload: true });
             }
         }
@@ -1512,13 +1655,11 @@
             const pages = this.double ? computeSpread(order, this.total) : [order];
             this.viewer.config.sequence.columns = pages.length;
             const sources = pages.map((p) => toTileSource(this.services[p]));
-            // Runs on load success AND failure: a restricted page's tiles 403 so load()
-            // rejects — still emit + sync the overlay instead of leaving a blank, stuck stage.
             const settle = () => {
                 const world = this.viewer.openseadragon.world;
                 this.currentItem = world.getItemCount() > 0 ? world.getItemAt(0) : null;
                 if (!this.double && this.currentItem) {
-                    this._anchor = _heightBand(this.currentItem.getBounds());
+                    this._anchor = heightBand(this.currentItem.getBounds());
                 }
                 this._preloaded.clear();
                 this._emit();
@@ -1550,43 +1691,8 @@
             return this.restricted[order] === true;
         }
 
-        /**
-         * Shows/hides the access-denied overlay when any displayed page is image-restricted.
-         * Purely cosmetic — the tiles 403 server-side (no leak); this just replaces the blank
-         * canvas. Toggled from _emit as a thin layer, not woven into the load/crossfade paths.
-         */
         _syncAccessOverlay() {
-            const host = this.viewer.element;
-            if (!host) return;
-            const denied = this.getCurrentPages().some((o) => this.isPageRestricted(o));
-            let overlay = this._accessOverlay;
-            if (!denied) {
-                if (overlay) overlay.hidden = true;
-                return;
-            }
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.className = 'immersive__page-denied';
-                overlay.setAttribute('role', 'status');
-                const inner = document.createElement('div');
-                inner.className = 'immersive__page-denied-inner';
-                // Prefer the server-rendered, admin-configured placeholder (image + rich text
-                // of the record's restricted condition); fall back to the generic message.
-                const template = document.getElementById('immersiveDeniedContent');
-                if (template && template.children.length) {
-                    for (const child of template.children) inner.appendChild(child.cloneNode(true));
-                } else {
-                    const text = document.createElement('span');
-                    text.className = 'immersive__page-denied-text';
-                    text.textContent = this.deniedText;
-                    inner.appendChild(text);
-                }
-                overlay.appendChild(inner);
-                if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
-                host.appendChild(overlay);
-                this._accessOverlay = overlay;
-            }
-            overlay.hidden = false;
+            this._access.sync(this.getCurrentPages().some((o) => this.isPageRestricted(o)));
         }
 
         /** Runs `fn` once when the first tile has been painted. */
@@ -1639,10 +1745,10 @@
 
         /** Releases the OpenSeadragon instance, the access overlay and all subscriptions. */
         destroy() {
-            clearTimeout(this._navWatchdog);
+            this._lock.destroy();
             this._preloaded.clear();
-            if (this._accessOverlay) this._accessOverlay.remove();
-            // The library's own teardown (its subjects, its ResizeObserver) before the OSD instance goes.
+            this._access.remove();
+            this._overlays.destroy();
             if (typeof this.viewer.close === 'function') this.viewer.close();
             const osd = this.viewer.openseadragon;
             if (osd && typeof osd.destroy === 'function') osd.destroy();
@@ -2042,7 +2148,6 @@
             _fetchPageLines(pi, apiBase, order, fetchFn),
             _fetchPageLines(pi, apiBase, order, fetchFn, '?granularity=word'),
         ]);
-        // Lines are the backbone: missing block/word granularity degrades, a missing line request is an error.
         if (lines === null) throw new Error('page text unavailable');
         return nestTextLevels({ blocks: blocks || [], lines, words: words || [] });
     }
@@ -2219,6 +2324,17 @@
 
     /** Central keydown dispatcher for the immersive view. */
 
+    /** Dispatcher priorities of every immersive key handler, lowest runs first; the single place that defines who wins a key. */
+    const KEY_PRIORITY = Object.freeze({
+        shortcutsModal: 10,
+        gridOverlay: 20,
+        pageDropdown: 30,
+        layoutTagsPick: 35,
+        panels: 40,
+        viewerNav: 50,
+        annotationsToggle: 55,
+    });
+
     /**
      * Creates the immersive key dispatcher: one document-level keydown listener,
      * handlers consulted in ascending priority order, the first handler that
@@ -2285,10 +2401,10 @@
      * @param {{register: Function}} keys  the immersive key dispatcher
      * @param {IvViewer} viewer
      * @param {HTMLElement} stageEl        the OSD mount element ([data-immersive-image])
-     * @param {number} [priority=50]       runs after modal (10), grid (20), dropdown (30), panels (40)
+     * @param {number} [priority=KEY_PRIORITY.viewerNav]
      * @returns {{destroy: function():void}}
      */
-    function registerViewerNavKeys(keys, viewer, stageEl, priority = 50) {
+    function registerViewerNavKeys(keys, viewer, stageEl, priority = KEY_PRIORITY.viewerNav) {
         const unregister = keys.register(priority, (e) => {
             if (e.ctrlKey || e.metaKey || e.altKey) return false;
             const key = e.key;
@@ -2510,7 +2626,6 @@
                     activePanelBtn = btn;
                     syncPanelOpenFlag();
                     panel.dispatchEvent(new CustomEvent('immersive:panel-open', { bubbles: false }));
-                    // Scroll via offset math, not scrollIntoView, so the page itself never moves.
                     const active = panel.querySelector('.widget-toc__element.active');
                     if (active) {
                         panel.scrollTop = Math.max(0, offsetTopWithin(active, panel) - panel.clientHeight / 2);
@@ -2531,7 +2646,7 @@
             });
         });
 
-        const unregisterKeys = keys.register(40, (e) => {
+        const unregisterKeys = keys.register(KEY_PRIORITY.panels, (e) => {
             if (e.key === 'Escape') {
                 if (!document.querySelector(PANEL_OPEN_SELECTOR)) return false;
                 closePanels(true);
@@ -2581,9 +2696,6 @@
         const MIN_WIDTH = 240;
         const MAX_WIDTH_RATIO = 0.8;
         const maxWidth = () => immersiveViewer.getBoundingClientRect().width * MAX_WIDTH_RATIO;
-        // The handle is positioned by the width variable, not the panel edge — so the
-        // clamp floor must include the open panel's own min-width (raised in the
-        // annotations two-column mode), or the handle would detach from the panel.
         const minWidth = () => {
             const open = immersiveRoot.querySelector(PANEL_OPEN_SELECTOR);
             const panelMin = open ? parseFloat(getComputedStyle(open).minWidth) || 0 : 0;
@@ -2601,13 +2713,6 @@
         handle.className = 'immersive__panel-resize-handle';
         handle.setAttribute('aria-hidden', 'true');
         immersiveViewer.appendChild(handle);
-        // A panel can grow beyond the width variable without a drag (the annotations
-        // two-column mode raises its min-width, e.g. when the checkbox is toggled).
-        // Sync the variable up to the real panel width in that case, or the handle
-        // would sit unreachable inside the panel instead of on its edge. The current
-        // variable value is read off the handle's GEOMETRY (it is positioned by the
-        // variable) — the inline style alone misses the CSS fallback, media-query
-        // and fullscreen values a first-time visitor runs on.
         let observer = null;
         if (typeof ResizeObserver !== 'undefined') {
             observer = new ResizeObserver(() => {
@@ -2625,7 +2730,6 @@
             handle.setPointerCapture(e.pointerId);
             immersiveRoot.classList.add('-resizing');
             const viewerLeft = immersiveViewer.getBoundingClientRect().left;
-            // Bounds are fixed for the duration of a drag — no style recalc per move.
             const dragMin = minWidth();
             const dragMax = maxWidth();
             const widthAt = (ev) => Math.min(Math.max(ev.clientX - viewerLeft - RAIL_WIDTH, dragMin), dragMax);
@@ -2748,7 +2852,7 @@
         const bag = createDisposer();
         const tocEntries = () =>
             Array.from(tocPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
-                .filter((el) => el.dataset.level !== '0') // skip the hidden record root
+                .filter((el) => el.dataset.level !== '0')
                 .map((el) => ({ el, no: Number(el.dataset.pageNo) }))
                 .filter((x) => Number.isFinite(x.no) && x.no >= 1);
 
@@ -2849,9 +2953,6 @@
         const trigger = document.querySelector('[data-immersive-shortcuts-trigger]');
         if (!overlay || !trigger) return noop;
         const bag = createDisposer();
-        // On Apple platforms modifiers are conventionally shown as symbols (⌥, ⇧);
-        // the accessible name keeps the spoken key name. The symbol gets its own
-        // span so the flex keycap centers the glyph instead of baseline-aligning it.
         if (isMacPlatform(navigator.userAgentData?.platform ?? navigator.platform)) {
             overlay.querySelectorAll('kbd[data-key]').forEach((kbd) => {
                 const mac = macKeyLabel(kbd.dataset.key);
@@ -2884,8 +2985,6 @@
                 overlay.removeEventListener('keydown', trapHandler);
                 trapHandler = null;
             }
-            // A '?'-opened dialog has no focused opener (activeElement is <body>);
-            // falling back to the trigger keeps keyboard users at a sensible spot.
             const restore = opener && opener !== document.body ? opener : trigger;
             opener = null;
             if (restore && typeof restore.focus === 'function') restore.focus();
@@ -2902,7 +3001,7 @@
         bag.listen(overlay, 'click', (e) => {
             if (dialog && !dialog.contains(e.target)) closeShortcuts();
         });
-        const unregisterKeys = keys.register(10, (e) => {
+        const unregisterKeys = keys.register(KEY_PRIORITY.shortcutsModal, (e) => {
             if (e.key === 'Escape' && !overlay.hidden) {
                 closeShortcuts();
                 return true;
@@ -3151,26 +3250,7 @@
         }
     }
 
-    /** ALTO layout-tag annotations: toggle state, inline markup, margin note column and image overlay regions. */
-
-    /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */
-    const STATE_CLASS = '-annotations-on';
-
-    /**
-     * Below this panel content width (px) the margin column collapses and notes render inline
-     * under their anchor line. With annotations on, the LESS min-width (560px panel − 32px
-     * padding = 528px content) keeps desktop above this threshold, so the collapsed mode is
-     * the small-screen fallback only; keep 560 − padding > this value or the ResizeObserver
-     * would flip-flop (see @immersive-anno-panel-min-width in ivAnnotations.less).
-     */
-    const COLLAPSE_BELOW = 460;
-
-    /**
-     * Vertical gap (px) between stacked margin notes. Kept small on purpose: entry
-     * height + gap must stay at or below the print row height (~24px), or runs of
-     * consecutive annotations can never sit on their own lines.
-     */
-    const NOTE_GAP = 2;
+    /** ALTO annotation model: pure mappings and geometry for word marks, drawn lines, margin-note anchoring and stacking. */
 
     /**
      * Presentation mapping keyed by the SEMANTIC types the layout endpoint derives from the
@@ -3369,6 +3449,89 @@
         return regions;
     }
 
+    /** Annotations toggle: persisted checkbox, root state class and the `a` shortcut. */
+
+    /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */
+    const STATE_CLASS = '-annotations-on';
+
+    /**
+     * Wires the annotations checkbox: persisted state, the root state class and
+     * the `a` keyboard shortcut. The whole toggle row is hidden (not just
+     * disabled — it would otherwise dictate the panel's minimum width) and the
+     * root state class is dropped whenever the current page has no annotation
+     * data; the persisted preference survives such pages.
+     *
+     * @param {object} opts
+     * @param {HTMLElement} opts.root      the .immersive root (carries the state class)
+     * @param {HTMLInputElement} opts.checkbox
+     * @param {Storage} opts.storage      e.g. window.localStorage
+     * @param {{register: Function}} [opts.keys]  the immersive key dispatcher
+     * @returns {{setPageData: Function, onChange: Function, destroy: Function}}
+     */
+    function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
+        const listeners = [];
+        const toggleRow = checkbox.closest('.immersive__anno-toggle');
+        let available = false;
+
+        const sync = () => {
+            root.classList.toggle(STATE_CLASS, checkbox.checked && available);
+        };
+
+        const setEnabled = (on) => {
+            checkbox.checked = on;
+            writeAnnotationsEnabled(storage, on);
+            sync();
+            listeners.forEach((cb) => cb(on));
+        };
+
+        const onCheckboxChange = () => setEnabled(checkbox.checked);
+        checkbox.checked = readAnnotationsEnabled(storage);
+        checkbox.addEventListener('change', onCheckboxChange);
+
+        let unregisterKeys = null;
+        if (keys) {
+            unregisterKeys = keys.register(KEY_PRIORITY.annotationsToggle, (e) => {
+                if (e.key !== 'a' || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return false;
+                if (isTypingTarget(e.target) || isStageFocused()) return false;
+                const panel = checkbox.closest('.immersive__panel-left');
+                if (checkbox.disabled || (panel && !panel.classList.contains('is-open'))) return false;
+                if (isOverlayOpen()) return false;
+                setEnabled(!checkbox.checked);
+                return true;
+            });
+        }
+
+        sync();
+
+        return {
+            /**
+             * Updates the toggle availability for the current page's layout data.
+             *
+             * @param {object|null} layout  the page's layout annotations
+             */
+            setPageData(layout) {
+                available = hasAnnotations(layout);
+                checkbox.disabled = !available;
+                if (toggleRow) toggleRow.hidden = !available;
+                sync();
+            },
+            onChange(cb) {
+                listeners.push(cb);
+                return () => {
+                    const i = listeners.indexOf(cb);
+                    if (i !== -1) listeners.splice(i, 1);
+                };
+            },
+            destroy() {
+                checkbox.removeEventListener('change', onCheckboxChange);
+                if (unregisterKeys) unregisterKeys();
+                listeners.length = 0;
+            },
+        };
+    }
+
+    /** Joins ALTO annotations onto the rendered page text and its image overlays by element id. */
+
     /**
      * Indexes the panel's region elements by ALTO element id (blocks, lines and
      * words alike), so layout annotations can be joined onto the rendered text.
@@ -3461,6 +3624,27 @@
         return sources;
     }
 
+    /** Margin-note cards for a page's handwriting blocks: line anchoring, collision stacking, popovers and hover coupling to text and image. */
+
+    /**
+     * Below this panel content width (px) the margin column collapses and notes render inline
+     * under their anchor line. With annotations on, the LESS min-width (560px panel − 32px
+     * padding = 528px content) keeps desktop above this threshold, so the collapsed mode is
+     * the small-screen fallback only; keep 560 − padding > this value or the ResizeObserver
+     * would flip-flop (see @immersive-anno-panel-min-width in ivAnnotations.less).
+     */
+    const COLLAPSE_BELOW = 460;
+
+    /**
+     * Vertical gap (px) between stacked margin notes. Kept small on purpose: entry
+     * height + gap must stay at or below the print row height (~24px), or runs of
+     * consecutive annotations can never sit on their own lines.
+     */
+    const NOTE_GAP = 2;
+
+    const POPOVER_TEMPLATE =
+        '<div class="popover immersive__anno-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>';
+
     /** Registers a mouseenter/mouseleave pair on `el` and records it in `registry` for teardown. */
     function bindHover(el, enter, leave, registry) {
         el.addEventListener('mouseenter', enter);
@@ -3468,95 +3652,38 @@
         registry.push([el, enter, leave]);
     }
 
-    /**
-     * Mounts everything block-level for one rendered page: EVERY handwriting block
-     * (margin notes, running heads, callouts, insertion marks alike) becomes a card
-     * in the annotations column, line-anchored at its position on the page, with
-     * collisions stacked; the printed-text column shows print only (the sources are
-     * hidden in both toggle states). Below {@link COLLAPSE_BELOW} content width the
-     * column collapses and the cards render inline under their anchor line. Wires
-     * the bidirectional hover coupling between cards, anchor lines and the image
-     * regions.
-     *
-     * Implementation constraints: the outside-click listener closing the note
-     * popovers is bound in the CAPTURE phase because OpenSeadragon stops click
-     * propagation over its canvas (a bubble listener never sees clicks on the
-     * image); the notes' Escape handling calls stopPropagation so the immersive
-     * key dispatcher on document does not ALSO close the fulltext panel; and a
-     * card overflowing above the first printed line is compensated by shifting
-     * the text down via the --immersive-anno-shift padding custom property (LESS
-     * applies it only in annotations mode, so switching the checkbox off cleans
-     * the shift up without JS) instead of clamping the card onto the line.
-     *
-     * @param {object} opts
-     * @param {HTMLElement} opts.box     the fulltext panel content element
-     * @param {object} opts.layout      the page's layout annotations
-     * @param {string} opts.pi
-     * @param {number|string} opts.pageNo  1-based page number
-     * @param {{id:string, rect:{y:number, h:number}|null, level:string}[]} opts.flat
-     *        flattened text levels of the page (line geometry for anchoring)
-     * @param {Map<string, HTMLElement>} [opts.els]  region element index from
-     *        {@link applyTextMarkup}; indexed fresh when absent
-     * @param {HTMLElement} [opts.columnsHead]  the "printed text | annotations" column header;
-     *        shown only while the side column is active
-     * @param {HTMLElement} [opts.scrollContainer]  scrollable panel; region hover reveals the card in it
-     * @param {() => Map<string, HTMLElement>} [opts.getRegionEls]  live accessor for the image
-     *        overlay elements by ALTO element id (card hover highlights the note's region on the scan)
-     * @returns {{relayout: function():void, attachRegions: function(Map, Map):void, destroy: function():void}|null}
-     *          destroy() removes cards, listeners and marker classes but does NOT restore the
-     *          reading order of repositioned inline sources — the panel rebuild on page open does
-     */
-    function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: givenEls, columnsHead, scrollContainer, getRegionEls }) {
-        const annotationBlocks = ((layout && layout.blocks) || []).filter((b) => b.author && b.rect);
-        if (!annotationBlocks.length) return null;
-
-        const els = givenEls || indexRegionElements(box, pi, pageNo);
-
+    /** Rendered line elements of the page with their ALTO geometry, for anchoring. */
+    function collectLineEls(flat, els, pi, pageNo) {
         const lineEls = [];
         (flat || []).forEach((r) => {
             if (r.level !== 'line' || !r.rect) return;
             const el = els.get(altoElementId(r.id, pi, pageNo) || '');
             if (el) lineEls.push({ rect: r.rect, el });
         });
+        return lineEls;
+    }
 
-        const sources = markAnnotationSources(annotationBlocks, els, lineEls);
-
-        const anchors = lineEls.filter(({ el }) => !el.closest('.immersive__anno-src')).map(({ rect, el }) => ({ y: rect.y, h: rect.h, el }));
-
-        const column = document.createElement('div');
-        column.className = 'immersive__anno-margin';
-
-        const revealCard = (noteEl) => {
-            if (!scrollContainer) return;
-            const target = scrollTopToReveal({
-                offsetTop: offsetTopWithin(noteEl, scrollContainer),
-                height: noteEl.offsetHeight,
-                scrollTop: scrollContainer.scrollTop,
-                clientHeight: scrollContainer.clientHeight,
-                scrollHeight: scrollContainer.scrollHeight,
-            });
-            if (target !== null) scrollContainer.scrollTop = target;
-        };
-
+    /**
+     * Bootstrap popovers on the note cards, one open at a time. The outside-click
+     * listener is bound in the capture phase because OpenSeadragon stops click
+     * propagation over its canvas; Escape stops propagation so the immersive key
+     * dispatcher does not also close the panel.
+     */
+    function createNotePopovers(scrollContainer) {
         const $ = env.$ || null;
-        const popoverCapable = !!($ && $.fn && typeof $.fn.popover === 'function');
-        const POPOVER_TEMPLATE =
-            '<div class="popover immersive__anno-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>';
+        const capable = !!($ && $.fn && typeof $.fn.popover === 'function');
         let openNote = null;
-
-        const hideNotePopover = () => {
-            if (openNote && popoverCapable) $(openNote).popover('hide');
+        const hide = () => {
+            if (openNote && capable) $(openNote).popover('hide');
         };
-
         const onDocumentClick = (e) => {
             if (!openNote || !(e.target instanceof Element)) return;
             if (e.target.closest('.immersive__anno-note, .immersive__anno-popover')) return;
-            hideNotePopover();
+            hide();
         };
         document.addEventListener('click', onDocumentClick, true);
-
-        const attachNotePopover = (noteEl, authorName, fullText) => {
-            if (!popoverCapable) return;
+        const attach = (noteEl, authorName, fullText) => {
+            if (!capable) return;
             $(noteEl).popover({
                 trigger: 'manual',
                 placement: 'left',
@@ -3569,14 +3696,14 @@
             noteEl.setAttribute('aria-expanded', 'false');
             noteEl.addEventListener('click', () => {
                 const wasOpen = openNote === noteEl;
-                hideNotePopover();
+                hide();
                 if (!wasOpen) $(noteEl).popover('show');
             });
             noteEl.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && openNote === noteEl) {
                     e.preventDefault();
                     e.stopPropagation();
-                    hideNotePopover();
+                    hide();
                 }
             });
             $(noteEl).on('shown.bs.popover', () => {
@@ -3590,7 +3717,7 @@
                         if (e.key === 'Escape') {
                             e.preventDefault();
                             e.stopPropagation();
-                            hideNotePopover();
+                            hide();
                             noteEl.focus();
                         }
                     });
@@ -3601,8 +3728,16 @@
                 noteEl.setAttribute('aria-expanded', 'false');
             });
         };
+        const destroy = (notes) => {
+            document.removeEventListener('click', onDocumentClick, true);
+            if (capable) notes.forEach(({ noteEl }) => $(noteEl).popover('dispose'));
+        };
+        return { attach, hide, destroy };
+    }
 
-        const notes = annotationBlocks
+    /** One card per block, anchored to the nearest printed line; hovering a card lights its anchor line and its image region. */
+    function buildNotes({ blocks, sources, anchors, popovers, getRegionEls }) {
+        return blocks
             .map((block) => {
                 const blockSources = sources.get(block.id) || [];
                 const noteEl = document.createElement('button');
@@ -3622,7 +3757,7 @@
                           .trim()
                     : block.text || '';
                 noteEl.append(text);
-                attachNotePopover(noteEl, block.authorName, text.textContent);
+                popovers.attach(noteEl, block.authorName, text.textContent);
                 const midY = block.rect.y + block.rect.h / 2;
                 const anchorIdx = nearestAnchorIndex(midY, anchors);
                 const anchor = anchorIdx >= 0 ? anchors[anchorIdx] : null;
@@ -3641,23 +3776,41 @@
                 return { block, noteEl, anchor, aboveAnchor };
             })
             .sort((a, b) => a.block.rect.y - b.block.rect.y);
+    }
 
-        const anchorListeners = [];
-        const notesByAnchor = new Map();
+    /** Hovering an anchor line lights every card anchored to it; returns the listener registry for teardown. */
+    function bindAnchorHover(notes) {
+        const listeners = [];
+        const byAnchor = new Map();
         notes.forEach((n) => {
             if (!n.anchor || n.aboveAnchor) return;
-            if (!notesByAnchor.has(n.anchor.el)) notesByAnchor.set(n.anchor.el, []);
-            notesByAnchor.get(n.anchor.el).push(n.noteEl);
+            if (!byAnchor.has(n.anchor.el)) byAnchor.set(n.anchor.el, []);
+            byAnchor.get(n.anchor.el).push(n.noteEl);
         });
-        notesByAnchor.forEach((noteEls, anchorEl) => {
+        byAnchor.forEach((noteEls, anchorEl) => {
             bindHover(
                 anchorEl,
                 () => noteEls.forEach((el) => el.classList.add('is-anno-active')),
                 () => noteEls.forEach((el) => el.classList.remove('is-anno-active')),
-                anchorListeners
+                listeners
             );
         });
+        return listeners;
+    }
 
+    /** Couples the image regions (drawn note areas and OCR text regions) to the cards: hover lights the card and scrolls it into view. */
+    function createRegionCoupling({ notes, sources, scrollContainer }) {
+        const revealCard = (noteEl) => {
+            if (!scrollContainer) return;
+            const target = scrollTopToReveal({
+                offsetTop: offsetTopWithin(noteEl, scrollContainer),
+                height: noteEl.offsetHeight,
+                scrollTop: scrollContainer.scrollTop,
+                clientHeight: scrollContainer.clientHeight,
+                scrollHeight: scrollContainer.scrollHeight,
+            });
+            if (target !== null) scrollContainer.scrollTop = target;
+        };
         const notesById = new Map(notes.map((n) => [n.block.id, n]));
         const regionIdToNote = new Map();
         notes.forEach((note) => {
@@ -3670,7 +3823,7 @@
                 srcEl.querySelectorAll('[data-iv-region-id]').forEach(collect);
             });
         });
-        const regionListeners = [];
+        const listeners = [];
         const bindRegion = (el, note) => {
             bindHover(
                 el,
@@ -3683,11 +3836,11 @@
                     note.noteEl.classList.remove('is-anno-active');
                     if (note.anchor && !note.aboveAnchor) note.anchor.el.classList.remove('is-anno-anchor');
                 },
-                regionListeners
+                listeners
             );
         };
         const attachRegions = (annoRegionMap, textRegionMap) => {
-            regionListeners.splice(0).forEach(([el, enter, leave]) => {
+            listeners.splice(0).forEach(([el, enter, leave]) => {
                 el.removeEventListener('mouseenter', enter);
                 el.removeEventListener('mouseleave', leave);
             });
@@ -3704,11 +3857,21 @@
                 });
             }
         };
+        return { attachRegions };
+    }
 
+    /**
+     * Places the cards: in the side column with collision stacking, or inline under
+     * their anchor line once the panel is narrower than COLLAPSE_BELOW. A card that
+     * would overflow above the first printed line shifts the text down via the
+     * --immersive-anno-shift custom property instead of being clamped onto the line.
+     */
+    function createNoteLayout({ box, notes, anchors, columnsHead, popovers }) {
+        const column = document.createElement('div');
+        column.className = 'immersive__anno-margin';
         const inlineNotes = [];
-
         const relayout = () => {
-            hideNotePopover();
+            popovers.hide();
             inlineNotes.splice(0).forEach((el) => el.remove());
             column.remove();
             box.style.removeProperty('--immersive-anno-shift');
@@ -3754,110 +3917,70 @@
                 desired[i].noteEl.style.top = `${top}px`;
             });
         };
+        const destroy = () => {
+            inlineNotes.splice(0).forEach((el) => el.remove());
+            column.remove();
+            box.classList.remove('-anno-collapsed');
+            box.style.removeProperty('--immersive-anno-shift');
+            if (columnsHead) columnsHead.hidden = true;
+        };
+        return { relayout, destroy };
+    }
 
+    /**
+     * Mounts everything block-level for one rendered page: every handwriting block
+     * becomes a card in the annotations column, line-anchored at its position on
+     * the page, with collisions stacked; the printed-text column shows print only.
+     * Below COLLAPSE_BELOW content width the column collapses and the cards render
+     * inline under their anchor line. Wires the bidirectional hover coupling between
+     * cards, anchor lines and the image regions.
+     *
+     * @param {object} opts
+     * @param {HTMLElement} opts.box     the fulltext panel content element
+     * @param {object} opts.layout      the page's layout annotations
+     * @param {string} opts.pi
+     * @param {number|string} opts.pageNo  1-based page number
+     * @param {{id:string, rect:{y:number, h:number}|null, level:string}[]} opts.flat  flattened text levels (line geometry for anchoring)
+     * @param {Map<string, HTMLElement>} [opts.els]  region element index from applyTextMarkup; indexed fresh when absent
+     * @param {HTMLElement} [opts.columnsHead]  the "printed text | annotations" column header, shown only while the side column is active
+     * @param {HTMLElement} [opts.scrollContainer]  scrollable panel; region hover reveals the card in it
+     * @param {() => Map<string, HTMLElement>} [opts.getRegionEls]  live accessor for the image overlay elements by ALTO element id
+     * @returns {{relayout: function():void, attachRegions: function(Map, Map):void, destroy: function():void}|null}
+     *          destroy() removes cards, listeners and marker classes; the reading order of repositioned inline sources is restored by the panel rebuild on page open
+     */
+    function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: givenEls, columnsHead, scrollContainer, getRegionEls }) {
+        const blocks = ((layout && layout.blocks) || []).filter((b) => b.author && b.rect);
+        if (!blocks.length) return null;
+        const els = givenEls || indexRegionElements(box, pi, pageNo);
+        const lineEls = collectLineEls(flat, els, pi, pageNo);
+        const sources = markAnnotationSources(blocks, els, lineEls);
+        const anchors = lineEls.filter(({ el }) => !el.closest('.immersive__anno-src')).map(({ rect, el }) => ({ y: rect.y, h: rect.h, el }));
+        const popovers = createNotePopovers(scrollContainer);
+        const notes = buildNotes({ blocks, sources, anchors, popovers, getRegionEls });
+        const anchorListeners = bindAnchorHover(notes);
+        const coupling = createRegionCoupling({ notes, sources, scrollContainer });
+        const placement = createNoteLayout({ box, notes, anchors, columnsHead, popovers });
         let observer = null;
         if (typeof ResizeObserver !== 'undefined') {
-            observer = new ResizeObserver(() => relayout());
+            observer = new ResizeObserver(() => placement.relayout());
             observer.observe(box);
         }
-        relayout();
-
+        placement.relayout();
         return {
-            relayout,
-            attachRegions,
+            relayout: placement.relayout,
+            attachRegions: coupling.attachRegions,
             destroy() {
                 if (observer) observer.disconnect();
-                document.removeEventListener('click', onDocumentClick, true);
-                if (popoverCapable) notes.forEach(({ noteEl }) => $(noteEl).popover('dispose'));
-                attachRegions(null, null);
+                popovers.destroy(notes);
+                coupling.attachRegions(null, null);
                 anchorListeners.splice(0).forEach(([el, enter, leave]) => {
                     el.removeEventListener('mouseenter', enter);
                     el.removeEventListener('mouseleave', leave);
                     el.classList.remove('is-anno-anchor');
                 });
-                inlineNotes.splice(0).forEach((el) => el.remove());
-                column.remove();
-                box.classList.remove('-anno-collapsed');
-                box.style.removeProperty('--immersive-anno-shift');
-                if (columnsHead) columnsHead.hidden = true;
+                placement.destroy();
                 els.forEach((el) => el.classList.remove('immersive__anno-margin-src', 'immersive__anno-src'));
                 if (getRegionEls) getRegionEls().forEach((el) => el.classList.remove('is-anno-active'));
-            },
-        };
-    }
-
-    /**
-     * Wires the annotations checkbox: persisted state, the root state class and
-     * the `a` keyboard shortcut. The whole toggle row is hidden (not just
-     * disabled — it would otherwise dictate the panel's minimum width) and the
-     * root state class is dropped whenever the current page has no annotation
-     * data; the persisted preference survives such pages.
-     *
-     * @param {object} opts
-     * @param {HTMLElement} opts.root      the .immersive root (carries the state class)
-     * @param {HTMLInputElement} opts.checkbox
-     * @param {Storage} opts.storage      e.g. window.localStorage
-     * @param {{register: Function}} [opts.keys]  the immersive key dispatcher
-     * @returns {{setPageData: Function, onChange: Function, destroy: Function}}
-     */
-    function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
-        const listeners = [];
-        const toggleRow = checkbox.closest('.immersive__anno-toggle');
-        let available = false;
-
-        const sync = () => {
-            root.classList.toggle(STATE_CLASS, checkbox.checked && available);
-        };
-
-        const setEnabled = (on) => {
-            checkbox.checked = on;
-            writeAnnotationsEnabled(storage, on);
-            sync();
-            listeners.forEach((cb) => cb(on));
-        };
-
-        const onCheckboxChange = () => setEnabled(checkbox.checked);
-        checkbox.checked = readAnnotationsEnabled(storage);
-        checkbox.addEventListener('change', onCheckboxChange);
-
-        let unregisterKeys = null;
-        if (keys) {
-            unregisterKeys = keys.register(55, (e) => {
-                if (e.key !== 'a' || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return false;
-                if (isTypingTarget(e.target) || isStageFocused()) return false;
-                const panel = checkbox.closest('.immersive__panel-left');
-                if (checkbox.disabled || (panel && !panel.classList.contains('is-open'))) return false;
-                if (isOverlayOpen()) return false;
-                setEnabled(!checkbox.checked);
-                return true;
-            });
-        }
-
-        sync();
-
-        return {
-            /**
-             * Updates the toggle availability for the current page's layout data.
-             *
-             * @param {object|null} layout  the page's layout annotations
-             */
-            setPageData(layout) {
-                available = hasAnnotations(layout);
-                checkbox.disabled = !available;
-                if (toggleRow) toggleRow.hidden = !available;
-                sync();
-            },
-            onChange(cb) {
-                listeners.push(cb);
-                return () => {
-                    const i = listeners.indexOf(cb);
-                    if (i !== -1) listeners.splice(i, 1);
-                };
-            },
-            destroy() {
-                checkbox.removeEventListener('change', onCheckboxChange);
-                if (unregisterKeys) unregisterKeys();
-                listeners.length = 0;
             },
         };
     }
@@ -3941,7 +4064,6 @@
         let textRegionEls = new Map();
         const mountOverlays = () => {
             overlayEls = viewer.setAnnotationRegions(panelOpen() ? overlayRegions(currentLayout) : []);
-            // OSD rebuilds its overlays per page open — the note-region hover bindings go stale.
             if (currentAnnotations) currentAnnotations.attachRegions(overlayEls, textRegionEls);
         };
 
@@ -3953,8 +4075,6 @@
         const refreshLayout = async () => {
             if (!annotations) return;
             const req = ++layoutReq;
-            // Invalidate immediately: loadFulltext may re-render and decorate() before this
-            // fetch resolves, and ALTO element ids collide across pages.
             currentLayout = null;
             if (!panelOpen() || viewer.isDoublePage()) {
                 mountOverlays();
@@ -3976,7 +4096,6 @@
         if (annotations) {
             bag.add(viewer.onPageChange.subscribe(refreshLayout));
             bag.add(viewer.onOpen.subscribe(mountOverlays));
-            // Note positions depend on rendered geometry, which is only measurable while visible.
             bag.add(
                 annotations.onChange((on) => {
                     if (on && currentAnnotations) requestAnimationFrame(() => currentAnnotations && currentAnnotations.relayout());
@@ -3989,9 +4108,6 @@
             let currentLink = null;
 
             const clearFulltextLink = () => {
-                // Also invalidates an in-flight loadFulltext: without the bump, a slow fetch
-                // resolving after panel close would re-render into the closed panel and
-                // remount the image overlays the close just removed.
                 fulltextReq++;
                 if (currentLink) {
                     currentLink.destroy();
@@ -4061,7 +4177,6 @@
             fulltextBtn.setAttribute('title', title);
             fulltextBtn.setAttribute('aria-label', title);
             if (doublePage && panelOpen()) panels.closePanels();
-            // Annotations follow the fulltext availability: no data/overlays in double-page mode.
             if (annotations) refreshLayout();
         };
         updateFulltextAvail();
@@ -4363,13 +4478,422 @@
         return parseLayoutTagDetails(await res.json(), start, end);
     }
 
-    /** Layout-tag panel wiring: tag pick menu, page range, per-page hit list with lazy detail loading, image highlights. */
+    /** Layout-tag panel state: selection, page range, cursor and per-page details, without any DOM. */
 
-    /** Number of colour dots the pick trigger shows for the selected tags. */
+    /**
+     * Creates the panel state. Queries derive everything from the index, the
+     * selection, the range and the loaded details; transitions keep the cursor
+     * valid (it prefers an entry on the pages the viewer currently shows).
+     *
+     * @param {number} pageCount
+     * @returns {object}
+     */
+    function createLayoutTagsState(pageCount) {
+        const s = { index: null, failed: false, selected: new Set(), from: 1, to: pageCount, filter: '', cursorKey: null, details: new Map(), inFlight: new Set() };
+        const allTags = () => (s.index ? s.index.tags : []);
+        const tagByLabel = (label) => allTags().find((t) => t.label === label) || null;
+        const selectedTags = () => allTags().filter((t) => s.selected.has(t.label));
+        const occurrencesOf = (page, label) => {
+            if (!s.details.has(page)) return undefined;
+            const byLabel = s.details.get(page);
+            return byLabel ? byLabel[label] || [] : null;
+        };
+        const entries = () => flatEntries(selectedTags(), s.from, s.to, occurrencesOf);
+        const preferCursorOnPages = (pages) => {
+            const list = entries();
+            const onPage = list.find((e) => pages.includes(e.page));
+            if (onPage) s.cursorKey = entryKey(onPage);
+            else if (!s.cursorKey && list.length) s.cursorKey = entryKey(list[0]);
+        };
+        const keepOrResetCursor = (pages) => {
+            if (!s.selected.size) {
+                s.cursorKey = null;
+                return;
+            }
+            if (!entries().some((e) => entryKey(e) === s.cursorKey)) {
+                s.cursorKey = null;
+                preferCursorOnPages(pages);
+            }
+        };
+        return {
+            get pageCount() {
+                return pageCount;
+            },
+            get index() {
+                return s.index;
+            },
+            get failed() {
+                return s.failed;
+            },
+            get selected() {
+                return s.selected;
+            },
+            get from() {
+                return s.from;
+            },
+            get to() {
+                return s.to;
+            },
+            get cursorKey() {
+                return s.cursorKey;
+            },
+            get details() {
+                return s.details;
+            },
+            get inFlight() {
+                return s.inFlight;
+            },
+            allTags,
+            tagByLabel,
+            selectedTags,
+            occurrencesOf,
+            entries,
+            cursorEntry() {
+                const list = entries();
+                return list[cursorIndex(list, s.cursorKey)] || null;
+            },
+            displayName(label) {
+                const tag = tagByLabel(label);
+                return tag ? tag.name : label;
+            },
+            styleTokens(label) {
+                const tag = tagByLabel(label);
+                return tag ? styleClassTokens(tag.styleClass) : [];
+            },
+            visibleTags: () => filterTags(allTags(), s),
+            inRangeCount: (tag) => tagPages(tag, s.from, s.to).length,
+            rangeIsFull: () => s.from === 1 && s.to === pageCount,
+            compositionKey: () => [s.failed, Array.from(s.selected).sort().join(','), s.from, s.to].join('|'),
+            progress() {
+                const pages = hitPages(selectedTags(), s.from, s.to);
+                return { total: pages.length, loaded: pages.filter((p) => s.details.has(p)).length, failed: pages.some((p) => s.details.get(p) === null) };
+            },
+            setIndex(index) {
+                s.index = index;
+                s.failed = false;
+            },
+            setFailed() {
+                s.failed = true;
+            },
+            setFilter(text) {
+                s.filter = text;
+            },
+            setCursor(key) {
+                s.cursorKey = key;
+            },
+            preferCursorOnPages,
+            toggleTag(label, currentPages) {
+                if (s.selected.has(label)) s.selected.delete(label);
+                else s.selected.add(label);
+                keepOrResetCursor(currentPages);
+            },
+            setRange(from, to, currentPages) {
+                const next = clampRange(from, to, pageCount);
+                if (next.from === s.from && next.to === s.to) return false;
+                s.from = next.from;
+                s.to = next.to;
+                keepOrResetCursor(currentPages);
+                return true;
+            },
+            missingPages: (pages) => pages.filter((p) => !s.details.has(p) && !s.inFlight.has(p)),
+            markInFlight(pages) {
+                pages.forEach((p) => s.inFlight.add(p));
+            },
+            storeDetails(pages, details) {
+                pages.forEach((p) => {
+                    s.inFlight.delete(p);
+                    s.details.set(p, details ? details.get(p) || {} : null);
+                });
+            },
+        };
+    }
+
+    /** Layout-tag pick menu: multi-select rows with optional filter; the trigger shows the selection as text and colour dots. */
+
     const TRIGGER_DOTS = 4;
 
-    /** Key-dispatcher priority of the pick menu's Escape: under the page dropdown (30), above the panels (40). */
-    const PICK_KEY_PRIORITY = 35;
+    /**
+     * @param {object} opts
+     * @param {object} opts.state  the panel state (createLayoutTagsState)
+     * @param {DOMStringMap} opts.labels  data-label-* of the panel
+     * @param {HTMLElement} opts.trigger
+     * @param {HTMLElement} opts.menu
+     * @param {HTMLElement} opts.list
+     * @param {HTMLElement|null} opts.dots
+     * @param {HTMLElement|null} opts.text
+     * @param {HTMLElement|null} opts.filterWrap
+     * @param {HTMLInputElement|null} opts.filterInput
+     * @param {{register: Function}} opts.keys
+     * @param {(label: string) => void} opts.onToggle
+     * @returns {{build: Function, sync: Function, close: Function, setFilterVisible: Function, destroy: Function}}
+     */
+    function setupPickMenu({ state, labels, trigger, menu, list, dots, text, filterWrap, filterInput, keys, onToggle }) {
+        const bag = createDisposer();
+        const isOpen = () => !menu.hidden;
+        const onOutside = (e) => {
+            if (!menu.contains(e.target) && !trigger.contains(e.target)) close();
+        };
+        const open = () => {
+            if (isOpen()) return;
+            menu.hidden = false;
+            trigger.setAttribute('aria-expanded', 'true');
+            document.addEventListener('pointerdown', onOutside, true);
+            const first = filterWrap && !filterWrap.hidden && filterInput ? filterInput : menu.querySelector('input[type="checkbox"]:not([disabled])');
+            if (first) first.focus();
+        };
+        const close = (restoreFocus = false) => {
+            if (!isOpen()) return;
+            menu.hidden = true;
+            trigger.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('pointerdown', onOutside, true);
+            if (restoreFocus) trigger.focus();
+        };
+
+        const syncRows = () => {
+            list.querySelectorAll('.immersive__layout-tags-pick-row').forEach((row) => {
+                const tag = state.tagByLabel(row.dataset.tagLabel);
+                if (!tag) return;
+                const inRange = state.inRangeCount(tag);
+                const selected = state.selected.has(tag.label);
+                const cb = row.querySelector('input');
+                const count = row.querySelector('.immersive__layout-tags-pick-count');
+                row.classList.toggle('-empty', !inRange);
+                cb.checked = selected;
+                cb.disabled = !inRange && !selected;
+                if (count) count.textContent = String(inRange);
+            });
+        };
+
+        const build = () => {
+            list.replaceChildren();
+            const tags = state.visibleTags();
+            if (!tags.length) {
+                list.append(el('p', 'immersive__layout-tags-pick-none', labels.labelFilterNone || ''));
+                return;
+            }
+            tags.forEach((tag, i) => {
+                const row = el('div', 'immersive__layout-tags-pick-row');
+                row.classList.add(...state.styleTokens(tag.label));
+                row.dataset.tagLabel = tag.label;
+                const id = `immersiveLayoutTagsPick-${i}`;
+                const cb = el('input', 'immersive__layout-tags-pick-checkbox');
+                cb.type = 'checkbox';
+                cb.id = id;
+                cb.addEventListener('change', () => onToggle(tag.label));
+                const label = el('label', 'immersive__layout-tags-pick-label');
+                label.htmlFor = id;
+                label.title = tag.label;
+                const dot = el('span', 'immersive__layout-tags-dot');
+                dot.setAttribute('aria-hidden', 'true');
+                label.append(dot, el('span', 'immersive__layout-tags-pick-name', tag.name));
+                row.append(cb, label, el('span', 'immersive__layout-tags-pick-count', String(state.inRangeCount(tag))));
+                list.append(row);
+            });
+            syncRows();
+        };
+
+        const sync = () => {
+            const chosen = state.selectedTags();
+            if (dots) {
+                dots.replaceChildren();
+                chosen
+                    .filter((tag) => styleClassTokens(tag.styleClass).length)
+                    .slice(0, TRIGGER_DOTS)
+                    .forEach((tag) => {
+                        const dot = el('span', 'immersive__layout-tags-dot');
+                        dot.classList.add(...styleClassTokens(tag.styleClass));
+                        dots.append(dot);
+                    });
+            }
+            let caption = labels.labelPick || '';
+            if (chosen.length === 1 || chosen.length === 2) caption = chosen.map((t) => t.name).join(', ');
+            else if (chosen.length > 2) caption = formatMessage(labels.labelPickMore, chosen[0].name, chosen.length - 1);
+            if (text) text.textContent = caption;
+            trigger.setAttribute('aria-label', chosen.length ? formatMessage(labels.labelPickSelected, chosen.length) : labels.labelPick || '');
+            syncRows();
+        };
+
+        bag.listen(trigger, 'click', () => (isOpen() ? close() : open()));
+        if (filterInput) {
+            bag.listen(filterInput, 'input', () => {
+                state.setFilter(filterInput.value);
+                build();
+            });
+        }
+        bag.add(
+            keys.register(KEY_PRIORITY.layoutTagsPick, (e) => {
+                if (e.key !== 'Escape' || !isOpen()) return false;
+                close(true);
+                return true;
+            })
+        );
+
+        return {
+            build,
+            sync,
+            close,
+            setFilterVisible(visible) {
+                if (filterWrap) filterWrap.hidden = !visible;
+            },
+            destroy() {
+                close();
+                bag.dispose();
+            },
+        };
+    }
+
+    /** Layout-tag hit list: rows grouped by page, per-page counts and error markers, the active row and the progress line. */
+
+    const REVEAL_MARGIN = 8;
+
+    /**
+     * @param {object} opts
+     * @param {object} opts.state  the panel state (createLayoutTagsState)
+     * @param {DOMStringMap} opts.labels  data-label-* of the panel
+     * @param {HTMLElement} opts.mount
+     * @param {HTMLElement} opts.panel  the scroll container
+     * @param {HTMLElement|null} opts.sticky
+     * @param {HTMLElement|null} opts.progress
+     * @param {(index: number) => void} opts.onActivate
+     * @returns {{render: Function, markActive: Function, pendingRows: Function}}
+     */
+    function createHitList({ state, labels, mount, panel, sticky, progress, onActivate }) {
+        let revealedKey = null;
+        let builtKey = null;
+
+        const syncCounts = () => {
+            mount.querySelectorAll('.immersive__layout-tags-hit').forEach((btn) => {
+                const page = Number(btn.dataset.pageNo);
+                const label = btn.dataset.tagLabel;
+                const occ = state.occurrencesOf(page, label);
+                const count = occ ? occ.length : 0;
+                const countEl = btn.querySelector('.immersive__layout-tags-hit-count');
+                btn.classList.toggle('-pending', occ === undefined);
+                btn.classList.toggle('-error', occ === null);
+                countEl.textContent = occ === undefined ? '…' : occ === null ? '!' : count > 1 ? `(${count})` : '';
+                let name = `${state.displayName(label)}, ${labels.labelPage || ''} ${page}`;
+                if (occ === null) name += `, ${labels.labelError || ''}`;
+                else if (occ !== undefined && count > 1) name += `, ${formatMessage(labels.labelOccurrences, count)}`;
+                btn.setAttribute('aria-label', name);
+                btn.title = occ === null ? labels.labelError || '' : '';
+            });
+        };
+
+        const emptyText = () => {
+            if (state.failed) return labels.labelError || '';
+            if (!state.selected.size) return labels.labelNoneSelected || '';
+            return (state.rangeIsFull() ? labels.labelEmpty : labels.labelEmptyRange) || '';
+        };
+
+        const build = () => {
+            revealedKey = null;
+            mount.replaceChildren();
+            const list = state.failed || !state.selected.size ? [] : state.entries();
+            if (!list.length) {
+                mount.append(el('p', 'immersive__layout-tags-empty', emptyText()));
+                return;
+            }
+            const ul = el('ul', 'immersive__layout-tags-hits');
+            let currentPage = null;
+            let typeList = null;
+            list.forEach((entry, i) => {
+                if (entry.page !== currentPage) {
+                    currentPage = entry.page;
+                    const pageLi = el('li', 'immersive__layout-tags-page');
+                    const pageNo = el('span', 'immersive__layout-tags-pageno');
+                    pageNo.append(el('span', 'sr-only', `${labels.labelPage || ''} `), document.createTextNode(String(entry.page)));
+                    typeList = el('ul', 'immersive__layout-tags-types');
+                    pageLi.append(pageNo, typeList);
+                    ul.append(pageLi);
+                }
+                const item = el('li');
+                const btn = el('button', 'immersive__layout-tags-hit');
+                btn.type = 'button';
+                btn.classList.add(...state.styleTokens(entry.label));
+                btn.dataset.spotIndex = String(i);
+                btn.dataset.spotKey = entryKey(entry);
+                btn.dataset.pageNo = String(entry.page);
+                btn.dataset.tagLabel = entry.label;
+                const dot = el('span', 'immersive__layout-tags-dot');
+                dot.setAttribute('aria-hidden', 'true');
+                btn.append(dot, el('span', 'immersive__layout-tags-hit-name', state.displayName(entry.label)), el('span', 'immersive__layout-tags-hit-count'));
+                btn.addEventListener('click', () => onActivate(i));
+                item.append(btn);
+                typeList.append(item);
+            });
+            mount.append(ul);
+            syncCounts();
+        };
+
+        const revealActive = () => {
+            if (state.cursorKey === revealedKey) return;
+            const row = mount.querySelector('.immersive__layout-tags-hit.-active');
+            if (!row) return;
+            revealedKey = state.cursorKey;
+            const stickyHeight = sticky ? sticky.offsetHeight : 0;
+            const top = row.offsetTop - panel.offsetTop;
+            const bottom = top + row.offsetHeight;
+            const viewTop = panel.scrollTop + stickyHeight;
+            const viewBottom = panel.scrollTop + panel.clientHeight;
+            if (top < viewTop) panel.scrollTop = Math.max(0, top - stickyHeight - REVEAL_MARGIN);
+            else if (bottom > viewBottom) panel.scrollTop = bottom - panel.clientHeight + REVEAL_MARGIN;
+        };
+
+        const syncProgress = () => {
+            if (!progress) return;
+            const { total, loaded, failed } = state.progress();
+            let text = '';
+            if (failed) text = labels.labelError || '';
+            else if (total && loaded < total) text = formatMessage(labels.labelProgressLoading, loaded, total);
+            else if (total === 1) text = labels.labelProgressDoneOne || '';
+            else if (total) text = formatMessage(labels.labelProgressDone, total);
+            progress.textContent = text;
+        };
+
+        const markActive = () => {
+            const list = state.entries();
+            const cursor = cursorIndex(list, state.cursorKey);
+            mount.querySelectorAll('.immersive__layout-tags-hit').forEach((btn) => {
+                const on = list.length > 0 && Number(btn.dataset.spotIndex) === cursor;
+                btn.classList.toggle('-active', on);
+                if (on) btn.setAttribute('aria-current', 'true');
+                else btn.removeAttribute('aria-current');
+            });
+            revealActive();
+            syncProgress();
+        };
+
+        const render = (force = false) => {
+            const key = state.compositionKey();
+            if (force || key !== builtKey) {
+                builtKey = key;
+                const focused = document.activeElement;
+                const focusKey = focused && focused.dataset ? focused.dataset.spotKey : null;
+                build();
+                if (focusKey) {
+                    const again = mount.querySelector(`[data-spot-key="${focusKey}"]`);
+                    if (again) again.focus({ preventScroll: true });
+                }
+            } else {
+                syncCounts();
+            }
+            markActive();
+        };
+
+        const pendingRows = () =>
+            Array.from(mount.querySelectorAll('.immersive__layout-tags-hit.-pending'))
+                .filter((btn) => !state.inFlight.has(Number(btn.dataset.pageNo)))
+                .map((btn) => {
+                    const r = btn.getBoundingClientRect();
+                    return { page: Number(btn.dataset.pageNo), top: r.top, bottom: r.bottom };
+                });
+
+        return { render, markActive, pendingRows };
+    }
+
+    /** Layout-tag panel wiring: index and detail loading, page range, cursor and image highlights; pick menu and hit list are sub-modules. */
+
+    const OWNER = 'layout-tags';
 
     /**
      * Wires the layout-tag panel: the record-wide index is fetched once (on the
@@ -4396,168 +4920,41 @@
         const rangeApply = q('[data-immersive-layout-tags="apply"]');
         const rangeReset = q('[data-immersive-layout-tags="reset"]');
         const pickTrigger = q('[data-immersive-layout-tags="pick-trigger"]');
-        const pickDots = q('[data-immersive-layout-tags="pick-dots"]');
-        const pickText = q('[data-immersive-layout-tags="pick-text"]');
         const pickMenu = q('[data-immersive-layout-tags="pick-menu"]');
-        const filterWrap = q('[data-immersive-layout-tags="filter"]');
-        const filterInput = filterWrap && filterWrap.querySelector('input');
         const pickList = q('[data-immersive-layout-tags="pick-list"]');
+        const filterWrap = q('[data-immersive-layout-tags="filter"]');
         const loader = q('[data-immersive-layout-tags="loader"]');
         const hitsMount = q('[data-immersive-layout-tags="hits"]');
-        const progress = q('[data-immersive-layout-tags="progress"]');
         if (!rangeFrom || !rangeTo || !pickTrigger || !pickMenu || !pickList || !hitsMount) return noop;
         const bag = createDisposer();
         const labels = panel.dataset;
-        const pageCount = viewer.getPageCount();
-
-        const state = {
-            index: null,
-            failed: false,
-            selected: new Set(),
-            from: 1,
-            to: pageCount,
-            filter: '',
-            cursorKey: null,
-            details: new Map(),
-            inFlight: new Set(),
-        };
-
+        const state = createLayoutTagsState(viewer.getPageCount());
         const panelOpen = () => panel.classList.contains('is-open');
         const currentPages = () => viewer.getCurrentPages().map((o) => o + 1);
-        const rangeIsFull = () => state.from === 1 && state.to === pageCount;
-        const allTags = () => (state.index ? state.index.tags : []);
-        const tagByLabel = (label) => allTags().find((t) => t.label === label) || null;
-        const selectedTags = () => allTags().filter((t) => state.selected.has(t.label));
-        const occurrencesOf = (page, label) => {
-            if (!state.details.has(page)) return undefined;
-            const byLabel = state.details.get(page);
-            return byLabel ? byLabel[label] || [] : null;
-        };
-        const entries = () => flatEntries(selectedTags(), state.from, state.to, occurrencesOf);
-        const displayName = (label) => {
-            const tag = tagByLabel(label);
-            return tag ? tag.name : label;
-        };
-        const styleTokens = (label) => {
-            const tag = tagByLabel(label);
-            return tag ? styleClassTokens(tag.styleClass) : [];
-        };
 
-        /* PICK MENU */
-
-        const isPickOpen = () => !pickMenu.hidden;
-        const onPickOutside = (e) => {
-            if (!pickMenu.contains(e.target) && !pickTrigger.contains(e.target)) closePick();
-        };
-        const openPick = () => {
-            if (isPickOpen()) return;
-            pickMenu.hidden = false;
-            pickTrigger.setAttribute('aria-expanded', 'true');
-            document.addEventListener('pointerdown', onPickOutside, true);
-            const first = filterWrap && !filterWrap.hidden && filterInput ? filterInput : pickMenu.querySelector('input[type="checkbox"]:not([disabled])');
-            if (first) first.focus();
-        };
-        const closePick = (restoreFocus = false) => {
-            if (!isPickOpen()) return;
-            pickMenu.hidden = true;
-            pickTrigger.setAttribute('aria-expanded', 'false');
-            document.removeEventListener('pointerdown', onPickOutside, true);
-            if (restoreFocus) pickTrigger.focus();
-        };
-
-        /** Rebuilds the checkbox rows of the pick menu from the index, range and filter. */
-        const buildPickRows = () => {
-            pickList.replaceChildren();
-            const list = filterTags(allTags(), state);
-            if (!list.length) {
-                pickList.append(el('p', 'immersive__layout-tags-pick-none', labels.labelFilterNone || ''));
-                return;
-            }
-            list.forEach((tag, i) => {
-                const inRange = tagPages(tag, state.from, state.to).length;
-                const row = el('div', 'immersive__layout-tags-pick-row');
-                row.classList.add(...styleTokens(tag.label));
-                row.dataset.tagLabel = tag.label;
-                const id = `immersiveLayoutTagsPick-${i}`;
-                const cb = el('input', 'immersive__layout-tags-pick-checkbox');
-                cb.type = 'checkbox';
-                cb.id = id;
-                cb.addEventListener('change', () => toggleTag(tag.label));
-                const label = el('label', 'immersive__layout-tags-pick-label');
-                label.htmlFor = id;
-                label.title = tag.label;
-                const dot = el('span', 'immersive__layout-tags-dot');
-                dot.setAttribute('aria-hidden', 'true');
-                label.append(dot, el('span', 'immersive__layout-tags-pick-name', tag.name));
-                row.append(cb, label, el('span', 'immersive__layout-tags-pick-count', String(inRange)));
-                pickList.append(row);
-            });
-            syncPickRows();
-        };
-
-        /** Aligns checked/disabled state and in-range counts of the existing rows with the state. */
-        const syncPickRows = () => {
-            pickList.querySelectorAll('.immersive__layout-tags-pick-row').forEach((row) => {
-                const tag = tagByLabel(row.dataset.tagLabel);
-                if (!tag) return;
-                const inRange = tagPages(tag, state.from, state.to).length;
-                const selected = state.selected.has(tag.label);
-                const cb = row.querySelector('input');
-                const count = row.querySelector('.immersive__layout-tags-pick-count');
-                row.classList.toggle('-empty', !inRange);
-                cb.checked = selected;
-                cb.disabled = !inRange && !selected;
-                if (count) count.textContent = String(inRange);
-            });
-        };
-
-        /** Trigger text, colour dots and accessible name follow the selection. */
-        const syncPick = () => {
-            const chosen = selectedTags();
-            if (pickDots) {
-                pickDots.replaceChildren();
-                chosen
-                    .filter((tag) => styleClassTokens(tag.styleClass).length)
-                    .slice(0, TRIGGER_DOTS)
-                    .forEach((tag) => {
-                        const dot = el('span', 'immersive__layout-tags-dot');
-                        dot.classList.add(...styleClassTokens(tag.styleClass));
-                        pickDots.append(dot);
-                    });
-            }
-            let text = labels.labelPick || '';
-            if (chosen.length === 1 || chosen.length === 2) text = chosen.map((t) => t.name).join(', ');
-            else if (chosen.length > 2) text = formatMessage(labels.labelPickMore, chosen[0].name, chosen.length - 1);
-            if (pickText) pickText.textContent = text;
-            pickTrigger.setAttribute('aria-label', chosen.length ? formatMessage(labels.labelPickSelected, chosen.length) : labels.labelPick || '');
-            syncPickRows();
-        };
-
-        bag.listen(pickTrigger, 'click', () => (isPickOpen() ? closePick() : openPick()));
-        if (filterInput) {
-            bag.listen(filterInput, 'input', () => {
-                state.filter = filterInput.value;
-                buildPickRows();
-            });
-        }
-        bag.add(
-            keys.register(PICK_KEY_PRIORITY, (e) => {
-                if (e.key !== 'Escape' || !isPickOpen()) return false;
-                closePick(true);
-                return true;
-            })
-        );
+        const pick = setupPickMenu({
+            state,
+            labels,
+            trigger: pickTrigger,
+            menu: pickMenu,
+            list: pickList,
+            dots: q('[data-immersive-layout-tags="pick-dots"]'),
+            text: q('[data-immersive-layout-tags="pick-text"]'),
+            filterWrap,
+            filterInput: filterWrap && filterWrap.querySelector('input'),
+            keys,
+            onToggle: (label) => toggleTag(label),
+        });
+        bag.add(() => pick.destroy());
+        const hits = createHitList({ state, labels, mount: hitsMount, panel, sticky, progress: q('[data-immersive-layout-tags="progress"]'), onActivate: (i) => goToEntry(i) });
 
         /* PAGE RANGE */
 
-        /** Shows either OK (unsaved input) or the reset button (narrowed range), never both. */
         const syncRangeButtons = () => {
             const dirty = Number(rangeFrom.value) !== state.from || Number(rangeTo.value) !== state.to;
             if (rangeApply) rangeApply.hidden = !dirty;
-            if (rangeReset) rangeReset.hidden = dirty || rangeIsFull();
+            if (rangeReset) rangeReset.hidden = dirty || state.rangeIsFull();
         };
-
-        /** Writes the state into the fields unless one of them is being edited. */
         const syncRange = () => {
             const editing = document.activeElement === rangeFrom || document.activeElement === rangeTo;
             if (!editing) {
@@ -4566,35 +4963,22 @@
             }
             syncRangeButtons();
         };
-
         const setRange = (from, to) => {
-            const next = clampRange(from, to, pageCount);
-            if (next.from === state.from && next.to === state.to) {
+            if (!state.setRange(from, to, currentPages())) {
                 syncRange();
                 return;
             }
-            state.from = next.from;
-            state.to = next.to;
-            if (!entries().some((e) => entryKey(e) === state.cursorKey)) {
-                state.cursorKey = null;
-                preferCursorOnCurrentPage();
-            }
-            render(true);
-            loadCursorPage();
-            pumpVisible();
-            renderHighlights();
+            refresh(true);
         };
-
         const applyRange = () => {
-            setRange(rangeFrom.value === '' ? 1 : rangeFrom.value, rangeTo.value === '' ? pageCount : rangeTo.value);
+            setRange(rangeFrom.value === '' ? 1 : rangeFrom.value, rangeTo.value === '' ? state.pageCount : rangeTo.value);
             rangeFrom.value = String(state.from);
             rangeTo.value = String(state.to);
             syncRangeButtons();
             if (document.activeElement === document.body) rangeFrom.focus();
         };
-
         [rangeFrom, rangeTo].forEach((input) => {
-            input.max = String(pageCount);
+            input.max = String(state.pageCount);
             bag.listen(input, 'input', syncRangeButtons);
             bag.listen(input, 'keydown', (e) => {
                 if (e.key !== 'Enter') return;
@@ -4605,7 +4989,7 @@
         if (rangeApply) bag.listen(rangeApply, 'click', applyRange);
         if (rangeReset) {
             bag.listen(rangeReset, 'click', () => {
-                setRange(1, pageCount);
+                setRange(1, state.pageCount);
                 rangeFrom.value = String(state.from);
                 rangeTo.value = String(state.to);
                 syncRangeButtons();
@@ -4614,253 +4998,79 @@
 
         /* DETAIL LOADING */
 
-        /** Fetches the details of the given pages in contiguous range batches; a failed batch marks its pages as failed. */
         const loadPages = (pages) => {
-            const missing = pages.filter((p) => !state.details.has(p) && !state.inFlight.has(p));
+            const missing = state.missingPages(pages);
             if (!missing.length) return;
             batchRanges(missing, VISIBLE_BATCH).forEach(({ start, end }) => {
                 const span = [];
                 for (let p = start; p <= end; p++) {
                     if (!state.details.has(p) && !state.inFlight.has(p)) span.push(p);
                 }
-                span.forEach((p) => state.inFlight.add(p));
+                state.markInFlight(span);
                 loadLayoutTagDetails(pi, apiBase, start, end)
-                    .then((details) => {
-                        span.forEach((p) => state.inFlight.delete(p));
-                        span.forEach((p) => state.details.set(p, details.get(p) || {}));
-                    })
+                    .then((details) => state.storeDetails(span, details))
                     .catch((e) => {
-                        span.forEach((p) => state.inFlight.delete(p));
                         console.warn('immersive layout tags failed', e);
-                        span.forEach((p) => state.details.set(p, null));
+                        state.storeDetails(span, null);
                     })
                     .then(() => {
-                        if (!state.cursorKey) preferCursorOnCurrentPage();
+                        if (!state.cursorKey) state.preferCursorOnPages(currentPages());
                         render();
                         renderHighlights();
                         pumpVisible();
                     });
             });
         };
-
-        /** Loads only the pages whose placeholder rows are in (or near) the panel's view. */
         const pumpVisible = () => {
             if (!panelOpen() || !state.selected.size) return;
-            const box = panel.getBoundingClientRect();
-            const rows = Array.from(hitsMount.querySelectorAll('.immersive__layout-tags-hit.-pending'))
-                .filter((btn) => !state.inFlight.has(Number(btn.dataset.pageNo)))
-                .map((btn) => {
-                    const r = btn.getBoundingClientRect();
-                    return { page: Number(btn.dataset.pageNo), top: r.top, bottom: r.bottom };
-                });
-            const wanted = visiblePages(box, rows, VISIBLE_BATCH);
+            const wanted = visiblePages(panel.getBoundingClientRect(), hits.pendingRows(), VISIBLE_BATCH);
             if (wanted.length) loadPages(wanted);
         };
-
-        /* CURSOR AND NAVIGATION */
-
-        /** Fetches the cursor's page ahead of the visible rows so its highlights appear first. */
         const loadCursorPage = () => {
-            const list = entries();
-            const active = list[cursorIndex(list, state.cursorKey)];
+            const active = state.cursorEntry();
             if (active && active.pending) loadPages([active.page]);
         };
 
-        /** Puts the cursor on the first entry of a page that is open right now, without turning pages. */
-        const preferCursorOnCurrentPage = () => {
-            const list = entries();
-            const pages = currentPages();
-            const onPage = list.find((e) => pages.includes(e.page));
-            if (onPage) state.cursorKey = entryKey(onPage);
-            else if (!state.cursorKey && list.length) state.cursorKey = entryKey(list[0]);
-        };
+        /* CURSOR AND HIGHLIGHTS */
 
-        const toggleTag = (label) => {
-            if (state.selected.has(label)) state.selected.delete(label);
-            else state.selected.add(label);
-            if (!state.selected.size) state.cursorKey = null;
-            else if (!entries().some((e) => entryKey(e) === state.cursorKey)) {
-                state.cursorKey = null;
-                preferCursorOnCurrentPage();
-            }
-            render(true);
+        const render = (force = false) => {
+            hits.render(force);
+            pick.sync();
+            syncRange();
+        };
+        const refresh = (force) => {
+            render(force);
             loadCursorPage();
             pumpVisible();
             renderHighlights();
         };
-
+        const toggleTag = (label) => {
+            state.toggleTag(label, currentPages());
+            refresh(true);
+        };
         const goToEntry = (i) => {
-            const list = entries();
+            const list = state.entries();
             if (!list.length) return;
             const entry = list[Math.max(0, Math.min(i, list.length - 1))];
-            state.cursorKey = entryKey(entry);
-            markActive();
+            state.setCursor(entryKey(entry));
+            hits.markActive();
             if (entry.pending) loadPages([entry.page]);
             if (!currentPages().includes(entry.page)) viewer.goToPage(entry.page - 1);
             else renderHighlights();
         };
-
-        /** Draws every occurrence of the cursor's tag on the open page(s); nothing while the panel is closed. */
         const renderHighlights = () => {
             if (!panelOpen()) return;
-            const list = entries();
-            const active = list[cursorIndex(list, state.cursorKey)];
+            const active = state.cursorEntry();
             if (!active || !currentPages().includes(active.page)) {
-                viewer.clearHighlights('layout-tags');
+                viewer.clearHighlights(OWNER);
                 return;
             }
-            const className = styleTokens(active.label).join(' ');
-            const rects = (occurrencesOf(active.page, active.label) || []).map((o) => ({ ...o.rect, order: active.page - 1, className }));
-            viewer.setHighlights(rects, 'layout-tags');
+            const className = state.styleTokens(active.label).join(' ');
+            const rects = (state.occurrencesOf(active.page, active.label) || []).map((o) => ({ ...o.rect, order: active.page - 1, className }));
+            viewer.setHighlights(rects, OWNER);
         };
 
-        /* HIT LIST */
-
-        let revealedKey = null;
-
-        /**
-         * Writes the per-page state (still loading, number of occurrences) into the
-         * existing rows. Which rows exist follows from the index alone, so arriving
-         * page details never rebuild the list — they only fill it in.
-         */
-        const syncHitCounts = () => {
-            hitsMount.querySelectorAll('.immersive__layout-tags-hit').forEach((btn) => {
-                const page = Number(btn.dataset.pageNo);
-                const label = btn.dataset.tagLabel;
-                const occ = occurrencesOf(page, label);
-                const count = occ ? occ.length : 0;
-                const countEl = btn.querySelector('.immersive__layout-tags-hit-count');
-                btn.classList.toggle('-pending', occ === undefined);
-                btn.classList.toggle('-error', occ === null);
-                countEl.textContent = occ === undefined ? '…' : occ === null ? '!' : count > 1 ? `(${count})` : '';
-                let name = `${displayName(label)}, ${labels.labelPage || ''} ${page}`;
-                if (occ === null) name += `, ${labels.labelError || ''}`;
-                else if (occ !== undefined && count > 1) name += `, ${formatMessage(labels.labelOccurrences, count)}`;
-                btn.setAttribute('aria-label', name);
-                btn.title = occ === null ? labels.labelError || '' : '';
-            });
-        };
-
-        /** Rebuilds the page-grouped hit list; rows carry page and label for the visibility pump and the count sync. */
-        const buildHits = () => {
-            // A rebuilt list is a new list: the active row is worth showing again.
-            revealedKey = null;
-            hitsMount.replaceChildren();
-            if (state.failed) {
-                hitsMount.append(el('p', 'immersive__layout-tags-empty', labels.labelError || ''));
-                return;
-            }
-            if (!state.selected.size) {
-                hitsMount.append(el('p', 'immersive__layout-tags-empty', labels.labelNoneSelected || ''));
-                return;
-            }
-            const list = entries();
-            if (!list.length) {
-                hitsMount.append(el('p', 'immersive__layout-tags-empty', (rangeIsFull() ? labels.labelEmpty : labels.labelEmptyRange) || ''));
-                return;
-            }
-            const ul = el('ul', 'immersive__layout-tags-hits');
-            let currentPage = null;
-            let typeList = null;
-            list.forEach((entry, i) => {
-                if (entry.page !== currentPage) {
-                    currentPage = entry.page;
-                    const pageLi = el('li', 'immersive__layout-tags-page');
-                    const pageNo = el('span', 'immersive__layout-tags-pageno');
-                    pageNo.append(el('span', 'sr-only', `${labels.labelPage || ''} `), document.createTextNode(String(entry.page)));
-                    typeList = el('ul', 'immersive__layout-tags-types');
-                    pageLi.append(pageNo, typeList);
-                    ul.append(pageLi);
-                }
-                const item = el('li');
-                const btn = el('button', 'immersive__layout-tags-hit');
-                btn.type = 'button';
-                btn.classList.add(...styleTokens(entry.label));
-                btn.dataset.spotIndex = String(i);
-                btn.dataset.spotKey = entryKey(entry);
-                btn.dataset.pageNo = String(entry.page);
-                btn.dataset.tagLabel = entry.label;
-                const dot = el('span', 'immersive__layout-tags-dot');
-                dot.setAttribute('aria-hidden', 'true');
-                btn.append(dot, el('span', 'immersive__layout-tags-hit-name', displayName(entry.label)), el('span', 'immersive__layout-tags-hit-count'));
-                btn.addEventListener('click', () => goToEntry(i));
-                item.append(btn);
-                typeList.append(item);
-            });
-            hitsMount.append(ul);
-            syncHitCounts();
-        };
-
-        /**
-         * Brings the active hit into view with offset math (no scrollIntoView, the
-         * page must not move). Only ever on a cursor change: every arriving page
-         * batch re-renders, and revealing on each of those would drag the list back
-         * up under a user who is scrolling.
-         */
-        const revealActiveSpot = () => {
-            if (state.cursorKey === revealedKey) return;
-            const row = hitsMount.querySelector('.immersive__layout-tags-hit.-active');
-            if (!row) return;
-            revealedKey = state.cursorKey;
-            const stickyHeight = sticky ? sticky.offsetHeight : 0;
-            const top = row.offsetTop - panel.offsetTop;
-            const bottom = top + row.offsetHeight;
-            const viewTop = panel.scrollTop + stickyHeight;
-            const viewBottom = panel.scrollTop + panel.clientHeight;
-            if (top < viewTop) panel.scrollTop = Math.max(0, top - stickyHeight - 8);
-            else if (bottom > viewBottom) panel.scrollTop = bottom - panel.clientHeight + 8;
-        };
-
-        const markActive = () => {
-            const list = entries();
-            const cursor = cursorIndex(list, state.cursorKey);
-            hitsMount.querySelectorAll('.immersive__layout-tags-hit').forEach((btn) => {
-                const on = list.length > 0 && Number(btn.dataset.spotIndex) === cursor;
-                btn.classList.toggle('-active', on);
-                if (on) btn.setAttribute('aria-current', 'true');
-                else btn.removeAttribute('aria-current');
-            });
-            revealActiveSpot();
-            if (progress) {
-                const pages = hitPages(selectedTags(), state.from, state.to);
-                const loaded = pages.filter((p) => state.details.has(p)).length;
-                const failed = pages.some((p) => state.details.get(p) === null);
-                let text = '';
-                if (failed) text = labels.labelError || '';
-                else if (pages.length && loaded < pages.length) text = formatMessage(labels.labelProgressLoading, loaded, pages.length);
-                else if (pages.length === 1) text = labels.labelProgressDoneOne || '';
-                else if (pages.length) text = formatMessage(labels.labelProgressDone, pages.length);
-                progress.textContent = text;
-            }
-        };
-
-        let builtKey = null;
-
-        /**
-         * Rebuilds the hit list only when its composition changed (selection, range,
-         * error), keeping keyboard focus on the same entry; arriving page details go
-         * through the count sync instead.
-         */
-        const render = (force = false) => {
-            const key = [state.failed, Array.from(state.selected).sort().join(','), state.from, state.to].join('|');
-            if (force || key !== builtKey) {
-                builtKey = key;
-                const focused = document.activeElement;
-                const focusKey = focused && focused.dataset ? focused.dataset.spotKey : null;
-                buildHits();
-                if (focusKey) {
-                    const again = hitsMount.querySelector(`[data-spot-key="${focusKey}"]`);
-                    if (again) again.focus({ preventScroll: true });
-                }
-            } else {
-                syncHitCounts();
-            }
-            syncPick();
-            syncRange();
-            markActive();
-        };
-
-        /* LOADING AND WIRING */
+        /* INDEX AND EVENTS */
 
         let indexRequest = null;
         const ensureIndex = () => {
@@ -4869,15 +5079,14 @@
             if (loader) loader.hidden = false;
             indexRequest = loadLayoutTagIndex(pi, apiBase, fetch, document.documentElement.lang)
                 .then((index) => {
-                    state.index = index;
-                    state.failed = false;
-                    if (filterWrap) filterWrap.hidden = index.tags.length < FILTER_THRESHOLD;
-                    buildPickRows();
+                    state.setIndex(index);
+                    pick.setFilterVisible(index.tags.length >= FILTER_THRESHOLD);
+                    pick.build();
                     return index;
                 })
                 .catch((e) => {
                     console.error('immersive layout-tag index failed', e);
-                    state.failed = true;
+                    state.setFailed();
                     return null;
                 })
                 .then((index) => {
@@ -4891,35 +5100,29 @@
         bag.listen(panel, 'immersive:panel-open', () => {
             ensureIndex().then(() => {
                 if (!panelOpen()) return;
-                if (!state.cursorKey) preferCursorOnCurrentPage();
-                render(true);
-                loadCursorPage();
-                pumpVisible();
-                renderHighlights();
+                if (!state.cursorKey) state.preferCursorOnPages(currentPages());
+                refresh(true);
             });
         });
-
         bag.add(
             panels.registerCloseHook(() => {
                 if (!panelOpen()) return;
-                closePick();
-                viewer.clearHighlights('layout-tags');
+                pick.close();
+                viewer.clearHighlights(OWNER);
             })
         );
-
         bag.add(
             viewer.onPageChange.subscribe(() => {
                 if (!panelOpen() || !state.index) return;
                 const pages = currentPages();
-                const onPage = entries().find((e) => pages.includes(e.page));
-                if (onPage) state.cursorKey = entryKey(onPage);
-                markActive();
+                const onPage = state.entries().find((e) => pages.includes(e.page));
+                if (onPage) state.setCursor(entryKey(onPage));
+                hits.markActive();
                 renderHighlights();
                 if (onPage && onPage.pending) loadPages([onPage.page]);
             })
         );
         bag.add(viewer.onOpen.subscribe(renderHighlights));
-
         let scrollQueued = false;
         bag.listen(panel, 'scroll', () => {
             if (scrollQueued) return;
@@ -4934,8 +5137,8 @@
         syncRange();
         return {
             destroy() {
-                closePick();
-                viewer.clearHighlights('layout-tags');
+                pick.close();
+                viewer.clearHighlights(OWNER);
                 bag.dispose();
             },
         };
@@ -5239,7 +5442,6 @@
         if (!trigger || !dropdown || !list) return noop;
         if (total < 2) {
             trigger.classList.add('immersive__title-trigger-static');
-            // no dropdown for single-page records: drop the popup semantics announced by the markup
             trigger.removeAttribute('aria-haspopup');
             trigger.removeAttribute('aria-expanded');
             trigger.removeAttribute('aria-controls');
@@ -5370,7 +5572,7 @@
             });
         }
         bag.add(
-            keys.register(30, (e) => {
+            keys.register(KEY_PRIORITY.pageDropdown, (e) => {
                 if (e.key !== 'Escape' || !isOpen()) return false;
                 close();
                 trigger.focus();
@@ -5406,7 +5608,6 @@
         const bag = createDisposer();
         const GRID_LOADER_TIMEOUT_MS = 8000;
         const GRID_TOP_VISIBLE_AFTER_PX = 200;
-        // IIIF size; must cover the largest grid step (230x330 CSS px) on HiDPI
         const GRID_THUMB_IMAGE_SIZE = '!400,560';
         const gridOverlay = document.getElementById('immersiveGridOverlay');
         const gridLoader = document.getElementById('immersiveGridLoader');
@@ -5504,8 +5705,6 @@
                 const thumbsMount = document.getElementById('immersiveThumbnails');
                 if (thumbsMount) {
                     bag.listen(thumbsMount, 'load', hideGridLoader, { capture: true, once: true });
-                    // Restricted pages' thumbnails 403; swap the broken <img> for the denied
-                    // template's image (admin-configured, else the bundled fallback asset).
                     const templateImg = document.querySelector('#immersiveDeniedContent .immersive__page-denied-img');
                     const deniedThumb = (templateImg && templateImg.getAttribute('src')) || `${apiBase.replace(/\/api\/v1\/?$/, '')}/resources/images/access_denied.png`;
                     bag.listen(
@@ -5514,7 +5713,7 @@
                         (e) => {
                             const t = e.target;
                             if (t && t.tagName === 'IMG' && !t.dataset.ivDenied) {
-                                t.dataset.ivDenied = '1'; // guard: the placeholder load must not re-trigger
+                                t.dataset.ivDenied = '1';
                                 t.classList.add('immersive__grid-thumb--denied');
                                 t.src = deniedThumb;
                             }
@@ -5548,7 +5747,7 @@
         };
 
         bag.add(
-            keys.register(20, (e) => {
+            keys.register(KEY_PRIORITY.gridOverlay, (e) => {
                 if (e.key !== 'Escape' || !gridOverlay || gridOverlay.hidden) return false;
                 closeGrid();
                 return true;
@@ -5566,11 +5765,11 @@
         };
     }
 
-    /** Bottom bar and page-status wiring: indicator, chevrons, actions, fullscreen. */
+    /** Bottom bar and page-status wiring: indicator, actions, fullscreen. */
 
     /**
      * Wires the paging UI and the bottom-bar actions: page indicator (bottom bar +
-     * title pill + canvas aria-label), chevron visibility, the action buttons
+     * title pill + canvas aria-label), the action buttons
      * (zoom, rotate, reset, double page, overview, fullscreen) and the
      * fullscreen-change bookkeeping incl. re-homing Bootstrap popovers into the
      * fullscreen element.
@@ -5599,17 +5798,6 @@
         };
         updateIndicator();
         bag.add(viewer.onPageChange.subscribe(() => updateIndicator()));
-
-        const prevChevron = document.querySelector('.immersive__chevron[data-immersive-page="prev"]');
-        const nextChevron = document.querySelector('.immersive__chevron[data-immersive-page="next"]');
-        const updateChevrons = () => {
-            const pages = viewer.getCurrentPages();
-            if (!pages.length) return;
-            if (prevChevron) prevChevron.hidden = Math.min(...pages) <= 0;
-            if (nextChevron) nextChevron.hidden = Math.max(...pages) >= total - 1;
-        };
-        updateChevrons();
-        bag.add(viewer.onPageChange.subscribe(updateChevrons));
 
         document.querySelectorAll('[data-immersive-page]').forEach((btn) => {
             bag.listen(btn, 'click', () => (btn.dataset.immersivePage === 'next' ? viewer.next() : viewer.prev()));
@@ -5655,12 +5843,7 @@
                     fullscreenBtn.setAttribute('title', label);
                 }
             }
-            // Bootstrap popovers portal into document.body by default, which puts them
-            // outside the fullscreen element — the browser clips everything outside it,
-            // so the popover becomes invisible. Workaround: re-home each popover's
-            // container to the fullscreen root while fullscreen is active and restore it
-            // on exit. Uses Bootstrap's internal `inst.config` object directly because
-            // there is no public API for changing the container after construction.
+
             document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
                 const $trigger = env.$ && env.$(trigger);
                 const inst = $trigger && $trigger.data('bs.popover');
@@ -5772,6 +5955,9 @@
                 trigger.setAttribute('aria-expanded', 'true');
                 const pop = popoverEl();
                 if (!pop) return;
+                pop.setAttribute('role', 'dialog');
+                const name = trigger.getAttribute('aria-label') || trigger.getAttribute('title');
+                if (name) pop.setAttribute('aria-label', name);
                 if (!pop.dataset.ivEscBound) {
                     pop.dataset.ivEscBound = '1';
                     pop.addEventListener('keydown', (e) => {
@@ -5823,7 +6009,6 @@
                 if (typeof tag.unmount === 'function') tag.unmount(true);
             });
             bag.add(bindImageFiltersRendering(viewer, tag));
-            // "Reset view" (button and '0' key) clears the image filters as well.
             bag.add(viewer.onReset.subscribe(() => tag.resetAll()));
         }
         return true;
@@ -5881,18 +6066,8 @@
     function showStageError(el) {
         const text = el.dataset.msgError;
         if (!text) return;
-        const box = document.createElement('div');
-        box.className = 'immersive__page-denied';
-        box.setAttribute('role', 'alert');
-        const inner = document.createElement('div');
-        inner.className = 'immersive__page-denied-inner';
-        const span = document.createElement('span');
-        span.className = 'immersive__page-denied-text';
-        span.textContent = text;
-        inner.appendChild(span);
-        box.appendChild(inner);
         if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
-        el.appendChild(box);
+        el.appendChild(buildDeniedPlaceholder({ text, role: 'alert' }));
     }
 
     /**
@@ -5901,10 +6076,8 @@
      * without VIEW_IMAGES. The image engine and its dependent wiring (bottom bar,
      * grid, fulltext, search, layout tags, page dropdown, TOC sync) are only built when the
      * server rendered the [data-immersive-image] mount, i.e. the user may view the
-     * images. Keyboard shortcuts run through one dispatcher whose priorities define
-     * the precedence: shortcuts modal (10) → grid overlay (20) → page dropdown (30)
-     * → layout-tag pick menu (35) → panels (40) → viewer navigation keys (50) →
-     * annotations toggle (55). Every setup module returns a destroyable; the
+     * images. Keyboard shortcuts run through one dispatcher; KEY_PRIORITY in
+     * shared/ivKeys defines who wins a key. Every setup module returns a destroyable; the
      * returned handle tears all of them down along with the engine.
      *
      * @param {HTMLElement} immersiveRoot  the .immersive root element
@@ -5938,8 +6111,6 @@
         use(setupImmersivePopoverA11y());
         use(setupShortcutsModal(panels.closePanels, keys));
 
-        // No VIEW_IMAGES: the stage shows a server-rendered access-denied placeholder
-        // and the image-dependent chrome is not rendered, so there is no viewer to build.
         const el = immersiveRoot.querySelector('[data-immersive-image]');
         if (!el) return handle;
 
@@ -5947,11 +6118,8 @@
         const apiBase = el.dataset.apiBase;
         const startOrder = Number(el.dataset.startOrder) || 0;
         const maxZoom = el.dataset.maxZoom ? parseInt(el.dataset.maxZoom, 10) : undefined;
-        // Server-rendered VIEW/ZOOM_IMAGES privilege; absent attribute defaults to allowed.
         const allowZoom = el.dataset.allowZoom !== 'false';
 
-        // Stage loading indicator (same pattern as the thumbnail grid): hidden once
-        // the first tile has been painted, with a timeout and init-failure fallback.
         const stageLoader = document.getElementById('immersiveStageLoader');
         let stageLoaderDone = false;
         const hideStageLoader = () => {
@@ -5963,14 +6131,20 @@
 
         const deniedText = el.dataset.msgDenied || '';
 
-        // Services and per-page access share the memoized manifest fetch (one request).
         Promise.all([loadPageServices(pi, apiBase), loadPageAccess(pi, apiBase)])
             .then(([services, restricted]) => {
                 if (destroyed) return;
-                viewer = new IvViewer({ element: el, services, startOrder, maxZoom, allowZoom, restricted, deniedText });
+                viewer = new IvViewer({
+                    element: el,
+                    services,
+                    startOrder,
+                    maxZoom,
+                    allowZoom,
+                    restricted,
+                    deniedText,
+                    deniedContent: document.getElementById('immersiveDeniedContent'),
+                });
                 viewer.onceTileLoaded(hideStageLoader);
-                // A restricted entry page never fires tile-loaded (tiles 403); onOpen fires
-                // once the (failed) load settles, so the loader is not left spinning.
                 viewer.onOpen.subscribe(hideStageLoader);
                 use(attachUrlSync(viewer, pi));
                 use(setupImageFilters(viewer));
@@ -5988,7 +6162,6 @@
                 use(setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys));
                 const grid = use(setupOverviewGrid(viewer, pi, apiBase, keys));
                 use(setupBottomBar(el, viewer, { toggleGrid: grid.toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail }));
-                // A panel opened while the manifest was still loading missed its open event.
                 panels.replayOpen();
             })
             .catch((e) => {

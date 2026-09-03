@@ -1,6 +1,7 @@
 /** Title page picker: "go to page" input plus a labelled listbox per page. */
 
 import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
+import { KEY_PRIORITY } from '../shared/ivKeys.mjs';
 
 /**
  * Builds the title page picker: a "go to page" input plus a listbox with one
@@ -22,7 +23,6 @@ export function setupPageDropdown(viewer, labels, keys) {
     if (!trigger || !dropdown || !list) return noop;
     if (total < 2) {
         trigger.classList.add('immersive__title-trigger-static');
-        // no dropdown for single-page records: drop the popup semantics announced by the markup
         trigger.removeAttribute('aria-haspopup');
         trigger.removeAttribute('aria-expanded');
         trigger.removeAttribute('aria-controls');
@@ -155,7 +155,7 @@ export function setupPageDropdown(viewer, labels, keys) {
         });
     }
     bag.add(
-        keys.register(30, (e) => {
+        keys.register(KEY_PRIORITY.pageDropdown, (e) => {
             if (e.key !== 'Escape' || !isOpen()) return false;
             close();
             trigger.focus();

@@ -137,6 +137,13 @@
     position: static;
 }
 
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+    .immersive {
+        --immersive-transition: 0s;
+    }
+}
+
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
 }

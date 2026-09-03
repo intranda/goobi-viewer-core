@@ -43,14 +43,13 @@
     .popover-header {
         margin: 0;
         padding: 12px 14px 4px;
-        color: @immersive-chrome-fg;
+        color: @immersive-chrome-fg-muted;
         background: transparent;
         border: 0;
         font-size: @fontSmall;
         font-weight: 700;
         letter-spacing: 0.07em;
         text-transform: uppercase;
-        opacity: 0.6;
     }
 
     .widget {
@@ -74,9 +73,8 @@
 
     .widget-citation__license-text,
     .widget-citation__citerecommendation-text-info {
-        color: @immersive-chrome-fg;
+        color: @immersive-chrome-fg-muted;
         font-size: @fontSmall;
-        opacity: 0.6;
     }
 
     .widget-citation__subtitle,
@@ -150,12 +148,10 @@
 
         &:hover,
         &:focus {
-            /* Repeated colour guards against theme a:hover/a:focus rules. */
             color: @immersive-chrome-fg;
         }
     }
 
-    /* Only the monochrome X logo inverts per theme; brand-coloured logos must not (invert breaks their colour). */
     .widget-social-media__link img[src$='x_logo.svg'] {
         filter: invert(@immersive-logo-invert);
     }

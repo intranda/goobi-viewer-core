@@ -16,7 +16,7 @@
         align-items: center;
         justify-content: center;
         pointer-events: none;
-        transition: opacity 0.2s ease;
+        transition: opacity @immersive-transition;
     }
 
     &__title {
@@ -79,10 +79,6 @@
         .immersive__overlay-top,
         .immersive__title-trigger,
         .immersive__page-dropdown {
-            pointer-events: none;
-        }
-        .immersive__chevron-left {
-            opacity: 0;
             pointer-events: none;
         }
     }

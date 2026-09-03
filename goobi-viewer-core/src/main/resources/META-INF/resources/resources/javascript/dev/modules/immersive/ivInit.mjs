@@ -1,13 +1,14 @@
 /** Immersive view bootstrap: engine construction plus the UI wiring modules. */
 
 import IvViewer from './engine/ivViewer.mjs';
+import { buildDeniedPlaceholder } from './engine/ivAccessOverlay.mjs';
 import { loadPageServices, loadPageLabels, loadPageAccess } from './data/ivManifestSource.mjs';
 import { attachUrlSync } from './ui/ivUrlSync.mjs';
 import { createKeyDispatcher, registerViewerNavKeys } from './shared/ivKeys.mjs';
 import { setupPanels, setupPanelResize, setupToc, setupMetadataToggle } from './ui/ivPanelsWiring.mjs';
 import { setupShortcutsModal } from './ui/ivShortcutsModal.mjs';
-import { setupFulltextPanel } from './ui/ivFulltextPanel.mjs';
-import { setupLayoutTagsPanel } from './ui/ivLayoutTagsPanel.mjs';
+import { setupFulltextPanel } from './ui/fulltext/ivFulltextPanel.mjs';
+import { setupLayoutTagsPanel } from './ui/layoutTags/ivLayoutTagsPanel.mjs';
 import { setupSearchPanel } from './ui/ivSearchPanel.mjs';
 import { setupPageDropdown } from './ui/ivPageDropdown.mjs';
 import { setupOverviewGrid } from './ui/ivGridOverlay.mjs';
@@ -21,18 +22,8 @@ const STAGE_LOADER_TIMEOUT_MS = 8000;
 function showStageError(el) {
     const text = el.dataset.msgError;
     if (!text) return;
-    const box = document.createElement('div');
-    box.className = 'immersive__page-denied';
-    box.setAttribute('role', 'alert');
-    const inner = document.createElement('div');
-    inner.className = 'immersive__page-denied-inner';
-    const span = document.createElement('span');
-    span.className = 'immersive__page-denied-text';
-    span.textContent = text;
-    inner.appendChild(span);
-    box.appendChild(inner);
     if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
-    el.appendChild(box);
+    el.appendChild(buildDeniedPlaceholder({ text, role: 'alert' }));
 }
 
 /**
@@ -41,10 +32,8 @@ function showStageError(el) {
  * without VIEW_IMAGES. The image engine and its dependent wiring (bottom bar,
  * grid, fulltext, search, layout tags, page dropdown, TOC sync) are only built when the
  * server rendered the [data-immersive-image] mount, i.e. the user may view the
- * images. Keyboard shortcuts run through one dispatcher whose priorities define
- * the precedence: shortcuts modal (10) → grid overlay (20) → page dropdown (30)
- * → layout-tag pick menu (35) → panels (40) → viewer navigation keys (50) →
- * annotations toggle (55). Every setup module returns a destroyable; the
+ * images. Keyboard shortcuts run through one dispatcher; KEY_PRIORITY in
+ * shared/ivKeys defines who wins a key. Every setup module returns a destroyable; the
  * returned handle tears all of them down along with the engine.
  *
  * @param {HTMLElement} immersiveRoot  the .immersive root element
@@ -78,8 +67,6 @@ export function initImmersiveViewer(immersiveRoot) {
     use(setupImmersivePopoverA11y());
     use(setupShortcutsModal(panels.closePanels, keys));
 
-    // No VIEW_IMAGES: the stage shows a server-rendered access-denied placeholder
-    // and the image-dependent chrome is not rendered, so there is no viewer to build.
     const el = immersiveRoot.querySelector('[data-immersive-image]');
     if (!el) return handle;
 
@@ -87,11 +74,8 @@ export function initImmersiveViewer(immersiveRoot) {
     const apiBase = el.dataset.apiBase;
     const startOrder = Number(el.dataset.startOrder) || 0;
     const maxZoom = el.dataset.maxZoom ? parseInt(el.dataset.maxZoom, 10) : undefined;
-    // Server-rendered VIEW/ZOOM_IMAGES privilege; absent attribute defaults to allowed.
     const allowZoom = el.dataset.allowZoom !== 'false';
 
-    // Stage loading indicator (same pattern as the thumbnail grid): hidden once
-    // the first tile has been painted, with a timeout and init-failure fallback.
     const stageLoader = document.getElementById('immersiveStageLoader');
     let stageLoaderDone = false;
     const hideStageLoader = () => {
@@ -103,14 +87,20 @@ export function initImmersiveViewer(immersiveRoot) {
 
     const deniedText = el.dataset.msgDenied || '';
 
-    // Services and per-page access share the memoized manifest fetch (one request).
     Promise.all([loadPageServices(pi, apiBase), loadPageAccess(pi, apiBase)])
         .then(([services, restricted]) => {
             if (destroyed) return;
-            viewer = new IvViewer({ element: el, services, startOrder, maxZoom, allowZoom, restricted, deniedText });
+            viewer = new IvViewer({
+                element: el,
+                services,
+                startOrder,
+                maxZoom,
+                allowZoom,
+                restricted,
+                deniedText,
+                deniedContent: document.getElementById('immersiveDeniedContent'),
+            });
             viewer.onceTileLoaded(hideStageLoader);
-            // A restricted entry page never fires tile-loaded (tiles 403); onOpen fires
-            // once the (failed) load settles, so the loader is not left spinning.
             viewer.onOpen.subscribe(hideStageLoader);
             use(attachUrlSync(viewer, pi));
             use(setupImageFilters(viewer));
@@ -128,7 +118,6 @@ export function initImmersiveViewer(immersiveRoot) {
             use(setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys));
             const grid = use(setupOverviewGrid(viewer, pi, apiBase, keys));
             use(setupBottomBar(el, viewer, { toggleGrid: grid.toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail }));
-            // A panel opened while the manifest was still loading missed its open event.
             panels.replayOpen();
         })
         .catch((e) => {

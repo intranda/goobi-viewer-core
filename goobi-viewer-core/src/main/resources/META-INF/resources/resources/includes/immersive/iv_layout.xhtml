@@ -53,28 +53,6 @@
                 </h:panelGroup>
             </div>
 
-            <!-- PAGE-TURN CHEVRONS -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
-                <button
-                    type="button"
-                    class="immersive__chevron immersive__chevron-left"
-                    data-immersive-page="prev"
-                    aria-label="#{msg.prevImage}">
-                    <util:icon
-                        icon="chevron-left"
-                        svgClass="immersive__chevron-icon" />
-                </button>
-                <button
-                    type="button"
-                    class="immersive__chevron immersive__chevron-right"
-                    data-immersive-page="next"
-                    aria-label="#{msg.nextImage}">
-                    <util:icon
-                        icon="chevron-right"
-                        svgClass="immersive__chevron-icon" />
-                </button>
-            </ui:fragment>
-
             <!-- RIGHT TOOLBAR -->
             <ui:include src="/resources/includes/immersive/iv_toolbar_right.xhtml" />
 

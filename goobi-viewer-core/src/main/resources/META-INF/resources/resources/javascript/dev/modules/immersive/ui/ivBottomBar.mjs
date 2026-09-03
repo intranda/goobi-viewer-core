@@ -1,11 +1,11 @@
-/** Bottom bar and page-status wiring: indicator, chevrons, actions, fullscreen. */
+/** Bottom bar and page-status wiring: indicator, actions, fullscreen. */
 
 import { createDisposer } from '../shared/ivLifecycle.mjs';
 import { env } from '../shared/ivEnv.mjs';
 
 /**
  * Wires the paging UI and the bottom-bar actions: page indicator (bottom bar +
- * title pill + canvas aria-label), chevron visibility, the action buttons
+ * title pill + canvas aria-label), the action buttons
  * (zoom, rotate, reset, double page, overview, fullscreen) and the
  * fullscreen-change bookkeeping incl. re-homing Bootstrap popovers into the
  * fullscreen element.
@@ -34,17 +34,6 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
     };
     updateIndicator();
     bag.add(viewer.onPageChange.subscribe(() => updateIndicator()));
-
-    const prevChevron = document.querySelector('.immersive__chevron[data-immersive-page="prev"]');
-    const nextChevron = document.querySelector('.immersive__chevron[data-immersive-page="next"]');
-    const updateChevrons = () => {
-        const pages = viewer.getCurrentPages();
-        if (!pages.length) return;
-        if (prevChevron) prevChevron.hidden = Math.min(...pages) <= 0;
-        if (nextChevron) nextChevron.hidden = Math.max(...pages) >= total - 1;
-    };
-    updateChevrons();
-    bag.add(viewer.onPageChange.subscribe(updateChevrons));
 
     document.querySelectorAll('[data-immersive-page]').forEach((btn) => {
         bag.listen(btn, 'click', () => (btn.dataset.immersivePage === 'next' ? viewer.next() : viewer.prev()));
@@ -90,12 +79,7 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
                 fullscreenBtn.setAttribute('title', label);
             }
         }
-        // Bootstrap popovers portal into document.body by default, which puts them
-        // outside the fullscreen element — the browser clips everything outside it,
-        // so the popover becomes invisible. Workaround: re-home each popover's
-        // container to the fullscreen root while fullscreen is active and restore it
-        // on exit. Uses Bootstrap's internal `inst.config` object directly because
-        // there is no public API for changing the container after construction.
+
         document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
             const $trigger = env.$ && env.$(trigger);
             const inst = $trigger && $trigger.data('bs.popover');

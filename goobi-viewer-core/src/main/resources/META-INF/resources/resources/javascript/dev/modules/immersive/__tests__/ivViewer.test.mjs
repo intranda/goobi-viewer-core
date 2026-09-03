@@ -52,7 +52,6 @@ function mockImageView() {
         Image: class {
             constructor(opts) {
                 this.element = opts.element;
-                // Keep the sequence object passed by IvViewer so shared-state bugs are visible.
                 this.config = { sequence: opts.sequence || { columns: 1 } };
                 const handlers = {};
                 this.openseadragon = {
@@ -153,6 +152,26 @@ describe('IvViewer construction', () => {
         expect(v.getCurrentOrder()).toBe(1);
         expect(seen).not.toHaveBeenCalled();
         expect(v._navigating).toBe(false);
+    });
+
+    test('a failed neighbour preload is evicted quietly instead of rejecting unhandled', async () => {
+        const v = new IvViewer({ element: {}, services: services(5), startOrder: 1 });
+        opens.shift()();
+        await flush();
+        v._refreshPreload.mockRestore();
+        jest.spyOn(v, '_acquire').mockImplementation((order) => {
+            const p = Promise.reject(new Error('tiles 403'));
+            v._preloaded.set(order, p);
+            return p;
+        });
+        const unhandled = jest.fn();
+        process.on('unhandledRejection', unhandled);
+        v._refreshPreload();
+        await flush();
+        await flush();
+        process.off('unhandledRejection', unhandled);
+        expect(unhandled).not.toHaveBeenCalled();
+        expect(v._preloaded.size).toBe(0);
     });
 
     test('destroy clears a pending navigation watchdog', async () => {
@@ -352,9 +371,9 @@ describe('IvViewer page navigation (clamping, no-ops, next/prev)', () => {
 
     test('goToPage clamps to the valid range', async () => {
         const v = await newViewer(10);
-        v.goToPage(-5); // clamps to 0 === current -> no-op
+        v.goToPage(-5);
         expect(v._crossfadeTo).not.toHaveBeenCalled();
-        v.goToPage(999); // clamps to the last page
+        v.goToPage(999);
         expect(v._crossfadeTo).toHaveBeenCalledWith(9);
     });
 
@@ -375,16 +394,16 @@ describe('IvViewer page navigation (clamping, no-ops, next/prev)', () => {
     test('double mode: goToPage snaps to the spread leader and skips the current spread', async () => {
         const v = await newViewer(20, 1);
         v.double = true;
-        v.goToPage(2); // same spread [1,2] -> no-op
+        v.goToPage(2);
         expect(v._navigateSpread).not.toHaveBeenCalled();
-        v.goToPage(4); // spread [3,4] -> leader 3
+        v.goToPage(4);
         expect(v._navigateSpread).toHaveBeenCalledWith(3);
     });
 
     test('double mode: next advances past the trailing page of the spread', async () => {
         const v = await newViewer(20, 1);
         v.double = true;
-        v.next(); // spread [1,2] -> goToPage(3) -> leader 3
+        v.next();
         expect(v._navigateSpread).toHaveBeenCalledWith(3);
     });
 
@@ -398,7 +417,7 @@ describe('IvViewer page navigation (clamping, no-ops, next/prev)', () => {
     test('toggling to double snaps current to the spread leader and returns the new state', async () => {
         const v = await newViewer(20, 4);
         expect(v.toggleDoublePage()).toBe(true);
-        expect(v.current).toBe(computeSpread(4, 20)[0]); // 3
+        expect(v.current).toBe(computeSpread(4, 20)[0]);
         expect(v._open).toHaveBeenCalledWith(3);
         opens.shift()?.();
         await flush();
@@ -427,16 +446,14 @@ describe('IvViewer page navigation (clamping, no-ops, next/prev)', () => {
 });
 
 describe('IvViewer navigation lock (double-page hang regression)', () => {
-    let opens; // pending resolvers for the stubbed _open, one per call
+    let opens;
 
     beforeEach(() => {
         mockImageView();
         opens = [];
-        // _open is the async boundary that hangs under rapid double-page reopens; control it.
         jest.spyOn(IvViewer.prototype, '_open').mockImplementation(function () {
             return new Promise((resolve) => opens.push(resolve));
         });
-        // Isolate the lock logic from OSD-only side effects.
         jest.spyOn(IvViewer.prototype, '_prewarmSpreads').mockImplementation(() => {});
         jest.spyOn(IvViewer.prototype, '_refreshPreload').mockImplementation(() => {});
     });
@@ -448,7 +465,7 @@ describe('IvViewer navigation lock (double-page hang regression)', () => {
 
     async function newDoublePageViewer(total = 20, opts = {}) {
         const v = new IvViewer({ element: {}, services: services(total), startOrder: 0, ...opts });
-        opens.shift()?.(); // settle the constructor's initial _open
+        opens.shift()?.();
         await flush();
         v.double = true;
         v._open.mockClear();
@@ -459,17 +476,17 @@ describe('IvViewer navigation lock (double-page hang regression)', () => {
     test('rapid TOC clicks do not run concurrent opens; the latest target wins', async () => {
         const v = await newDoublePageViewer(20);
 
-        v.goToPage(4); // starts a spread navigation
+        v.goToPage(4);
         expect(v._open).toHaveBeenCalledTimes(1);
 
-        v.goToPage(8); // busy -> queued
-        v.goToPage(12); // busy -> overwrites 8 (latest wins)
-        expect(v._open).toHaveBeenCalledTimes(1); // still no concurrent open
+        v.goToPage(8);
+        v.goToPage(12);
+        expect(v._open).toHaveBeenCalledTimes(1);
 
-        opens.shift()(); // finish the first navigation
+        opens.shift()();
         await flush();
 
-        expect(v._open).toHaveBeenCalledTimes(2); // exactly one follow-up, not two
+        expect(v._open).toHaveBeenCalledTimes(2);
         const expectedLeader = computeSpread(12, 20)[0];
         expect(v._open).toHaveBeenLastCalledWith(expectedLeader);
         expect(v.current).toBe(expectedLeader);
@@ -478,29 +495,29 @@ describe('IvViewer navigation lock (double-page hang regression)', () => {
     test('a spread load that never settles is released by the watchdog (no permanent freeze)', async () => {
         const v = await newDoublePageViewer(20, { navWatchdogMs: 20 });
 
-        v.goToPage(4); // _open for this navigation never resolves
+        v.goToPage(4);
         expect(v._navigating).toBe(true);
 
-        await new Promise((resolve) => setTimeout(resolve, 40)); // past the watchdog
+        await new Promise((resolve) => setTimeout(resolve, 40));
         await flush();
 
-        expect(v._navigating).toBe(false); // recovered instead of frozen
+        expect(v._navigating).toBe(false);
         v._open.mockClear();
-        v.goToPage(6); // navigation works again
+        v.goToPage(6);
         expect(v._open).toHaveBeenCalledTimes(1);
     });
 
     test('toggling double-page while navigating defers the reopen (no concurrent open)', async () => {
         const v = await newDoublePageViewer(20);
 
-        v.goToPage(4); // in-flight navigation
+        v.goToPage(4);
         expect(v._open).toHaveBeenCalledTimes(1);
 
-        v.toggleDoublePage(); // must not open concurrently
+        v.toggleDoublePage();
         expect(v._open).toHaveBeenCalledTimes(1);
         expect(v._queuedReopen).toBe(true);
 
-        opens.shift()(); // finish the navigation -> deferred reopen runs
+        opens.shift()();
         await flush();
 
         expect(v._open).toHaveBeenCalledTimes(2);
@@ -510,17 +527,17 @@ describe('IvViewer navigation lock (double-page hang regression)', () => {
         const crossfade = jest.spyOn(IvViewer.prototype, '_crossfadeTo').mockImplementation(() => {});
         const v = await newDoublePageViewer(20);
 
-        v.goToPage(4); // in-flight (_open for leader 3)
-        v.goToPage(8); // queued page target
-        v.toggleDoublePage(); // queued reopen (now single mode)
+        v.goToPage(4);
+        v.goToPage(8);
+        v.toggleDoublePage();
         expect(v._open).toHaveBeenCalledTimes(1);
 
-        opens.shift()(); // finish the navigation -> the reopen must run first
+        opens.shift()();
         await flush();
-        expect(v._open).toHaveBeenCalledTimes(2); // the reopen
-        expect(v._queuedNav).toBe(8); // the page target survived the reopen
+        expect(v._open).toHaveBeenCalledTimes(2);
+        expect(v._queuedNav).toBe(8);
 
-        opens.shift()(); // finish the reopen -> the queued target runs (single mode now)
+        opens.shift()();
         await flush();
         expect(crossfade).toHaveBeenCalledWith(8);
     });
@@ -617,7 +634,7 @@ describe('IvViewer overlays (search highlights + text regions)', () => {
     test('double-page: each rect is drawn on the tiled image of its own page (misplaced-highlights regression)', () => {
         const v = new IvViewer({ element: {}, services: services(6) });
         v.double = true;
-        v.current = 1; // spread [1, 2]
+        v.current = 1;
         const left = { imageToViewportRectangle: jest.fn((x, y, w, h) => ({ page: 'left', x, y, w, h })) };
         const right = { imageToViewportRectangle: jest.fn((x, y, w, h) => ({ page: 'right', x, y, w, h })) };
         const osd = v.viewer.openseadragon;
@@ -638,7 +655,7 @@ describe('IvViewer overlays (search highlights + text regions)', () => {
 
     test('without a current item nothing is drawn', () => {
         const v = new IvViewer({ element: {}, services: services(5) });
-        v.currentItem = null; // world.getItemAt also returns null
+        v.currentItem = null;
         const osd = v.viewer.openseadragon;
 
         expect(v.setTextRegions([{ id: 'a', rect: { x: 1, y: 2, w: 3, h: 4 } }]).size).toBe(0);
@@ -676,7 +693,7 @@ describe('IvViewer preloading', () => {
         expect(osd.addTiledImage).toHaveBeenCalledTimes(1);
         expect(osd.addTiledImage.mock.calls[0][0].tileSource).toBe('https://example.test/img3/info.json');
 
-        v._acquire(5); // service id already ends in /info.json -> not suffixed twice
+        v._acquire(5);
         expect(osd.addTiledImage.mock.calls[1][0].tileSource).toBe('https://example.test/img5/info.json');
     });
 
@@ -691,7 +708,6 @@ describe('IvViewer preloading', () => {
         v._refreshPreload();
         await flush();
 
-        // resident around page 5 is {4,5,6}: 4 and 6 get acquired, 0 and 9 get evicted
         expect([...v._preloaded.keys()].sort((a, b) => a - b)).toEqual([4, 6]);
         expect(osd.world.removeItem).toHaveBeenCalledWith(itemA);
         expect(osd.world.removeItem).toHaveBeenCalledWith(itemB);
@@ -702,7 +718,6 @@ describe('IvViewer onOpen (library reload signal for filter re-sync)', () => {
     beforeEach(() => {
         mockImageView();
         jest.spyOn(IvViewer.prototype, '_refreshPreload').mockImplementation(() => {});
-        // jsdom has no fetch; the info.json warm-up is irrelevant here
         jest.spyOn(IvViewer.prototype, '_prefetchAround').mockImplementation(() => {});
     });
 
@@ -754,8 +769,8 @@ describe('IvViewer access overlay (mixed page rights)', () => {
         delete global.ImageView;
     });
 
-    const restrictedViewer = (restricted, startOrder = 0) =>
-        new IvViewer({ element: document.createElement('div'), services: services(restricted.length), startOrder, restricted, deniedText: 'Kein Zugriff' });
+    const restrictedViewer = (restricted, startOrder = 0, deniedContent = null) =>
+        new IvViewer({ element: document.createElement('div'), services: services(restricted.length), startOrder, restricted, deniedText: 'Kein Zugriff', deniedContent });
 
     test('isPageRestricted reflects the per-page flags', () => {
         const v = restrictedViewer([false, true, false]);
@@ -789,7 +804,7 @@ describe('IvViewer access overlay (mixed page rights)', () => {
         template.innerHTML = '<img class="immersive__page-denied-img" src="/custom/denied.png" alt="x" /><div class="immersive__page-denied-text">Gesperrt (Lizenz)</div>';
         document.body.appendChild(template);
         try {
-            const v = restrictedViewer([false, true], 1);
+            const v = restrictedViewer([false, true], 1, template);
             v._emit();
             const overlay = v.viewer.element.querySelector('.immersive__page-denied');
             expect(overlay.querySelector('.immersive__page-denied-img').getAttribute('src')).toBe('/custom/denied.png');
@@ -802,7 +817,7 @@ describe('IvViewer access overlay (mixed page rights)', () => {
     test('double mode: the overlay shows when any page of the spread is restricted', () => {
         const v = restrictedViewer([false, false, true, false], 0);
         v.double = true;
-        v.current = 2; // spread contains the restricted page
+        v.current = 2;
         v._emit();
         const overlay = v.viewer.element.querySelector('.immersive__page-denied');
         expect(overlay).not.toBeNull();
@@ -825,10 +840,9 @@ describe('IvViewer restricted-page navigation (tile-load reject fix)', () => {
 
     test('_open still emits + shows the overlay when the tile load REJECTS (restricted entry)', async () => {
         mockImageView();
-        // Restricted page tiles 403 -> library load() rejects.
         global.ImageView.Image.prototype.load = () => Promise.reject(new Error('403'));
         jest.spyOn(IvViewer.prototype, '_refreshPreload').mockImplementation(() => {});
-        jest.spyOn(IvViewer.prototype, '_prefetchAround').mockImplementation(() => {}); // no fetch in jsdom
+        jest.spyOn(IvViewer.prototype, '_prefetchAround').mockImplementation(() => {});
 
         const v = new IvViewer({ element: document.createElement('div'), services: services(3), startOrder: 0, restricted: [true, false, false], deniedText: 'Kein Zugriff' });
         const opened = jest.fn();

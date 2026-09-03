@@ -1,6 +1,6 @@
 /** Unit tests for the fulltext panel wiring: load on open, empty state, double-page availability, teardown. */
 import { jest } from '@jest/globals';
-import { setupFulltextPanel } from '../ui/ivFulltextPanel.mjs';
+import { setupFulltextPanel } from '../ui/fulltext/ivFulltextPanel.mjs';
 import { createKeyDispatcher } from '../shared/ivKeys.mjs';
 import { Emitter } from '../engine/ivViewer.mjs';
 
