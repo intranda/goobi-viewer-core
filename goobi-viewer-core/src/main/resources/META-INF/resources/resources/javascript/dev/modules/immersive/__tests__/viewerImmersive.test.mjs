@@ -117,6 +117,26 @@ describe('attachUrlSync', function () {
         window.dispatchEvent(new PopStateEvent('popstate', { state: null }));
         expect(viewer.goToPage).not.toHaveBeenCalled();
     });
+
+    test('destroy stops the history sync and the popstate handling', function () {
+        window.history.replaceState({}, '', '/viewer/immersive/PPN123/1/');
+        const subs = new Set();
+        const viewer = {
+            onPageChange: {
+                subscribe: (fn) => {
+                    subs.add(fn);
+                    return () => subs.delete(fn);
+                },
+            },
+            goToPage: jest.fn(),
+        };
+        const sync = attachUrlSync(viewer, 'PPN123');
+        sync.destroy();
+        subs.forEach((fn) => fn(2));
+        expect(window.location.pathname).toBe('/viewer/immersive/PPN123/1/');
+        window.dispatchEvent(new PopStateEvent('popstate', { state: { order: 4 } }));
+        expect(viewer.goToPage).not.toHaveBeenCalled();
+    });
 });
 
 // ---------------------------------------------------------------------------

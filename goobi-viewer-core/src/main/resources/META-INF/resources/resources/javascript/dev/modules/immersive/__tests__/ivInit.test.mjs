@@ -51,3 +51,25 @@ describe('initImmersiveViewer bootstrap split', () => {
         expect(document.getElementById('immersiveShortcuts').hidden).toBe(false);
     });
 });
+
+describe('initImmersiveViewer teardown', () => {
+    beforeEach(() => {
+        global.ImageView = { Image: jest.fn(), Controls: { Zoom: class {}, Rotation: class {} } };
+    });
+
+    afterEach(() => {
+        delete global.ImageView;
+        document.body.innerHTML = '';
+    });
+
+    test('returns a handle whose destroy detaches the chrome and the key dispatcher', () => {
+        const root = chromeMarkup({ withImage: false });
+        const view = initImmersiveViewer(root);
+        expect(typeof view.destroy).toBe('function');
+        view.destroy();
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: '?', bubbles: true }));
+        expect(document.getElementById('immersiveShortcuts').hidden).toBe(true);
+        document.querySelector('[data-immersive-panel="immersivePanelMetadata"]').click();
+        expect(document.getElementById('immersivePanelMetadata').classList.contains('is-open')).toBe(false);
+    });
+});

@@ -30,8 +30,9 @@ function mountMarkup() {
             </div>
         </aside>`;
     const viewer = fakeViewer();
-    setupSearchPanel(viewer, 'PI', '/api/v1');
+    const panel = setupSearchPanel(viewer, 'PI', '/api/v1');
     return {
+        panel,
         viewer,
         input: document.querySelector('#immersivePanelSearch input'),
         form: document.querySelector('#immersivePanelSearch form'),
@@ -102,5 +103,16 @@ describe('setupSearchPanel', () => {
         expect(list.textContent).not.toContain('Keine Treffer');
         expect(viewer.clearHighlights).toHaveBeenCalled();
         consoleError.mockRestore();
+    });
+
+    test('destroy detaches the form and removes the injected clear button', async () => {
+        global.fetch = jest.fn(async () => response(hitList(1)));
+        const { panel, form, input } = mountMarkup();
+        expect(document.querySelector('.immersive__search-clear')).not.toBeNull();
+        panel.destroy();
+        expect(document.querySelector('.immersive__search-clear')).toBeNull();
+        submit(form, input, 'wort');
+        await flush();
+        expect(global.fetch).not.toHaveBeenCalled();
     });
 });

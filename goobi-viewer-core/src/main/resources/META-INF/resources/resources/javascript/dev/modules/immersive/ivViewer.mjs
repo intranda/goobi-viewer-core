@@ -13,6 +13,9 @@ export class Emitter {
     emit(value) {
         this._subs.forEach((fn) => fn(value));
     }
+    clear() {
+        this._subs.clear();
+    }
 }
 
 /** Maps a IIIF image-service base id to an OSD tile source (its info.json URL). */
@@ -663,5 +666,14 @@ export default class IvViewer {
             this._accessOverlay = overlay;
         }
         overlay.hidden = false;
+    }
+
+    /** Releases the OpenSeadragon instance, the access overlay and all subscriptions. */
+    destroy() {
+        this._preloaded.clear();
+        if (this._accessOverlay) this._accessOverlay.remove();
+        const osd = this.viewer.openseadragon;
+        if (osd && typeof osd.destroy === 'function') osd.destroy();
+        [this.onPageChange, this.onLoaded, this.onOpen, this.onReset].forEach((emitter) => emitter.clear());
     }
 }

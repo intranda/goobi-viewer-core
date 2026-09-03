@@ -1,5 +1,7 @@
 /** Title page picker: "go to page" input plus a labelled listbox per page. */
 
+import { createDisposer, noop } from './ivLifecycle.mjs';
+
 /**
  * Builds the title page picker: a "go to page" input plus a listbox with one
  * option per page, labelled with the manifest page labels. Registers its
@@ -9,6 +11,7 @@
  * @param {IvViewer} viewer
  * @param {string[]} labels page labels, index-aligned with the page orders
  * @param {{register: Function}} keys  the immersive key dispatcher
+ * @returns {{destroy: function():void}}
  */
 export function setupPageDropdown(viewer, labels, keys) {
     const total = viewer.getPageCount();
@@ -16,15 +19,16 @@ export function setupPageDropdown(viewer, labels, keys) {
     const dropdown = document.getElementById('immersivePageDropdown');
     const list = document.getElementById('immersivePageList');
     const input = document.getElementById('immersivePageInput');
-    if (!trigger || !dropdown || !list) return;
+    if (!trigger || !dropdown || !list) return noop;
     if (total < 2) {
         trigger.classList.add('immersive__title-trigger-static');
         // no dropdown for single-page records: drop the popup semantics announced by the markup
         trigger.removeAttribute('aria-haspopup');
         trigger.removeAttribute('aria-expanded');
         trigger.removeAttribute('aria-controls');
-        return;
+        return noop;
     }
+    const bag = createDisposer();
     if (input) input.max = String(total);
     const listLabel = input && input.labels && input.labels[0] ? input.labels[0].textContent.trim() : '';
     if (listLabel) list.setAttribute('aria-label', listLabel);
@@ -100,14 +104,14 @@ export function setupPageDropdown(viewer, labels, keys) {
         }
     };
 
-    trigger.addEventListener('click', () => (isOpen() ? close() : open()));
-    list.addEventListener('click', (e) => {
+    bag.listen(trigger, 'click', () => (isOpen() ? close() : open()));
+    bag.listen(list, 'click', (e) => {
         const btn = e.target.closest('.immersive__page-dropdown-item');
         if (!btn) return;
         viewer.goToPage(Number(btn.dataset.order));
         close();
     });
-    list.addEventListener('keydown', (e) => {
+    bag.listen(list, 'keydown', (e) => {
         const cur = items.indexOf(document.activeElement);
         if (cur === -1 && !['Escape'].includes(e.key)) return;
         switch (e.key) {
@@ -145,7 +149,7 @@ export function setupPageDropdown(viewer, labels, keys) {
         }
     });
     if (input) {
-        input.addEventListener('keydown', (e) => {
+        bag.listen(input, 'keydown', (e) => {
             if (e.key !== 'Enter') return;
             e.preventDefault();
             const n = parseInt(input.value, 10);
@@ -155,12 +159,20 @@ export function setupPageDropdown(viewer, labels, keys) {
             }
         });
     }
-    keys.register(30, (e) => {
-        if (e.key !== 'Escape' || !isOpen()) return false;
-        close();
-        trigger.focus();
-        return true;
-    });
-    viewer.onPageChange.subscribe(markActive);
+    bag.add(
+        keys.register(30, (e) => {
+            if (e.key !== 'Escape' || !isOpen()) return false;
+            close();
+            trigger.focus();
+            return true;
+        })
+    );
+    bag.add(viewer.onPageChange.subscribe(markActive));
     markActive();
+    return {
+        destroy() {
+            close();
+            bag.dispose();
+        },
+    };
 }

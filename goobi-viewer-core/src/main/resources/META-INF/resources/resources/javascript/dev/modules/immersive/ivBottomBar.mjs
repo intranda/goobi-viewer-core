@@ -1,5 +1,7 @@
 /** Bottom bar and page-status wiring: indicator, chevrons, actions, fullscreen. */
 
+import { createDisposer } from './ivLifecycle.mjs';
+
 /**
  * Wires the paging UI and the bottom-bar actions: page indicator (bottom bar +
  * title pill + canvas aria-label), chevron visibility, the action buttons
@@ -12,8 +14,10 @@
  * @param {object} hooks
  * @param {Function} hooks.toggleGrid  toggles the thumbnail overview overlay
  * @param {Function} hooks.updateFulltextAvail  fulltext availability follows double-page mode
+ * @returns {{destroy: function():void}}
  */
 export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) {
+    const bag = createDisposer();
     const indicator = document.getElementById('immersivePageIndicator');
     const titlePage = document.getElementById('immersiveTitlePage');
     const total = viewer.getPageCount();
@@ -28,7 +32,7 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
         imageSurface.setAttribute('aria-label', workTitle ? `${workTitle}, ${label} / ${total}` : `${label} / ${total}`);
     };
     updateIndicator();
-    viewer.onPageChange.subscribe(() => updateIndicator());
+    bag.add(viewer.onPageChange.subscribe(() => updateIndicator()));
 
     const prevChevron = document.querySelector('.immersive__chevron[data-immersive-page="prev"]');
     const nextChevron = document.querySelector('.immersive__chevron[data-immersive-page="next"]');
@@ -39,13 +43,13 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
         if (nextChevron) nextChevron.hidden = Math.max(...pages) >= total - 1;
     };
     updateChevrons();
-    viewer.onPageChange.subscribe(updateChevrons);
+    bag.add(viewer.onPageChange.subscribe(updateChevrons));
 
     document.querySelectorAll('[data-immersive-page]').forEach((btn) => {
-        btn.addEventListener('click', () => (btn.dataset.immersivePage === 'next' ? viewer.next() : viewer.prev()));
+        bag.listen(btn, 'click', () => (btn.dataset.immersivePage === 'next' ? viewer.next() : viewer.prev()));
     });
     document.querySelectorAll('[data-immersive-action]').forEach((btn) => {
-        btn.addEventListener('click', () => {
+        bag.listen(btn, 'click', () => {
             const action = btn.dataset.immersiveAction;
             if (action === 'zoom-in') viewer.zoomIn();
             else if (action === 'zoom-out') viewer.zoomOut();
@@ -65,7 +69,7 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
     });
 
     const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
-    document.addEventListener('fullscreenchange', () => {
+    bag.listen(document, 'fullscreenchange', () => {
         const osd = viewer.viewer.openseadragon;
         let done = false;
         const doReset = () => {
@@ -108,6 +112,7 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
             }
         });
     });
+    return { destroy: bag.dispose };
 }
 
 /** Toggles native browser fullscreen on the immersive viewer hero (Esc exits). */

@@ -692,7 +692,7 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
  * @param {HTMLInputElement} opts.checkbox
  * @param {Storage} opts.storage      e.g. window.localStorage
  * @param {{register: Function}} [opts.keys]  the immersive key dispatcher
- * @returns {{setPageData: Function, onChange: Function}}
+ * @returns {{setPageData: Function, onChange: Function, destroy: Function}}
  */
 export function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
     const listeners = [];
@@ -710,11 +710,13 @@ export function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
         listeners.forEach((cb) => cb(on));
     };
 
+    const onCheckboxChange = () => setEnabled(checkbox.checked);
     checkbox.checked = readAnnotationsEnabled(storage);
-    checkbox.addEventListener('change', () => setEnabled(checkbox.checked));
+    checkbox.addEventListener('change', onCheckboxChange);
 
+    let unregisterKeys = null;
     if (keys) {
-        keys.register(55, (e) => {
+        unregisterKeys = keys.register(55, (e) => {
             if (e.key !== 'a' || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return false;
             if (isTypingTarget(e.target)) return false;
             const panel = checkbox.closest('.immersive__panel-left');
@@ -741,6 +743,15 @@ export function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
         },
         onChange(cb) {
             listeners.push(cb);
+            return () => {
+                const i = listeners.indexOf(cb);
+                if (i !== -1) listeners.splice(i, 1);
+            };
+        },
+        destroy() {
+            checkbox.removeEventListener('change', onCheckboxChange);
+            if (unregisterKeys) unregisterKeys();
+            listeners.length = 0;
         },
     };
 }

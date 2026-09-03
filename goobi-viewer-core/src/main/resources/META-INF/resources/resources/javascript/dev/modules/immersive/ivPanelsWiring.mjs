@@ -3,6 +3,7 @@
 import { offsetTopWithin } from './ivTextImageLink.mjs';
 import { pickActiveTocPageNo, panelIdForKeyEvent } from './viewerImmersive.mjs';
 import { isOverlayOpen } from './ivSelectors.mjs';
+import { createDisposer, noop } from './ivLifecycle.mjs';
 
 /**
  * Wires the rail buttons to their left panels (open/close with ARIA + inert
@@ -13,9 +14,10 @@ import { isOverlayOpen } from './ivSelectors.mjs';
  *
  * @param {HTMLElement|null} immersiveRoot  the .immersive root element
  * @param {{register: Function}} keys  the immersive key dispatcher
- * @returns {{closePanels: Function, registerCloseHook: Function}}
+ * @returns {{closePanels: Function, registerCloseHook: Function, destroy: Function}}
  */
 export function setupPanels(immersiveRoot, keys) {
+    const bag = createDisposer();
     const panelButtons = document.querySelectorAll('[data-immersive-panel]');
     document.querySelectorAll('.immersive__panel-left').forEach((p) => (p.inert = true));
     const syncPanelOpenFlag = () => {
@@ -42,7 +44,7 @@ export function setupPanels(immersiveRoot, keys) {
         activePanelBtn = null;
     };
     panelButtons.forEach((btn) => {
-        btn.addEventListener('click', () => {
+        bag.listen(btn, 'click', () => {
             if (btn.getAttribute('aria-disabled') === 'true') return;
             const panel = document.getElementById(btn.dataset.immersivePanel);
             if (!panel) return;
@@ -78,7 +80,7 @@ export function setupPanels(immersiveRoot, keys) {
         });
     });
 
-    keys.register(40, (e) => {
+    const unregisterKeys = keys.register(40, (e) => {
         if (e.key === 'Escape') {
             if (!document.querySelector('.immersive__panel-left.is-open')) return false;
             closePanels(true);
@@ -92,23 +94,32 @@ export function setupPanels(immersiveRoot, keys) {
         btn.click();
         return true;
     });
+    bag.add(unregisterKeys);
 
     return {
         closePanels,
-        /** Registers a hook that runs whenever the panels close (e.g. fulltext teardown). */
+        /** Registers a hook that runs whenever the panels close (e.g. fulltext teardown); returns its unregister. */
         registerCloseHook(hook) {
-            if (typeof hook === 'function') closeHooks.push(hook);
+            if (typeof hook !== 'function') return () => {};
+            closeHooks.push(hook);
+            return () => {
+                const i = closeHooks.indexOf(hook);
+                if (i !== -1) closeHooks.splice(i, 1);
+            };
         },
+        destroy: bag.dispose,
     };
 }
 
 /**
  * Adds the drag handle that resizes the left panels: one shared
  * --immersive-panel-width custom property, persisted in sessionStorage.
+ *
+ * @returns {{destroy: function():void}}
  */
 export function setupPanelResize(immersiveRoot) {
     const immersiveViewer = immersiveRoot && immersiveRoot.querySelector('.immersive__viewer');
-    if (!immersiveViewer) return;
+    if (!immersiveViewer) return noop;
     const WIDTH_KEY = 'immersive-panel-width';
     const RAIL_WIDTH = 40;
     const MIN_WIDTH = 240;
@@ -141,8 +152,9 @@ export function setupPanelResize(immersiveRoot) {
     // variable value is read off the handle's GEOMETRY (it is positioned by the
     // variable) — the inline style alone misses the CSS fallback, media-query
     // and fullscreen values a first-time visitor runs on.
+    let observer = null;
     if (typeof ResizeObserver !== 'undefined') {
-        const observer = new ResizeObserver(() => {
+        observer = new ResizeObserver(() => {
             const open = immersiveViewer.querySelector('.immersive__panel-left.is-open');
             if (!open || !handle.offsetParent) return;
             const panelWidth = open.getBoundingClientRect().width;
@@ -174,6 +186,12 @@ export function setupPanelResize(immersiveRoot) {
         handle.addEventListener('pointermove', onMove);
         handle.addEventListener('pointerup', onUp);
     });
+    return {
+        destroy() {
+            if (observer) observer.disconnect();
+            handle.remove();
+        },
+    };
 }
 
 /**
@@ -181,16 +199,22 @@ export function setupPanelResize(immersiveRoot) {
  * bails early when it is not in the DOM (conditional server-render).
  *
  * @param {IvViewer} viewer
+ * @returns {{destroy: function():void}}
  */
 export function setupToc(viewer) {
     const tocPanel = document.getElementById('immersivePanelToc');
-    if (!tocPanel) return;
-    setupTocCollapseToggle(tocPanel);
-    setupTocSync(viewer, tocPanel);
+    if (!tocPanel) return noop;
+    const parts = [setupTocCollapseToggle(tocPanel), setupTocSync(viewer, tocPanel)];
+    return {
+        destroy() {
+            parts.forEach((part) => part.destroy());
+        },
+    };
 }
 
 /** Wires the "collapse all / expand all" toggle on the server-rendered TOC tree (shown only when the TOC nests). */
 export function setupTocCollapseToggle(tocPanel = document.getElementById('immersivePanelToc')) {
+    const bag = createDisposer();
     const tocContainer = document.getElementById('widgetToc');
     const tocToggle = tocPanel && tocPanel.querySelector('[data-immersive-toc-toggle]');
     if (tocContainer && tocToggle && tocContainer.querySelector(".widget-toc__element[data-level='2']")) {
@@ -203,7 +227,7 @@ export function setupTocCollapseToggle(tocPanel = document.getElementById('immer
             tocToggle.setAttribute('aria-label', label);
             tocToggle.setAttribute('title', label);
         };
-        tocToggle.addEventListener('click', () => {
+        bag.listen(tocToggle, 'click', () => {
             if (tocContainer.querySelector('.widget-toc__element--hidden')) {
                 tocContainer.querySelectorAll('.widget-toc__element--hidden').forEach((li) => li.classList.remove('widget-toc__element--hidden'));
                 tocContainer.querySelectorAll('.widget-toc__element.parent').forEach((li) => {
@@ -226,10 +250,12 @@ export function setupTocCollapseToggle(tocPanel = document.getElementById('immer
         });
         reflectTocToggle();
     }
+    return { destroy: bag.dispose };
 }
 
 /** Wires the metadata "more / less" fold that reveals the deeper structural blocks. */
 export function setupMetadataToggle() {
+    const bag = createDisposer();
     const metadataToggle = document.querySelector('[data-immersive-metadata-toggle]');
     if (metadataToggle) {
         const moreEl = document.getElementById(metadataToggle.dataset.immersiveMetadataToggle);
@@ -241,7 +267,7 @@ export function setupMetadataToggle() {
                 if (lessLabel) lessLabel.setAttribute('aria-hidden', String(!open));
             };
             syncMetadataToggleLabel(!moreEl.hidden);
-            metadataToggle.addEventListener('click', () => {
+            bag.listen(metadataToggle, 'click', () => {
                 const willOpen = moreEl.hidden;
                 moreEl.hidden = !willOpen;
                 metadataToggle.setAttribute('aria-expanded', String(willOpen));
@@ -249,6 +275,7 @@ export function setupMetadataToggle() {
             });
         }
     }
+    return { destroy: bag.dispose };
 }
 
 /**
@@ -258,9 +285,11 @@ export function setupMetadataToggle() {
  *
  * @param {IvViewer} viewer
  * @param {HTMLElement} [tocPanel]
+ * @returns {{destroy: function():void}}
  */
 export function setupTocSync(viewer, tocPanel = document.getElementById('immersivePanelToc')) {
-    if (!tocPanel) return;
+    if (!tocPanel) return noop;
+    const bag = createDisposer();
     const tocEntries = () =>
         Array.from(tocPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
             .filter((el) => el.dataset.level !== '0') // skip the hidden record root
@@ -280,7 +309,7 @@ export function setupTocSync(viewer, tocPanel = document.getElementById('immersi
         }
     };
 
-    tocPanel.addEventListener('click', (e) => {
+    bag.listen(tocPanel, 'click', (e) => {
         const link = e.target.closest('.widget-toc__element-link a');
         if (!link) return;
         const element = link.closest('.widget-toc__element');
@@ -309,6 +338,7 @@ export function setupTocSync(viewer, tocPanel = document.getElementById('immersi
         });
         setTocActive(best ? best.el : null);
     };
-    viewer.onPageChange.subscribe(syncTocActive);
+    bag.add(viewer.onPageChange.subscribe(syncTocActive));
     syncTocActive();
+    return { destroy: bag.dispose };
 }

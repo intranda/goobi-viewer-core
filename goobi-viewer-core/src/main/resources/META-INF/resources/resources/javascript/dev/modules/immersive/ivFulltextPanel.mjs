@@ -4,6 +4,7 @@ import { loadPageTextLevels, flattenTextLevels, loadPageLayout } from './ivManif
 import { buildTextLevels, mountTextImageLink } from './ivTextImageLink.mjs';
 import { currentOrder } from './viewerImmersive.mjs';
 import { setupAnnotationsToggle, applyTextMarkup, applyRegionMarkup, mountBlockAnnotations, overlayRegions } from './ivAnnotations.mjs';
+import { createDisposer } from './ivLifecycle.mjs';
 
 /**
  * Wires the fulltext panel: loads the nested OCR levels for the visible page,
@@ -21,9 +22,10 @@ import { setupAnnotationsToggle, applyTextMarkup, applyRegionMarkup, mountBlockA
  * @param {string} apiBase
  * @param {{closePanels: Function, registerCloseHook: Function}} panels
  * @param {{register: Function}} [keys]  the immersive key dispatcher (annotations shortcut)
- * @returns {{updateFulltextAvail: Function}}
+ * @returns {{updateFulltextAvail: Function, destroy: Function}}
  */
 export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
+    const bag = createDisposer();
     const fulltextPanel = document.getElementById('immersivePanelFulltext');
     const fulltextBox = document.getElementById('immersiveFulltext');
     const fulltextLoader = document.getElementById('immersiveFulltextLoader');
@@ -42,6 +44,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
         storage = null;
     }
     const annotations = annoCheckbox && immersiveRoot ? setupAnnotationsToggle({ root: immersiveRoot, checkbox: annoCheckbox, storage, keys }) : null;
+    if (annotations) bag.add(() => annotations.destroy());
 
     const panelOpen = () => !!fulltextPanel && fulltextPanel.classList.contains('is-open');
 
@@ -120,12 +123,14 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     };
 
     if (annotations) {
-        viewer.onPageChange.subscribe(refreshLayout);
-        viewer.onOpen.subscribe(mountOverlays);
+        bag.add(viewer.onPageChange.subscribe(refreshLayout));
+        bag.add(viewer.onOpen.subscribe(mountOverlays));
         // Note positions depend on rendered geometry, which is only measurable while visible.
-        annotations.onChange((on) => {
-            if (on && currentAnnotations) requestAnimationFrame(() => currentAnnotations && currentAnnotations.relayout());
-        });
+        bag.add(
+            annotations.onChange((on) => {
+                if (on && currentAnnotations) requestAnimationFrame(() => currentAnnotations && currentAnnotations.relayout());
+            })
+        );
     }
 
     if (fulltextPanel && fulltextBox) {
@@ -147,7 +152,8 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
             clearBlockAnnotations();
             if (fulltextLoader) fulltextLoader.hidden = true;
         };
-        panels.registerCloseHook(clearFulltextLink);
+        bag.add(panels.registerCloseHook(clearFulltextLink));
+        bag.add(clearFulltextLink);
 
         const loadFulltext = async () => {
             const order = currentOrder(viewer);
@@ -181,13 +187,15 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
             }
         };
 
-        fulltextPanel.addEventListener('immersive:panel-open', loadFulltext);
-        fulltextPanel.addEventListener('immersive:panel-open', () => {
+        bag.listen(fulltextPanel, 'immersive:panel-open', loadFulltext);
+        bag.listen(fulltextPanel, 'immersive:panel-open', () => {
             if (annotations) refreshLayout();
         });
-        viewer.onPageChange.subscribe(() => {
-            if (panelOpen()) loadFulltext();
-        });
+        bag.add(
+            viewer.onPageChange.subscribe(() => {
+                if (panelOpen()) loadFulltext();
+            })
+        );
     }
 
     const updateFulltextAvail = () => {
@@ -205,5 +213,5 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     };
     updateFulltextAvail();
 
-    return { updateFulltextAvail };
+    return { updateFulltextAvail, destroy: bag.dispose };
 }

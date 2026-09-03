@@ -58,18 +58,26 @@ export function pickActiveTocPageNo(entryNos, visiblePages, activeNo = null) {
  *
  * @param {{onPageChange:{subscribe:Function}, goToPage:Function}} viewer
  * @param {string} pi
+ * @returns {{destroy: function():void}}
  */
 export function attachUrlSync(viewer, pi) {
-    viewer.onPageChange.subscribe((order) => {
+    const unsubscribe = viewer.onPageChange.subscribe((order) => {
         const url = new URL(window.location.href);
         url.pathname = pageUrlPath(url.pathname, pi, order + 1);
         window.history.pushState({ order }, '', url.toString());
     });
-    window.addEventListener('popstate', (e) => {
+    const onPopState = (e) => {
         if (e.state && typeof e.state.order === 'number') {
             viewer.goToPage(e.state.order);
         }
-    });
+    };
+    window.addEventListener('popstate', onPopState);
+    return {
+        destroy() {
+            if (typeof unsubscribe === 'function') unsubscribe();
+            window.removeEventListener('popstate', onPopState);
+        },
+    };
 }
 
 export const THUMB_SIZE_KEY = 'immersive-thumb-size';

@@ -126,6 +126,17 @@ describe('IvViewer construction', () => {
         expect(w.current).toBe(0);
     });
 
+    test('destroy tears down OSD and silences the emitters', () => {
+        const v = new IvViewer({ element: {}, services: services(3) });
+        v.viewer.openseadragon.destroy = jest.fn();
+        const seen = jest.fn();
+        v.onPageChange.subscribe(seen);
+        v.destroy();
+        expect(v.viewer.openseadragon.destroy).toHaveBeenCalledTimes(1);
+        v.onPageChange.emit(1);
+        expect(seen).not.toHaveBeenCalled();
+    });
+
     test('each instance gets its own sequence config (no shared module state)', () => {
         const a = new IvViewer({ element: {}, services: services(3) });
         const b = new IvViewer({ element: {}, services: services(3) });

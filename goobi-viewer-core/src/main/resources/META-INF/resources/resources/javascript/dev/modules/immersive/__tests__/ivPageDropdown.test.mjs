@@ -126,3 +126,22 @@ describe('setupPageDropdown', () => {
         expect(options[0].getAttribute('aria-selected')).toBe('false');
     });
 });
+
+describe('setupPageDropdown teardown', () => {
+    afterEach(() => {
+        document.body.innerHTML = '';
+    });
+
+    test('destroy detaches the trigger and the Escape handler', () => {
+        const { trigger, dropdown } = mountMarkup();
+        const keys = createKeyDispatcher();
+        const picker = setupPageDropdown(fakeViewer(3), ['a', 'b', 'c'], keys);
+        trigger.click();
+        expect(dropdown.hidden).toBe(false);
+        picker.destroy();
+        expect(dropdown.hidden).toBe(true);
+        trigger.click();
+        expect(dropdown.hidden).toBe(true);
+        expect(keys.handleEvent({ key: 'Escape' })).toBe(false);
+    });
+});

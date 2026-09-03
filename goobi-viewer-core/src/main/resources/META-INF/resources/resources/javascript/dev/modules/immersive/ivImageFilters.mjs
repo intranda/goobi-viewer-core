@@ -1,5 +1,7 @@
 /** Image-filter popover wiring plus a11y for the immersive Bootstrap popovers. */
 
+import { createDisposer, noop } from './ivLifecycle.mjs';
+
 const FILTER_TRIGGER_SELECTOR = '[data-popover-element="#immersiveFilterPopover"]';
 
 /**
@@ -22,14 +24,17 @@ function isViewerOriginClean(viewer) {
  * The origin-clean check runs at open time (the canvas only taints once tiles have
  * been drawn); a persistent handler with a mounted flag replaces one(), so an open
  * where the mount cannot happen yet does not burn the only mount attempt.
+ *
+ * @returns {{destroy: function():void}}
  */
 export function setupImageFilters(viewer) {
     const btn = document.querySelector(FILTER_TRIGGER_SELECTOR);
-    if (!btn) return;
+    if (!btn) return noop;
+    const bag = createDisposer();
     const $ = window.$ || window.jQuery;
     if (!$) {
-        mountImageFilters(viewer);
-        return;
+        mountImageFilters(viewer, bag);
+        return { destroy: bag.dispose };
     }
     let mounted = false;
     $(btn).on('shown.bs.popover.immersiveFilters', () => {
@@ -39,9 +44,11 @@ export function setupImageFilters(viewer) {
             btn.hidden = true;
             return;
         }
-        mounted = mountImageFilters(viewer);
+        mounted = mountImageFilters(viewer, bag);
         if (mounted) $(btn).popover('update');
     });
+    bag.add(() => $(btn).off('shown.bs.popover.immersiveFilters'));
+    return { destroy: bag.dispose };
 }
 
 /**
@@ -49,10 +56,13 @@ export function setupImageFilters(viewer) {
  * Filter) without touching the shared popovers controller. On open, focus moves into the
  * portaled popover; Escape inside it closes and returns focus to the trigger; aria-expanded
  * is kept in sync. Hooks only these triggers via Bootstrap's shown/hidden.bs.popover events.
+ *
+ * @returns {{destroy: function():void}}
  */
 export function setupImmersivePopoverA11y() {
     const $ = window.$ || window.jQuery;
-    if (!$) return;
+    if (!$) return noop;
+    const bag = createDisposer();
     const FOCUSABLE = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
     const selectors = ['#immersiveSharePopover', '#immersiveCitationPopover', '#immersiveFilterPopover'];
     selectors.forEach((sel) => {
@@ -68,7 +78,7 @@ export function setupImmersivePopoverA11y() {
             return all.length ? all[all.length - 1] : null;
         };
 
-        $(trigger).on('shown.bs.popover', () => {
+        $(trigger).on('shown.bs.popover.ivA11y', () => {
             trigger.setAttribute('aria-expanded', 'true');
             const pop = popoverEl();
             if (!pop) return;
@@ -92,27 +102,33 @@ export function setupImmersivePopoverA11y() {
             }
         });
 
-        $(trigger).on('hidden.bs.popover', () => {
+        $(trigger).on('hidden.bs.popover.ivA11y', () => {
             trigger.setAttribute('aria-expanded', 'false');
             const active = document.activeElement;
             if (!active || active === document.body) trigger.focus();
         });
+        bag.add(() => {
+            $(trigger).off('.ivA11y');
+            delete trigger.dataset.a11yBound;
+        });
     });
+    return { destroy: bag.dispose };
 }
 
 /**
  * Mounts the reused imageFilters riot tag on the viewer's live ImageView.Image so the
  * Filter popover adjusts brightness/contrast/etc.
  *
+ * @param {{add: Function}} bag  the caller's disposer; the tag's subscriptions are queued on it
  * @returns {boolean} whether the tag was mounted
  */
-function mountImageFilters(viewer) {
+function mountImageFilters(viewer, bag) {
     if (!document.querySelector('imageFilters') || !window.immersiveFilterConfig) return false;
     const [tag] = riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
     if (tag) {
-        bindImageFiltersRendering(viewer, tag);
+        bag.add(bindImageFiltersRendering(viewer, tag));
         // "Reset view" (button and '0' key) clears the image filters as well.
-        viewer.onReset.subscribe(() => tag.resetAll());
+        bag.add(viewer.onReset.subscribe(() => tag.resetAll()));
     }
     return true;
 }
@@ -129,6 +145,8 @@ function mountImageFilters(viewer) {
  * Applying the filter methods ourselves from a single handler sidesteps the
  * chain entirely; the tag's start/close/isActive/apply are rebased onto a
  * plain active-set so its UI logic (checkboxes, precludes, reset) keeps working.
+ *
+ * @returns {function():void} detaches the frame handler and the onOpen subscription
  */
 export function bindImageFiltersRendering(viewer, tag) {
     const image = viewer.viewer;
@@ -163,5 +181,9 @@ export function bindImageFiltersRendering(viewer, tag) {
         boundOsd.addHandler('update-viewport', renderFilters);
     };
     attach();
-    viewer.onOpen.subscribe(attach);
+    const unsubscribe = viewer.onOpen.subscribe(attach);
+    return () => {
+        unsubscribe();
+        if (boundOsd && typeof boundOsd.removeHandler === 'function') boundOsd.removeHandler('update-viewport', renderFilters);
+    };
 }

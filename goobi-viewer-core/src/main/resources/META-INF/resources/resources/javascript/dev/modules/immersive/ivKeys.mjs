@@ -10,18 +10,28 @@ import { isOverlayOpen } from './ivSelectors.mjs';
  * grid → dropdown → panels) declared in one place instead of guard selectors
  * scattered over independent listeners. Pure + tested.
  *
- * @returns {{register:Function, handleEvent:Function, attach:Function}}
+ * @returns {{register:Function, handleEvent:Function, attach:Function, detach:Function}}
  */
 export function createKeyDispatcher() {
     const handlers = [];
-    return {
+    let bound = null;
+    const onKeydown = (e) => {
+        if (dispatcher.handleEvent(e)) e.preventDefault();
+    };
+    const dispatcher = {
         /**
          * @param {number} priority  lower runs first
          * @param {(event: KeyboardEvent) => boolean} handler  true = consumed
+         * @returns {function():void} unregisters the handler
          */
         register(priority, handler) {
-            handlers.push({ priority, handler });
+            const entry = { priority, handler };
+            handlers.push(entry);
             handlers.sort((a, b) => a.priority - b.priority);
+            return () => {
+                const i = handlers.indexOf(entry);
+                if (i !== -1) handlers.splice(i, 1);
+            };
         },
         /** @returns {boolean} whether any handler consumed the event */
         handleEvent(event) {
@@ -30,13 +40,19 @@ export function createKeyDispatcher() {
             }
             return false;
         },
-        /** Binds the single keydown listener. */
+        /** Binds the single keydown listener; attaching again moves it. */
         attach(target) {
-            target.addEventListener('keydown', (e) => {
-                if (this.handleEvent(e)) e.preventDefault();
-            });
+            dispatcher.detach();
+            bound = target;
+            bound.addEventListener('keydown', onKeydown);
+        },
+        /** Removes the keydown listener. */
+        detach() {
+            if (bound) bound.removeEventListener('keydown', onKeydown);
+            bound = null;
         },
     };
+    return dispatcher;
 }
 
 /**
@@ -54,9 +70,10 @@ export function createKeyDispatcher() {
  * @param {IvViewer} viewer
  * @param {HTMLElement} stageEl        the OSD mount element ([data-immersive-image])
  * @param {number} [priority=50]       runs after modal (10), grid (20), dropdown (30), panels (40)
+ * @returns {{destroy: function():void}}
  */
 export function registerViewerNavKeys(keys, viewer, stageEl, priority = 50) {
-    keys.register(priority, (e) => {
+    const unregister = keys.register(priority, (e) => {
         if (e.ctrlKey || e.metaKey || e.altKey) return false;
         const key = e.key;
         const zoomIn = key === '+' || key === '=' || (e.shiftKey && key === 'ArrowUp');
@@ -80,4 +97,5 @@ export function registerViewerNavKeys(keys, viewer, stageEl, priority = 50) {
         else viewer.zoomOut();
         return true;
     });
+    return { destroy: unregister };
 }

@@ -174,3 +174,36 @@ describe('registerViewerNavKeys', () => {
         expect(dispatch('ArrowDown')).toBe(false);
     });
 });
+
+describe('createKeyDispatcher teardown', () => {
+    test('register returns an unregister function', () => {
+        const keys = createKeyDispatcher();
+        const off = keys.register(10, () => true);
+        expect(keys.handleEvent({ key: 'x' })).toBe(true);
+        off();
+        expect(keys.handleEvent({ key: 'x' })).toBe(false);
+    });
+
+    test('attach never binds twice; detach removes the document listener', () => {
+        const keys = createKeyDispatcher();
+        const seen = jest.fn(() => true);
+        keys.register(10, seen);
+        keys.attach(document);
+        keys.attach(document);
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
+        expect(seen).toHaveBeenCalledTimes(1);
+        keys.detach();
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
+        expect(seen).toHaveBeenCalledTimes(1);
+    });
+
+    test('registerViewerNavKeys returns a handle whose destroy unregisters the keys', () => {
+        const keys = createKeyDispatcher();
+        const viewer = { next: jest.fn(), prev: jest.fn(), allowZoom: true };
+        const nav = registerViewerNavKeys(keys, viewer, null);
+        expect(keys.handleEvent({ key: 'ArrowRight', target: document.body })).toBe(true);
+        nav.destroy();
+        expect(keys.handleEvent({ key: 'ArrowRight', target: document.body })).toBe(false);
+        expect(viewer.next).toHaveBeenCalledTimes(1);
+    });
+});

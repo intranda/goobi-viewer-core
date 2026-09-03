@@ -235,3 +235,27 @@ describe('setupPanelResize', () => {
         expect(localStorage.getItem(WIDTH_KEY)).toBeNull();
     });
 });
+
+describe('setupPanels teardown', () => {
+    afterEach(() => {
+        document.body.innerHTML = '';
+    });
+
+    test('registerCloseHook returns an unregister function', () => {
+        const { panels, btn } = mountMarkup();
+        const hook = jest.fn();
+        const off = panels.registerCloseHook(hook);
+        off();
+        btn('immersivePanelToc').click();
+        panels.closePanels();
+        expect(hook).not.toHaveBeenCalled();
+    });
+
+    test('destroy detaches the rail buttons and the keyboard shortcuts', () => {
+        const { keys, panels, btn, panel } = mountMarkup();
+        panels.destroy();
+        btn('immersivePanelToc').click();
+        expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(false);
+        expect(keys.handleEvent(altDigit('Digit1'))).toBe(false);
+    });
+});

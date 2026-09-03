@@ -1,6 +1,7 @@
 /** Search panel wiring: in-work IIIF content search with hit list and highlights. */
 
 import { search, nextIndex, prevIndex } from './ivFulltextSearch.mjs';
+import { createDisposer } from './ivLifecycle.mjs';
 
 /**
  * Wires the in-place IIIF content search: result list in the left panel,
@@ -9,8 +10,10 @@ import { search, nextIndex, prevIndex } from './ivFulltextSearch.mjs';
  * @param {IvViewer} viewer
  * @param {string} pi
  * @param {string} apiBase
+ * @returns {{destroy: function():void}}
  */
 export function setupSearchPanel(viewer, pi, apiBase) {
+    const bag = createDisposer();
     const searchState = { hits: [], activeIndex: -1, term: '', failed: false };
     let searchReq = 0;
     const resultsBox = document.getElementById('immersiveSearchResults');
@@ -100,13 +103,13 @@ export function setupSearchPanel(viewer, pi, apiBase) {
         else viewer.clearHighlights();
     };
 
-    viewer.onPageChange.subscribe(renderHighlights);
+    bag.add(viewer.onPageChange.subscribe(renderHighlights));
 
     const searchPanel = document.getElementById('immersivePanelSearch');
     const searchForm = searchPanel && searchPanel.querySelector('form');
     const searchInput = searchPanel && searchPanel.querySelector('input[type="text"]');
     if (searchForm && searchInput) {
-        searchForm.addEventListener('submit', (e) => {
+        bag.listen(searchForm, 'submit', (e) => {
             e.preventDefault();
             runSearch(searchInput.value.trim());
         });
@@ -119,6 +122,7 @@ export function setupSearchPanel(viewer, pi, apiBase) {
         clearBtn.hidden = !searchInput.value;
         const group = searchInput.closest('.input-group') || searchInput.parentElement;
         group.insertBefore(clearBtn, group.querySelector('.input-group-addon') || null);
+        bag.add(() => clearBtn.remove());
         const syncClear = () => {
             clearBtn.hidden = !searchInput.value;
         };
@@ -128,9 +132,9 @@ export function setupSearchPanel(viewer, pi, apiBase) {
             runSearch('');
             searchInput.focus();
         };
-        searchInput.addEventListener('input', syncClear);
-        clearBtn.addEventListener('click', resetSearch);
-        searchInput.addEventListener('keydown', (e) => {
+        bag.listen(searchInput, 'input', syncClear);
+        bag.listen(clearBtn, 'click', resetSearch);
+        bag.listen(searchInput, 'keydown', (e) => {
             if (e.key === 'Escape' && searchInput.value) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -139,9 +143,10 @@ export function setupSearchPanel(viewer, pi, apiBase) {
         });
     }
     document.querySelectorAll('[data-immersive-hit]').forEach((btn) => {
-        btn.addEventListener('click', () => {
+        bag.listen(btn, 'click', () => {
             const n = searchState.hits.length;
             goToHit(btn.dataset.immersiveHit === 'next' ? nextIndex(searchState.activeIndex, n) : prevIndex(searchState.activeIndex, n));
         });
     });
+    return { destroy: bag.dispose };
 }

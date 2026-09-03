@@ -2,6 +2,7 @@
 
 import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX, currentOrder } from './viewerImmersive.mjs';
 import { createFocusTrap } from './ivA11y.mjs';
+import { createDisposer } from './ivLifecycle.mjs';
 
 /**
  * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
@@ -14,9 +15,10 @@ import { createFocusTrap } from './ivA11y.mjs';
  * @param {string} pi
  * @param {string} apiBase
  * @param {{register: Function}} keys  the immersive key dispatcher
- * @returns {function():void} toggles the overlay
+ * @returns {{toggleGrid: Function, destroy: Function}}
  */
 export function setupOverviewGrid(viewer, pi, apiBase, keys) {
+    const bag = createDisposer();
     const GRID_LOADER_TIMEOUT_MS = 8000;
     const GRID_TOP_VISIBLE_AFTER_PX = 200;
     // IIIF size; must cover the largest grid step (230x330 CSS px) on HiDPI
@@ -43,18 +45,19 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
     };
     applyGridThumbSize(readThumbSizeStep(window.localStorage));
     if (gridSizeSlider) {
-        gridSizeSlider.addEventListener('input', () => {
+        bag.listen(gridSizeSlider, 'input', () => {
             const step = normalizeThumbSizeStep(gridSizeSlider.value);
             applyGridThumbSize(step);
             writeThumbSizeStep(window.localStorage, step);
         });
     }
     if (gridScroll && gridTopBtn) {
-        gridTopBtn.addEventListener('click', () => {
+        bag.listen(gridTopBtn, 'click', () => {
             const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
             gridScroll.scrollTo({ top: 0, behavior });
         });
-        gridScroll.addEventListener(
+        bag.listen(
+            gridScroll,
             'scroll',
             () => {
                 const hide = gridScroll.scrollTop < GRID_TOP_VISIBLE_AFTER_PX;
@@ -69,21 +72,24 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
     let gridOpener = null;
     let gridTrapHandler = null;
     const gridActions = new rxjs.Subject();
-    gridActions.subscribe((e) => {
+    const gridActionsSub = gridActions.subscribe((e) => {
         if (e && e.action === 'clickImage' && typeof e.value === 'number') {
             viewer.goToPage(e.value);
             closeGrid();
         }
     });
+    bag.add(() => gridActionsSub.unsubscribe());
     const syncGridSelection = () => {
         if (gridTag) {
             gridTag.opts.index = currentOrder(viewer);
             gridTag.update();
         }
     };
-    viewer.onPageChange.subscribe(() => {
-        if (gridOverlay && !gridOverlay.hidden) syncGridSelection();
-    });
+    bag.add(
+        viewer.onPageChange.subscribe(() => {
+            if (gridOverlay && !gridOverlay.hidden) syncGridSelection();
+        })
+    );
     const openGrid = () => {
         gridOpener = gridTrigger || document.activeElement;
         gridOverlay.hidden = false;
@@ -112,12 +118,13 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
             };
             const thumbsMount = document.getElementById('immersiveThumbnails');
             if (thumbsMount) {
-                thumbsMount.addEventListener('load', hideGridLoader, { capture: true, once: true });
+                bag.listen(thumbsMount, 'load', hideGridLoader, { capture: true, once: true });
                 // Restricted pages' thumbnails 403; swap the broken <img> for the denied
                 // template's image (admin-configured, else the bundled fallback asset).
                 const templateImg = document.querySelector('#immersiveDeniedContent .immersive__page-denied-img');
                 const deniedThumb = (templateImg && templateImg.getAttribute('src')) || `${apiBase.replace(/\/api\/v1\/?$/, '')}/resources/images/access_denied.png`;
-                thumbsMount.addEventListener(
+                bag.listen(
+                    thumbsMount,
                     'error',
                     (e) => {
                         const t = e.target;
@@ -155,10 +162,18 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
         else closeGrid();
     };
 
-    keys.register(20, (e) => {
-        if (e.key !== 'Escape' || !gridOverlay || gridOverlay.hidden) return false;
-        closeGrid();
-        return true;
-    });
-    return toggleGrid;
+    bag.add(
+        keys.register(20, (e) => {
+            if (e.key !== 'Escape' || !gridOverlay || gridOverlay.hidden) return false;
+            closeGrid();
+            return true;
+        })
+    );
+    return {
+        toggleGrid,
+        destroy() {
+            closeGrid();
+            bag.dispose();
+        },
+    };
 }

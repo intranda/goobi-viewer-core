@@ -25,23 +25,42 @@ const STAGE_LOADER_TIMEOUT_MS = 8000;
  * server rendered the [data-immersive-image] mount, i.e. the user may view the
  * images. Keyboard shortcuts run through one dispatcher whose priorities define
  * the overlay precedence: shortcuts modal (10) → grid overlay (20) → page
- * dropdown (30) → panels (40).
+ * dropdown (30) → panels (40). Every setup module returns a destroyable; the
+ * returned handle tears all of them down along with the engine.
  *
  * @param {HTMLElement} immersiveRoot  the .immersive root element
+ * @returns {{destroy: function():void}}
  */
 export function initImmersiveViewer(immersiveRoot) {
+    const parts = [];
+    const use = (part) => {
+        parts.push(part);
+        return part;
+    };
+    let viewer = null;
+    let destroyed = false;
+    const handle = {
+        destroy() {
+            destroyed = true;
+            while (parts.length) parts.pop().destroy();
+            if (viewer) viewer.destroy();
+            viewer = null;
+            keys.detach();
+        },
+    };
+
     const keys = createKeyDispatcher();
     keys.attach(document);
-    const panels = setupPanels(immersiveRoot, keys);
-    setupPanelResize(immersiveRoot);
-    setupMetadataToggle();
-    setupImmersivePopoverA11y();
-    setupShortcutsModal(panels.closePanels, keys);
+    const panels = use(setupPanels(immersiveRoot, keys));
+    use(setupPanelResize(immersiveRoot));
+    use(setupMetadataToggle());
+    use(setupImmersivePopoverA11y());
+    use(setupShortcutsModal(panels.closePanels, keys));
 
     // No VIEW_IMAGES: the stage shows a server-rendered access-denied placeholder
     // and the image-dependent chrome is not rendered, so there is no viewer to build.
     const el = immersiveRoot.querySelector('[data-immersive-image]');
-    if (!el) return;
+    if (!el) return handle;
 
     const pi = el.dataset.pi;
     const apiBase = el.dataset.apiBase;
@@ -66,28 +85,32 @@ export function initImmersiveViewer(immersiveRoot) {
     // Services and per-page access share the memoized manifest fetch (one request).
     Promise.all([loadPageServices(pi, apiBase), loadPageAccess(pi, apiBase)])
         .then(([services, restricted]) => {
-            const viewer = new IvViewer({ element: el, services, startOrder, maxZoom, allowZoom, restricted, deniedText });
+            if (destroyed) return;
+            viewer = new IvViewer({ element: el, services, startOrder, maxZoom, allowZoom, restricted, deniedText });
             viewer.viewer.openseadragon.addOnceHandler('tile-loaded', hideStageLoader);
             // A restricted entry page never fires tile-loaded (tiles 403); onOpen fires
             // once the (failed) load settles, so the loader is not left spinning.
             viewer.onOpen.subscribe(hideStageLoader);
-            attachUrlSync(viewer, pi);
-            setupImageFilters(viewer);
-            registerViewerNavKeys(keys, viewer, el);
+            use(attachUrlSync(viewer, pi));
+            use(setupImageFilters(viewer));
+            use(registerViewerNavKeys(keys, viewer, el));
 
             loadPageLabels(pi, apiBase, fetch, document.documentElement.lang)
-                .then((labels) => setupPageDropdown(viewer, labels, keys))
+                .then((labels) => {
+                    if (!destroyed) use(setupPageDropdown(viewer, labels, keys));
+                })
                 .catch((e) => console.warn('immersive page labels failed', e));
 
-            setupToc(viewer);
-            setupSearchPanel(viewer, pi, apiBase);
-            const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels, keys);
-            setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys);
-            const toggleGrid = setupOverviewGrid(viewer, pi, apiBase, keys);
-            setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail });
+            use(setupToc(viewer));
+            use(setupSearchPanel(viewer, pi, apiBase));
+            const fulltext = use(setupFulltextPanel(viewer, pi, apiBase, panels, keys));
+            use(setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys));
+            const grid = use(setupOverviewGrid(viewer, pi, apiBase, keys));
+            use(setupBottomBar(el, viewer, { toggleGrid: grid.toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail }));
         })
         .catch((e) => {
             hideStageLoader();
             console.error('immersive viewer init failed', e);
         });
+    return handle;
 }

@@ -3,6 +3,7 @@
 import { isTypingTarget, isMacPlatform, macKeyLabel } from './viewerImmersive.mjs';
 import { createFocusTrap } from './ivA11y.mjs';
 import { isOverlayOpen } from './ivSelectors.mjs';
+import { createDisposer, noop } from './ivLifecycle.mjs';
 
 /**
  * Keyboard-shortcuts help modal: opened via the rail button or the `?` key,
@@ -15,11 +16,13 @@ import { isOverlayOpen } from './ivSelectors.mjs';
  *
  * @param {Function} closePanels  closes the open left panel(s)
  * @param {{register: Function}} keys  the immersive key dispatcher
+ * @returns {{destroy: function():void}}
  */
 export function setupShortcutsModal(closePanels, keys) {
     const overlay = document.getElementById('immersiveShortcuts');
     const trigger = document.querySelector('[data-immersive-shortcuts-trigger]');
-    if (!overlay || !trigger) return;
+    if (!overlay || !trigger) return noop;
+    const bag = createDisposer();
     // On Apple platforms modifiers are conventionally shown as symbols (⌥, ⇧);
     // the accessible name keeps the spoken key name. The symbol gets its own
     // span so the flex keycap centers the glyph instead of baseline-aligning it.
@@ -61,7 +64,7 @@ export function setupShortcutsModal(closePanels, keys) {
         opener = null;
         if (restore && typeof restore.focus === 'function') restore.focus();
     };
-    trigger.addEventListener('click', () => {
+    bag.listen(trigger, 'click', () => {
         if (!overlay.hidden) {
             closeShortcuts();
             return;
@@ -69,11 +72,11 @@ export function setupShortcutsModal(closePanels, keys) {
         if (typeof closePanels === 'function') closePanels();
         openShortcuts();
     });
-    if (closeBtn) closeBtn.addEventListener('click', closeShortcuts);
-    overlay.addEventListener('click', (e) => {
+    if (closeBtn) bag.listen(closeBtn, 'click', closeShortcuts);
+    bag.listen(overlay, 'click', (e) => {
         if (dialog && !dialog.contains(e.target)) closeShortcuts();
     });
-    keys.register(10, (e) => {
+    const unregisterKeys = keys.register(10, (e) => {
         if (e.key === 'Escape' && !overlay.hidden) {
             closeShortcuts();
             return true;
@@ -85,4 +88,11 @@ export function setupShortcutsModal(closePanels, keys) {
         }
         return false;
     });
+    bag.add(unregisterKeys);
+    return {
+        destroy() {
+            closeShortcuts();
+            bag.dispose();
+        },
+    };
 }

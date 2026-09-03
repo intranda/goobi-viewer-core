@@ -19,8 +19,9 @@ function mountMarkup() {
         <input id="someInput" type="text" />`;
     const keys = createKeyDispatcher();
     const closePanels = jest.fn();
-    setupShortcutsModal(closePanels, keys);
+    const modal = setupShortcutsModal(closePanels, keys);
     return {
+        modal,
         keys,
         closePanels,
         overlay: document.getElementById('immersiveShortcuts'),
@@ -85,5 +86,15 @@ describe('setupShortcutsModal', () => {
         expect(overlay.hidden).toBe(false);
         overlay.dispatchEvent(new MouseEvent('click', { bubbles: true }));
         expect(overlay.hidden).toBe(true);
+    });
+});
+
+describe('setupShortcutsModal teardown', () => {
+    test('destroy detaches the trigger and the dispatcher handler', () => {
+        const { modal, keys, overlay, trigger } = mountMarkup();
+        modal.destroy();
+        trigger.click();
+        expect(overlay.hidden).toBe(true);
+        expect(keys.handleEvent(question())).toBe(false);
     });
 });

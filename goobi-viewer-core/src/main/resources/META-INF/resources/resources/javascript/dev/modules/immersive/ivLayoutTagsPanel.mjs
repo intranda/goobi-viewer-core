@@ -17,6 +17,7 @@ import {
     loadLayoutTagDetails,
 } from './ivLayoutTags.mjs';
 import { styleClassTokens } from './ivAnnotations.mjs';
+import { createDisposer, noop } from './ivLifecycle.mjs';
 
 /** Number of colour dots the pick trigger shows for the selected tags. */
 const TRIGGER_DOTS = 4;
@@ -37,10 +38,11 @@ const PICK_KEY_PRIORITY = 35;
  * @param {string} apiBase
  * @param {{closePanels: Function, registerCloseHook: Function}} panels
  * @param {{register: Function}} keys  the immersive key dispatcher
+ * @returns {{destroy: function():void}}
  */
 export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
     const panel = document.getElementById('immersivePanelLayoutTags');
-    if (!panel) return;
+    if (!panel) return noop;
     const q = (sel) => panel.querySelector(sel);
     const sticky = q('[data-immersive-layout-tags="sticky"]');
     const rangeFrom = q('[data-immersive-layout-tags="from"]');
@@ -57,7 +59,8 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
     const loader = q('[data-immersive-layout-tags="loader"]');
     const hitsMount = q('[data-immersive-layout-tags="hits"]');
     const progress = q('[data-immersive-layout-tags="progress"]');
-    if (!rangeFrom || !rangeTo || !pickTrigger || !pickMenu || !pickList || !hitsMount) return;
+    if (!rangeFrom || !rangeTo || !pickTrigger || !pickMenu || !pickList || !hitsMount) return noop;
+    const bag = createDisposer();
     const labels = panel.dataset;
     const pageCount = viewer.getPageCount();
 
@@ -192,18 +195,20 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         syncPickRows();
     };
 
-    pickTrigger.addEventListener('click', () => (isPickOpen() ? closePick() : openPick()));
+    bag.listen(pickTrigger, 'click', () => (isPickOpen() ? closePick() : openPick()));
     if (filterInput) {
-        filterInput.addEventListener('input', () => {
+        bag.listen(filterInput, 'input', () => {
             state.filter = filterInput.value;
             buildPickRows();
         });
     }
-    keys.register(PICK_KEY_PRIORITY, (e) => {
-        if (e.key !== 'Escape' || !isPickOpen()) return false;
-        closePick(true);
-        return true;
-    });
+    bag.add(
+        keys.register(PICK_KEY_PRIORITY, (e) => {
+            if (e.key !== 'Escape' || !isPickOpen()) return false;
+            closePick(true);
+            return true;
+        })
+    );
 
     /* PAGE RANGE */
 
@@ -252,16 +257,16 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
 
     [rangeFrom, rangeTo].forEach((input) => {
         input.max = String(pageCount);
-        input.addEventListener('input', syncRangeButtons);
-        input.addEventListener('keydown', (e) => {
+        bag.listen(input, 'input', syncRangeButtons);
+        bag.listen(input, 'keydown', (e) => {
             if (e.key !== 'Enter') return;
             e.preventDefault();
             applyRange();
         });
     });
-    if (rangeApply) rangeApply.addEventListener('click', applyRange);
+    if (rangeApply) bag.listen(rangeApply, 'click', applyRange);
     if (rangeReset) {
-        rangeReset.addEventListener('click', () => {
+        bag.listen(rangeReset, 'click', () => {
             setRange(1, pageCount);
             rangeFrom.value = String(state.from);
             rangeTo.value = String(state.to);
@@ -544,7 +549,7 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         return indexRequest;
     };
 
-    panel.addEventListener('immersive:panel-open', () => {
+    bag.listen(panel, 'immersive:panel-open', () => {
         ensureIndex().then(() => {
             if (!panelOpen()) return;
             if (!state.cursorKey) preferCursorOnCurrentPage();
@@ -555,25 +560,29 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         });
     });
 
-    panels.registerCloseHook(() => {
-        if (!panelOpen()) return;
-        closePick();
-        viewer.clearHighlights();
-    });
+    bag.add(
+        panels.registerCloseHook(() => {
+            if (!panelOpen()) return;
+            closePick();
+            viewer.clearHighlights();
+        })
+    );
 
-    viewer.onPageChange.subscribe(() => {
-        if (!panelOpen() || !state.index) return;
-        const pages = currentPages();
-        const onPage = entries().find((e) => pages.includes(e.page));
-        if (onPage) state.cursorKey = entryKey(onPage);
-        markActive();
-        renderHighlights();
-        if (onPage && onPage.pending) loadPages([onPage.page]);
-    });
-    viewer.onOpen.subscribe(renderHighlights);
+    bag.add(
+        viewer.onPageChange.subscribe(() => {
+            if (!panelOpen() || !state.index) return;
+            const pages = currentPages();
+            const onPage = entries().find((e) => pages.includes(e.page));
+            if (onPage) state.cursorKey = entryKey(onPage);
+            markActive();
+            renderHighlights();
+            if (onPage && onPage.pending) loadPages([onPage.page]);
+        })
+    );
+    bag.add(viewer.onOpen.subscribe(renderHighlights));
 
     let scrollQueued = false;
-    panel.addEventListener('scroll', () => {
+    bag.listen(panel, 'scroll', () => {
         if (scrollQueued) return;
         scrollQueued = true;
         requestAnimationFrame(() => {
@@ -584,4 +593,11 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
     });
 
     syncRange();
+    return {
+        destroy() {
+            closePick();
+            viewer.clearHighlights();
+            bag.dispose();
+        },
+    };
 }

@@ -17,6 +17,8 @@ import {
     mountBlockAnnotations,
     applyRegionMarkup,
 } from '../ivAnnotations.mjs';
+import { createKeyDispatcher } from '../ivKeys.mjs';
+import { jest } from '@jest/globals';
 
 describe('readAnnotationsEnabled / writeAnnotationsEnabled', () => {
     test('reads only the literal "true" as enabled, default off', () => {
@@ -350,6 +352,24 @@ describe('setupAnnotationsToggle (jsdom)', () => {
         expect(root.classList.contains('-annotations-on')).toBe(true);
         toggle.setPageData(null);
         expect(root.classList.contains('-annotations-on')).toBe(false);
+    });
+
+    test('onChange returns an unsubscribe; destroy detaches checkbox and shortcut', () => {
+        const { root, checkbox } = buildToggle();
+        const keys = createKeyDispatcher();
+        const toggle = setupAnnotationsToggle({ root, checkbox, storage, keys });
+        toggle.setPageData({ blocks: [{ id: 'b-1', author: 'gr_jacob_grimm' }], words: [], lines: [] });
+        const seen = jest.fn();
+        toggle.onChange(seen)();
+        checkbox.checked = true;
+        checkbox.dispatchEvent(new Event('change'));
+        expect(seen).not.toHaveBeenCalled();
+        expect(root.classList.contains('-annotations-on')).toBe(true);
+        toggle.destroy();
+        checkbox.checked = false;
+        checkbox.dispatchEvent(new Event('change'));
+        expect(root.classList.contains('-annotations-on')).toBe(true);
+        expect(keys.handleEvent({ key: 'a', target: document.body })).toBe(false);
     });
 });
 
