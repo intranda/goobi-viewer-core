@@ -2,7 +2,7 @@
 
 import IvViewer from './ivViewer.mjs';
 import { loadPageServices, loadPageLabels, loadPageAccess } from './ivManifestSource.mjs';
-import { attachUrlSync } from './viewerImmersive.mjs';
+import { attachUrlSync } from './ivUrlSync.mjs';
 import { createKeyDispatcher, registerViewerNavKeys } from './ivKeys.mjs';
 import { setupPanels, setupPanelResize, setupToc, setupMetadataToggle } from './ivPanelsWiring.mjs';
 import { setupShortcutsModal } from './ivShortcutsModal.mjs';

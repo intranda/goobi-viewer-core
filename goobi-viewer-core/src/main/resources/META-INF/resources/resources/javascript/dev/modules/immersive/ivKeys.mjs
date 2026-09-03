@@ -1,6 +1,6 @@
 /** Central keydown dispatcher for the immersive view. */
 
-import { isTypingTarget } from './viewerImmersive.mjs';
+import { isTypingTarget } from './ivPlatform.mjs';
 import { isOverlayOpen } from './ivSelectors.mjs';
 
 /**

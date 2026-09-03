@@ -1,9 +1,55 @@
 /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
 
-import { offsetTopWithin } from './ivTextImageLink.mjs';
-import { pickActiveTocPageNo, panelIdForKeyEvent } from './viewerImmersive.mjs';
+import { offsetTopWithin } from './ivDom.mjs';
 import { isOverlayOpen } from './ivSelectors.mjs';
 import { createDisposer, noop } from './ivLifecycle.mjs';
+
+/** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
+const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata', 'immersivePanelLayoutTags'];
+
+/**
+ * The rail panel an Alt+digit shortcut toggles: Alt+1-5 address the panels in
+ * toolbar order (TOC, fulltext, search, metadata, layout tags). Matches on
+ * `code`, not `key`, because macOS Option+digit produces characters ('¡', '™',
+ * …); bare digits are deliberately no shortcut (WCAG 2.1.4 discourages
+ * printable single-character shortcuts) and Ctrl/Cmd combinations stay with
+ * the browser. Pure + tested.
+ *
+ * @param {{altKey:boolean, ctrlKey:boolean, metaKey:boolean, code:string}} event
+ * @returns {string|null} panel element id, or null
+ */
+export function panelIdForKeyEvent({ altKey, ctrlKey, metaKey, code }) {
+    if (!altKey || ctrlKey || metaKey) return null;
+    const index = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5'].indexOf(code);
+    return index === -1 ? null : PANEL_SHORTCUT_IDS[index];
+}
+
+/**
+ * Picks the 1-based page number of the TOC section that should be highlighted.
+ * A section owns the page range [its page, next section's page). Returns the
+ * current `activeNo` unchanged while any visible page (single page, or either
+ * page of a double-page spread) still falls in its range, so the highlight is
+ * kept; otherwise the section owning the last visible page, or null when no
+ * section starts at or before it. Pure + tested.
+ *
+ * @param {number[]} entryNos      1-based start pages of all TOC sections
+ * @param {number[]} visiblePages  1-based page numbers currently shown
+ * @param {number|null} activeNo   start page of the currently highlighted section
+ * @returns {number|null}
+ */
+export function pickActiveTocPageNo(entryNos, visiblePages, activeNo = null) {
+    if (!entryNos.length || !visiblePages.length) return activeNo;
+    if (activeNo !== null) {
+        const nextNo = Math.min(...entryNos.filter((n) => n > activeNo), Infinity);
+        if (visiblePages.some((p) => p >= activeNo && p < nextNo)) return activeNo;
+    }
+    const top = Math.max(...visiblePages);
+    let best = null;
+    for (const no of entryNos) {
+        if (no <= top && (best === null || no >= best)) best = no;
+    }
+    return best;
+}
 
 /**
  * Wires the rail buttons to their left panels (open/close with ARIA + inert

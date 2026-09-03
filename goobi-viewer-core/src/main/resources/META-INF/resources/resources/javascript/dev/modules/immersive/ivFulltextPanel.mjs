@@ -2,7 +2,6 @@
 
 import { loadPageTextLevels, flattenTextLevels, loadPageLayout } from './ivManifestSource.mjs';
 import { buildTextLevels, mountTextImageLink } from './ivTextImageLink.mjs';
-import { currentOrder } from './viewerImmersive.mjs';
 import { setupAnnotationsToggle, applyTextMarkup, applyRegionMarkup, mountBlockAnnotations, overlayRegions } from './ivAnnotations.mjs';
 import { createDisposer } from './ivLifecycle.mjs';
 
@@ -63,7 +62,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     /** Applies inline markup + block annotations (margin column etc.) to the rendered panel text. */
     const decorate = () => {
         if (!annotations || !currentLayout || !panelOpen() || !fulltextBox || !fulltextBox.childElementCount) return;
-        const pageNo = currentOrder(viewer) + 1;
+        const pageNo = viewer.getCurrentOrder() + 1;
         const els = applyTextMarkup(fulltextBox, currentLayout, pi, pageNo);
         applyRegionMarkup(textRegionEls, currentLayout, pi, pageNo);
         clearBlockAnnotations();
@@ -111,7 +110,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
         }
         let layout = null;
         try {
-            layout = await loadPageLayout(pi, apiBase, currentOrder(viewer));
+            layout = await loadPageLayout(pi, apiBase, viewer.getCurrentOrder());
         } catch {
             layout = null;
         }
@@ -156,7 +155,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
         bag.add(clearFulltextLink);
 
         const loadFulltext = async () => {
-            const order = currentOrder(viewer);
+            const order = viewer.getCurrentOrder();
             clearFulltextLink();
             const req = ++fulltextReq;
             if (fulltextLoader) fulltextLoader.hidden = false;

@@ -1,15 +1,11 @@
 import {
-    ANNOTATIONS_KEY,
     applyTextMarkup,
     overlayRegions,
     rectCenterInside,
-    readAnnotationsEnabled,
-    writeAnnotationsEnabled,
     altoElementId,
     hasAnnotations,
     wordTypeClasses,
     lineTypeModifier,
-    styleClassTokens,
     nearestAnchorIndex,
     stackNoteTops,
     isAboveAnchor,
@@ -19,32 +15,6 @@ import {
 } from '../ivAnnotations.mjs';
 import { createKeyDispatcher } from '../ivKeys.mjs';
 import { jest } from '@jest/globals';
-
-describe('readAnnotationsEnabled / writeAnnotationsEnabled', () => {
-    test('reads only the literal "true" as enabled, default off', () => {
-        const store = new Map();
-        const storage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, v) };
-        expect(readAnnotationsEnabled(storage)).toBe(false);
-        writeAnnotationsEnabled(storage, true);
-        expect(store.get(ANNOTATIONS_KEY)).toBe('true');
-        expect(readAnnotationsEnabled(storage)).toBe(true);
-        writeAnnotationsEnabled(storage, false);
-        expect(readAnnotationsEnabled(storage)).toBe(false);
-    });
-
-    test('falls back to off and swallows errors when storage throws (private mode)', () => {
-        const throwing = {
-            getItem: () => {
-                throw new Error('denied');
-            },
-            setItem: () => {
-                throw new Error('denied');
-            },
-        };
-        expect(readAnnotationsEnabled(throwing)).toBe(false);
-        expect(() => writeAnnotationsEnabled(throwing, true)).not.toThrow();
-    });
-});
 
 describe('altoElementId', () => {
     test('extracts the ALTO element id from a text annotation URI', () => {
@@ -106,19 +76,6 @@ describe('lineTypeModifier', () => {
         expect(lineTypeModifier(['whatever'])).toBeNull();
         expect(lineTypeModifier([])).toBeNull();
         expect(lineTypeModifier(undefined)).toBeNull();
-    });
-});
-
-describe('styleClassTokens', () => {
-    test('splits a configured styleClass into class tokens', () => {
-        expect(styleClassTokens('alto-annotation--jacob-grimm')).toEqual(['alto-annotation--jacob-grimm']);
-        expect(styleClassTokens('kunde--hand-a  extra')).toEqual(['kunde--hand-a', 'extra']);
-    });
-
-    test('blank or missing values yield an empty list', () => {
-        expect(styleClassTokens('')).toEqual([]);
-        expect(styleClassTokens('   ')).toEqual([]);
-        expect(styleClassTokens(undefined)).toEqual([]);
     });
 });
 

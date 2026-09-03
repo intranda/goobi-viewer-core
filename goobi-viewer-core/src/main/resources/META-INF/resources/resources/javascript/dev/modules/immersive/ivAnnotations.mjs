@@ -1,12 +1,11 @@
 /** ALTO layout-tag annotations: toggle state, inline markup, margin note column and image overlay regions. */
 
-import { isTypingTarget } from './viewerImmersive.mjs';
-import { offsetTopWithin, scrollTopToReveal } from './ivTextImageLink.mjs';
+import { isTypingTarget } from './ivPlatform.mjs';
+import { readAnnotationsEnabled, writeAnnotationsEnabled } from './ivPrefs.mjs';
+import { offsetTopWithin, scrollTopToReveal, styleClassTokens } from './ivDom.mjs';
 import { isOverlayOpen } from './ivSelectors.mjs';
 
 /** localStorage key persisting the annotations toggle, following the immersive-* key convention. */
-export const ANNOTATIONS_KEY = 'immersive-annotations';
-
 /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */
 const STATE_CLASS = '-annotations-on';
 
@@ -44,33 +43,6 @@ const LINE_TYPE_MODIFIERS = {
     strikethrough: 'strike',
     mark: 'mark',
 };
-
-/**
- * Reads the persisted annotations toggle. Only the literal 'true' enables it;
- * storage errors (private mode) fall back to off. Pure + tested.
- *
- * @param {Storage} storage  e.g. window.localStorage
- * @returns {boolean}
- */
-export function readAnnotationsEnabled(storage) {
-    try {
-        return storage.getItem(ANNOTATIONS_KEY) === 'true';
-    } catch {
-        return false;
-    }
-}
-
-/**
- * Persists the annotations toggle; storage errors are swallowed.
- *
- * @param {Storage} storage
- * @param {boolean} enabled
- */
-export function writeAnnotationsEnabled(storage, enabled) {
-    try {
-        storage.setItem(ANNOTATIONS_KEY, String(!!enabled));
-    } catch {}
-}
 
 /**
  * Extracts the ALTO element id from a page text annotation URI. Those URIs end
@@ -132,19 +104,6 @@ export function lineTypeModifier(types) {
         if (LINE_TYPE_MODIFIERS[type]) return LINE_TYPE_MODIFIERS[type];
     }
     return null;
-}
-
-/**
- * Splits a configured styleClass attribute into class tokens; blank or missing
- * values yield an empty list. Pure + tested.
- *
- * @param {string} [styleClass]  the configured CSS class(es) of an author mapping
- * @returns {string[]}
- */
-export function styleClassTokens(styleClass) {
-    return String(styleClass || '')
-        .split(/\s+/)
-        .filter(Boolean);
 }
 
 /**

@@ -10,7 +10,7 @@
  * (transform: {}). We import it explicitly from @jest/globals.
  */
 import { jest } from '@jest/globals';
-import IvViewer, { Emitter } from '../ivViewer.mjs';
+import IvViewer, { Emitter, stageMargins } from '../ivViewer.mjs';
 import { computeSpread } from '../ivImageWindow.mjs';
 
 describe('Emitter', function () {
@@ -754,5 +754,17 @@ describe('IvViewer restricted-page navigation (tile-load reject fix)', () => {
         const overlay = v.viewer.element.querySelector('.immersive__page-denied');
         expect(overlay).not.toBeNull();
         expect(overlay.hidden).toBe(false);
+    });
+});
+
+describe('stageMargins', function () {
+    test('reserves the full desktop chrome above 768px', function () {
+        expect(stageMargins(1280)).toEqual({ top: 64, bottom: 72, left: 64, right: 64 });
+        expect(stageMargins(769)).toEqual({ top: 64, bottom: 72, left: 64, right: 64 });
+    });
+
+    test('shrinks the chrome margins on small viewports so the page uses the screen', function () {
+        expect(stageMargins(768)).toEqual({ top: 56, bottom: 60, left: 16, right: 16 });
+        expect(stageMargins(390)).toEqual({ top: 56, bottom: 60, left: 16, right: 16 });
     });
 });

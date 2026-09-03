@@ -16,7 +16,7 @@ import {
     loadLayoutTagIndex,
     loadLayoutTagDetails,
 } from './ivLayoutTags.mjs';
-import { styleClassTokens } from './ivAnnotations.mjs';
+import { styleClassTokens, el } from './ivDom.mjs';
 import { createDisposer, noop } from './ivLifecycle.mjs';
 
 /** Number of colour dots the pick trigger shows for the selected tags. */
@@ -96,13 +96,6 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
     const styleTokens = (label) => {
         const tag = tagByLabel(label);
         return tag ? styleClassTokens(tag.styleClass) : [];
-    };
-
-    const el = (tag, cls, text) => {
-        const node = document.createElement(tag);
-        if (cls) node.className = cls;
-        if (text != null) node.textContent = text;
-        return node;
     };
 
     /* PICK MENU */

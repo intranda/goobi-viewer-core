@@ -1,5 +1,7 @@
 /** OCR text ↔ image region hover linking for the immersive fulltext panel (block > line > word). */
 
+import { offsetTopWithin, scrollTopToReveal } from './ivDom.mjs';
+
 const ACTIVE_CLASS = 'is-linked-active';
 
 /**
@@ -15,37 +17,6 @@ export function indexById(elements) {
         if (id) map.set(id, el);
     }
     return map;
-}
-
-/**
- * Computes the scrollTop needed to center a line within its scroll container,
- * or null if the line is already fully visible. Pure (numbers only) so it is
- * testable without a layout engine.
- *
- * @param {{offsetTop:number, height:number, scrollTop:number, clientHeight:number, scrollHeight:number}} metrics
- * @returns {number|null}
- */
-export function scrollTopToReveal(metrics) {
-    const top = metrics.offsetTop;
-    const bottom = metrics.offsetTop + metrics.height;
-    if (top >= metrics.scrollTop && bottom <= metrics.scrollTop + metrics.clientHeight) return null;
-    const target = metrics.offsetTop - metrics.clientHeight / 2 + metrics.height / 2;
-    const max = Math.max(0, metrics.scrollHeight - metrics.clientHeight);
-    return Math.min(Math.max(0, target), max);
-}
-
-/**
- * Cumulative offsetTop of `el` relative to `container` (walks the offsetParent
- * chain), for scrolling panel content into view without moving the page.
- *
- * @param {HTMLElement} el
- * @param {HTMLElement} container
- * @returns {number}
- */
-export function offsetTopWithin(el, container) {
-    let top = 0;
-    for (let n = el; n && n !== container; n = n.offsetParent) top += n.offsetTop;
-    return top;
 }
 
 /**

@@ -4,7 +4,7 @@
  * key dispatcher.
  */
 import { jest } from '@jest/globals';
-import { setupPanels, setupPanelResize } from '../ivPanelsWiring.mjs';
+import { setupPanels, setupPanelResize, pickActiveTocPageNo, panelIdForKeyEvent } from '../ivPanelsWiring.mjs';
 import { createKeyDispatcher } from '../ivKeys.mjs';
 
 function mountMarkup() {
@@ -257,5 +257,68 @@ describe('setupPanels teardown', () => {
         btn('immersivePanelToc').click();
         expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(false);
         expect(keys.handleEvent(altDigit('Digit1'))).toBe(false);
+    });
+});
+
+describe('pickActiveTocPageNo', function () {
+    test('keeps the active section while any visible page is in its range', function () {
+        expect(pickActiveTocPageNo([1, 5, 9], [5, 6], 5)).toBe(5);
+        // double-page spread: the left page belongs to the previous section, the
+        // right page still falls in the active one -> keep it
+        expect(pickActiveTocPageNo([1, 5, 9], [4, 5], 5)).toBe(5);
+    });
+
+    test('a section starting on the right page of a spread wins when none is active', function () {
+        expect(pickActiveTocPageNo([1, 6], [5, 6])).toBe(6);
+    });
+
+    test('the next section takes over once the active one leaves the visible range', function () {
+        expect(pickActiveTocPageNo([1, 6], [6, 7], 1)).toBe(6);
+    });
+
+    test('without an active section the owner of the last visible page wins', function () {
+        expect(pickActiveTocPageNo([1, 5, 9], [7])).toBe(5);
+        expect(pickActiveTocPageNo([1, 5, 9], [9, 10])).toBe(9);
+    });
+
+    test('returns null when no section starts at or before the visible pages', function () {
+        expect(pickActiveTocPageNo([10], [2])).toBeNull();
+    });
+
+    test('the last section owns all pages to the end', function () {
+        expect(pickActiveTocPageNo([1], [40], 1)).toBe(1);
+    });
+
+    test('empty entries or pages leave the active section untouched', function () {
+        expect(pickActiveTocPageNo([], [5], 3)).toBe(3);
+        expect(pickActiveTocPageNo([1, 5], [], 5)).toBe(5);
+    });
+});
+
+describe('panelIdForKeyEvent', function () {
+    const altDigit = (code) => ({ altKey: true, ctrlKey: false, metaKey: false, code });
+
+    test('maps Alt+1-5 to the rail panels in toolbar order (TOC, fulltext, search, metadata, layout tags)', function () {
+        expect(panelIdForKeyEvent(altDigit('Digit1'))).toBe('immersivePanelToc');
+        expect(panelIdForKeyEvent(altDigit('Digit2'))).toBe('immersivePanelFulltext');
+        expect(panelIdForKeyEvent(altDigit('Digit3'))).toBe('immersivePanelSearch');
+        expect(panelIdForKeyEvent(altDigit('Digit4'))).toBe('immersivePanelMetadata');
+        expect(panelIdForKeyEvent(altDigit('Digit5'))).toBe('immersivePanelLayoutTags');
+    });
+
+    test('bare digits are no shortcut (WCAG 2.1.4: no printable single-character shortcuts)', function () {
+        expect(panelIdForKeyEvent({ altKey: false, ctrlKey: false, metaKey: false, code: 'Digit1' })).toBeNull();
+    });
+
+    test('Ctrl/Cmd combinations stay with the browser (tab switching)', function () {
+        expect(panelIdForKeyEvent({ altKey: true, ctrlKey: true, metaKey: false, code: 'Digit1' })).toBeNull();
+        expect(panelIdForKeyEvent({ altKey: true, ctrlKey: false, metaKey: true, code: 'Digit1' })).toBeNull();
+    });
+
+    test('numpad digits and other codes are ignored (Alt+numpad types characters on Windows)', function () {
+        expect(panelIdForKeyEvent(altDigit('Numpad1'))).toBeNull();
+        expect(panelIdForKeyEvent(altDigit('Digit6'))).toBeNull();
+        expect(panelIdForKeyEvent(altDigit('KeyA'))).toBeNull();
+        expect(panelIdForKeyEvent(altDigit(undefined))).toBeNull();
     });
 });

@@ -1,6 +1,6 @@
 /** Keyboard-shortcuts help modal with platform-specific modifier keycaps. */
 
-import { isTypingTarget, isMacPlatform, macKeyLabel } from './viewerImmersive.mjs';
+import { isTypingTarget, isMacPlatform, macKeyLabel } from './ivPlatform.mjs';
 import { createFocusTrap } from './ivA11y.mjs';
 import { isOverlayOpen } from './ivSelectors.mjs';
 import { createDisposer, noop } from './ivLifecycle.mjs';

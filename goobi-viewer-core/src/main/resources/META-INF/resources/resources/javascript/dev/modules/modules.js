@@ -864,180 +864,6 @@
     }
 
     /**
-     * Rewrites the page-number segment of an immersive URL path (or appends it).
-     * The PI segment is never treated as the page number. Pure + tested.
-     *
-     * @param {string} pathname  e.g. "/viewer/immersive/PPN123/4/"
-     * @param {string} pi
-     * @param {number|string} pageNo  1-based page number
-     * @returns {string} rewritten pathname (keeps trailing slash)
-     */
-    function pageUrlPath(pathname, pi, pageNo) {
-        const parts = pathname.split('/');
-        for (let i = parts.length - 1; i >= 0; i--) {
-            if (/^\d+$/.test(parts[i]) && parts[i] !== String(pi)) {
-                parts[i] = String(pageNo);
-                return parts.join('/');
-            }
-        }
-        if (parts[parts.length - 1].length === 0) {
-            parts[parts.length - 1] = String(pageNo);
-            parts.push('');
-        } else {
-            parts.push(String(pageNo), '');
-        }
-        return parts.join('/');
-    }
-
-    /**
-     * Picks the 1-based page number of the TOC section that should be highlighted.
-     * A section owns the page range [its page, next section's page). Returns the
-     * current `activeNo` unchanged while any visible page (single page, or either
-     * page of a double-page spread) still falls in its range, so the highlight is
-     * kept; otherwise the section owning the last visible page, or null when no
-     * section starts at or before it. Pure + tested.
-     *
-     * @param {number[]} entryNos      1-based start pages of all TOC sections
-     * @param {number[]} visiblePages  1-based page numbers currently shown
-     * @param {number|null} activeNo   start page of the currently highlighted section
-     * @returns {number|null}
-     */
-    function pickActiveTocPageNo(entryNos, visiblePages, activeNo = null) {
-        if (!entryNos.length || !visiblePages.length) return activeNo;
-        if (activeNo !== null) {
-            const nextNo = Math.min(...entryNos.filter((n) => n > activeNo), Infinity);
-            if (visiblePages.some((p) => p >= activeNo && p < nextNo)) return activeNo;
-        }
-        const top = Math.max(...visiblePages);
-        let best = null;
-        for (const no of entryNos) {
-            if (no <= top && (best === null || no >= best)) best = no;
-        }
-        return best;
-    }
-
-    /**
-     * URL-sync feature: pushes a history entry on page change (deep-linkable,
-     * back/forward steps through pages) and navigates the viewer on popstate.
-     * The viewer uses 0-based page orders; URLs use 1-based page numbers.
-     *
-     * @param {{onPageChange:{subscribe:Function}, goToPage:Function}} viewer
-     * @param {string} pi
-     * @returns {{destroy: function():void}}
-     */
-    function attachUrlSync(viewer, pi) {
-        const unsubscribe = viewer.onPageChange.subscribe((order) => {
-            const url = new URL(window.location.href);
-            url.pathname = pageUrlPath(url.pathname, pi, order + 1);
-            window.history.pushState({ order }, '', url.toString());
-        });
-        const onPopState = (e) => {
-            if (e.state && typeof e.state.order === 'number') {
-                viewer.goToPage(e.state.order);
-            }
-        };
-        window.addEventListener('popstate', onPopState);
-        return {
-            destroy() {
-                if (typeof unsubscribe === 'function') unsubscribe();
-                window.removeEventListener('popstate', onPopState);
-            },
-        };
-    }
-
-    const THUMB_SIZE_KEY = 'immersive-thumb-size';
-
-    const THUMB_SIZE_MAX = 2;
-
-    const THUMB_SIZE_DEFAULT = 1;
-
-    /**
-     * Normalizes a stored thumbnail-size value to a valid grid step. Values are
-     * parsed with parseInt, so leading-numeric strings are accepted; anything
-     * else falls back to the default (medium). Pure + tested.
-     *
-     * @param {*} value
-     * @returns {number} integer step between 0 and THUMB_SIZE_MAX
-     */
-    function normalizeThumbSizeStep(value) {
-        const n = parseInt(value, 10);
-        return Number.isInteger(n) && n >= 0 && n <= THUMB_SIZE_MAX ? n : THUMB_SIZE_DEFAULT;
-    }
-
-    /**
-     * Reads the persisted thumbnail-size step. Falls back to the default when
-     * the storage operations throw (private mode) or the value is invalid.
-     *
-     * @param {Storage} storage  e.g. window.localStorage
-     * @returns {number} integer step between 0 and THUMB_SIZE_MAX
-     */
-    function readThumbSizeStep(storage) {
-        try {
-            return normalizeThumbSizeStep(storage.getItem(THUMB_SIZE_KEY));
-        } catch {
-            return THUMB_SIZE_DEFAULT;
-        }
-    }
-
-    /**
-     * Persists the thumbnail-size step; invalid steps are normalized. Storage
-     * errors (private mode, quota) are swallowed.
-     *
-     * @param {Storage} storage
-     * @param {number|string} step
-     */
-    function writeThumbSizeStep(storage, step) {
-        try {
-            storage.setItem(THUMB_SIZE_KEY, String(normalizeThumbSizeStep(step)));
-        } catch {}
-    }
-
-    /**
-     * Whether a key-event target sits in a typing context — a form field or a
-     * contenteditable region (also via ancestors) — where single-character
-     * shortcuts like `?` must not fire. Pure + tested.
-     *
-     * @param {EventTarget|null} element  e.g. a keydown event's target
-     * @returns {boolean}
-     */
-    function isTypingTarget(element) {
-        if (!element || typeof element.closest !== 'function') return false;
-        return !!element.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])');
-    }
-
-    /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
-    const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata', 'immersivePanelLayoutTags'];
-
-    /**
-     * The rail panel an Alt+digit shortcut toggles: Alt+1-5 address the panels in
-     * toolbar order (TOC, fulltext, search, metadata, layout tags). Matches on
-     * `code`, not `key`, because macOS Option+digit produces characters ('¡', '™',
-     * …); bare digits are deliberately no shortcut (WCAG 2.1.4 discourages
-     * printable single-character shortcuts) and Ctrl/Cmd combinations stay with
-     * the browser. Pure + tested.
-     *
-     * @param {{altKey:boolean, ctrlKey:boolean, metaKey:boolean, code:string}} event
-     * @returns {string|null} panel element id, or null
-     */
-    function panelIdForKeyEvent({ altKey, ctrlKey, metaKey, code }) {
-        if (!altKey || ctrlKey || metaKey) return null;
-        const index = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5'].indexOf(code);
-        return index === -1 ? null : PANEL_SHORTCUT_IDS[index];
-    }
-
-    /**
-     * First visible page as 0-based order (the leading page of a double-page
-     * spread), 0 when the viewer has no pages yet. Pure + tested.
-     *
-     * @param {{getCurrentPages?: Function}} viewer
-     * @returns {number}
-     */
-    function currentOrder(viewer) {
-        const pages = viewer.getCurrentPages ? viewer.getCurrentPages() : [];
-        return pages.length ? pages[0] : 0;
-    }
-
-    /**
      * OSD viewport margins that keep the fitted page clear of the floating chrome.
      * Desktop reserves generous side margins; small viewports shrink them so the
      * page actually uses the screen (bars stay clear via the top/bottom values:
@@ -1051,36 +877,6 @@
             return { top: 56, bottom: 60, left: 16, right: 16 };
         }
         return { top: 64, bottom: 72, left: 64, right: 64 };
-    }
-
-    /**
-     * Whether a platform string names an Apple platform, where modifier keys are
-     * conventionally shown as symbols (⌥, ⇧) instead of their PC names.
-     * Pure + tested.
-     *
-     * @param {string} [platform]  navigator.userAgentData?.platform or navigator.platform
-     * @returns {boolean}
-     */
-    function isMacPlatform(platform) {
-        return /mac|iphone|ipad|ipod/i.test(platform || '');
-    }
-
-    /**
-     * Mac display variant of a modifier key: the Apple symbol plus the key name
-     * for the keycap (a bare ⇧ reads like an arrow key next to real ↑/↓ caps),
-     * and the spoken name for assistive technology. Symbol and name stay separate
-     * so the keycap can flex-center the symbol glyph independently of the text
-     * baseline. Null for keys that read the same on every platform. Pure + tested.
-     *
-     * @param {string} key  lowercase modifier name from a `data-key` attribute
-     * @returns {{symbol:string, name:string, label:string}|null}
-     */
-    function macKeyLabel(key) {
-        const labels = {
-            alt: { symbol: '⌥', name: 'Option', label: 'Option' },
-            shift: { symbol: '⇧', name: 'Shift', label: 'Shift' },
-        };
-        return labels[key] || null;
     }
 
     /** Minimal dependency-free event emitter (rxjs-compatible `subscribe` shape). */
@@ -2191,6 +1987,108 @@
         return parseLayoutAnnotations(await res.json());
     }
 
+    /** Deep-linkable page URLs: history entries per page change, popstate navigation. */
+
+    /**
+     * Rewrites the page-number segment of an immersive URL path (or appends it).
+     * The PI segment is never treated as the page number. Pure + tested.
+     *
+     * @param {string} pathname  e.g. "/viewer/immersive/PPN123/4/"
+     * @param {string} pi
+     * @param {number|string} pageNo  1-based page number
+     * @returns {string} rewritten pathname (keeps trailing slash)
+     */
+    function pageUrlPath(pathname, pi, pageNo) {
+        const parts = pathname.split('/');
+        for (let i = parts.length - 1; i >= 0; i--) {
+            if (/^\d+$/.test(parts[i]) && parts[i] !== String(pi)) {
+                parts[i] = String(pageNo);
+                return parts.join('/');
+            }
+        }
+        if (parts[parts.length - 1].length === 0) {
+            parts[parts.length - 1] = String(pageNo);
+            parts.push('');
+        } else {
+            parts.push(String(pageNo), '');
+        }
+        return parts.join('/');
+    }
+
+    /**
+     * URL-sync feature: pushes a history entry on page change (deep-linkable,
+     * back/forward steps through pages) and navigates the viewer on popstate.
+     * The viewer uses 0-based page orders; URLs use 1-based page numbers.
+     *
+     * @param {{onPageChange:{subscribe:Function}, goToPage:Function}} viewer
+     * @param {string} pi
+     * @returns {{destroy: function():void}}
+     */
+    function attachUrlSync(viewer, pi) {
+        const unsubscribe = viewer.onPageChange.subscribe((order) => {
+            const url = new URL(window.location.href);
+            url.pathname = pageUrlPath(url.pathname, pi, order + 1);
+            window.history.pushState({ order }, '', url.toString());
+        });
+        const onPopState = (e) => {
+            if (e.state && typeof e.state.order === 'number') {
+                viewer.goToPage(e.state.order);
+            }
+        };
+        window.addEventListener('popstate', onPopState);
+        return {
+            destroy() {
+                if (typeof unsubscribe === 'function') unsubscribe();
+                window.removeEventListener('popstate', onPopState);
+            },
+        };
+    }
+
+    /** Platform and input-context predicates shared by the keyboard handling. */
+
+    /**
+     * Whether a key-event target sits in a typing context — a form field or a
+     * contenteditable region (also via ancestors) — where single-character
+     * shortcuts like `?` must not fire. Pure + tested.
+     *
+     * @param {EventTarget|null} element  e.g. a keydown event's target
+     * @returns {boolean}
+     */
+    function isTypingTarget(element) {
+        if (!element || typeof element.closest !== 'function') return false;
+        return !!element.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])');
+    }
+
+    /**
+     * Whether a platform string names an Apple platform, where modifier keys are
+     * conventionally shown as symbols (⌥, ⇧) instead of their PC names.
+     * Pure + tested.
+     *
+     * @param {string} [platform]  navigator.userAgentData?.platform or navigator.platform
+     * @returns {boolean}
+     */
+    function isMacPlatform(platform) {
+        return /mac|iphone|ipad|ipod/i.test(platform || '');
+    }
+
+    /**
+     * Mac display variant of a modifier key: the Apple symbol plus the key name
+     * for the keycap (a bare ⇧ reads like an arrow key next to real ↑/↓ caps),
+     * and the spoken name for assistive technology. Symbol and name stay separate
+     * so the keycap can flex-center the symbol glyph independently of the text
+     * baseline. Null for keys that read the same on every platform. Pure + tested.
+     *
+     * @param {string} key  lowercase modifier name from a `data-key` attribute
+     * @returns {{symbol:string, name:string, label:string}|null}
+     */
+    function macKeyLabel(key) {
+        const labels = {
+            alt: { symbol: '⌥', name: 'Option', label: 'Option' },
+            shift: { symbol: '⇧', name: 'Shift', label: 'Shift' },
+        };
+        return labels[key] || null;
+    }
+
     /** Shared DOM contract: which immersive overlays and panels count as open for the keyboard guards. */
 
     /** Grid, shortcuts modal, page dropdown and Bootstrap popovers; they swallow single-key shortcuts while open. */
@@ -2310,24 +2208,7 @@
         return { destroy: unregister };
     }
 
-    /** OCR text ↔ image region hover linking for the immersive fulltext panel (block > line > word). */
-
-    const ACTIVE_CLASS = 'is-linked-active';
-
-    /**
-     * Indexes elements by their `data-iv-region-id` (elements without one are skipped).
-     *
-     * @param {Iterable<HTMLElement>} elements
-     * @returns {Map<string, HTMLElement>}
-     */
-    function indexById(elements) {
-        const map = new Map();
-        for (const el of elements) {
-            const id = el.dataset && el.dataset.ivRegionId;
-            if (id) map.set(id, el);
-        }
-        return map;
-    }
+    /** DOM helpers shared by the wiring modules: geometry, class tokens, element building. */
 
     /**
      * Computes the scrollTop needed to center a line within its scroll container,
@@ -2361,125 +2242,31 @@
     }
 
     /**
-     * Wires bidirectional hover highlighting between the panel text elements
-     * (inside `box`) and the image region overlays (`regionEls`) that share the
-     * same `data-iv-region-id`. Hover on either side toggles `is-linked-active` on
-     * both. On the text side the DOM nesting (block > line > word) already puts
-     * every hovered ancestor into its own mouseenter state, so each element only
-     * toggles its own id; the flat image overlays cascade explicitly through the
-     * `parents` chain instead. Deliberately pointer-only: the highlight is a
-     * supplementary cue, the text itself stays fully readable without it.
+     * Splits a configured styleClass attribute into class tokens; blank or missing
+     * values yield an empty list. Pure + tested.
      *
-     * @param {object} opts
-     * @param {HTMLElement} opts.box fulltext panel element containing the text elements
-     * @param {Map<string, HTMLElement>} opts.regionEls image overlay elements, indexed by id
-     * @param {Map<string, string>} [opts.parents] region id → parent region id; hovering
-     *   an overlay also activates all its ancestors on both sides
-     * @param {HTMLElement} [opts.scrollContainer] scrollable panel; when set, hovering an
-     *   image overlay scrolls its text into view if not fully visible
-     * @param {Set<string>} [opts.revealIds] overlay ids allowed to trigger that scroll;
-     *   large regions (paragraphs) stay out so grazing them never jumps the panel
-     * @returns {{destroy: function():void}}
+     * @param {string} [styleClass]  the configured CSS class(es) of an author mapping
+     * @returns {string[]}
      */
-    function mountTextImageLink({ box, regionEls, parents, scrollContainer, revealIds }) {
-        const spanEls = indexById(box.querySelectorAll('[data-iv-region-id]'));
-        const regions = regionEls || new Map();
-        const parentIds = parents || new Map();
-        const listeners = [];
-
-        const setActive = (id, on) => {
-            const span = spanEls.get(id);
-            const overlay = regions.get(id);
-            if (span) span.classList.toggle(ACTIVE_CLASS, on);
-            if (overlay) overlay.classList.toggle(ACTIVE_CLASS, on);
-        };
-
-        const chain = (id) => {
-            const ids = [];
-            for (let current = id; current != null && !ids.includes(current); current = parentIds.get(current)) {
-                ids.push(current);
-            }
-            return ids;
-        };
-
-        const revealSpan = (id) => {
-            if (!scrollContainer) return;
-            const span = spanEls.get(id);
-            if (!span) return;
-            const target = scrollTopToReveal({
-                offsetTop: offsetTopWithin(span, scrollContainer),
-                height: span.offsetHeight,
-                scrollTop: scrollContainer.scrollTop,
-                clientHeight: scrollContainer.clientHeight,
-                scrollHeight: scrollContainer.scrollHeight,
-            });
-            if (target !== null) scrollContainer.scrollTop = target;
-        };
-
-        const bind = (el, id, isOverlay) => {
-            const ids = isOverlay ? chain(id) : [id];
-            const enter = () => {
-                ids.forEach((i) => setActive(i, true));
-                if (isOverlay && (!revealIds || revealIds.has(id))) revealSpan(id);
-            };
-            const leave = () => ids.forEach((i) => setActive(i, false));
-            el.addEventListener('mouseenter', enter);
-            el.addEventListener('mouseleave', leave);
-            listeners.push([el, enter, leave]);
-        };
-
-        spanEls.forEach((el, id) => bind(el, id, false));
-        regions.forEach((el, id) => bind(el, id, true));
-
-        return {
-            destroy() {
-                listeners.forEach(([el, enter, leave]) => {
-                    el.removeEventListener('mouseenter', enter);
-                    el.removeEventListener('mouseleave', leave);
-                });
-                listeners.length = 0;
-            },
-        };
+    function styleClassTokens(styleClass) {
+        return String(styleClass || '')
+            .split(/\s+/)
+            .filter(Boolean);
     }
 
     /**
-     * Builds the combined multi-level panel markup from nested OCR levels: one
-     * `<div>` per text block containing one `<span>` per line, which in turn holds
-     * one `<span>` per word (single spaces between words). Lines without word
-     * geometry render their plain line text instead. Every real region carries
-     * `data-iv-region-id`; synthetic blocks (id null) render as plain wrappers.
-     * All text is set via `textContent`, so OCR content can never inject markup.
+     * Creates an element with optional class list and text content.
      *
-     * @param {Array} blocks  nested levels, see ivManifestSource.nestTextLevels
-     * @returns {DocumentFragment}
+     * @param {string} tag
+     * @param {string} [cls]
+     * @param {string} [text]
+     * @returns {HTMLElement}
      */
-    function buildTextLevels(blocks) {
-        const frag = document.createDocumentFragment();
-        (blocks || []).forEach((block) => {
-            const blockEl = document.createElement('div');
-            blockEl.className = 'immersive__fulltext-block';
-            if (block.id && block.rect) blockEl.dataset.ivRegionId = block.id;
-            block.lines.forEach((line) => {
-                const lineEl = document.createElement('span');
-                lineEl.className = 'immersive__fulltext-line';
-                if (line.id && line.rect) lineEl.dataset.ivRegionId = line.id;
-                if (line.words.length) {
-                    line.words.forEach((word, i) => {
-                        if (i > 0) lineEl.appendChild(document.createTextNode(' '));
-                        const wordEl = document.createElement('span');
-                        wordEl.className = 'immersive__fulltext-word';
-                        wordEl.dataset.ivRegionId = word.id;
-                        wordEl.textContent = word.chars || '';
-                        lineEl.appendChild(wordEl);
-                    });
-                } else {
-                    lineEl.textContent = line.chars || '';
-                }
-                blockEl.appendChild(lineEl);
-            });
-            frag.appendChild(blockEl);
-        });
-        return frag;
+    function el(tag, cls, text) {
+        const node = document.createElement(tag);
+        if (cls) node.className = cls;
+        if (text != null) node.textContent = text;
+        return node;
     }
 
     /** Teardown bookkeeping for the setup modules: one disposer per module, one call undoes everything. */
@@ -2513,6 +2300,53 @@
     }
 
     /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
+
+    /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
+    const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata', 'immersivePanelLayoutTags'];
+
+    /**
+     * The rail panel an Alt+digit shortcut toggles: Alt+1-5 address the panels in
+     * toolbar order (TOC, fulltext, search, metadata, layout tags). Matches on
+     * `code`, not `key`, because macOS Option+digit produces characters ('¡', '™',
+     * …); bare digits are deliberately no shortcut (WCAG 2.1.4 discourages
+     * printable single-character shortcuts) and Ctrl/Cmd combinations stay with
+     * the browser. Pure + tested.
+     *
+     * @param {{altKey:boolean, ctrlKey:boolean, metaKey:boolean, code:string}} event
+     * @returns {string|null} panel element id, or null
+     */
+    function panelIdForKeyEvent({ altKey, ctrlKey, metaKey, code }) {
+        if (!altKey || ctrlKey || metaKey) return null;
+        const index = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5'].indexOf(code);
+        return index === -1 ? null : PANEL_SHORTCUT_IDS[index];
+    }
+
+    /**
+     * Picks the 1-based page number of the TOC section that should be highlighted.
+     * A section owns the page range [its page, next section's page). Returns the
+     * current `activeNo` unchanged while any visible page (single page, or either
+     * page of a double-page spread) still falls in its range, so the highlight is
+     * kept; otherwise the section owning the last visible page, or null when no
+     * section starts at or before it. Pure + tested.
+     *
+     * @param {number[]} entryNos      1-based start pages of all TOC sections
+     * @param {number[]} visiblePages  1-based page numbers currently shown
+     * @param {number|null} activeNo   start page of the currently highlighted section
+     * @returns {number|null}
+     */
+    function pickActiveTocPageNo(entryNos, visiblePages, activeNo = null) {
+        if (!entryNos.length || !visiblePages.length) return activeNo;
+        if (activeNo !== null) {
+            const nextNo = Math.min(...entryNos.filter((n) => n > activeNo), Infinity);
+            if (visiblePages.some((p) => p >= activeNo && p < nextNo)) return activeNo;
+        }
+        const top = Math.max(...visiblePages);
+        let best = null;
+        for (const no of entryNos) {
+            if (no <= top && (best === null || no >= best)) best = no;
+        }
+        return best;
+    }
 
     /**
      * Wires the rail buttons to their left panels (open/close with ARIA + inert
@@ -2976,11 +2810,228 @@
         };
     }
 
+    /** OCR text ↔ image region hover linking for the immersive fulltext panel (block > line > word). */
+
+    const ACTIVE_CLASS = 'is-linked-active';
+
+    /**
+     * Indexes elements by their `data-iv-region-id` (elements without one are skipped).
+     *
+     * @param {Iterable<HTMLElement>} elements
+     * @returns {Map<string, HTMLElement>}
+     */
+    function indexById(elements) {
+        const map = new Map();
+        for (const el of elements) {
+            const id = el.dataset && el.dataset.ivRegionId;
+            if (id) map.set(id, el);
+        }
+        return map;
+    }
+
+    /**
+     * Wires bidirectional hover highlighting between the panel text elements
+     * (inside `box`) and the image region overlays (`regionEls`) that share the
+     * same `data-iv-region-id`. Hover on either side toggles `is-linked-active` on
+     * both. On the text side the DOM nesting (block > line > word) already puts
+     * every hovered ancestor into its own mouseenter state, so each element only
+     * toggles its own id; the flat image overlays cascade explicitly through the
+     * `parents` chain instead. Deliberately pointer-only: the highlight is a
+     * supplementary cue, the text itself stays fully readable without it.
+     *
+     * @param {object} opts
+     * @param {HTMLElement} opts.box fulltext panel element containing the text elements
+     * @param {Map<string, HTMLElement>} opts.regionEls image overlay elements, indexed by id
+     * @param {Map<string, string>} [opts.parents] region id → parent region id; hovering
+     *   an overlay also activates all its ancestors on both sides
+     * @param {HTMLElement} [opts.scrollContainer] scrollable panel; when set, hovering an
+     *   image overlay scrolls its text into view if not fully visible
+     * @param {Set<string>} [opts.revealIds] overlay ids allowed to trigger that scroll;
+     *   large regions (paragraphs) stay out so grazing them never jumps the panel
+     * @returns {{destroy: function():void}}
+     */
+    function mountTextImageLink({ box, regionEls, parents, scrollContainer, revealIds }) {
+        const spanEls = indexById(box.querySelectorAll('[data-iv-region-id]'));
+        const regions = regionEls || new Map();
+        const parentIds = parents || new Map();
+        const listeners = [];
+
+        const setActive = (id, on) => {
+            const span = spanEls.get(id);
+            const overlay = regions.get(id);
+            if (span) span.classList.toggle(ACTIVE_CLASS, on);
+            if (overlay) overlay.classList.toggle(ACTIVE_CLASS, on);
+        };
+
+        const chain = (id) => {
+            const ids = [];
+            for (let current = id; current != null && !ids.includes(current); current = parentIds.get(current)) {
+                ids.push(current);
+            }
+            return ids;
+        };
+
+        const revealSpan = (id) => {
+            if (!scrollContainer) return;
+            const span = spanEls.get(id);
+            if (!span) return;
+            const target = scrollTopToReveal({
+                offsetTop: offsetTopWithin(span, scrollContainer),
+                height: span.offsetHeight,
+                scrollTop: scrollContainer.scrollTop,
+                clientHeight: scrollContainer.clientHeight,
+                scrollHeight: scrollContainer.scrollHeight,
+            });
+            if (target !== null) scrollContainer.scrollTop = target;
+        };
+
+        const bind = (el, id, isOverlay) => {
+            const ids = isOverlay ? chain(id) : [id];
+            const enter = () => {
+                ids.forEach((i) => setActive(i, true));
+                if (isOverlay && (!revealIds || revealIds.has(id))) revealSpan(id);
+            };
+            const leave = () => ids.forEach((i) => setActive(i, false));
+            el.addEventListener('mouseenter', enter);
+            el.addEventListener('mouseleave', leave);
+            listeners.push([el, enter, leave]);
+        };
+
+        spanEls.forEach((el, id) => bind(el, id, false));
+        regions.forEach((el, id) => bind(el, id, true));
+
+        return {
+            destroy() {
+                listeners.forEach(([el, enter, leave]) => {
+                    el.removeEventListener('mouseenter', enter);
+                    el.removeEventListener('mouseleave', leave);
+                });
+                listeners.length = 0;
+            },
+        };
+    }
+
+    /**
+     * Builds the combined multi-level panel markup from nested OCR levels: one
+     * `<div>` per text block containing one `<span>` per line, which in turn holds
+     * one `<span>` per word (single spaces between words). Lines without word
+     * geometry render their plain line text instead. Every real region carries
+     * `data-iv-region-id`; synthetic blocks (id null) render as plain wrappers.
+     * All text is set via `textContent`, so OCR content can never inject markup.
+     *
+     * @param {Array} blocks  nested levels, see ivManifestSource.nestTextLevels
+     * @returns {DocumentFragment}
+     */
+    function buildTextLevels(blocks) {
+        const frag = document.createDocumentFragment();
+        (blocks || []).forEach((block) => {
+            const blockEl = document.createElement('div');
+            blockEl.className = 'immersive__fulltext-block';
+            if (block.id && block.rect) blockEl.dataset.ivRegionId = block.id;
+            block.lines.forEach((line) => {
+                const lineEl = document.createElement('span');
+                lineEl.className = 'immersive__fulltext-line';
+                if (line.id && line.rect) lineEl.dataset.ivRegionId = line.id;
+                if (line.words.length) {
+                    line.words.forEach((word, i) => {
+                        if (i > 0) lineEl.appendChild(document.createTextNode(' '));
+                        const wordEl = document.createElement('span');
+                        wordEl.className = 'immersive__fulltext-word';
+                        wordEl.dataset.ivRegionId = word.id;
+                        wordEl.textContent = word.chars || '';
+                        lineEl.appendChild(wordEl);
+                    });
+                } else {
+                    lineEl.textContent = line.chars || '';
+                }
+                blockEl.appendChild(lineEl);
+            });
+            frag.appendChild(blockEl);
+        });
+        return frag;
+    }
+
+    /** Persisted viewer preferences (localStorage) with tolerant read/write. */
+
+    const THUMB_SIZE_KEY = 'immersive-thumb-size';
+
+    const THUMB_SIZE_MAX = 2;
+
+    const THUMB_SIZE_DEFAULT = 1;
+
+    /**
+     * Normalizes a stored thumbnail-size value to a valid grid step. Values are
+     * parsed with parseInt, so leading-numeric strings are accepted; anything
+     * else falls back to the default (medium). Pure + tested.
+     *
+     * @param {*} value
+     * @returns {number} integer step between 0 and THUMB_SIZE_MAX
+     */
+    function normalizeThumbSizeStep(value) {
+        const n = parseInt(value, 10);
+        return Number.isInteger(n) && n >= 0 && n <= THUMB_SIZE_MAX ? n : THUMB_SIZE_DEFAULT;
+    }
+
+    /**
+     * Reads the persisted thumbnail-size step. Falls back to the default when
+     * the storage operations throw (private mode) or the value is invalid.
+     *
+     * @param {Storage} storage  e.g. window.localStorage
+     * @returns {number} integer step between 0 and THUMB_SIZE_MAX
+     */
+    function readThumbSizeStep(storage) {
+        try {
+            return normalizeThumbSizeStep(storage.getItem(THUMB_SIZE_KEY));
+        } catch {
+            return THUMB_SIZE_DEFAULT;
+        }
+    }
+
+    /**
+     * Persists the thumbnail-size step; invalid steps are normalized. Storage
+     * errors (private mode, quota) are swallowed.
+     *
+     * @param {Storage} storage
+     * @param {number|string} step
+     */
+    function writeThumbSizeStep(storage, step) {
+        try {
+            storage.setItem(THUMB_SIZE_KEY, String(normalizeThumbSizeStep(step)));
+        } catch {}
+    }
+
+    const ANNOTATIONS_KEY = 'immersive-annotations';
+
+    /**
+     * Reads the persisted annotations toggle. Only the literal 'true' enables it;
+     * storage errors (private mode) fall back to off. Pure + tested.
+     *
+     * @param {Storage} storage  e.g. window.localStorage
+     * @returns {boolean}
+     */
+    function readAnnotationsEnabled(storage) {
+        try {
+            return storage.getItem(ANNOTATIONS_KEY) === 'true';
+        } catch {
+            return false;
+        }
+    }
+
+    /**
+     * Persists the annotations toggle; storage errors are swallowed.
+     *
+     * @param {Storage} storage
+     * @param {boolean} enabled
+     */
+    function writeAnnotationsEnabled(storage, enabled) {
+        try {
+            storage.setItem(ANNOTATIONS_KEY, String(!!enabled));
+        } catch {}
+    }
+
     /** ALTO layout-tag annotations: toggle state, inline markup, margin note column and image overlay regions. */
 
     /** localStorage key persisting the annotations toggle, following the immersive-* key convention. */
-    const ANNOTATIONS_KEY = 'immersive-annotations';
-
     /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */
     const STATE_CLASS = '-annotations-on';
 
@@ -3018,33 +3069,6 @@
         strikethrough: 'strike',
         mark: 'mark',
     };
-
-    /**
-     * Reads the persisted annotations toggle. Only the literal 'true' enables it;
-     * storage errors (private mode) fall back to off. Pure + tested.
-     *
-     * @param {Storage} storage  e.g. window.localStorage
-     * @returns {boolean}
-     */
-    function readAnnotationsEnabled(storage) {
-        try {
-            return storage.getItem(ANNOTATIONS_KEY) === 'true';
-        } catch {
-            return false;
-        }
-    }
-
-    /**
-     * Persists the annotations toggle; storage errors are swallowed.
-     *
-     * @param {Storage} storage
-     * @param {boolean} enabled
-     */
-    function writeAnnotationsEnabled(storage, enabled) {
-        try {
-            storage.setItem(ANNOTATIONS_KEY, String(!!enabled));
-        } catch {}
-    }
 
     /**
      * Extracts the ALTO element id from a page text annotation URI. Those URIs end
@@ -3106,19 +3130,6 @@
             if (LINE_TYPE_MODIFIERS[type]) return LINE_TYPE_MODIFIERS[type];
         }
         return null;
-    }
-
-    /**
-     * Splits a configured styleClass attribute into class tokens; blank or missing
-     * values yield an empty list. Pure + tested.
-     *
-     * @param {string} [styleClass]  the configured CSS class(es) of an author mapping
-     * @returns {string[]}
-     */
-    function styleClassTokens(styleClass) {
-        return String(styleClass || '')
-            .split(/\s+/)
-            .filter(Boolean);
     }
 
     /**
@@ -3789,7 +3800,7 @@
         /** Applies inline markup + block annotations (margin column etc.) to the rendered panel text. */
         const decorate = () => {
             if (!annotations || !currentLayout || !panelOpen() || !fulltextBox || !fulltextBox.childElementCount) return;
-            const pageNo = currentOrder(viewer) + 1;
+            const pageNo = viewer.getCurrentOrder() + 1;
             const els = applyTextMarkup(fulltextBox, currentLayout, pi, pageNo);
             applyRegionMarkup(textRegionEls, currentLayout, pi, pageNo);
             clearBlockAnnotations();
@@ -3837,7 +3848,7 @@
             }
             let layout = null;
             try {
-                layout = await loadPageLayout(pi, apiBase, currentOrder(viewer));
+                layout = await loadPageLayout(pi, apiBase, viewer.getCurrentOrder());
             } catch {
                 layout = null;
             }
@@ -3882,7 +3893,7 @@
             bag.add(clearFulltextLink);
 
             const loadFulltext = async () => {
-                const order = currentOrder(viewer);
+                const order = viewer.getCurrentOrder();
                 clearFulltextLink();
                 const req = ++fulltextReq;
                 if (fulltextLoader) fulltextLoader.hidden = false;
@@ -4314,13 +4325,6 @@
         const styleTokens = (label) => {
             const tag = tagByLabel(label);
             return tag ? styleClassTokens(tag.styleClass) : [];
-        };
-
-        const el = (tag, cls, text) => {
-            const node = document.createElement(tag);
-            if (cls) node.className = cls;
-            if (text != null) node.textContent = text;
-            return node;
         };
 
         /* PICK MENU */
@@ -5346,7 +5350,7 @@
         bag.add(() => gridActionsSub.unsubscribe());
         const syncGridSelection = () => {
             if (gridTag) {
-                gridTag.opts.index = currentOrder(viewer);
+                gridTag.opts.index = viewer.getCurrentOrder();
                 gridTag.update();
             }
         };
@@ -5370,7 +5374,7 @@
                     type: 'sequence',
                     actionlistener: gridActions,
                     imagesize: GRID_THUMB_IMAGE_SIZE,
-                    index: currentOrder(viewer),
+                    index: viewer.getCurrentOrder(),
                 })[0];
                 gridMounted = true;
                 let gridLoaderDone = false;

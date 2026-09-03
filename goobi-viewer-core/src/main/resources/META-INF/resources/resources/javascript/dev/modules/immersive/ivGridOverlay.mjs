@@ -1,6 +1,6 @@
 /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
 
-import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX, currentOrder } from './viewerImmersive.mjs';
+import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX } from './ivPrefs.mjs';
 import { createFocusTrap } from './ivA11y.mjs';
 import { createDisposer } from './ivLifecycle.mjs';
 
@@ -81,7 +81,7 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
     bag.add(() => gridActionsSub.unsubscribe());
     const syncGridSelection = () => {
         if (gridTag) {
-            gridTag.opts.index = currentOrder(viewer);
+            gridTag.opts.index = viewer.getCurrentOrder();
             gridTag.update();
         }
     };
@@ -105,7 +105,7 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
                 type: 'sequence',
                 actionlistener: gridActions,
                 imagesize: GRID_THUMB_IMAGE_SIZE,
-                index: currentOrder(viewer),
+                index: viewer.getCurrentOrder(),
             })[0];
             gridMounted = true;
             let gridLoaderDone = false;
