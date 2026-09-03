@@ -656,7 +656,7 @@ public class AdminLicenseBean implements Serializable {
         }
 
         // Persist changes
-        if (DataManager.getInstance().getDao().updateTicket(ticket)) {
+        if (DataManager.getInstance().getDao().updateTicket(ticket) != null) {
             logger.trace("Ticket '{}' updated successfully", ticket.getId());
             Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
         } else {

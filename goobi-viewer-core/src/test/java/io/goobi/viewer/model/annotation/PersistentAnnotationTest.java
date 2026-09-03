@@ -223,7 +223,7 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
 
         LocalDateTime changed = DateTools.now();
         fromDAO.setDateModified(changed);
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateAnnotation(fromDAO));
+        Assertions.assertNotNull(DataManager.getInstance().getDao().updateAnnotation(fromDAO));
 
         CrowdsourcingAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs

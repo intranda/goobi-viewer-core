@@ -293,7 +293,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         // Saving the licensee should not create any extra licenses
         {
-            assertTrue(DataManager.getInstance().getDao().updateUser(user));
+            assertNotNull(DataManager.getInstance().getDao().updateUser(user));
             User user2 = DataManager.getInstance().getDao().getUser(user.getId());
             assertNotNull(user2);
             assertEquals(1, user2.getLicenses().size());
@@ -397,7 +397,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals("user group 1 name", userGroup.getName());
 
         userGroup.setName("user group 1 new name");
-        assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+        assertNotNull(DataManager.getInstance().getDao().updateUserGroup(userGroup));
         assertEquals(3, DataManager.getInstance().getDao().getAllUserGroups().size());
 
         UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
@@ -515,7 +515,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
         // Saving the licensee should not create any extra licenses
         {
-            assertTrue(DataManager.getInstance().getDao().updateUserGroup(userGroup));
+            assertNotNull(DataManager.getInstance().getDao().updateUserGroup(userGroup));
             UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
             assertNotNull(userGroup2);
             assertEquals(2, userGroup2.getLicenses().size());
@@ -579,7 +579,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(role2);
         assertEquals(role1, userRole.getRole());
         userRole.setRole(role2);
-        assertTrue(DataManager.getInstance().getDao().updateUserRole(userRole));
+        assertNotNull(DataManager.getInstance().getDao().updateUserRole(userRole));
         assertEquals(3, DataManager.getInstance().getDao().getAllUserRoles().size());
 
         UserRole userRole2 = DataManager.getInstance().getDao().getAllUserRoles().get(0);
@@ -886,7 +886,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         LocalDateTime now = DateTools.now();
         comment.setDateModified(now);
 
-        assertTrue(DataManager.getInstance().getDao().updateComment(comment));
+        assertNotNull(DataManager.getInstance().getDao().updateComment(comment));
         assertEquals(4, DataManager.getInstance().getDao().getAllComments().size());
 
         Comment comment2 = DataManager.getInstance().getDao().getComment(comment.getId());
@@ -1071,7 +1071,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         LocalDateTime now = DateTools.now();
         o.setDateUpdated(now);
 
-        assertTrue(DataManager.getInstance().getDao().updateSearch(o));
+        assertNotNull(DataManager.getInstance().getDao().updateSearch(o));
         assertEquals(3, DataManager.getInstance().getDao().getAllSearches().size());
 
         Search o2 = DataManager.getInstance().getDao().getSearch(o.getId());
@@ -1341,7 +1341,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         role.setName("role 1 new name");
         role.setDescription("role 1 new desc");
         role.getPrivileges().add("role 1 priv 2");
-        assertTrue(DataManager.getInstance().getDao().updateRole(role));
+        assertNotNull(DataManager.getInstance().getDao().updateRole(role));
         assertEquals(2, DataManager.getInstance().getDao().getAllRoles().size());
 
         Role role2 = DataManager.getInstance().getDao().getRole(role.getId());
@@ -1362,7 +1362,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(1, role.getPrivileges().size());
 
         role.getPrivileges().add("role 1 priv 1");
-        assertTrue(DataManager.getInstance().getDao().updateRole(role));
+        assertNotNull(DataManager.getInstance().getDao().updateRole(role));
 
         Role role2 = DataManager.getInstance().getDao().getRole(role.getId());
         assertNotNull(role2);
@@ -1992,7 +1992,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(2, item.getMetadata().size());
         item.setFileName("image_new.jpg");
         item.getMetadata().remove(item.getMetadata().get(0));
-        assertTrue(DataManager.getInstance().getDao().updateCMSMediaItem(item));
+        assertNotNull(DataManager.getInstance().getDao().updateCMSMediaItem(item));
 
         assertEquals(4, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
         CMSMediaItem item2 = DataManager.getInstance().getDao().getCMSMediaItem(1);
@@ -2210,7 +2210,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         item.setPageUrl("new url");
         item.getChildItems().get(0).setPageUrl("new child url");
 
-        assertTrue(DataManager.getInstance().getDao().updateCMSNavigationItem(item));
+        assertNotNull(DataManager.getInstance().getDao().updateCMSNavigationItem(item));
         assertEquals(2, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
 
         CMSNavigationItem item2 = DataManager.getInstance().getDao().getCMSNavigationItem(item.getId());
@@ -3907,7 +3907,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertNotNull(byId);
 
         byName.setSolrQuery("DOCSTRCT:manuscript");
-        assertTrue(DataManager.getInstance().getDao().updateDynamicCollection(byName));
+        assertNotNull(DataManager.getInstance().getDao().updateDynamicCollection(byName));
         assertEquals("DOCSTRCT:manuscript", DataManager.getInstance().getDao().getDynamicCollection("test_dyncol").getSolrQuery());
 
         int countBefore = DataManager.getInstance().getDao().getAllDynamicCollections().size();

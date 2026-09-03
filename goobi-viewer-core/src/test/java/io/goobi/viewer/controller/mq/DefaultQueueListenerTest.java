@@ -56,7 +56,7 @@ class DefaultQueueListenerTest extends AbstractDatabaseEnabledTest {
         super.setUp();
         this.dao = Mockito.mock(IDAO.class);
         Mockito.when(dao.addViewerMessage(Mockito.any())).thenReturn(true);
-        Mockito.when(dao.updateViewerMessage(Mockito.any())).thenReturn(true);
+        Mockito.when(dao.updateViewerMessage(Mockito.any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         CreateDownloadPdfMessageHandler pdfHandler = Mockito.mock(CreateDownloadPdfMessageHandler.class);
         Mockito.when(pdfHandler.call(Mockito.any(), Mockito.any())).thenReturn(MessageStatus.FINISH);

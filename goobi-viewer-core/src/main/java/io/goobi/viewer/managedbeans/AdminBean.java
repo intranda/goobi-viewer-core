@@ -292,7 +292,7 @@ public class AdminBean implements Serializable {
                 }
                 user.setNewPassword(passwordOne);
             }
-            if (DataManager.getInstance().getDao().updateUser(user)) {
+            if (DataManager.getInstance().getDao().updateUser(user) != null) {
                 if (StringUtils.isNotEmpty(passwordOne)) {
                     DataManager.getInstance().getDao().deleteAllUserTokensForUser(user);
                     logger.info("Revoked all bearer tokens for user {} due to password change", user.getEmail());
@@ -434,7 +434,7 @@ public class AdminBean implements Serializable {
         currentUserGroup.setMemberships(null);
 
         if (getCurrentUserGroup().getId() != null) {
-            if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup())) {
+            if (DataManager.getInstance().getDao().updateUserGroup(getCurrentUserGroup()) != null) {
                 Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -493,7 +493,7 @@ public class AdminBean implements Serializable {
      */
     public void saveRoleAction() throws DAOException {
         if (getCurrentRole().getId() != null) {
-            if (DataManager.getInstance().getDao().updateRole(getCurrentRole())) {
+            if (DataManager.getInstance().getDao().updateRole(getCurrentRole()) != null) {
                 Messages.info(StringConstants.MSG_ADMIN_UPDATED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -626,7 +626,7 @@ public class AdminBean implements Serializable {
                 }
                 if (userRole.getId() != null) {
                     // existing
-                    if (DataManager.getInstance().getDao().updateUserRole(userRole)) {
+                    if (DataManager.getInstance().getDao().updateUserRole(userRole) != null) {
                         Messages.info("userGroup_membershipUpdateSuccess");
                     } else {
                         Messages.error("userGroup_membershipUpdateFailure");
@@ -1171,7 +1171,7 @@ public class AdminBean implements Serializable {
             throw new IllegalArgumentException("user may not be null");
         }
         user.setSuspended(!user.isSuspended());
-        if (DataManager.getInstance().getDao().updateUser(user)) {
+        if (DataManager.getInstance().getDao().updateUser(user) != null) {
             Messages.info(user.isSuspended() ? "user_accountSuspended" : "user_accountUnsuspended");
         }
 

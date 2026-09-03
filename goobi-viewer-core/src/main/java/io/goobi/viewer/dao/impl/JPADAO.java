@@ -587,17 +587,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateUser(User user) throws DAOException {
+    public User updateUser(User user) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(user);
+            User mergedUser = em.merge(user);
             commitTransaction(em);
-            return true;
+            return mergedUser;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -890,17 +890,17 @@ public class JPADAO implements IDAO {
      * @should not duplicate licenses and deleting license should not delete group
      */
     @Override
-    public boolean updateUserGroup(UserGroup userGroup) throws DAOException {
+    public UserGroup updateUserGroup(UserGroup userGroup) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(userGroup);
+            UserGroup mergedUserGroup = em.merge(userGroup);
             commitTransaction(em);
-            return true;
+            return mergedUserGroup;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -1223,17 +1223,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateRole(Role role) throws DAOException {
+    public Role updateRole(Role role) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(role);
+            Role mergedRole = em.merge(role);
             commitTransaction(em);
-            return true;
+            return mergedRole;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -1397,17 +1397,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateUserRole(UserRole userRole) throws DAOException {
+    public UserRole updateUserRole(UserRole userRole) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(userRole);
+            UserRole mergedUserRole = em.merge(userRole);
             commitTransaction(em);
-            return true;
+            return mergedUserRole;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -2076,18 +2076,18 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateTicket(AccessTicket ticket) throws DAOException {
+    public AccessTicket updateTicket(AccessTicket ticket) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(ticket);
+            AccessTicket mergedTicket = em.merge(ticket);
             commitTransaction(em);
-            return true;
+            return mergedTicket;
         } catch (PersistenceException e) {
             logger.error(e.getMessage());
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -2394,18 +2394,18 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#updateCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
-    public boolean updateCommentGroup(CommentGroup commentGroup) throws DAOException {
+    public CommentGroup updateCommentGroup(CommentGroup commentGroup) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(commentGroup);
+            CommentGroup mergedCommentGroup = em.merge(commentGroup);
             commitTransaction(em);
-            return true;
+            return mergedCommentGroup;
         } catch (PersistenceException e) {
             logger.error(e.toString(), e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -2614,17 +2614,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateComment(Comment comment) throws DAOException {
+    public Comment updateComment(Comment comment) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(comment);
+            Comment mergedComment = em.merge(comment);
             commitTransaction(em);
-            return true;
+            return mergedComment;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -2933,17 +2933,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateSearch(Search search) throws DAOException {
+    public Search updateSearch(Search search) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(search);
+            Search mergedSearch = em.merge(search);
             commitTransaction(em);
-            return true;
+            return mergedSearch;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -3041,17 +3041,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateUploadJob(UploadJob uploadJob) throws DAOException {
+    public UploadJob updateUploadJob(UploadJob uploadJob) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(uploadJob);
+            UploadJob mergedUploadJob = em.merge(uploadJob);
             commitTransaction(em);
-            return true;
+            return mergedUploadJob;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -3569,19 +3569,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateCMSMediaItem(CMSMediaItem item) throws DAOException {
+    public CMSMediaItem updateCMSMediaItem(CMSMediaItem item) throws DAOException {
         synchronized (cmsRequestLock) {
 
             preQuery();
             EntityManager em = getEntityManager();
             try {
                 startTransaction(em);
-                em.merge(item);
+                CMSMediaItem mergedItem = em.merge(item);
                 commitTransaction(em);
-                return true;
+                return mergedItem;
             } catch (PersistenceException e) {
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -3684,19 +3684,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateCMSNavigationItem(CMSNavigationItem item) throws DAOException {
+    public CMSNavigationItem updateCMSNavigationItem(CMSNavigationItem item) throws DAOException {
         synchronized (cmsRequestLock) {
 
             preQuery();
             EntityManager em = getEntityManager();
             try {
                 startTransaction(em);
-                em.merge(item);
+                CMSNavigationItem mergedItem = em.merge(item);
                 commitTransaction(em);
-                return true;
+                return mergedItem;
             } catch (PersistenceException e) {
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -3811,17 +3811,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateTranskribusJob(TranskribusJob job) throws DAOException {
+    public TranskribusJob updateTranskribusJob(TranskribusJob job) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(job);
+            TranskribusJob mergedJob = em.merge(job);
             commitTransaction(em);
-            return true;
+            return mergedJob;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -4482,17 +4482,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateStaticPage(CMSStaticPage page) throws DAOException {
+    public CMSStaticPage updateStaticPage(CMSStaticPage page) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(page);
+            CMSStaticPage mergedPage = em.merge(page);
             commitTransaction(em);
-            return true;
+            return mergedPage;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -4838,17 +4838,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateDynamicCollection(DynamicCollection collection) throws DAOException {
+    public DynamicCollection updateDynamicCollection(DynamicCollection collection) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(collection);
+            DynamicCollection mergedCollection = em.merge(collection);
             commitTransaction(em);
-            return true;
+            return mergedCollection;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -5113,17 +5113,17 @@ public class JPADAO implements IDAO {
      * Update an existing {@link CMSCategory} object in the persistence context
      */
     @Override
-    public boolean updateCategory(CMSCategory category) throws DAOException {
+    public CMSCategory updateCategory(CMSCategory category) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(category);
+            CMSCategory mergedCategory = em.merge(category);
             commitTransaction(em);
-            return true;
+            return mergedCategory;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -5708,19 +5708,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
+    public CrowdsourcingAnnotation updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(annotation);
+            CrowdsourcingAnnotation mergedAnnotation = em.merge(annotation);
             commitTransaction(em);
-            return true;
+            return mergedAnnotation;
         } catch (IllegalArgumentException e) {
-            return false;
+            return null;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -6094,19 +6094,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateRecordNote(CMSRecordNote note) throws DAOException {
+    public CMSRecordNote updateRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(note);
+            CMSRecordNote mergedNote = em.merge(note);
             commitTransaction(em);
-            return true;
+            return mergedNote;
         } catch (IllegalArgumentException e) {
-            return false;
+            return null;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -6193,19 +6193,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateSlider(CMSSlider slider) throws DAOException {
+    public CMSSlider updateSlider(CMSSlider slider) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(slider);
+            CMSSlider mergedSlider = em.merge(slider);
             commitTransaction(em);
-            return true;
+            return mergedSlider;
         } catch (IllegalArgumentException e) {
-            return false;
+            return null;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -6315,19 +6315,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateTheme(ThemeConfiguration theme) throws DAOException {
+    public ThemeConfiguration updateTheme(ThemeConfiguration theme) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(theme);
+            ThemeConfiguration mergedTheme = em.merge(theme);
             commitTransaction(em);
-            return true;
+            return mergedTheme;
         } catch (IllegalArgumentException e) {
-            return false;
+            return null;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -6409,20 +6409,20 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException {
+    public CustomSidebarWidget updateCustomWidget(CustomSidebarWidget widget) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
             EntityManager em = getEntityManager();
             try {
                 startTransaction(em);
-                em.merge(widget);
+                CustomSidebarWidget mergedWidget = em.merge(widget);
                 commitTransaction(em);
-                return true;
+                return mergedWidget;
             } catch (IllegalArgumentException e) {
-                return false;
+                return null;
             } catch (PersistenceException e) {
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -7132,18 +7132,18 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException {
+    public DailySessionUsageStatistics updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(statistics);
+            DailySessionUsageStatistics mergedStatistics = em.merge(statistics);
             commitTransaction(em);
-            return true;
+            return mergedStatistics;
         } catch (PersistenceException e) {
             logger.error("Error saving usage statistics", e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -7318,19 +7318,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean updateViewerMessage(ViewerMessage message) throws DAOException {
+    public ViewerMessage updateViewerMessage(ViewerMessage message) throws DAOException {
         // Synchronized together with addViewerMessage to prevent concurrent DELETE+INSERT deadlocks on mq_message_properties
         synchronized (viewerMessageLock) {
             preQuery();
             EntityManager em = getEntityManager();
             try {
                 startTransaction(em);
-                em.merge(message);
+                ViewerMessage mergedMessage = em.merge(message);
                 commitTransaction(em);
-                return true;
+                return mergedMessage;
             } catch (PersistenceException e) {
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -7536,17 +7536,17 @@ public class JPADAO implements IDAO {
     }
 
     @Override
-    public boolean updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException {
+    public RecurringTaskTrigger updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(trigger);
+            RecurringTaskTrigger mergedTrigger = em.merge(trigger);
             commitTransaction(em);
-            return true;
+            return mergedTrigger;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -7577,7 +7577,7 @@ public class JPADAO implements IDAO {
     }
 
     @Override
-    public boolean updateHighlight(HighlightData object) throws DAOException {
+    public HighlightData updateHighlight(HighlightData object) throws DAOException {
         return updateEntity(object);
     }
 
@@ -7679,18 +7679,18 @@ public class JPADAO implements IDAO {
         }
     }
 
-    private boolean updateEntity(Serializable obj) throws DAOException {
+    private <T extends Serializable> T updateEntity(T obj) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
-            em.merge(obj);
+            T merged = em.merge(obj);
             commitTransaction(em);
-            return true;
+            return merged;
         } catch (PersistenceException e) {
             logger.error("Error updating object in database", e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }

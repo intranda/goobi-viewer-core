@@ -273,7 +273,7 @@ public class AdminCommentBean implements Serializable {
     public String saveCommentGroupAction(CommentGroup commentGroup) throws DAOException {
         logger.trace("saveCommentGroupAction");
         if (commentGroup.getId() != null) {
-            if (DataManager.getInstance().getDao().updateCommentGroup(commentGroup)) {
+            if (DataManager.getInstance().getDao().updateCommentGroup(commentGroup) != null) {
                 Messages.info("updatedSuccessfully");
                 currentCommentGroup = null;
                 return "pretty:adminUserCommentGroups";
@@ -328,7 +328,7 @@ public class AdminCommentBean implements Serializable {
             // Set updated timestamp
             comment.setDateModified(DateTools.now());
             logger.trace(comment.getContentString());
-            if (DataManager.getInstance().getDao().updateComment(comment)) {
+            if (DataManager.getInstance().getDao().updateComment(comment) != null) {
                 Messages.info("updatedSuccessfully");
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);

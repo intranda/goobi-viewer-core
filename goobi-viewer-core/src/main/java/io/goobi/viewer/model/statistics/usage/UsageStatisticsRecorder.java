@@ -154,7 +154,7 @@ public class UsageStatisticsRecorder {
      */
     private boolean updateStatistics(DailySessionUsageStatistics statistics) throws DAOException, IllegalArgumentException {
         if (statistics.getId() != null) {
-            return this.dao.updateUsageStatistics(statistics);
+            return this.dao.updateUsageStatistics(statistics) != null;
         }
         throw new IllegalArgumentException("given statistics object is not a dao entity (doesn't have a database id)");
     }

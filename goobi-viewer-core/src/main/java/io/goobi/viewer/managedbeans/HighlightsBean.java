@@ -292,7 +292,7 @@ public class HighlightsBean implements Serializable {
         boolean saved = false;
         boolean redirect = false;
         if (object != null && object.getData().getId() != null) {
-            saved = dao.updateHighlight(object.getData());
+            saved = dao.updateHighlight(object.getData()) != null;
         } else if (object != null) {
             saved = dao.addHighlight(object.getData());
             redirect = true;

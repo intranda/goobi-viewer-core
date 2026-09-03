@@ -211,10 +211,10 @@ public interface IDAO {
      * updateUser.
      *
      * @param user user to update in the database
-     * @return true if user was updated successfully; false otherwise
+     * @return the merged, up-to-date user if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateUser(User user) throws DAOException;
+    public User updateUser(User user) throws DAOException;
 
     /**
      * deleteUser.
@@ -356,10 +356,10 @@ public interface IDAO {
      * updateUserGroup.
      *
      * @param userGroup user group to update in the database
-     * @return true if user group was updated successfully; false otherwise
+     * @return the merged, up-to-date user group if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateUserGroup(UserGroup userGroup) throws DAOException;
+    public UserGroup updateUserGroup(UserGroup userGroup) throws DAOException;
 
     /**
      * deleteUserGroup.
@@ -524,10 +524,10 @@ public interface IDAO {
      * updateRole.
      *
      * @param role role to update in the database
-     * @return true if role was updated successfully; false otherwise
+     * @return the merged, up-to-date role if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateRole(Role role) throws DAOException;
+    public Role updateRole(Role role) throws DAOException;
 
     /**
      * deleteRole.
@@ -583,10 +583,10 @@ public interface IDAO {
      * updateUserRole.
      *
      * @param userRole user role assignment to update in the database
-     * @return true if user role was updated successfully; false otherwise
+     * @return the merged, up-to-date user role if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateUserRole(UserRole userRole) throws DAOException;
+    public UserRole updateUserRole(UserRole userRole) throws DAOException;
 
     /**
      * deleteUserRole.
@@ -877,10 +877,10 @@ public interface IDAO {
      * updateTicket.
      *
      * @param ticket access ticket to update in the database
-     * @return true if ticket was updated successfully; false otherwise
+     * @return the merged, up-to-date ticket if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateTicket(AccessTicket ticket) throws DAOException;
+    public AccessTicket updateTicket(AccessTicket ticket) throws DAOException;
 
     /**
      * deleteTicket.
@@ -1020,10 +1020,10 @@ public interface IDAO {
      * updateCommentGroup.
      *
      * @param commentGroup comment group to update in the database
-     * @return true if comment group was updated successfully; false otherwise
+     * @return the merged, up-to-date comment group if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateCommentGroup(CommentGroup commentGroup) throws DAOException;
+    public CommentGroup updateCommentGroup(CommentGroup commentGroup) throws DAOException;
 
     /**
      * deleteCommentGroup.
@@ -1132,10 +1132,10 @@ public interface IDAO {
      * updateComment.
      *
      * @param comment comment to update in the database
-     * @return true if comment was updated successfully; false otherwise
+     * @return the merged, up-to-date comment if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateComment(Comment comment) throws DAOException;
+    public Comment updateComment(Comment comment) throws DAOException;
 
     /**
      * deleteComment.
@@ -1231,10 +1231,10 @@ public interface IDAO {
      * updateSearch.
      *
      * @param search saved search to update in the database
-     * @return true if search was updated successfully; false otherwise
+     * @return the merged, up-to-date search if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateSearch(Search search) throws DAOException;
+    public Search updateSearch(Search search) throws DAOException;
 
     /**
      * deleteSearch.
@@ -1276,10 +1276,10 @@ public interface IDAO {
      * updateDownloadJob.
      *
      * @param uploadJob upload job to update in the database
-     * @return true if upload job was updated successfully; false otherwise
+     * @return the merged, up-to-date upload job if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateUploadJob(UploadJob uploadJob) throws DAOException;
+    public UploadJob updateUploadJob(UploadJob uploadJob) throws DAOException;
 
     /**
      * deleteDownloadJob.
@@ -1529,10 +1529,10 @@ public interface IDAO {
      * updateCMSMediaItem.
      *
      * @param item CMS media item to update in the database
-     * @return true if CMS media item was updated successfully; false otherwise
+     * @return the merged, up-to-date CMS media item if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateCMSMediaItem(CMSMediaItem item) throws DAOException;
+    public CMSMediaItem updateCMSMediaItem(CMSMediaItem item) throws DAOException;
 
     /**
      * deleteCMSMediaItem.
@@ -1582,10 +1582,10 @@ public interface IDAO {
      * updateCMSNavigationItem.
      *
      * @param item CMS navigation item to update in the database
-     * @return true if navigation item was updated successfully; false otherwise
+     * @return the merged, up-to-date navigation item if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateCMSNavigationItem(CMSNavigationItem item) throws DAOException;
+    public CMSNavigationItem updateCMSNavigationItem(CMSNavigationItem item) throws DAOException;
 
     /**
      * deleteCMSNavigationItem.
@@ -1626,10 +1626,10 @@ public interface IDAO {
      * updateStaticPage.
      *
      * @param page static page to update in the database
-     * @return true if page updated successfully; false otherwise
+     * @return the merged, up-to-date page if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateStaticPage(CMSStaticPage page) throws DAOException;
+    public CMSStaticPage updateStaticPage(CMSStaticPage page) throws DAOException;
 
     /**
      * deleteStaticPage.
@@ -1746,10 +1746,10 @@ public interface IDAO {
      * updateCategory.
      *
      * @param category CMS category to update in the database
-     * @return true if category updated successfully; false otherwise
+     * @return the merged, up-to-date category if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateCategory(CMSCategory category) throws DAOException;
+    public CMSCategory updateCategory(CMSCategory category) throws DAOException;
 
     /**
      * deleteCategory.
@@ -1812,10 +1812,10 @@ public interface IDAO {
      * updateTranskribusJob.
      *
      * @param job Transkribus job to update in the database
-     * @return true if job updated successfully; false otherwise
+     * @return the merged, up-to-date job if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateTranskribusJob(TranskribusJob job) throws DAOException;
+    public TranskribusJob updateTranskribusJob(TranskribusJob job) throws DAOException;
 
     /**
      * deleteTranskribusJob.
@@ -2059,10 +2059,10 @@ public interface IDAO {
      * updateDynamicCollection.
      *
      * @param collection dynamic collection to update in the database
-     * @return true if the dynamic collection was updated successfully; false otherwise
+     * @return the merged, up-to-date dynamic collection if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateDynamicCollection(DynamicCollection collection) throws DAOException;
+    public DynamicCollection updateDynamicCollection(DynamicCollection collection) throws DAOException;
 
     /**
      * deleteDynamicCollection.
@@ -2198,10 +2198,10 @@ public interface IDAO {
      * updateAnnotation.
      *
      * @param annotation crowdsourcing annotation to update in the database
-     * @return true if annotation was updated successfully; false otherwise
+     * @return the merged, up-to-date annotation if the update succeeded; null otherwise
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
+    public CrowdsourcingAnnotation updateAnnotation(CrowdsourcingAnnotation annotation) throws DAOException;
 
     /**
      * deleteAnnotation.
@@ -2349,10 +2349,10 @@ public interface IDAO {
      * Updates an existing {@link CMSRecordNote}.
      *
      * @param note record note to update
-     * @return true if note updated successfully; false otherwise
+     * @return the merged, up-to-date note if the update succeeded; null otherwise
      * @throws DAOException if a database error occurs
      */
-    public boolean updateRecordNote(CMSRecordNote note) throws DAOException;
+    public CMSRecordNote updateRecordNote(CMSRecordNote note) throws DAOException;
 
     /**
      * Deletes an existing {@link CMSRecordNote}.
@@ -2375,7 +2375,7 @@ public interface IDAO {
 
     public boolean addSlider(CMSSlider slider) throws DAOException;
 
-    public boolean updateSlider(CMSSlider slider) throws DAOException;
+    public CMSSlider updateSlider(CMSSlider slider) throws DAOException;
 
     public boolean deleteSlider(CMSSlider slider) throws DAOException;
 
@@ -2387,7 +2387,7 @@ public interface IDAO {
 
     public boolean addTheme(ThemeConfiguration theme) throws DAOException;
 
-    public boolean updateTheme(ThemeConfiguration theme) throws DAOException;
+    public ThemeConfiguration updateTheme(ThemeConfiguration theme) throws DAOException;
 
     public boolean deleteTheme(ThemeConfiguration theme) throws DAOException;
 
@@ -2431,7 +2431,7 @@ public interface IDAO {
 
     public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException;
 
-    public boolean updateCustomWidget(CustomSidebarWidget widget) throws DAOException;
+    public CustomSidebarWidget updateCustomWidget(CustomSidebarWidget widget) throws DAOException;
 
     public boolean deleteCustomWidget(Long id) throws DAOException;
 
@@ -2476,7 +2476,7 @@ public interface IDAO {
 
     public boolean addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
 
-    public boolean updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
+    public DailySessionUsageStatistics updateUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException;
 
     public boolean deleteUsageStatistics(long id) throws DAOException;
 
@@ -2492,7 +2492,7 @@ public interface IDAO {
 
     public boolean addViewerMessage(ViewerMessage message) throws DAOException;
 
-    public boolean updateViewerMessage(ViewerMessage message) throws DAOException;
+    public ViewerMessage updateViewerMessage(ViewerMessage message) throws DAOException;
 
     public ViewerMessage getViewerMessage(Long id) throws DAOException;
 
@@ -2529,7 +2529,7 @@ public interface IDAO {
 
     public boolean addRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
 
-    public boolean updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
+    public RecurringTaskTrigger updateRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException;
 
     public boolean deleteRecurringTaskTrigger(Long id) throws DAOException;
 
@@ -2537,7 +2537,7 @@ public interface IDAO {
 
     public boolean addHighlight(HighlightData object) throws DAOException;
 
-    public boolean updateHighlight(HighlightData object) throws DAOException;
+    public HighlightData updateHighlight(HighlightData object) throws DAOException;
 
     public boolean deleteHighlight(Long id) throws DAOException;
 
