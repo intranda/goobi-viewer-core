@@ -1,0 +1,35 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    <ui:fragment rendered="#{activeDocumentBean.toc.hasChildren}">
+        <aside
+            id="immersivePanelToc"
+            class="immersive__panel immersive__panel-left immersive__panel-toc"
+            aria-label="#{msg.toc}"
+            aria-hidden="true"
+            inert="inert">
+            <div class="immersive__panel-header">
+                <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
+                <button
+                    type="button"
+                    class="immersive__toc-collapse"
+                    data-immersive-toc-toggle=""
+                    data-label-collapse="#{msg.allClose}"
+                    data-label-expand="#{msg.allOpen}"
+                    title="#{msg.allClose}"
+                    aria-label="#{msg.allClose}"
+                    hidden="hidden">
+                    <util:icon
+                        icon="square-rounded-minus"
+                        svgClass="immersive__toc-collapse-icon immersive__toc-collapse-icon-collapse" />
+                    <util:icon
+                        icon="square-rounded-plus"
+                        svgClass="immersive__toc-collapse-icon immersive__toc-collapse-icon-expand" />
+                </button>
+            </div>
+            <widgetComponent:widget_toc />
+        </aside>
+    </ui:fragment>
+</ui:composition>

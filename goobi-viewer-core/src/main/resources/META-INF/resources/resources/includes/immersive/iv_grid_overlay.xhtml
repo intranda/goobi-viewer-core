@@ -1,0 +1,65 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util">
+    <div
+        class="immersive__grid"
+        id="immersiveGridOverlay"
+        hidden="hidden">
+        <button
+            type="button"
+            class="immersive__grid-close"
+            data-immersive-action="overview"
+            aria-label="#{msg.closeWindow}">
+            <util:icon icon="x" />
+        </button>
+        <button
+            type="button"
+            class="immersive__grid-top"
+            hidden="hidden"
+            title="#{msg.label__back_to_top}"
+            aria-label="#{msg.label__back_to_top}">
+            <util:icon
+                icon="arrow-up"
+                svgClass="immersive__grid-top-icon" />
+        </button>
+        <div class="immersive__grid-size">
+            <label
+                for="immersiveGridSize"
+                class="sr-only">
+                #{msg.label__thumbnail_size}
+            </label>
+            <util:icon
+                icon="photo"
+                svgClass="immersive__grid-size-icon immersive__grid-size-icon-small" />
+            <input
+                type="range"
+                id="immersiveGridSize"
+                class="immersive__grid-size-slider"
+                min="0"
+                max="2"
+                step="1"
+                value="1"
+                data-label-small="#{msg.label__size_small}"
+                data-label-medium="#{msg.label__size_medium}"
+                data-label-large="#{msg.label__size_large}" />
+            <util:icon
+                icon="photo"
+                svgClass="immersive__grid-size-icon immersive__grid-size-icon-large" />
+        </div>
+        <div class="immersive__grid-scroll">
+            <div
+                id="immersiveGridLoader"
+                class="immersive__grid-loader"
+                role="status">
+                <img
+                    src="#{request.contextPath}/resources/images/infinity_loader.svg"
+                    class="ajax-loader__animated-image"
+                    alt="" />
+            </div>
+            <div
+                id="immersiveThumbnails"
+                class="immersive__grid-mount" />
+        </div>
+    </div>
+</ui:composition>

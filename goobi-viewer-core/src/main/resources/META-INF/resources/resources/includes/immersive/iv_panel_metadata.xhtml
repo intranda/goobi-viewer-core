@@ -1,0 +1,63 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <aside
+        id="immersivePanelMetadata"
+        class="immersive__panel immersive__panel-left immersive__panel-metadata"
+        aria-label="#{msg.metadata}"
+        aria-hidden="true"
+        inert="inert">
+        <div class="immersive__panel-header">
+            <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
+        </div>
+        <div class="metadata">
+            <c:set
+                scope="request"
+                var="mdList"
+                value="#{metadataBean.metadataElementList}" />
+            <c:set
+                var="mdCount"
+                value="#{not empty mdList and mdList[0].anchor ? 2 : 1}" />
+            <c:forEach
+                items="#{mdList}"
+                var="metadataElement"
+                varStatus="status">
+                <ui:fragment rendered="#{status.index lt mdCount}">
+                    <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
+                        <ui:param
+                            name="metadataElement"
+                            value="#{metadataElement}" />
+                    </ui:include>
+                </ui:fragment>
+            </c:forEach>
+            <ui:fragment rendered="#{not empty mdList and mdList.size() gt mdCount}">
+                <div
+                    id="immersiveMetadataMore"
+                    hidden="hidden">
+                    <c:forEach
+                        items="#{mdList}"
+                        var="metadataElement"
+                        varStatus="status">
+                        <ui:fragment rendered="#{status.index ge mdCount}">
+                            <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
+                                <ui:param
+                                    name="metadataElement"
+                                    value="#{metadataElement}" />
+                            </ui:include>
+                        </ui:fragment>
+                    </c:forEach>
+                </div>
+                <button
+                    type="button"
+                    class="immersive__metadata-toggle"
+                    data-immersive-metadata-toggle="immersiveMetadataMore"
+                    aria-controls="immersiveMetadataMore"
+                    aria-expanded="false">
+                    <span class="immersive__metadata-toggle-more">#{msg.metadata__fold_show_more}</span>
+                    <span class="immersive__metadata-toggle-less">#{msg.metadata__fold_show_less}</span>
+                </button>
+            </ui:fragment>
+        </div>
+    </aside>
+</ui:composition>

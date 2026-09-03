@@ -1,0 +1,61 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    <aside
+        id="immersivePanelSearch"
+        class="immersive__panel immersive__panel-left immersive__panel-search"
+        aria-label="#{msg.search}"
+        aria-hidden="true"
+        inert="inert">
+        <div class="immersive__panel-header">
+            <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
+        </div>
+        <ui:fragment rendered="#{not displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
+            <p class="immersive__search-hint">#{msg.immersive__search_hint_no_fulltext}</p>
+        </ui:fragment>
+        <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
+            <widgetComponent:widget_searchInCurrentItem />
+            <div
+                id="immersiveSearchResults"
+                class="immersive__results"
+                data-label-empty="#{msg.hitsZero}"
+                data-label-reset="#{msg.searchList_resetCurrentSearch}"
+                hidden="hidden">
+                <div class="immersive__results-head">
+                    <span
+                        class="immersive__results-count"
+                        id="immersiveHitCounter"
+                        aria-live="polite"
+                        aria-atomic="true" />
+                    <span class="immersive__results-nav">
+                        <button
+                            type="button"
+                            class="immersive__results-nav-btn"
+                            data-immersive-hit="prev"
+                            title="#{msg.previousHit}"
+                            aria-label="#{msg.previousHit}">
+                            <util:icon
+                                icon="chevron-left"
+                                svgClass="immersive__results-nav-icon" />
+                        </button>
+                        <button
+                            type="button"
+                            class="immersive__results-nav-btn"
+                            data-immersive-hit="next"
+                            title="#{msg.nextHit}"
+                            aria-label="#{msg.nextHit}">
+                            <util:icon
+                                icon="chevron-right"
+                                svgClass="immersive__results-nav-icon" />
+                        </button>
+                    </span>
+                </div>
+                <ul
+                    class="immersive__results-list"
+                    id="immersiveResultsList" />
+            </div>
+        </ui:fragment>
+    </aside>
+</ui:composition>

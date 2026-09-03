@@ -1,0 +1,120 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util">
+    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+        <div class="immersive__bottombar">
+            <!-- NAVIGATION -->
+            <div class="immersive__bottombar-group">
+                <button
+                    type="button"
+                    class="immersive__bar-btn"
+                    data-immersive-page="prev"
+                    title="#{msg.prevImage}"
+                    aria-label="#{msg.prevImage}">
+                    <util:icon
+                        icon="chevron-left"
+                        svgClass="immersive__bar-icon" />
+                </button>
+                <span
+                    class="immersive__page-indicator"
+                    id="immersivePageIndicator"
+                    aria-live="polite"
+                    aria-atomic="true">
+                    #{activeDocumentBean.viewManager.currentImageOrder}
+                </span>
+                <button
+                    type="button"
+                    class="immersive__bar-btn"
+                    data-immersive-page="next"
+                    title="#{msg.nextImage}"
+                    aria-label="#{msg.nextImage}">
+                    <util:icon
+                        icon="chevron-right"
+                        svgClass="immersive__bar-icon" />
+                </button>
+            </div>
+            <!-- ZOOM -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
+                <div class="immersive__bottombar-group">
+                    <button
+                        type="button"
+                        class="immersive__bar-btn"
+                        data-immersive-action="zoom-in"
+                        title="#{msg.zoomIn}"
+                        aria-label="#{msg.zoomIn}">
+                        <util:icon
+                            icon="plus"
+                            svgClass="immersive__bar-icon" />
+                    </button>
+                    <button
+                        type="button"
+                        class="immersive__bar-btn"
+                        data-immersive-action="zoom-out"
+                        title="#{msg.zoomOut}"
+                        aria-label="#{msg.zoomOut}">
+                        <util:icon
+                            icon="minus"
+                            svgClass="immersive__bar-icon" />
+                    </button>
+                </div>
+            </ui:fragment>
+            <!-- ROTATE -->
+            <div class="immersive__bottombar-group">
+                <button
+                    type="button"
+                    class="immersive__bar-btn"
+                    data-immersive-action="rotate-left"
+                    title="#{msg.rotateLeft}"
+                    aria-label="#{msg.rotateLeft}">
+                    <util:icon
+                        icon="rotate"
+                        svgClass="immersive__bar-icon" />
+                </button>
+                <button
+                    type="button"
+                    class="immersive__bar-btn"
+                    data-immersive-action="rotate-right"
+                    title="#{msg.rotateRight}"
+                    aria-label="#{msg.rotateRight}">
+                    <util:icon
+                        icon="rotate-clockwise"
+                        svgClass="immersive__bar-icon" />
+                </button>
+            </div>
+            <!-- RESET -->
+            <div class="immersive__bottombar-group">
+                <button
+                    type="button"
+                    class="immersive__bar-btn"
+                    data-immersive-action="reset"
+                    title="#{msg.resetImage}"
+                    aria-label="#{msg.resetImage}">
+                    <util:icon
+                        icon="restore"
+                        svgClass="immersive__bar-icon" />
+                </button>
+            </div>
+            <!-- FILTER -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
+                <div class="immersive__bottombar-group">
+                    <button
+                        type="button"
+                        class="immersive__bar-btn"
+                        data-popover-element="#immersiveFilterPopover"
+                        data-popover-placement="top"
+                        data-popover-dismiss="click-outside"
+                        aria-haspopup="dialog"
+                        aria-expanded="false"
+                        aria-controls="immersiveFilterPopover"
+                        title="#{msg.label__image_filter_toolkit}"
+                        aria-label="#{msg.label__image_filter_toolkit}">
+                        <util:icon
+                            icon="adjustments"
+                            svgClass="immersive__bar-icon" />
+                    </button>
+                </div>
+            </ui:fragment>
+        </div>
+    </ui:fragment>
+</ui:composition>

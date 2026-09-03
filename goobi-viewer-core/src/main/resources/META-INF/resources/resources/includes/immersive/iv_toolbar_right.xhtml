@@ -1,0 +1,114 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:util="http://goobi.io/util">
+    <div class="immersive__toolbar immersive__toolbar-right">
+        <!-- ACTIONS -->
+        <h:panelGroup
+            layout="block"
+            styleClass="immersive__toolbar-group"
+            rendered="#{activeDocumentBean.accessPermissionPdf or configurationBean.displaySocialMediaShareLinks or configurationBean.displaySidebarWidgetUsageCitationLinks}">
+            <!-- DOWNLOAD PDF -->
+            <ui:fragment rendered="#{activeDocumentBean.accessPermissionPdf}">
+                <a
+                    class="immersive__tool-btn immersive__btn-download"
+                    href="#{activeDocumentBean.viewManager.pdfDownloadLink}"
+                    target="_blank"
+                    rel="noopener"
+                    title="#{msg.action__search_hit_download_pdf}"
+                    aria-label="#{msg.action__search_hit_download_pdf}">
+                    <util:icon
+                        icon="download"
+                        svgClass="immersive__tool-icon" />
+                </a>
+            </ui:fragment>
+            <!-- SHARE -->
+            <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
+                <button
+                    type="button"
+                    class="immersive__tool-btn immersive__btn-share"
+                    data-popover-element="#immersiveSharePopover"
+                    data-popover-placement="left"
+                    data-popover-dismiss="click-outside"
+                    aria-haspopup="dialog"
+                    aria-expanded="false"
+                    aria-controls="immersiveSharePopover"
+                    title="#{msg.action__share}"
+                    aria-label="#{msg.action__share}">
+                    <util:icon
+                        icon="share"
+                        svgClass="immersive__tool-icon" />
+                </button>
+            </ui:fragment>
+            <!-- CITE -->
+            <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
+                <button
+                    type="button"
+                    class="immersive__tool-btn immersive__btn-cite"
+                    data-popover-element="#immersiveCitationPopover"
+                    data-popover-placement="left"
+                    data-popover-dismiss="click-outside"
+                    aria-haspopup="dialog"
+                    aria-expanded="false"
+                    aria-controls="immersiveCitationPopover"
+                    title="#{msg.widget_citation}"
+                    aria-label="#{msg.widget_citation}">
+                    <util:icon
+                        icon="quote"
+                        svgClass="immersive__tool-icon" />
+                </button>
+            </ui:fragment>
+        </h:panelGroup>
+
+        <!-- VIEWS -->
+        <h:panelGroup
+            layout="block"
+            styleClass="immersive__toolbar-group"
+            rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+            <!-- DOUBLE PAGE -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
+                <button
+                    type="button"
+                    class="immersive__tool-btn immersive__btn-double-page"
+                    data-immersive-action="double-page"
+                    aria-pressed="false"
+                    title="#{msg.doublePageView}"
+                    aria-label="#{msg.doublePageView}">
+                    <util:icon
+                        icon="book"
+                        svgClass="immersive__tool-icon" />
+                </button>
+            </ui:fragment>
+            <!-- OVERVIEW -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
+                <button
+                    type="button"
+                    class="immersive__tool-btn immersive__btn-overview"
+                    data-immersive-action="overview"
+                    aria-haspopup="dialog"
+                    aria-expanded="false"
+                    title="#{msg.fullscreen_showThumbs}"
+                    aria-label="#{msg.fullscreen_showThumbs}">
+                    <util:icon
+                        icon="layout-grid"
+                        svgClass="immersive__tool-icon" />
+                </button>
+            </ui:fragment>
+            <!-- FULLSCREEN -->
+            <button
+                type="button"
+                class="immersive__tool-btn immersive__btn-fullscreen"
+                data-immersive-action="fullscreen"
+                data-label-enter="#{msg.fullscreen_enter}"
+                data-label-exit="#{msg.fullscreen_exit}"
+                title="#{msg.fullscreen_enter}"
+                aria-label="#{msg.fullscreen_enter}"
+                aria-pressed="false">
+                <util:icon
+                    icon="maximize"
+                    svgClass="immersive__tool-icon" />
+            </button>
+        </h:panelGroup>
+    </div>
+</ui:composition>

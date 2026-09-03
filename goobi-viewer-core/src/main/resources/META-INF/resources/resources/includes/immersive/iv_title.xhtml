@@ -1,0 +1,63 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util">
+    <div class="immersive__overlay-top">
+        <div class="immersive__title">
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                <button
+                    type="button"
+                    class="immersive__title-trigger"
+                    data-immersive-title-trigger=""
+                    aria-haspopup="dialog"
+                    aria-expanded="false"
+                    aria-controls="immersivePageDropdown"
+                    title="#{msg.aria_label__select_page}">
+                    <util:icon
+                        icon="book"
+                        svgClass="immersive__title-icon" />
+                    <span class="immersive__title-text">#{activeDocumentBean.titleBarLabel}</span>
+                    <span
+                        class="immersive__title-page"
+                        id="immersiveTitlePage" />
+                    <util:icon
+                        icon="chevron-down"
+                        svgClass="immersive__title-caret" />
+                </button>
+                <div
+                    class="immersive__page-dropdown"
+                    id="immersivePageDropdown"
+                    role="dialog"
+                    aria-label="#{msg.aria_label__select_page}"
+                    hidden="hidden">
+                    <div class="immersive__page-dropdown-jump">
+                        <label
+                            class="immersive__page-dropdown-label"
+                            for="immersivePageInput">
+                            #{msg.aria__label_pagination_goto}
+                        </label>
+                        <input
+                            type="number"
+                            min="1"
+                            id="immersivePageInput"
+                            class="immersive__page-dropdown-input"
+                            inputmode="numeric"
+                            autocomplete="off" />
+                    </div>
+                    <ul
+                        class="immersive__page-dropdown-list"
+                        id="immersivePageList"
+                        role="listbox" />
+                </div>
+            </ui:fragment>
+            <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                <span class="immersive__title-trigger immersive__title-trigger-static">
+                    <util:icon
+                        icon="book"
+                        svgClass="immersive__title-icon" />
+                    <span class="immersive__title-text">#{activeDocumentBean.titleBarLabel}</span>
+                </span>
+            </ui:fragment>
+        </div>
+    </div>
+</ui:composition>

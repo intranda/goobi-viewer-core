@@ -1,0 +1,152 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util">
+    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage and activeDocumentBean.viewManager.topStructElement.layoutTagAvailable}">
+        <aside
+            id="immersivePanelLayoutTags"
+            class="immersive__panel immersive__panel-left immersive__panel-layout-tags"
+            aria-label="#{msg.immersive__layout_tags}"
+            aria-hidden="true"
+            inert="inert"
+            data-label-page="#{msg.page}"
+            data-label-pick="#{msg.immersive__layout_tags_pick}"
+            data-label-pick-more="#{msg.immersive__layout_tags_pick_more}"
+            data-label-pick-selected="#{msg.immersive__layout_tags_pick_selected}"
+            data-label-filter-none="#{msg.immersive__layout_tags_filter_none}"
+            data-label-none-selected="#{msg.immersive__layout_tags_none_selected}"
+            data-label-empty="#{msg.immersive__layout_tags_empty}"
+            data-label-empty-range="#{msg.immersive__layout_tags_empty_range}"
+            data-label-error="#{msg.immersive__layout_tags_error}"
+            data-label-occurrences="#{msg.immersive__layout_tags_occurrences}"
+            data-label-progress-loading="#{msg.immersive__layout_tags_progress_loading}"
+            data-label-progress-done="#{msg.immersive__layout_tags_progress_done}"
+            data-label-progress-done-one="#{msg.immersive__layout_tags_progress_done_one}">
+            <div
+                class="immersive__layout-tags-sticky"
+                data-immersive-layout-tags="sticky">
+                <div class="immersive__panel-header">
+                    <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
+                </div>
+                <div class="immersive__layout-tags-range">
+                    <label
+                        class="immersive__layout-tags-range-label"
+                        for="immersiveLayoutTagsFrom">
+                        #{msg.immersive__layout_tags_range_from}
+                    </label>
+                    <input
+                        type="number"
+                        id="immersiveLayoutTagsFrom"
+                        class="immersive__layout-tags-range-input"
+                        data-immersive-layout-tags="from"
+                        min="1"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        aria-label="#{msg.immersive__layout_tags_range_first}" />
+                    <label
+                        class="immersive__layout-tags-range-label"
+                        for="immersiveLayoutTagsTo">
+                        #{msg.immersive__layout_tags_range_to}
+                    </label>
+                    <input
+                        type="number"
+                        id="immersiveLayoutTagsTo"
+                        class="immersive__layout-tags-range-input"
+                        data-immersive-layout-tags="to"
+                        min="1"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        aria-label="#{msg.immersive__layout_tags_range_last}" />
+                    <button
+                        type="button"
+                        class="immersive__layout-tags-range-apply"
+                        data-immersive-layout-tags="apply"
+                        title="#{msg.immersive__layout_tags_range_apply}"
+                        aria-label="#{msg.immersive__layout_tags_range_apply}"
+                        hidden="hidden">
+                        #{msg.ok}
+                    </button>
+                    <button
+                        type="button"
+                        class="immersive__layout-tags-range-reset"
+                        data-immersive-layout-tags="reset"
+                        title="#{msg.immersive__layout_tags_range_reset}"
+                        aria-label="#{msg.immersive__layout_tags_range_reset}"
+                        hidden="hidden">
+                        <util:icon
+                            icon="x"
+                            svgClass="immersive__layout-tags-range-reset-icon" />
+                    </button>
+                </div>
+                <div class="immersive__layout-tags-pick">
+                    <button
+                        type="button"
+                        class="immersive__layout-tags-pick-trigger"
+                        data-immersive-layout-tags="pick-trigger"
+                        data-immersive-panel-focus=""
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-controls="immersiveLayoutTagsPickMenu">
+                        <span
+                            class="immersive__layout-tags-pick-dots"
+                            data-immersive-layout-tags="pick-dots"
+                            aria-hidden="true" />
+                        <span
+                            class="immersive__layout-tags-pick-text"
+                            data-immersive-layout-tags="pick-text">
+                            #{msg.immersive__layout_tags_pick}
+                        </span>
+                        <util:icon
+                            icon="chevron-down"
+                            svgClass="immersive__layout-tags-pick-chevron" />
+                    </button>
+                    <div
+                        id="immersiveLayoutTagsPickMenu"
+                        class="immersive__layout-tags-pick-menu"
+                        data-immersive-layout-tags="pick-menu"
+                        hidden="hidden">
+                        <div
+                            class="immersive__layout-tags-filter"
+                            data-immersive-layout-tags="filter"
+                            hidden="hidden">
+                            <label
+                                class="sr-only"
+                                for="immersiveLayoutTagsFilter">
+                                #{msg.immersive__layout_tags_filter}
+                            </label>
+                            <input
+                                type="text"
+                                id="immersiveLayoutTagsFilter"
+                                class="immersive__layout-tags-filter-input"
+                                placeholder="#{msg.immersive__layout_tags_filter}"
+                                autocomplete="off" />
+                        </div>
+                        <div
+                            class="immersive__layout-tags-pick-list"
+                            data-immersive-layout-tags="pick-list"
+                            role="group"
+                            aria-label="#{msg.immersive__layout_tags_pick}" />
+                    </div>
+                </div>
+            </div>
+            <div
+                class="immersive__layout-tags-loader"
+                data-immersive-layout-tags="loader"
+                role="status"
+                hidden="hidden">
+                <img
+                    src="#{request.contextPath}/resources/images/infinity_loader.svg"
+                    class="ajax-loader__animated-image"
+                    alt="" />
+            </div>
+            <div
+                class="immersive__layout-tags-hits-mount"
+                data-immersive-layout-tags="hits" />
+            <p
+                class="immersive__layout-tags-progress"
+                data-immersive-layout-tags="progress"
+                role="status"
+                aria-live="polite" />
+        </aside>
+    </ui:fragment>
+</ui:composition>

@@ -1,0 +1,112 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:util="http://goobi.io/util">
+    <div class="immersive__toolbar immersive__toolbar-left">
+        <!-- BACK TO SEARCH RESULTS -->
+        <ui:fragment rendered="#{searchBean.hitsCount > 0}">
+            <div class="immersive__toolbar-group">
+                <a
+                    class="immersive__tool-btn immersive__back"
+                    href="#{searchBean.lastUsedSearchUrl}"
+                    title="#{msg.returnToHitlist}"
+                    aria-label="#{msg.returnToHitlist}">
+                    <util:icon
+                        icon="arrow-narrow-left"
+                        svgClass="immersive__tool-icon" />
+                </a>
+            </div>
+        </ui:fragment>
+        <div class="immersive__toolbar-group immersive__toolbar-group-grow">
+            <!-- TOC -->
+            <ui:fragment rendered="#{activeDocumentBean.toc.hasChildren and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                <button
+                    type="button"
+                    class="immersive__tool-btn immersive__btn-toc"
+                    data-immersive-panel="immersivePanelToc"
+                    aria-controls="immersivePanelToc"
+                    aria-expanded="false"
+                    title="#{msg.toc}"
+                    aria-label="#{msg.toc}">
+                    <util:icon
+                        icon="list"
+                        svgClass="immersive__tool-icon" />
+                </button>
+            </ui:fragment>
+            <!-- FULLTEXT -->
+            <ui:fragment
+                rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}') and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                <button
+                    type="button"
+                    class="immersive__tool-btn immersive__btn-fulltext"
+                    data-immersive-panel="immersivePanelFulltext"
+                    data-label-disabled="#{msg.fulltextOnlySinglePage}"
+                    aria-controls="immersivePanelFulltext"
+                    aria-expanded="false"
+                    title="#{msg.fulltext}"
+                    aria-label="#{msg.fulltext}">
+                    <util:icon
+                        icon="file-text"
+                        svgClass="immersive__tool-icon" />
+                </button>
+            </ui:fragment>
+            <!-- SEARCH -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                <button
+                    type="button"
+                    class="immersive__tool-btn immersive__btn-search"
+                    data-immersive-panel="immersivePanelSearch"
+                    aria-controls="immersivePanelSearch"
+                    aria-expanded="false"
+                    title="#{msg.search}"
+                    aria-label="#{msg.search}">
+                    <util:icon
+                        icon="search"
+                        svgClass="immersive__tool-icon" />
+                </button>
+            </ui:fragment>
+            <!-- METADATA -->
+            <button
+                type="button"
+                class="immersive__tool-btn immersive__btn-metadata"
+                data-immersive-panel="immersivePanelMetadata"
+                aria-controls="immersivePanelMetadata"
+                aria-expanded="false"
+                title="#{msg.metadata}"
+                aria-label="#{msg.metadata}">
+                <util:icon
+                    icon="info-circle"
+                    svgClass="immersive__tool-icon" />
+            </button>
+            <!-- LAYOUT TAGS -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage and activeDocumentBean.viewManager.topStructElement.layoutTagAvailable}">
+                <button
+                    type="button"
+                    class="immersive__tool-btn immersive__btn-layout-tags"
+                    data-immersive-panel="immersivePanelLayoutTags"
+                    aria-controls="immersivePanelLayoutTags"
+                    aria-expanded="false"
+                    title="#{msg.immersive__layout_tags}"
+                    aria-label="#{msg.immersive__layout_tags}">
+                    <util:icon
+                        icon="tags"
+                        svgClass="immersive__tool-icon" />
+                </button>
+            </ui:fragment>
+            <!-- KEYBOARD SHORTCUTS -->
+            <button
+                type="button"
+                class="immersive__tool-btn immersive__shortcuts-btn"
+                data-immersive-shortcuts-trigger=""
+                aria-haspopup="dialog"
+                aria-expanded="false"
+                aria-controls="immersiveShortcuts"
+                title="#{msg.immersive__shortcuts}"
+                aria-label="#{msg.immersive__shortcuts}">
+                <util:icon
+                    icon="keyboard"
+                    svgClass="immersive__tool-icon" />
+            </button>
+        </div>
+    </div>
+</ui:composition>

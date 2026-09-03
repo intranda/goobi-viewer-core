@@ -1,0 +1,78 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <div class="immersive__content container">
+        <div class="row">
+            <div class="col-12">
+                <!-- METADATA -->
+                <h:panelGroup rendered="#{metadataBean.activeMetadataView != null}">
+                    <ui:include src="/resources/includes/metadata/metadata.xhtml">
+                        <ui:param
+                            name="metadataViewIndex"
+                            value="#{metadataBean.activeMetadataView.index}" />
+                        <ui:param
+                            name="metadataViewLabel"
+                            value="#{metadataBean.activeMetadataView.label != null ? metadataBean.activeMetadataView.label : metadataBean.defaultMetadataLabel}" />
+                    </ui:include>
+                </h:panelGroup>
+
+                <!-- MODULE CONTRIBUTIONS -->
+                <c:forEach
+                    var="module"
+                    items="#{configurationBean.modules}">
+                    <c:forEach
+                        var="contribution"
+                        items="#{module.getWidgets('viewImage')}">
+                        <ui:include src="/#{contribution}" />
+                    </c:forEach>
+                </c:forEach>
+
+                <!-- USER GENERATED CONTENT (ANNOTATIONS) -->
+                <h:panelGroup id="userGeneratedContentGroup">
+                    <ui:fragment
+                        rendered="#{configurationBean.displayUserGeneratedContentBelowImage and contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage).size() > 0}">
+                        <div
+                            id="view_image_user_generated_content"
+                            class="view-object__user_generated_content">
+                            <h2>
+                                <span>#{msg.admin__crowdsourcing_annotations}</span>
+                            </h2>
+                            <viewerComponent:annotationList
+                                contentList="#{contentBean.getUserGeneratedContentsOfPageForDisplay(activeDocumentBean.viewManager.currentPage)}"
+                                sidebar="false" />
+                        </div>
+                    </ui:fragment>
+                </h:panelGroup>
+
+                <!-- USER COMMENTS -->
+                <ui:include src="/resources/includes/user/userComments.xhtml" />
+
+                <!-- RELATED GROUPS CONTENT SECTION -->
+                <ui:include src="/resources/includes/record/relatedGroupsSection.xhtml" />
+            </div>
+        </div>
+    </div>
+
+    <!-- SHARE POPOVER -->
+    <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
+        <popover id="immersiveSharePopover">
+            <widgetComponent:widget_socialMedia_share />
+        </popover>
+    </ui:fragment>
+    <!-- CITE POPOVER -->
+    <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
+        <popover id="immersiveCitationPopover">
+            <widgetComponent:widget_citation id="immersiveCitationWidget" />
+        </popover>
+    </ui:fragment>
+    <!-- FILTER POPOVER -->
+    <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
+        <popover id="immersiveFilterPopover">
+            <imageFilters />
+        </popover>
+    </ui:fragment>
+</ui:composition>
