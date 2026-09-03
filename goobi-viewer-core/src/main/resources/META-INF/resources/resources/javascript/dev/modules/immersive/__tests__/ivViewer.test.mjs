@@ -130,9 +130,11 @@ describe('IvViewer construction', () => {
     test('destroy tears down OSD and silences the emitters', () => {
         const v = new IvViewer({ element: {}, services: services(3) });
         v.viewer.openseadragon.destroy = jest.fn();
+        v.viewer.close = jest.fn();
         const seen = jest.fn();
         v.onPageChange.subscribe(seen);
         v.destroy();
+        expect(v.viewer.close).toHaveBeenCalledTimes(1);
         expect(v.viewer.openseadragon.destroy).toHaveBeenCalledTimes(1);
         v.onPageChange.emit(1);
         expect(seen).not.toHaveBeenCalled();
@@ -560,6 +562,27 @@ describe('IvViewer overlays (search highlights + text regions)', () => {
 
         v.clearHighlights();
         expect(osd.removeOverlay).toHaveBeenCalledTimes(2);
+    });
+
+    test('highlights are kept per owner: one panel never wipes another', () => {
+        const v = new IvViewer({ element: {}, services: services(5) });
+        v.currentItem = fakeItem();
+        const osd = v.viewer.openseadragon;
+        v.setHighlights([{ x: 1, y: 2, w: 3, h: 4 }], 'search');
+        v.setHighlights(
+            [
+                { x: 5, y: 6, w: 7, h: 8 },
+                { x: 9, y: 9, w: 1, h: 1 },
+            ],
+            'layout-tags'
+        );
+        expect(osd.addOverlay).toHaveBeenCalledTimes(3);
+        v.clearHighlights('layout-tags');
+        expect(osd.removeOverlay).toHaveBeenCalledTimes(2);
+        v.setHighlights([{ x: 0, y: 0, w: 1, h: 1 }], 'search');
+        expect(osd.removeOverlay).toHaveBeenCalledTimes(3);
+        v.clearHighlights();
+        expect(osd.removeOverlay).toHaveBeenCalledTimes(4);
     });
 
     test('setHighlights appends an optional per-rect class (layout-tag colour hook)', () => {

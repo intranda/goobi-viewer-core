@@ -6,6 +6,8 @@
 import { jest } from '@jest/globals';
 import { initImmersiveViewer } from '../ivInit.mjs';
 
+const flush = () => new Promise((r) => setTimeout(r, 0));
+
 function chromeMarkup({ withImage } = {}) {
     document.body.innerHTML = `
         <div class="immersive">
@@ -71,5 +73,50 @@ describe('initImmersiveViewer teardown', () => {
         expect(document.getElementById('immersiveShortcuts').hidden).toBe(true);
         document.querySelector('[data-immersive-panel="immersivePanelMetadata"]').click();
         expect(document.getElementById('immersivePanelMetadata').classList.contains('is-open')).toBe(false);
+    });
+});
+
+describe('initImmersiveViewer engine bootstrap failures', () => {
+    const realFetch = global.fetch;
+    beforeEach(() => {
+        global.ImageView = { Image: jest.fn(), Controls: { Zoom: class {}, Rotation: class {} } };
+    });
+    afterEach(() => {
+        global.fetch = realFetch;
+        delete global.ImageView;
+        document.body.innerHTML = '';
+    });
+
+    test('a failed manifest shows the stage error placeholder instead of an empty stage', async () => {
+        global.fetch = jest.fn(() => Promise.reject(new Error('manifest down')));
+        const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+        const root = chromeMarkup({ withImage: true });
+        const mount = root.querySelector('[data-immersive-image]');
+        mount.dataset.pi = 'PI_FAIL';
+        mount.dataset.msgError = 'Anzeige nicht ladbar';
+        initImmersiveViewer(root);
+        await flush();
+        await flush();
+        await flush();
+        const alert = mount.querySelector('[role="alert"]');
+        expect(alert).not.toBeNull();
+        expect(alert.textContent).toBe('Anzeige nicht ladbar');
+        expect(global.ImageView.Image).not.toHaveBeenCalled();
+        error.mockRestore();
+    });
+
+    test('destroy clears the stage-loader timeout', () => {
+        jest.useFakeTimers();
+        try {
+            global.fetch = jest.fn(() => new Promise(() => {}));
+            const root = chromeMarkup({ withImage: true });
+            root.querySelector('[data-immersive-image]').dataset.pi = 'PI_PENDING';
+            const view = initImmersiveViewer(root);
+            expect(jest.getTimerCount()).toBe(1);
+            view.destroy();
+            expect(jest.getTimerCount()).toBe(0);
+        } finally {
+            jest.useRealTimers();
+        }
     });
 });

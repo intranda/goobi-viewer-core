@@ -17,6 +17,24 @@ import { setupImageFilters, setupImmersivePopoverA11y } from './ui/ivImageFilter
 /** Hides the stage loading indicator at the latest after this, even without a painted tile. */
 const STAGE_LOADER_TIMEOUT_MS = 8000;
 
+/** Fills the stage with the access-denied styled placeholder, worded for a failed load. */
+function showStageError(el) {
+    const text = el.dataset.msgError;
+    if (!text) return;
+    const box = document.createElement('div');
+    box.className = 'immersive__page-denied';
+    box.setAttribute('role', 'alert');
+    const inner = document.createElement('div');
+    inner.className = 'immersive__page-denied-inner';
+    const span = document.createElement('span');
+    span.className = 'immersive__page-denied-text';
+    span.textContent = text;
+    inner.appendChild(span);
+    box.appendChild(inner);
+    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    el.appendChild(box);
+}
+
 /**
  * Bootstraps the immersive view. The chrome (panels, keyboard dispatcher,
  * shortcuts modal, metadata fold) is wired whenever the view is present, even
@@ -24,8 +42,9 @@ const STAGE_LOADER_TIMEOUT_MS = 8000;
  * grid, fulltext, search, layout tags, page dropdown, TOC sync) are only built when the
  * server rendered the [data-immersive-image] mount, i.e. the user may view the
  * images. Keyboard shortcuts run through one dispatcher whose priorities define
- * the overlay precedence: shortcuts modal (10) → grid overlay (20) → page
- * dropdown (30) → panels (40). Every setup module returns a destroyable; the
+ * the precedence: shortcuts modal (10) → grid overlay (20) → page dropdown (30)
+ * → layout-tag pick menu (35) → panels (40) → viewer navigation keys (50) →
+ * annotations toggle (55). Every setup module returns a destroyable; the
  * returned handle tears all of them down along with the engine.
  *
  * @param {HTMLElement} immersiveRoot  the .immersive root element
@@ -39,9 +58,11 @@ export function initImmersiveViewer(immersiveRoot) {
     };
     let viewer = null;
     let destroyed = false;
+    let stageLoaderTimer = null;
     const handle = {
         destroy() {
             destroyed = true;
+            clearTimeout(stageLoaderTimer);
             while (parts.length) parts.pop().destroy();
             if (viewer) viewer.destroy();
             viewer = null;
@@ -78,7 +99,7 @@ export function initImmersiveViewer(immersiveRoot) {
         stageLoaderDone = true;
         if (stageLoader) stageLoader.hidden = true;
     };
-    setTimeout(hideStageLoader, STAGE_LOADER_TIMEOUT_MS);
+    stageLoaderTimer = setTimeout(hideStageLoader, STAGE_LOADER_TIMEOUT_MS);
 
     const deniedText = el.dataset.msgDenied || '';
 
@@ -112,6 +133,7 @@ export function initImmersiveViewer(immersiveRoot) {
         })
         .catch((e) => {
             hideStageLoader();
+            showStageError(el);
             console.error('immersive viewer init failed', e);
         });
     return handle;

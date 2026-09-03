@@ -360,12 +360,12 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         const list = entries();
         const active = list[cursorIndex(list, state.cursorKey)];
         if (!active || !currentPages().includes(active.page)) {
-            viewer.clearHighlights();
+            viewer.clearHighlights('layout-tags');
             return;
         }
         const className = styleTokens(active.label).join(' ');
         const rects = (occurrencesOf(active.page, active.label) || []).map((o) => ({ ...o.rect, order: active.page - 1, className }));
-        viewer.setHighlights(rects);
+        viewer.setHighlights(rects, 'layout-tags');
     };
 
     /* HIT LIST */
@@ -557,7 +557,7 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         panels.registerCloseHook(() => {
             if (!panelOpen()) return;
             closePick();
-            viewer.clearHighlights();
+            viewer.clearHighlights('layout-tags');
         })
     );
 
@@ -589,7 +589,7 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
     return {
         destroy() {
             closePick();
-            viewer.clearHighlights();
+            viewer.clearHighlights('layout-tags');
             bag.dispose();
         },
     };

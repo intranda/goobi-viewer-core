@@ -124,7 +124,7 @@ export default class IvViewer {
         this._queuedNav = null;
         this._queuedReopen = false;
         this._navWatchdogMs = opts.navWatchdogMs ?? NAV_WATCHDOG_MS;
-        this._highlights = [];
+        this._highlights = new Map();
         this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
         this.onPageChange = new Emitter();
         this.onLoaded = new Emitter();
@@ -201,16 +201,17 @@ export default class IvViewer {
     }
 
     /**
-     * Draws search-hit rectangles as overlays. Rect coordinates are image pixels of
-     * the page given by `rect.order`, so spread hits land on the right half of a
-     * double-page view; rects for pages outside the current view are skipped. An
-     * optional `className` per rect is appended (e.g. a layout-tag style class that
-     * the theme maps to a colour).
+     * Draws highlight rectangles for `owner` (search hits, layout-tag occurrences);
+     * every owner keeps its own set, so one panel never wipes another's marks. Rect
+     * coordinates are image pixels of the page given by `rect.order`, so spread hits
+     * land on the right half of a double-page view; rects for pages outside the
+     * current view are skipped. An optional `className` per rect is appended (e.g. a
+     * layout-tag style class that the theme maps to a colour).
      */
-    setHighlights(rects) {
-        this.clearHighlights();
+    setHighlights(rects, owner = 'default') {
+        this.clearHighlights(owner);
         const osd = this.viewer.openseadragon;
-        this._highlights = (rects || []).flatMap((r) => {
+        const els = (rects || []).flatMap((r) => {
             const item = this._itemForOrder(r.order);
             if (!item) return [];
             const el = document.createElement('div');
@@ -218,13 +219,17 @@ export default class IvViewer {
             osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
             return [el];
         });
+        this._highlights.set(owner, els);
     }
 
-    /** Removes all search-hit overlays (leaves text regions untouched). */
-    clearHighlights() {
+    /** Removes the highlight overlays of `owner`, or of every owner when omitted (text regions stay). */
+    clearHighlights(owner) {
         const osd = this.viewer.openseadragon;
-        (this._highlights || []).forEach((el) => osd.removeOverlay(el));
-        this._highlights = [];
+        const owners = owner === undefined ? Array.from(this._highlights.keys()) : [owner];
+        owners.forEach((key) => {
+            (this._highlights.get(key) || []).forEach((el) => osd.removeOverlay(el));
+            this._highlights.delete(key);
+        });
     }
 
     /**
@@ -720,9 +725,10 @@ export default class IvViewer {
     }
 
     /**
-     * Runs `fn` after every drawn frame. The library may swap its OpenSeadragon
-     * instance on re-open, so the handler follows onOpen onto the current
-     * instance without ever stacking on one. Returns a detach function.
+     * Runs `fn` after every drawn frame. The library re-runs its own event wiring
+     * on every load() against the same OpenSeadragon instance; attaching once per
+     * instance keeps this handler from stacking, and a replaced instance is picked
+     * up on onOpen. Returns a detach function.
      */
     onFrame(fn) {
         let bound = null;
@@ -745,6 +751,8 @@ export default class IvViewer {
         clearTimeout(this._navWatchdog);
         this._preloaded.clear();
         if (this._accessOverlay) this._accessOverlay.remove();
+        // The library's own teardown (its subjects, its ResizeObserver) before the OSD instance goes.
+        if (typeof this.viewer.close === 'function') this.viewer.close();
         const osd = this.viewer.openseadragon;
         if (osd && typeof osd.destroy === 'function') osd.destroy();
         [this.onPageChange, this.onLoaded, this.onOpen, this.onReset].forEach((emitter) => emitter.clear());

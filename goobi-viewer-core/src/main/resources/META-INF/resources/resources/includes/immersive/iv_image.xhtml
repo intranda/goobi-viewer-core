@@ -15,7 +15,8 @@
         data-start-order="#{activeDocumentBean.viewManager.currentImageOrder - 1}"
         data-max-zoom="#{activeDocumentBean.viewManager.currentPage.getMaxImageZoom(navigationHelper.currentPageType)}"
         data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}"
-        data-msg-denied="#{msg.errHttp403Msg}" />
+        data-msg-denied="#{msg.errHttp403Msg}"
+        data-msg-error="#{msg.immersive__viewer_error}" />
 
     <!-- Access-denied placeholder (image + rich text) for the record's restricted
          condition, resolved once server-side (independent of the entry page). Rendered

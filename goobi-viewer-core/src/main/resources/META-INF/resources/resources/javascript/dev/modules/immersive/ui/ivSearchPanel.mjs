@@ -28,7 +28,7 @@ export function setupSearchPanel(viewer, pi, apiBase) {
                 .filter((h) => h.rect)
                 .map((h) => ({ ...h.rect, order: o, active: h === activeHit }))
         );
-        viewer.setHighlights(rects);
+        viewer.setHighlights(rects, 'search');
     };
 
     const renderResults = () => {
@@ -100,7 +100,7 @@ export function setupSearchPanel(viewer, pi, apiBase) {
         searchState.activeIndex = hits.length ? 0 : -1;
         renderResults();
         if (searchState.activeIndex >= 0) goToHit(0);
-        else viewer.clearHighlights();
+        else viewer.clearHighlights('search');
     };
 
     bag.add(viewer.onPageChange.subscribe(renderHighlights));

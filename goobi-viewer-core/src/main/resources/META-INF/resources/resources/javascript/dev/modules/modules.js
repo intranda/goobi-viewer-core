@@ -886,6 +886,10 @@
         get viewerJS() {
             return win().viewerJS;
         },
+        /** Image-filter labels the page script provides (iv_image.xhtml). */
+        get immersiveFilterConfig() {
+            return win().immersiveFilterConfig;
+        },
     };
 
     /**
@@ -1011,7 +1015,7 @@
             this._queuedNav = null;
             this._queuedReopen = false;
             this._navWatchdogMs = opts.navWatchdogMs ?? NAV_WATCHDOG_MS;
-            this._highlights = [];
+            this._highlights = new Map();
             this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
             this.onPageChange = new Emitter();
             this.onLoaded = new Emitter();
@@ -1088,16 +1092,17 @@
         }
 
         /**
-         * Draws search-hit rectangles as overlays. Rect coordinates are image pixels of
-         * the page given by `rect.order`, so spread hits land on the right half of a
-         * double-page view; rects for pages outside the current view are skipped. An
-         * optional `className` per rect is appended (e.g. a layout-tag style class that
-         * the theme maps to a colour).
+         * Draws highlight rectangles for `owner` (search hits, layout-tag occurrences);
+         * every owner keeps its own set, so one panel never wipes another's marks. Rect
+         * coordinates are image pixels of the page given by `rect.order`, so spread hits
+         * land on the right half of a double-page view; rects for pages outside the
+         * current view are skipped. An optional `className` per rect is appended (e.g. a
+         * layout-tag style class that the theme maps to a colour).
          */
-        setHighlights(rects) {
-            this.clearHighlights();
+        setHighlights(rects, owner = 'default') {
+            this.clearHighlights(owner);
             const osd = this.viewer.openseadragon;
-            this._highlights = (rects || []).flatMap((r) => {
+            const els = (rects || []).flatMap((r) => {
                 const item = this._itemForOrder(r.order);
                 if (!item) return [];
                 const el = document.createElement('div');
@@ -1105,13 +1110,17 @@
                 osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
                 return [el];
             });
+            this._highlights.set(owner, els);
         }
 
-        /** Removes all search-hit overlays (leaves text regions untouched). */
-        clearHighlights() {
+        /** Removes the highlight overlays of `owner`, or of every owner when omitted (text regions stay). */
+        clearHighlights(owner) {
             const osd = this.viewer.openseadragon;
-            (this._highlights || []).forEach((el) => osd.removeOverlay(el));
-            this._highlights = [];
+            const owners = owner === undefined ? Array.from(this._highlights.keys()) : [owner];
+            owners.forEach((key) => {
+                (this._highlights.get(key) || []).forEach((el) => osd.removeOverlay(el));
+                this._highlights.delete(key);
+            });
         }
 
         /**
@@ -1607,9 +1616,10 @@
         }
 
         /**
-         * Runs `fn` after every drawn frame. The library may swap its OpenSeadragon
-         * instance on re-open, so the handler follows onOpen onto the current
-         * instance without ever stacking on one. Returns a detach function.
+         * Runs `fn` after every drawn frame. The library re-runs its own event wiring
+         * on every load() against the same OpenSeadragon instance; attaching once per
+         * instance keeps this handler from stacking, and a replaced instance is picked
+         * up on onOpen. Returns a detach function.
          */
         onFrame(fn) {
             let bound = null;
@@ -1632,6 +1642,8 @@
             clearTimeout(this._navWatchdog);
             this._preloaded.clear();
             if (this._accessOverlay) this._accessOverlay.remove();
+            // The library's own teardown (its subjects, its ResizeObserver) before the OSD instance goes.
+            if (typeof this.viewer.close === 'function') this.viewer.close();
             const osd = this.viewer.openseadragon;
             if (osd && typeof osd.destroy === 'function') osd.destroy();
             [this.onPageChange, this.onLoaded, this.onOpen, this.onReset].forEach((emitter) => emitter.clear());
@@ -4694,12 +4706,12 @@
             const list = entries();
             const active = list[cursorIndex(list, state.cursorKey)];
             if (!active || !currentPages().includes(active.page)) {
-                viewer.clearHighlights();
+                viewer.clearHighlights('layout-tags');
                 return;
             }
             const className = styleTokens(active.label).join(' ');
             const rects = (occurrencesOf(active.page, active.label) || []).map((o) => ({ ...o.rect, order: active.page - 1, className }));
-            viewer.setHighlights(rects);
+            viewer.setHighlights(rects, 'layout-tags');
         };
 
         /* HIT LIST */
@@ -4891,7 +4903,7 @@
             panels.registerCloseHook(() => {
                 if (!panelOpen()) return;
                 closePick();
-                viewer.clearHighlights();
+                viewer.clearHighlights('layout-tags');
             })
         );
 
@@ -4923,7 +4935,7 @@
         return {
             destroy() {
                 closePick();
-                viewer.clearHighlights();
+                viewer.clearHighlights('layout-tags');
                 bag.dispose();
             },
         };
@@ -5082,7 +5094,7 @@
                     .filter((h) => h.rect)
                     .map((h) => ({ ...h.rect, order: o, active: h === activeHit }))
             );
-            viewer.setHighlights(rects);
+            viewer.setHighlights(rects, 'search');
         };
 
         const renderResults = () => {
@@ -5154,7 +5166,7 @@
             searchState.activeIndex = hits.length ? 0 : -1;
             renderResults();
             if (searchState.activeIndex >= 0) goToHit(0);
-            else viewer.clearHighlights();
+            else viewer.clearHighlights('search');
         };
 
         bag.add(viewer.onPageChange.subscribe(renderHighlights));
@@ -5546,6 +5558,9 @@
             toggleGrid,
             destroy() {
                 closeGrid();
+                if (gridTag && typeof gridTag.unmount === 'function') gridTag.unmount(true);
+                gridTag = null;
+                gridMounted = false;
                 bag.dispose();
             },
         };
@@ -5801,9 +5816,12 @@
      * @returns {boolean} whether the tag was mounted
      */
     function mountImageFilters(viewer, bag) {
-        if (!document.querySelector('imageFilters') || !window.immersiveFilterConfig) return false;
-        const [tag] = env.riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
+        if (!document.querySelector('imageFilters') || !env.immersiveFilterConfig) return false;
+        const [tag] = env.riot.mount('imageFilters', { image: viewer.viewer, config: env.immersiveFilterConfig });
         if (tag) {
+            bag.add(() => {
+                if (typeof tag.unmount === 'function') tag.unmount(true);
+            });
             bag.add(bindImageFiltersRendering(viewer, tag));
             // "Reset view" (button and '0' key) clears the image filters as well.
             bag.add(viewer.onReset.subscribe(() => tag.resetAll()));
@@ -5859,6 +5877,24 @@
     /** Hides the stage loading indicator at the latest after this, even without a painted tile. */
     const STAGE_LOADER_TIMEOUT_MS = 8000;
 
+    /** Fills the stage with the access-denied styled placeholder, worded for a failed load. */
+    function showStageError(el) {
+        const text = el.dataset.msgError;
+        if (!text) return;
+        const box = document.createElement('div');
+        box.className = 'immersive__page-denied';
+        box.setAttribute('role', 'alert');
+        const inner = document.createElement('div');
+        inner.className = 'immersive__page-denied-inner';
+        const span = document.createElement('span');
+        span.className = 'immersive__page-denied-text';
+        span.textContent = text;
+        inner.appendChild(span);
+        box.appendChild(inner);
+        if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+        el.appendChild(box);
+    }
+
     /**
      * Bootstraps the immersive view. The chrome (panels, keyboard dispatcher,
      * shortcuts modal, metadata fold) is wired whenever the view is present, even
@@ -5866,8 +5902,9 @@
      * grid, fulltext, search, layout tags, page dropdown, TOC sync) are only built when the
      * server rendered the [data-immersive-image] mount, i.e. the user may view the
      * images. Keyboard shortcuts run through one dispatcher whose priorities define
-     * the overlay precedence: shortcuts modal (10) → grid overlay (20) → page
-     * dropdown (30) → panels (40). Every setup module returns a destroyable; the
+     * the precedence: shortcuts modal (10) → grid overlay (20) → page dropdown (30)
+     * → layout-tag pick menu (35) → panels (40) → viewer navigation keys (50) →
+     * annotations toggle (55). Every setup module returns a destroyable; the
      * returned handle tears all of them down along with the engine.
      *
      * @param {HTMLElement} immersiveRoot  the .immersive root element
@@ -5881,9 +5918,11 @@
         };
         let viewer = null;
         let destroyed = false;
+        let stageLoaderTimer = null;
         const handle = {
             destroy() {
                 destroyed = true;
+                clearTimeout(stageLoaderTimer);
                 while (parts.length) parts.pop().destroy();
                 if (viewer) viewer.destroy();
                 viewer = null;
@@ -5920,7 +5959,7 @@
             stageLoaderDone = true;
             if (stageLoader) stageLoader.hidden = true;
         };
-        setTimeout(hideStageLoader, STAGE_LOADER_TIMEOUT_MS);
+        stageLoaderTimer = setTimeout(hideStageLoader, STAGE_LOADER_TIMEOUT_MS);
 
         const deniedText = el.dataset.msgDenied || '';
 
@@ -5954,6 +5993,7 @@
             })
             .catch((e) => {
                 hideStageLoader();
+                showStageError(el);
                 console.error('immersive viewer init failed', e);
             });
         return handle;

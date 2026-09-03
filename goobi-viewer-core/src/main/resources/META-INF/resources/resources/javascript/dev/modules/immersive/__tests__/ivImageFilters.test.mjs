@@ -122,3 +122,60 @@ describe('setupImmersivePopoverA11y', () => {
         expect(trigger.getAttribute('aria-expanded')).toBe('true');
     });
 });
+
+describe('setupImageFilters', () => {
+    const realPopover = window.$.fn.popover;
+    let tag;
+
+    function mountFilter({ originClean = true } = {}) {
+        document.body.innerHTML = `<button data-popover-element="#immersiveFilterPopover"></button><imagefilters></imagefilters>`;
+        window.immersiveFilterConfig = { filters: {} };
+        tag = { filters: [], resetAll: jest.fn(), unmount: jest.fn() };
+        global.riot = { mount: jest.fn(() => [tag]) };
+        window.$.fn.popover = jest.fn();
+        const osd = fakeOsd();
+        const viewer = {
+            viewer: { isOriginClean: () => originClean },
+            onOpen: new Emitter(),
+            onReset: new Emitter(),
+            redraw: jest.fn(),
+            getCanvasContext: () => null,
+            onFrame: (fn) => (osd.addHandler('update-viewport', fn), () => {}),
+        };
+        return { viewer, btn: document.querySelector('[data-popover-element]') };
+    }
+
+    afterEach(() => {
+        window.$.fn.popover = realPopover;
+        delete global.riot;
+        delete window.immersiveFilterConfig;
+        document.body.innerHTML = '';
+    });
+
+    test('mounts the riot tag once on the first popover show, resets it with the view, unmounts on destroy', async () => {
+        const { setupImageFilters } = await import('../ui/ivImageFilters.mjs');
+        const { viewer, btn } = mountFilter();
+        const filters = setupImageFilters(viewer);
+        window.$(btn).trigger('shown.bs.popover');
+        window.$(btn).trigger('shown.bs.popover');
+        expect(global.riot.mount).toHaveBeenCalledTimes(1);
+        expect(global.riot.mount.mock.calls[0][1]).toEqual(expect.objectContaining({ image: viewer.viewer, config: window.immersiveFilterConfig }));
+        expect(window.$.fn.popover).toHaveBeenCalledWith('update');
+        viewer.onReset.emit();
+        expect(tag.resetAll).toHaveBeenCalledTimes(1);
+        filters.destroy();
+        expect(tag.unmount).toHaveBeenCalledWith(true);
+        window.$(btn).trigger('shown.bs.popover');
+        expect(global.riot.mount).toHaveBeenCalledTimes(1);
+    });
+
+    test('a tainted canvas hides the filter button instead of mounting', async () => {
+        const { setupImageFilters } = await import('../ui/ivImageFilters.mjs');
+        const { viewer, btn } = mountFilter({ originClean: false });
+        setupImageFilters(viewer);
+        window.$(btn).trigger('shown.bs.popover');
+        expect(global.riot.mount).not.toHaveBeenCalled();
+        expect(window.$.fn.popover).toHaveBeenCalledWith('hide');
+        expect(btn.hidden).toBe(true);
+    });
+});

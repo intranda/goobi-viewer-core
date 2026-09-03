@@ -174,6 +174,9 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
         toggleGrid,
         destroy() {
             closeGrid();
+            if (gridTag && typeof gridTag.unmount === 'function') gridTag.unmount(true);
+            gridTag = null;
+            gridMounted = false;
             bag.dispose();
         },
     };

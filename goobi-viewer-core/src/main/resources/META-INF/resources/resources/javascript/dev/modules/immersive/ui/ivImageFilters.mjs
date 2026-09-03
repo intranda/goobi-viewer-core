@@ -127,9 +127,12 @@ export function setupImmersivePopoverA11y() {
  * @returns {boolean} whether the tag was mounted
  */
 function mountImageFilters(viewer, bag) {
-    if (!document.querySelector('imageFilters') || !window.immersiveFilterConfig) return false;
-    const [tag] = env.riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
+    if (!document.querySelector('imageFilters') || !env.immersiveFilterConfig) return false;
+    const [tag] = env.riot.mount('imageFilters', { image: viewer.viewer, config: env.immersiveFilterConfig });
     if (tag) {
+        bag.add(() => {
+            if (typeof tag.unmount === 'function') tag.unmount(true);
+        });
         bag.add(bindImageFiltersRendering(viewer, tag));
         // "Reset view" (button and '0' key) clears the image filters as well.
         bag.add(viewer.onReset.subscribe(() => tag.resetAll()));

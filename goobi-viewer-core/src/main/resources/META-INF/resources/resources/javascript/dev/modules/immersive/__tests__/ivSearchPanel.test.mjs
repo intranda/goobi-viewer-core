@@ -74,6 +74,14 @@ describe('setupSearchPanel', () => {
         expect(viewer.goToPage).toHaveBeenCalledWith(2);
     });
 
+    test('hits on the open page are drawn under the search owner', async () => {
+        global.fetch = jest.fn(async () => response({ resources: [{ '@id': 'a0', on: '/records/PI/pages/1/canvas#xywh=1,2,3,4', resource: { value: 'x' } }] }));
+        const { viewer, form, input } = mountMarkup();
+        submit(form, input, 'wort');
+        await flush();
+        expect(viewer.setHighlights).toHaveBeenLastCalledWith([expect.objectContaining({ x: 1, y: 2, w: 3, h: 4, order: 0, active: true })], 'search');
+    });
+
     test('a slow older search never overwrites a newer one', async () => {
         const first = deferred();
         const second = deferred();
@@ -101,7 +109,7 @@ describe('setupSearchPanel', () => {
         expect(counter.textContent).toBe('Suche fehlgeschlagen');
         expect(list.textContent).toContain('Suche fehlgeschlagen');
         expect(list.textContent).not.toContain('Keine Treffer');
-        expect(viewer.clearHighlights).toHaveBeenCalled();
+        expect(viewer.clearHighlights).toHaveBeenCalledWith('search');
         consoleError.mockRestore();
     });
 

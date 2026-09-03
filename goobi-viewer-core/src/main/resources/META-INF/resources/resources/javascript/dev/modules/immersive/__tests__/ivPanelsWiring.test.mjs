@@ -4,7 +4,17 @@
  * key dispatcher.
  */
 import { jest } from '@jest/globals';
-import { setupPanels, setupPanelResize, pickActiveTocPageNo, panelIdForKeyEvent } from '../ui/ivPanelsWiring.mjs';
+import {
+    setupPanels,
+    setupPanelResize,
+    setupToc,
+    setupTocSync,
+    setupTocCollapseToggle,
+    setupMetadataToggle,
+    pickActiveTocPageNo,
+    panelIdForKeyEvent,
+} from '../ui/ivPanelsWiring.mjs';
+import { Emitter } from '../engine/ivViewer.mjs';
 import { createKeyDispatcher } from '../shared/ivKeys.mjs';
 
 function mountMarkup() {
@@ -331,5 +341,101 @@ describe('panelIdForKeyEvent', function () {
         expect(panelIdForKeyEvent(altDigit('Digit6'))).toBeNull();
         expect(panelIdForKeyEvent(altDigit('KeyA'))).toBeNull();
         expect(panelIdForKeyEvent(altDigit(undefined))).toBeNull();
+    });
+});
+
+describe('TOC and metadata wiring', () => {
+    if (!Element.prototype.scrollIntoView) Element.prototype.scrollIntoView = () => {};
+
+    function tocMarkup() {
+        document.body.innerHTML = `
+            <aside id="immersivePanelToc" class="immersive__panel immersive__panel-left is-open">
+                <button data-immersive-toc-toggle data-label-collapse="Alle zu" data-label-expand="Alle auf" hidden></button>
+                <div id="widgetToc">
+                    <div class="widget-toc__element" data-level="0" data-page-no="1"><span class="widget-toc__element-link"><a href="#">Werk</a></span></div>
+                    <div class="widget-toc__element parent widget-toc__element--expanded" data-level="1" data-page-no="1"><button class="widget-toc__toggle" aria-expanded="true"></button><span class="widget-toc__element-link"><a href="#">Kapitel 1</a></span></div>
+                    <div class="widget-toc__element" data-level="2" data-page-no="3"><span class="widget-toc__element-link"><a href="#">Abschnitt 1.1</a></span></div>
+                    <div class="widget-toc__element" data-level="1" data-page-no="6"><span class="widget-toc__element-link"><a href="#">Kapitel 2</a></span></div>
+                </div>
+            </aside>`;
+        const viewer = { getCurrentPages: () => [0], goToPage: jest.fn(), onPageChange: new Emitter() };
+        return {
+            viewer,
+            panel: document.getElementById('immersivePanelToc'),
+            toggle: document.querySelector('[data-immersive-toc-toggle]'),
+            entry: (no) => document.querySelector(`.widget-toc__element[data-page-no="${no}"]:not([data-level="0"])`),
+        };
+    }
+
+    afterEach(() => {
+        document.body.innerHTML = '';
+    });
+
+    test('the collapse toggle appears for nested TOCs and folds level 2 and deeper', () => {
+        const { panel, toggle } = tocMarkup();
+        setupTocCollapseToggle(panel);
+        expect(toggle.hidden).toBe(false);
+        expect(toggle.getAttribute('aria-expanded')).toBe('true');
+        expect(toggle.getAttribute('aria-label')).toBe('Alle zu');
+        toggle.click();
+        const nested = document.querySelector('.widget-toc__element[data-level="2"]');
+        const parent = document.querySelector('.widget-toc__element.parent');
+        expect(nested.classList.contains('widget-toc__element--hidden')).toBe(true);
+        expect(parent.classList.contains('widget-toc__element--expanded')).toBe(false);
+        expect(parent.querySelector('.widget-toc__toggle').getAttribute('aria-expanded')).toBe('false');
+        expect(toggle.classList.contains('-collapsed')).toBe(true);
+        expect(toggle.getAttribute('aria-label')).toBe('Alle auf');
+        toggle.click();
+        expect(nested.classList.contains('widget-toc__element--hidden')).toBe(false);
+        expect(parent.classList.contains('widget-toc__element--expanded')).toBe(true);
+    });
+
+    test('a TOC entry navigates in place and the active section follows the visible pages', () => {
+        const { viewer, panel, entry } = tocMarkup();
+        let pages = [0];
+        viewer.getCurrentPages = () => pages;
+        setupTocSync(viewer, panel);
+        expect(entry(1).classList.contains('active')).toBe(true);
+        entry(6).querySelector('a').click();
+        expect(viewer.goToPage).toHaveBeenCalledWith(5);
+        expect(entry(6).classList.contains('active')).toBe(true);
+        pages = [2];
+        viewer.onPageChange.emit(2);
+        expect(entry(3).classList.contains('active')).toBe(true);
+        pages = [1];
+        viewer.onPageChange.emit(1);
+        expect(entry(1).classList.contains('active')).toBe(true);
+    });
+
+    test('setupToc wires both parts and destroy detaches them; without the panel it is a no-op', () => {
+        const { viewer, entry, toggle } = tocMarkup();
+        const toc = setupToc(viewer);
+        toc.destroy();
+        entry(6).querySelector('a').click();
+        expect(viewer.goToPage).not.toHaveBeenCalled();
+        toggle.click();
+        expect(document.querySelector('.widget-toc__element[data-level="2"]').classList.contains('widget-toc__element--hidden')).toBe(false);
+        document.body.innerHTML = '';
+        expect(() => setupToc(viewer).destroy()).not.toThrow();
+    });
+
+    test('the metadata fold toggles the hidden block and swaps the button labels', () => {
+        document.body.innerHTML = `
+            <button data-immersive-metadata-toggle="immersiveMetadataMore" aria-expanded="false">
+                <span class="immersive__metadata-toggle-more">mehr</span><span class="immersive__metadata-toggle-less">weniger</span>
+            </button>
+            <div id="immersiveMetadataMore" hidden></div>`;
+        const fold = setupMetadataToggle();
+        const btn = document.querySelector('[data-immersive-metadata-toggle]');
+        const more = document.getElementById('immersiveMetadataMore');
+        expect(btn.querySelector('.immersive__metadata-toggle-more').getAttribute('aria-hidden')).toBe('false');
+        expect(btn.querySelector('.immersive__metadata-toggle-less').getAttribute('aria-hidden')).toBe('true');
+        btn.click();
+        expect(more.hidden).toBe(false);
+        expect(btn.getAttribute('aria-expanded')).toBe('true');
+        expect(btn.querySelector('.immersive__metadata-toggle-more').getAttribute('aria-hidden')).toBe('true');
+        fold.destroy();
+        btn.click();
+        expect(more.hidden).toBe(false);
     });
 });

@@ -32,7 +32,7 @@ function mountMarkup() {
                 <div class="immersive__grid-scroll"><div id="immersiveGridLoader"></div><div id="immersiveThumbnails"></div></div>
             </div>
         </div>`;
-    const tag = { opts: {}, update: jest.fn() };
+    const tag = { opts: {}, update: jest.fn(), unmount: jest.fn() };
     global.riot = { mount: jest.fn(() => [tag]) };
     global.rxjs = { Subject: FakeSubject };
     const keys = createKeyDispatcher();
@@ -100,4 +100,12 @@ test('destroy closes the grid and detaches slider and Escape', () => {
     expect(overlay.dataset.thumbSize).toBe('1');
     grid.toggleGrid();
     expect(keys.handleEvent({ key: 'Escape' })).toBe(false);
+});
+
+test('destroy unmounts the riot grid but keeps its mount element', () => {
+    const { grid, tag } = mountMarkup();
+    grid.toggleGrid();
+    grid.destroy();
+    expect(tag.unmount).toHaveBeenCalledWith(true);
+    expect(document.getElementById('immersiveThumbnails')).not.toBeNull();
 });

@@ -202,7 +202,8 @@ describe('setupLayoutTagsPanel', () => {
         expect(active.dataset.spotKey).toBe('8#gr_unterstrichen');
         expect(active.getAttribute('aria-current')).toBe('true');
         expect(viewer.goToPage).not.toHaveBeenCalled();
-        expect(viewer.setHighlights).toHaveBeenLastCalledWith([
+        expect(viewer.setHighlights.mock.lastCall[1]).toBe('layout-tags');
+        expect(viewer.setHighlights.mock.lastCall[0]).toEqual([
             { x: 10, y: 10, w: 40, h: 10, order: 7, className: '' },
             { x: 10, y: 30, w: 40, h: 10, order: 7, className: '' },
         ]);
@@ -210,7 +211,7 @@ describe('setupLayoutTagsPanel', () => {
         hits()
             .find((b) => b.dataset.spotKey === '8#gr_jacob_grimm')
             .click();
-        expect(viewer.setHighlights).toHaveBeenLastCalledWith([{ x: 100, y: 100, w: 200, h: 100, order: 7, className: 'alto-annotation--jacob-grimm' }]);
+        expect(viewer.setHighlights.mock.lastCall[0]).toEqual([{ x: 100, y: 100, w: 200, h: 100, order: 7, className: 'alto-annotation--jacob-grimm' }]);
         expect(
             hits()
                 .find((b) => b.dataset.spotKey === '8#gr_jacob_grimm')
@@ -224,7 +225,7 @@ describe('setupLayoutTagsPanel', () => {
         viewer.current = [48];
         viewer.onPageChange.emit(48);
         expect(document.querySelector('.immersive__layout-tags-hit.-active').dataset.spotKey).toBe('49#gr_unterstrichen');
-        expect(viewer.clearHighlights).toHaveBeenCalled();
+        expect(viewer.clearHighlights).toHaveBeenCalledWith('layout-tags');
     });
 
     test('the page range is applied explicitly, narrows the list and can be reset', async () => {
@@ -299,7 +300,7 @@ describe('setupLayoutTagsPanel', () => {
         expect(keys.handleEvent(new KeyboardEvent('keydown', { key: 'Escape' }))).toBe(false);
 
         panels.hooks.forEach((h) => h());
-        expect(viewer.clearHighlights).toHaveBeenCalled();
+        expect(viewer.clearHighlights).toHaveBeenCalledWith('layout-tags');
     });
 
     test('a batch arriving while the user scrolls does not pull the list back to the active hit', async () => {
