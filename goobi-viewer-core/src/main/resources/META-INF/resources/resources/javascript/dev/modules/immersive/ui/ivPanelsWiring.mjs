@@ -1,7 +1,7 @@
 /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
 
 import { offsetTopWithin } from '../shared/ivDom.mjs';
-import { isOverlayOpen } from '../shared/ivSelectors.mjs';
+import { isOverlayOpen, PANEL_OPEN_SELECTOR } from '../shared/ivSelectors.mjs';
 import { createDisposer, noop } from '../shared/ivLifecycle.mjs';
 
 /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
@@ -60,7 +60,7 @@ export function pickActiveTocPageNo(entryNos, visiblePages, activeNo = null) {
  *
  * @param {HTMLElement|null} immersiveRoot  the .immersive root element
  * @param {{register: Function}} keys  the immersive key dispatcher
- * @returns {{closePanels: Function, registerCloseHook: Function, destroy: Function}}
+ * @returns {{closePanels: Function, registerCloseHook: Function, replayOpen: Function, destroy: Function}}
  */
 export function setupPanels(immersiveRoot, keys) {
     const bag = createDisposer();
@@ -152,6 +152,11 @@ export function setupPanels(immersiveRoot, keys) {
                 const i = closeHooks.indexOf(hook);
                 if (i !== -1) closeHooks.splice(i, 1);
             };
+        },
+        /** Re-sends the open event for an already open panel, for modules that were wired after the click. */
+        replayOpen() {
+            const open = document.querySelector(PANEL_OPEN_SELECTOR);
+            if (open) open.dispatchEvent(new CustomEvent('immersive:panel-open', { bubbles: false }));
         },
         destroy: bag.dispose,
     };

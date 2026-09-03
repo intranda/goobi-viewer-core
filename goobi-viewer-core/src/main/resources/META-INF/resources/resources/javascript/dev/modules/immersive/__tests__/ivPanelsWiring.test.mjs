@@ -251,6 +251,17 @@ describe('setupPanels teardown', () => {
         expect(hook).not.toHaveBeenCalled();
     });
 
+    test('replayOpen re-sends the open event for a panel that is already open', () => {
+        const { panels, btn, panel } = mountMarkup();
+        const seen = jest.fn();
+        panel('immersivePanelToc').addEventListener('immersive:panel-open', seen);
+        panels.replayOpen();
+        expect(seen).not.toHaveBeenCalled();
+        btn('immersivePanelToc').click();
+        panels.replayOpen();
+        expect(seen).toHaveBeenCalledTimes(2);
+    });
+
     test('destroy detaches the rail buttons and the keyboard shortcuts', () => {
         const { keys, panels, btn, panel } = mountMarkup();
         panels.destroy();

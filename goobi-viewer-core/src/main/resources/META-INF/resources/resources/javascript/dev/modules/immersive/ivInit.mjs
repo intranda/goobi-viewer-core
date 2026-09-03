@@ -107,6 +107,8 @@ export function initImmersiveViewer(immersiveRoot) {
             use(setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys));
             const grid = use(setupOverviewGrid(viewer, pi, apiBase, keys));
             use(setupBottomBar(el, viewer, { toggleGrid: grid.toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail }));
+            // A panel opened while the manifest was still loading missed its open event.
+            panels.replayOpen();
         })
         .catch((e) => {
             hideStageLoader();

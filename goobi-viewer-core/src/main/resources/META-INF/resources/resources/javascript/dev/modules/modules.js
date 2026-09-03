@@ -863,6 +863,31 @@
         return [...new Set([...prev, ...here, ...next])].filter((p) => p >= 0 && p < total).sort((a, b) => a - b);
     }
 
+    /** Browser libraries the immersive view relies on, read lazily from window so tests can stub them. */
+
+    const win = () => (typeof window !== 'undefined' ? window : {});
+
+    const env = {
+        /** OpenSeadragon wrapper from imageView.min.js. */
+        get ImageView() {
+            return win().ImageView;
+        },
+        get riot() {
+            return win().riot;
+        },
+        get rxjs() {
+            return win().rxjs;
+        },
+        /** jQuery, needed for the Bootstrap popover API. */
+        get $() {
+            return win().$ || win().jQuery;
+        },
+        /** Legacy core namespace (TOC widget). */
+        get viewerJS() {
+            return win().viewerJS;
+        },
+    };
+
     /**
      * OSD viewport margins that keep the fitted page clear of the floating chrome.
      * Desktop reserves generous side margins; small viewports shrink them so the
@@ -993,7 +1018,7 @@
             this.onOpen = new Emitter();
             this.onReset = new Emitter();
 
-            this.viewer = new ImageView.Image({
+            this.viewer = new env.ImageView.Image({
                 element: opts.element,
                 fittingMode: 'fixed',
                 margins: stageMargins(window.innerWidth),
@@ -1002,8 +1027,8 @@
                 navigator: { enabled: false },
             });
             this.viewer.openseadragon.crossOriginPolicy = 'Anonymous';
-            this.zoom = new ImageView.Controls.Zoom(this.viewer);
-            this.rotation = new ImageView.Controls.Rotation(this.viewer);
+            this.zoom = new env.ImageView.Controls.Zoom(this.viewer);
+            this.rotation = new env.ImageView.Controls.Rotation(this.viewer);
 
             // Without ZOOM_IMAGES the image server caps resolution anyway; disable the
             // interactive zoom gestures so the viewer stays at the fitted page.
@@ -2357,7 +2382,7 @@
      *
      * @param {HTMLElement|null} immersiveRoot  the .immersive root element
      * @param {{register: Function}} keys  the immersive key dispatcher
-     * @returns {{closePanels: Function, registerCloseHook: Function, destroy: Function}}
+     * @returns {{closePanels: Function, registerCloseHook: Function, replayOpen: Function, destroy: Function}}
      */
     function setupPanels(immersiveRoot, keys) {
         const bag = createDisposer();
@@ -2449,6 +2474,11 @@
                     const i = closeHooks.indexOf(hook);
                     if (i !== -1) closeHooks.splice(i, 1);
                 };
+            },
+            /** Re-sends the open event for an already open panel, for modules that were wired after the click. */
+            replayOpen() {
+                const open = document.querySelector(PANEL_OPEN_SELECTOR);
+                if (open) open.dispatchEvent(new CustomEvent('immersive:panel-open', { bubbles: false }));
             },
             destroy: bag.dispose,
         };
@@ -2640,8 +2670,8 @@
                 .filter((x) => Number.isFinite(x.no) && x.no >= 1);
 
         const setTocActive = (el) => {
-            if (el && el.dataset.iddoc && window.viewerJS && viewerJS.widgetToc) {
-                viewerJS.widgetToc.setActive(el.dataset.iddoc.replace('iddoc_', ''));
+            if (el && el.dataset.iddoc && env.viewerJS && env.viewerJS.widgetToc) {
+                env.viewerJS.widgetToc.setActive(el.dataset.iddoc.replace('iddoc_', ''));
                 if (tocPanel.classList.contains('is-open')) el.scrollIntoView({ block: 'nearest' });
                 return;
             }
@@ -3417,7 +3447,7 @@
             if (target !== null) scrollContainer.scrollTop = target;
         };
 
-        const $ = typeof window !== 'undefined' ? window.$ || window.jQuery : null;
+        const $ = env.$ || null;
         const popoverCapable = !!($ && $.fn && typeof $.fn.popover === 'function');
         const POPOVER_TEMPLATE =
             '<div class="popover immersive__anno-popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>';
@@ -5340,7 +5370,7 @@
         let gridTag = null;
         let gridOpener = null;
         let gridTrapHandler = null;
-        const gridActions = new rxjs.Subject();
+        const gridActions = new env.rxjs.Subject();
         const gridActionsSub = gridActions.subscribe((e) => {
             if (e && e.action === 'clickImage' && typeof e.value === 'number') {
                 viewer.goToPage(e.value);
@@ -5369,7 +5399,7 @@
             gridTrapHandler = createFocusTrap(gridOverlay);
             gridOverlay.addEventListener('keydown', gridTrapHandler);
             if (!gridMounted) {
-                gridTag = riot.mount('#immersiveThumbnails', 'thumbnails', {
+                gridTag = env.riot.mount('#immersiveThumbnails', 'thumbnails', {
                     source: `${apiBase}/records/${pi}/manifest`,
                     type: 'sequence',
                     actionlistener: gridActions,
@@ -5544,7 +5574,7 @@
             // on exit. Uses Bootstrap's internal `inst.config` object directly because
             // there is no public API for changing the container after construction.
             document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
-                const $trigger = window.$ && window.$(trigger);
+                const $trigger = env.$ && env.$(trigger);
                 const inst = $trigger && $trigger.data('bs.popover');
                 if (!inst) return;
                 $trigger.popover('hide');
@@ -5604,7 +5634,7 @@
         const btn = document.querySelector(FILTER_TRIGGER_SELECTOR);
         if (!btn) return noop;
         const bag = createDisposer();
-        const $ = window.$ || window.jQuery;
+        const $ = env.$;
         if (!$) {
             mountImageFilters(viewer, bag);
             return { destroy: bag.dispose };
@@ -5633,7 +5663,7 @@
      * @returns {{destroy: function():void}}
      */
     function setupImmersivePopoverA11y() {
-        const $ = window.$ || window.jQuery;
+        const $ = env.$;
         if (!$) return noop;
         const bag = createDisposer();
         const FOCUSABLE = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
@@ -5697,7 +5727,7 @@
      */
     function mountImageFilters(viewer, bag) {
         if (!document.querySelector('imageFilters') || !window.immersiveFilterConfig) return false;
-        const [tag] = riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
+        const [tag] = env.riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
         if (tag) {
             bag.add(bindImageFiltersRendering(viewer, tag));
             // "Reset view" (button and '0' key) clears the image filters as well.
@@ -5856,6 +5886,8 @@
                 use(setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys));
                 const grid = use(setupOverviewGrid(viewer, pi, apiBase, keys));
                 use(setupBottomBar(el, viewer, { toggleGrid: grid.toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail }));
+                // A panel opened while the manifest was still loading missed its open event.
+                panels.replayOpen();
             })
             .catch((e) => {
                 hideStageLoader();
