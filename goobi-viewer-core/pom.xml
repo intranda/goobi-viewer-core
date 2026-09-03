@@ -84,7 +84,7 @@
 
 		<!-- Checkstyle -->
 		<checkstyle.max.violations>0</checkstyle.max.violations>
-		<skipCheckstyle>true</skipCheckstyle>
+		<checkstyle.skip>true</checkstyle.skip>
 
 		<!-- Manifest information -->
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>

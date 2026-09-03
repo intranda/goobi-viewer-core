@@ -41,7 +41,7 @@
 		<maven.compiler.release>21</maven.compiler.release>
 		<skipTests>true</skipTests>
 		<skipDependencyCheck>true</skipDependencyCheck>
-		<skipCheckstyle>true</skipCheckstyle>
+		<checkstyle.skip>true</checkstyle.skip>
 		<checkstyle.max.violations>0</checkstyle.max.violations>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<buildDate>${maven.build.timestamp}</buildDate>
@@ -261,10 +261,7 @@
 						<execution>
 							<id>checkstyle-check</id>
 							<phase>verify</phase>
-							<!-- skip stays execution-scoped: at plugin level it would also suppress the CI report goal,
-							     which is switched on via -Dcheckstyle.skip=false and must not inherit ${skipCheckstyle} -->
 							<configuration>
-								<skip>${skipCheckstyle}</skip>
 								<failOnViolation>true</failOnViolation>
 								<failsOnError>false</failsOnError>
 								<logViolationsToConsole>true</logViolationsToConsole>
