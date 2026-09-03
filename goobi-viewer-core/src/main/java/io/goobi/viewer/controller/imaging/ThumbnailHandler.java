@@ -122,11 +122,12 @@ public class ThumbnailHandler {
      * getThumbnailPath.
      *
      * @param filename file name to resolve against the static images path
+     * @throws IllegalArgumentException if the given filename is empty or not a valid url string
      * @return the URI of the resolved static image path
      */
-    public URI getThumbnailPath(String filename) {
+    public URI getThumbnailPath(String filename) throws IllegalArgumentException {
         if (StringUtils.isBlank(filename)) {
-            return null;
+            throw new IllegalArgumentException("Cannot create URI from empty or null string");
         }
         URI uri;
         try {
@@ -135,8 +136,8 @@ public class ThumbnailHandler {
             return uri;
         } catch (URISyntaxException e) {
             logger.error(e.toString(), e);
+            throw new IllegalArgumentException("Cannot create URI: " + e.toString());
         }
-        return null;
     }
 
     /**
@@ -352,9 +353,9 @@ public class ThumbnailHandler {
      * getPage.
      *
      * <p>
-     * Variant that reuses an already-fetched record document instead of querying Solr for it again. Callers that have
-     * loaded the top-level record document (e.g. when associating many collections with their representative works)
-     * should use this overload to avoid a redundant per-record round-trip.
+     * Variant that reuses an already-fetched record document instead of querying Solr for it again. Callers that have loaded the top-level record
+     * document (e.g. when associating many collections with their representative works) should use this overload to avoid a redundant per-record
+     * round-trip.
      *
      * @param recordDoc top-level Solr document of the record whose page to load; if null, null is returned
      * @param order physical page order number within the work
@@ -730,7 +731,7 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(StructElement se, int size) {
         String thumbnailUrl = getImagePath(se);
-        if (StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
+        if (thumbnailUrl != null && StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
         } else if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
