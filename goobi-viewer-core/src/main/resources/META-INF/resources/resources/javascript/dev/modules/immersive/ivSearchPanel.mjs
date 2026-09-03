@@ -11,7 +11,8 @@ import { search, nextIndex, prevIndex } from './ivFulltextSearch.mjs';
  * @param {string} apiBase
  */
 export function setupFulltextSearch(viewer, pi, apiBase) {
-    const searchState = { hits: [], activeIndex: -1, term: '' };
+    const searchState = { hits: [], activeIndex: -1, term: '', failed: false };
+    let searchReq = 0;
     const resultsBox = document.getElementById('immersiveSearchResults');
     const resultsList = document.getElementById('immersiveResultsList');
     const hitCounter = document.getElementById('immersiveHitCounter');
@@ -30,16 +31,15 @@ export function setupFulltextSearch(viewer, pi, apiBase) {
     const renderResults = () => {
         if (!resultsBox || !resultsList) return;
         resultsBox.hidden = !searchState.term;
+        const emptyLabel = (searchState.failed ? resultsBox.dataset.labelError : resultsBox.dataset.labelEmpty) || '';
         if (hitCounter) {
-            hitCounter.textContent = searchState.hits.length
-                ? `${searchState.activeIndex + 1} / ${searchState.hits.length}`
-                : (searchState.term && resultsBox.dataset.labelEmpty) || '';
+            hitCounter.textContent = searchState.hits.length ? `${searchState.activeIndex + 1} / ${searchState.hits.length}` : (searchState.term && emptyLabel) || '';
         }
         resultsList.replaceChildren();
         if (searchState.term && !searchState.hits.length) {
             const empty = document.createElement('li');
             empty.className = 'immersive__results-empty';
-            empty.textContent = resultsBox.dataset.labelEmpty || '';
+            empty.textContent = emptyLabel;
             resultsList.appendChild(empty);
             return;
         }
@@ -77,15 +77,24 @@ export function setupFulltextSearch(viewer, pi, apiBase) {
         renderResults();
     };
 
+    /** Only the latest submitted search may render; a slower older response is dropped. */
     const runSearch = async (term) => {
+        const req = ++searchReq;
+        let hits = [];
+        let failed = false;
+        if (term) {
+            try {
+                hits = await search(pi, apiBase, term);
+            } catch (e) {
+                console.error('immersive fulltext search failed', e);
+                failed = true;
+            }
+        }
+        if (req !== searchReq) return;
         searchState.term = term;
-        searchState.hits = term
-            ? await search(pi, apiBase, term).catch((e) => {
-                  console.error('immersive fulltext search failed', e);
-                  return [];
-              })
-            : [];
-        searchState.activeIndex = searchState.hits.length ? 0 : -1;
+        searchState.hits = hits;
+        searchState.failed = failed;
+        searchState.activeIndex = hits.length ? 0 : -1;
         renderResults();
         if (searchState.activeIndex >= 0) goToHit(0);
         else viewer.clearHighlights();
