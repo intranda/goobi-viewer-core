@@ -1242,7 +1242,7 @@
             const release = () => {
                 if (released) return;
                 released = true;
-                clearTimeout(watchdog);
+                clearTimeout(this._navWatchdog);
                 this._navigating = false;
                 if (this._queuedReopen) {
                     this._queuedReopen = false;
@@ -1253,7 +1253,7 @@
                 this._queuedNav = null;
                 if (next != null) this.goToPage(next);
             };
-            const watchdog = setTimeout(() => {
+            this._navWatchdog = setTimeout(() => {
                 try {
                     if (onStuck) onStuck();
                 } catch {}
@@ -1580,8 +1580,56 @@
             overlay.hidden = false;
         }
 
+        /** Runs `fn` once when the first tile has been painted. */
+        onceTileLoaded(fn) {
+            this.viewer.openseadragon.addOnceHandler('tile-loaded', fn);
+        }
+
+        /** Runs `fn` on the next viewport resize; returns a cancel function. */
+        onceResized(fn) {
+            const osd = this.viewer.openseadragon;
+            const handler = () => {
+                osd.removeHandler('resize', handler);
+                fn();
+            };
+            osd.addHandler('resize', handler);
+            return () => osd.removeHandler('resize', handler);
+        }
+
+        /** Forces a redraw of the current frame. */
+        redraw() {
+            this.viewer.openseadragon.forceRedraw();
+        }
+
+        /** 2D context of the drawn canvas, null before the first paint. */
+        getCanvasContext() {
+            return typeof this.viewer.getCanvasContext === 'function' ? this.viewer.getCanvasContext() : null;
+        }
+
+        /**
+         * Runs `fn` after every drawn frame. The library may swap its OpenSeadragon
+         * instance on re-open, so the handler follows onOpen onto the current
+         * instance without ever stacking on one. Returns a detach function.
+         */
+        onFrame(fn) {
+            let bound = null;
+            const attach = () => {
+                const osd = this.viewer.openseadragon;
+                if (!osd || bound === osd) return;
+                bound = osd;
+                osd.addHandler('update-viewport', fn);
+            };
+            attach();
+            const unsubscribe = this.onOpen.subscribe(attach);
+            return () => {
+                unsubscribe();
+                if (bound && typeof bound.removeHandler === 'function') bound.removeHandler('update-viewport', fn);
+            };
+        }
+
         /** Releases the OpenSeadragon instance, the access overlay and all subscriptions. */
         destroy() {
+            clearTimeout(this._navWatchdog);
             this._preloaded.clear();
             if (this._accessOverlay) this._accessOverlay.remove();
             const osd = this.viewer.openseadragon;
@@ -3082,6 +3130,15 @@
         } catch {}
     }
 
+    /** window.localStorage, or null when the browser blocks the access (the property read itself can throw). */
+    function localStore() {
+        try {
+            return window.localStorage;
+        } catch {
+            return null;
+        }
+    }
+
     /** ALTO layout-tag annotations: toggle state, inline markup, margin note column and image overlay regions. */
 
     /** State class on the .immersive root while annotations are switched on (panel markup AND image overlays key off it). */
@@ -3824,14 +3881,7 @@
         const annoCheckbox = document.getElementById('immersiveAnnotationsToggle');
         const annoColumnsHead = document.getElementById('immersiveAnnotationsColumns');
         const immersiveRoot = fulltextPanel ? fulltextPanel.closest('.immersive') : null;
-        // Even READING window.localStorage can throw (browser with storage blocked);
-        // the toggle helpers handle a null storage gracefully.
-        let storage = null;
-        try {
-            storage = window.localStorage;
-        } catch {
-            storage = null;
-        }
+        const storage = localStore();
         const annotations = annoCheckbox && immersiveRoot ? setupAnnotationsToggle({ root: immersiveRoot, checkbox: annoCheckbox, storage, keys }) : null;
         if (annotations) bag.add(() => annotations.destroy());
 
@@ -5268,7 +5318,7 @@
         });
         bag.listen(list, 'keydown', (e) => {
             const cur = items.indexOf(document.activeElement);
-            if (cur === -1 && !['Escape'].includes(e.key)) return;
+            if (cur === -1) return;
             switch (e.key) {
                 case 'ArrowDown':
                     e.preventDefault();
@@ -5291,11 +5341,6 @@
                 case 'Spacebar':
                     e.preventDefault();
                     viewer.goToPage(Number(items[cur].dataset.order));
-                    close();
-                    trigger.focus();
-                    break;
-                case 'Escape':
-                    e.preventDefault();
                     close();
                     trigger.focus();
                     break;
@@ -5371,12 +5416,12 @@
                 }
             }
         };
-        applyGridThumbSize(readThumbSizeStep(window.localStorage));
+        applyGridThumbSize(readThumbSizeStep(localStore()));
         if (gridSizeSlider) {
             bag.listen(gridSizeSlider, 'input', () => {
                 const step = normalizeThumbSizeStep(gridSizeSlider.value);
                 applyGridThumbSize(step);
-                writeThumbSizeStep(window.localStorage, step);
+                writeThumbSizeStep(localStore(), step);
             });
         }
         if (gridScroll && gridTopBtn) {
@@ -5576,15 +5621,14 @@
 
         const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
         bag.listen(document, 'fullscreenchange', () => {
-            const osd = viewer.viewer.openseadragon;
             let done = false;
             const doReset = () => {
                 if (done) return;
                 done = true;
-                osd.removeHandler('resize', doReset);
+                cancelResize();
                 requestAnimationFrame(() => viewer.resetView());
             };
-            osd.addHandler('resize', doReset);
+            const cancelResize = viewer.onceResized(doReset);
             setTimeout(doReset, 300);
             if (fullscreenBtn) {
                 fullscreenBtn.setAttribute('aria-pressed', String(!!document.fullscreenElement));
@@ -5605,7 +5649,7 @@
             document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
                 const $trigger = env.$ && env.$(trigger);
                 const inst = $trigger && $trigger.data('bs.popover');
-                if (!inst) return;
+                if (!inst || !inst.config) return;
                 $trigger.popover('hide');
                 if (document.fullscreenElement) {
                     if (inst.config._savedContainer === undefined) {
@@ -5783,8 +5827,7 @@
      * @returns {function():void} detaches the frame handler and the onOpen subscription
      */
     function bindImageFiltersRendering(viewer, tag) {
-        const image = viewer.viewer;
-        const redraw = () => image.openseadragon.forceRedraw();
+        const redraw = () => viewer.redraw();
         const active = new Set();
         (tag.filters || []).forEach((filter) => {
             filter.start = () => {
@@ -5800,7 +5843,7 @@
         });
         const renderFilters = () => {
             if (!active.size) return;
-            const context = image.getCanvasContext();
+            const context = viewer.getCanvasContext();
             if (!context) return;
             let data = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
             active.forEach((filter) => {
@@ -5808,18 +5851,7 @@
             });
             context.putImageData(data, 0, 0);
         };
-        let boundOsd = null;
-        const attach = () => {
-            if (!image.openseadragon || boundOsd === image.openseadragon) return;
-            boundOsd = image.openseadragon;
-            boundOsd.addHandler('update-viewport', renderFilters);
-        };
-        attach();
-        const unsubscribe = viewer.onOpen.subscribe(attach);
-        return () => {
-            unsubscribe();
-            if (boundOsd && typeof boundOsd.removeHandler === 'function') boundOsd.removeHandler('update-viewport', renderFilters);
-        };
+        return viewer.onFrame(renderFilters);
     }
 
     /** Immersive view bootstrap: engine construction plus the UI wiring modules. */
@@ -5897,7 +5929,7 @@
             .then(([services, restricted]) => {
                 if (destroyed) return;
                 viewer = new IvViewer({ element: el, services, startOrder, maxZoom, allowZoom, restricted, deniedText });
-                viewer.viewer.openseadragon.addOnceHandler('tile-loaded', hideStageLoader);
+                viewer.onceTileLoaded(hideStageLoader);
                 // A restricted entry page never fires tile-loaded (tiles 403); onOpen fires
                 // once the (failed) load settles, so the loader is not left spinning.
                 viewer.onOpen.subscribe(hideStageLoader);

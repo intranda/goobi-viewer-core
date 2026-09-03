@@ -71,15 +71,14 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
 
     const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
     bag.listen(document, 'fullscreenchange', () => {
-        const osd = viewer.viewer.openseadragon;
         let done = false;
         const doReset = () => {
             if (done) return;
             done = true;
-            osd.removeHandler('resize', doReset);
+            cancelResize();
             requestAnimationFrame(() => viewer.resetView());
         };
-        osd.addHandler('resize', doReset);
+        const cancelResize = viewer.onceResized(doReset);
         setTimeout(doReset, 300);
         if (fullscreenBtn) {
             fullscreenBtn.setAttribute('aria-pressed', String(!!document.fullscreenElement));
@@ -100,7 +99,7 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
         document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
             const $trigger = env.$ && env.$(trigger);
             const inst = $trigger && $trigger.data('bs.popover');
-            if (!inst) return;
+            if (!inst || !inst.config) return;
             $trigger.popover('hide');
             if (document.fullscreenElement) {
                 if (inst.config._savedContainer === undefined) {

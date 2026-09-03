@@ -153,8 +153,7 @@ function mountImageFilters(viewer, bag) {
  * @returns {function():void} detaches the frame handler and the onOpen subscription
  */
 export function bindImageFiltersRendering(viewer, tag) {
-    const image = viewer.viewer;
-    const redraw = () => image.openseadragon.forceRedraw();
+    const redraw = () => viewer.redraw();
     const active = new Set();
     (tag.filters || []).forEach((filter) => {
         filter.start = () => {
@@ -170,7 +169,7 @@ export function bindImageFiltersRendering(viewer, tag) {
     });
     const renderFilters = () => {
         if (!active.size) return;
-        const context = image.getCanvasContext();
+        const context = viewer.getCanvasContext();
         if (!context) return;
         let data = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
         active.forEach((filter) => {
@@ -178,16 +177,5 @@ export function bindImageFiltersRendering(viewer, tag) {
         });
         context.putImageData(data, 0, 0);
     };
-    let boundOsd = null;
-    const attach = () => {
-        if (!image.openseadragon || boundOsd === image.openseadragon) return;
-        boundOsd = image.openseadragon;
-        boundOsd.addHandler('update-viewport', renderFilters);
-    };
-    attach();
-    const unsubscribe = viewer.onOpen.subscribe(attach);
-    return () => {
-        unsubscribe();
-        if (boundOsd && typeof boundOsd.removeHandler === 'function') boundOsd.removeHandler('update-viewport', renderFilters);
-    };
+    return viewer.onFrame(renderFilters);
 }

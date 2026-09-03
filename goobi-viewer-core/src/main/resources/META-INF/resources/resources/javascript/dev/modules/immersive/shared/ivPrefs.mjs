@@ -75,3 +75,12 @@ export function writeAnnotationsEnabled(storage, enabled) {
         storage.setItem(ANNOTATIONS_KEY, String(!!enabled));
     } catch {}
 }
+
+/** window.localStorage, or null when the browser blocks the access (the property read itself can throw). */
+export function localStore() {
+    try {
+        return window.localStorage;
+    } catch {
+        return null;
+    }
+}

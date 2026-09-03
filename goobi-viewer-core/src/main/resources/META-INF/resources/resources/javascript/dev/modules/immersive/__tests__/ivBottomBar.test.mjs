@@ -6,10 +6,8 @@ import { Emitter } from '../engine/ivViewer.mjs';
 function fakeViewer(total = 5) {
     let current = [0];
     let double = false;
-    const osd = { addHandler: jest.fn(), removeHandler: jest.fn() };
     return {
-        viewer: { openseadragon: osd },
-        osd,
+        onceResized: jest.fn(() => jest.fn()),
         getPageCount: () => total,
         getCurrentPages: () => current,
         show(pages) {
@@ -111,7 +109,7 @@ test('fullscreenchange re-fits the view once OSD has resized and relabels the bu
     const viewer = fakeViewer();
     mountMarkup(viewer);
     document.dispatchEvent(new Event('fullscreenchange'));
-    expect(viewer.osd.addHandler).toHaveBeenCalledWith('resize', expect.any(Function));
+    expect(viewer.onceResized).toHaveBeenCalledWith(expect.any(Function));
     const btn = document.querySelector('[data-immersive-action="fullscreen"]');
     expect(btn.getAttribute('aria-pressed')).toBe('false');
     expect(btn.getAttribute('aria-label')).toBe('Vollbild');

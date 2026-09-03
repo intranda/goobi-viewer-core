@@ -31,7 +31,17 @@ function setup() {
         putImageData: jest.fn(),
     };
     const image = { openseadragon: osd, getCanvasContext: () => context };
-    const viewer = { viewer: image, onOpen: new Emitter(), onReset: new Emitter() };
+    const viewer = {
+        viewer: image,
+        onOpen: new Emitter(),
+        onReset: new Emitter(),
+        redraw: () => osd.forceRedraw(),
+        getCanvasContext: () => context,
+        onFrame: (fn) => {
+            osd.addHandler('update-viewport', fn);
+            return () => {};
+        },
+    };
     const filterA = { filterMethod: jest.fn((d) => d) };
     const filterB = { filterMethod: jest.fn(() => undefined) };
     const tag = { filters: [filterA, filterB] };
@@ -64,27 +74,9 @@ describe('bindImageFiltersRendering', () => {
         expect(context.putImageData).toHaveBeenCalledTimes(2);
     });
 
-    test('repeated onOpen on the same OSD instance never stacks the handler (compounding regression)', () => {
-        const { osd, viewer, filterA } = setup();
+    test('renders through the engine frame hook exactly once per registration', () => {
+        const { osd, filterA } = setup();
         filterA.start();
-        viewer.onOpen.emit();
-        viewer.onOpen.emit();
-        viewer.onOpen.emit();
-        expect(osd._handlers['update-viewport']).toHaveLength(1);
-        osd.fire('update-viewport');
-        expect(filterA.filterMethod).toHaveBeenCalledTimes(1);
-    });
-
-    test('a fresh OSD instance after onOpen gets the handler re-attached', () => {
-        const { osd, image, viewer, filterA } = setup();
-        filterA.start();
-        const nextOsd = fakeOsd();
-        image.openseadragon = nextOsd;
-        viewer.onOpen.emit();
-        expect(nextOsd._handlers['update-viewport']).toHaveLength(1);
-        nextOsd.fire('update-viewport');
-        expect(filterA.filterMethod).toHaveBeenCalledTimes(1);
-        // the stale handler on the old instance keeps working but is not duplicated
         expect(osd._handlers['update-viewport']).toHaveLength(1);
     });
 

@@ -355,7 +355,7 @@ export default class IvViewer {
         const release = () => {
             if (released) return;
             released = true;
-            clearTimeout(watchdog);
+            clearTimeout(this._navWatchdog);
             this._navigating = false;
             if (this._queuedReopen) {
                 this._queuedReopen = false;
@@ -366,7 +366,7 @@ export default class IvViewer {
             this._queuedNav = null;
             if (next != null) this.goToPage(next);
         };
-        const watchdog = setTimeout(() => {
+        this._navWatchdog = setTimeout(() => {
             try {
                 if (onStuck) onStuck();
             } catch {}
@@ -693,8 +693,56 @@ export default class IvViewer {
         overlay.hidden = false;
     }
 
+    /** Runs `fn` once when the first tile has been painted. */
+    onceTileLoaded(fn) {
+        this.viewer.openseadragon.addOnceHandler('tile-loaded', fn);
+    }
+
+    /** Runs `fn` on the next viewport resize; returns a cancel function. */
+    onceResized(fn) {
+        const osd = this.viewer.openseadragon;
+        const handler = () => {
+            osd.removeHandler('resize', handler);
+            fn();
+        };
+        osd.addHandler('resize', handler);
+        return () => osd.removeHandler('resize', handler);
+    }
+
+    /** Forces a redraw of the current frame. */
+    redraw() {
+        this.viewer.openseadragon.forceRedraw();
+    }
+
+    /** 2D context of the drawn canvas, null before the first paint. */
+    getCanvasContext() {
+        return typeof this.viewer.getCanvasContext === 'function' ? this.viewer.getCanvasContext() : null;
+    }
+
+    /**
+     * Runs `fn` after every drawn frame. The library may swap its OpenSeadragon
+     * instance on re-open, so the handler follows onOpen onto the current
+     * instance without ever stacking on one. Returns a detach function.
+     */
+    onFrame(fn) {
+        let bound = null;
+        const attach = () => {
+            const osd = this.viewer.openseadragon;
+            if (!osd || bound === osd) return;
+            bound = osd;
+            osd.addHandler('update-viewport', fn);
+        };
+        attach();
+        const unsubscribe = this.onOpen.subscribe(attach);
+        return () => {
+            unsubscribe();
+            if (bound && typeof bound.removeHandler === 'function') bound.removeHandler('update-viewport', fn);
+        };
+    }
+
     /** Releases the OpenSeadragon instance, the access overlay and all subscriptions. */
     destroy() {
+        clearTimeout(this._navWatchdog);
         this._preloaded.clear();
         if (this._accessOverlay) this._accessOverlay.remove();
         const osd = this.viewer.openseadragon;

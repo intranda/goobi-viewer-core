@@ -7,6 +7,7 @@ import {
     ANNOTATIONS_KEY,
     readAnnotationsEnabled,
     writeAnnotationsEnabled,
+    localStore,
 } from '../shared/ivPrefs.mjs';
 
 describe('normalizeThumbSizeStep', function () {
@@ -105,5 +106,25 @@ describe('readAnnotationsEnabled / writeAnnotationsEnabled', () => {
         };
         expect(readAnnotationsEnabled(throwing)).toBe(false);
         expect(() => writeAnnotationsEnabled(throwing, true)).not.toThrow();
+    });
+});
+
+describe('localStore', function () {
+    test('returns window.localStorage, or null when even the access throws (storage blocked)', function () {
+        expect(localStore()).toBe(window.localStorage);
+        const original = Object.getOwnPropertyDescriptor(window, 'localStorage');
+        Object.defineProperty(window, 'localStorage', {
+            configurable: true,
+            get() {
+                throw new Error('blocked');
+            },
+        });
+        try {
+            expect(localStore()).toBeNull();
+            expect(readThumbSizeStep(localStore())).toBe(1);
+            expect(() => writeThumbSizeStep(localStore(), 2)).not.toThrow();
+        } finally {
+            Object.defineProperty(window, 'localStorage', original);
+        }
     });
 });

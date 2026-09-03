@@ -87,7 +87,7 @@ export function initImmersiveViewer(immersiveRoot) {
         .then(([services, restricted]) => {
             if (destroyed) return;
             viewer = new IvViewer({ element: el, services, startOrder, maxZoom, allowZoom, restricted, deniedText });
-            viewer.viewer.openseadragon.addOnceHandler('tile-loaded', hideStageLoader);
+            viewer.onceTileLoaded(hideStageLoader);
             // A restricted entry page never fires tile-loaded (tiles 403); onOpen fires
             // once the (failed) load settles, so the loader is not left spinning.
             viewer.onOpen.subscribe(hideStageLoader);

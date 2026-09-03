@@ -4,6 +4,7 @@ import { loadPageTextLevels, flattenTextLevels, loadPageLayout } from '../data/i
 import { buildTextLevels, mountTextImageLink } from './ivTextImageLink.mjs';
 import { setupAnnotationsToggle, applyTextMarkup, applyRegionMarkup, mountBlockAnnotations, overlayRegions } from './ivAnnotations.mjs';
 import { createDisposer } from '../shared/ivLifecycle.mjs';
+import { localStore } from '../shared/ivPrefs.mjs';
 
 /**
  * Wires the fulltext panel: loads the nested OCR levels for the visible page,
@@ -34,14 +35,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     const annoCheckbox = document.getElementById('immersiveAnnotationsToggle');
     const annoColumnsHead = document.getElementById('immersiveAnnotationsColumns');
     const immersiveRoot = fulltextPanel ? fulltextPanel.closest('.immersive') : null;
-    // Even READING window.localStorage can throw (browser with storage blocked);
-    // the toggle helpers handle a null storage gracefully.
-    let storage = null;
-    try {
-        storage = window.localStorage;
-    } catch {
-        storage = null;
-    }
+    const storage = localStore();
     const annotations = annoCheckbox && immersiveRoot ? setupAnnotationsToggle({ root: immersiveRoot, checkbox: annoCheckbox, storage, keys }) : null;
     if (annotations) bag.add(() => annotations.destroy());
 

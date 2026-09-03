@@ -5,6 +5,7 @@
 import { jest } from '@jest/globals';
 import { setupPageDropdown } from '../ui/ivPageDropdown.mjs';
 import { createKeyDispatcher } from '../shared/ivKeys.mjs';
+import { setupPanels } from '../ui/ivPanelsWiring.mjs';
 import { Emitter } from '../engine/ivViewer.mjs';
 
 function fakeViewer(total, current = [0]) {
@@ -143,5 +144,34 @@ describe('setupPageDropdown teardown', () => {
         trigger.click();
         expect(dropdown.hidden).toBe(true);
         expect(keys.handleEvent({ key: 'Escape' })).toBe(false);
+    });
+});
+
+describe('Escape layering with the panels', () => {
+    afterEach(() => {
+        document.body.innerHTML = '';
+    });
+
+    test('Escape on a list item closes only the dropdown; the open panel closes on the next Escape', () => {
+        const { trigger, dropdown, list } = mountMarkup();
+        document.body.insertAdjacentHTML(
+            'beforeend',
+            '<div class="immersive"><button data-immersive-panel="immersivePanelToc"></button><aside id="immersivePanelToc" class="immersive__panel immersive__panel-left"></aside></div>'
+        );
+        const keys = createKeyDispatcher();
+        keys.attach(document);
+        setupPanels(document.querySelector('.immersive'), keys);
+        setupPageDropdown(fakeViewer(3), ['a', 'b', 'c'], keys);
+        document.querySelector('[data-immersive-panel]').click();
+        trigger.click();
+        const item = list.querySelector('.immersive__page-dropdown-item');
+        item.focus();
+        item.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+        expect(dropdown.hidden).toBe(true);
+        expect(document.activeElement).toBe(trigger);
+        expect(document.getElementById('immersivePanelToc').classList.contains('is-open')).toBe(true);
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+        expect(document.getElementById('immersivePanelToc').classList.contains('is-open')).toBe(false);
+        keys.detach();
     });
 });

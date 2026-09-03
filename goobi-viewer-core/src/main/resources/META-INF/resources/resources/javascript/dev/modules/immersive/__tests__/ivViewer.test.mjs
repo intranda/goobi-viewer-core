@@ -61,6 +61,7 @@ function mockImageView() {
                         handlers[name] = fn;
                     },
                     removeHandler() {},
+                    addOnceHandler: jest.fn(),
                     addTiledImage: jest.fn(),
                     addOverlay: jest.fn(),
                     removeOverlay: jest.fn(),
@@ -150,6 +151,74 @@ describe('IvViewer construction', () => {
         expect(v.getCurrentOrder()).toBe(1);
         expect(seen).not.toHaveBeenCalled();
         expect(v._navigating).toBe(false);
+    });
+
+    test('destroy clears a pending navigation watchdog', async () => {
+        jest.useFakeTimers();
+        try {
+            const v = new IvViewer({ element: {}, services: services(5) });
+            opens.shift()();
+            await Promise.resolve();
+            jest.spyOn(v, '_acquire').mockReturnValue(new Promise(() => {}));
+            v.goToPage(2);
+            expect(jest.getTimerCount()).toBe(1);
+            v.destroy();
+            expect(jest.getTimerCount()).toBe(0);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    test('onceTileLoaded, onceResized and redraw wrap the OpenSeadragon instance', () => {
+        const v = new IvViewer({ element: {}, services: services(3) });
+        const handlers = {};
+        const osd = {
+            addHandler: (name, fn) => (handlers[name] = handlers[name] || []).push(fn),
+            removeHandler: (name, fn) => (handlers[name] = (handlers[name] || []).filter((h) => h !== fn)),
+            addOnceHandler: jest.fn(),
+            forceRedraw: jest.fn(),
+            fire: (name) => (handlers[name] || []).slice().forEach((fn) => fn()),
+        };
+        v.viewer.openseadragon = osd;
+        const tile = jest.fn();
+        v.onceTileLoaded(tile);
+        expect(osd.addOnceHandler).toHaveBeenCalledWith('tile-loaded', tile);
+        const resized = jest.fn();
+        v.onceResized(resized);
+        osd.fire('resize');
+        osd.fire('resize');
+        expect(resized).toHaveBeenCalledTimes(1);
+        expect(handlers.resize).toHaveLength(0);
+        const cancel = v.onceResized(resized);
+        cancel();
+        expect(handlers.resize).toHaveLength(0);
+        v.redraw();
+        expect(osd.forceRedraw).toHaveBeenCalledTimes(1);
+    });
+
+    test('onFrame follows the library onto a new OpenSeadragon instance without stacking on the old one', () => {
+        const v = new IvViewer({ element: {}, services: services(3) });
+        const fakeOsd = () => {
+            const handlers = {};
+            return {
+                handlers,
+                addHandler: (n, fn) => (handlers[n] = handlers[n] || []).push(fn),
+                removeHandler: (n, fn) => (handlers[n] = (handlers[n] || []).filter((h) => h !== fn)),
+            };
+        };
+        const first = fakeOsd();
+        v.viewer.openseadragon = first;
+        const frame = jest.fn();
+        const detach = v.onFrame(frame);
+        v.onOpen.emit();
+        v.onOpen.emit();
+        expect(first.handlers['update-viewport']).toHaveLength(1);
+        const second = fakeOsd();
+        v.viewer.openseadragon = second;
+        v.onOpen.emit();
+        expect(second.handlers['update-viewport']).toHaveLength(1);
+        detach();
+        expect(second.handlers['update-viewport']).toHaveLength(0);
     });
 
     test('each instance gets its own sequence config (no shared module state)', () => {

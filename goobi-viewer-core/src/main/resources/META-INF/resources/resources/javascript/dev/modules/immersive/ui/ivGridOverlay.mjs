@@ -1,6 +1,6 @@
 /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
 
-import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX } from '../shared/ivPrefs.mjs';
+import { normalizeThumbSizeStep, readThumbSizeStep, writeThumbSizeStep, THUMB_SIZE_MAX, localStore } from '../shared/ivPrefs.mjs';
 import { createFocusTrap } from '../shared/ivA11y.mjs';
 import { createDisposer } from '../shared/ivLifecycle.mjs';
 import { env } from '../shared/ivEnv.mjs';
@@ -44,12 +44,12 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
             }
         }
     };
-    applyGridThumbSize(readThumbSizeStep(window.localStorage));
+    applyGridThumbSize(readThumbSizeStep(localStore()));
     if (gridSizeSlider) {
         bag.listen(gridSizeSlider, 'input', () => {
             const step = normalizeThumbSizeStep(gridSizeSlider.value);
             applyGridThumbSize(step);
-            writeThumbSizeStep(window.localStorage, step);
+            writeThumbSizeStep(localStore(), step);
         });
     }
     if (gridScroll && gridTopBtn) {

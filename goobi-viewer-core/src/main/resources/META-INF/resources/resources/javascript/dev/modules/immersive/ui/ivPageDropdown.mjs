@@ -113,7 +113,7 @@ export function setupPageDropdown(viewer, labels, keys) {
     });
     bag.listen(list, 'keydown', (e) => {
         const cur = items.indexOf(document.activeElement);
-        if (cur === -1 && !['Escape'].includes(e.key)) return;
+        if (cur === -1) return;
         switch (e.key) {
             case 'ArrowDown':
                 e.preventDefault();
@@ -136,11 +136,6 @@ export function setupPageDropdown(viewer, labels, keys) {
             case 'Spacebar':
                 e.preventDefault();
                 viewer.goToPage(Number(items[cur].dataset.order));
-                close();
-                trigger.focus();
-                break;
-            case 'Escape':
-                e.preventDefault();
                 close();
                 trigger.focus();
                 break;
