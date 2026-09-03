@@ -10,7 +10,7 @@ import { search, nextIndex, prevIndex } from './ivFulltextSearch.mjs';
  * @param {string} pi
  * @param {string} apiBase
  */
-export function setupFulltextSearch(viewer, pi, apiBase) {
+export function setupSearchPanel(viewer, pi, apiBase) {
     const searchState = { hits: [], activeIndex: -1, term: '', failed: false };
     let searchReq = 0;
     const resultsBox = document.getElementById('immersiveSearchResults');

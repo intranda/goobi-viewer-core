@@ -923,18 +923,26 @@
      *
      * @param {{onPageChange:{subscribe:Function}, goToPage:Function}} viewer
      * @param {string} pi
+     * @returns {{destroy: function():void}}
      */
     function attachUrlSync(viewer, pi) {
-        viewer.onPageChange.subscribe((order) => {
+        const unsubscribe = viewer.onPageChange.subscribe((order) => {
             const url = new URL(window.location.href);
             url.pathname = pageUrlPath(url.pathname, pi, order + 1);
             window.history.pushState({ order }, '', url.toString());
         });
-        window.addEventListener('popstate', (e) => {
+        const onPopState = (e) => {
             if (e.state && typeof e.state.order === 'number') {
                 viewer.goToPage(e.state.order);
             }
-        });
+        };
+        window.addEventListener('popstate', onPopState);
+        return {
+            destroy() {
+                if (typeof unsubscribe === 'function') unsubscribe();
+                window.removeEventListener('popstate', onPopState);
+            },
+        };
     }
 
     const THUMB_SIZE_KEY = 'immersive-thumb-size';
@@ -1086,6 +1094,9 @@
         }
         emit(value) {
             this._subs.forEach((fn) => fn(value));
+        }
+        clear() {
+            this._subs.clear();
         }
     }
 
@@ -1738,6 +1749,15 @@
             }
             overlay.hidden = false;
         }
+
+        /** Releases the OpenSeadragon instance, the access overlay and all subscriptions. */
+        destroy() {
+            this._preloaded.clear();
+            if (this._accessOverlay) this._accessOverlay.remove();
+            const osd = this.viewer.openseadragon;
+            if (osd && typeof osd.destroy === 'function') osd.destroy();
+            [this.onPageChange, this.onLoaded, this.onOpen, this.onReset].forEach((emitter) => emitter.clear());
+        }
     }
 
     const cache = new Map();
@@ -2200,18 +2220,28 @@
      * grid → dropdown → panels) declared in one place instead of guard selectors
      * scattered over independent listeners. Pure + tested.
      *
-     * @returns {{register:Function, handleEvent:Function, attach:Function}}
+     * @returns {{register:Function, handleEvent:Function, attach:Function, detach:Function}}
      */
     function createKeyDispatcher() {
         const handlers = [];
-        return {
+        let bound = null;
+        const onKeydown = (e) => {
+            if (dispatcher.handleEvent(e)) e.preventDefault();
+        };
+        const dispatcher = {
             /**
              * @param {number} priority  lower runs first
              * @param {(event: KeyboardEvent) => boolean} handler  true = consumed
+             * @returns {function():void} unregisters the handler
              */
             register(priority, handler) {
-                handlers.push({ priority, handler });
+                const entry = { priority, handler };
+                handlers.push(entry);
                 handlers.sort((a, b) => a.priority - b.priority);
+                return () => {
+                    const i = handlers.indexOf(entry);
+                    if (i !== -1) handlers.splice(i, 1);
+                };
             },
             /** @returns {boolean} whether any handler consumed the event */
             handleEvent(event) {
@@ -2220,13 +2250,19 @@
                 }
                 return false;
             },
-            /** Binds the single keydown listener. */
+            /** Binds the single keydown listener; attaching again moves it. */
             attach(target) {
-                target.addEventListener('keydown', (e) => {
-                    if (this.handleEvent(e)) e.preventDefault();
-                });
+                dispatcher.detach();
+                bound = target;
+                bound.addEventListener('keydown', onKeydown);
+            },
+            /** Removes the keydown listener. */
+            detach() {
+                if (bound) bound.removeEventListener('keydown', onKeydown);
+                bound = null;
             },
         };
+        return dispatcher;
     }
 
     /**
@@ -2244,9 +2280,10 @@
      * @param {IvViewer} viewer
      * @param {HTMLElement} stageEl        the OSD mount element ([data-immersive-image])
      * @param {number} [priority=50]       runs after modal (10), grid (20), dropdown (30), panels (40)
+     * @returns {{destroy: function():void}}
      */
     function registerViewerNavKeys(keys, viewer, stageEl, priority = 50) {
-        keys.register(priority, (e) => {
+        const unregister = keys.register(priority, (e) => {
             if (e.ctrlKey || e.metaKey || e.altKey) return false;
             const key = e.key;
             const zoomIn = key === '+' || key === '=' || (e.shiftKey && key === 'ArrowUp');
@@ -2270,6 +2307,7 @@
             else viewer.zoomOut();
             return true;
         });
+        return { destroy: unregister };
     }
 
     /** OCR text ↔ image region hover linking for the immersive fulltext panel (block > line > word). */
@@ -2444,6 +2482,36 @@
         return frag;
     }
 
+    /** Teardown bookkeeping for the setup modules: one disposer per module, one call undoes everything. */
+
+    /** Destroyable that does nothing, returned by setup functions whose markup is not on the page. */
+    const noop = Object.freeze({ destroy() {} });
+
+    /**
+     * Collects listeners and teardown callbacks so a setup module can undo itself.
+     *
+     * @returns {{listen: Function, add: Function, dispose: Function}}
+     */
+    function createDisposer() {
+        const fns = [];
+        return {
+            /** addEventListener whose removal is queued for dispose. */
+            listen(target, type, handler, options) {
+                target.addEventListener(type, handler, options);
+                fns.push(() => target.removeEventListener(type, handler, options));
+            },
+            /** Queues a teardown callback (an unsubscribe or unregister function) and returns it. */
+            add(fn) {
+                if (typeof fn === 'function') fns.push(fn);
+                return fn;
+            },
+            /** Runs every queued teardown once, newest first. */
+            dispose() {
+                while (fns.length) fns.pop()();
+            },
+        };
+    }
+
     /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
 
     /**
@@ -2455,9 +2523,10 @@
      *
      * @param {HTMLElement|null} immersiveRoot  the .immersive root element
      * @param {{register: Function}} keys  the immersive key dispatcher
-     * @returns {{closePanels: Function, registerCloseHook: Function}}
+     * @returns {{closePanels: Function, registerCloseHook: Function, destroy: Function}}
      */
     function setupPanels(immersiveRoot, keys) {
+        const bag = createDisposer();
         const panelButtons = document.querySelectorAll('[data-immersive-panel]');
         document.querySelectorAll('.immersive__panel-left').forEach((p) => (p.inert = true));
         const syncPanelOpenFlag = () => {
@@ -2484,7 +2553,7 @@
             activePanelBtn = null;
         };
         panelButtons.forEach((btn) => {
-            btn.addEventListener('click', () => {
+            bag.listen(btn, 'click', () => {
                 if (btn.getAttribute('aria-disabled') === 'true') return;
                 const panel = document.getElementById(btn.dataset.immersivePanel);
                 if (!panel) return;
@@ -2520,7 +2589,7 @@
             });
         });
 
-        keys.register(40, (e) => {
+        const unregisterKeys = keys.register(40, (e) => {
             if (e.key === 'Escape') {
                 if (!document.querySelector('.immersive__panel-left.is-open')) return false;
                 closePanels(true);
@@ -2534,23 +2603,32 @@
             btn.click();
             return true;
         });
+        bag.add(unregisterKeys);
 
         return {
             closePanels,
-            /** Registers a hook that runs whenever the panels close (e.g. fulltext teardown). */
+            /** Registers a hook that runs whenever the panels close (e.g. fulltext teardown); returns its unregister. */
             registerCloseHook(hook) {
-                if (typeof hook === 'function') closeHooks.push(hook);
+                if (typeof hook !== 'function') return () => {};
+                closeHooks.push(hook);
+                return () => {
+                    const i = closeHooks.indexOf(hook);
+                    if (i !== -1) closeHooks.splice(i, 1);
+                };
             },
+            destroy: bag.dispose,
         };
     }
 
     /**
      * Adds the drag handle that resizes the left panels: one shared
      * --immersive-panel-width custom property, persisted in sessionStorage.
+     *
+     * @returns {{destroy: function():void}}
      */
     function setupPanelResize(immersiveRoot) {
         const immersiveViewer = immersiveRoot && immersiveRoot.querySelector('.immersive__viewer');
-        if (!immersiveViewer) return;
+        if (!immersiveViewer) return noop;
         const WIDTH_KEY = 'immersive-panel-width';
         const RAIL_WIDTH = 40;
         const MIN_WIDTH = 240;
@@ -2583,8 +2661,9 @@
         // variable value is read off the handle's GEOMETRY (it is positioned by the
         // variable) — the inline style alone misses the CSS fallback, media-query
         // and fullscreen values a first-time visitor runs on.
+        let observer = null;
         if (typeof ResizeObserver !== 'undefined') {
-            const observer = new ResizeObserver(() => {
+            observer = new ResizeObserver(() => {
                 const open = immersiveViewer.querySelector('.immersive__panel-left.is-open');
                 if (!open || !handle.offsetParent) return;
                 const panelWidth = open.getBoundingClientRect().width;
@@ -2616,6 +2695,12 @@
             handle.addEventListener('pointermove', onMove);
             handle.addEventListener('pointerup', onUp);
         });
+        return {
+            destroy() {
+                if (observer) observer.disconnect();
+                handle.remove();
+            },
+        };
     }
 
     /**
@@ -2623,16 +2708,22 @@
      * bails early when it is not in the DOM (conditional server-render).
      *
      * @param {IvViewer} viewer
+     * @returns {{destroy: function():void}}
      */
     function setupToc(viewer) {
         const tocPanel = document.getElementById('immersivePanelToc');
-        if (!tocPanel) return;
-        setupTocCollapseToggle(tocPanel);
-        setupTocSync(viewer, tocPanel);
+        if (!tocPanel) return noop;
+        const parts = [setupTocCollapseToggle(tocPanel), setupTocSync(viewer, tocPanel)];
+        return {
+            destroy() {
+                parts.forEach((part) => part.destroy());
+            },
+        };
     }
 
     /** Wires the "collapse all / expand all" toggle on the server-rendered TOC tree (shown only when the TOC nests). */
     function setupTocCollapseToggle(tocPanel = document.getElementById('immersivePanelToc')) {
+        const bag = createDisposer();
         const tocContainer = document.getElementById('widgetToc');
         const tocToggle = tocPanel && tocPanel.querySelector('[data-immersive-toc-toggle]');
         if (tocContainer && tocToggle && tocContainer.querySelector(".widget-toc__element[data-level='2']")) {
@@ -2645,7 +2736,7 @@
                 tocToggle.setAttribute('aria-label', label);
                 tocToggle.setAttribute('title', label);
             };
-            tocToggle.addEventListener('click', () => {
+            bag.listen(tocToggle, 'click', () => {
                 if (tocContainer.querySelector('.widget-toc__element--hidden')) {
                     tocContainer.querySelectorAll('.widget-toc__element--hidden').forEach((li) => li.classList.remove('widget-toc__element--hidden'));
                     tocContainer.querySelectorAll('.widget-toc__element.parent').forEach((li) => {
@@ -2668,10 +2759,12 @@
             });
             reflectTocToggle();
         }
+        return { destroy: bag.dispose };
     }
 
     /** Wires the metadata "more / less" fold that reveals the deeper structural blocks. */
     function setupMetadataToggle() {
+        const bag = createDisposer();
         const metadataToggle = document.querySelector('[data-immersive-metadata-toggle]');
         if (metadataToggle) {
             const moreEl = document.getElementById(metadataToggle.dataset.immersiveMetadataToggle);
@@ -2683,7 +2776,7 @@
                     if (lessLabel) lessLabel.setAttribute('aria-hidden', String(!open));
                 };
                 syncMetadataToggleLabel(!moreEl.hidden);
-                metadataToggle.addEventListener('click', () => {
+                bag.listen(metadataToggle, 'click', () => {
                     const willOpen = moreEl.hidden;
                     moreEl.hidden = !willOpen;
                     metadataToggle.setAttribute('aria-expanded', String(willOpen));
@@ -2691,6 +2784,7 @@
                 });
             }
         }
+        return { destroy: bag.dispose };
     }
 
     /**
@@ -2700,9 +2794,11 @@
      *
      * @param {IvViewer} viewer
      * @param {HTMLElement} [tocPanel]
+     * @returns {{destroy: function():void}}
      */
     function setupTocSync(viewer, tocPanel = document.getElementById('immersivePanelToc')) {
-        if (!tocPanel) return;
+        if (!tocPanel) return noop;
+        const bag = createDisposer();
         const tocEntries = () =>
             Array.from(tocPanel.querySelectorAll('.widget-toc__element[data-page-no]'))
                 .filter((el) => el.dataset.level !== '0') // skip the hidden record root
@@ -2722,7 +2818,7 @@
             }
         };
 
-        tocPanel.addEventListener('click', (e) => {
+        bag.listen(tocPanel, 'click', (e) => {
             const link = e.target.closest('.widget-toc__element-link a');
             if (!link) return;
             const element = link.closest('.widget-toc__element');
@@ -2751,8 +2847,9 @@
             });
             setTocActive(best ? best.el : null);
         };
-        viewer.onPageChange.subscribe(syncTocActive);
+        bag.add(viewer.onPageChange.subscribe(syncTocActive));
         syncTocActive();
+        return { destroy: bag.dispose };
     }
 
     /** Shared accessibility utilities for the immersive view. */
@@ -2798,11 +2895,13 @@
      *
      * @param {Function} closePanels  closes the open left panel(s)
      * @param {{register: Function}} keys  the immersive key dispatcher
+     * @returns {{destroy: function():void}}
      */
     function setupShortcutsModal(closePanels, keys) {
         const overlay = document.getElementById('immersiveShortcuts');
         const trigger = document.querySelector('[data-immersive-shortcuts-trigger]');
-        if (!overlay || !trigger) return;
+        if (!overlay || !trigger) return noop;
+        const bag = createDisposer();
         // On Apple platforms modifiers are conventionally shown as symbols (⌥, ⇧);
         // the accessible name keeps the spoken key name. The symbol gets its own
         // span so the flex keycap centers the glyph instead of baseline-aligning it.
@@ -2844,7 +2943,7 @@
             opener = null;
             if (restore && typeof restore.focus === 'function') restore.focus();
         };
-        trigger.addEventListener('click', () => {
+        bag.listen(trigger, 'click', () => {
             if (!overlay.hidden) {
                 closeShortcuts();
                 return;
@@ -2852,11 +2951,11 @@
             if (typeof closePanels === 'function') closePanels();
             openShortcuts();
         });
-        if (closeBtn) closeBtn.addEventListener('click', closeShortcuts);
-        overlay.addEventListener('click', (e) => {
+        if (closeBtn) bag.listen(closeBtn, 'click', closeShortcuts);
+        bag.listen(overlay, 'click', (e) => {
             if (dialog && !dialog.contains(e.target)) closeShortcuts();
         });
-        keys.register(10, (e) => {
+        const unregisterKeys = keys.register(10, (e) => {
             if (e.key === 'Escape' && !overlay.hidden) {
                 closeShortcuts();
                 return true;
@@ -2868,6 +2967,13 @@
             }
             return false;
         });
+        bag.add(unregisterKeys);
+        return {
+            destroy() {
+                closeShortcuts();
+                bag.dispose();
+            },
+        };
     }
 
     /** ALTO layout-tag annotations: toggle state, inline markup, margin note column and image overlay regions. */
@@ -3560,7 +3666,7 @@
      * @param {HTMLInputElement} opts.checkbox
      * @param {Storage} opts.storage      e.g. window.localStorage
      * @param {{register: Function}} [opts.keys]  the immersive key dispatcher
-     * @returns {{setPageData: Function, onChange: Function}}
+     * @returns {{setPageData: Function, onChange: Function, destroy: Function}}
      */
     function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
         const listeners = [];
@@ -3578,11 +3684,13 @@
             listeners.forEach((cb) => cb(on));
         };
 
+        const onCheckboxChange = () => setEnabled(checkbox.checked);
         checkbox.checked = readAnnotationsEnabled(storage);
-        checkbox.addEventListener('change', () => setEnabled(checkbox.checked));
+        checkbox.addEventListener('change', onCheckboxChange);
 
+        let unregisterKeys = null;
         if (keys) {
-            keys.register(55, (e) => {
+            unregisterKeys = keys.register(55, (e) => {
                 if (e.key !== 'a' || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return false;
                 if (isTypingTarget(e.target)) return false;
                 const panel = checkbox.closest('.immersive__panel-left');
@@ -3609,6 +3717,15 @@
             },
             onChange(cb) {
                 listeners.push(cb);
+                return () => {
+                    const i = listeners.indexOf(cb);
+                    if (i !== -1) listeners.splice(i, 1);
+                };
+            },
+            destroy() {
+                checkbox.removeEventListener('change', onCheckboxChange);
+                if (unregisterKeys) unregisterKeys();
+                listeners.length = 0;
             },
         };
     }
@@ -3631,9 +3748,10 @@
      * @param {string} apiBase
      * @param {{closePanels: Function, registerCloseHook: Function}} panels
      * @param {{register: Function}} [keys]  the immersive key dispatcher (annotations shortcut)
-     * @returns {{updateFulltextAvail: Function}}
+     * @returns {{updateFulltextAvail: Function, destroy: Function}}
      */
     function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
+        const bag = createDisposer();
         const fulltextPanel = document.getElementById('immersivePanelFulltext');
         const fulltextBox = document.getElementById('immersiveFulltext');
         const fulltextLoader = document.getElementById('immersiveFulltextLoader');
@@ -3652,6 +3770,7 @@
             storage = null;
         }
         const annotations = annoCheckbox && immersiveRoot ? setupAnnotationsToggle({ root: immersiveRoot, checkbox: annoCheckbox, storage, keys }) : null;
+        if (annotations) bag.add(() => annotations.destroy());
 
         const panelOpen = () => !!fulltextPanel && fulltextPanel.classList.contains('is-open');
 
@@ -3730,12 +3849,14 @@
         };
 
         if (annotations) {
-            viewer.onPageChange.subscribe(refreshLayout);
-            viewer.onOpen.subscribe(mountOverlays);
+            bag.add(viewer.onPageChange.subscribe(refreshLayout));
+            bag.add(viewer.onOpen.subscribe(mountOverlays));
             // Note positions depend on rendered geometry, which is only measurable while visible.
-            annotations.onChange((on) => {
-                if (on && currentAnnotations) requestAnimationFrame(() => currentAnnotations && currentAnnotations.relayout());
-            });
+            bag.add(
+                annotations.onChange((on) => {
+                    if (on && currentAnnotations) requestAnimationFrame(() => currentAnnotations && currentAnnotations.relayout());
+                })
+            );
         }
 
         if (fulltextPanel && fulltextBox) {
@@ -3757,7 +3878,8 @@
                 clearBlockAnnotations();
                 if (fulltextLoader) fulltextLoader.hidden = true;
             };
-            panels.registerCloseHook(clearFulltextLink);
+            bag.add(panels.registerCloseHook(clearFulltextLink));
+            bag.add(clearFulltextLink);
 
             const loadFulltext = async () => {
                 const order = currentOrder(viewer);
@@ -3791,13 +3913,15 @@
                 }
             };
 
-            fulltextPanel.addEventListener('immersive:panel-open', loadFulltext);
-            fulltextPanel.addEventListener('immersive:panel-open', () => {
+            bag.listen(fulltextPanel, 'immersive:panel-open', loadFulltext);
+            bag.listen(fulltextPanel, 'immersive:panel-open', () => {
                 if (annotations) refreshLayout();
             });
-            viewer.onPageChange.subscribe(() => {
-                if (panelOpen()) loadFulltext();
-            });
+            bag.add(
+                viewer.onPageChange.subscribe(() => {
+                    if (panelOpen()) loadFulltext();
+                })
+            );
         }
 
         const updateFulltextAvail = () => {
@@ -3815,7 +3939,7 @@
         };
         updateFulltextAvail();
 
-        return { updateFulltextAvail };
+        return { updateFulltextAvail, destroy: bag.dispose };
     }
 
     /** Layout-tag panel logic: index/detail loading and parsing, range clamping, hit-list derivation, visibility batching. */
@@ -4133,10 +4257,11 @@
      * @param {string} apiBase
      * @param {{closePanels: Function, registerCloseHook: Function}} panels
      * @param {{register: Function}} keys  the immersive key dispatcher
+     * @returns {{destroy: function():void}}
      */
     function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         const panel = document.getElementById('immersivePanelLayoutTags');
-        if (!panel) return;
+        if (!panel) return noop;
         const q = (sel) => panel.querySelector(sel);
         const sticky = q('[data-immersive-layout-tags="sticky"]');
         const rangeFrom = q('[data-immersive-layout-tags="from"]');
@@ -4153,7 +4278,8 @@
         const loader = q('[data-immersive-layout-tags="loader"]');
         const hitsMount = q('[data-immersive-layout-tags="hits"]');
         const progress = q('[data-immersive-layout-tags="progress"]');
-        if (!rangeFrom || !rangeTo || !pickTrigger || !pickMenu || !pickList || !hitsMount) return;
+        if (!rangeFrom || !rangeTo || !pickTrigger || !pickMenu || !pickList || !hitsMount) return noop;
+        const bag = createDisposer();
         const labels = panel.dataset;
         const pageCount = viewer.getPageCount();
 
@@ -4287,18 +4413,20 @@
             syncPickRows();
         };
 
-        pickTrigger.addEventListener('click', () => (isPickOpen() ? closePick() : openPick()));
+        bag.listen(pickTrigger, 'click', () => (isPickOpen() ? closePick() : openPick()));
         if (filterInput) {
-            filterInput.addEventListener('input', () => {
+            bag.listen(filterInput, 'input', () => {
                 state.filter = filterInput.value;
                 buildPickRows();
             });
         }
-        keys.register(PICK_KEY_PRIORITY, (e) => {
-            if (e.key !== 'Escape' || !isPickOpen()) return false;
-            closePick(true);
-            return true;
-        });
+        bag.add(
+            keys.register(PICK_KEY_PRIORITY, (e) => {
+                if (e.key !== 'Escape' || !isPickOpen()) return false;
+                closePick(true);
+                return true;
+            })
+        );
 
         /* PAGE RANGE */
 
@@ -4347,16 +4475,16 @@
 
         [rangeFrom, rangeTo].forEach((input) => {
             input.max = String(pageCount);
-            input.addEventListener('input', syncRangeButtons);
-            input.addEventListener('keydown', (e) => {
+            bag.listen(input, 'input', syncRangeButtons);
+            bag.listen(input, 'keydown', (e) => {
                 if (e.key !== 'Enter') return;
                 e.preventDefault();
                 applyRange();
             });
         });
-        if (rangeApply) rangeApply.addEventListener('click', applyRange);
+        if (rangeApply) bag.listen(rangeApply, 'click', applyRange);
         if (rangeReset) {
-            rangeReset.addEventListener('click', () => {
+            bag.listen(rangeReset, 'click', () => {
                 setRange(1, pageCount);
                 rangeFrom.value = String(state.from);
                 rangeTo.value = String(state.to);
@@ -4635,7 +4763,7 @@
             return indexRequest;
         };
 
-        panel.addEventListener('immersive:panel-open', () => {
+        bag.listen(panel, 'immersive:panel-open', () => {
             ensureIndex().then(() => {
                 if (!panelOpen()) return;
                 if (!state.cursorKey) preferCursorOnCurrentPage();
@@ -4646,25 +4774,29 @@
             });
         });
 
-        panels.registerCloseHook(() => {
-            if (!panelOpen()) return;
-            closePick();
-            viewer.clearHighlights();
-        });
+        bag.add(
+            panels.registerCloseHook(() => {
+                if (!panelOpen()) return;
+                closePick();
+                viewer.clearHighlights();
+            })
+        );
 
-        viewer.onPageChange.subscribe(() => {
-            if (!panelOpen() || !state.index) return;
-            const pages = currentPages();
-            const onPage = entries().find((e) => pages.includes(e.page));
-            if (onPage) state.cursorKey = entryKey(onPage);
-            markActive();
-            renderHighlights();
-            if (onPage && onPage.pending) loadPages([onPage.page]);
-        });
-        viewer.onOpen.subscribe(renderHighlights);
+        bag.add(
+            viewer.onPageChange.subscribe(() => {
+                if (!panelOpen() || !state.index) return;
+                const pages = currentPages();
+                const onPage = entries().find((e) => pages.includes(e.page));
+                if (onPage) state.cursorKey = entryKey(onPage);
+                markActive();
+                renderHighlights();
+                if (onPage && onPage.pending) loadPages([onPage.page]);
+            })
+        );
+        bag.add(viewer.onOpen.subscribe(renderHighlights));
 
         let scrollQueued = false;
-        panel.addEventListener('scroll', () => {
+        bag.listen(panel, 'scroll', () => {
             if (scrollQueued) return;
             scrollQueued = true;
             requestAnimationFrame(() => {
@@ -4675,6 +4807,13 @@
         });
 
         syncRange();
+        return {
+            destroy() {
+                closePick();
+                viewer.clearHighlights();
+                bag.dispose();
+            },
+        };
     }
 
     /** Extracts the snippet text from a IIIF `resource` (object, array, or missing). */
@@ -4812,8 +4951,10 @@
      * @param {IvViewer} viewer
      * @param {string} pi
      * @param {string} apiBase
+     * @returns {{destroy: function():void}}
      */
-    function setupFulltextSearch(viewer, pi, apiBase) {
+    function setupSearchPanel(viewer, pi, apiBase) {
+        const bag = createDisposer();
         const searchState = { hits: [], activeIndex: -1, term: '', failed: false };
         let searchReq = 0;
         const resultsBox = document.getElementById('immersiveSearchResults');
@@ -4903,13 +5044,13 @@
             else viewer.clearHighlights();
         };
 
-        viewer.onPageChange.subscribe(renderHighlights);
+        bag.add(viewer.onPageChange.subscribe(renderHighlights));
 
         const searchPanel = document.getElementById('immersivePanelSearch');
         const searchForm = searchPanel && searchPanel.querySelector('form');
         const searchInput = searchPanel && searchPanel.querySelector('input[type="text"]');
         if (searchForm && searchInput) {
-            searchForm.addEventListener('submit', (e) => {
+            bag.listen(searchForm, 'submit', (e) => {
                 e.preventDefault();
                 runSearch(searchInput.value.trim());
             });
@@ -4922,6 +5063,7 @@
             clearBtn.hidden = !searchInput.value;
             const group = searchInput.closest('.input-group') || searchInput.parentElement;
             group.insertBefore(clearBtn, group.querySelector('.input-group-addon') || null);
+            bag.add(() => clearBtn.remove());
             const syncClear = () => {
                 clearBtn.hidden = !searchInput.value;
             };
@@ -4931,9 +5073,9 @@
                 runSearch('');
                 searchInput.focus();
             };
-            searchInput.addEventListener('input', syncClear);
-            clearBtn.addEventListener('click', resetSearch);
-            searchInput.addEventListener('keydown', (e) => {
+            bag.listen(searchInput, 'input', syncClear);
+            bag.listen(clearBtn, 'click', resetSearch);
+            bag.listen(searchInput, 'keydown', (e) => {
                 if (e.key === 'Escape' && searchInput.value) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -4942,11 +5084,12 @@
             });
         }
         document.querySelectorAll('[data-immersive-hit]').forEach((btn) => {
-            btn.addEventListener('click', () => {
+            bag.listen(btn, 'click', () => {
                 const n = searchState.hits.length;
                 goToHit(btn.dataset.immersiveHit === 'next' ? nextIndex(searchState.activeIndex, n) : prevIndex(searchState.activeIndex, n));
             });
         });
+        return { destroy: bag.dispose };
     }
 
     /** Title page picker: "go to page" input plus a labelled listbox per page. */
@@ -4960,6 +5103,7 @@
      * @param {IvViewer} viewer
      * @param {string[]} labels page labels, index-aligned with the page orders
      * @param {{register: Function}} keys  the immersive key dispatcher
+     * @returns {{destroy: function():void}}
      */
     function setupPageDropdown(viewer, labels, keys) {
         const total = viewer.getPageCount();
@@ -4967,15 +5111,16 @@
         const dropdown = document.getElementById('immersivePageDropdown');
         const list = document.getElementById('immersivePageList');
         const input = document.getElementById('immersivePageInput');
-        if (!trigger || !dropdown || !list) return;
+        if (!trigger || !dropdown || !list) return noop;
         if (total < 2) {
             trigger.classList.add('immersive__title-trigger-static');
             // no dropdown for single-page records: drop the popup semantics announced by the markup
             trigger.removeAttribute('aria-haspopup');
             trigger.removeAttribute('aria-expanded');
             trigger.removeAttribute('aria-controls');
-            return;
+            return noop;
         }
+        const bag = createDisposer();
         if (input) input.max = String(total);
         const listLabel = input && input.labels && input.labels[0] ? input.labels[0].textContent.trim() : '';
         if (listLabel) list.setAttribute('aria-label', listLabel);
@@ -5051,14 +5196,14 @@
             }
         };
 
-        trigger.addEventListener('click', () => (isOpen() ? close() : open()));
-        list.addEventListener('click', (e) => {
+        bag.listen(trigger, 'click', () => (isOpen() ? close() : open()));
+        bag.listen(list, 'click', (e) => {
             const btn = e.target.closest('.immersive__page-dropdown-item');
             if (!btn) return;
             viewer.goToPage(Number(btn.dataset.order));
             close();
         });
-        list.addEventListener('keydown', (e) => {
+        bag.listen(list, 'keydown', (e) => {
             const cur = items.indexOf(document.activeElement);
             if (cur === -1 && !['Escape'].includes(e.key)) return;
             switch (e.key) {
@@ -5094,7 +5239,7 @@
             }
         });
         if (input) {
-            input.addEventListener('keydown', (e) => {
+            bag.listen(input, 'keydown', (e) => {
                 if (e.key !== 'Enter') return;
                 e.preventDefault();
                 const n = parseInt(input.value, 10);
@@ -5104,14 +5249,22 @@
                 }
             });
         }
-        keys.register(30, (e) => {
-            if (e.key !== 'Escape' || !isOpen()) return false;
-            close();
-            trigger.focus();
-            return true;
-        });
-        viewer.onPageChange.subscribe(markActive);
+        bag.add(
+            keys.register(30, (e) => {
+                if (e.key !== 'Escape' || !isOpen()) return false;
+                close();
+                trigger.focus();
+                return true;
+            })
+        );
+        bag.add(viewer.onPageChange.subscribe(markActive));
         markActive();
+        return {
+            destroy() {
+                close();
+                bag.dispose();
+            },
+        };
     }
 
     /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
@@ -5127,9 +5280,10 @@
      * @param {string} pi
      * @param {string} apiBase
      * @param {{register: Function}} keys  the immersive key dispatcher
-     * @returns {function():void} toggles the overlay
+     * @returns {{toggleGrid: Function, destroy: Function}}
      */
     function setupOverviewGrid(viewer, pi, apiBase, keys) {
+        const bag = createDisposer();
         const GRID_LOADER_TIMEOUT_MS = 8000;
         const GRID_TOP_VISIBLE_AFTER_PX = 200;
         // IIIF size; must cover the largest grid step (230x330 CSS px) on HiDPI
@@ -5156,18 +5310,19 @@
         };
         applyGridThumbSize(readThumbSizeStep(window.localStorage));
         if (gridSizeSlider) {
-            gridSizeSlider.addEventListener('input', () => {
+            bag.listen(gridSizeSlider, 'input', () => {
                 const step = normalizeThumbSizeStep(gridSizeSlider.value);
                 applyGridThumbSize(step);
                 writeThumbSizeStep(window.localStorage, step);
             });
         }
         if (gridScroll && gridTopBtn) {
-            gridTopBtn.addEventListener('click', () => {
+            bag.listen(gridTopBtn, 'click', () => {
                 const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
                 gridScroll.scrollTo({ top: 0, behavior });
             });
-            gridScroll.addEventListener(
+            bag.listen(
+                gridScroll,
                 'scroll',
                 () => {
                     const hide = gridScroll.scrollTop < GRID_TOP_VISIBLE_AFTER_PX;
@@ -5182,21 +5337,24 @@
         let gridOpener = null;
         let gridTrapHandler = null;
         const gridActions = new rxjs.Subject();
-        gridActions.subscribe((e) => {
+        const gridActionsSub = gridActions.subscribe((e) => {
             if (e && e.action === 'clickImage' && typeof e.value === 'number') {
                 viewer.goToPage(e.value);
                 closeGrid();
             }
         });
+        bag.add(() => gridActionsSub.unsubscribe());
         const syncGridSelection = () => {
             if (gridTag) {
                 gridTag.opts.index = currentOrder(viewer);
                 gridTag.update();
             }
         };
-        viewer.onPageChange.subscribe(() => {
-            if (gridOverlay && !gridOverlay.hidden) syncGridSelection();
-        });
+        bag.add(
+            viewer.onPageChange.subscribe(() => {
+                if (gridOverlay && !gridOverlay.hidden) syncGridSelection();
+            })
+        );
         const openGrid = () => {
             gridOpener = gridTrigger || document.activeElement;
             gridOverlay.hidden = false;
@@ -5225,12 +5383,13 @@
                 };
                 const thumbsMount = document.getElementById('immersiveThumbnails');
                 if (thumbsMount) {
-                    thumbsMount.addEventListener('load', hideGridLoader, { capture: true, once: true });
+                    bag.listen(thumbsMount, 'load', hideGridLoader, { capture: true, once: true });
                     // Restricted pages' thumbnails 403; swap the broken <img> for the denied
                     // template's image (admin-configured, else the bundled fallback asset).
                     const templateImg = document.querySelector('#immersiveDeniedContent .immersive__page-denied-img');
                     const deniedThumb = (templateImg && templateImg.getAttribute('src')) || `${apiBase.replace(/\/api\/v1\/?$/, '')}/resources/images/access_denied.png`;
-                    thumbsMount.addEventListener(
+                    bag.listen(
+                        thumbsMount,
                         'error',
                         (e) => {
                             const t = e.target;
@@ -5268,12 +5427,20 @@
             else closeGrid();
         };
 
-        keys.register(20, (e) => {
-            if (e.key !== 'Escape' || !gridOverlay || gridOverlay.hidden) return false;
-            closeGrid();
-            return true;
-        });
-        return toggleGrid;
+        bag.add(
+            keys.register(20, (e) => {
+                if (e.key !== 'Escape' || !gridOverlay || gridOverlay.hidden) return false;
+                closeGrid();
+                return true;
+            })
+        );
+        return {
+            toggleGrid,
+            destroy() {
+                closeGrid();
+                bag.dispose();
+            },
+        };
     }
 
     /** Bottom bar and page-status wiring: indicator, chevrons, actions, fullscreen. */
@@ -5290,8 +5457,10 @@
      * @param {object} hooks
      * @param {Function} hooks.toggleGrid  toggles the thumbnail overview overlay
      * @param {Function} hooks.updateFulltextAvail  fulltext availability follows double-page mode
+     * @returns {{destroy: function():void}}
      */
     function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) {
+        const bag = createDisposer();
         const indicator = document.getElementById('immersivePageIndicator');
         const titlePage = document.getElementById('immersiveTitlePage');
         const total = viewer.getPageCount();
@@ -5306,7 +5475,7 @@
             imageSurface.setAttribute('aria-label', workTitle ? `${workTitle}, ${label} / ${total}` : `${label} / ${total}`);
         };
         updateIndicator();
-        viewer.onPageChange.subscribe(() => updateIndicator());
+        bag.add(viewer.onPageChange.subscribe(() => updateIndicator()));
 
         const prevChevron = document.querySelector('.immersive__chevron[data-immersive-page="prev"]');
         const nextChevron = document.querySelector('.immersive__chevron[data-immersive-page="next"]');
@@ -5317,13 +5486,13 @@
             if (nextChevron) nextChevron.hidden = Math.max(...pages) >= total - 1;
         };
         updateChevrons();
-        viewer.onPageChange.subscribe(updateChevrons);
+        bag.add(viewer.onPageChange.subscribe(updateChevrons));
 
         document.querySelectorAll('[data-immersive-page]').forEach((btn) => {
-            btn.addEventListener('click', () => (btn.dataset.immersivePage === 'next' ? viewer.next() : viewer.prev()));
+            bag.listen(btn, 'click', () => (btn.dataset.immersivePage === 'next' ? viewer.next() : viewer.prev()));
         });
         document.querySelectorAll('[data-immersive-action]').forEach((btn) => {
-            btn.addEventListener('click', () => {
+            bag.listen(btn, 'click', () => {
                 const action = btn.dataset.immersiveAction;
                 if (action === 'zoom-in') viewer.zoomIn();
                 else if (action === 'zoom-out') viewer.zoomOut();
@@ -5343,7 +5512,7 @@
         });
 
         const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
-        document.addEventListener('fullscreenchange', () => {
+        bag.listen(document, 'fullscreenchange', () => {
             const osd = viewer.viewer.openseadragon;
             let done = false;
             const doReset = () => {
@@ -5386,6 +5555,7 @@
                 }
             });
         });
+        return { destroy: bag.dispose };
     }
 
     /** Toggles native browser fullscreen on the immersive viewer hero (Esc exits). */
@@ -5423,14 +5593,17 @@
      * The origin-clean check runs at open time (the canvas only taints once tiles have
      * been drawn); a persistent handler with a mounted flag replaces one(), so an open
      * where the mount cannot happen yet does not burn the only mount attempt.
+     *
+     * @returns {{destroy: function():void}}
      */
-    function bindImageFiltersMount(viewer) {
+    function setupImageFilters(viewer) {
         const btn = document.querySelector(FILTER_TRIGGER_SELECTOR);
-        if (!btn) return;
+        if (!btn) return noop;
+        const bag = createDisposer();
         const $ = window.$ || window.jQuery;
         if (!$) {
-            mountImageFilters(viewer);
-            return;
+            mountImageFilters(viewer, bag);
+            return { destroy: bag.dispose };
         }
         let mounted = false;
         $(btn).on('shown.bs.popover.immersiveFilters', () => {
@@ -5440,9 +5613,11 @@
                 btn.hidden = true;
                 return;
             }
-            mounted = mountImageFilters(viewer);
+            mounted = mountImageFilters(viewer, bag);
             if (mounted) $(btn).popover('update');
         });
+        bag.add(() => $(btn).off('shown.bs.popover.immersiveFilters'));
+        return { destroy: bag.dispose };
     }
 
     /**
@@ -5450,10 +5625,13 @@
      * Filter) without touching the shared popovers controller. On open, focus moves into the
      * portaled popover; Escape inside it closes and returns focus to the trigger; aria-expanded
      * is kept in sync. Hooks only these triggers via Bootstrap's shown/hidden.bs.popover events.
+     *
+     * @returns {{destroy: function():void}}
      */
     function setupImmersivePopoverA11y() {
         const $ = window.$ || window.jQuery;
-        if (!$) return;
+        if (!$) return noop;
+        const bag = createDisposer();
         const FOCUSABLE = 'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"])';
         const selectors = ['#immersiveSharePopover', '#immersiveCitationPopover', '#immersiveFilterPopover'];
         selectors.forEach((sel) => {
@@ -5469,7 +5647,7 @@
                 return all.length ? all[all.length - 1] : null;
             };
 
-            $(trigger).on('shown.bs.popover', () => {
+            $(trigger).on('shown.bs.popover.ivA11y', () => {
                 trigger.setAttribute('aria-expanded', 'true');
                 const pop = popoverEl();
                 if (!pop) return;
@@ -5493,27 +5671,33 @@
                 }
             });
 
-            $(trigger).on('hidden.bs.popover', () => {
+            $(trigger).on('hidden.bs.popover.ivA11y', () => {
                 trigger.setAttribute('aria-expanded', 'false');
                 const active = document.activeElement;
                 if (!active || active === document.body) trigger.focus();
             });
+            bag.add(() => {
+                $(trigger).off('.ivA11y');
+                delete trigger.dataset.a11yBound;
+            });
         });
+        return { destroy: bag.dispose };
     }
 
     /**
      * Mounts the reused imageFilters riot tag on the viewer's live ImageView.Image so the
      * Filter popover adjusts brightness/contrast/etc.
      *
+     * @param {{add: Function}} bag  the caller's disposer; the tag's subscriptions are queued on it
      * @returns {boolean} whether the tag was mounted
      */
-    function mountImageFilters(viewer) {
+    function mountImageFilters(viewer, bag) {
         if (!document.querySelector('imageFilters') || !window.immersiveFilterConfig) return false;
         const [tag] = riot.mount('imageFilters', { image: viewer.viewer, config: window.immersiveFilterConfig });
         if (tag) {
-            bindImageFiltersRendering(viewer, tag);
+            bag.add(bindImageFiltersRendering(viewer, tag));
             // "Reset view" (button and '0' key) clears the image filters as well.
-            viewer.onReset.subscribe(() => tag.resetAll());
+            bag.add(viewer.onReset.subscribe(() => tag.resetAll()));
         }
         return true;
     }
@@ -5530,6 +5714,8 @@
      * Applying the filter methods ourselves from a single handler sidesteps the
      * chain entirely; the tag's start/close/isActive/apply are rebased onto a
      * plain active-set so its UI logic (checkboxes, precludes, reset) keeps working.
+     *
+     * @returns {function():void} detaches the frame handler and the onOpen subscription
      */
     function bindImageFiltersRendering(viewer, tag) {
         const image = viewer.viewer;
@@ -5564,7 +5750,11 @@
             boundOsd.addHandler('update-viewport', renderFilters);
         };
         attach();
-        viewer.onOpen.subscribe(attach);
+        const unsubscribe = viewer.onOpen.subscribe(attach);
+        return () => {
+            unsubscribe();
+            if (boundOsd && typeof boundOsd.removeHandler === 'function') boundOsd.removeHandler('update-viewport', renderFilters);
+        };
     }
 
     /** Immersive view bootstrap: engine construction plus the UI wiring modules. */
@@ -5580,23 +5770,42 @@
      * server rendered the [data-immersive-image] mount, i.e. the user may view the
      * images. Keyboard shortcuts run through one dispatcher whose priorities define
      * the overlay precedence: shortcuts modal (10) → grid overlay (20) → page
-     * dropdown (30) → panels (40).
+     * dropdown (30) → panels (40). Every setup module returns a destroyable; the
+     * returned handle tears all of them down along with the engine.
      *
      * @param {HTMLElement} immersiveRoot  the .immersive root element
+     * @returns {{destroy: function():void}}
      */
     function initImmersiveViewer(immersiveRoot) {
+        const parts = [];
+        const use = (part) => {
+            parts.push(part);
+            return part;
+        };
+        let viewer = null;
+        let destroyed = false;
+        const handle = {
+            destroy() {
+                destroyed = true;
+                while (parts.length) parts.pop().destroy();
+                if (viewer) viewer.destroy();
+                viewer = null;
+                keys.detach();
+            },
+        };
+
         const keys = createKeyDispatcher();
         keys.attach(document);
-        const panels = setupPanels(immersiveRoot, keys);
-        setupPanelResize(immersiveRoot);
-        setupMetadataToggle();
-        setupImmersivePopoverA11y();
-        setupShortcutsModal(panels.closePanels, keys);
+        const panels = use(setupPanels(immersiveRoot, keys));
+        use(setupPanelResize(immersiveRoot));
+        use(setupMetadataToggle());
+        use(setupImmersivePopoverA11y());
+        use(setupShortcutsModal(panels.closePanels, keys));
 
         // No VIEW_IMAGES: the stage shows a server-rendered access-denied placeholder
         // and the image-dependent chrome is not rendered, so there is no viewer to build.
         const el = immersiveRoot.querySelector('[data-immersive-image]');
-        if (!el) return;
+        if (!el) return handle;
 
         const pi = el.dataset.pi;
         const apiBase = el.dataset.apiBase;
@@ -5621,30 +5830,34 @@
         // Services and per-page access share the memoized manifest fetch (one request).
         Promise.all([loadPageServices(pi, apiBase), loadPageAccess(pi, apiBase)])
             .then(([services, restricted]) => {
-                const viewer = new IvViewer({ element: el, services, startOrder, maxZoom, allowZoom, restricted, deniedText });
+                if (destroyed) return;
+                viewer = new IvViewer({ element: el, services, startOrder, maxZoom, allowZoom, restricted, deniedText });
                 viewer.viewer.openseadragon.addOnceHandler('tile-loaded', hideStageLoader);
                 // A restricted entry page never fires tile-loaded (tiles 403); onOpen fires
                 // once the (failed) load settles, so the loader is not left spinning.
                 viewer.onOpen.subscribe(hideStageLoader);
-                attachUrlSync(viewer, pi);
-                bindImageFiltersMount(viewer);
-                registerViewerNavKeys(keys, viewer, el);
+                use(attachUrlSync(viewer, pi));
+                use(setupImageFilters(viewer));
+                use(registerViewerNavKeys(keys, viewer, el));
 
                 loadPageLabels(pi, apiBase, fetch, document.documentElement.lang)
-                    .then((labels) => setupPageDropdown(viewer, labels, keys))
+                    .then((labels) => {
+                        if (!destroyed) use(setupPageDropdown(viewer, labels, keys));
+                    })
                     .catch((e) => console.warn('immersive page labels failed', e));
 
-                setupToc(viewer);
-                setupFulltextSearch(viewer, pi, apiBase);
-                const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels, keys);
-                setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys);
-                const toggleGrid = setupOverviewGrid(viewer, pi, apiBase, keys);
-                setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail });
+                use(setupToc(viewer));
+                use(setupSearchPanel(viewer, pi, apiBase));
+                const fulltext = use(setupFulltextPanel(viewer, pi, apiBase, panels, keys));
+                use(setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys));
+                const grid = use(setupOverviewGrid(viewer, pi, apiBase, keys));
+                use(setupBottomBar(el, viewer, { toggleGrid: grid.toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail }));
             })
             .catch((e) => {
                 hideStageLoader();
                 console.error('immersive viewer init failed', e);
             });
+        return handle;
     }
 
     window.ShareImageFragment = ShareImageFragment;

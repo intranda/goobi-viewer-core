@@ -8,11 +8,11 @@ import { setupPanels, setupPanelResize, setupToc, setupMetadataToggle } from './
 import { setupShortcutsModal } from './ivShortcutsModal.mjs';
 import { setupFulltextPanel } from './ivFulltextPanel.mjs';
 import { setupLayoutTagsPanel } from './ivLayoutTagsPanel.mjs';
-import { setupFulltextSearch } from './ivSearchPanel.mjs';
+import { setupSearchPanel } from './ivSearchPanel.mjs';
 import { setupPageDropdown } from './ivPageDropdown.mjs';
 import { setupOverviewGrid } from './ivGridOverlay.mjs';
 import { setupBottomBar } from './ivBottomBar.mjs';
-import { bindImageFiltersMount, setupImmersivePopoverA11y } from './ivImageFilters.mjs';
+import { setupImageFilters, setupImmersivePopoverA11y } from './ivImageFilters.mjs';
 
 /** Hides the stage loading indicator at the latest after this, even without a painted tile. */
 const STAGE_LOADER_TIMEOUT_MS = 8000;
@@ -72,7 +72,7 @@ export function initImmersiveViewer(immersiveRoot) {
             // once the (failed) load settles, so the loader is not left spinning.
             viewer.onOpen.subscribe(hideStageLoader);
             attachUrlSync(viewer, pi);
-            bindImageFiltersMount(viewer);
+            setupImageFilters(viewer);
             registerViewerNavKeys(keys, viewer, el);
 
             loadPageLabels(pi, apiBase, fetch, document.documentElement.lang)
@@ -80,7 +80,7 @@ export function initImmersiveViewer(immersiveRoot) {
                 .catch((e) => console.warn('immersive page labels failed', e));
 
             setupToc(viewer);
-            setupFulltextSearch(viewer, pi, apiBase);
+            setupSearchPanel(viewer, pi, apiBase);
             const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels, keys);
             setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys);
             const toggleGrid = setupOverviewGrid(viewer, pi, apiBase, keys);

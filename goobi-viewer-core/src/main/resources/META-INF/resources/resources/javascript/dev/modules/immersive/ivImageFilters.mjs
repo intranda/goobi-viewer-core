@@ -23,7 +23,7 @@ function isViewerOriginClean(viewer) {
  * been drawn); a persistent handler with a mounted flag replaces one(), so an open
  * where the mount cannot happen yet does not burn the only mount attempt.
  */
-export function bindImageFiltersMount(viewer) {
+export function setupImageFilters(viewer) {
     const btn = document.querySelector(FILTER_TRIGGER_SELECTOR);
     if (!btn) return;
     const $ = window.$ || window.jQuery;

@@ -1,6 +1,6 @@
 /** Unit tests for the search panel wiring: result rendering, stale responses, error state. */
 import { jest } from '@jest/globals';
-import { setupFulltextSearch } from '../ivSearchPanel.mjs';
+import { setupSearchPanel } from '../ivSearchPanel.mjs';
 import { Emitter } from '../ivViewer.mjs';
 
 function fakeViewer() {
@@ -30,7 +30,7 @@ function mountMarkup() {
             </div>
         </aside>`;
     const viewer = fakeViewer();
-    setupFulltextSearch(viewer, 'PI', '/api/v1');
+    setupSearchPanel(viewer, 'PI', '/api/v1');
     return {
         viewer,
         input: document.querySelector('#immersivePanelSearch input'),
@@ -56,7 +56,7 @@ function submit(form, input, term) {
     form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 }
 
-describe('setupFulltextSearch', () => {
+describe('setupSearchPanel', () => {
     const realFetch = global.fetch;
     afterEach(() => {
         global.fetch = realFetch;
