@@ -226,6 +226,10 @@ public class RecordsFilesImageResource extends ImageResource {
     public void createResourceURI(HttpServletRequest request, String directory, String filename) throws IllegalRequestException {
         try {
             AbstractApiUrlManager urls = DataManager.getInstance().getRestApiManager().getCMSMediaImageApiManager(Version.v1);
+            if (urls == null) {
+                // No API manager exists while a legacy REST URL is configured
+                throw new IllegalRequestException("CMS media image API is not available for the configured REST API URL");
+            }
             this.resourceURI = super.createResourceURI(URI.create(urls.getApiUrl()), directory, filename);
             String toReplace = URLEncoder.encode("{pi}", "UTF-8");
             this.resourceURI = URI.create(this.resourceURI.toString().replace(toReplace, directory));

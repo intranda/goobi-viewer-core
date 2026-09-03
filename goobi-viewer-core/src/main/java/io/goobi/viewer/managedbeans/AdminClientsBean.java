@@ -174,7 +174,7 @@ public class AdminClientsBean implements Serializable {
     public void save(ClientApplication client) {
         String clientId = Optional.ofNullable(client).map(ClientApplication::getClientIdentifier).orElse("-");
         try {
-            if (dao.saveClientApplication(client)) {
+            if (dao.saveClientApplication(client) != null) {
                 Messages.info(null, "admin__clients__save_client__success", clientId);
             } else {
                 Messages.error(null, "admin__clients__save_client__error", clientId);

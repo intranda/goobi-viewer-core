@@ -69,7 +69,7 @@ class AccessConditionUtilsClientsTest extends AbstractDatabaseEnabledTest {
 
         client = new ClientApplication("12345");
         client.setAccessStatus(AccessStatus.GRANTED);
-        if (!DataManager.getInstance().getDao().saveClientApplication(client)) {
+        if (DataManager.getInstance().getDao().saveClientApplication(client) == null) {
             logger.error("ClientApplication could not be added to the DB.");
         }
 

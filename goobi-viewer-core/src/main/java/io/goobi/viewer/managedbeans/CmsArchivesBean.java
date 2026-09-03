@@ -147,7 +147,7 @@ public class CmsArchivesBean implements Serializable {
         }
 
         config.setDateUpdated(DateTools.now());
-        return DataManager.getInstance().getDao().saveCMSArchiveConfig(config);
+        return DataManager.getInstance().getDao().saveCMSArchiveConfig(config) != null;
     }
 
     /**

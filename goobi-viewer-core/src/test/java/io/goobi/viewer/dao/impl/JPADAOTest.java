@@ -3075,11 +3075,25 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
-     * @verifies return true for given input
-     * @see JPADAO#saveTermsOfUse
+     * @verifies return the persisted entity
+     * @see JPADAO#saveTermsOfUse(TermsOfUse)
      */
     @Test
-    void saveTermsOfUse_shouldReturnTrueForGivenInput() throws DAOException {
+    void saveTermsOfUse_shouldReturnThePersistedEntity() throws DAOException {
+        TermsOfUse tou = new TermsOfUse();
+        tou.setActive(true);
+
+        TermsOfUse saved = DataManager.getInstance().getDao().saveTermsOfUse(tou);
+        assertNotNull(saved);
+        assertTrue(saved.isActive());
+    }
+
+    /**
+     * @verifies persist active flag and translations
+     * @see JPADAO#saveTermsOfUse(TermsOfUse)
+     */
+    @Test
+    void saveTermsOfUse_shouldPersistActiveFlagAndTranslations() throws DAOException {
         TermsOfUse tou = new TermsOfUse();
         tou.setActive(true);
         DataManager.getInstance().getDao().saveTermsOfUse(tou);

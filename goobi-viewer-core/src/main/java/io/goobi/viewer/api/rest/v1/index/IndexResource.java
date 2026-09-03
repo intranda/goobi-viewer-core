@@ -498,7 +498,7 @@ public class IndexResource {
         String finalQuery = SolrTools.cleanUpQuery(StringTools.unescapeCriticalUrlChracters(filterQuery));
 
         String coordQuery = "*:*";
-        if (!finalQuery.startsWith("{!join")) {
+        if (!finalQuery.startsWith("{!join")) { //NOSONAR - filterQuery carries a @DefaultValue, so cleanUpQuery never returns null
             finalQuery =
                     new StringBuilder()
                             .append(finalQuery)

@@ -3080,10 +3080,10 @@ public class ActiveDocumentBean implements Serializable {
                     } else if (currentRightPage.isPresent()) {
                         imageToShow = currentRightPage.get().getOrder() + "-" + currentRightPage.get().getOrder();
                     }
-                } else if (doublePageMode) {
-                    imageToShow = String.valueOf(viewManager.getCurrentPage().getOrder() + "-" + viewManager.getCurrentPage().getOrder());
-                } else {
-                    imageToShow = String.valueOf(viewManager.getCurrentPage().getOrder());
+                } else if (currentPage != null) {
+                    imageToShow = doublePageMode
+                            ? String.valueOf(currentPage.getOrder() + "-" + currentPage.getOrder())
+                            : String.valueOf(currentPage.getOrder());
                 }
             }
         } finally {

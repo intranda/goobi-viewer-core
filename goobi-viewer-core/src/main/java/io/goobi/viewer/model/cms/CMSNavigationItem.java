@@ -202,13 +202,17 @@ public class CMSNavigationItem implements Comparable<CMSNavigationItem>, Seriali
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should not overflow for distant order values
+     */
     @Override
     public int compareTo(CMSNavigationItem o) {
         if (this == o) {
             return 0;
         } else if (getOrder() != null && o.getOrder() != null) {
-            return (getOrder() - o.getOrder());
+            return Integer.compare(getOrder(), o.getOrder());
         } else if (getOrder() != null) {
             return -1;
         } else {

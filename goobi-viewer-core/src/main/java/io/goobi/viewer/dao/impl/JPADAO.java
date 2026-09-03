@@ -4629,22 +4629,23 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean saveCMSArchiveConfig(CMSArchiveConfig config) throws DAOException {
+    public CMSArchiveConfig saveCMSArchiveConfig(CMSArchiveConfig config) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
+            CMSArchiveConfig saved = config;
             if (config.getId() == null) {
                 em.persist(config);
             } else {
-                em.merge(config);
+                saved = em.merge(config);
             }
             commitTransaction(em);
-            return true;
+            return saved;
         } catch (PersistenceException e) {
             logger.error(e.toString(), e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -5901,24 +5902,30 @@ public class JPADAO implements IDAO {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should persist active flag and translations
+     * @should return the persisted entity
+     */
     @Override
-    public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException {
+    public TermsOfUse saveTermsOfUse(TermsOfUse tou) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
+        TermsOfUse saved = tou;
         try {
             startTransaction(em);
             if (tou.getId() == null) {
                 //create initial tou
                 em.persist(tou);
             } else {
-                em.merge(tou);
+                saved = em.merge(tou);
             }
             commitTransaction(em);
         } finally {
             close(em);
         }
-        return true;
+        return saved;
     }
 
     /** {@inheritDoc} */
@@ -6495,22 +6502,23 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean saveCookieBanner(CookieBanner banner) throws DAOException {
+    public CookieBanner saveCookieBanner(CookieBanner banner) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
+            CookieBanner saved = banner;
             if (banner.getId() == null) {
                 //create initial tou
                 em.persist(banner);
             } else {
-                em.merge(banner);
+                saved = em.merge(banner);
             }
             commitTransaction(em);
-            return true;
+            return saved;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -6518,23 +6526,24 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException {
+    public Disclaimer saveDisclaimer(Disclaimer disclaimer) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
+            Disclaimer saved = disclaimer;
             if (disclaimer.getId() == null) {
                 //create initial tou
                 em.persist(disclaimer);
             } else {
-                em.merge(disclaimer);
+                saved = em.merge(disclaimer);
             }
             commitTransaction(em);
-            return true;
+            return saved;
         } catch (PersistenceException e) {
             logger.error("Error saving disclaimer", e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -7022,22 +7031,23 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean saveClientApplication(ClientApplication client) throws DAOException {
+    public ClientApplication saveClientApplication(ClientApplication client) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
+            ClientApplication saved = client;
             if (client.getId() == null) {
                 em.persist(client);
             } else {
-                em.merge(client);
+                saved = em.merge(client);
             }
             commitTransaction(em);
-            return true;
+            return saved;
         } catch (PersistenceException e) {
             logger.error("Error saving client application", e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }

@@ -206,7 +206,7 @@ public class ClientApplicationManager {
         if (StringUtils.isNotBlank(ip)) {
             client.setClientIp(ip);
         }
-        if (dao.saveClientApplication(client)) {
+        if (dao.saveClientApplication(client) != null) {
             return client;
         }
 

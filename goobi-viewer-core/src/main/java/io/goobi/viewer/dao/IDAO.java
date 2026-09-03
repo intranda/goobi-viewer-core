@@ -1695,10 +1695,10 @@ public interface IDAO {
      * saveCMSArchiveConfig.
      *
      * @param config CMS archive configuration to persist or update
-     * @return true if archive config was saved successfully; false otherwise
+     * @return the persisted archive config; null if saving failed
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    public boolean saveCMSArchiveConfig(CMSArchiveConfig config) throws DAOException;
+    public CMSArchiveConfig saveCMSArchiveConfig(CMSArchiveConfig config) throws DAOException;
 
     /**
      * deleteCMSArchiveConfig.
@@ -2363,7 +2363,7 @@ public interface IDAO {
      */
     public boolean deleteRecordNote(CMSRecordNote note) throws DAOException;
 
-    public boolean saveTermsOfUse(TermsOfUse tou) throws DAOException;
+    public TermsOfUse saveTermsOfUse(TermsOfUse tou) throws DAOException;
 
     public TermsOfUse getTermsOfUse() throws DAOException;
 
@@ -2439,7 +2439,7 @@ public interface IDAO {
 
     public CookieBanner getCookieBanner() throws DAOException;
 
-    public boolean saveCookieBanner(CookieBanner banner) throws DAOException;
+    public CookieBanner saveCookieBanner(CookieBanner banner) throws DAOException;
 
     /**
      * Get the single stored {@link Disclaimer}. May return null if no disclaimer has been persisted yet
@@ -2449,7 +2449,7 @@ public interface IDAO {
      */
     public Disclaimer getDisclaimer() throws DAOException;
 
-    public boolean saveDisclaimer(Disclaimer disclaimer) throws DAOException;
+    public Disclaimer saveDisclaimer(Disclaimer disclaimer) throws DAOException;
 
     public Long getNumRecordsWithComments(User user) throws DAOException;
 
@@ -2462,7 +2462,7 @@ public interface IDAO {
 
     public ClientApplication getClientApplication(long id) throws DAOException;
 
-    public boolean saveClientApplication(ClientApplication client) throws DAOException;
+    public ClientApplication saveClientApplication(ClientApplication client) throws DAOException;
 
     public boolean deleteClientApplication(long id) throws DAOException;
 

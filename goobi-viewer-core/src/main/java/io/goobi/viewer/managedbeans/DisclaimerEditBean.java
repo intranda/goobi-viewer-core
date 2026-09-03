@@ -77,7 +77,7 @@ public class DisclaimerEditBean implements Serializable {
         if (this.disclaimerForEdit != null) {
             //            this.disclaimerForEdit.setAcceptanceScope(new ConsentScope(this.disclaimerForEdit.getAcceptanceScope().toString()));
             try {
-                if (!this.dao.saveDisclaimer(this.disclaimerForEdit)) {
+                if (this.dao.saveDisclaimer(this.disclaimerForEdit) == null) {
                     throw new DAOException("Saving disclaimer failed");
                 }
                 Messages.info("admin__legal__disclaimer_save_success");
@@ -135,7 +135,7 @@ public class DisclaimerEditBean implements Serializable {
         if (this.dao != null) {
             Disclaimer disclaimer = dao.getDisclaimer();
             disclaimer.setRequiresConsentAfter(DateTools.now());
-            if (dao.saveDisclaimer(disclaimer)) {
+            if (dao.saveDisclaimer(disclaimer) != null) {
                 if (this.disclaimerForEdit != null) {
                     this.disclaimerForEdit.setRequiresConsentAfter(disclaimer.getRequiresConsentAfter());
                 }
