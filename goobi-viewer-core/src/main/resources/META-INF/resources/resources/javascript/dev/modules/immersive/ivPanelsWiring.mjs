@@ -2,6 +2,7 @@
 
 import { offsetTopWithin } from './ivTextImageLink.mjs';
 import { pickActiveTocPageNo, panelIdForKeyEvent } from './viewerImmersive.mjs';
+import { isOverlayOpen } from './ivSelectors.mjs';
 
 /**
  * Wires the rail buttons to their left panels (open/close with ARIA + inert
@@ -77,7 +78,6 @@ export function setupPanels(immersiveRoot, keys) {
         });
     });
 
-    const overlayOpen = () => !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden])');
     keys.register(40, (e) => {
         if (e.key === 'Escape') {
             if (!document.querySelector('.immersive__panel-left.is-open')) return false;
@@ -85,7 +85,7 @@ export function setupPanels(immersiveRoot, keys) {
             return true;
         }
         const panelId = panelIdForKeyEvent(e);
-        if (!panelId || overlayOpen()) return false;
+        if (!panelId || isOverlayOpen()) return false;
         const btn = document.querySelector(`[data-immersive-panel="${panelId}"]`);
         if (!btn) return false;
         e.preventDefault();

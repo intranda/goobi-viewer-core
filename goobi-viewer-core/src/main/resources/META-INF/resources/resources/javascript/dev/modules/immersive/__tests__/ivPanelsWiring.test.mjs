@@ -103,6 +103,13 @@ describe('setupPanels', () => {
         expect(keys.handleEvent(altDigit('Digit1'))).toBe(false);
         expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(false);
     });
+
+    test('Alt+digit is ignored while a Bootstrap popover (share, cite, filter) is open', () => {
+        const { keys, panel } = mountMarkup();
+        document.body.insertAdjacentHTML('beforeend', '<div class="popover show"></div>');
+        expect(keys.handleEvent(altDigit('Digit1'))).toBe(false);
+        expect(panel('immersivePanelToc').classList.contains('is-open')).toBe(false);
+    });
 });
 
 describe('setupPanelResize', () => {

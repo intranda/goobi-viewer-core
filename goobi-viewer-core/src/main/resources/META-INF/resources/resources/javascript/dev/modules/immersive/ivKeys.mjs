@@ -1,16 +1,7 @@
 /** Central keydown dispatcher for the immersive view. */
 
 import { isTypingTarget } from './viewerImmersive.mjs';
-
-/**
- * Overlays/popovers that swallow single-key shortcuts while open — WITHOUT the
- * left panels, which some shortcuts (the annotations toggle lives inside the
- * fulltext panel) must keep working under. Shared so the lists cannot drift.
- */
-export const OVERLAY_SELECTOR_BASE = '#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden]), .popover.show';
-
-/** Overlays/panels/popovers that own the arrow and zoom keys while open. */
-const OVERLAY_OPEN_SELECTOR = `${OVERLAY_SELECTOR_BASE}, .immersive__panel-left.is-open`;
+import { isOverlayOpen } from './ivSelectors.mjs';
 
 /**
  * Creates the immersive key dispatcher: one document-level keydown listener,
@@ -78,7 +69,7 @@ export function registerViewerNavKeys(keys, viewer, stageEl, priority = 50) {
         if (!zoomIn && !zoomOut && !prev && !next && !reset && !rotateCW && !rotateCCW) return false;
         if (isTypingTarget(e.target)) return false;
         if (stageEl && stageEl.contains(document.activeElement)) return false;
-        if (document.querySelector(OVERLAY_OPEN_SELECTOR)) return false;
+        if (isOverlayOpen({ panels: true })) return false;
         if ((zoomIn || zoomOut) && !viewer.allowZoom) return false;
         if (prev) viewer.prev();
         else if (next) viewer.next();

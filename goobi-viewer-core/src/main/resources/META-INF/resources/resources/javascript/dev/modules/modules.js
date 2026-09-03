@@ -2171,17 +2171,27 @@
         return parseLayoutAnnotations(await res.json());
     }
 
-    /** Central keydown dispatcher for the immersive view. */
+    /** Shared DOM contract: which immersive overlays and panels count as open for the keyboard guards. */
+
+    /** Grid, shortcuts modal, page dropdown and Bootstrap popovers; they swallow single-key shortcuts while open. */
+    const OVERLAY_OPEN_SELECTOR = '#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden]), .popover.show';
+
+    /** An open left rail panel. */
+    const PANEL_OPEN_SELECTOR = '.immersive__panel-left.is-open';
 
     /**
-     * Overlays/popovers that swallow single-key shortcuts while open — WITHOUT the
-     * left panels, which some shortcuts (the annotations toggle lives inside the
-     * fulltext panel) must keep working under. Shared so the lists cannot drift.
+     * Whether an immersive overlay is open. With `panels: true` an open left panel
+     * counts as well (arrow and zoom keys, the `?` shortcut); without, panels are
+     * ignored (Alt+digit toggles, the annotations key inside the fulltext panel).
+     *
+     * @param {{panels?: boolean}} [options]
+     * @returns {boolean}
      */
-    const OVERLAY_SELECTOR_BASE = '#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden]), .popover.show';
+    function isOverlayOpen({ panels = false } = {}) {
+        return !!document.querySelector(panels ? `${OVERLAY_OPEN_SELECTOR}, ${PANEL_OPEN_SELECTOR}` : OVERLAY_OPEN_SELECTOR);
+    }
 
-    /** Overlays/panels/popovers that own the arrow and zoom keys while open. */
-    const OVERLAY_OPEN_SELECTOR = `${OVERLAY_SELECTOR_BASE}, .immersive__panel-left.is-open`;
+    /** Central keydown dispatcher for the immersive view. */
 
     /**
      * Creates the immersive key dispatcher: one document-level keydown listener,
@@ -2249,7 +2259,7 @@
             if (!zoomIn && !zoomOut && !prev && !next && !reset && !rotateCW && !rotateCCW) return false;
             if (isTypingTarget(e.target)) return false;
             if (stageEl && stageEl.contains(document.activeElement)) return false;
-            if (document.querySelector(OVERLAY_OPEN_SELECTOR)) return false;
+            if (isOverlayOpen({ panels: true })) return false;
             if ((zoomIn || zoomOut) && !viewer.allowZoom) return false;
             if (prev) viewer.prev();
             else if (next) viewer.next();
@@ -2510,7 +2520,6 @@
             });
         });
 
-        const overlayOpen = () => !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersiveShortcuts:not([hidden]), #immersivePageDropdown:not([hidden])');
         keys.register(40, (e) => {
             if (e.key === 'Escape') {
                 if (!document.querySelector('.immersive__panel-left.is-open')) return false;
@@ -2518,7 +2527,7 @@
                 return true;
             }
             const panelId = panelIdForKeyEvent(e);
-            if (!panelId || overlayOpen()) return false;
+            if (!panelId || isOverlayOpen()) return false;
             const btn = document.querySelector(`[data-immersive-panel="${panelId}"]`);
             if (!btn) return false;
             e.preventDefault();
@@ -2812,10 +2821,8 @@
         const closeBtn = overlay.querySelector('.immersive__shortcuts-close');
         let opener = null;
         let trapHandler = null;
-        const otherOverlayOpen = () =>
-            !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel-left.is-open, .popover.show');
         const openShortcuts = () => {
-            if (!overlay.hidden || otherOverlayOpen()) return;
+            if (!overlay.hidden || isOverlayOpen({ panels: true })) return;
             opener = document.activeElement;
             overlay.hidden = false;
             trigger.setAttribute('aria-expanded', 'true');
@@ -2854,7 +2861,7 @@
                 closeShortcuts();
                 return true;
             }
-            if (e.key === '?' && overlay.hidden && !e.ctrlKey && !e.metaKey && !e.altKey && !isTypingTarget(e.target) && !otherOverlayOpen()) {
+            if (e.key === '?' && overlay.hidden && !e.ctrlKey && !e.metaKey && !e.altKey && !isTypingTarget(e.target) && !isOverlayOpen({ panels: true })) {
                 e.preventDefault();
                 openShortcuts();
                 return true;
@@ -3580,9 +3587,7 @@
                 if (isTypingTarget(e.target)) return false;
                 const panel = checkbox.closest('.immersive__panel-left');
                 if (checkbox.disabled || (panel && !panel.classList.contains('is-open'))) return false;
-                if (document.querySelector(OVERLAY_SELECTOR_BASE)) {
-                    return false;
-                }
+                if (isOverlayOpen()) return false;
                 setEnabled(!checkbox.checked);
                 return true;
             });
@@ -4809,7 +4814,8 @@
      * @param {string} apiBase
      */
     function setupFulltextSearch(viewer, pi, apiBase) {
-        const searchState = { hits: [], activeIndex: -1, term: '' };
+        const searchState = { hits: [], activeIndex: -1, term: '', failed: false };
+        let searchReq = 0;
         const resultsBox = document.getElementById('immersiveSearchResults');
         const resultsList = document.getElementById('immersiveResultsList');
         const hitCounter = document.getElementById('immersiveHitCounter');
@@ -4828,16 +4834,15 @@
         const renderResults = () => {
             if (!resultsBox || !resultsList) return;
             resultsBox.hidden = !searchState.term;
+            const emptyLabel = (searchState.failed ? resultsBox.dataset.labelError : resultsBox.dataset.labelEmpty) || '';
             if (hitCounter) {
-                hitCounter.textContent = searchState.hits.length
-                    ? `${searchState.activeIndex + 1} / ${searchState.hits.length}`
-                    : (searchState.term && resultsBox.dataset.labelEmpty) || '';
+                hitCounter.textContent = searchState.hits.length ? `${searchState.activeIndex + 1} / ${searchState.hits.length}` : (searchState.term && emptyLabel) || '';
             }
             resultsList.replaceChildren();
             if (searchState.term && !searchState.hits.length) {
                 const empty = document.createElement('li');
                 empty.className = 'immersive__results-empty';
-                empty.textContent = resultsBox.dataset.labelEmpty || '';
+                empty.textContent = emptyLabel;
                 resultsList.appendChild(empty);
                 return;
             }
@@ -4875,15 +4880,24 @@
             renderResults();
         };
 
+        /** Only the latest submitted search may render; a slower older response is dropped. */
         const runSearch = async (term) => {
+            const req = ++searchReq;
+            let hits = [];
+            let failed = false;
+            if (term) {
+                try {
+                    hits = await search(pi, apiBase, term);
+                } catch (e) {
+                    console.error('immersive fulltext search failed', e);
+                    failed = true;
+                }
+            }
+            if (req !== searchReq) return;
             searchState.term = term;
-            searchState.hits = term
-                ? await search(pi, apiBase, term).catch((e) => {
-                      console.error('immersive fulltext search failed', e);
-                      return [];
-                  })
-                : [];
-            searchState.activeIndex = searchState.hits.length ? 0 : -1;
+            searchState.hits = hits;
+            searchState.failed = failed;
+            searchState.activeIndex = hits.length ? 0 : -1;
             renderResults();
             if (searchState.activeIndex >= 0) goToHit(0);
             else viewer.clearHighlights();

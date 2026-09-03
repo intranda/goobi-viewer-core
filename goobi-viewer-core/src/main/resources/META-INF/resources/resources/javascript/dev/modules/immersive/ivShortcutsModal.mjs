@@ -2,6 +2,7 @@
 
 import { isTypingTarget, isMacPlatform, macKeyLabel } from './viewerImmersive.mjs';
 import { createFocusTrap } from './ivA11y.mjs';
+import { isOverlayOpen } from './ivSelectors.mjs';
 
 /**
  * Keyboard-shortcuts help modal: opened via the rail button or the `?` key,
@@ -37,10 +38,8 @@ export function setupShortcutsModal(closePanels, keys) {
     const closeBtn = overlay.querySelector('.immersive__shortcuts-close');
     let opener = null;
     let trapHandler = null;
-    const otherOverlayOpen = () =>
-        !!document.querySelector('#immersiveGridOverlay:not([hidden]), #immersivePageDropdown:not([hidden]), .immersive__panel-left.is-open, .popover.show');
     const openShortcuts = () => {
-        if (!overlay.hidden || otherOverlayOpen()) return;
+        if (!overlay.hidden || isOverlayOpen({ panels: true })) return;
         opener = document.activeElement;
         overlay.hidden = false;
         trigger.setAttribute('aria-expanded', 'true');
@@ -79,7 +78,7 @@ export function setupShortcutsModal(closePanels, keys) {
             closeShortcuts();
             return true;
         }
-        if (e.key === '?' && overlay.hidden && !e.ctrlKey && !e.metaKey && !e.altKey && !isTypingTarget(e.target) && !otherOverlayOpen()) {
+        if (e.key === '?' && overlay.hidden && !e.ctrlKey && !e.metaKey && !e.altKey && !isTypingTarget(e.target) && !isOverlayOpen({ panels: true })) {
             e.preventDefault();
             openShortcuts();
             return true;

@@ -2,7 +2,7 @@
 
 import { isTypingTarget } from './viewerImmersive.mjs';
 import { offsetTopWithin, scrollTopToReveal } from './ivTextImageLink.mjs';
-import { OVERLAY_SELECTOR_BASE } from './ivKeys.mjs';
+import { isOverlayOpen } from './ivSelectors.mjs';
 
 /** localStorage key persisting the annotations toggle, following the immersive-* key convention. */
 export const ANNOTATIONS_KEY = 'immersive-annotations';
@@ -719,9 +719,7 @@ export function setupAnnotationsToggle({ root, checkbox, storage, keys }) {
             if (isTypingTarget(e.target)) return false;
             const panel = checkbox.closest('.immersive__panel-left');
             if (checkbox.disabled || (panel && !panel.classList.contains('is-open'))) return false;
-            if (document.querySelector(OVERLAY_SELECTOR_BASE)) {
-                return false;
-            }
+            if (isOverlayOpen()) return false;
             setEnabled(!checkbox.checked);
             return true;
         });
