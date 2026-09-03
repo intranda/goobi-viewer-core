@@ -24,6 +24,7 @@ package io.goobi.viewer.api.rest.v1.records;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_ANNOTATIONS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYOUT_TAGS_INDEX;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_METADATA_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_NER_TAGS;
@@ -272,6 +273,42 @@ class RecordResourceTest extends AbstractRestApiTest {
             JSONObject doc = new JSONObject(entity);
             assertNotNull(doc.getJSONArray("pages"));
             assertEquals(322, doc.getJSONArray("pages").length());
+        }
+    }
+
+    /**
+     * @verifies return index with page count
+     * @see RecordResource#getLayoutTagIndex()
+     */
+    @Test
+    void getLayoutTagIndex_shouldReturnIndexWithPageCount() {
+        String url = urls.path(RECORDS_RECORD, RECORDS_LAYOUT_TAGS_INDEX).params(PI_NER).build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, response.getStatus(), "Should return status 200: " + response.getStatusInfo().getReasonPhrase());
+            String entity = response.readEntity(String.class);
+            assertNotNull(entity);
+            JSONObject doc = new JSONObject(entity);
+            assertEquals(PI_NER, doc.getString("pi"));
+            assertEquals(322, doc.getInt("pageCount"));
+            assertNotNull(doc.getJSONArray("tags"));
+        }
+    }
+
+    /**
+     * @verifies return 404 for unknown record
+     * @see RecordResource#getLayoutTagIndex()
+     */
+    @Test
+    void getLayoutTagIndex_shouldReturn404ForUnknownRecord() {
+        String url = urls.path(RECORDS_RECORD, RECORDS_LAYOUT_TAGS_INDEX).params("PPN_does_not_exist").build();
+        try (Response response = target(url)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(404, response.getStatus(), "Should return status 404: " + response.getStatusInfo().getReasonPhrase());
         }
     }
 

@@ -334,6 +334,8 @@ public final class SolrConstants {
     /** Constant <code>FACET_DC="FACET_DC"</code>. */
     public static final String FACET_DC = "FACET_DC";
 
+    /** Multi-valued field holding the ALTO layout-tag LABELs occurring on a page. */
+    public static final String MD_LAYOUTTAG = "MD_LAYOUTTAG";
     /** Constant <code>MD_TEXT="MD_TEXT"</code>. */
     public static final String MD_TEXT = "MD_TEXT"; //content of UGC docs
     /** Constant <code>MD_BODY="MD_BODY"</code>. */

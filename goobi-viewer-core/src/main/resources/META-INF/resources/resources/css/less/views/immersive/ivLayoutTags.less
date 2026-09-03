@@ -1,0 +1,439 @@
+/* ==============================================================
+   Immersive View: Layout Tags
+   style declarations for viewImmersive.xhtml (layout-tag panel: sticky head,
+   tag pick menu, page range, page-grouped hit list)
+   ==============================================================*/
+
+@immersive-layout-tags-font: 1.3rem;
+@immersive-layout-tags-dot: 9px;
+@immersive-layout-tags-z-sticky: 3;
+@immersive-layout-tags-z-menu: 20;
+
+.immersive {
+    &__panel-layout-tags {
+        color: @immersive-chrome-fg;
+    }
+
+    /* STICKY HEAD */
+    &__layout-tags-sticky {
+        position: sticky;
+        top: 0;
+        z-index: @immersive-layout-tags-z-sticky;
+        margin: 0 -12px;
+        padding: 0 12px;
+        background-color: @immersive-chrome-bg;
+        border-bottom: 1px solid transparent;
+        transition:
+            border-color @immersive-transition,
+            box-shadow @immersive-transition;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: -16px;
+            left: 0;
+            right: 0;
+            height: 16px;
+            background-color: @immersive-chrome-bg;
+        }
+
+        &.-scrolled {
+            border-bottom-color: @immersive-chrome-border-color;
+            box-shadow: @immersive-sticky-shadow;
+        }
+    }
+
+    /* PAGE RANGE */
+    &__layout-tags-range {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0 0 8px;
+        font-size: @immersive-layout-tags-font;
+    }
+
+    &__layout-tags-range-label {
+        flex-shrink: 0;
+        margin: 0;
+        font-weight: 400;
+        white-space: nowrap;
+    }
+
+    &__layout-tags-range-input {
+        flex: 1 1 auto;
+        min-width: 0;
+        width: 5em;
+        padding: 4px 6px;
+        border: 1px solid @immersive-key-border-color;
+        border-radius: @immersive-radius;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+        appearance: textfield;
+        -moz-appearance: textfield;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        &:focus {
+            border-color: @immersive-accent;
+        }
+    }
+
+    &__layout-tags-range-apply {
+        flex-shrink: 0;
+        padding: 4px 10px;
+        border: 1px solid @immersive-key-border-color;
+        border-radius: @immersive-radius;
+        background: transparent;
+        color: @immersive-chrome-fg;
+        font: inherit;
+        font-size: @fontSmall;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+            border-color @immersive-transition,
+            background-color @immersive-transition,
+            color @immersive-transition;
+
+        &:hover {
+            border-color: @immersive-accent;
+            background-color: @immersive-chrome-hover-bg;
+            color: @immersive-accent;
+        }
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__layout-tags-range-reset {
+        .mx-immersive-icon-button(26px);
+
+        &:hover {
+            color: @immersive-accent;
+        }
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__layout-tags-range-reset-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* TAG PICK MENU */
+    &__layout-tags-pick {
+        position: relative;
+        margin: 0 0 8px;
+    }
+
+    &__layout-tags-pick-trigger {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 7px 10px;
+        border: 1px solid @immersive-key-border-color;
+        border-radius: @immersive-radius-lg;
+        background: transparent;
+        color: @immersive-chrome-fg;
+        font: inherit;
+        font-size: @immersive-layout-tags-font;
+        text-align: left;
+        cursor: pointer;
+        transition:
+            border-color @immersive-transition,
+            background-color @immersive-transition;
+
+        &:hover {
+            border-color: @immersive-accent;
+            background-color: @immersive-chrome-hover-bg;
+            color: @immersive-chrome-fg;
+        }
+
+        &[aria-expanded='true'] .immersive__layout-tags-pick-chevron {
+            transform: rotate(180deg);
+        }
+    }
+
+    &__layout-tags-pick-dots {
+        display: flex;
+        flex-shrink: 0;
+        gap: 3px;
+
+        &:empty {
+            display: none;
+        }
+    }
+
+    &__layout-tags-pick-text {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__layout-tags-pick-chevron {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        transition: transform @immersive-transition;
+    }
+
+    &__layout-tags-pick-menu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        z-index: @immersive-layout-tags-z-menu;
+        max-height: 60vh;
+        overflow-y: auto;
+        padding: 6px;
+        border: 1px solid @immersive-key-border-color;
+        border-radius: @immersive-radius-lg;
+        background-color: @immersive-chrome-bg;
+        box-shadow: @immersive-chrome-shadow;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__layout-tags-filter {
+        margin-bottom: 6px;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__layout-tags-filter-input {
+        width: 100%;
+        padding: 7px 10px;
+        border: 1px solid @immersive-key-border-color;
+        border-radius: @immersive-radius-lg;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-size: @immersive-layout-tags-font;
+
+        &::placeholder {
+            color: @immersive-chrome-fg;
+            opacity: 0.75;
+        }
+
+        &:focus {
+            border-color: @immersive-accent;
+        }
+    }
+
+    &__layout-tags-pick-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 3px 4px;
+        border-radius: @immersive-radius;
+        transition: background-color @immersive-transition;
+
+        &:hover {
+            background-color: @immersive-chrome-hover-bg;
+        }
+
+        &.-empty {
+            opacity: 0.45;
+
+            .immersive__layout-tags-pick-label {
+                cursor: default;
+            }
+        }
+    }
+
+    &__layout-tags-pick-checkbox {
+        flex-shrink: 0;
+        width: 14px;
+        height: 14px;
+        margin: 0;
+        accent-color: @immersive-accent;
+    }
+
+    &__layout-tags-pick-label {
+        display: flex;
+        flex: 1 1 auto;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        margin: 0;
+        font-size: @immersive-layout-tags-font;
+        font-weight: 400;
+        line-height: 1.5;
+        cursor: pointer;
+    }
+
+    &__layout-tags-pick-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__layout-tags-pick-count {
+        flex-shrink: 0;
+        font-size: @fontSmall;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__layout-tags-pick-none {
+        margin: 0;
+        padding: 4px;
+        font-size: @immersive-layout-tags-font;
+    }
+
+    /* Colour dot */
+    &__layout-tags-dot {
+        flex-shrink: 0;
+        width: @immersive-layout-tags-dot;
+        height: @immersive-layout-tags-dot;
+        border-radius: 50%;
+        background-color: var(--immersive-tag-color, transparent);
+    }
+
+    &__layout-tags-loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80px;
+
+        .ajax-loader__animated-image {
+            width: 48px;
+        }
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    /* HIT LIST: one entry per page, its tags as buttons */
+    &__layout-tags-hits {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    &__layout-tags-page {
+        display: flex;
+        gap: 10px;
+        min-width: 0;
+        padding: 8px 0 6px;
+
+        & + & {
+            border-top: 1px solid @immersive-divider;
+        }
+    }
+
+    &__layout-tags-pageno {
+        flex: 0 0 2.6em;
+        margin-left: 10px;
+        padding-top: 5px;
+        color: @immersive-accent;
+        font-size: @fontNormal;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.45;
+    }
+
+    &__layout-tags-types {
+        flex: 1 1 auto;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    &__layout-tags-hit {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 5px 8px;
+        border: 0;
+        border-left: 2px solid transparent;
+        border-radius: @immersive-radius;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-size: @fontNormal;
+        text-align: left;
+        cursor: pointer;
+        transition:
+            background-color @immersive-transition,
+            border-color @immersive-transition;
+
+        &:hover,
+        &:active {
+            background-color: @immersive-chrome-hover-bg;
+            color: inherit;
+        }
+
+        /* Active hit */
+        &.-active {
+            background-color: @immersive-chrome-hover-bg;
+            border-left-color: var(--immersive-tag-color, @immersive-accent);
+            font-weight: 600;
+        }
+
+        &.-pending {
+            cursor: progress;
+        }
+    }
+
+    &__layout-tags-hit-name {
+        flex: 0 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__layout-tags-hit-count {
+        flex-shrink: 0;
+        font-size: @fontSmall;
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__layout-tags-empty {
+        margin: 14px 0 0;
+        font-size: @immersive-layout-tags-font;
+        line-height: 1.45;
+    }
+
+    &__layout-tags-progress {
+        margin: 10px 0 0;
+        font-size: @fontSmall;
+        font-variant-numeric: tabular-nums;
+
+        &:empty {
+            display: none;
+        }
+    }
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
+}

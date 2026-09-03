@@ -467,6 +467,16 @@ describe('IvViewer overlays (search highlights + text regions)', () => {
         expect(osd.removeOverlay).toHaveBeenCalledTimes(2);
     });
 
+    test('setHighlights appends an optional per-rect class (layout-tag colour hook)', () => {
+        const v = new IvViewer({ element: {}, services: services(5) });
+        v.currentItem = fakeItem();
+        const osd = v.viewer.openseadragon;
+
+        v.setHighlights([{ x: 1, y: 2, w: 3, h: 4, className: 'alto-annotation--jacob-grimm' }]);
+
+        expect(osd.addOverlay.mock.calls[0][0].element.className).toBe('immersive__highlight alto-annotation--jacob-grimm');
+    });
+
     test('setTextRegions returns a map of id-tagged overlays and skips rect-less regions', () => {
         const v = new IvViewer({ element: {}, services: services(5) });
         v.currentItem = fakeItem();

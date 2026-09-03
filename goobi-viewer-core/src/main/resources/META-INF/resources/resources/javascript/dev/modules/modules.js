@@ -63,11 +63,7 @@
                 borderColor: styles['borderTopColor'],
                 fillColor: styles['background-color'],
             });
-            let activeStyles = viewerJS.helper.getCss('page-area focus', [
-                'borderTopColor',
-                'borderTopWidth',
-                'background-color',
-            ]);
+            let activeStyles = viewerJS.helper.getCss('page-area focus', ['borderTopColor', 'borderTopWidth', 'background-color']);
             ({
                 borderWidth: parseInt(activeStyles['borderTopWidth']),
                 borderColor: activeStyles['borderTopColor'],
@@ -125,12 +121,12 @@
             window.history.replaceState(null, '', url.toString());
         }
 
-        drawActiveAreas(activeAreas, imageView) { 
+        drawActiveAreas(activeAreas, imageView) {
             let areasOnCanvas = [];
             activeAreas.forEach((activeArea, index) => {
                 const area = this.drawArea(activeArea, index, imageView);
                 areasOnCanvas.push(area?.overlay?.bounds);
-    			console.log("add active area ", area, areasOnCanvas);
+                console.log('add active area ', area, areasOnCanvas);
                 let scrollPosition = window.sessionStorage.getItem('scrollPosition');
                 $(document).scrollTop(parseInt(scrollPosition));
                 window.sessionStorage.removeItem('scrollPosition');
@@ -166,9 +162,9 @@
         }
 
         drawArea(area, shapeIndex, image, clickToLeave) {
-    		let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
-    		let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
-    		let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
+            let imageRect = ImageView.CoordinateConversion.convertToOpenSeadragonObject(area.coords);
+            let areaSourceId = image.getTileSourceFromOrder(area.pageNo)?.id;
+            let rect = image.viewer.getViewportCoordinates(imageRect, areaSourceId);
             let $area = $('#pageAreaFrame_' + area.logId + '_' + shapeIndex);
             let $label = $('#pageAreaLabel_' + area.logId + '_' + shapeIndex);
             let overlayId = area.logId + '_' + shapeIndex;
@@ -189,7 +185,7 @@
                 () => $(area.tooltip.element).addClass('hover'),
                 () => $(area.tooltip.element).removeClass('hover')
             );
-    		return area;
+            return area;
         }
     }
 
@@ -231,7 +227,7 @@
                 showNavigator: 'imageShowNavigator',
                 allowDownload: 'allowDownload',
                 allowZoom: 'allowZoom',
-    			maxZoom: 'maxZoom'
+                maxZoom: 'maxZoom',
             },
             data: {
                 footerHeight: 'height',
@@ -252,12 +248,8 @@
                 this.viewMode = imageElement.dataset[_config.datasets.image.viewMode];
 
                 this.topMarginElement = document.querySelector(_config.elementSelectors.data.topMarginElement)?.textContent;
-                this.leftMarginElement = document.querySelector(
-                    _config.elementSelectors.data.leftMarginElement
-                )?.textContent;
-                this.rightMarginElement = document.querySelector(
-                    _config.elementSelectors.data.rightMarginElement
-                )?.textContent;
+                this.leftMarginElement = document.querySelector(_config.elementSelectors.data.leftMarginElement)?.textContent;
+                this.rightMarginElement = document.querySelector(_config.elementSelectors.data.rightMarginElement)?.textContent;
 
                 const imageViewConfig = createZoomableImageConfig(imageElement);
                 this.viewer = new ImageView.Image(imageViewConfig);
@@ -270,9 +262,7 @@
 
                 this.tileSources = createTileSource();
 
-                this.tileSourceIdToOrder = Object.fromEntries(
-                    Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order])
-                );
+                this.tileSourceIdToOrder = Object.fromEntries(Object.entries(this.tileSources).map(([order, obj]) => [viewerJS.iiif.getId(obj), order]));
 
                 if (this.viewMode == 'sequence') {
                     this.sequence = new ImageView.Sequence(this.viewer, this.zoom);
@@ -290,7 +280,7 @@
                                 showTooltip: element.dataset[_config.datasets.data.showTooltip],
                                 highlightClassName: 'focus',
                                 highlightOnHover: true,
-                            }); 
+                            });
                             this.overlayGroups.push(overlays);
                         } catch (e) {
                             console.error('Error parsing coords string ', coordsString, e);
@@ -312,9 +302,7 @@
                 const viewerRight = this.viewer.element.offsetLeft + this.viewer.element.offsetWidth;
                 const sidebarRightLeft = document.querySelector(this.rightMarginElement)?.offsetLeft;
                 const margins = {
-                    left:
-                        (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) +
-                        (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
+                    left: (document.querySelector(this.leftMarginElement)?.offsetWidth ?? 0) + (document.querySelector(this.leftMarginElement)?.offsetLeft ?? 0),
                     right: sidebarRightLeft ? viewerRight - sidebarRightLeft : 0,
                     top: document.querySelector(this.topMarginElement)?.offsetHeight ?? 0,
                 };
@@ -444,12 +432,8 @@
         if (document.querySelector(_config.elementSelectors.controls.zoomSlider)) {
             zoom.setSlider(_config.elementSelectors.controls.zoomSlider, 3);
         }
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateLeft)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
-        document
-            .querySelectorAll(_config.elementSelectors.controls.rotateRight)
-            .forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateLeft).forEach((button) => button.addEventListener('click', (e) => rotation.rotateLeft()));
+        document.querySelectorAll(_config.elementSelectors.controls.rotateRight).forEach((button) => button.addEventListener('click', (e) => rotation.rotateRight()));
         document.querySelectorAll(_config.elementSelectors.controls.reset).forEach((button) =>
             button.addEventListener('click', (e) => {
                 rotation.rotateTo(0);
@@ -463,42 +447,38 @@
             element: imageElement,
             fittingMode: getFittingMode(document.querySelector(_config.elementSelectors.data.pageType)?.textContent),
             margins: {
-                bottom: Number(
-                    document.querySelector(_config.elementSelectors.data.footer)?.dataset[
-                        _config.datasets.data.footerHeight
-                    ]
-                ),
+                bottom: Number(document.querySelector(_config.elementSelectors.data.footer)?.dataset[_config.datasets.data.footerHeight]),
             },
             zoom: {
                 enabled: imageElement.dataset[_config.datasets.image.allowZoom] !== 'false',
-    			max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
+                max: parseInt(imageElement.dataset[_config.datasets.image.maxZoom]),
             },
             sequence: getSequenceSettings(imageElement.dataset[_config.datasets.image.viewMode]),
             navigator: {
                 enabled: imageElement.dataset[_config.datasets.image.showNavigator] === 'true',
-    			position: "BOTTOM_RIGHT"
+                position: 'BOTTOM_RIGHT',
             },
         };
     }
 
     function getSequenceSettings(viewMode) {
         let columns;
-    	switch ((viewMode || '').toLowerCase()) {
+        switch ((viewMode || '').toLowerCase()) {
             case 'double':
                 columns = 2;
-    			break;
+                break;
             case 'sequence':
             case 'single':
             default:
-               columns = 1;
+                columns = 1;
         }
-    	return {
-    		columns: columns,
-    		useWindowing: true,
-    		windowSize: _sequenceWindowSize,
-    		windowExpandThreshold: _expandThreshold,
-    		windowExpandSize: _expandBatchSize
-    	}
+        return {
+            columns: columns,
+            useWindowing: true,
+            windowSize: _sequenceWindowSize,
+            windowExpandThreshold: _expandThreshold,
+            windowExpandSize: _expandBatchSize,
+        };
     }
 
     function getFittingMode(pageType) {
@@ -564,11 +544,7 @@
 
             // init area select
             try {
-                let styles = viewerJS.helper.getCss('image-fragment', [
-                    'borderTopColor',
-                    'borderTopWidth',
-                    'background-color',
-                ]);
+                let styles = viewerJS.helper.getCss('image-fragment', ['borderTopColor', 'borderTopWidth', 'background-color']);
                 var fragmentSelectConfig = {
                     removeOldAreas: true,
                     drawCondition: (event) => this.active && this.fragmentSelect?.currentOverlay == undefined,
@@ -597,8 +573,7 @@
             if (this.fragmentSelect) {
                 this.fragmentSelect.finishedHook.subscribe((area) => {
                     var areaString = this.getAreaString(area);
-                    var pageUrl =
-                        window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
+                    var pageUrl = window.location.origin + window.location.pathname + window.location.search + '#xywh=' + areaString;
                     var imageUrl = this.getRegionUrl(area);
                     console.log('set area data ', pageUrl, imageUrl);
                     $('[data-fragment-link="page"]').attr('data-copy-share-image', pageUrl);
@@ -613,14 +588,7 @@
 
         getAreaString(area) {
             if (area && area.x != undefined && area.y != undefined && area.width != undefined && area.height != undefined) {
-                var areaString =
-                    area.x.toFixed(0) +
-                    ',' +
-                    area.y.toFixed(0) +
-                    ',' +
-                    area.width.toFixed(0) +
-                    ',' +
-                    area.height.toFixed(0);
+                var areaString = area.x.toFixed(0) + ',' + area.y.toFixed(0) + ',' + area.width.toFixed(0) + ',' + area.height.toFixed(0);
                 return areaString;
             } else {
                 return 'full';
@@ -701,10 +669,7 @@
         }
 
         toggleImageShare($panel) {
-            if (
-                $panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') &&
-                $panel.hasClass('in')
-            ) {
+            if ($panel.closest('.fullscreen__view-sidebar-accordeon-panel').hasClass('share-image-area') && $panel.hasClass('in')) {
                 this.startFragmentSelect();
             }
         }
@@ -727,8 +692,7 @@
             this.container = document.querySelector(this.config.container);
             // console.log('init voyager3d', this);
             if (this.isVisible()) {
-                this.loaded = this.initView().then(() => {
-                });
+                this.loaded = this.initView().then(() => {});
             }
         }
 
@@ -1033,23 +997,23 @@
         return !!element.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])');
     }
 
-    /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-4 map onto this. */
-    const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata'];
+    /** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
+    const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata', 'immersivePanelLayoutTags'];
 
     /**
-     * The rail panel an Alt+digit shortcut toggles: Alt+1-4 address the panels in
-     * toolbar order (TOC, fulltext, search, metadata). Matches on `code`, not
-     * `key`, because macOS Option+digit produces characters ('¡', '™', …); bare
-     * digits are deliberately no shortcut (WCAG 2.1.4 discourages printable
-     * single-character shortcuts) and Ctrl/Cmd combinations stay with the browser.
-     * Pure + tested.
+     * The rail panel an Alt+digit shortcut toggles: Alt+1-5 address the panels in
+     * toolbar order (TOC, fulltext, search, metadata, layout tags). Matches on
+     * `code`, not `key`, because macOS Option+digit produces characters ('¡', '™',
+     * …); bare digits are deliberately no shortcut (WCAG 2.1.4 discourages
+     * printable single-character shortcuts) and Ctrl/Cmd combinations stay with
+     * the browser. Pure + tested.
      *
      * @param {{altKey:boolean, ctrlKey:boolean, metaKey:boolean, code:string}} event
      * @returns {string|null} panel element id, or null
      */
     function panelIdForKeyEvent({ altKey, ctrlKey, metaKey, code }) {
         if (!altKey || ctrlKey || metaKey) return null;
-        const index = ['Digit1', 'Digit2', 'Digit3', 'Digit4'].indexOf(code);
+        const index = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5'].indexOf(code);
         return index === -1 ? null : PANEL_SHORTCUT_IDS[index];
     }
 
@@ -1294,7 +1258,9 @@
         /**
          * Draws search-hit rectangles as overlays. Rect coordinates are image pixels of
          * the page given by `rect.order`, so spread hits land on the right half of a
-         * double-page view; rects for pages outside the current view are skipped.
+         * double-page view; rects for pages outside the current view are skipped. An
+         * optional `className` per rect is appended (e.g. a layout-tag style class that
+         * the theme maps to a colour).
          */
         setHighlights(rects) {
             this.clearHighlights();
@@ -1303,7 +1269,7 @@
                 const item = this._itemForOrder(r.order);
                 if (!item) return [];
                 const el = document.createElement('div');
-                el.className = r.active ? 'immersive__highlight -active' : 'immersive__highlight';
+                el.className = ['immersive__highlight', r.active ? '-active' : '', r.className || ''].filter(Boolean).join(' ');
                 osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
                 return [el];
             });
@@ -2207,7 +2173,6 @@
 
     /** Central keydown dispatcher for the immersive view. */
 
-
     /**
      * Overlays/popovers that swallow single-key shortcuts while open — WITHOUT the
      * left panels, which some shortcuts (the annotations toggle lives inside the
@@ -2471,11 +2436,12 @@
 
     /** Left rail panel wiring: open/close, keyboard toggles, resize, TOC + metadata folds. */
 
-
     /**
      * Wires the rail buttons to their left panels (open/close with ARIA + inert
      * bookkeeping) and registers the panel keyboard shortcuts on the dispatcher:
-     * Escape closes the open panel, Alt+1-4 toggles the panels in rail order.
+     * Escape closes the open panel, Alt+1-5 toggles the panels in rail order. On
+     * open, focus moves to the panel's [data-immersive-panel-focus] element if it
+     * declares one, else to its first visible control.
      *
      * @param {HTMLElement|null} immersiveRoot  the .immersive root element
      * @param {{register: Function}} keys  the immersive key dispatcher
@@ -2531,7 +2497,8 @@
                     const isMetadataPanel = panel.id === 'immersivePanelMetadata';
                     const focusTarget = isMetadataPanel
                         ? panel.querySelector('.immersive__panel-title')
-                        : Array.from(panel.querySelectorAll('input, a[href], button')).find((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
+                        : panel.querySelector('[data-immersive-panel-focus]') ||
+                          Array.from(panel.querySelectorAll('input, a[href], button')).find((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
                     if (focusTarget) {
                         if (!focusTarget.hasAttribute('tabindex')) focusTarget.setAttribute('tabindex', '-1');
                         focusTarget.focus({ preventScroll: true });
@@ -2795,9 +2762,7 @@
     function createFocusTrap(container) {
         return function trapFocus(e) {
             if (e.key !== 'Tab') return;
-            const f = Array.from(container.querySelectorAll(FOCUSABLE_QUERY)).filter(
-                (n) => !n.hidden && !n.disabled && n.offsetParent !== null
-            );
+            const f = Array.from(container.querySelectorAll(FOCUSABLE_QUERY)).filter((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
             if (!f.length) return;
             const first = f[0];
             const last = f[f.length - 1];
@@ -2812,7 +2777,6 @@
     }
 
     /** Keyboard-shortcuts help modal with platform-specific modifier keycaps. */
-
 
     /**
      * Keyboard-shortcuts help modal: opened via the rail button or the `?` key,
@@ -2900,7 +2864,6 @@
     }
 
     /** ALTO layout-tag annotations: toggle state, inline markup, margin note column and image overlay regions. */
-
 
     /** localStorage key persisting the annotations toggle, following the immersive-* key convention. */
     const ANNOTATIONS_KEY = 'immersive-annotations';
@@ -3647,7 +3610,6 @@
 
     /** Fulltext panel wiring: combined block/line/word text with image hover linking and layout annotations. */
 
-
     /**
      * Wires the fulltext panel: loads the nested OCR levels for the visible page,
      * renders them, and mounts the bidirectional text ↔ image hover linking. The
@@ -3851,6 +3813,865 @@
         return { updateFulltextAvail };
     }
 
+    /** Layout-tag panel logic: index/detail loading and parsing, range clamping, hit-list derivation, visibility batching. */
+
+    const indexCache = new Map();
+
+    /** Highest number of pages one visibility-driven detail request spans (the endpoint parses one ALTO per page in range). */
+    const VISIBLE_BATCH = 8;
+
+    /** Number of tags from which the pick menu shows its free-text filter. */
+    const FILTER_THRESHOLD = 13;
+
+    /**
+     * Replaces `{0}`, `{1}`, … in a message template with the given values.
+     * Pure + tested.
+     *
+     * @param {string} template
+     * @param {...(string|number)} values
+     * @returns {string}
+     */
+    function formatMessage(template, ...values) {
+        return String(template || '').replace(/\{(\d+)\}/g, (m, i) => (values[i] != null ? String(values[i]) : ''));
+    }
+
+    /**
+     * Normalizes the layout-tag index endpoint response: tags without a label are
+     * dropped, pages become ascending, duplicate-free finite integers, missing
+     * names fall back to the label. Pure + tested.
+     *
+     * @param {object} json  the /layout/tags/index response
+     * @returns {{pi:string, pageCount:number, tags:{label:string, name:string, styleClass:string, pages:number[]}[]}}
+     */
+    function parseLayoutTagIndex(json) {
+        const src = json && typeof json === 'object' ? json : {};
+        const tags = (Array.isArray(src.tags) ? src.tags : [])
+            .filter((t) => t && typeof t.label === 'string' && t.label.length > 0)
+            .map((t) => {
+                const pages = Array.from(new Set((Array.isArray(t.pages) ? t.pages : []).map(Number).filter((p) => Number.isInteger(p) && p >= 1))).sort((a, b) => a - b);
+                return { label: t.label, name: typeof t.name === 'string' && t.name ? t.name : t.label, styleClass: typeof t.styleClass === 'string' ? t.styleClass : '', pages };
+            });
+        return { pi: typeof src.pi === 'string' ? src.pi : '', pageCount: Number.isInteger(src.pageCount) ? src.pageCount : 0, tags };
+    }
+
+    /**
+     * Parses the `x1,y1,x2,y2` coordinate string of the layout-tag endpoint into
+     * an image-pixel rect; null for degenerate or unparsable boxes (the printed
+     * label carries `0,0,0,0`). Pure + tested.
+     *
+     * @param {string} coordinates
+     * @returns {{x:number, y:number, w:number, h:number}|null}
+     */
+    function parseCoordinates(coordinates) {
+        const parts = String(coordinates || '')
+            .split(',')
+            .map((v) => parseFloat(v));
+        if (parts.length !== 4 || parts.some((v) => !Number.isFinite(v))) return null;
+        const [x1, y1, x2, y2] = parts;
+        const w = x2 - x1;
+        const h = y2 - y1;
+        if (w <= 0 || h <= 0) return null;
+        return { x: x1, y: y1, w, h };
+    }
+
+    /**
+     * Maps a page-range response of `/records/{pi}/layout/tags` to occurrences per
+     * page and label. Every page of the requested range gets an entry (pages the
+     * response does not mention count as loaded without occurrences), so the
+     * caller can mark the whole range as fetched. Occurrences without a drawable
+     * rect are skipped. Pure + tested.
+     *
+     * @param {object} json  the endpoint response (`DocumentReference`)
+     * @param {number} start first page of the requested range (1-based, inclusive)
+     * @param {number} end   last page of the requested range (inclusive)
+     * @returns {Map<number, Object<string, {id:string, rect:object, content:string}[]>>}
+     */
+    function parseLayoutTagDetails(json, start, end) {
+        const details = new Map();
+        for (let p = start; p <= end; p++) details.set(p, {});
+        const groups = json && Array.isArray(json.pages) ? json.pages : [];
+        groups.forEach((group) => {
+            const groupPage = Number(group && (group.pageOrder != null ? group.pageOrder : group.firstPage));
+            (group && Array.isArray(group.tags) ? group.tags : []).forEach((tag) => {
+                if (!tag || typeof tag.value !== 'string') return;
+                (Array.isArray(tag.references) ? tag.references : []).forEach((ref) => {
+                    if (!ref) return;
+                    const page = Number.isInteger(ref.page) ? ref.page : groupPage;
+                    if (!Number.isInteger(page)) return;
+                    const rect = parseCoordinates(ref.coordinates);
+                    if (!rect) return;
+                    if (!details.has(page)) details.set(page, {});
+                    const byLabel = details.get(page);
+                    (byLabel[tag.value] = byLabel[tag.value] || []).push({ id: ref.id || '', rect, content: ref.content || '' });
+                });
+            });
+        });
+        return details;
+    }
+
+    /**
+     * Pages of a tag inside the range. Pure + tested.
+     *
+     * @param {{pages:number[]}|null} tag
+     * @param {number} from
+     * @param {number} to
+     * @returns {number[]}
+     */
+    function tagPages(tag, from, to) {
+        return tag ? tag.pages.filter((p) => p >= from && p <= to) : [];
+    }
+
+    /**
+     * Ascending pages on which any of the given tags occurs inside the range.
+     * Pure + tested.
+     *
+     * @param {{pages:number[]}[]} tags
+     * @param {number} from
+     * @param {number} to
+     * @returns {number[]}
+     */
+    function hitPages(tags, from, to) {
+        const set = new Set();
+        tags.forEach((t) => tagPages(t, from, to).forEach((p) => set.add(p)));
+        return Array.from(set).sort((a, b) => a - b);
+    }
+
+    /**
+     * One entry per page and tag, ordered by page, then by the given tag order.
+     * `occurrencesOf(page, label)` returns the loaded occurrences or undefined
+     * while the page detail is still pending. Pure + tested.
+     *
+     * @param {{label:string, pages:number[]}[]} tags  the selected tags
+     * @param {number} from
+     * @param {number} to
+     * @param {(page:number, label:string) => Array|undefined} occurrencesOf
+     * @returns {{page:number, label:string, pending:boolean, count:number}[]}
+     */
+    function flatEntries(tags, from, to, occurrencesOf) {
+        const out = [];
+        hitPages(tags, from, to).forEach((page) => {
+            tags.forEach((tag) => {
+                if (!tag.pages.includes(page)) return;
+                const occ = occurrencesOf(page, tag.label);
+                out.push({ page, label: tag.label, pending: occ === undefined, count: occ ? occ.length : 0 });
+            });
+        });
+        return out;
+    }
+
+    /**
+     * Stable identity of a hit-list entry (`page#label`). Pure + tested.
+     *
+     * @param {{page:number, label:string}} entry
+     * @returns {string}
+     */
+    function entryKey(entry) {
+        return `${entry.page}#${entry.label}`;
+    }
+
+    /**
+     * Index of the cursor entry: the exact key, else the first entry on the
+     * cursor's page, else 0. Pure + tested.
+     *
+     * @param {{page:number, label:string}[]} entries
+     * @param {string|null} cursorKey
+     * @returns {number}
+     */
+    function cursorIndex(entries, cursorKey) {
+        if (!cursorKey) return 0;
+        const at = entries.findIndex((e) => entryKey(e) === cursorKey);
+        if (at !== -1) return at;
+        const page = Number(String(cursorKey).split('#')[0]);
+        const onPage = entries.findIndex((e) => e.page === page);
+        return onPage !== -1 ? onPage : 0;
+    }
+
+    /**
+     * Clamps a typed page range to `[1, pageCount]` and swaps reversed bounds;
+     * non-numeric input falls back to the respective end. Pure + tested.
+     *
+     * @param {*} from
+     * @param {*} to
+     * @param {number} pageCount
+     * @returns {{from:number, to:number}}
+     */
+    function clampRange(from, to, pageCount) {
+        const max = Math.max(1, pageCount);
+        const clamp = (v, fallback) => {
+            const n = Math.round(Number(v));
+            return Math.max(1, Math.min(max, Number.isFinite(n) && n > 0 ? n : fallback));
+        };
+        let a = clamp(from, 1);
+        let b = clamp(to, max);
+        if (a > b) [a, b] = [b, a];
+        return { from: a, to: b };
+    }
+
+    /**
+     * Tags shown in the pick menu: those with pages in the range or already
+     * selected, narrowed by the free-text filter (name or label, case-insensitive);
+     * selected tags always stay visible. Pure + tested.
+     *
+     * @param {{label:string, name:string, pages:number[]}[]} tags
+     * @param {{selected:Set<string>, filter:string, from:number, to:number}} opts
+     * @returns {Array}
+     */
+    function filterTags(tags, { selected, filter, from, to }) {
+        const f = String(filter || '')
+            .trim()
+            .toLowerCase();
+        return tags.filter((t) => {
+            if (selected.has(t.label)) return true;
+            if (!tagPages(t, from, to).length) return false;
+            return !f || t.name.toLowerCase().includes(f) || t.label.toLowerCase().includes(f);
+        });
+    }
+
+    /**
+     * Pages whose placeholder rows lie within one panel height above or below the
+     * visible panel area, in DOM order, duplicate-free, at most `batch`.
+     * Pure + tested.
+     *
+     * @param {{top:number, bottom:number}} panelBox
+     * @param {{page:number, top:number, bottom:number}[]} rows  pending rows with their boxes
+     * @param {number} batch
+     * @returns {number[]}
+     */
+    function visiblePages(panelBox, rows, batch) {
+        const height = panelBox.bottom - panelBox.top;
+        const wanted = [];
+        rows.forEach((r) => {
+            if (r.bottom > panelBox.top - height && r.top < panelBox.bottom + height && !wanted.includes(r.page)) wanted.push(r.page);
+        });
+        return wanted.slice(0, batch);
+    }
+
+    /**
+     * Groups pages into contiguous fetch ranges of at most `batch` pages each, so
+     * a sparse selection never drags hundreds of untagged pages into one request.
+     * Pure + tested.
+     *
+     * @param {number[]} pages
+     * @param {number} batch
+     * @returns {{start:number, end:number}[]}
+     */
+    function batchRanges(pages, batch) {
+        const sorted = Array.from(new Set(pages)).sort((a, b) => a - b);
+        const ranges = [];
+        sorted.forEach((p) => {
+            const last = ranges[ranges.length - 1];
+            if (last && p - last.start + 1 <= batch) last.end = p;
+            else ranges.push({ start: p, end: p });
+        });
+        return ranges;
+    }
+
+    /**
+     * Fetches (and memoizes per pi) the record's layout-tag index. The UI language
+     * is passed along so the server resolves the display names in it. A failed
+     * request is evicted from the cache so a transient error does not poison it.
+     *
+     * @param {string} pi
+     * @param {string} apiBase  base URL of the REST API (no trailing slash)
+     * @param {Function} fetchFn fetch-compatible function (injectable for tests)
+     * @param {string} [lang]   UI language code for the display names
+     * @returns {Promise<ReturnType<typeof parseLayoutTagIndex>>}
+     */
+    function loadLayoutTagIndex(pi, apiBase, fetchFn = fetch, lang = '') {
+        if (indexCache.has(pi)) return indexCache.get(pi);
+        const query = lang ? `?lang=${encodeURIComponent(lang)}` : '';
+        const promise = fetchFn(`${apiBase}/records/${pi}/layout/tags/index${query}`).then((res) => {
+            if (!res.ok) throw new Error(`Failed to load layout-tag index for "${pi}": HTTP ${res.status}`);
+            return res.json().then(parseLayoutTagIndex);
+        });
+        indexCache.set(pi, promise);
+        return promise.catch((e) => {
+            indexCache.delete(pi);
+            throw e;
+        });
+    }
+
+    /**
+     * Fetches the layout-tag occurrences of a page range in one request.
+     *
+     * @param {string} pi
+     * @param {string} apiBase
+     * @param {number} start  first page (1-based, inclusive)
+     * @param {number} end    last page (inclusive)
+     * @param {Function} fetchFn
+     * @returns {Promise<Map<number, object>>} see {@link parseLayoutTagDetails}
+     */
+    async function loadLayoutTagDetails(pi, apiBase, start, end, fetchFn = fetch) {
+        const res = await fetchFn(`${apiBase}/records/${pi}/layout/tags/?start=${start}&end=${end}`);
+        if (!res.ok) throw new Error(`Failed to load layout tags ${start}-${end} for "${pi}": HTTP ${res.status}`);
+        return parseLayoutTagDetails(await res.json(), start, end);
+    }
+
+    /** Layout-tag panel wiring: tag pick menu, page range, per-page hit list with lazy detail loading, image highlights. */
+
+    /** Number of colour dots the pick trigger shows for the selected tags. */
+    const TRIGGER_DOTS = 4;
+
+    /** Key-dispatcher priority of the pick menu's Escape: under the page dropdown (30), above the panels (40). */
+    const PICK_KEY_PRIORITY = 35;
+
+    /**
+     * Wires the layout-tag panel: the record-wide index is fetched once (on the
+     * first open) and drives a multi-select pick menu, a page-range row and a hit
+     * list grouped by page. Page details (occurrence counts and rects) are loaded
+     * only for the rows in view, in small page-range batches. Activating a hit
+     * opens the page and highlights every occurrence of that tag on it; the
+     * highlights are redrawn on page change and cleared when the panel closes.
+     *
+     * @param {IvViewer} viewer
+     * @param {string} pi
+     * @param {string} apiBase
+     * @param {{closePanels: Function, registerCloseHook: Function}} panels
+     * @param {{register: Function}} keys  the immersive key dispatcher
+     */
+    function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
+        const panel = document.getElementById('immersivePanelLayoutTags');
+        if (!panel) return;
+        const q = (sel) => panel.querySelector(sel);
+        const sticky = q('[data-immersive-layout-tags="sticky"]');
+        const rangeFrom = q('[data-immersive-layout-tags="from"]');
+        const rangeTo = q('[data-immersive-layout-tags="to"]');
+        const rangeApply = q('[data-immersive-layout-tags="apply"]');
+        const rangeReset = q('[data-immersive-layout-tags="reset"]');
+        const pickTrigger = q('[data-immersive-layout-tags="pick-trigger"]');
+        const pickDots = q('[data-immersive-layout-tags="pick-dots"]');
+        const pickText = q('[data-immersive-layout-tags="pick-text"]');
+        const pickMenu = q('[data-immersive-layout-tags="pick-menu"]');
+        const filterWrap = q('[data-immersive-layout-tags="filter"]');
+        const filterInput = filterWrap && filterWrap.querySelector('input');
+        const pickList = q('[data-immersive-layout-tags="pick-list"]');
+        const loader = q('[data-immersive-layout-tags="loader"]');
+        const hitsMount = q('[data-immersive-layout-tags="hits"]');
+        const progress = q('[data-immersive-layout-tags="progress"]');
+        if (!rangeFrom || !rangeTo || !pickTrigger || !pickMenu || !pickList || !hitsMount) return;
+        const labels = panel.dataset;
+        const pageCount = viewer.getPageCount();
+
+        const state = {
+            index: null,
+            failed: false,
+            selected: new Set(),
+            from: 1,
+            to: pageCount,
+            filter: '',
+            cursorKey: null,
+            details: new Map(),
+            inFlight: new Set(),
+        };
+
+        const panelOpen = () => panel.classList.contains('is-open');
+        const currentPages = () => viewer.getCurrentPages().map((o) => o + 1);
+        const rangeIsFull = () => state.from === 1 && state.to === pageCount;
+        const allTags = () => (state.index ? state.index.tags : []);
+        const tagByLabel = (label) => allTags().find((t) => t.label === label) || null;
+        const selectedTags = () => allTags().filter((t) => state.selected.has(t.label));
+        const occurrencesOf = (page, label) => {
+            if (!state.details.has(page)) return undefined;
+            const byLabel = state.details.get(page);
+            return byLabel ? byLabel[label] || [] : [];
+        };
+        const entries = () => flatEntries(selectedTags(), state.from, state.to, occurrencesOf);
+        const displayName = (label) => {
+            const tag = tagByLabel(label);
+            return tag ? tag.name : label;
+        };
+        const styleTokens = (label) => {
+            const tag = tagByLabel(label);
+            return tag ? styleClassTokens(tag.styleClass) : [];
+        };
+
+        const el = (tag, cls, text) => {
+            const node = document.createElement(tag);
+            if (cls) node.className = cls;
+            if (text != null) node.textContent = text;
+            return node;
+        };
+
+        /* PICK MENU */
+
+        const isPickOpen = () => !pickMenu.hidden;
+        const onPickOutside = (e) => {
+            if (!pickMenu.contains(e.target) && !pickTrigger.contains(e.target)) closePick();
+        };
+        const openPick = () => {
+            if (isPickOpen()) return;
+            pickMenu.hidden = false;
+            pickTrigger.setAttribute('aria-expanded', 'true');
+            document.addEventListener('pointerdown', onPickOutside, true);
+            const first = filterWrap && !filterWrap.hidden && filterInput ? filterInput : pickMenu.querySelector('input[type="checkbox"]:not([disabled])');
+            if (first) first.focus();
+        };
+        const closePick = (restoreFocus = false) => {
+            if (!isPickOpen()) return;
+            pickMenu.hidden = true;
+            pickTrigger.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('pointerdown', onPickOutside, true);
+            if (restoreFocus) pickTrigger.focus();
+        };
+
+        /** Rebuilds the checkbox rows of the pick menu from the index, range and filter. */
+        const buildPickRows = () => {
+            pickList.replaceChildren();
+            const list = filterTags(allTags(), state);
+            if (!list.length) {
+                pickList.append(el('p', 'immersive__layout-tags-pick-none', labels.labelFilterNone || ''));
+                return;
+            }
+            list.forEach((tag, i) => {
+                const inRange = tagPages(tag, state.from, state.to).length;
+                const row = el('div', 'immersive__layout-tags-pick-row');
+                row.classList.add(...styleTokens(tag.label));
+                row.dataset.tagLabel = tag.label;
+                const id = `immersiveLayoutTagsPick-${i}`;
+                const cb = el('input', 'immersive__layout-tags-pick-checkbox');
+                cb.type = 'checkbox';
+                cb.id = id;
+                cb.addEventListener('change', () => toggleTag(tag.label));
+                const label = el('label', 'immersive__layout-tags-pick-label');
+                label.htmlFor = id;
+                label.title = tag.label;
+                const dot = el('span', 'immersive__layout-tags-dot');
+                dot.setAttribute('aria-hidden', 'true');
+                label.append(dot, el('span', 'immersive__layout-tags-pick-name', tag.name));
+                row.append(cb, label, el('span', 'immersive__layout-tags-pick-count', String(inRange)));
+                pickList.append(row);
+            });
+            syncPickRows();
+        };
+
+        /** Aligns checked/disabled state and in-range counts of the existing rows with the state. */
+        const syncPickRows = () => {
+            pickList.querySelectorAll('.immersive__layout-tags-pick-row').forEach((row) => {
+                const tag = tagByLabel(row.dataset.tagLabel);
+                if (!tag) return;
+                const inRange = tagPages(tag, state.from, state.to).length;
+                const selected = state.selected.has(tag.label);
+                const cb = row.querySelector('input');
+                const count = row.querySelector('.immersive__layout-tags-pick-count');
+                row.classList.toggle('-empty', !inRange);
+                cb.checked = selected;
+                cb.disabled = !inRange && !selected;
+                if (count) count.textContent = String(inRange);
+            });
+        };
+
+        /** Trigger text, colour dots and accessible name follow the selection. */
+        const syncPick = () => {
+            const chosen = selectedTags();
+            if (pickDots) {
+                pickDots.replaceChildren();
+                chosen
+                    .filter((tag) => styleClassTokens(tag.styleClass).length)
+                    .slice(0, TRIGGER_DOTS)
+                    .forEach((tag) => {
+                        const dot = el('span', 'immersive__layout-tags-dot');
+                        dot.classList.add(...styleClassTokens(tag.styleClass));
+                        pickDots.append(dot);
+                    });
+            }
+            let text = labels.labelPick || '';
+            if (chosen.length === 1 || chosen.length === 2) text = chosen.map((t) => t.name).join(', ');
+            else if (chosen.length > 2) text = formatMessage(labels.labelPickMore, chosen[0].name, chosen.length - 1);
+            if (pickText) pickText.textContent = text;
+            pickTrigger.setAttribute('aria-label', chosen.length ? formatMessage(labels.labelPickSelected, chosen.length) : labels.labelPick || '');
+            syncPickRows();
+        };
+
+        pickTrigger.addEventListener('click', () => (isPickOpen() ? closePick() : openPick()));
+        if (filterInput) {
+            filterInput.addEventListener('input', () => {
+                state.filter = filterInput.value;
+                buildPickRows();
+            });
+        }
+        keys.register(PICK_KEY_PRIORITY, (e) => {
+            if (e.key !== 'Escape' || !isPickOpen()) return false;
+            closePick(true);
+            return true;
+        });
+
+        /* PAGE RANGE */
+
+        /** Shows either OK (unsaved input) or the reset button (narrowed range), never both. */
+        const syncRangeButtons = () => {
+            const dirty = Number(rangeFrom.value) !== state.from || Number(rangeTo.value) !== state.to;
+            if (rangeApply) rangeApply.hidden = !dirty;
+            if (rangeReset) rangeReset.hidden = dirty || rangeIsFull();
+        };
+
+        /** Writes the state into the fields unless one of them is being edited. */
+        const syncRange = () => {
+            const editing = document.activeElement === rangeFrom || document.activeElement === rangeTo;
+            if (!editing) {
+                rangeFrom.value = String(state.from);
+                rangeTo.value = String(state.to);
+            }
+            syncRangeButtons();
+        };
+
+        const setRange = (from, to) => {
+            const next = clampRange(from, to, pageCount);
+            if (next.from === state.from && next.to === state.to) {
+                syncRange();
+                return;
+            }
+            state.from = next.from;
+            state.to = next.to;
+            if (!entries().some((e) => entryKey(e) === state.cursorKey)) {
+                state.cursorKey = null;
+                preferCursorOnCurrentPage();
+            }
+            render(true);
+            loadCursorPage();
+            pumpVisible();
+            renderHighlights();
+        };
+
+        const applyRange = () => {
+            setRange(rangeFrom.value === '' ? 1 : rangeFrom.value, rangeTo.value === '' ? pageCount : rangeTo.value);
+            rangeFrom.value = String(state.from);
+            rangeTo.value = String(state.to);
+            syncRangeButtons();
+            if (document.activeElement === document.body) rangeFrom.focus();
+        };
+
+        [rangeFrom, rangeTo].forEach((input) => {
+            input.max = String(pageCount);
+            input.addEventListener('input', syncRangeButtons);
+            input.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                applyRange();
+            });
+        });
+        if (rangeApply) rangeApply.addEventListener('click', applyRange);
+        if (rangeReset) {
+            rangeReset.addEventListener('click', () => {
+                setRange(1, pageCount);
+                rangeFrom.value = String(state.from);
+                rangeTo.value = String(state.to);
+                syncRangeButtons();
+            });
+        }
+
+        /* DETAIL LOADING */
+
+        /** Fetches the details of the given pages in contiguous range batches; stale responses are dropped. */
+        const loadPages = (pages) => {
+            const missing = pages.filter((p) => !state.details.has(p) && !state.inFlight.has(p));
+            if (!missing.length) return;
+            batchRanges(missing, VISIBLE_BATCH).forEach(({ start, end }) => {
+                const span = [];
+                for (let p = start; p <= end; p++) {
+                    if (!state.details.has(p) && !state.inFlight.has(p)) span.push(p);
+                }
+                span.forEach((p) => state.inFlight.add(p));
+                loadLayoutTagDetails(pi, apiBase, start, end)
+                    .then((details) => {
+                        span.forEach((p) => state.inFlight.delete(p));
+                        span.forEach((p) => state.details.set(p, details.get(p) || {}));
+                    })
+                    .catch((e) => {
+                        span.forEach((p) => state.inFlight.delete(p));
+                        console.warn('immersive layout tags failed', e);
+                        span.forEach((p) => state.details.set(p, null));
+                    })
+                    .then(() => {
+                        if (!state.cursorKey) preferCursorOnCurrentPage();
+                        render();
+                        renderHighlights();
+                        pumpVisible();
+                    });
+            });
+        };
+
+        /** Loads only the pages whose placeholder rows are in (or near) the panel's view. */
+        const pumpVisible = () => {
+            if (!panelOpen() || !state.selected.size) return;
+            const box = panel.getBoundingClientRect();
+            const rows = Array.from(hitsMount.querySelectorAll('.immersive__layout-tags-hit.-pending'))
+                .filter((btn) => !state.inFlight.has(Number(btn.dataset.pageNo)))
+                .map((btn) => {
+                    const r = btn.getBoundingClientRect();
+                    return { page: Number(btn.dataset.pageNo), top: r.top, bottom: r.bottom };
+                });
+            const wanted = visiblePages(box, rows, VISIBLE_BATCH);
+            if (wanted.length) loadPages(wanted);
+        };
+
+        /* CURSOR AND NAVIGATION */
+
+        /** Fetches the cursor's page ahead of the visible rows so its highlights appear first. */
+        const loadCursorPage = () => {
+            const list = entries();
+            const active = list[cursorIndex(list, state.cursorKey)];
+            if (active && active.pending) loadPages([active.page]);
+        };
+
+        /** Puts the cursor on the first entry of a page that is open right now, without turning pages. */
+        const preferCursorOnCurrentPage = () => {
+            const list = entries();
+            const pages = currentPages();
+            const onPage = list.find((e) => pages.includes(e.page));
+            if (onPage) state.cursorKey = entryKey(onPage);
+            else if (!state.cursorKey && list.length) state.cursorKey = entryKey(list[0]);
+        };
+
+        const toggleTag = (label) => {
+            if (state.selected.has(label)) state.selected.delete(label);
+            else state.selected.add(label);
+            if (!state.selected.size) state.cursorKey = null;
+            else if (!entries().some((e) => entryKey(e) === state.cursorKey)) {
+                state.cursorKey = null;
+                preferCursorOnCurrentPage();
+            }
+            render(true);
+            loadCursorPage();
+            pumpVisible();
+            renderHighlights();
+        };
+
+        const goToEntry = (i) => {
+            const list = entries();
+            if (!list.length) return;
+            const entry = list[Math.max(0, Math.min(i, list.length - 1))];
+            state.cursorKey = entryKey(entry);
+            markActive();
+            if (entry.pending) loadPages([entry.page]);
+            if (!currentPages().includes(entry.page)) viewer.goToPage(entry.page - 1);
+            else renderHighlights();
+        };
+
+        /** Draws every occurrence of the cursor's tag on the open page(s); nothing while the panel is closed. */
+        const renderHighlights = () => {
+            if (!panelOpen()) return;
+            const list = entries();
+            const active = list[cursorIndex(list, state.cursorKey)];
+            if (!active || !currentPages().includes(active.page)) {
+                viewer.clearHighlights();
+                return;
+            }
+            const className = styleTokens(active.label).join(' ');
+            const rects = (occurrencesOf(active.page, active.label) || []).map((o) => ({ ...o.rect, order: active.page - 1, className }));
+            viewer.setHighlights(rects);
+        };
+
+        /* HIT LIST */
+
+        let revealedKey = null;
+
+        /**
+         * Writes the per-page state (still loading, number of occurrences) into the
+         * existing rows. Which rows exist follows from the index alone, so arriving
+         * page details never rebuild the list — they only fill it in.
+         */
+        const syncHitCounts = () => {
+            hitsMount.querySelectorAll('.immersive__layout-tags-hit').forEach((btn) => {
+                const page = Number(btn.dataset.pageNo);
+                const label = btn.dataset.tagLabel;
+                const occ = occurrencesOf(page, label);
+                const count = occ ? occ.length : 0;
+                const countEl = btn.querySelector('.immersive__layout-tags-hit-count');
+                btn.classList.toggle('-pending', occ === undefined);
+                countEl.textContent = occ === undefined ? '…' : count > 1 ? `(${count})` : '';
+                let name = `${displayName(label)}, ${labels.labelPage || ''} ${page}`;
+                if (occ !== undefined && count > 1) name += `, ${formatMessage(labels.labelOccurrences, count)}`;
+                btn.setAttribute('aria-label', name);
+            });
+        };
+
+        /** Rebuilds the page-grouped hit list; rows carry page and label for the visibility pump and the count sync. */
+        const buildHits = () => {
+            // A rebuilt list is a new list: the active row is worth showing again.
+            revealedKey = null;
+            hitsMount.replaceChildren();
+            if (state.failed) {
+                hitsMount.append(el('p', 'immersive__layout-tags-empty', labels.labelError || ''));
+                return;
+            }
+            if (!state.selected.size) {
+                hitsMount.append(el('p', 'immersive__layout-tags-empty', labels.labelNoneSelected || ''));
+                return;
+            }
+            const list = entries();
+            if (!list.length) {
+                hitsMount.append(el('p', 'immersive__layout-tags-empty', (rangeIsFull() ? labels.labelEmpty : labels.labelEmptyRange) || ''));
+                return;
+            }
+            const ul = el('ul', 'immersive__layout-tags-hits');
+            let currentPage = null;
+            let typeList = null;
+            list.forEach((entry, i) => {
+                if (entry.page !== currentPage) {
+                    currentPage = entry.page;
+                    const pageLi = el('li', 'immersive__layout-tags-page');
+                    const pageNo = el('span', 'immersive__layout-tags-pageno');
+                    pageNo.append(el('span', 'sr-only', `${labels.labelPage || ''} `), document.createTextNode(String(entry.page)));
+                    typeList = el('ul', 'immersive__layout-tags-types');
+                    pageLi.append(pageNo, typeList);
+                    ul.append(pageLi);
+                }
+                const item = el('li');
+                const btn = el('button', 'immersive__layout-tags-hit');
+                btn.type = 'button';
+                btn.classList.add(...styleTokens(entry.label));
+                btn.dataset.spotIndex = String(i);
+                btn.dataset.spotKey = entryKey(entry);
+                btn.dataset.pageNo = String(entry.page);
+                btn.dataset.tagLabel = entry.label;
+                const dot = el('span', 'immersive__layout-tags-dot');
+                dot.setAttribute('aria-hidden', 'true');
+                btn.append(dot, el('span', 'immersive__layout-tags-hit-name', displayName(entry.label)), el('span', 'immersive__layout-tags-hit-count'));
+                btn.addEventListener('click', () => goToEntry(i));
+                item.append(btn);
+                typeList.append(item);
+            });
+            hitsMount.append(ul);
+            syncHitCounts();
+        };
+
+        /**
+         * Brings the active hit into view with offset math (no scrollIntoView, the
+         * page must not move). Only ever on a cursor change: every arriving page
+         * batch re-renders, and revealing on each of those would drag the list back
+         * up under a user who is scrolling.
+         */
+        const revealActiveSpot = () => {
+            if (state.cursorKey === revealedKey) return;
+            const row = hitsMount.querySelector('.immersive__layout-tags-hit.-active');
+            if (!row) return;
+            revealedKey = state.cursorKey;
+            const stickyHeight = sticky ? sticky.offsetHeight : 0;
+            const top = row.offsetTop - panel.offsetTop;
+            const bottom = top + row.offsetHeight;
+            const viewTop = panel.scrollTop + stickyHeight;
+            const viewBottom = panel.scrollTop + panel.clientHeight;
+            if (top < viewTop) panel.scrollTop = Math.max(0, top - stickyHeight - 8);
+            else if (bottom > viewBottom) panel.scrollTop = bottom - panel.clientHeight + 8;
+        };
+
+        const markActive = () => {
+            const list = entries();
+            const cursor = cursorIndex(list, state.cursorKey);
+            hitsMount.querySelectorAll('.immersive__layout-tags-hit').forEach((btn) => {
+                const on = list.length > 0 && Number(btn.dataset.spotIndex) === cursor;
+                btn.classList.toggle('-active', on);
+                if (on) btn.setAttribute('aria-current', 'true');
+                else btn.removeAttribute('aria-current');
+            });
+            revealActiveSpot();
+            if (progress) {
+                const pages = hitPages(selectedTags(), state.from, state.to);
+                const loaded = pages.filter((p) => state.details.has(p)).length;
+                let text = '';
+                if (pages.length && loaded < pages.length) text = formatMessage(labels.labelProgressLoading, loaded, pages.length);
+                else if (pages.length === 1) text = labels.labelProgressDoneOne || '';
+                else if (pages.length) text = formatMessage(labels.labelProgressDone, pages.length);
+                progress.textContent = text;
+            }
+        };
+
+        let builtKey = null;
+
+        /**
+         * Rebuilds the hit list only when its composition changed (selection, range,
+         * error), keeping keyboard focus on the same entry; arriving page details go
+         * through the count sync instead.
+         */
+        const render = (force = false) => {
+            const key = [state.failed, Array.from(state.selected).sort().join(','), state.from, state.to].join('|');
+            if (force || key !== builtKey) {
+                builtKey = key;
+                const focused = document.activeElement;
+                const focusKey = focused && focused.dataset ? focused.dataset.spotKey : null;
+                buildHits();
+                if (focusKey) {
+                    const again = hitsMount.querySelector(`[data-spot-key="${focusKey}"]`);
+                    if (again) again.focus({ preventScroll: true });
+                }
+            } else {
+                syncHitCounts();
+            }
+            syncPick();
+            syncRange();
+            markActive();
+        };
+
+        /* LOADING AND WIRING */
+
+        let indexRequest = null;
+        const ensureIndex = () => {
+            if (state.index) return Promise.resolve(state.index);
+            if (indexRequest) return indexRequest;
+            if (loader) loader.hidden = false;
+            indexRequest = loadLayoutTagIndex(pi, apiBase, fetch, document.documentElement.lang)
+                .then((index) => {
+                    state.index = index;
+                    state.failed = false;
+                    if (filterWrap) filterWrap.hidden = index.tags.length < FILTER_THRESHOLD;
+                    buildPickRows();
+                    return index;
+                })
+                .catch((e) => {
+                    console.error('immersive layout-tag index failed', e);
+                    state.failed = true;
+                    return null;
+                })
+                .then((index) => {
+                    indexRequest = null;
+                    if (loader) loader.hidden = true;
+                    return index;
+                });
+            return indexRequest;
+        };
+
+        panel.addEventListener('immersive:panel-open', () => {
+            ensureIndex().then(() => {
+                if (!panelOpen()) return;
+                if (!state.cursorKey) preferCursorOnCurrentPage();
+                render(true);
+                loadCursorPage();
+                pumpVisible();
+                renderHighlights();
+            });
+        });
+
+        panels.registerCloseHook(() => {
+            if (!panelOpen()) return;
+            closePick();
+            viewer.clearHighlights();
+        });
+
+        viewer.onPageChange.subscribe(() => {
+            if (!panelOpen() || !state.index) return;
+            const pages = currentPages();
+            const onPage = entries().find((e) => pages.includes(e.page));
+            if (onPage) state.cursorKey = entryKey(onPage);
+            markActive();
+            renderHighlights();
+            if (onPage && onPage.pending) loadPages([onPage.page]);
+        });
+        viewer.onOpen.subscribe(renderHighlights);
+
+        let scrollQueued = false;
+        panel.addEventListener('scroll', () => {
+            if (scrollQueued) return;
+            scrollQueued = true;
+            requestAnimationFrame(() => {
+                scrollQueued = false;
+                if (sticky) sticky.classList.toggle('-scrolled', panel.scrollTop > 0);
+                pumpVisible();
+            });
+        });
+
+        syncRange();
+    }
+
     /** Extracts the snippet text from a IIIF `resource` (object, array, or missing). */
     function _snippet(resource) {
         const r = Array.isArray(resource) ? resource[0] : resource;
@@ -3978,7 +4799,6 @@
     }
 
     /** Search panel wiring: in-work IIIF content search with hit list and highlights. */
-
 
     /**
      * Wires the in-place IIIF content search: result list in the left panel,
@@ -4281,7 +5101,6 @@
     }
 
     /** Thumbnail overview overlay: lazy riot grid with modal focus handling. */
-
 
     /**
      * Mounts the thumbnail grid overlay lazily (riot `thumbnails` tag) with modal
@@ -4736,7 +5555,6 @@
 
     /** Immersive view bootstrap: engine construction plus the UI wiring modules. */
 
-
     /** Hides the stage loading indicator at the latest after this, even without a painted tile. */
     const STAGE_LOADER_TIMEOUT_MS = 8000;
 
@@ -4744,7 +5562,7 @@
      * Bootstraps the immersive view. The chrome (panels, keyboard dispatcher,
      * shortcuts modal, metadata fold) is wired whenever the view is present, even
      * without VIEW_IMAGES. The image engine and its dependent wiring (bottom bar,
-     * grid, fulltext, search, page dropdown, TOC sync) are only built when the
+     * grid, fulltext, search, layout tags, page dropdown, TOC sync) are only built when the
      * server rendered the [data-immersive-image] mount, i.e. the user may view the
      * images. Keyboard shortcuts run through one dispatcher whose priorities define
      * the overlay precedence: shortcuts modal (10) → grid overlay (20) → page
@@ -4805,6 +5623,7 @@
                 setupToc(viewer);
                 setupFulltextSearch(viewer, pi, apiBase);
                 const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels, keys);
+                setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys);
                 const toggleGrid = setupOverviewGrid(viewer, pi, apiBase, keys);
                 setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail });
             })
@@ -4840,5 +5659,4 @@
             initImmersiveViewer(immersiveRoot);
         }
     });
-
 })();

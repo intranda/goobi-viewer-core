@@ -81,6 +81,7 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_LAYER = "/layers/{name}";
     public static final String RECORDS_NER_TAGS = "/ner/tags";
     public static final String RECORDS_LAYOUT_TAGS = "/layout/tags";
+    public static final String RECORDS_LAYOUT_TAGS_INDEX = "/layout/tags/index";
     public static final String RECORDS_PLAINTEXT = "/plaintext";
     public static final String RECORDS_PLAINTEXT_ZIP = "/plaintext.zip";
     public static final String RECORDS_ALTO = "/alto";

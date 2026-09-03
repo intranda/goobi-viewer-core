@@ -184,7 +184,9 @@ export default class IvViewer {
     /**
      * Draws search-hit rectangles as overlays. Rect coordinates are image pixels of
      * the page given by `rect.order`, so spread hits land on the right half of a
-     * double-page view; rects for pages outside the current view are skipped.
+     * double-page view; rects for pages outside the current view are skipped. An
+     * optional `className` per rect is appended (e.g. a layout-tag style class that
+     * the theme maps to a colour).
      */
     setHighlights(rects) {
         this.clearHighlights();
@@ -193,7 +195,7 @@ export default class IvViewer {
             const item = this._itemForOrder(r.order);
             if (!item) return [];
             const el = document.createElement('div');
-            el.className = r.active ? 'immersive__highlight -active' : 'immersive__highlight';
+            el.className = ['immersive__highlight', r.active ? '-active' : '', r.className || ''].filter(Boolean).join(' ');
             osd.addOverlay({ element: el, location: item.imageToViewportRectangle(r.x, r.y, r.w, r.h) });
             return [el];
         });

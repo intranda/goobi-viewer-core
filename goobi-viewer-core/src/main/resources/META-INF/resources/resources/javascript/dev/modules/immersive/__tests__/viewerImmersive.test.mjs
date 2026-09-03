@@ -247,11 +247,12 @@ describe('isTypingTarget', function () {
 describe('panelIdForKeyEvent', function () {
     const altDigit = (code) => ({ altKey: true, ctrlKey: false, metaKey: false, code });
 
-    test('maps Alt+1-4 to the rail panels in toolbar order (TOC, fulltext, search, metadata)', function () {
+    test('maps Alt+1-5 to the rail panels in toolbar order (TOC, fulltext, search, metadata, layout tags)', function () {
         expect(panelIdForKeyEvent(altDigit('Digit1'))).toBe('immersivePanelToc');
         expect(panelIdForKeyEvent(altDigit('Digit2'))).toBe('immersivePanelFulltext');
         expect(panelIdForKeyEvent(altDigit('Digit3'))).toBe('immersivePanelSearch');
         expect(panelIdForKeyEvent(altDigit('Digit4'))).toBe('immersivePanelMetadata');
+        expect(panelIdForKeyEvent(altDigit('Digit5'))).toBe('immersivePanelLayoutTags');
     });
 
     test('bare digits are no shortcut (WCAG 2.1.4: no printable single-character shortcuts)', function () {
@@ -265,7 +266,7 @@ describe('panelIdForKeyEvent', function () {
 
     test('numpad digits and other codes are ignored (Alt+numpad types characters on Windows)', function () {
         expect(panelIdForKeyEvent(altDigit('Numpad1'))).toBeNull();
-        expect(panelIdForKeyEvent(altDigit('Digit5'))).toBeNull();
+        expect(panelIdForKeyEvent(altDigit('Digit6'))).toBeNull();
         expect(panelIdForKeyEvent(altDigit('KeyA'))).toBeNull();
         expect(panelIdForKeyEvent(altDigit(undefined))).toBeNull();
     });

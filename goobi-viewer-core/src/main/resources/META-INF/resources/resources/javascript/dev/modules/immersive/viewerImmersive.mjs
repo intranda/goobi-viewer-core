@@ -132,23 +132,23 @@ export function isTypingTarget(element) {
     return !!element.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])');
 }
 
-/** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-4 map onto this. */
-const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata'];
+/** Rail panel ids in toolbar order; the Alt+digit shortcuts 1-5 map onto this. */
+const PANEL_SHORTCUT_IDS = ['immersivePanelToc', 'immersivePanelFulltext', 'immersivePanelSearch', 'immersivePanelMetadata', 'immersivePanelLayoutTags'];
 
 /**
- * The rail panel an Alt+digit shortcut toggles: Alt+1-4 address the panels in
- * toolbar order (TOC, fulltext, search, metadata). Matches on `code`, not
- * `key`, because macOS Option+digit produces characters ('¡', '™', …); bare
- * digits are deliberately no shortcut (WCAG 2.1.4 discourages printable
- * single-character shortcuts) and Ctrl/Cmd combinations stay with the browser.
- * Pure + tested.
+ * The rail panel an Alt+digit shortcut toggles: Alt+1-5 address the panels in
+ * toolbar order (TOC, fulltext, search, metadata, layout tags). Matches on
+ * `code`, not `key`, because macOS Option+digit produces characters ('¡', '™',
+ * …); bare digits are deliberately no shortcut (WCAG 2.1.4 discourages
+ * printable single-character shortcuts) and Ctrl/Cmd combinations stay with
+ * the browser. Pure + tested.
  *
  * @param {{altKey:boolean, ctrlKey:boolean, metaKey:boolean, code:string}} event
  * @returns {string|null} panel element id, or null
  */
 export function panelIdForKeyEvent({ altKey, ctrlKey, metaKey, code }) {
     if (!altKey || ctrlKey || metaKey) return null;
-    const index = ['Digit1', 'Digit2', 'Digit3', 'Digit4'].indexOf(code);
+    const index = ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5'].indexOf(code);
     return index === -1 ? null : PANEL_SHORTCUT_IDS[index];
 }
 

@@ -6,7 +6,9 @@ import { pickActiveTocPageNo, panelIdForKeyEvent } from './viewerImmersive.mjs';
 /**
  * Wires the rail buttons to their left panels (open/close with ARIA + inert
  * bookkeeping) and registers the panel keyboard shortcuts on the dispatcher:
- * Escape closes the open panel, Alt+1-4 toggles the panels in rail order.
+ * Escape closes the open panel, Alt+1-5 toggles the panels in rail order. On
+ * open, focus moves to the panel's [data-immersive-panel-focus] element if it
+ * declares one, else to its first visible control.
  *
  * @param {HTMLElement|null} immersiveRoot  the .immersive root element
  * @param {{register: Function}} keys  the immersive key dispatcher
@@ -62,7 +64,8 @@ export function setupPanels(immersiveRoot, keys) {
                 const isMetadataPanel = panel.id === 'immersivePanelMetadata';
                 const focusTarget = isMetadataPanel
                     ? panel.querySelector('.immersive__panel-title')
-                    : Array.from(panel.querySelectorAll('input, a[href], button')).find((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
+                    : panel.querySelector('[data-immersive-panel-focus]') ||
+                      Array.from(panel.querySelectorAll('input, a[href], button')).find((n) => !n.hidden && !n.disabled && n.offsetParent !== null);
                 if (focusTarget) {
                     if (!focusTarget.hasAttribute('tabindex')) focusTarget.setAttribute('tabindex', '-1');
                     focusTarget.focus({ preventScroll: true });

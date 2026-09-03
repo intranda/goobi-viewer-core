@@ -29,6 +29,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_COMMENTS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_JSON;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYER;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYOUT_TAGS;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_LAYOUT_TAGS_INDEX;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_AUTOCOMPLETE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_MANIFEST_SEARCH;
@@ -52,6 +53,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,10 +79,12 @@ import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.IIIFPresentationBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.FilterTools;
+import io.goobi.viewer.api.rest.model.LayoutTagIndex;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.LayoutTagBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.LayoutTagIndexBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
@@ -416,6 +420,32 @@ public class RecordResource {
             throws PresentationException, IndexUnreachableException {
         LayoutTagBuilder b = new LayoutTagBuilder();
         return b.getLayoutTags(pi, label, start, end, stepSize == null ? 1 : stepSize, servletRequest);
+    }
+
+    /**
+     * @return the record-wide layout-tag index
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     * @throws ContentNotFoundException if no record exists for the given identifier
+     * @param language language code for the tag names; null resolves to the current locale
+     * @should return index with page count
+     * @should return 404 for unknown record
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_LAYOUT_TAGS_INDEX)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records" }, summary = "Get the record-wide index of ALTO layout tags (which tag occurs on which pages)")
+    @ApiResponse(responseCode = "200", description = "Layout-tag index for the given record (empty tag list without VIEW_FULLTEXT access)")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
+    public LayoutTagIndex getLayoutTagIndex(
+            @Parameter(description = "Language of the returned tag names (optional)") @QueryParam("lang") String language)
+            throws PresentationException, IndexUnreachableException, DAOException, ContentNotFoundException {
+        StructElement se = getStructElement(pi);
+        Locale locale = StringUtils.isNotBlank(language) ? Locale.forLanguageTag(language) : null;
+        return new LayoutTagIndexBuilder(DataManager.getInstance().getConfiguration(), locale).getLayoutTagIndex(se, servletRequest);
     }
 
     @GET

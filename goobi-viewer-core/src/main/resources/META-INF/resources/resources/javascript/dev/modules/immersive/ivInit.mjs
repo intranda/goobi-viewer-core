@@ -7,6 +7,7 @@ import { createKeyDispatcher, registerViewerNavKeys } from './ivKeys.mjs';
 import { setupPanels, setupPanelResize, setupToc, setupMetadataToggle } from './ivPanelsWiring.mjs';
 import { setupShortcutsModal } from './ivShortcutsModal.mjs';
 import { setupFulltextPanel } from './ivFulltextPanel.mjs';
+import { setupLayoutTagsPanel } from './ivLayoutTagsPanel.mjs';
 import { setupFulltextSearch } from './ivSearchPanel.mjs';
 import { setupPageDropdown } from './ivPageDropdown.mjs';
 import { setupOverviewGrid } from './ivGridOverlay.mjs';
@@ -20,7 +21,7 @@ const STAGE_LOADER_TIMEOUT_MS = 8000;
  * Bootstraps the immersive view. The chrome (panels, keyboard dispatcher,
  * shortcuts modal, metadata fold) is wired whenever the view is present, even
  * without VIEW_IMAGES. The image engine and its dependent wiring (bottom bar,
- * grid, fulltext, search, page dropdown, TOC sync) are only built when the
+ * grid, fulltext, search, layout tags, page dropdown, TOC sync) are only built when the
  * server rendered the [data-immersive-image] mount, i.e. the user may view the
  * images. Keyboard shortcuts run through one dispatcher whose priorities define
  * the overlay precedence: shortcuts modal (10) → grid overlay (20) → page
@@ -81,6 +82,7 @@ export function initImmersiveViewer(immersiveRoot) {
             setupToc(viewer);
             setupFulltextSearch(viewer, pi, apiBase);
             const fulltext = setupFulltextPanel(viewer, pi, apiBase, panels, keys);
+            setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys);
             const toggleGrid = setupOverviewGrid(viewer, pi, apiBase, keys);
             setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail: fulltext.updateFulltextAvail });
         })
