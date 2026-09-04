@@ -137,11 +137,14 @@
 @media screen and (max-width: @smallBreakpoint) {
     .immersive.-panel-open .immersive__toolbar-right {
         opacity: 0;
+        visibility: hidden;
         pointer-events: none;
     }
 
     .immersive__toolbar-right {
-        transition: opacity @immersive-transition;
+        transition:
+            opacity @immersive-transition,
+            visibility @immersive-transition;
     }
 }
 

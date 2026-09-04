@@ -16,7 +16,9 @@
         align-items: center;
         justify-content: center;
         pointer-events: none;
-        transition: opacity @immersive-transition;
+        transition:
+            opacity @immersive-transition,
+            visibility @immersive-transition;
     }
 
     &__title {
@@ -75,6 +77,7 @@
     &.-panel-open {
         .immersive__overlay-top {
             opacity: 0;
+            visibility: hidden;
         }
         .immersive__overlay-top,
         .immersive__title-trigger,
