@@ -69,6 +69,29 @@ describe('mountBlockAnnotations (jsdom)', () => {
         mounted.destroy();
     });
 
+    test('only a card whose text overflows is marked as expandable', () => {
+        const { box, flat, els } = buildPage();
+        const layout = {
+            blocks: [
+                { id: 'b-1', author: 'gr_jacob_grimm', authorName: 'Jacob Grimm', rect: { x: 0, y: 100, w: 200, h: 20 }, text: 'kurz' },
+                { id: 'b-2', author: 'gr_jacob_grimm', authorName: 'Jacob Grimm', rect: { x: 0, y: 300, w: 200, h: 20 }, text: 'sehr lang' },
+            ],
+        };
+        const mounted = mountBlockAnnotations({ box, layout, pi: 'PI1', pageNo: 2, flat, els });
+        const [shortCard, longCard] = Array.from(box.querySelectorAll('.immersive__anno-note'));
+        const clamp = (card, full) => {
+            const text = card.querySelector('.immersive__anno-note-text');
+            Object.defineProperty(text, 'clientHeight', { get: () => 40, configurable: true });
+            Object.defineProperty(text, 'scrollHeight', { get: () => full, configurable: true });
+        };
+        clamp(shortCard, 40);
+        clamp(longCard, 96);
+        mounted.relayout();
+        expect(shortCard.classList.contains('-truncated')).toBe(false);
+        expect(longCard.classList.contains('-truncated')).toBe(true);
+        mounted.destroy();
+    });
+
     test('cards anchored ON their line leave the text unshifted', () => {
         const { box, flat, els } = buildPage();
         const layout = { blocks: [{ id: 'b-9', author: 'gr_jacob_grimm', authorName: 'Jacob Grimm', rect: { x: 0, y: 200, w: 200, h: 20 }, text: 'Randnotiz' }] };

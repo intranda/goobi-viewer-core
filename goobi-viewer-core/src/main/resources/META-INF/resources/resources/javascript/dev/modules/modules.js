@@ -3657,6 +3657,9 @@
      * height + gap must stay at or below the print row height (~24px), or runs of
      * consecutive annotations can never sit on their own lines.
      */
+    /** Card whose text does not fit the clamp - the only one a click unfolds. */
+    const TRUNCATED_CLASS = '-truncated';
+
     const NOTE_GAP = 2;
 
     const POPOVER_TEMPLATE =
@@ -3712,6 +3715,7 @@
             noteEl.setAttribute('aria-haspopup', 'dialog');
             noteEl.setAttribute('aria-expanded', 'false');
             noteEl.addEventListener('click', () => {
+                if (!noteEl.classList.contains(TRUNCATED_CLASS)) return;
                 const wasOpen = openNote === noteEl;
                 hide();
                 if (!wasOpen) $(noteEl).popover('show');
@@ -3903,6 +3907,17 @@
      * would overflow above the first printed line shifts the text down via the
      * --immersive-anno-shift custom property instead of being clamped onto the line.
      */
+    /** Marks the cards whose clamped text overflows; only those can be unfolded. */
+    function markTruncation(notes) {
+        notes.forEach(({ noteEl }) => {
+            const text = noteEl.querySelector('.immersive__anno-note-text');
+            const cut = !!text && text.scrollHeight > text.clientHeight + 1;
+            noteEl.classList.toggle(TRUNCATED_CLASS, cut);
+            if (cut) noteEl.setAttribute('aria-haspopup', 'dialog');
+            else noteEl.removeAttribute('aria-haspopup');
+        });
+    }
+
     function createNoteLayout({ box, notes, anchors, columnsHead, popovers }) {
         const column = document.createElement('div');
         column.className = 'immersive__anno-margin';
@@ -3924,6 +3939,7 @@
                     else box.appendChild(noteEl);
                     inlineNotes.push(noteEl);
                 });
+                markTruncation(notes);
                 return;
             }
             notes.forEach(({ noteEl }) => {
@@ -3953,6 +3969,7 @@
             stackNoteTops(desired, NOTE_GAP).forEach((top, i) => {
                 desired[i].noteEl.style.top = `${top}px`;
             });
+            markTruncation(notes);
         };
         const destroy = () => {
             inlineNotes.splice(0).forEach((el) => el.remove());

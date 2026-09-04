@@ -9,6 +9,8 @@
 @immersive-anno-font-note: @fontSmall;
 @immersive-anno-margin-gap: 12px;
 @immersive-anno-bar: 3px;
+@immersive-anno-note-lines: 4;
+@immersive-anno-note-caret: 5px;
 
 .immersive {
     &__anno-toggle {
@@ -129,6 +131,7 @@
         line-height: 1.4;
         white-space: normal;
         color: @immersive-chrome-fg;
+        cursor: default;
         transition: top @immersive-transition;
 
         &:hover,
@@ -141,8 +144,27 @@
             .mx-immersive-focus-ring();
         }
 
+        /* EXPANDABLE */
+        &.-truncated {
+            cursor: pointer;
+            padding-bottom: 6px;
+
+            &::after {
+                content: '';
+                position: absolute;
+                right: 6px;
+                bottom: 5px;
+                width: @immersive-anno-note-caret;
+                height: @immersive-anno-note-caret;
+                border-right: 1.5px solid currentColor;
+                border-bottom: 1.5px solid currentColor;
+                transform: rotate(45deg);
+                opacity: 0.55;
+            }
+        }
+
         &.-inline {
-            position: static;
+            position: relative;
             width: 100%;
             margin: 4px 0 4px 16px;
         }
@@ -158,10 +180,10 @@
 
     &__anno-note-text {
         --alto-tag-color: initial;
-        display: block;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: @immersive-anno-note-lines;
         overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
 
     &__anno-popover.popover {
