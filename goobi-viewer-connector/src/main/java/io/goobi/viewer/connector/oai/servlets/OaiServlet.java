@@ -284,16 +284,7 @@ public class OaiServlet extends HttpServlet {
                 xmlOut.output(doc, response.getOutputStream());
             }
         } catch (IOException e) {
-            // Client disconnects (harvester timeouts etc.) are normal network behavior.
-            // Downgrade to DEBUG so they don't pollute the error log.
-            if (isClientAbort(e)) {
-                // Use the container-resolved remote address. X-Forwarded-For is attacker-controlled and must
-                // not be trusted in application code; the reverse proxy's RemoteIpValve resolves the real
-                // client IP into getRemoteAddr() (see GVC-2026-12).
-                logger.debug("Client {} disconnected during OAI response for '{}': {}",
-                        request.getRemoteAddr(), request.getQueryString(), e.getMessage());
-            } else {
-                logger.error(e.getMessage(), e);
+            if (!handleOutputException(e, request.getRemoteAddr(), request.getQueryString())) {
                 try {
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                 } catch (IOException e1) {
@@ -301,6 +292,34 @@ public class OaiServlet extends HttpServlet {
                 }
             }
         }
+    }
+
+    /**
+     * Logs an exception thrown while writing the OAI response and reports whether it was a client disconnect.
+     *
+     * <p>Client disconnects (harvester timeouts etc.) are normal network behavior and are logged at DEBUG so they do not pollute the error log.
+     * Everything else is a genuine error and is logged as such; the caller then still owes the client an error response.
+     *
+     * <p>The client address is passed in as the container-resolved remote address. Application code must never read {@code X-Forwarded-For} itself,
+     * because that header is attacker-controlled; the reverse proxy's {@code RemoteIpValve} resolves the real client address into
+     * {@code getRemoteAddr()}. Taking the address as a parameter keeps the branch unit-testable without mocking HttpServletRequest.
+     *
+     * @param e the exception thrown while writing the response
+     * @param remoteAddr container-resolved remote address of the client
+     * @param queryString query string of the request, may be null
+     * @return true if the exception was a client disconnect and needs no further handling
+     * @should return true and log at debug for a client abort
+     * @should return false for a generic io exception
+     * @should tolerate a null query string
+     */
+    static boolean handleOutputException(IOException e, String remoteAddr, String queryString) {
+        if (isClientAbort(e)) {
+            logger.debug("Client {} disconnected during OAI response for '{}': {}", remoteAddr, queryString, e.getMessage());
+            return true;
+        }
+
+        logger.error(e.getMessage(), e);
+        return false;
     }
 
     /**

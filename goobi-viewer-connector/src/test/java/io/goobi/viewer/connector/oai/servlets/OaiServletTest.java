@@ -132,6 +132,35 @@ class OaiServletTest extends AbstractTest {
     }
 
     /**
+     * @see OaiServlet#handleOutputException(IOException,String,String)
+     * @verifies return true and log at debug for a client abort
+     */
+    @Test
+    void handleOutputException_shouldReturnTrueAndLogAtDebugForAClientAbort() {
+        Assertions.assertTrue(OaiServlet.handleOutputException(new IOException("Broken pipe"), "10.0.0.1", "verb=Identify"));
+        Assertions.assertTrue(OaiServlet.handleOutputException(new IOException("Connection reset by peer"), "10.0.0.1", "verb=Identify"));
+    }
+
+    /**
+     * @see OaiServlet#handleOutputException(IOException,String,String)
+     * @verifies return false for a generic io exception
+     */
+    @Test
+    void handleOutputException_shouldReturnFalseForAGenericIoException() {
+        Assertions.assertFalse(OaiServlet.handleOutputException(new IOException("Disk full"), "10.0.0.1", "verb=Identify"));
+    }
+
+    /**
+     * @see OaiServlet#handleOutputException(IOException,String,String)
+     * @verifies tolerate a null query string
+     */
+    @Test
+    void handleOutputException_shouldTolerateANullQueryString() {
+        Assertions.assertTrue(OaiServlet.handleOutputException(new IOException("Broken pipe"), "10.0.0.1", null));
+        Assertions.assertFalse(OaiServlet.handleOutputException(new IOException("Disk full"), "10.0.0.1", null));
+    }
+
+    /**
      * @see OaiServlet#isSolrUrlMismatch(String, String)
      * @verifies return false when either url is null
      */
