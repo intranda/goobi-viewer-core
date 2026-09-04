@@ -284,16 +284,7 @@ public class OaiServlet extends HttpServlet {
                 xmlOut.output(doc, response.getOutputStream());
             }
         } catch (IOException e) {
-            // Client disconnects (harvester timeouts etc.) are normal network behavior.
-            // Downgrade to DEBUG so they don't pollute the error log.
-            if (isClientAbort(e)) {
-                // IP extraction was pulled into extractClientIp() so the X-Forwarded-For parsing
-                // (first-entry-wins, trim) can be unit-tested without mocking HttpServletRequest.
-                String clientIp = extractClientIp(request.getHeader("X-Forwarded-For"), request.getRemoteAddr());
-                logger.debug("Client {} disconnected during OAI response for '{}': {}",
-                        clientIp, request.getQueryString(), e.getMessage());
-            } else {
-                logger.error(e.getMessage(), e);
+            if (!handleOutputException(e, request.getRemoteAddr(), request.getQueryString())) {
                 try {
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                 } catch (IOException e1) {
@@ -301,6 +292,34 @@ public class OaiServlet extends HttpServlet {
                 }
             }
         }
+    }
+
+    /**
+     * Logs an exception thrown while writing the OAI response and reports whether it was a client disconnect.
+     *
+     * <p>Client disconnects (harvester timeouts etc.) are normal network behavior and are logged at DEBUG so they do not pollute the error log.
+     * Everything else is a genuine error and is logged as such; the caller then still owes the client an error response.
+     *
+     * <p>The client address is passed in as the container-resolved remote address. Application code must never read {@code X-Forwarded-For} itself,
+     * because that header is attacker-controlled; the reverse proxy's {@code RemoteIpValve} resolves the real client address into
+     * {@code getRemoteAddr()}. Taking the address as a parameter keeps the branch unit-testable without mocking HttpServletRequest.
+     *
+     * @param e the exception thrown while writing the response
+     * @param remoteAddr container-resolved remote address of the client
+     * @param queryString query string of the request, may be null
+     * @return true if the exception was a client disconnect and needs no further handling
+     * @should return true and log at debug for a client abort
+     * @should return false for a generic io exception
+     * @should tolerate a null query string
+     */
+    static boolean handleOutputException(IOException e, String remoteAddr, String queryString) {
+        if (isClientAbort(e)) {
+            logger.debug("Client {} disconnected during OAI response for '{}': {}", remoteAddr, queryString, e.getMessage());
+            return true;
+        }
+
+        logger.error(e.getMessage(), e);
+        return false;
     }
 
     /**
@@ -323,31 +342,6 @@ public class OaiServlet extends HttpServlet {
                 || message.contains("broken pipe")
                 || message.contains("connection reset")
                 || message.contains("clientabort");
-    }
-
-    /**
-     * Resolves the originating client IP for logging purposes. Prefers the first entry of the X-Forwarded-For header (proxy chain order: client,
-     * proxy-1, proxy-2, ...), trimmed of surrounding whitespace, and falls back to the servlet container's remote address when the header is absent.
-     *
-     * Extracted from the doGet catch block so the parsing can be unit-tested without mocking HttpServletRequest.
-     *
-     * @param forwardedFor raw value of the X-Forwarded-For header (may be null)
-     * @param remoteAddr fallback remote address (servlet container value)
-     * @return the resolved client IP, or remoteAddr if forwardedFor is null
-     * @should return remote address when forwarded for is null
-     * @should return forwarded for when no comma present
-     * @should return first ip when forwarded for contains comma
-     * @should trim whitespace from first forwarded for entry
-     */
-    static String extractClientIp(String forwardedFor, String remoteAddr) {
-        if (forwardedFor == null) {
-            return remoteAddr;
-        }
-        int comma = forwardedFor.indexOf(',');
-        if (comma > 0) {
-            return forwardedFor.substring(0, comma).trim();
-        }
-        return forwardedFor;
     }
 
     /**

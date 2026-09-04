@@ -562,4 +562,17 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals("TEST_PI_123", metadata.getOwnerPi());
         assertEquals("LOG_0001", metadata.getOwnerLogid());
     }
+
+    /**
+     * @see Metadata#hashCode()
+     * @verifies return same hash code for equal instances with different keys
+     */
+    @Test
+    void hashCode_shouldReturnSameHashCodeForEqualInstancesWithDifferentKeys() {
+        Metadata one = new Metadata("MD_TITLE", "MD_TITLE", "{0}", Collections.emptyList());
+        Metadata other = new Metadata("MD_TITLE", "MD_TITLE_LANG_DE", "{0}", Collections.emptyList());
+
+        assertEquals(one, other);
+        assertEquals(one.hashCode(), other.hashCode());
+    }
 }

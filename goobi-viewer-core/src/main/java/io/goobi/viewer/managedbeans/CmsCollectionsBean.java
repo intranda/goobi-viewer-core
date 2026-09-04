@@ -650,10 +650,20 @@ public class CmsCollectionsBean implements Serializable {
                 default:
                     break;
             }
+            CMSCollection persistedCollection;
             if (getCurrentCollection().getId() != null) {
-                DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
+                persistedCollection = DataManager.getInstance().getDao().updateCMSCollection(getCurrentCollection());
             } else {
-                DataManager.getInstance().getDao().addCMSCollection(getCurrentCollection());
+                persistedCollection = DataManager.getInstance().getDao().addCMSCollection(getCurrentCollection());
+            }
+            if (persistedCollection != null) {
+                // Continue working with a fresh copy of the persisted collection so translations added during this
+                // edit carry their generated id for subsequent saves - mirrors the isolation already established by
+                // setCollectionName(). Assigned directly instead of relying on updateCollections()'s reload check,
+                // since CMSCollection.equals() compares solrField/solrFieldValue rather than id and would keep the
+                // stale, unsynced instance selected.
+                originalCollection = persistedCollection;
+                currentCollection = new CMSCollection(originalCollection);
             }
             updateCollections();
             addToCollectionViews(getCurrentCollection());

@@ -22,6 +22,7 @@
 package io.goobi.viewer.model.cms.pages;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
@@ -47,7 +48,7 @@ class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
     Path componentTemplatesPath = Paths.get("src/test/resources/data/viewer/cms/component_templates");
     CMSTemplateManager templateManager;
     CMSPageContentManager contentManager;
-    
+
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -55,14 +56,14 @@ class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         templateManager = new CMSTemplateManager(componentTemplatesPath.toString(), null);
         contentManager = templateManager.getContentManager();
     }
-    
+
     /**
      * @verifies persist added components and remove deleted components after save and reload
      */
     @Test
     void addAndUpdateCMSPage_shouldPersistAddedComponentsAndRemoveDeletedComponentsAfterSaveAndReload() throws DAOException {
         CMSPage page = new CMSPage();
-        
+
         page.initialiseCMSComponents(templateManager);
         PersistentCMSComponent component1 = page.addComponent("text", templateManager);
         component1.getTranslatableContentItems().get(0).getText().setValue("text1");
@@ -70,55 +71,76 @@ class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         PersistentCMSComponent component2 = page.addComponent("text", templateManager);
         component2.getTranslatableContentItems().get(0).getText().setValue("text2");
         component2.setOrder(2);
-        
+
         assertEquals(2, page.getPersistentComponents().size());
         assertEquals(2, page.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
-        assertEquals("text1text2", page.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).sorted().collect(Collectors.joining()));
+        assertEquals("text1text2",
+                page.getPersistentComponents()
+                        .stream()
+                        .flatMap(p -> p.getContentItems().stream())
+                        .map(c -> (((CMSShortTextContent) c).getText().getText()))
+                        .sorted()
+                        .collect(Collectors.joining()));
 
-        assertTrue(dao.addCMSPage(page));
-        
+        assertNotNull(dao.addCMSPage(page));
+
         CMSPage page2 = new CMSPage(dao.getCMSPage(page.getId()));
         page2.initialiseCMSComponents(templateManager);
         assertEquals(2, page2.getPersistentComponents().size());
         assertEquals(2, page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
-        assertEquals("text1text2", page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).sorted().collect(Collectors.joining()));
-        
+        assertEquals("text1text2",
+                page2.getPersistentComponents()
+                        .stream()
+                        .flatMap(p -> p.getContentItems().stream())
+                        .map(c -> (((CMSShortTextContent) c).getText().getText()))
+                        .sorted()
+                        .collect(Collectors.joining()));
+
         CMSComponent deletedComponent = page2.getComponents().get(0);
         page2.removeComponent(deletedComponent);
         dao.deleteCMSComponent(deletedComponent.getPersistentComponent());
         assertEquals(1, page2.getPersistentComponents().size());
         assertEquals(1, page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
-        assertEquals("text2", page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
-        
-        assertTrue(dao.updateCMSPage(page2));
-        
+        assertEquals("text2",
+                page2.getPersistentComponents()
+                        .stream()
+                        .flatMap(p -> p.getContentItems().stream())
+                        .map(c -> (((CMSShortTextContent) c).getText().getText()))
+                        .collect(Collectors.joining()));
+
+        assertNotNull(dao.updateCMSPage(page2));
+
         CMSPage page3 = new CMSPage(dao.getCMSPage(page2.getId()));
         page3.initialiseCMSComponents(templateManager);
         assertEquals(1, page3.getPersistentComponents().size());
         assertEquals(1, page3.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
-        assertEquals("text2", page3.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).map(c -> (((CMSShortTextContent)c).getText().getText())).collect(Collectors.joining()));
-        
-        
+        assertEquals("text2",
+                page3.getPersistentComponents()
+                        .stream()
+                        .flatMap(p -> p.getContentItems().stream())
+                        .map(c -> (((CMSShortTextContent) c).getText().getText()))
+                        .collect(Collectors.joining()));
+
     }
-    
+
     /**
      * @verifies persist and delete components without content
      */
     @Test
     void addAndUpdateCMSPage_shouldPersistAndDeleteComponentsWithoutContent() throws DAOException {
         CMSPage page = new CMSPage();
-        
+
         page.initialiseCMSComponents(templateManager);
         PersistentCMSComponent component1 = page.addComponent("static", templateManager);
         component1.setOrder(1);
         PersistentCMSComponent component2 = page.addComponent("static", templateManager);
         component2.setOrder(2);
-        
+
         assertEquals(2, page.getPersistentComponents().size());
         assertEquals(0, page.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
 
-        assertTrue(dao.addCMSPage(page));
-        
+        assertNotNull(dao.addCMSPage(page));
+
         CMSPage page2 = new CMSPage(dao.getCMSPage(page.getId()));
         assertEquals(2, page2.getPersistentComponents().size());
         assertEquals(0, page2.getPersistentComponents().stream().flatMap(p -> p.getContentItems().stream()).count());
@@ -128,40 +150,71 @@ class CMSPageSavingIssuesTest extends AbstractDatabaseEnabledTest {
         CMSComponent deletedComponent = page2.getComponents().get(0);
         page2.removeComponent(deletedComponent);
         assertEquals(1, page2.getPersistentComponents().size());
-        
-        assertTrue(dao.updateCMSPage(page2));
-        
+
+        assertNotNull(dao.updateCMSPage(page2));
+
         CMSPage page3 = new CMSPage(dao.getCMSPage(page2.getId()));
         assertEquals(1, page3.getPersistentComponents().size());
         assertEquals(1, dao.getNativeQueryResults("SELECT * FROM cms_components WHERE owning_page_id=" + page3.getId()).size());
-        
-        
+
     }
-    
+
+    /**
+     * @verifies keep the same component id when the merged page returned by the first save is used for a second save of the same page, instead of the
+     *           original (now stale) instance
+     */
+    @Test
+    void updateCMSPage_shouldKeepSameComponentIdAcrossRepeatedSavesOfSameInstance() throws DAOException {
+        CMSPage page = new CMSPage();
+        page.initialiseCMSComponents(templateManager);
+        assertNotNull(dao.addCMSPage(page));
+
+        CMSPage page2 = new CMSPage(dao.getCMSPage(page.getId()));
+        page2.initialiseCMSComponents(templateManager);
+        PersistentCMSComponent added = page2.addComponent("text", templateManager);
+        added.setOrder(1);
+
+        // First save: `added` still has a null id going in, so em.merge() cascades a persist()
+        // for it. The generated id is only reflected on the returned, merged page - not on `page2`.
+        CMSPage afterFirstSave = dao.updateCMSPage(page2);
+        assertNotNull(afterFirstSave);
+        assertEquals(1, afterFirstSave.getPersistentComponents().size());
+        Long idAfterFirstSave = afterFirstSave.getPersistentComponents().get(0).getId();
+        assertNotNull(idAfterFirstSave);
+
+        // Save again using the merged instance from the first save (as CmsPageEditBean now does),
+        // instead of the stale `page2` - the previously added component must be updated in place,
+        // not deleted and re-inserted under a new id.
+        CMSPage afterSecondSave = dao.updateCMSPage(afterFirstSave);
+        assertNotNull(afterSecondSave);
+        assertEquals(1, afterSecondSave.getPersistentComponents().size());
+        Long idAfterSecondSave = afterSecondSave.getPersistentComponents().get(0).getId();
+
+        assertEquals(idAfterFirstSave, idAfterSecondSave);
+    }
+
     /**
      * @verifies remove component and content from database
      */
     @Test
     void deleteCMSComponent_shouldRemoveComponentAndContentFromDatabase() throws DAOException {
-        
+
         CMSShortTextContent text = new CMSShortTextContent();
         text.getText().setText("text");
-        PersistentCMSComponent component1 = new PersistentCMSComponent(templateManager.getComponent("text").orElse(null), Collections.singletonList(text));
+        PersistentCMSComponent component1 =
+                new PersistentCMSComponent(templateManager.getComponent("text").orElse(null), Collections.singletonList(text));
         assertEquals("text", component1.getTranslatableContentItems().get(0).getText().getText());
-        
+
         dao.addCMSComponent(component1);
         assertEquals(1, dao.getNativeQueryResults("SELECT * FROM cms_components WHERE component_id=" + component1.getId()).size());
         assertEquals(1, dao.getNativeQueryResults("SELECT * FROM cms_content WHERE owning_component_id=" + component1.getId()).size());
 
         PersistentCMSComponent component2 = new PersistentCMSComponent(dao.getCMSComponent(component1.getId()));
         assertTrue(dao.deleteCMSComponent(component2));
-        
+
         assertEquals(0, dao.getNativeQueryResults("SELECT * FROM cms_components WHERE component_id=" + component1.getId()).size());
         assertEquals(0, dao.getNativeQueryResults("SELECT * FROM cms_content WHERE owning_component_id=" + component1.getId()).size());
 
-        
     }
-    
-    
 
 }

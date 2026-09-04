@@ -39,6 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -652,4 +653,21 @@ class ThumbnailHandlerTest extends AbstractTest {
         Assertions.assertEquals("image/tiff", ThumbnailHandler.getMimeType(se).get());
     }
 
+
+    /**
+     * @see ThumbnailHandler#getImageUrl(PhysicalElement,Scale,ImageFileFormat)
+     * @verifies return url for iiif image info path
+     */
+    @Test
+    void getImageUrl_shouldReturnUrlForIiifImageInfoPath() {
+        PhysicalElement page = new PhysicalElementBuilder().setPi("1234")
+                .setPhysId("PHYS_0001")
+                .setFilePath("http://example.com/iiif/image-api/1234_0001/image.info")
+                .setOrder(1)
+                .setMimeType("image/tiff")
+                .build();
+
+        String url = handler.getImageUrl(page, Scale.MAX, ImageFileFormat.JPG);
+        Assertions.assertEquals("http://example.com/iiif/image-api/1234_0001/image.info/full/max/0/default.jpg", url);
+    }
 }

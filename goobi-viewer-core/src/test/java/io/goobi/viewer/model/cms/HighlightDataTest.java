@@ -89,7 +89,7 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         object.setMediaItem(mediaItem);
         object.setImageMode(ImageMode.UPLOADED_IMAGE);
         
-        assertTrue(this.dao.updateHighlight(object));
+        assertNotNull(this.dao.updateHighlight(object));
         assertNotNull(object.getId());
         
         HighlightData loaded = this.dao.getHighlight(object.getId());

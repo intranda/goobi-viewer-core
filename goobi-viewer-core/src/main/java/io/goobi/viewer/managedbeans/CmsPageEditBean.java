@@ -71,6 +71,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -173,9 +174,9 @@ public class CmsPageEditBean implements Serializable {
      * savePageAndForwardToEdit.
      *
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-      * @should save page
-      * @should save as template
-      * @should save page no admin
+     * @should save page
+     * @should save as template
+     * @should save page no admin
      */
     public void savePageAndForwardToEdit() throws DAOException {
         this.saveSelectedPage();
@@ -208,13 +209,24 @@ public class CmsPageEditBean implements Serializable {
         selectedPage.writeSelectableCategories();
         // Save
         boolean success = false;
-        selectedPage.setDateUpdated(LocalDateTime.now());
+        selectedPage.setDateUpdated(DateTools.now());
 
         logger.trace("update dao");
+        CMSPage mergedPage = null;
         if (selectedPage.getId() != null) {
-            success = this.dao.updateCMSPage(selectedPage);
+            mergedPage = this.dao.updateCMSPage(selectedPage);
         } else {
-            success = this.dao.addCMSPage(selectedPage);
+            mergedPage = this.dao.addCMSPage(selectedPage);
+        }
+        success = mergedPage != null;
+        if (success) {
+            // Adopt the merged, persistence-context-aware page so that any child added
+            // during this edit (sidebar element, property, component) carries its
+            // generated id for subsequent saves in this view - otherwise the next save
+            // would re-insert it under a new id instead of updating it.
+
+            //continue working with a copy so changes to this.selectedPage are only persisted on explicit save
+            this.selectedPage = new CMSPage(mergedPage);
         }
 
         if (saveAsTemplate) {
@@ -272,7 +284,7 @@ public class CmsPageEditBean implements Serializable {
         template.setTitleTranslations(title);
         template.setLockComponents(lockComponents);
         template.setPublished(true);
-        return this.dao.addCMSPageTemplate(template);
+        return this.dao.addCMSPageTemplate(template) != null;
     }
 
     /**
@@ -280,7 +292,7 @@ public class CmsPageEditBean implements Serializable {
      *
      * @return Return view
      * @throws io.goobi.viewer.exceptions.DAOException if any.
-      * @should delete page for given input
+     * @should delete page for given input
      */
     public String deleteSelectedPage() throws DAOException {
         if (deletePage(selectedPage)) {
@@ -666,6 +678,7 @@ public class CmsPageEditBean implements Serializable {
 
     /**
      * addComponent.
+     * 
      * @should return true for given input
      */
     public void addComponent() {
@@ -790,7 +803,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-
+     * 
      */
     IDAO getDao() {
         return dao;
@@ -799,7 +812,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-
+     * 
      */
     void setDao(IDAO dao) {
         this.dao = dao;
@@ -808,7 +821,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-
+     * 
      */
     void setTemplateManager(CMSTemplateManager templateManager) {
         this.templateManager = templateManager;
@@ -817,7 +830,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-
+     * 
      */
     void setUserBean(UserBean userBean) {
         this.userBean = userBean;
@@ -826,7 +839,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-
+     * 
      */
     void setWidgetsBean(CMSSidebarWidgetsBean widgetsBean) {
         this.widgetsBean = widgetsBean;
@@ -835,7 +848,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Getter for unit tests.
      * 
-
+     * 
      */
     CollectionViewBean getCollectionViewBean() {
         return collectionViewBean;
@@ -844,7 +857,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      * 
-
+     * 
      */
     void setCollectionViewBean(CollectionViewBean collectionViewBean) {
         this.collectionViewBean = collectionViewBean;
@@ -853,7 +866,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      *
-
+     * 
      */
     void setCmsBean(CmsBean cmsBean) {
         this.cmsBean = cmsBean;
@@ -862,7 +875,7 @@ public class CmsPageEditBean implements Serializable {
     /**
      * Setter for unit tests.
      *
-
+     * 
      */
     void setFacesContext(FacesContext facesContext) {
         this.facesContext = facesContext;

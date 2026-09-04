@@ -41,6 +41,7 @@ import org.jdom2.transform.XSLTransformer;
 import de.unigoettingen.sub.commons.contentlib.servlet.controller.GetAction;
 import io.goobi.viewer.controller.DataFileTools;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -213,7 +214,7 @@ public class MetsResolver extends HttpServlet {
                     }
                 } catch (IOException | JDOMException e) {
                     if (e instanceof IOException && GetAction.isClientAbort(e)) {
-                        logger.debug("Client {} disconnected while serving METS for {}: {}", clientIp(request), id, e.getMessage());
+                        logger.debug("Client {} disconnected while serving METS for {}: {}", NetTools.getIpAddress(request), id, e.getMessage());
                     } else {
                         logger.error(e.getMessage());
                     }
@@ -229,7 +230,7 @@ public class MetsResolver extends HttpServlet {
                     out.flush();
                 } catch (IOException e) {
                     if (GetAction.isClientAbort(e)) {
-                        logger.debug("Client {} disconnected while serving METS for {}: {}", clientIp(request), id, e.getMessage());
+                        logger.debug("Client {} disconnected while serving METS for {}: {}", NetTools.getIpAddress(request), id, e.getMessage());
                     } else {
                         logger.error(e.getMessage());
                     }
@@ -244,7 +245,7 @@ public class MetsResolver extends HttpServlet {
             }
         } catch (IOException e) {
             if (GetAction.isClientAbort(e)) {
-                logger.debug("Client {} disconnected while serving METS for {}: {}", clientIp(request), id, e.getMessage());
+                logger.debug("Client {} disconnected while serving METS for {}: {}", NetTools.getIpAddress(request), id, e.getMessage());
             } else {
                 logger.error(e.getMessage());
                 try {
@@ -273,19 +274,5 @@ public class MetsResolver extends HttpServlet {
         }
 
         return null;
-    }
-
-    /**
-     * Returns the client IP address, preferring the X-Forwarded-For header (first entry) over the direct remote address.
-     *
-     * @param request the HTTP request
-     * @return client IP string
-     */
-    private static String clientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isEmpty()) {
-            return forwarded.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }

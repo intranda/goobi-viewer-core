@@ -71,7 +71,7 @@ public class RISExport {
      */
     public RISExport() {
         this.fileName = "viewer_search_"
-                + LocalDateTime.now().format(DateTools.FORMATTERFILENAME) + ".ris";
+                + DateTools.now().format(DateTools.FORMATTERFILENAME) + ".ris";
     }
 
     /**

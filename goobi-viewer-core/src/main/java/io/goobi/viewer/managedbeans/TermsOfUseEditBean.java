@@ -122,7 +122,7 @@ public class TermsOfUseEditBean implements Serializable, IPolyglott {
         boolean saved = false;
         try {
             this.termsOfUse.cleanTranslations();
-            saved = DataManager.getInstance().getDao().saveTermsOfUse(this.termsOfUse);
+            saved = DataManager.getInstance().getDao().saveTermsOfUse(this.termsOfUse) != null;
         } catch (DAOException e) {
             logger.error("Error saving terms of use ", e);
         }

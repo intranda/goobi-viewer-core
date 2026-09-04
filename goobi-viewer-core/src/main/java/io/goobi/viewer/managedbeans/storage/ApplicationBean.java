@@ -39,6 +39,7 @@ import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.dao.update.DatabaseUpdater;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -90,7 +91,7 @@ public class ApplicationBean implements DataStorage, Serializable {
 
     public ApplicationBean put(String key, Object object) {
         synchronized (map) {
-            map.put(key, Pair.of(object, Instant.now()));
+            map.put(key, Pair.of(object, DateTools.nowInstant()));
             return this;
         }
     }
@@ -109,7 +110,7 @@ public class ApplicationBean implements DataStorage, Serializable {
      */
     @SuppressWarnings("unchecked")
     public synchronized <T> T getIfRecentOrPut(String key, T object, long timeToLive, TemporalUnit unit) {
-        Instant oldestViable = Instant.now().minus(timeToLive, unit);
+        Instant oldestViable = DateTools.nowInstant().minus(timeToLive, unit);
         if (contains(key) && !olderThan(key, oldestViable)) {
             return (T) get(key);
         } else {
@@ -148,7 +149,7 @@ public class ApplicationBean implements DataStorage, Serializable {
      */
     @SuppressWarnings("unchecked")
     public synchronized <T> Optional<T> getIfRecentOrRemove(String key, long timeToLive, TemporalUnit unit) {
-        Instant oldestViable = Instant.now().minus(timeToLive, unit);
+        Instant oldestViable = DateTools.nowInstant().minus(timeToLive, unit);
         if (contains(key) && !olderThan(key, oldestViable)) {
             return Optional.ofNullable((T) get(key));
         } else {

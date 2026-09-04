@@ -127,7 +127,7 @@ class ThemeConfigurationTest extends AbstractDatabaseEnabledTest {
         assertEquals(logoItem, editableTheme.getLogo().getMediaItem());
         assertEquals(iconItem, editableTheme.getIcon().getMediaItem());
 
-        assertTrue(DataManager.getInstance().getDao().updateTheme(editableTheme));
+        assertNotNull(DataManager.getInstance().getDao().updateTheme(editableTheme));
         ThemeConfiguration loadedTheme2 = DataManager.getInstance().getDao().getTheme(THEME_NAME);
         assertEquals(theme.getId(), loadedTheme2.getId());
         assertEquals(THEME_LABEL_ALT, loadedTheme2.getLabel());

@@ -42,6 +42,7 @@ import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.HTTPException;
 import io.goobi.viewer.model.job.JobStatus;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * Utility class for communicating with the Transkribus REST API to submit and monitor HTR jobs.
@@ -370,7 +371,7 @@ public final class TranskribusUtils {
         job.setViewerCollectionId(viewerCollectionId);
         job.setJobId(response);
         job.setStatus(JobStatus.WAITING);
-        job.setDateCreated(LocalDateTime.now());
+        job.setDateCreated(DateTools.now());
 
         // TODO retrieve doc id
 

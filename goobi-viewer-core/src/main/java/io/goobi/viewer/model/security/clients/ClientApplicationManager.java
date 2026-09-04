@@ -30,6 +30,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.clients.ClientApplication.AccessStatus;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * Class managing registration and log-in of {@link ClientApplication}s.
@@ -117,7 +118,7 @@ public class ClientApplicationManager {
     public boolean registerClientInSession(ClientApplication client, HttpSession session) {
         if (getClientFromSession(session).isEmpty()) {
             try {
-                client.setDateLastAccess(LocalDateTime.now());
+                client.setDateLastAccess(DateTools.now());
                 dao.saveClientApplication(client);
             } catch (DAOException e) {
                 logger.error("Error updating client in database ", e);
@@ -205,7 +206,7 @@ public class ClientApplicationManager {
         if (StringUtils.isNotBlank(ip)) {
             client.setClientIp(ip);
         }
-        if (dao.saveClientApplication(client)) {
+        if (dao.saveClientApplication(client) != null) {
             return client;
         }
 

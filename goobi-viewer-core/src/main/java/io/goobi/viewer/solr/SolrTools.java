@@ -1130,7 +1130,8 @@ public final class SolrTools {
      */
     public static Map<String, List<IMetadataValue>> getTranslatedMetadata(SolrDocument doc, Map<String, List<IMetadataValue>> metadata,
             Locale documentLocale, Function<String, Boolean> fieldNameFilter) {
-        List<String> fieldNames = doc.getFieldNames().stream().filter(fieldNameFilter::apply).toList();
+        // Every caller passes a document taken from a Solr response, which is never null
+        List<String> fieldNames = doc.getFieldNames().stream().filter(fieldNameFilter::apply).toList(); //NOSONAR - doc is never null
         String docType = SolrTools.getBaseFieldName(SolrTools.getSingleFieldStringValue(doc, SolrConstants.LABEL));
 
         for (String fieldName : fieldNames) {

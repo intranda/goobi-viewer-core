@@ -162,7 +162,7 @@ public class CmsRecordNoteEditBean implements Serializable, IPolyglott {
         try {
             if (this.note != null && this.note.getId() != null) {
                 CMSRecordNote persistentNote = this.note.copy();
-                boolean success = DataManager.getInstance().getDao().updateRecordNote(persistentNote);
+                boolean success = DataManager.getInstance().getDao().updateRecordNote(persistentNote) != null;
                 if (success) {
                     Messages.info(null, "button__save__success", persistentNote.getNoteTitle().getText());
                 } else {

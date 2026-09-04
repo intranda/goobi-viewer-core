@@ -50,6 +50,7 @@ import io.goobi.viewer.model.cms.pages.CMSPageTemplate;
 import io.goobi.viewer.model.cms.pages.CMSTemplateManager;
 import io.goobi.viewer.model.cms.pages.content.CMSComponent;
 import io.goobi.viewer.model.cms.widgets.WidgetDisplayElement;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -249,15 +250,21 @@ public class CMSPageTemplateEditBean implements Serializable {
         selectedTemplate.writeSelectableCategories();
         // Save
         boolean success = false;
-        selectedTemplate.setDateUpdated(LocalDateTime.now());
+        selectedTemplate.setDateUpdated(DateTools.now());
 
         logger.trace("update dao");
+        CMSPageTemplate mergedTemplate;
         if (selectedTemplate.getId() != null) {
-            success = this.dao.updateCMSPageTemplate(selectedTemplate);
+            mergedTemplate = this.dao.updateCMSPageTemplate(selectedTemplate);
         } else {
-            success = this.dao.addCMSPageTemplate(selectedTemplate);
+            mergedTemplate = this.dao.addCMSPageTemplate(selectedTemplate);
         }
+        success = mergedTemplate != null;
         if (success) {
+            // Continue working with a copy so changes to this.selectedTemplate are only persisted on explicit
+            // save - mirrors the isolation already established by setSelectedTemplate().
+            this.selectedTemplate = new CMSPageTemplate(mergedTemplate);
+            this.selectedTemplate.initialiseCMSComponents(templateManager);
             Messages.info("cms_pageSaveSuccess");
             logger.trace("reload cms page");
             logger.trace("update pages");

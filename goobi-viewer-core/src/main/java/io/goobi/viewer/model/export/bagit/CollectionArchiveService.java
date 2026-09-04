@@ -72,6 +72,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -401,7 +402,7 @@ public class CollectionArchiveService {
 
             Map<String, String> bagInfo = new LinkedHashMap<>();
             bagInfo.put("Source-Organization", config.getName());
-            bagInfo.put("Bagging-Date", LocalDate.now().toString());
+            bagInfo.put("Bagging-Date", DateTools.today().toString());
             bagInfo.put("External-Identifier", field + ":" + collectionName);
             bagInfo.put("External-Description", "Collection " + collectionName + " (" + field + ")");
             bagInfo.put("Bag-Count", String.valueOf(recordCount));

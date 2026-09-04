@@ -62,6 +62,7 @@ import io.goobi.viewer.exceptions.UploadException;
 import io.goobi.viewer.model.job.JobStatus;
 import io.goobi.viewer.model.job.download.AbstractTaskManagerRequest;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -217,7 +218,7 @@ public class UploadJob implements Serializable {
                 // Persist UploadJob
                 setStatus(JobStatus.WAITING);
                 setProcessId(cr.getProcessId());
-                setDateCreated(LocalDateTime.now());
+                setDateCreated(DateTools.now());
                 if (DataManager.getInstance().getDao().addUploadJob(this)) {
                     return;
                 }

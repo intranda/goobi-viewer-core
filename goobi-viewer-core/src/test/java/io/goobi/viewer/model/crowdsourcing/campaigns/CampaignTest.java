@@ -43,6 +43,7 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.Role;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.controller.DateTools;
 
 class CampaignTest extends AbstractDatabaseEnabledTest {
 
@@ -64,12 +65,12 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     void getDaysLeft_shouldReturnDaysUntilEndDateOrZeroWhenEndDateIsInThePast() throws Exception {
         Campaign campaign = new Campaign();
         {
-            LocalDateTime later = LocalDateTime.now().plusDays(99);
+            LocalDateTime later = DateTools.now().plusDays(99);
             campaign.setDateEnd(later);
             Assertions.assertEquals(99, campaign.getDaysLeft());
         }
         {
-            LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
+            LocalDateTime earlier = DateTools.now().plusDays(-20);
             campaign.setDateEnd(earlier);
             Assertions.assertEquals(0, campaign.getDaysLeft());
         }
@@ -103,12 +104,12 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     void getDaysBeforeStart_shouldReturnDaysUntilStartDateOrZeroWhenStartDateIsInThePast() throws Exception {
         Campaign campaign = new Campaign();
         {
-            LocalDateTime later = LocalDateTime.now().plusDays(15);
+            LocalDateTime later = DateTools.now().plusDays(15);
             campaign.setDateStart(later);
             Assertions.assertEquals(15, campaign.getDaysBeforeStart());
         }
         {
-            LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
+            LocalDateTime earlier = DateTools.now().plusDays(-20);
             campaign.setDateStart(earlier);
             Assertions.assertEquals(0, campaign.getDaysBeforeStart());
         }
@@ -131,7 +132,7 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     void isHasEnded_shouldReturnTrueIfDateEndBeforeNow() throws Exception {
         Campaign campaign = new Campaign();
-        LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
+        LocalDateTime earlier = DateTools.now().plusDays(-20);
         campaign.setDateEnd(earlier);
         campaign.setTimePeriodEnabled(true);
         Assertions.assertTrue(campaign.isHasEnded());
@@ -143,7 +144,7 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     void isHasEnded_shouldReturnFalseIfDateEndAfterNow() throws Exception {
         Campaign campaign = new Campaign();
-        LocalDateTime later = LocalDateTime.now().plusDays(20);
+        LocalDateTime later = DateTools.now().plusDays(20);
         campaign.setDateEnd(later);
         campaign.setTimePeriodEnabled(true);
         Assertions.assertFalse(campaign.isHasEnded());
@@ -155,7 +156,7 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     void isHasEnded_shouldReturnFalseIfTimePeriodEnabledFalse() throws Exception {
         Campaign campaign = new Campaign();
-        LocalDateTime earlier = LocalDateTime.now().plusDays(-20);
+        LocalDateTime earlier = DateTools.now().plusDays(-20);
         campaign.setDateEnd(earlier);
         Assertions.assertFalse(campaign.isHasEnded());
     }
@@ -178,7 +179,7 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     void isHasStarted_shouldReturnTrueIfDateStartEqualsNow() throws Exception {
         Campaign campaign = new Campaign();
-        campaign.setDateStart(LocalDateTime.now());
+        campaign.setDateStart(DateTools.now());
         campaign.setTimePeriodEnabled(true);
         Assertions.assertTrue(campaign.isHasStarted());
     }
@@ -189,7 +190,7 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     void isHasStarted_shouldReturnTrueIfDateStartBeforeNow() throws Exception {
         Campaign campaign = new Campaign();
-        LocalDateTime later = LocalDateTime.now().plusDays(-20);
+        LocalDateTime later = DateTools.now().plusDays(-20);
         campaign.setDateStart(later);
         campaign.setTimePeriodEnabled(true);
         Assertions.assertTrue(campaign.isHasStarted());
@@ -201,7 +202,7 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     void isHasStarted_shouldReturnFalseIfDateStartAfterNow() throws Exception {
         Campaign campaign = new Campaign();
-        LocalDateTime later = LocalDateTime.now().plusDays(20);
+        LocalDateTime later = DateTools.now().plusDays(20);
         campaign.setDateStart(later);
         campaign.setTimePeriodEnabled(true);
         Assertions.assertFalse(campaign.isHasStarted());
@@ -213,7 +214,7 @@ class CampaignTest extends AbstractDatabaseEnabledTest {
     @Test
     void isHasStarted_shouldReturnTrueIfTimePeriodEnabledFalse() throws Exception {
         Campaign campaign = new Campaign();
-        LocalDateTime later = LocalDateTime.now().plusDays(-20);
+        LocalDateTime later = DateTools.now().plusDays(-20);
         campaign.setDateStart(later);
         campaign.setTimePeriodEnabled(true);
         Assertions.assertTrue(campaign.isHasStarted());

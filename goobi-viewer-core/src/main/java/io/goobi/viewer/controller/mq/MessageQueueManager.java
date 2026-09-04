@@ -81,6 +81,7 @@ import io.goobi.viewer.managedbeans.MessageQueueBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.spi.CreationalContext;
@@ -336,7 +337,7 @@ public class MessageQueueManager {
         if (MessageStatus.IGNORE != rv) {
             message.setMessageStatus(rv);
             message.setQueue(MessageQueueManager.getQueueForMessageType(message.getTaskName()));
-            message.setLastUpdateTime(LocalDateTime.now());
+            message.setLastUpdateTime(DateTools.now());
             try {
                 if (message.getId() == null) {
                     dao.addViewerMessage(message);

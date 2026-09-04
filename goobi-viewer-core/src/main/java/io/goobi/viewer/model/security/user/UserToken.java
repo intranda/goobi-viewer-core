@@ -32,6 +32,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * A user-bound opaque authentication token. The plaintext token is returned once at login and never persisted; only its SHA-256 hash is stored.
@@ -59,7 +60,7 @@ public class UserToken {
     private LocalDateTime expirationDate;
 
     public UserToken() {
-        dateCreated = LocalDateTime.now();
+        dateCreated = DateTools.now();
     }
 
     /**
@@ -69,7 +70,7 @@ public class UserToken {
      * @should return true when expiration date is null
      */
     public boolean isExpired() {
-        return expirationDate == null || expirationDate.isBefore(LocalDateTime.now());
+        return expirationDate == null || expirationDate.isBefore(DateTools.now());
     }
 
     public Long getId() {

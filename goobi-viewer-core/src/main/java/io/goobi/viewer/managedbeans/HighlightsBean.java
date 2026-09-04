@@ -57,6 +57,7 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.cms.Highlight;
 import io.goobi.viewer.model.cms.HighlightData;
 import io.goobi.viewer.model.metadata.MetadataElement;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * Managed bean handling {@link Highlight} objects.
@@ -130,7 +131,7 @@ public class HighlightsBean implements Serializable {
      */
     @PostConstruct
     public void init() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         if (allObjectsProvider == null || currentObjectsProvider == null) {
             initProviders(now);
         }
@@ -291,7 +292,7 @@ public class HighlightsBean implements Serializable {
         boolean saved = false;
         boolean redirect = false;
         if (object != null && object.getData().getId() != null) {
-            saved = dao.updateHighlight(object.getData());
+            saved = dao.updateHighlight(object.getData()) != null;
         } else if (object != null) {
             saved = dao.addHighlight(object.getData());
             redirect = true;
@@ -336,7 +337,7 @@ public class HighlightsBean implements Serializable {
      * @throws DAOException
      */
     public Highlight getCurrentHighlight() throws DAOException {
-        List<Highlight> currentObjects = dao.getHighlightsForDate(LocalDateTime.now())
+        List<Highlight> currentObjects = dao.getHighlightsForDate(DateTools.now())
                 .stream()
                 .filter(HighlightData::isEnabled)
                 .map(Highlight::new)

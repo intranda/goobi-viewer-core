@@ -147,7 +147,7 @@ public class CustomWidgetEditBean implements Serializable {
                     ((PageListSidebarWidget) this.widget).setPageIds(pageIds);
                 }
                 if (widget.getId() != null) {
-                    if (!DataManager.getInstance().getDao().updateCustomWidget(widget)) {
+                    if (DataManager.getInstance().getDao().updateCustomWidget(widget) == null) {
                         throw new DAOException("Updating database failed");
                     }
                 } else {

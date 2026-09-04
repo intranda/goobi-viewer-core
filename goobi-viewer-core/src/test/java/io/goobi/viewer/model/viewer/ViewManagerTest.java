@@ -1190,4 +1190,62 @@ class ViewManagerTest extends AbstractDatabaseAndSolrEnabledTest {
         Mockito.verify(spy, Mockito.atLeastOnce()).search(Mockito.contains(SolrConstants.THUMBPAGENO));
     }
 
+    /**
+     * @see ViewManager#resolveCalendarDocStructType(StructElement,StructElement)
+     * @verifies return anchor docstruct type when anchor struct element is given
+     */
+    @Test
+    void resolveCalendarDocStructType_shouldReturnAnchorDocstructTypeWhenAnchorStructElementIsGiven() throws Exception {
+        StructElement top = Mockito.mock(StructElement.class);
+        Mockito.when(top.getDocStructType()).thenReturn("issue");
+        StructElement anchor = Mockito.mock(StructElement.class);
+        Mockito.when(anchor.getDocStructType()).thenReturn("newspaper");
+
+        Assertions.assertEquals("newspaper", ViewManager.resolveCalendarDocStructType(top, anchor));
+    }
+
+    /**
+     * @see ViewManager#resolveCalendarDocStructType(StructElement,StructElement)
+     * @verifies return group docstruct type for group members without anchor
+     */
+    @Test
+    void resolveCalendarDocStructType_shouldReturnGroupDocstructTypeForGroupMembersWithoutAnchor() throws Exception {
+        StructElement top = Mockito.mock(StructElement.class);
+        Mockito.when(top.getDocStructType()).thenReturn("issue");
+        Mockito.when(top.isGroupMember()).thenReturn(true);
+        Mockito.when(top.getGroupMemberships()).thenReturn(Collections.singletonMap("GROUPID_NEWSPAPER", "301877785"));
+        Mockito.when(top.getGroupDocStructType("301877785")).thenReturn("newspaper");
+
+        Assertions.assertEquals("newspaper", ViewManager.resolveCalendarDocStructType(top, null));
+    }
+
+    /**
+     * @see ViewManager#resolveCalendarDocStructType(StructElement,StructElement)
+     * @verifies return own docstruct type if group record cannot be resolved
+     */
+    @Test
+    void resolveCalendarDocStructType_shouldReturnOwnDocstructTypeIfGroupRecordCannotBeResolved() throws Exception {
+        StructElement top = Mockito.mock(StructElement.class);
+        Mockito.when(top.getDocStructType()).thenReturn("issue");
+        Mockito.when(top.isGroupMember()).thenReturn(true);
+        Mockito.when(top.getGroupMemberships()).thenReturn(Collections.singletonMap("GROUPID_NEWSPAPER", "301877785"));
+        Mockito.when(top.getGroupDocStructType("301877785")).thenReturn(null);
+
+        Assertions.assertEquals("issue", ViewManager.resolveCalendarDocStructType(top, null));
+    }
+
+    /**
+     * @see ViewManager#resolveCalendarDocStructType(StructElement,StructElement)
+     * @verifies return own docstruct type for group records themselves
+     */
+    @Test
+    void resolveCalendarDocStructType_shouldReturnOwnDocstructTypeForGroupRecordsThemselves() throws Exception {
+        StructElement top = Mockito.mock(StructElement.class);
+        Mockito.when(top.getDocStructType()).thenReturn("newspaper");
+        Mockito.when(top.isGroup()).thenReturn(true);
+
+        Assertions.assertEquals("newspaper", ViewManager.resolveCalendarDocStructType(top, null));
+        Mockito.verify(top, Mockito.never()).getGroupDocStructType(Mockito.anyString());
+    }
+
 }

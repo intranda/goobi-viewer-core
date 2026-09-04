@@ -642,7 +642,7 @@ public class ManifestBuilder extends AbstractBuilder {
                 } else if (!StringUtils.isBlank(urlString)) {
                     logos.add(imageDelivery.getThumbs().getThumbnailPath(urlString).toString());
                 }
-            } catch (URISyntaxException e) {
+            } catch (URISyntaxException | IllegalArgumentException e) {
                 logger.error("Value '{}' configured in webapi.iiif.logo is not a valid uri", urlString);
             }
 

@@ -45,6 +45,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
@@ -61,6 +62,7 @@ import de.intranda.api.iiif.search.AutoSuggestService;
 import de.intranda.api.iiif.search.SearchService;
 import de.intranda.api.services.Service;
 import de.intranda.metadata.multilanguage.IMetadataValue;
+import de.intranda.metadata.multilanguage.SimpleMetadataValue;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
@@ -85,6 +87,8 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
 import io.goobi.viewer.model.viewer.pageloader.IPageLoader;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.UriBuilder;
 
@@ -133,6 +137,7 @@ public class ManifestBuilder extends AbstractBuilder {
         AbstractPresentationModelElement3 manifest = generateManifest(mainDocument, Optional.empty());
 
         if (manifest instanceof Manifest3 manifest3) {
+            addAnchor(manifest3, mainDocument.getMetadataValue(SolrConstants.PI_ANCHOR));
             addPages(mainDocument, manifest3);
             addStructures(mainDocument, childDocuments, manifest3);
             addAnnotations(mainDocument.getPi(), (Manifest3) manifest, request);
@@ -150,6 +155,7 @@ public class ManifestBuilder extends AbstractBuilder {
         AbstractPresentationModelElement3 manifest = generateManifest(mainDocument, Optional.ofNullable(pageNo));
 
         if (manifest instanceof Manifest3 manifest3) {
+            addAnchor(manifest3, mainDocument.getMetadataValue(SolrConstants.PI_ANCHOR));
             addPage(manifest3, mainDocument, pageNo);
             addAnnotations(mainDocument.getPi(), pageNo, manifest3, this.request);
         } else if (manifest instanceof Collection3) {
@@ -157,6 +163,35 @@ public class ManifestBuilder extends AbstractBuilder {
         }
 
         return manifest;
+    }
+
+    /**
+     * addAnchor.
+     *
+     * @param manifest volume manifest to add the anchor reference to
+     * @param anchorPI persistent identifier of the anchor record
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws java.net.URISyntaxException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public void addAnchor(Manifest3 manifest, String anchorPI)
+            throws PresentationException, IndexUnreachableException, URISyntaxException, DAOException {
+
+        /*ANCHOR*/
+        if (StringUtils.isNotBlank(anchorPI)) {
+            Collection3 anchor = new Collection3(getManifestURI(anchorPI), anchorPI);
+            SolrDocument anchorDoc = dataRetriever.getSolrDocument(anchorPI, List.of(SolrConstants.LABEL));
+            String anchorTitle = Optional.ofNullable(anchorDoc)
+                    .map(doc -> SolrTools.getSingleFieldValue(doc, SolrConstants.LABEL))
+                    .map(Object::toString)
+                    .orElse(null);
+            if (StringUtils.isNotBlank(anchorTitle)) {
+                anchor.setLabel(new SimpleMetadataValue(anchorTitle));
+            }
+            manifest.addWithin(anchor);
+        }
+
     }
 
     /**

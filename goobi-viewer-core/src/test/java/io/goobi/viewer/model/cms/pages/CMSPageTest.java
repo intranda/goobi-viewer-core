@@ -72,7 +72,7 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
         page.getTitleTranslations().setValue("Titel", Locale.ENGLISH);
         assertEquals("Titel", page.getTitle(Locale.ENGLISH));
 
-        assertTrue(dao.addCMSPage(page));
+        assertNotNull(dao.addCMSPage(page));
 
         CMSPage loaded = dao.getCMSPage(page.getId());
 
@@ -99,7 +99,7 @@ class CMSPageTest extends AbstractDatabaseEnabledTest {
         CMSShortTextContent textContent = (CMSShortTextContent) textComponentInPage.getContentItems().get(0);
         textContent.getText().setText("Entered Text", Locale.ENGLISH);
 
-        assertTrue(dao.addCMSPage(page));
+        assertNotNull(dao.addCMSPage(page));
         assertTrue(page.removeComponent(page.getAsCMSComponent(textComponentInPage)));
 
         CMSPage loaded = dao.getCMSPage(page.getId());

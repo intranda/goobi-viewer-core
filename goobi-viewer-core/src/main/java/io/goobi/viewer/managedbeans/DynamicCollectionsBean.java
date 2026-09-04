@@ -132,6 +132,7 @@ public class DynamicCollectionsBean implements Serializable {
      *
      * @param name unique name of the collection to load
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should compute the query hit count when loading an existing collection
      */
     public void setCollectionName(String name) throws DAOException {
         currentCollection = DataManager.getInstance().getDao().getDynamicCollection(name);
@@ -148,12 +149,15 @@ public class DynamicCollectionsBean implements Serializable {
 
     /**
      * Prepares a blank dynamic collection for creation. Called by the "new collection" pretty-URL route.
+     *
+     * @should reset the query hit count of a previously edited collection
      */
     public void createNewCollection() {
         currentCollection = new DynamicCollection();
         currentCollection.populateLabels();
         currentCollection.populateDescriptions();
         initImageMode();
+        updateQueryHitCount();
         originalCollection = new DynamicCollection(currentCollection);
     }
 

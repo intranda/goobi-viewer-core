@@ -50,6 +50,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -248,7 +249,7 @@ public class License extends AbstractPrivilegeHolder implements Serializable {
      * @should return correct value
      */
     public boolean isValid() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         return (start == null || start.isBefore(now)) && (end == null || end.isAfter(now));
     }
 

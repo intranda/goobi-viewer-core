@@ -36,6 +36,7 @@ import io.goobi.viewer.dao.converter.DisplayScopeConverter;
 import io.goobi.viewer.dao.converter.TranslatedTextConverter;
 import io.goobi.viewer.model.administration.legal.DisplayScope.PageScope;
 import io.goobi.viewer.model.translations.TranslatedText;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * Class to persist settings for the disclaimer modal. Only one instance of this class should be persisted in the database
@@ -70,7 +71,7 @@ public class Disclaimer {
      * must be accepted again
      */
     @Column(name = "requires_consent_after", nullable = false)
-    private LocalDateTime requiresConsentAfter = LocalDateTime.now();
+    private LocalDateTime requiresConsentAfter = DateTools.now();
 
     /**
      * The scope within which accepting the disclaimer modal is valid for any user.

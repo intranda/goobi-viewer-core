@@ -132,39 +132,32 @@ class OaiServletTest extends AbstractTest {
     }
 
     /**
-     * @see OaiServlet#extractClientIp(String, String)
-     * @verifies return remote address when forwarded for is null
+     * @see OaiServlet#handleOutputException(IOException,String,String)
+     * @verifies return true and log at debug for a client abort
      */
     @Test
-    void extractClientIp_shouldReturnRemoteAddressWhenForwardedForIsNull() {
-        Assertions.assertEquals("10.0.0.1", OaiServlet.extractClientIp(null, "10.0.0.1"));
+    void handleOutputException_shouldReturnTrueAndLogAtDebugForAClientAbort() {
+        Assertions.assertTrue(OaiServlet.handleOutputException(new IOException("Broken pipe"), "10.0.0.1", "verb=Identify"));
+        Assertions.assertTrue(OaiServlet.handleOutputException(new IOException("Connection reset by peer"), "10.0.0.1", "verb=Identify"));
     }
 
     /**
-     * @see OaiServlet#extractClientIp(String, String)
-     * @verifies return forwarded for when no comma present
+     * @see OaiServlet#handleOutputException(IOException,String,String)
+     * @verifies return false for a generic io exception
      */
     @Test
-    void extractClientIp_shouldReturnForwardedForWhenNoCommaPresent() {
-        Assertions.assertEquals("203.0.113.5", OaiServlet.extractClientIp("203.0.113.5", "10.0.0.1"));
+    void handleOutputException_shouldReturnFalseForAGenericIoException() {
+        Assertions.assertFalse(OaiServlet.handleOutputException(new IOException("Disk full"), "10.0.0.1", "verb=Identify"));
     }
 
     /**
-     * @see OaiServlet#extractClientIp(String, String)
-     * @verifies return first ip when forwarded for contains comma
+     * @see OaiServlet#handleOutputException(IOException,String,String)
+     * @verifies tolerate a null query string
      */
     @Test
-    void extractClientIp_shouldReturnFirstIpWhenForwardedForContainsComma() {
-        Assertions.assertEquals("203.0.113.5", OaiServlet.extractClientIp("203.0.113.5,198.51.100.7,10.0.0.1", "10.0.0.1"));
-    }
-
-    /**
-     * @see OaiServlet#extractClientIp(String, String)
-     * @verifies trim whitespace from first forwarded for entry
-     */
-    @Test
-    void extractClientIp_shouldTrimWhitespaceFromFirstForwardedForEntry() {
-        Assertions.assertEquals("203.0.113.5", OaiServlet.extractClientIp("  203.0.113.5  , 198.51.100.7", "10.0.0.1"));
+    void handleOutputException_shouldTolerateANullQueryString() {
+        Assertions.assertTrue(OaiServlet.handleOutputException(new IOException("Broken pipe"), "10.0.0.1", null));
+        Assertions.assertFalse(OaiServlet.handleOutputException(new IOException("Disk full"), "10.0.0.1", null));
     }
 
     /**

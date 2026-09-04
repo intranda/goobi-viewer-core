@@ -160,9 +160,6 @@
             to a lean page loading strategy that limit memory usage (default is 1000) -->
         <pageLoaderThreshold>1000</pageLoaderThreshold>
 
-        <!-- If true, all HTTP responses will contain attributes preventing proxies 
-            etc. from caching contents. Default is false. -->
-        <preventProxyCaching>true</preventProxyCaching>
     </performance>
 
     <accessConditions>

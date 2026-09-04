@@ -54,6 +54,7 @@ import io.goobi.viewer.model.maps.ManualFeatureSet;
 import io.goobi.viewer.model.maps.SearchResultFeatureSet;
 import io.goobi.viewer.model.maps.SolrFeatureSet;
 import io.goobi.viewer.model.translations.IPolyglott;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
@@ -149,15 +150,23 @@ public class GeoMapBean implements Serializable, IPolyglott {
         if (this.currentMap == null) {
             throw new IllegalArgumentException("No map selected. Cannot save");
         } else if (this.currentMap.getId() == null) {
-            this.currentMap.setDateCreated(LocalDateTime.now());
-            this.currentMap.setDateUpdated(LocalDateTime.now());
+            this.currentMap.setDateCreated(DateTools.now());
+            this.currentMap.setDateUpdated(DateTools.now());
             this.currentMap.setCreator(BeanUtils.getUserBean().getUser());
-            saved = DataManager.getInstance().getDao().addGeoMap(this.currentMap);
+            GeoMap addedMap = DataManager.getInstance().getDao().addGeoMap(this.currentMap);
+            saved = addedMap != null;
+            if (saved) {
+                replaceCurrentMapWithPersisted(addedMap);
+            }
             redirect = true;
         } else {
-            this.currentMap.setDateUpdated(LocalDateTime.now());
+            this.currentMap.setDateUpdated(DateTools.now());
             GeoMap mapToSave = new GeoMap(this.currentMap);
-            saved = DataManager.getInstance().getDao().updateGeoMap(mapToSave);
+            GeoMap mergedMap = DataManager.getInstance().getDao().updateGeoMap(mapToSave);
+            saved = mergedMap != null;
+            if (saved) {
+                replaceCurrentMapWithPersisted(mergedMap);
+            }
         }
         if (saved) {
             Messages.info("notify__save_map__success");
@@ -172,6 +181,23 @@ public class GeoMapBean implements Serializable, IPolyglott {
         this.loadedMaps = null;
         if (redirect) {
             PrettyUrlTools.redirectToUrl(PrettyUrlTools.getAbsolutePageUrl("adminCmsGeoMapEdit", this.currentMap.getId()));
+        }
+    }
+
+    /**
+     * Replaces {@link #currentMap} with a fresh copy of the persisted map returned by the DAO, so that children
+     * added during this edit (feature sets, translations) carry their generated id for subsequent saves - otherwise
+     * the next save would re-insert them under a new id instead of updating them. The active feature set is
+     * re-resolved by position in the new copy so the selection made in the UI survives the save.
+     *
+     * @param persistedMap the map returned by {@code addGeoMap}/{@code updateGeoMap}
+     */
+    private void replaceCurrentMapWithPersisted(GeoMap persistedMap) {
+        int activeIndex = this.activeFeatureSet == null ? -1 : this.currentMap.getFeatureSets().indexOf(this.activeFeatureSet);
+        this.currentMap = new GeoMap(persistedMap);
+        if (activeIndex >= 0 && activeIndex < this.currentMap.getFeatureSets().size()
+                && this.currentMap.getFeatureSets().get(activeIndex) instanceof ManualFeatureSet mfs) {
+            this.activeFeatureSet = mfs;
         }
     }
 

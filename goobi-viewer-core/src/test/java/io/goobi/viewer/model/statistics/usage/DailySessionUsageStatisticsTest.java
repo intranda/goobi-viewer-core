@@ -37,6 +37,7 @@ import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.controller.DateTools;
 
 /**
  * @author florian
@@ -69,7 +70,7 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
     void addUsageStatistics_shouldPersistAndLoadCorrectly() throws DAOException {
         
         
-        LocalDate date = LocalDate.now();
+        LocalDate date = DateTools.today();
         
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
         
@@ -89,7 +90,7 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
     @Test
     void addUsageStatistics_shouldPersistAndUpdateSessionEntriesCorrectly() throws DAOException {
         
-        LocalDate date = LocalDate.now();
+        LocalDate date = DateTools.today();
         RequestType type = RequestType.RECORD_VIEW;
         
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
@@ -129,7 +130,7 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
     @Test
     void deleteUsageStatistics_shouldDeleteUsageStatisticsSuccessfully() throws DAOException {
         
-        LocalDate date = LocalDate.now();
+        LocalDate date = DateTools.today();
         RequestType type = RequestType.RECORD_VIEW;
 
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
@@ -161,7 +162,7 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
     @Test
     void getTotalRequestCount_shouldReturnCorrectTotalAndUniqueRequestCountsPerRecord() {
         
-        LocalDate date = LocalDate.now();
+        LocalDate date = DateTools.today();
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
         RequestType type = RequestType.RECORD_VIEW;
 
@@ -190,7 +191,7 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
     @Test
     void getSession_shouldPersistenceWithEntries() throws DAOException {
         // Verify that getSession returns the correct session after persistence round-trip
-        LocalDate date = LocalDate.now();
+        LocalDate date = DateTools.today();
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
 
         SessionUsageStatistics session = new SessionUsageStatistics("SESSION1", "TestAgent", "127.0.0.1");
@@ -214,7 +215,7 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
     @Test
     void getSession_shouldPersistenceDelete() throws DAOException {
         // Verify that after deleting persisted statistics, getSession returns null on reload
-        LocalDate date = LocalDate.now();
+        LocalDate date = DateTools.today();
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
 
         SessionUsageStatistics session = new SessionUsageStatistics("SESS_DEL", "TestAgent", "127.0.0.1");
@@ -261,7 +262,7 @@ class DailySessionUsageStatisticsTest extends AbstractDatabaseEnabledTest {
     @Test
     void getTotalRequestCount_shouldTestCounting() {
         // Verify that getTotalRequestCount sums request counts across multiple sessions
-        LocalDate date = LocalDate.now();
+        LocalDate date = DateTools.today();
         DailySessionUsageStatistics stats = new DailySessionUsageStatistics(date, "viewer-test");
 
         SessionUsageStatistics session1 = new SessionUsageStatistics("A", "Firefox", "10.0.0.1");

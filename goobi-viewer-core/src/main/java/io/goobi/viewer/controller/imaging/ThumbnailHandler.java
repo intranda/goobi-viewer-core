@@ -122,11 +122,12 @@ public class ThumbnailHandler {
      * getThumbnailPath.
      *
      * @param filename file name to resolve against the static images path
+     * @throws IllegalArgumentException if the given filename is empty or not a valid url string
      * @return the URI of the resolved static image path
      */
-    public URI getThumbnailPath(String filename) {
+    public URI getThumbnailPath(String filename) throws IllegalArgumentException {
         if (StringUtils.isBlank(filename)) {
-            return null;
+            throw new IllegalArgumentException("Cannot create URI from empty or null string");
         }
         URI uri;
         try {
@@ -135,8 +136,8 @@ public class ThumbnailHandler {
             return uri;
         } catch (URISyntaxException e) {
             logger.error(e.toString(), e);
+            throw new IllegalArgumentException("Cannot create URI: " + e.toString());
         }
-        return null;
     }
 
     /**
@@ -345,8 +346,28 @@ public class ThumbnailHandler {
      */
     public static PhysicalElement getPage(String pi, int order) throws IndexUnreachableException, PresentationException, DAOException {
         SolrDocument doc = DataManager.getInstance().getSearchIndex().getDocumentByPI(pi);
-        if (doc != null) {
-            StructElement struct = new StructElement((String) doc.getFirstValue(SolrConstants.IDDOC), doc);
+        return getPage(doc, order);
+    }
+
+    /**
+     * getPage.
+     *
+     * <p>
+     * Variant that reuses an already-fetched record document instead of querying Solr for it again. Callers that have loaded the top-level record
+     * document (e.g. when associating many collections with their representative works) should use this overload to avoid a redundant per-record
+     * round-trip.
+     *
+     * @param recordDoc top-level Solr document of the record whose page to load; if null, null is returned
+     * @param order physical page order number within the work
+     * @return the PhysicalElement at the given order position within the record, or null if not found
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
+    public static PhysicalElement getPage(SolrDocument recordDoc, int order)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        if (recordDoc != null) {
+            StructElement struct = new StructElement((String) recordDoc.getFirstValue(SolrConstants.IDDOC), recordDoc);
             // Pass List.of(order) so AbstractPageLoader.create() picks the LeanPageLoader and only
             // loads the single requested page. The previous create(struct) call passed an empty
             // pageNosToLoad list, which fell through to EagerPageLoader for any record below the
@@ -433,6 +454,7 @@ public class ThumbnailHandler {
      * @param scale scaling parameters defining the output size
      * @param format the file extension of the desired format. Possible values are 'jpg', 'tif' and 'png'
      * @return the image URL for the given page at the given scale in the given format
+     * @should return url for iiif image info path
      */
     public String getImageUrl(PhysicalElement page, Scale scale, ImageFileFormat format) {
 
@@ -445,10 +467,11 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, null, scale, null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
-            return iiifUrlHandler.getIIIFImageUrl(path, null, scale, null, null, null);
+            return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, scale, Rotation.NONE, Colortype.DEFAULT, format);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT,
-                    format.getFileExtension());
+            // Reached only with a non-null page: every caller resolves the page through ImageDeliveryBean.getCurrentPageIfExists()
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", //NOSONAR
+                    StringConstants.DEFAULT, format.getFileExtension());
         }
     }
 
@@ -483,7 +506,9 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
             return IIIFUrlResolver.getIIIFImageUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else {
-            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", StringConstants.DEFAULT, "jpg");
+            // Reached only with a non-null page: every caller resolves the page through ImageDeliveryBean.getCurrentPageIfExists()
+            return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", //NOSONAR
+                    StringConstants.DEFAULT, "jpg");
         }
     }
 
@@ -706,7 +731,7 @@ public class ThumbnailHandler {
      */
     public String getSquareThumbnailUrl(StructElement se, int size) {
         String thumbnailUrl = getImagePath(se);
-        if (StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
+        if (thumbnailUrl != null && StringUtils.isNotBlank(thumbnailUrl) && isStaticImageResource(thumbnailUrl)) {
             return thumbnailUrl;
         } else if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);

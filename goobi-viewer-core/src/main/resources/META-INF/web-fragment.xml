@@ -61,6 +61,10 @@
         <param-name>org.omnifaces.SOCKET_ENDPOINT_ENABLED</param-name>
         <param-value>true</param-value>
     </context-param>
+    <context-param>
+        <param-name>com.sun.faces.defaultResourceMaxAge</param-name>
+        <param-value>300000</param-value>
+    </context-param>
 
     <filter>
         <filter-name>HttpResponseFilter</filter-name>
@@ -71,6 +75,7 @@
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
+        <dispatcher>ERROR</dispatcher>
     </filter-mapping>
 
     <filter>
@@ -177,28 +182,6 @@
         <url-pattern>/piresolver</url-pattern>
         <url-pattern>/ppnresolver</url-pattern>
         <url-pattern>/epnresolver</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <display-name>WebApiServlet</display-name>
-        <servlet-name>WebApiServlet</servlet-name>
-        <servlet-class>io.goobi.viewer.servlets.WebApiServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>WebApiServlet</servlet-name>
-        <url-pattern>/api</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <display-name>ToolServlet</display-name>
-        <servlet-name>ToolServlet</servlet-name>
-        <servlet-class>io.goobi.viewer.servlets.ToolServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ToolServlet</servlet-name>
-        <url-pattern>/tools</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ToolServlet</servlet-name>
-        <url-pattern>/cache</url-pattern>
     </servlet-mapping>
     <servlet>
         <display-name>HarvestServlet</display-name>

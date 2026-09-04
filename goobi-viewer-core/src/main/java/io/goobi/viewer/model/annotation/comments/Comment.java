@@ -36,6 +36,7 @@ import io.goobi.viewer.model.annotation.PersistentAnnotation;
 import io.goobi.viewer.model.annotation.PublicationStatus;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -78,7 +79,7 @@ public class Comment extends PersistentAnnotation implements Comparable<Comment>
         setAccessCondition(accessCondition);
         setText(text);
         setCreator(owner);
-        setDateCreated(LocalDateTime.now());
+        setDateCreated(DateTools.now());
         setMotivation(Motivation.COMMENTING);
         setTarget(uri != null ? uri.toString() : "");
         setTargetPI(pi);

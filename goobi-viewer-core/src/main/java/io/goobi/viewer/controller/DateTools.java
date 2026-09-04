@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.controller;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -108,8 +109,36 @@ public final class DateTools {
     public static final DateTimeFormatter FORMATTERFILENAME = DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmssSSS");
 
     
+    /**
+     * The server's clock, captured once in its default time zone. Callers must go through {@link #now()}/{@link #today()}/
+     * {@link #nowInstant()} instead of the parameterless {@code now()} factory methods on {@code java.time} types, whose result
+     * would otherwise implicitly depend on the JVM's default zone - a global, mutable setting (see SonarSource rule java:S8688).
+     */
+    private static final Clock CLOCK = Clock.systemDefaultZone();
+
     private DateTools() {
         //
+    }
+
+    /**
+     * @return the current date/time in the server's time zone
+     */
+    public static LocalDateTime now() {
+        return LocalDateTime.now(CLOCK);
+    }
+
+    /**
+     * @return the current date in the server's time zone
+     */
+    public static LocalDate today() {
+        return LocalDate.now(CLOCK);
+    }
+
+    /**
+     * @return the current instant
+     */
+    public static Instant nowInstant() {
+        return Instant.now(CLOCK);
     }
 
     /**

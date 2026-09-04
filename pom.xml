@@ -31,7 +31,7 @@
 	</repositories>
 
 	<properties>
-		<revision>26.07</revision>
+		<revision>26.09</revision>
 		<changelist>-SNAPSHOT</changelist>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<failOnSnapshot>false</failOnSnapshot>
@@ -41,7 +41,7 @@
 		<maven.compiler.release>21</maven.compiler.release>
 		<skipTests>true</skipTests>
 		<skipDependencyCheck>true</skipDependencyCheck>
-		<skipCheckstyle>true</skipCheckstyle>
+		<checkstyle.skip>true</checkstyle.skip>
 		<checkstyle.max.violations>0</checkstyle.max.violations>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<buildDate>${maven.build.timestamp}</buildDate>
@@ -53,7 +53,7 @@
 		<sonar.java.target>21</sonar.java.target>
 
 		<!-- Shared dependency versions (later of the previous drifts preferred) -->
-		<checkstyle.version>13.10.0</checkstyle.version>
+		<checkstyle.version>14.0.0</checkstyle.version>
 		<commons-configuration2.version>2.15.1</commons-configuration2.version>
 		<commons-io.version>2.22.0</commons-io.version>
 		<commons-jxpath.version>1.4.0</commons-jxpath.version>
@@ -261,10 +261,7 @@
 						<execution>
 							<id>checkstyle-check</id>
 							<phase>verify</phase>
-							<!-- skip stays execution-scoped: at plugin level it would also suppress the CI report goal,
-							     which is switched on via -Dcheckstyle.skip=false and must not inherit ${skipCheckstyle} -->
 							<configuration>
-								<skip>${skipCheckstyle}</skip>
 								<failOnViolation>true</failOnViolation>
 								<failsOnError>false</failsOnError>
 								<logViolationsToConsole>true</logViolationsToConsole>

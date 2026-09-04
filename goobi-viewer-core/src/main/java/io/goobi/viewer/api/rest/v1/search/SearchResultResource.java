@@ -385,7 +385,7 @@ public class SearchResultResource {
      * @return the built {@link Response}
      */
     private static Response attachment(Response.ResponseBuilder builder, ExportFormat exportFormat, String fileNameBase) {
-        String fileName = fileNameBase + "_" + LocalDateTime.now().format(DateTools.FORMATTERFILENAME) + "." + exportFormat.getFileExtension();
+        String fileName = fileNameBase + "_" + DateTools.now().format(DateTools.FORMATTERFILENAME) + "." + exportFormat.getFileExtension();
         return builder.header("Content-Disposition", "attachment; filename=\"" + fileName + "\"").build();
     }
 

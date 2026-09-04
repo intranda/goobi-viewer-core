@@ -30,16 +30,12 @@ import org.mockito.Mockito;
 import io.goobi.viewer.AbstractTest;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * Note: {@code X-Forwarded-For} trust is handled at the container level by Tomcat's {@code RemoteIpValve} (see the shipped {@code server.xml}), which
+ * resolves the real client IP into {@code request.getRemoteAddr()}. Application code must never re-introduce {@code X-Forwarded-For} parsing (see
+ * GVC-2026-12); the tests below assert that the header is ignored.
+ */
 class NetToolsTest extends AbstractTest {
-
-    /**
-     * @see NetTools#parseMultipleIpAddresses(String)
-     * @verifies return only the first IP address from a comma-separated list
-     */
-    @Test
-    void parseMultipleIpAddresses_shouldReturnOnlyTheFirstIPAddressFromACommaSeparatedList() throws Exception {
-        Assertions.assertEquals("1.1.1.1", NetTools.parseMultipleIpAddresses("1.1.1.1, 2.2.2.2, 3.3.3.3"));
-    }
 
     /**
      * @see NetTools#scrambleEmailAddress(String)
@@ -125,45 +121,37 @@ class NetToolsTest extends AbstractTest {
     }
 
     /**
-     * @verifies parse ip address
+     * @see NetTools#getIpAddress(HttpServletRequest)
+     * @verifies return remote address
      */
     @Test
-    void getIpAddress_shouldParseIpAddress() {
-        {
-            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("143.34.255.931, 127.0.0.1");
-            Assertions.assertEquals("143.34.255.931", NetTools.getIpAddress(request));
-        }
+    void getIpAddress_shouldReturnRemoteAddress() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getRemoteAddr()).thenReturn("192.0.2.42");
+        // A spoofed X-Forwarded-For header must be ignored; only the container-resolved remote address counts.
+        Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("1.2.3.4");
+        Mockito.when(request.getHeader("x-forwarded-for")).thenReturn("1.2.3.4");
+        Assertions.assertEquals("192.0.2.42", NetTools.getIpAddress(request));
+    }
 
-        {
-            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("2001:db8:85a3:8d3:1319:8a2e:370:7348");
-            Assertions.assertEquals("2001:db8:85a3:8d3:1319:8a2e:370:7348", NetTools.getIpAddress(request));
-        }
+    /**
+     * @see NetTools#getIpAddress(HttpServletRequest)
+     * @verifies return localhost if request is null
+     */
+    @Test
+    void getIpAddress_shouldReturnLocalhostIfRequestIsNull() {
+        Assertions.assertEquals("127.0.0.1", NetTools.getIpAddress(null));
+    }
 
-        {
-            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("203.0.113.195, 2001:db8:85a3:8d3:1319:8a2e:370:7348");
-            Assertions.assertEquals("203.0.113.195", NetTools.getIpAddress(request));
-        }
-
-        {
-            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("2001:db8:85a3:8d3:1319:8a2e:370:7348, 203.0.113.195");
-            Assertions.assertEquals("2001:db8:85a3:8d3:1319:8a2e:370:7348", NetTools.getIpAddress(request));
-        }
-
-        {
-            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn("143.34.255.931");
-            Assertions.assertEquals("143.34.255.931", NetTools.getIpAddress(request));
-        }
-
-        {
-            HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-            Mockito.when(request.getHeader("X-Forwarded-For")).thenReturn(null);
-            Assertions.assertEquals("127.0.0.1", NetTools.getIpAddress(request));
-        }
+    /**
+     * @see NetTools#getIpAddress(HttpServletRequest)
+     * @verifies return localhost if remote address is null
+     */
+    @Test
+    void getIpAddress_shouldReturnLocalhostIfRemoteAddressIsNull() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getRemoteAddr()).thenReturn(null);
+        Assertions.assertEquals("127.0.0.1", NetTools.getIpAddress(request));
     }
 
     // --- SSRF validation tests ---

@@ -221,9 +221,9 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         Assertions.assertEquals(webAnno.getTarget(), fromDAOWebAnno.getTarget());
         Assertions.assertEquals(webAnno, fromDAOWebAnno);
 
-        LocalDateTime changed = LocalDateTime.now();
+        LocalDateTime changed = DateTools.now();
         fromDAO.setDateModified(changed);
-        Assertions.assertTrue(DataManager.getInstance().getDao().updateAnnotation(fromDAO));
+        Assertions.assertNotNull(DataManager.getInstance().getDao().updateAnnotation(fromDAO));
 
         CrowdsourcingAnnotation fromDAO2 = DataManager.getInstance().getDao().getAnnotation(daoAnno.getId());
         // Compare date strings instead of LocalDateTime due to differences in milisecond precision between JVMs
@@ -263,4 +263,24 @@ class PersistentAnnotationTest extends AbstractDatabaseEnabledTest {
         assertEquals("GROSHERZOGLICH", pAnno.getContentString());
     }
 
+
+    /**
+     * @see PersistentAnnotation#hashCode()
+     * @verifies return same hash code for equal instances with different ids
+     */
+    @Test
+    void hashCode_shouldReturnSameHashCodeForEqualInstancesWithDifferentIds() {
+        CrowdsourcingAnnotation one = new CrowdsourcingAnnotation();
+        one.setId(1L);
+        one.setBody("{\"value\": \"foo\"}");
+        one.setTargetPI("PI_1");
+
+        CrowdsourcingAnnotation other = new CrowdsourcingAnnotation();
+        other.setId(2L);
+        other.setBody("{\"value\": \"foo\"}");
+        other.setTargetPI("PI_1");
+
+        assertEquals(one, other);
+        assertEquals(one.hashCode(), other.hashCode());
+    }
 }

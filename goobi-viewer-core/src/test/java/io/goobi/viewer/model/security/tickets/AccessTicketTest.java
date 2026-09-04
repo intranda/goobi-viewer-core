@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.controller.DateTools;
 
 class AccessTicketTest extends AbstractTest {
 
@@ -50,7 +51,7 @@ class AccessTicketTest extends AbstractTest {
     void isExpired_shouldReturnFalseIfTicketNotExpired() throws Exception {
         AccessTicket ticket = new AccessTicket();
         ticket.setPasswordHash("abcde");
-        ticket.setExpirationDate(LocalDateTime.now().plusDays(1));
+        ticket.setExpirationDate(DateTools.now().plusDays(1));
         Assertions.assertFalse(ticket.isExpired());
     }
 
@@ -60,7 +61,7 @@ class AccessTicketTest extends AbstractTest {
     @Test
     void isExpired_shouldReturnTrueIfExpirationDateBeforeNow() throws Exception {
         AccessTicket ticket = new AccessTicket();
-        ticket.setExpirationDate(LocalDateTime.now().minusDays(1));
+        ticket.setExpirationDate(DateTools.now().minusDays(1));
         Assertions.assertTrue(ticket.isExpired());
     }
 
@@ -70,7 +71,7 @@ class AccessTicketTest extends AbstractTest {
     @Test
     void isExpired_shouldReturnFalseIfExpirationDateAfterNow() throws Exception {
         AccessTicket ticket = new AccessTicket();
-        ticket.setExpirationDate(LocalDateTime.now().plusDays(1));
+        ticket.setExpirationDate(DateTools.now().plusDays(1));
         Assertions.assertFalse(ticket.isExpired());
     }
 
@@ -83,7 +84,7 @@ class AccessTicketTest extends AbstractTest {
         // Active ticket: has a password hash (not a request) and expiration in the future (not expired)
         AccessTicket ticket = new AccessTicket();
         ticket.setPasswordHash("somehash");
-        ticket.setExpirationDate(LocalDateTime.now().plusDays(10));
+        ticket.setExpirationDate(DateTools.now().plusDays(10));
         Assertions.assertTrue(ticket.isActive());
     }
 

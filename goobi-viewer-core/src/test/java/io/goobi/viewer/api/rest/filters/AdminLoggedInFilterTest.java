@@ -41,6 +41,7 @@ import io.goobi.viewer.controller.SecurityManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
+import io.goobi.viewer.controller.DateTools;
 
 class AdminLoggedInFilterTest extends AbstractRestApiTest {
 
@@ -89,7 +90,7 @@ class AdminLoggedInFilterTest extends AbstractRestApiTest {
         UserToken token = new UserToken();
         token.setUser(adminUser);
         token.setTokenHash(SecurityManager.hashToken(plaintext));
-        token.setExpirationDate(LocalDateTime.now().plusDays(1));
+        token.setExpirationDate(DateTools.now().plusDays(1));
         DataManager.getInstance().getDao().addUserToken(token);
 
         try (Response response = target(ADMIN_URL_PATH).request()
@@ -109,7 +110,7 @@ class AdminLoggedInFilterTest extends AbstractRestApiTest {
         UserToken token = new UserToken();
         token.setUser(regularUser);
         token.setTokenHash(SecurityManager.hashToken(plaintext));
-        token.setExpirationDate(LocalDateTime.now().plusDays(1));
+        token.setExpirationDate(DateTools.now().plusDays(1));
         DataManager.getInstance().getDao().addUserToken(token);
 
         try (Response response = target(ADMIN_URL_PATH).request()
@@ -129,7 +130,7 @@ class AdminLoggedInFilterTest extends AbstractRestApiTest {
         UserToken token = new UserToken();
         token.setUser(adminUser);
         token.setTokenHash(SecurityManager.hashToken(plaintext));
-        token.setExpirationDate(LocalDateTime.now().minusSeconds(1));
+        token.setExpirationDate(DateTools.now().minusSeconds(1));
         DataManager.getInstance().getDao().addUserToken(token);
 
         try (Response response = target(ADMIN_URL_PATH).request()

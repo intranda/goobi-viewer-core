@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
+import io.goobi.viewer.controller.DateTools;
 
 class UserTokenTest {
 
@@ -37,7 +38,7 @@ class UserTokenTest {
     @Test
     void isExpired_shouldReturnTrueWhenExpirationDateIsInThePast() {
         UserToken token = new UserToken();
-        token.setExpirationDate(LocalDateTime.now().minusSeconds(1));
+        token.setExpirationDate(DateTools.now().minusSeconds(1));
         assertTrue(token.isExpired());
     }
 
@@ -48,7 +49,7 @@ class UserTokenTest {
     @Test
     void isExpired_shouldReturnFalseWhenExpirationDateIsInTheFuture() {
         UserToken token = new UserToken();
-        token.setExpirationDate(LocalDateTime.now().plusDays(1));
+        token.setExpirationDate(DateTools.now().plusDays(1));
         assertFalse(token.isExpired());
     }
 

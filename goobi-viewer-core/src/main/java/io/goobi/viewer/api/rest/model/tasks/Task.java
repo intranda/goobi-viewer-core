@@ -39,6 +39,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.goobi.viewer.api.rest.v1.tasks.TasksResource;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -116,7 +117,7 @@ public class Task {
         this.type = params.getType();
         this.work = work;
         this.id = ID_COUNTER.incrementAndGet();
-        this.timeCreated = LocalDateTime.now();
+        this.timeCreated = DateTools.now();
         this.status = TaskStatus.CREATED;
         this.params = params;
     }

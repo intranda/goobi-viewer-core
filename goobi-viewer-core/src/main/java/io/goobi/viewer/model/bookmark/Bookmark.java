@@ -53,6 +53,7 @@ import io.goobi.viewer.model.search.SearchHitFactory;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -139,7 +140,7 @@ public class Bookmark implements Serializable {
     public Bookmark(String pi, String mainTitle, String name) {
         this.pi = pi;
         this.name = name;
-        this.dateAdded = LocalDateTime.now();
+        this.dateAdded = DateTools.now();
     }
 
     /**
@@ -159,7 +160,7 @@ public class Bookmark implements Serializable {
         this.logId = logId;
         this.order = order;
         this.name = getDocumentTitle();
-        this.dateAdded = LocalDateTime.now();
+        this.dateAdded = DateTools.now();
     }
 
     /**
@@ -188,7 +189,7 @@ public class Bookmark implements Serializable {
                 throw e;
             }
         }
-        this.dateAdded = LocalDateTime.now();
+        this.dateAdded = DateTools.now();
     }
 
     /** {@inheritDoc} */

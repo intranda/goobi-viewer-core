@@ -36,11 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.SessionScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -55,6 +50,7 @@ import com.ocpsoft.pretty.faces.url.URL;
 
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -78,6 +74,10 @@ import io.goobi.viewer.model.crowdsourcing.questions.Question;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.solr.SolrConstants;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.persistence.PersistenceException;
 
 /**
@@ -472,7 +472,7 @@ public class CrowdsourcingBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-      * @should persist campaign changes after save action
+     * @should persist campaign changes after save action
      */
     public String saveSelectedCampaignAction() throws DAOException, PresentationException, IndexUnreachableException {
         logger.trace("saveSelectedCampaign");
@@ -487,25 +487,29 @@ public class CrowdsourcingBean implements Serializable {
         }
 
         // Save
-        boolean success = false;
-        LocalDateTime now = LocalDateTime.now();
+        Campaign persistedCampaign = null;
+        LocalDateTime now = DateTools.now();
         if (selectedCampaign.getDateCreated() == null) {
             selectedCampaign.setDateCreated(now);
         }
         selectedCampaign.setDateUpdated(now);
         if (selectedCampaign.getId() != null) {
             try {
-                success = dao.updateCampaign(selectedCampaign);
+                persistedCampaign = dao.updateCampaign(selectedCampaign);
             } catch (PersistenceException e) {
                 logger.error("Updating campaign {} in database failed ", selectedCampaign, e);
-                success = false;
+                persistedCampaign = null;
             }
         } else {
-            success = dao.addCampaign(selectedCampaign);
+            persistedCampaign = dao.addCampaign(selectedCampaign);
         }
-        if (success) {
+        if (persistedCampaign != null) {
             Messages.info("admin__crowdsourcing_campaign_save_success");
-            setSelectedCampaign(selectedCampaign);
+            // Continue working with a fresh copy of the persisted campaign so that questions/translations/log
+            // messages added during this edit carry their generated id for subsequent saves - assigning directly
+            // instead of going through setSelectedCampaign(), whose id-equality guard would otherwise never fire
+            // here since the argument is always the same campaign that was just saved.
+            this.selectedCampaign = new Campaign(persistedCampaign);
             lazyModelCampaigns.update();
             // Update the map of active campaigns for record identifiers (in case a new Solr query changes the set)
             updateActiveCampaigns();

@@ -174,18 +174,37 @@ public class CMSCollection implements Comparable<CMSCollection>, BrowseElementIn
      */
     public CMSCollection loadRepresentativeImage() {
         if (hasRepresentativeWork()) {
-            // Check thumbnail access permission if representative record set
             try {
                 SolrDocument doc = DataManager.getInstance()
                         .getSearchIndex()
                         .getFirstDoc(SolrConstants.PI + ":\"" + getRepresentativeWorkPI() + '"', null);
-                if (doc != null) {
-                    logger.trace("loaded record: {}", getRepresentativeWorkPI());
-                    PhysicalElement pe = ThumbnailHandler.getPage(getRepresentativeWorkPI(),
-                            SolrTools.getSingleFieldIntegerValue(doc, SolrConstants.THUMBPAGENO));
-                    if (pe != null) {
-                        setAccessPermissionThumbnail(pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
-                    }
+                return loadRepresentativeImage(doc);
+            } catch (PresentationException | IndexUnreachableException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets the thumbnail access permission from an already-fetched representative record document.
+     *
+     * <p>
+     * Overload for callers that have loaded the representative record's Solr document in a single batched query,
+     * avoiding a per-collection {@code getFirstDoc} round-trip. The document is reused for the page lookup as well.
+     *
+     * @param recordDoc top-level Solr document of the representative work, or null to skip
+     * @return this
+     */
+    public CMSCollection loadRepresentativeImage(SolrDocument recordDoc) {
+        // Check thumbnail access permission if representative record set
+        if (hasRepresentativeWork() && recordDoc != null) {
+            try {
+                logger.trace("loaded record: {}", getRepresentativeWorkPI());
+                PhysicalElement pe = ThumbnailHandler.getPage(recordDoc, SolrTools.getSingleFieldIntegerValue(recordDoc, SolrConstants.THUMBPAGENO));
+                if (pe != null) {
+                    setAccessPermissionThumbnail(pe.getAccessPermission(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS));
                 }
             } catch (PresentationException | IndexUnreachableException | DAOException e) {
                 logger.error(e.getMessage());

@@ -26,10 +26,14 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
@@ -37,6 +41,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.controller.DataManager;
@@ -51,6 +57,8 @@ import io.goobi.viewer.model.cms.collections.CMSCollection;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.viewer.PageType;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrTools;
 import jakarta.ws.rs.core.UriBuilder;
 
 /**
@@ -316,11 +324,14 @@ public class CollectionView implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @should return 1 for given input
      * @should return true for given input
+     * @should load representative records in single query
      */
     public static void associateWithCMSCollections(List<HierarchicalBrowseDcElement> collections, List<CMSCollection> cmsCollections) {
         if (cmsCollections == null || cmsCollections.isEmpty()) {
             return;
         }
+        // Phase 1: match each CMS collection to a visible collection node.
+        Map<CMSCollection, HierarchicalBrowseDcElement> matches = new LinkedHashMap<>();
         for (CMSCollection cmsCollection : cmsCollections) {
             String collectionName = cmsCollection.getSolrFieldValue();
             if (StringUtils.isBlank(collectionName)) {
@@ -331,8 +342,68 @@ public class CollectionView implements Serializable {
                     .flatMap(ele -> ele.getChildren(true).stream())
                     .filter(ele -> ele.getName().equals(collectionName))
                     .findAny();
-            element.ifPresent(ele -> ele.setInfo(cmsCollection.loadRepresentativeImage()));
+            element.ifPresent(ele -> matches.put(cmsCollection, ele));
         }
+        if (matches.isEmpty()) {
+            return;
+        }
+        // Phase 2: fetch the representative records of all matched collections in a single batched query,
+        // rather than one getFirstDoc round-trip per node.
+        Set<String> pis = matches.keySet()
+                .stream()
+                .filter(CMSCollection::hasRepresentativeWork)
+                .map(CMSCollection::getRepresentativeWorkPI)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        Map<String, SolrDocument> recordDocs = fetchRepresentativeRecords(pis);
+        // Phase 3: enrich the matched elements, reusing the pre-fetched record documents.
+        for (Entry<CMSCollection, HierarchicalBrowseDcElement> entry : matches.entrySet()) {
+            CMSCollection cmsCollection = entry.getKey();
+            SolrDocument recordDoc = recordDocs.get(cmsCollection.getRepresentativeWorkPI());
+            entry.getValue().setInfo(cmsCollection.loadRepresentativeImage(recordDoc));
+        }
+    }
+
+    /**
+     * Loads the top-level Solr documents of the given representative-work PIs in a single batched query, chunking the PI list to keep the query
+     * string bounded (mirrors the paging approach in {@link io.goobi.viewer.solr.SolrSearchIndex#getLabelValuesForFacetField}).
+     *
+     * @param pis persistent identifiers of the representative works to load
+     * @return map of PI to its top-level Solr document; empty if none could be loaded
+     */
+    private static Map<String, SolrDocument> fetchRepresentativeRecords(Set<String> pis) {
+        Map<String, SolrDocument> ret = new HashMap<>();
+        if (pis == null || pis.isEmpty()) {
+            return ret;
+        }
+        List<String> pisList = new ArrayList<>(pis);
+        int pageSize = 20;
+        int pages = (int) Math.ceil(pisList.size() / (double) pageSize);
+        try {
+            for (int i = 0; i < pages; ++i) {
+                StringBuilder sbQuery = new StringBuilder(SolrConstants.PI).append(":(");
+                int start = i * pageSize;
+                for (int j = start; j < start + pageSize && j < pisList.size(); ++j) {
+                    if (j > start) {
+                        sbQuery.append(' ');
+                    }
+                    sbQuery.append('"').append(pisList.get(j)).append('"');
+                }
+                sbQuery.append(')');
+                SolrDocumentList docs = DataManager.getInstance().getSearchIndex().getDocs(sbQuery.toString(), null);
+                if (docs != null) {
+                    for (SolrDocument doc : docs) {
+                        String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
+                        if (StringUtils.isNotBlank(pi)) {
+                            ret.put(pi, doc);
+                        }
+                    }
+                }
+            }
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.error("Failed to load representative records for collections: {}", e.getMessage());
+        }
+        return ret;
     }
 
     /**

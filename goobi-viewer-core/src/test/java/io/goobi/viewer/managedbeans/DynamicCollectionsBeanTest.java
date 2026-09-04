@@ -148,6 +148,27 @@ class DynamicCollectionsBeanTest extends AbstractDatabaseEnabledTest {
     }
 
     /**
+     * @see DynamicCollectionsBean#createNewCollection()
+     * @verifies reset the query hit count of a previously edited collection
+     */
+    @Test
+    void createNewCollection_shouldResetTheQueryHitCountOfAPreviouslyEditedCollection() throws DAOException {
+        DynamicCollection existing = new DynamicCollection("bean_hitcount_reset_test");
+        existing.setSolrQuery("*:*");
+        DataManager.getInstance().getDao().addDynamicCollection(existing);
+        try {
+            DynamicCollectionsBean bean = new DynamicCollectionsBean();
+            bean.setCollectionName("bean_hitcount_reset_test");
+            assertNotNull(bean.getQueryHitCount());
+            bean.createNewCollection();
+            assertNull(bean.getQueryHitCount());
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(existing);
+        }
+    }
+
+    /**
+     * @see DynamicCollectionsBean#setCollectionName(String)
      * @verifies compute the query hit count when loading an existing collection
      */
     @Test

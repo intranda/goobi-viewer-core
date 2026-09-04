@@ -67,6 +67,7 @@ import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestExceptio
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.bindings.CSRFGuarded;
+import io.goobi.viewer.api.rest.bindings.MediaResourceBinding;
 import io.goobi.viewer.api.rest.bindings.UserLoggedInBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.MediaDeliveryService;
@@ -262,6 +263,7 @@ public class CMSMediaResource {
     @ApiResponse(responseCode = "200", description = "PDF file content",
             content = @Content(mediaType = "application/pdf"))
     @ApiResponse(responseCode = "404", description = "File not found")
+    @MediaResourceBinding
     public static StreamingOutput getPDFMediaItemContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -292,6 +294,7 @@ public class CMSMediaResource {
     @ApiResponse(responseCode = "200", description = "SVG image content",
             content = @Content(mediaType = "image/svg+xml"))
     @ApiResponse(responseCode = "404", description = "File not found")
+    @MediaResourceBinding
     public static StreamingOutput getSvgContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));
@@ -322,6 +325,7 @@ public class CMSMediaResource {
     @ApiResponse(responseCode = "200", description = "ICO image content",
             content = @Content(mediaType = "image/x-icon"))
     @ApiResponse(responseCode = "404", description = "File not found")
+    @MediaResourceBinding
     public static StreamingOutput getIcoContent(@PathParam("filename") String filename, @Context HttpServletResponse response)
             throws ContentNotFoundException {
         String decFilename = StringTools.cleanUserGeneratedData(StringTools.decodeUrl(filename));

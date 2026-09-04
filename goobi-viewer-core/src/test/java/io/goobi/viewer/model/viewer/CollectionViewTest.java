@@ -43,6 +43,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -62,6 +63,7 @@ import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.model.viewer.collections.CollectionView.BrowseDataProvider;
 import io.goobi.viewer.model.viewer.collections.HierarchicalBrowseDcElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrSearchIndex;
 
 class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
 
@@ -275,6 +277,37 @@ class CollectionViewTest extends AbstractDatabaseAndSolrEnabledTest {
         Assertions.assertEquals(1, view.getVisibleDcElements().size());
         Assertions.assertEquals("a", view.getVisibleDcElements().get(0).getName());
         Assertions.assertEquals("AAA", view.getVisibleDcElements().get(0).getDescription("de"));
+    }
+
+    /**
+     * @see CollectionView#associateWithCMSCollections(java.util.List,java.util.List)
+     * @verifies load representative records in single query
+     */
+    @Test
+    void associateWithCMSCollections_shouldLoadRepresentativeRecordsInSingleQuery() throws Exception {
+        SolrSearchIndex mockIndex = Mockito.mock(SolrSearchIndex.class);
+        Mockito.when(mockIndex.getDocs(Mockito.anyString(), Mockito.any())).thenReturn(null);
+        DataManager.getInstance().injectSearchIndex(mockIndex);
+
+        Map<String, CollectionResult> providerMap = new HashMap<>();
+        List<CMSCollection> cmsCollections = new ArrayList<>();
+        for (int i = 0; i < 15; i++) {
+            String name = "col" + i;
+            providerMap.put(name, new CollectionResult(name, 1));
+            CMSCollection cmsCollection = new CMSCollection("DC", name);
+            cmsCollection.setRepresentativeWorkPI("PI_" + i);
+            cmsCollections.add(cmsCollection);
+        }
+
+        CollectionView view = new CollectionView("DC", () -> providerMap);
+        view.populateCollectionList();
+
+        view.associateElementsWithCMSData(cmsCollections);
+
+        // The 15 representative records are fetched with one batched getDocs call instead of one getFirstDoc per node
+        Mockito.verify(mockIndex, Mockito.times(1)).getDocs(Mockito.anyString(), Mockito.any());
+        Mockito.verify(mockIndex, Mockito.never()).getFirstDoc(Mockito.anyString(), Mockito.any());
+        Mockito.verify(mockIndex, Mockito.never()).getDocumentByPI(Mockito.anyString());
     }
 
     /**

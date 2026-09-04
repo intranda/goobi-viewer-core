@@ -119,10 +119,12 @@ public class MediaItem {
      */
     public static IContent getMediaResource(CMSMediaItem source) {
         if (source != null) {
-            ImageContent image = new ImageContent(source.getIconURI());
+            // getIconURI() is null for items without a file name or with an unparseable URI
+            URI iconURI = source.getIconURI();
+            ImageContent image = new ImageContent(iconURI);
             image.setFormat(Format.fromFilename(source.getFileName()));
-            if (IIIFUrlResolver.isIIIFImageUrl(source.getIconURI().toString())) {
-                URI imageInfoURI = URI.create(IIIFUrlResolver.getIIIFImageBaseUrl(source.getIconURI().toString()));
+            if (iconURI != null && IIIFUrlResolver.isIIIFImageUrl(iconURI.toString())) {
+                URI imageInfoURI = URI.create(IIIFUrlResolver.getIIIFImageBaseUrl(iconURI.toString()));
                 image.setService(new ImageInformation(imageInfoURI.toString()));
             }
             return image;

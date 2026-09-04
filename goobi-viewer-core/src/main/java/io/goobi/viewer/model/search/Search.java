@@ -703,9 +703,10 @@ public class Search implements Serializable {
     }
 
     /**
-     * Populates the available facets for database-defined dynamic collections (query facets). Each collection's stored Solr query is added as a Solr
-     * facet.query over the current (unfiltered) result set, and the resulting counts become {@link FacetType#QUERY} facet items under the reserved
-     * {@link SolrConstants#DC_DYNAMIC} pseudo field. Counts are computed independently of active facets, consistent with other always-available facets.
+     * Populates the available facets for database-defined dynamic collections (query facets). Each collection's stored Solr query is added as a
+     * Solr facet.query over the current (unfiltered) result set, and the resulting counts become {@link FacetType#QUERY} facet items under the
+     * reserved {@link SolrConstants#DC_DYNAMIC} pseudo field. Counts are computed independently of active facets, consistent with other always-
+     * available facets.
      *
      * @param finalQuery fully assembled main Solr query
      * @param facets active search facets to populate

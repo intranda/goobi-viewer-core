@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.goobi.viewer.controller.BCrypt;
 import io.goobi.viewer.controller.StringTools;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -106,7 +107,7 @@ public class AccessTicket {
     protected transient BCrypt bcrypt = new BCrypt();
 
     public AccessTicket() {
-        dateCreated = LocalDateTime.now();
+        dateCreated = DateTools.now();
     }
 
     /**
@@ -125,7 +126,7 @@ public class AccessTicket {
      * @should return false if expiration date after now
      */
     public boolean isExpired() {
-        return expirationDate != null && expirationDate.isBefore(LocalDateTime.now());
+        return expirationDate != null && expirationDate.isBefore(DateTools.now());
     }
 
     /**
@@ -158,7 +159,7 @@ public class AccessTicket {
             password = StringTools.generateRandomToken(PASSWORD_RANDOM_BYTES);
             passwordHash = BCrypt.hashpw(password, BCrypt.gensalt(BCRYPT_LOG_ROUNDS));
         }
-        expirationDate = LocalDateTime.now().plusDays(VALIDITY_DAYS);
+        expirationDate = DateTools.now().plusDays(VALIDITY_DAYS);
     }
 
     /**
@@ -174,7 +175,7 @@ public class AccessTicket {
         if (expirationDate != null) {
             expirationDate = expirationDate.plusDays(days);
         } else {
-            expirationDate = LocalDateTime.now().plusDays(days);
+            expirationDate = DateTools.now().plusDays(days);
         }
     }
 

@@ -55,16 +55,13 @@ public class CmsDynamicContentBean implements Serializable {
     /**
      * getTopBarContent.
      *
-     * @return the HtmlPanelGroup containing the dynamically loaded top bar content for the current CMS page
+     * @return the HtmlPanelGroup containing the dynamically loaded top bar content for the current CMS page; empty if no CMS page is available
+     * @should return empty panel group if no cms page is available
      */
     public HtmlPanelGroup getTopBarContent() {
         this.cmsPage = Optional.ofNullable(BeanUtils.getCmsBean()).map(CmsBean::getCurrentPage).orElse(null);
         if (topBarGroup == null) {
-            try {
-                loadTopBarContent();
-            } catch (IllegalStateException e) {
-                logger.error("Error initializing topbar content: {}", e.getMessage());
-            }
+            loadTopBarContent();
         }
         return topBarGroup;
     }
@@ -82,7 +79,8 @@ public class CmsDynamicContentBean implements Serializable {
 
         this.topBarGroup = new HtmlPanelGroup();
         if (this.cmsPage == null) {
-            throw new IllegalStateException("CMSPage must be set before loading content");
+            // This bean is bound during view build-up, before CmsBean has resolved the current page
+            return;
         }
         try {
             List<CMSComponent> components = this.cmsPage.getTopbarComponents();

@@ -60,6 +60,7 @@ import io.goobi.viewer.model.cms.widgets.embed.CMSSidebarElementDefault;
 import io.goobi.viewer.model.maps.GeoMap;
 import io.goobi.viewer.model.translations.IPolyglott;
 import io.goobi.viewer.model.translations.TranslatedText;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -170,7 +171,7 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
      * Creates a new CMSPage instance.
      */
     public CMSPageTemplate() {
-        this.dateCreated = LocalDateTime.now();
+        this.dateCreated = DateTools.now();
     }
 
     /**
@@ -211,8 +212,8 @@ public class CMSPageTemplate implements Comparable<CMSPageTemplate>, IPolyglott,
 
     public CMSPageTemplate(CMSPage original) {
         this.title = new TranslatedText(original.getTitleTranslations());
-        this.dateCreated = LocalDateTime.now();
-        this.dateUpdated = LocalDateTime.now();
+        this.dateCreated = DateTools.now();
+        this.dateUpdated = DateTools.now();
         this.useDefaultSidebar = original.isUseDefaultSidebar();
         this.subTheme = original.getSubTheme();
         this.categories = new ArrayList<>(original.getCategories());

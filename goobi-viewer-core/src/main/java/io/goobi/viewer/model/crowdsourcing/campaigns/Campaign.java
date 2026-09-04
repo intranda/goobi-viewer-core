@@ -569,7 +569,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
 
         // Count whole calendar days via ChronoUnit; Duration.toDays() measures elapsed time, which is the
         // wrong semantics for a day count and is flagged by S8700. Numerically equivalent here.
-        return Math.max(0L, ChronoUnit.DAYS.between(LocalDate.now(), dateStart.toLocalDate()));
+        return Math.max(0L, ChronoUnit.DAYS.between(DateTools.today(), dateStart.toLocalDate()));
     }
 
     /**
@@ -587,7 +587,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
 
         // Count whole calendar days via ChronoUnit; Duration.toDays() measures elapsed time, which is the
         // wrong semantics for a day count and is flagged by S8700. Numerically equivalent here.
-        return Math.max(0L, ChronoUnit.DAYS.between(LocalDate.now(), dateEnd.toLocalDate()));
+        return Math.max(0L, ChronoUnit.DAYS.between(DateTools.today(), dateEnd.toLocalDate()));
     }
 
     /**
@@ -618,7 +618,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
             return true;
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         return now.isEqual(dateStart) || now.isAfter(dateStart);
     }
 
@@ -636,7 +636,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
             return false;
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         return now.isAfter(dateEnd);
     }
 
@@ -1474,7 +1474,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         if (statistic == null) {
             statistic = new CampaignRecordStatistic();
             statistic.setOwner(this);
-            statistic.setDateCreated(LocalDateTime.now());
+            statistic.setDateCreated(DateTools.now());
             statistic.setStatus(CrowdsourcingStatus.ANNOTATE);
         }
         if (CrowdsourcingStatus.ANNOTATE.equals(statistic.getStatus())) {
@@ -1484,7 +1484,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
         }
         statistic.setPi(pi);
         statistic.setStatus(status);
-        statistic.setDateUpdated(LocalDateTime.now());
+        statistic.setDateUpdated(DateTools.now());
         statistics.put(pi, statistic);
     }
 
@@ -1497,7 +1497,7 @@ public class Campaign implements CMSMediaHolder, ILicenseType, IPolyglott, Seria
      */
     public void setRecordPageStatus(String pi, int page, CrowdsourcingStatus status, Optional<User> user) {
         // logger.trace("setRecordPageStatus: {}/{}", pi, page); //NOSONAR Debug
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = DateTools.now();
         CampaignRecordStatistic statistic = statistics.get(pi);
         if (statistic == null) {
             statistic = new CampaignRecordStatistic();

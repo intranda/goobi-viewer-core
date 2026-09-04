@@ -406,7 +406,8 @@ public class IndexResource {
         if (wktRegion != null && !WKT_REGION_PATTERN.matcher(wktRegion).matches()) {
             throw new IllegalRequestException("region parameter contains characters not allowed in WKT syntax");
         }
-        servletResponse.addHeader("Cache-Control", "max-age=300");
+        servletResponse.setHeader("Cache-Control", "private, max-age=300");
+        servletResponse.setHeader("Vary", "Cookie");
 
         // Clean the user query, preserving a whitelisted "{!join ...}" prefix. A leading Solr
         // local param must stay at the very start of the query string, so the query must NOT be
@@ -488,7 +489,8 @@ public class IndexResource {
         if (wktRegion != null && !WKT_REGION_PATTERN.matcher(wktRegion).matches()) {
             throw new IllegalRequestException("region parameter contains characters not allowed in WKT syntax");
         }
-        servletResponse.addHeader("Cache-Control", "max-age=300");
+        servletResponse.setHeader("Cache-Control", "private, max-age=300");
+        servletResponse.setHeader("Vary", "Cookie");
 
         // Run filterQuery through cleanUpQuery to strip non-whitelisted Solr local-params
         // ({!type=...}, {!parent ...} etc.) that would otherwise bypass the access-condition
@@ -496,7 +498,7 @@ public class IndexResource {
         String finalQuery = SolrTools.cleanUpQuery(StringTools.unescapeCriticalUrlChracters(filterQuery));
 
         String coordQuery = "*:*";
-        if (!finalQuery.startsWith("{!join")) {
+        if (!finalQuery.startsWith("{!join")) { //NOSONAR - filterQuery carries a @DefaultValue, so cleanUpQuery never returns null
             finalQuery =
                     new StringBuilder()
                             .append(finalQuery)

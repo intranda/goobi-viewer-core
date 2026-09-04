@@ -73,6 +73,7 @@ import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
 import io.goobi.viewer.servlets.utils.ServletUtils;
+import io.goobi.viewer.controller.DateTools;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
@@ -285,7 +286,7 @@ public class UserBean implements Serializable {
                     // Activate user
                     u.setActivationKey(null);
                     u.setActive(true);
-                    if (DataManager.getInstance().getDao().updateUser(u)) {
+                    if (DataManager.getInstance().getDao().updateUser(u) != null) {
                         Messages.info(ViewerResourceBundle.getTranslation("user_accountActivationSuccess", null));
                         logger.debug("User account successfully activated: {}", u.getEmail());
                     } else {
@@ -434,8 +435,8 @@ public class UserBean implements Serializable {
 
                     DataManager.getInstance().getBookmarkManager().addSessionBookmarkListToUser(u, request);
                     // Update last login
-                    u.setLastLogin(LocalDateTime.now());
-                    if (!DataManager.getInstance().getDao().updateUser(u)) {
+                    u.setLastLogin(DateTools.now());
+                    if (DataManager.getInstance().getDao().updateUser(u) == null) {
                         logger.error("Could not update user in DB.");
                     }
                     setUser(u);
@@ -705,7 +706,7 @@ public class UserBean implements Serializable {
                 }
                 String resetUrl = navigationHelper.getApplicationUrl() + "user/resetpw/" + u.getEmail() + "/" + u.getActivationKey() + "/";
 
-                if (DataManager.getInstance().getDao().updateUser(u)) {
+                if (DataManager.getInstance().getDao().updateUser(u) != null) {
                     try {
                         if (NetTools.postMail(Collections.singletonList(email), null, null,
                                 ViewerResourceBundle.getTranslation("user_retrieveAccountConfirmationEmailSubject", null),
@@ -759,7 +760,7 @@ public class UserBean implements Serializable {
                     if (NetTools.postMail(Collections.singletonList(email), null, null,
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailSubject", null),
                             ViewerResourceBundle.getTranslation("user_retrieveAccountNewPasswordEmailBody", null).replace("{0}", newPassword))
-                            && DataManager.getInstance().getDao().updateUser(u)) {
+                            && DataManager.getInstance().getDao().updateUser(u) != null) {
                         DataManager.getInstance().getDao().deleteAllUserTokensForUser(u);
                         logger.info("Revoked all bearer tokens for user {} due to password reset", u.getEmail());
                         email = null;
