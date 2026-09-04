@@ -878,6 +878,121 @@ describe('IvViewer restricted-page navigation (tile-load reject fix)', () => {
     });
 });
 
+describe('IvViewer crossfade with slow tiles', () => {
+    let items;
+
+    /** A TiledImage whose "first tile painted" event the test fires by hand. */
+    const fakeItem = () => {
+        const handlers = {};
+        return {
+            handlers,
+            getFullyLoaded: () => false,
+            setOpacity: jest.fn(),
+            addHandler: (name, fn) => {
+                handlers[name] = fn;
+            },
+            removeHandler: (name) => {
+                delete handlers[name];
+            },
+            paint() {
+                if (handlers['fully-loaded-change']) handlers['fully-loaded-change']({ fullyLoaded: true });
+            },
+        };
+    };
+
+    beforeEach(() => {
+        mockImageView();
+        items = [];
+        jest.spyOn(IvViewer.prototype, '_open').mockResolvedValue();
+        jest.spyOn(IvViewer.prototype, '_refreshPreload').mockImplementation(() => {});
+        jest.spyOn(IvViewer.prototype, '_prefetchAround').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+        delete global.ImageView;
+    });
+
+    /** Viewer whose tile images are added instantly but only paint when the test says so. */
+    async function slowTileViewer(opts) {
+        const v = new IvViewer({ element: document.createElement('div'), services: services(5), startOrder: 0, ...opts });
+        const osd = v.viewer.openseadragon;
+        const osdHandlers = {};
+        osd.addHandler = (name, fn) => {
+            (osdHandlers[name] = osdHandlers[name] || []).push(fn);
+        };
+        osd.removeHandler = (name, fn) => {
+            osdHandlers[name] = (osdHandlers[name] || []).filter((h) => h !== fn);
+        };
+        osd.addTiledImage = jest.fn(({ success }) => {
+            const item = fakeItem();
+            items.push(item);
+            success({ item });
+        });
+        v._fadeMs = 0;
+        await flush();
+        return { v, osd, osdHandlers };
+    }
+
+    /** Long enough for the rAF-driven crossfade tween to finish. */
+    const settle = () => new Promise((resolve) => setTimeout(resolve, 50));
+
+    test('a page whose tiles never paint rolls the navigation back instead of freezing', async () => {
+        const { v, osd, osdHandlers } = await slowTileViewer({ contentTimeoutMs: 20, navWatchdogMs: 5000 });
+        const seen = jest.fn();
+        v.onPageChange.subscribe(seen);
+        const unhandled = jest.fn();
+        process.on('unhandledRejection', unhandled);
+
+        v.goToPage(1);
+        await flush();
+        expect(items).toHaveLength(1);
+        expect(v._navigating).toBe(true);
+
+        await settle();
+        await flush();
+        process.off('unhandledRejection', unhandled);
+
+        expect(v.getCurrentOrder()).toBe(0);
+        expect(seen).not.toHaveBeenCalled();
+        expect(v._navigating).toBe(false);
+        expect(unhandled).not.toHaveBeenCalled();
+        expect(items[0].handlers['fully-loaded-change']).toBeUndefined();
+        expect(osdHandlers['tile-loaded']).toEqual([]);
+        expect(osd.world.removeItem).toHaveBeenCalledWith(items[0]);
+    });
+
+    test('a load that outlives its watchdog release never overwrites the page a newer navigation shows', async () => {
+        const { v, osd } = await slowTileViewer({ navWatchdogMs: 20, contentTimeoutMs: 5000 });
+
+        v.goToPage(1);
+        await flush();
+        expect(items).toHaveLength(1);
+
+        await settle();
+        await flush();
+        expect(v._navigating).toBe(false);
+
+        v.goToPage(2);
+        await flush();
+        expect(items).toHaveLength(2);
+        items[1].paint();
+        await settle();
+        expect(v.getCurrentOrder()).toBe(2);
+        expect(v.currentItem).toBe(items[1]);
+
+        const seen = jest.fn();
+        v.onPageChange.subscribe(seen);
+        items[0].paint();
+        await settle();
+
+        expect(v.getCurrentOrder()).toBe(2);
+        expect(v.currentItem).toBe(items[1]);
+        expect(seen).not.toHaveBeenCalled();
+        expect(osd.world.removeItem).toHaveBeenCalledWith(items[0]);
+    });
+});
+
 describe('stageMargins', function () {
     test('reserves the full desktop chrome above 768px', function () {
         expect(stageMargins(1280)).toEqual({ top: 64, bottom: 72, left: 64, right: 64 });

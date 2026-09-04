@@ -28,6 +28,25 @@ test('a rejected or throwing task still releases', async () => {
     expect(lock.busy).toBe(false);
 });
 
+test('a second run while the lock is busy is refused, and the running task keeps its watchdog', () => {
+    jest.useFakeTimers();
+    try {
+        const lock = createNavLock(500);
+        const first = jest.fn(() => new Promise(() => {}));
+        const second = jest.fn();
+        const stuck = jest.fn();
+        expect(lock.run(first, stuck)).toBe(true);
+        expect(lock.run(second)).toBe(false);
+        expect(second).not.toHaveBeenCalled();
+        expect(lock.busy).toBe(true);
+        jest.advanceTimersByTime(500);
+        expect(stuck).toHaveBeenCalledTimes(1);
+        expect(lock.busy).toBe(false);
+    } finally {
+        jest.useRealTimers();
+    }
+});
+
 test('the watchdog releases a task that never settles and runs onStuck; destroy clears it', () => {
     jest.useFakeTimers();
     try {

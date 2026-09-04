@@ -61,6 +61,13 @@ const FADE_MS = 160;
 const NAV_WATCHDOG_MS = 8000;
 
 /**
+ * How long a navigation waits for the target page to paint its first tile. Shorter than
+ * NAV_WATCHDOG_MS on purpose: a dead tile source then rolls the navigation back (the page
+ * on screen stays) instead of leaving promise, handlers and lock to the watchdog.
+ */
+const CONTENT_TIMEOUT_MS = 6000;
+
+/**
  * Immersive image viewer engine around a single live ImageView.Image (OSD).
  * Single pages are swapped flicker-free by fading in a preloaded neighbour; double
  * pages are composed by the library and transitioned with a snapshot crossfade.
@@ -90,6 +97,8 @@ export default class IvViewer {
         this._queuedReopen = false;
         this._lock = createNavLock(opts.navWatchdogMs ?? NAV_WATCHDOG_MS);
         this._lock.onRelease(() => this._runQueued());
+        this._contentTimeoutMs = opts.contentTimeoutMs ?? CONTENT_TIMEOUT_MS;
+        this._nav = 0;
         this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
         this.onPageChange = new Emitter();
         this.onLoaded = new Emitter();
@@ -249,9 +258,17 @@ export default class IvViewer {
         return this._lock.busy;
     }
 
-    /** Runs `run` under the navigation lock; `onStuck` cleans up if the watchdog fires (see ivNavLock). */
+    /**
+     * Runs `run` under the navigation lock; `onStuck` cleans up if the watchdog fires (see ivNavLock).
+     * `run` receives a `stale()` predicate that turns true once a later navigation has taken the lock,
+     * so a body resuming after a watchdog release drops its result instead of writing state for a page
+     * that is no longer on screen.
+     */
     _withNavLock(run, onStuck) {
-        this._lock.run(run, onStuck);
+        this._lock.run(() => {
+            const generation = ++this._nav;
+            return run(() => this._nav !== generation);
+        }, onStuck);
     }
 
     /** After a release: a queued mode reopen first, else the latest queued page target. */
@@ -316,10 +333,11 @@ export default class IvViewer {
 
     /**
      * Single-page navigation: fade the (preloaded or freshly added) target page in
-     * over the current one, then drop the old. No reload, no blank, no jump.
+     * over the current one, then drop the old. No reload, no blank, no jump. A load
+     * that only arrives after its watchdog release is dropped, not applied.
      */
     _crossfadeTo(target) {
-        this._withNavLock(async () => {
+        this._withNavLock(async (stale) => {
             const previous = this.currentItem;
             const from = this.current;
             this.current = target;
@@ -336,9 +354,14 @@ export default class IvViewer {
                 this._preloaded.delete(target);
                 await this._whenContent(item);
             } catch (e) {
-                this.current = from;
                 this._preloaded.delete(target);
+                this._drop(item);
+                if (!stale()) this.current = from;
                 throw e;
+            }
+            if (stale()) {
+                this._drop(item);
+                return;
             }
             await crossfade(item, previous, this._fadeMs);
             if (previous) this.viewer.openseadragon.world.removeItem(previous);
@@ -372,18 +395,25 @@ export default class IvViewer {
         return p;
     }
 
-    /** Resolves once `item` has painted its first (low-res) tile, or is already fully loaded. */
+    /**
+     * Resolves once `item` has painted its first (low-res) tile, or is already fully
+     * loaded; rejects when no tile arrives within `contentTimeoutMs`. Either way the
+     * tile handlers are detached, so a page that never paints leaves nothing behind.
+     */
     _whenContent(item) {
         if (item.getFullyLoaded()) return Promise.resolve();
         const osd = this.viewer.openseadragon;
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             let done = false;
-            const finish = () => {
+            let timer = null;
+            const finish = (error) => {
                 if (done) return;
                 done = true;
+                clearTimeout(timer);
                 osd.removeHandler('tile-loaded', onTile);
                 item.removeHandler('fully-loaded-change', onFull);
-                resolve();
+                if (error) reject(error);
+                else resolve();
             };
             const onTile = (e) => {
                 if (e.tiledImage === item) finish();
@@ -393,7 +423,16 @@ export default class IvViewer {
             };
             osd.addHandler('tile-loaded', onTile);
             item.addHandler('fully-loaded-change', onFull);
+            timer = setTimeout(() => finish(new Error(`immersive: no tile painted within ${this._contentTimeoutMs}ms`)), this._contentTimeoutMs);
         });
+    }
+
+    /** Removes an abandoned image from the world -- a page that never made it on screen must not stay in it. */
+    _drop(item) {
+        if (!item) return;
+        try {
+            this.viewer.openseadragon.world.removeItem(item);
+        } catch {}
     }
 
     /** Keeps the adjacent pages (±1) preloaded and evicts the rest (single-page path). */
@@ -408,11 +447,7 @@ export default class IvViewer {
         }
         for (const [order, p] of this._preloaded) {
             if (!keep.has(order)) {
-                p.then((item) => {
-                    try {
-                        this.viewer.openseadragon.world.removeItem(item);
-                    } catch {}
-                }).catch(() => {});
+                p.then((item) => this._drop(item)).catch(() => {});
                 this._preloaded.delete(order);
             }
         }
