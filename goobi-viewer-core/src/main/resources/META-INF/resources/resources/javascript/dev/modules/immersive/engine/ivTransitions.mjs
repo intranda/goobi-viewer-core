@@ -31,6 +31,43 @@ export function crossfade(incoming, outgoing, durationMs) {
 }
 
 /**
+ * The current view expressed relative to the page row, so it survives a reload
+ * that rebuilds the world: `zoom` is the magnification per row width and `x`/`y`
+ * are the centre as a fraction of the row. Null whenever there is nothing
+ * meaningful to keep. Pure + tested.
+ *
+ * @param {{x:number, y:number, width:number, height:number}|null} row  union bounds of the displayed pages
+ * @param {{x:number, y:number}|null} center  viewport centre (the animation target, not the current frame)
+ * @param {number} zoom  viewport zoom (likewise the target)
+ * @param {number} pages  number of pages the row is made of
+ * @returns {{zoom:number, x:number, y:number, pages:number}|null}
+ */
+export function captureView(row, center, zoom, pages) {
+    if (!row || !center || !(row.width > 0) || !(row.height > 0) || !(zoom > 0) || !(pages > 0)) {
+        return null;
+    }
+    return { zoom: zoom * row.width, x: (center.x - row.x) / row.width, y: (center.y - row.y) / row.height, pages };
+}
+
+/**
+ * The zoom and centre a captured view maps to on the new row, or null when it
+ * must not be applied: without a view, without a usable row, or when the row is
+ * made of a different number of pages - a spread and a single page want their
+ * own fit, not the same magnification. Pure + tested.
+ *
+ * @param {{zoom:number, x:number, y:number, pages:number}|null} view
+ * @param {{x:number, y:number, width:number, height:number}|null} row
+ * @param {number} pages  number of pages the new row is made of
+ * @returns {{zoom:number, center:{x:number, y:number}}|null}
+ */
+export function restoredView(view, row, pages) {
+    if (!view || !row || !(row.width > 0) || !(row.height > 0) || view.pages !== pages) {
+        return null;
+    }
+    return { zoom: view.zoom / row.width, center: { x: row.x + view.x * row.width, y: row.y + view.y * row.height } };
+}
+
+/**
  * Widens a bounds rect to a tall band (same y/height, 3x width, same centre).
  * As a fitBounds anchor this makes OSD fit by height, so pages of differing scan
  * aspect render at a uniform height and paging never jumps vertically.

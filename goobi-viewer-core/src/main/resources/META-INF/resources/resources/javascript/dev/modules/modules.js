@@ -896,6 +896,43 @@
     }
 
     /**
+     * The current view expressed relative to the page row, so it survives a reload
+     * that rebuilds the world: `zoom` is the magnification per row width and `x`/`y`
+     * are the centre as a fraction of the row. Null whenever there is nothing
+     * meaningful to keep. Pure + tested.
+     *
+     * @param {{x:number, y:number, width:number, height:number}|null} row  union bounds of the displayed pages
+     * @param {{x:number, y:number}|null} center  viewport centre (the animation target, not the current frame)
+     * @param {number} zoom  viewport zoom (likewise the target)
+     * @param {number} pages  number of pages the row is made of
+     * @returns {{zoom:number, x:number, y:number, pages:number}|null}
+     */
+    function captureView(row, center, zoom, pages) {
+        if (!row || !center || !(row.width > 0) || !(row.height > 0) || !(zoom > 0) || !(pages > 0)) {
+            return null;
+        }
+        return { zoom: zoom * row.width, x: (center.x - row.x) / row.width, y: (center.y - row.y) / row.height, pages };
+    }
+
+    /**
+     * The zoom and centre a captured view maps to on the new row, or null when it
+     * must not be applied: without a view, without a usable row, or when the row is
+     * made of a different number of pages - a spread and a single page want their
+     * own fit, not the same magnification. Pure + tested.
+     *
+     * @param {{zoom:number, x:number, y:number, pages:number}|null} view
+     * @param {{x:number, y:number, width:number, height:number}|null} row
+     * @param {number} pages  number of pages the new row is made of
+     * @returns {{zoom:number, center:{x:number, y:number}}|null}
+     */
+    function restoredView(view, row, pages) {
+        if (!view || !row || !(row.width > 0) || !(row.height > 0) || view.pages !== pages) {
+            return null;
+        }
+        return { zoom: view.zoom / row.width, center: { x: row.x + view.x * row.width, y: row.y + view.y * row.height } };
+    }
+
+    /**
      * Widens a bounds rect to a tall band (same y/height, 3x width, same centre).
      * As a fitBounds anchor this makes OSD fit by height, so pages of differing scan
      * aspect render at a uniform height and paging never jumps vertically.
@@ -1655,12 +1692,14 @@
             const pages = this.double ? computeSpread(order, this.total) : [order];
             this.viewer.config.sequence.columns = pages.length;
             const sources = pages.map((p) => toTileSource(this.services[p]));
+            const kept = this._captureView();
             const settle = () => {
                 const world = this.viewer.openseadragon.world;
                 this.currentItem = world.getItemCount() > 0 ? world.getItemAt(0) : null;
                 if (!this.double && this.currentItem) {
                     this._anchor = heightBand(this.currentItem.getBounds());
                 }
+                this._restoreView(kept);
                 this._preloaded.clear();
                 this._emit();
                 this.onOpen.emit(this.current);
@@ -1668,6 +1707,66 @@
             const loaded = this.viewer.load(sources, 0);
             this._prefetchAround(pages[pages.length - 1]);
             return loaded.then(settle, settle);
+        }
+
+        /**
+         * The page row on screen: union bounds and page count. Neighbour pages sit preloaded in the
+         * same world at opacity 0 (see {@link _acquire}), so counting world items would report a row
+         * that is neither the right size nor the right shape.
+         */
+        _visibleRow() {
+            const world = this.viewer.openseadragon.world;
+            let bounds = null;
+            let pages = 0;
+            for (let i = 0; i < world.getItemCount(); i++) {
+                const item = world.getItemAt(i);
+                if (item.getOpacity && item.getOpacity() <= 0) {
+                    continue;
+                }
+                const itemBounds = item.getBounds();
+                bounds = bounds ? bounds.union(itemBounds) : itemBounds;
+                pages++;
+            }
+            return { bounds, pages };
+        }
+
+        /**
+         * The view as it stands before a reload, relative to the page row, plus the rotation.
+         * Reads the animation targets, so paging mid-zoom keeps where the zoom was heading
+         * rather than the frame it happened to be on.
+         */
+        _captureView() {
+            try {
+                const viewport = this.viewer.openseadragon.viewport;
+                // The page count comes from the row on screen, not from the mode: on a mode toggle
+                // `double` already holds the new value while the row is still the old one.
+                const row = this._visibleRow();
+                const view = captureView(row.bounds, viewport.getCenter(false), viewport.getZoom(false), row.pages);
+                return view ? { ...view, degrees: viewport.getRotation ? viewport.getRotation() : 0 } : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        /**
+         * Re-applies a captured view after the library has rebuilt the world. Measures the new
+         * row the same way the capture measured the old one, so a cover shown alone or a page
+         * without an image compares honestly. Silent about every failure: the library has
+         * already fitted the new row, so doing nothing leaves a correct view, while throwing
+         * in here would strand the navigation lock.
+         */
+        _restoreView(kept) {
+            try {
+                const row = this._visibleRow();
+                const target = restoredView(kept, row.bounds, row.pages);
+                if (!target) return;
+                const viewport = this.viewer.openseadragon.viewport;
+                if (kept.degrees) this.rotation.rotateTo(kept.degrees);
+                viewport.zoomTo(target.zoom, null, true);
+                viewport.panTo(target.center, true);
+            } catch (e) {
+                console.warn('immersive: could not keep the view across the reload', e);
+            }
         }
 
         /** Warms neighbour info.json in the browser cache so the next load is faster. */

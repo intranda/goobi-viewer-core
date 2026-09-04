@@ -1,5 +1,5 @@
 import { computeSpread, residentPages } from './ivImageWindow.mjs';
-import { crossfade, heightBand, snapshotOverlay, fadeOverlay } from './ivTransitions.mjs';
+import { captureView, crossfade, heightBand, restoredView, snapshotOverlay, fadeOverlay } from './ivTransitions.mjs';
 import { createNavLock } from './ivNavLock.mjs';
 import { IvOverlays } from './ivOverlays.mjs';
 import { createAccessOverlay } from './ivAccessOverlay.mjs';
@@ -465,12 +465,14 @@ export default class IvViewer {
         const pages = this.double ? computeSpread(order, this.total) : [order];
         this.viewer.config.sequence.columns = pages.length;
         const sources = pages.map((p) => toTileSource(this.services[p]));
+        const kept = this._captureView();
         const settle = () => {
             const world = this.viewer.openseadragon.world;
             this.currentItem = world.getItemCount() > 0 ? world.getItemAt(0) : null;
             if (!this.double && this.currentItem) {
                 this._anchor = heightBand(this.currentItem.getBounds());
             }
+            this._restoreView(kept);
             this._preloaded.clear();
             this._emit();
             this.onOpen.emit(this.current);
@@ -478,6 +480,66 @@ export default class IvViewer {
         const loaded = this.viewer.load(sources, 0);
         this._prefetchAround(pages[pages.length - 1]);
         return loaded.then(settle, settle);
+    }
+
+    /**
+     * The page row on screen: union bounds and page count. Neighbour pages sit preloaded in the
+     * same world at opacity 0 (see {@link _acquire}), so counting world items would report a row
+     * that is neither the right size nor the right shape.
+     */
+    _visibleRow() {
+        const world = this.viewer.openseadragon.world;
+        let bounds = null;
+        let pages = 0;
+        for (let i = 0; i < world.getItemCount(); i++) {
+            const item = world.getItemAt(i);
+            if (item.getOpacity && item.getOpacity() <= 0) {
+                continue;
+            }
+            const itemBounds = item.getBounds();
+            bounds = bounds ? bounds.union(itemBounds) : itemBounds;
+            pages++;
+        }
+        return { bounds, pages };
+    }
+
+    /**
+     * The view as it stands before a reload, relative to the page row, plus the rotation.
+     * Reads the animation targets, so paging mid-zoom keeps where the zoom was heading
+     * rather than the frame it happened to be on.
+     */
+    _captureView() {
+        try {
+            const viewport = this.viewer.openseadragon.viewport;
+            // The page count comes from the row on screen, not from the mode: on a mode toggle
+            // `double` already holds the new value while the row is still the old one.
+            const row = this._visibleRow();
+            const view = captureView(row.bounds, viewport.getCenter(false), viewport.getZoom(false), row.pages);
+            return view ? { ...view, degrees: viewport.getRotation ? viewport.getRotation() : 0 } : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /**
+     * Re-applies a captured view after the library has rebuilt the world. Measures the new
+     * row the same way the capture measured the old one, so a cover shown alone or a page
+     * without an image compares honestly. Silent about every failure: the library has
+     * already fitted the new row, so doing nothing leaves a correct view, while throwing
+     * in here would strand the navigation lock.
+     */
+    _restoreView(kept) {
+        try {
+            const row = this._visibleRow();
+            const target = restoredView(kept, row.bounds, row.pages);
+            if (!target) return;
+            const viewport = this.viewer.openseadragon.viewport;
+            if (kept.degrees) this.rotation.rotateTo(kept.degrees);
+            viewport.zoomTo(target.zoom, null, true);
+            viewport.panTo(target.center, true);
+        } catch (e) {
+            console.warn('immersive: could not keep the view across the reload', e);
+        }
     }
 
     /** Warms neighbour info.json in the browser cache so the next load is faster. */

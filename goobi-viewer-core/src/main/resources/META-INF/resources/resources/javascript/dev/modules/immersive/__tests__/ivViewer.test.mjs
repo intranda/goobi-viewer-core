@@ -889,3 +889,97 @@ describe('stageMargins', function () {
         expect(stageMargins(390)).toEqual({ top: 56, bottom: 60, left: 16, right: 16 });
     });
 });
+
+describe('IvViewer keeps the view across a reload', () => {
+    beforeEach(() => {
+        mockImageView();
+        global.fetch = jest.fn(() => Promise.resolve());
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+        delete global.ImageView;
+        delete global.fetch;
+    });
+
+    const rect = (x, y, width, height) => ({
+        x,
+        y,
+        width,
+        height,
+        clone: () => rect(x, y, width, height),
+        union: (o) => rect(Math.min(x, o.x), Math.min(y, o.y), Math.max(x + width, o.x + o.width) - Math.min(x, o.x), Math.max(y + height, o.y + o.height) - Math.min(y, o.y)),
+    });
+
+    const stage = (v, bounds) => {
+        const osd = v.viewer.openseadragon;
+        osd.world = {
+            getItemCount: () => bounds().length,
+            getItemAt: (i) => ({ getBounds: () => bounds()[i].rect || bounds()[i], getOpacity: () => (bounds()[i].hidden ? 0 : 1) }),
+            removeItem: jest.fn(),
+        };
+        osd.viewport = {
+            goHome() {},
+            getCenter: () => ({ x: 0.75, y: 0.25 }),
+            getZoom: () => 4,
+            getRotation: () => 0,
+            zoomTo: jest.fn(),
+            panTo: jest.fn(),
+        };
+        return osd;
+    };
+
+    test('the same two-page row gets the view back, a row that lost a page keeps the fresh fit', async () => {
+        const v = new IvViewer({ element: {}, services: services(4), startOrder: 0 });
+        await flush();
+        let bounds = [rect(0, 0, 0.5, 0.5), rect(0.5, 0, 0.5, 0.5)];
+        const osd = stage(v, () => bounds);
+        v.double = true;
+
+        await v._open(0);
+        expect(osd.viewport.zoomTo).toHaveBeenCalledWith(4, null, true);
+        expect(osd.viewport.panTo).toHaveBeenCalledWith({ x: 0.75, y: 0.25 }, true);
+
+        osd.viewport.zoomTo.mockClear();
+        osd.viewport.panTo.mockClear();
+        v.double = false;
+        // the spread is still on screen while the view is measured; the single page arrives with the load
+        v.viewer.load = () => {
+            bounds = [rect(0, 0, 0.5, 0.5)];
+            return Promise.resolve();
+        };
+        await v._open(3);
+        expect(osd.viewport.zoomTo).not.toHaveBeenCalled();
+        expect(osd.viewport.panTo).not.toHaveBeenCalled();
+    });
+
+    test('pages preloaded into the same world do not count towards the row', async () => {
+        const v = new IvViewer({ element: {}, services: services(6), startOrder: 2 });
+        await flush();
+        // two visible pages of the spread plus one neighbour preloaded hidden next to them
+        let bounds = [rect(0, 0, 0.5, 0.5), rect(0.5, 0, 0.5, 0.5), { rect: rect(1, 0, 0.5, 0.5), hidden: true }];
+        const osd = stage(v, () => bounds);
+        v.double = true;
+        v.viewer.load = () => {
+            bounds = [rect(0, 0, 0.5, 0.5), rect(0.5, 0, 0.5, 0.5)];
+            return Promise.resolve();
+        };
+
+        await v._open(2);
+        // the row is the visible pair, so the view is put back instead of being dropped as a shape change
+        expect(osd.viewport.zoomTo).toHaveBeenCalledWith(4, null, true);
+        expect(osd.viewport.panTo).toHaveBeenCalledWith({ x: 0.75, y: 0.25 }, true);
+    });
+
+    test('a viewport that cannot be read leaves the navigation intact', async () => {
+        const v = new IvViewer({ element: {}, services: services(3), startOrder: 0 });
+        await flush();
+        const osd = stage(v, () => [rect(0, 0, 0.5, 0.5)]);
+        osd.viewport.getZoom = () => {
+            throw new Error('viewport not ready');
+        };
+
+        await expect(v._open(1)).resolves.toBeUndefined();
+        expect(osd.viewport.zoomTo).not.toHaveBeenCalled();
+    });
+});
