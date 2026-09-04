@@ -38,6 +38,9 @@ public class ElementReference {
     private String content;
     @JsonInclude(Include.NON_EMPTY)
     private String uri;
+    /** Name of the ALTO element the reference points at ({@code String}, {@code TextBlock}, {@code GraphicalElement} ...). */
+    @JsonInclude(Include.NON_EMPTY)
+    private String elementType;
     private int page;
 
     /**
@@ -130,6 +133,20 @@ public class ElementReference {
     
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    /**
+     * @return name of the ALTO element the reference points at, or null
+     */
+    public String getElementType() {
+        return elementType;
+    }
+
+    /**
+     * @param elementType name of the ALTO element the reference points at
+     */
+    public void setElementType(String elementType) {
+        this.elementType = elementType;
     }
 
     /**

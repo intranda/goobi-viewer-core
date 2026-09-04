@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,7 +56,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * Builds a per-record listing of ALTO {@code <LayoutTag>} labels, grouped into page ranges — the layout-tag analogue
  * of {@link NERBuilder}. Reuses the NER REST model ({@link DocumentReference} / {@link TagGroup} / {@link TagCount} /
  * {@link ElementReference}); layout tags carry a placeholder {@code MISC} type and no authority URI (see
- * {@link ALTOTools#getLayoutTags(String, String, String)}). The per-page ALTO is loaded and parsed on demand (no
+ * {@link ALTOTools#getLayoutTags(String, String, String, java.util.Collection)}). The per-page ALTO is loaded and parsed on demand (no
  * occurrence data is held in Solr), exactly like the NER listing.
  */
 public class LayoutTagBuilder {
@@ -103,6 +104,7 @@ public class LayoutTagBuilder {
             if (solrDocuments.get(0).containsKey(SolrConstants.PI_TOPSTRUCT)) {
                 topStructPi = SolrTools.getAsString(solrDocuments.get(0).getFieldValue(SolrConstants.PI_TOPSTRUCT));
             }
+            Set<String> wordTagLabels = DataManager.getInstance().getConfiguration().getAltoLayoutWordTagTypes().keySet();
             DocumentReference doc = new DocumentReference(topStructPi);
             for (int index = 0; index < solrDocuments.size(); index += rangeSize) {
                 List<SolrDocument> rangeList = solrDocuments.subList(index, Math.min(index + rangeSize, solrDocuments.size()));
@@ -132,7 +134,7 @@ public class LayoutTagBuilder {
                                 continue;
                             }
                             Integer pageOrder = getPageOrder(solrDoc);
-                            List<TagCount> tags = ALTOTools.getLayoutTags(altoString, charset, label);
+                            List<TagCount> tags = ALTOTools.getLayoutTags(altoString, charset, label, wordTagLabels);
                             for (TagCount tagCount : tags) {
                                 for (ElementReference reference : tagCount.getReferences()) {
                                     reference.setPage(pageOrder);

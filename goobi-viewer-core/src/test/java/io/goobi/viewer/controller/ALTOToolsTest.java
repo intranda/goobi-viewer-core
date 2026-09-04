@@ -27,6 +27,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -45,6 +46,7 @@ import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.Tag;
 import de.intranda.digiverso.ocr.alto.utils.AltoCoords;
 import io.goobi.viewer.AbstractTest;
+import io.goobi.viewer.api.rest.model.ner.ElementReference;
 import io.goobi.viewer.api.rest.model.ner.NERTag;
 import io.goobi.viewer.api.rest.model.ner.TagCount;
 import io.goobi.viewer.controller.model.alto.AltoHtmlBuilder.AnnotationStyle;
@@ -356,7 +358,7 @@ class ALTOToolsTest extends AbstractTest {
     }
 
     /**
-     * @see ALTOTools#getLayoutTags(String,String,String)
+     * @see ALTOTools#getLayoutTags(String,String,String,Collection)
      * @verifies return layout tags with references
      * @verifies filter by label
      */
@@ -366,7 +368,7 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertTrue(file.isFile());
         String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
 
-        List<TagCount> all = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, null);
+        List<TagCount> all = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, null, Collections.emptySet());
         Assertions.assertNotNull(all);
         Set<String> values = new LinkedHashSet<>();
         for (TagCount tc : all) {
@@ -382,10 +384,50 @@ class ALTOToolsTest extends AbstractTest {
         Assertions.assertEquals(values.size(), all.size());
 
         // Label filter returns only the requested label
-        List<TagCount> underlinedOnly = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, "gr_unterstrichen");
+        List<TagCount> underlinedOnly = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, "gr_unterstrichen", Collections.emptySet());
         Assertions.assertEquals(1, underlinedOnly.size());
         Assertions.assertEquals("gr_unterstrichen", underlinedOnly.get(0).getValue());
         Assertions.assertTrue(underlinedOnly.get(0).getCounter() > 1);
+    }
+
+    /**
+     * A word tag marks a drawn line: the ALTO carries the same LABEL on the mark itself
+     * ({@code <GraphicalElement>}) and on every word the mark runs across, so only the marks are occurrences.
+     *
+     * @see ALTOTools#getLayoutTags(String,String,String,Collection)
+     * @verifies keep only graphical references for word tags
+     * @verifies keep references of word tags without graphical reference
+     * @verifies not filter labels that are no word tags
+     */
+    @Test
+    void getLayoutTags_shouldKeepOnlyMarksForWordTags() throws Exception {
+        File file = new File("src/test/resources/data/alto_layouttags.xml");
+        Assertions.assertTrue(file.isFile());
+        String alto = FileTools.getStringFromFile(file, StringTools.DEFAULT_ENCODING);
+        Set<String> wordTagLabels = Set.of("gr_unterstrichen", "gr_durchgestrichen");
+
+        // The fixture attaches gr_unterstrichen to 10 GraphicalElements and to the 14 words they run across.
+        List<TagCount> unfiltered = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, "gr_unterstrichen", Collections.emptySet());
+        Assertions.assertEquals(24, unfiltered.get(0).getCounter().intValue());
+
+        List<TagCount> underlines = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, "gr_unterstrichen", wordTagLabels);
+        Assertions.assertEquals(1, underlines.size());
+        Assertions.assertEquals(10, underlines.get(0).getCounter().intValue());
+        for (ElementReference reference : underlines.get(0).getReferences()) {
+            Assertions.assertEquals("GraphicalElement", reference.getElementType(), reference.getId());
+        }
+
+        // gr_durchgestrichen is a word tag too, but the fixture records no mark for it: its word reference remains.
+        List<TagCount> struck = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, "gr_durchgestrichen", wordTagLabels);
+        Assertions.assertEquals(1, struck.size());
+        Assertions.assertEquals(1, struck.get(0).getCounter().intValue());
+        Assertions.assertEquals("s-151", struck.get(0).getReferences().get(0).getId());
+        Assertions.assertEquals("String", struck.get(0).getReferences().get(0).getElementType());
+
+        // Annotation tags are untouched by the filter.
+        List<TagCount> jacob = ALTOTools.getLayoutTags(alto, StringTools.DEFAULT_ENCODING, "gr_jacob_grimm", wordTagLabels);
+        Assertions.assertEquals(1, jacob.size());
+        Assertions.assertEquals(7, jacob.get(0).getCounter().intValue());
     }
 
     /**

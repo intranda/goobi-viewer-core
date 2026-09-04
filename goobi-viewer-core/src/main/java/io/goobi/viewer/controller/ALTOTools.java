@@ -28,11 +28,13 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -48,6 +50,7 @@ import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
 
 import de.intranda.digiverso.normdataimporter.Utils;
+import de.intranda.digiverso.ocr.alto.model.structureclasses.blocks.GraphicalElement;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.lineelements.Word;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoDocument;
 import de.intranda.digiverso.ocr.alto.model.structureclasses.logical.AltoTags.TagType;
@@ -193,11 +196,15 @@ public final class ALTOTools {
      * @param alto ALTO XML document as a string
      * @param inCharset character encoding of the ALTO document
      * @param label if non-null, only tags with this exact LABEL are returned; null returns all layout tags
+     * @param wordTagLabels LABELs configured as word tags (see {@link #filterWordTagReferences})
      * @return list of TagCounts for the document's layout tags
      * @should return layout tags with references
      * @should filter by label
+     * @should keep only graphical references for word tags
+     * @should keep references of word tags without graphical reference
      */
-    public static List<TagCount> getLayoutTags(String alto, final String inCharset, String label) {
+    @SuppressWarnings("rawtypes")
+    public static List<TagCount> getLayoutTags(String alto, final String inCharset, String label, Collection<String> wordTagLabels) {
         String charset = inCharset;
         if (StringUtils.isBlank(charset)) {
             charset = null;
@@ -205,10 +212,16 @@ public final class ALTOTools {
         List<TagCount> ret = new ArrayList<>();
         try {
             AltoDocument doc = AltoDocument.getDocumentFromString(alto, charset);
+            // A LayoutTag is declared per referenced element, so a label's references must be collected across all
+            // of its declarations before the word-tag filter can tell the stroke from the text it covers.
+            Map<String, List<GeometricData>> referencesByLabel = new LinkedHashMap<>();
             for (Tag tag : doc.getTags().getTagsAsList()) {
                 if (tag.getTagType() == TagType.LAYOUT_TAG && (label == null || label.equals(tag.getLabel()))) {
-                    addTags(createLayoutTag(tag), ret);
+                    referencesByLabel.computeIfAbsent(tag.getLabel(), k -> new ArrayList<>()).addAll(tag.getReferences());
                 }
+            }
+            for (Entry<String, List<GeometricData>> entry : referencesByLabel.entrySet()) {
+                addTags(createLayoutTag(entry.getKey(), filterWordTagReferences(entry.getKey(), entry.getValue(), wordTagLabels)), ret);
             }
         } catch (UnsupportedEncodingException e) {
             logger.error("{}: {}", e.getMessage(), charset);
@@ -220,15 +233,37 @@ public final class ALTOTools {
     }
 
     /**
-     * @param tag ALTO layout tag to convert into TagCount entries (one per reference)
+     * A word tag marks a drawn stroke, and the ALTO carries its LABEL twice: on the stroke itself (an ALTO
+     * {@code <GraphicalElement>}) and on every word the stroke runs across. Only the strokes are occurrences, so the
+     * word references are dropped - unless the page records no stroke at all, in which case they are all there is.
+     *
+     * @param label LABEL of the ALTO layout tag
+     * @param references elements referencing it on this page
+     * @param wordTagLabels LABELs configured as word tags; other labels pass through unchanged
+     * @return the references to report as occurrences
+     */
+    @SuppressWarnings("rawtypes")
+    static List<GeometricData> filterWordTagReferences(String label, List<GeometricData> references, Collection<String> wordTagLabels) {
+        if (wordTagLabels == null || !wordTagLabels.contains(label)) {
+            return references;
+        }
+        List<GeometricData> strokes =
+                references.stream().filter(reference -> GraphicalElement.JDOM_NAME.equals(reference.getJDOMName())).toList();
+        return strokes.isEmpty() ? references : strokes;
+    }
+
+    /**
+     * @param value LABEL of the ALTO layout tag
+     * @param references elements referencing it (one TagCount per reference)
      * @return List<TagCount>
      */
     @SuppressWarnings("rawtypes")
-    static List<TagCount> createLayoutTag(Tag tag) {
-        String value = tag.getLabel();
-        List<TagCount> ret = new ArrayList<>(tag.getReferences().size());
-        for (GeometricData reference : tag.getReferences()) {
+    static List<TagCount> createLayoutTag(String value, List<GeometricData> references) {
+        List<TagCount> ret = new ArrayList<>(references.size());
+        for (GeometricData reference : references) {
             ElementReference element = new ElementReference(reference.getId(), reference.getRect().getBounds(), reference.getContent(), null);
+            // The ALTO element name tells the client whether the occurrence is a drawn stroke or a text region.
+            element.setElementType(reference.getJDOMName());
             // Layout tags have no NER type; MISC is a placeholder so the value-based TagCount merge works (see javadoc).
             ret.add(new TagCount(value, Type.MISC, element));
         }
