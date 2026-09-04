@@ -992,11 +992,15 @@
             },
             /**
              * Runs `task` (returns the settle promise) under the lock; `onStuck` cleans up if the watchdog fires first.
+             * A run while the lock is busy is refused instead of overwriting the running task's watchdog -- callers
+             * queue their target and pick it up on the release hook.
              *
              * @param {() => Promise|any} task
              * @param {Function} [onStuck]
+             * @returns {boolean} whether the task was started
              */
             run(task, onStuck) {
+                if (busy) return false;
                 busy = true;
                 let released = false;
                 const release = () => {
@@ -1019,6 +1023,7 @@
                 } catch {
                     release();
                 }
+                return true;
             },
             /** Registers a callback that runs after every release (queued navigations pick up here). */
             onRelease(fn) {
@@ -1288,6 +1293,13 @@
     const NAV_WATCHDOG_MS = 8000;
 
     /**
+     * How long a navigation waits for the target page to paint its first tile. Shorter than
+     * NAV_WATCHDOG_MS on purpose: a dead tile source then rolls the navigation back (the page
+     * on screen stays) instead of leaving promise, handlers and lock to the watchdog.
+     */
+    const CONTENT_TIMEOUT_MS = 6000;
+
+    /**
      * Immersive image viewer engine around a single live ImageView.Image (OSD).
      * Single pages are swapped flicker-free by fading in a preloaded neighbour; double
      * pages are composed by the library and transitioned with a snapshot crossfade.
@@ -1317,6 +1329,8 @@
             this._queuedReopen = false;
             this._lock = createNavLock(opts.navWatchdogMs ?? NAV_WATCHDOG_MS);
             this._lock.onRelease(() => this._runQueued());
+            this._contentTimeoutMs = opts.contentTimeoutMs ?? CONTENT_TIMEOUT_MS;
+            this._nav = 0;
             this._fadeMs = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FADE_MS;
             this.onPageChange = new Emitter();
             this.onLoaded = new Emitter();
@@ -1476,9 +1490,17 @@
             return this._lock.busy;
         }
 
-        /** Runs `run` under the navigation lock; `onStuck` cleans up if the watchdog fires (see ivNavLock). */
+        /**
+         * Runs `run` under the navigation lock; `onStuck` cleans up if the watchdog fires (see ivNavLock).
+         * `run` receives a `stale()` predicate that turns true once a later navigation has taken the lock,
+         * so a body resuming after a watchdog release drops its result instead of writing state for a page
+         * that is no longer on screen.
+         */
         _withNavLock(run, onStuck) {
-            this._lock.run(run, onStuck);
+            this._lock.run(() => {
+                const generation = ++this._nav;
+                return run(() => this._nav !== generation);
+            }, onStuck);
         }
 
         /** After a release: a queued mode reopen first, else the latest queued page target. */
@@ -1543,10 +1565,11 @@
 
         /**
          * Single-page navigation: fade the (preloaded or freshly added) target page in
-         * over the current one, then drop the old. No reload, no blank, no jump.
+         * over the current one, then drop the old. No reload, no blank, no jump. A load
+         * that only arrives after its watchdog release is dropped, not applied.
          */
         _crossfadeTo(target) {
-            this._withNavLock(async () => {
+            this._withNavLock(async (stale) => {
                 const previous = this.currentItem;
                 const from = this.current;
                 this.current = target;
@@ -1563,9 +1586,14 @@
                     this._preloaded.delete(target);
                     await this._whenContent(item);
                 } catch (e) {
-                    this.current = from;
                     this._preloaded.delete(target);
+                    this._drop(item);
+                    if (!stale()) this.current = from;
                     throw e;
+                }
+                if (stale()) {
+                    this._drop(item);
+                    return;
                 }
                 await crossfade(item, previous, this._fadeMs);
                 if (previous) this.viewer.openseadragon.world.removeItem(previous);
@@ -1599,18 +1627,25 @@
             return p;
         }
 
-        /** Resolves once `item` has painted its first (low-res) tile, or is already fully loaded. */
+        /**
+         * Resolves once `item` has painted its first (low-res) tile, or is already fully
+         * loaded; rejects when no tile arrives within `contentTimeoutMs`. Either way the
+         * tile handlers are detached, so a page that never paints leaves nothing behind.
+         */
         _whenContent(item) {
             if (item.getFullyLoaded()) return Promise.resolve();
             const osd = this.viewer.openseadragon;
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 let done = false;
-                const finish = () => {
+                let timer = null;
+                const finish = (error) => {
                     if (done) return;
                     done = true;
+                    clearTimeout(timer);
                     osd.removeHandler('tile-loaded', onTile);
                     item.removeHandler('fully-loaded-change', onFull);
-                    resolve();
+                    if (error) reject(error);
+                    else resolve();
                 };
                 const onTile = (e) => {
                     if (e.tiledImage === item) finish();
@@ -1620,7 +1655,16 @@
                 };
                 osd.addHandler('tile-loaded', onTile);
                 item.addHandler('fully-loaded-change', onFull);
+                timer = setTimeout(() => finish(new Error(`immersive: no tile painted within ${this._contentTimeoutMs}ms`)), this._contentTimeoutMs);
             });
+        }
+
+        /** Removes an abandoned image from the world -- a page that never made it on screen must not stay in it. */
+        _drop(item) {
+            if (!item) return;
+            try {
+                this.viewer.openseadragon.world.removeItem(item);
+            } catch {}
         }
 
         /** Keeps the adjacent pages (±1) preloaded and evicts the rest (single-page path). */
@@ -1635,11 +1679,7 @@
             }
             for (const [order, p] of this._preloaded) {
                 if (!keep.has(order)) {
-                    p.then((item) => {
-                        try {
-                            this.viewer.openseadragon.world.removeItem(item);
-                        } catch {}
-                    }).catch(() => {});
+                    p.then((item) => this._drop(item)).catch(() => {});
                     this._preloaded.delete(order);
                 }
             }
@@ -2273,7 +2313,9 @@
     /**
      * Fetches one page's ALTO layout-tag annotations. The rects share the
      * coordinate space of the page text annotations, so both data sets join by
-     * ALTO element id. Null on failure (treated as "no annotations").
+     * ALTO element id. A 404 means the page has no ALTO at all and yields null
+     * ("no annotations"); every other HTTP error rejects, so a forbidden or
+     * broken endpoint is not silently indistinguishable from an unannotated page.
      *
      * @param {string} pi
      * @param {string} apiBase
@@ -2283,7 +2325,8 @@
      */
     async function loadPageLayout(pi, apiBase, order, fetchFn = fetch) {
         const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/layout/`);
-        if (!res.ok) return null;
+        if (res.status === 404) return null;
+        if (!res.ok) throw new Error(`Failed to load layout annotations for "${pi}" page ${order + 1}: HTTP ${res.status}`);
         return parseLayoutAnnotations(await res.json());
     }
 
@@ -4177,6 +4220,10 @@
         const panelOpen = () => !!fulltextPanel && fulltextPanel.classList.contains('is-open');
 
         let layoutReq = 0;
+        /** Invalidates an in-flight layout request, so a late response cannot draw into a torn-down panel. */
+        const cancelLayout = () => {
+            layoutReq++;
+        };
         let currentLayout = null;
         let currentFlat = null;
         let currentAnnotations = null;
@@ -4237,7 +4284,8 @@
             let layout = null;
             try {
                 layout = await loadPageLayout(pi, apiBase, viewer.getCurrentOrder());
-            } catch {
+            } catch (e) {
+                console.warn('immersive layout annotations failed', e);
                 layout = null;
             }
             if (req !== layoutReq) return;
@@ -4248,6 +4296,7 @@
         };
 
         if (annotations) {
+            bag.add(cancelLayout);
             bag.add(viewer.onPageChange.subscribe(refreshLayout));
             bag.add(viewer.onOpen.subscribe(mountOverlays));
             bag.add(
@@ -5110,6 +5159,7 @@
         const hitsMount = q('[data-immersive-layout-tags="hits"]');
         if (!rangeFrom || !rangeTo || !pickTrigger || !pickMenu || !pickList || !hitsMount) return noop;
         const bag = createDisposer();
+        let destroyed = false;
         const labels = panel.dataset;
         const state = createLayoutTagsState(viewer.getPageCount());
         const panelOpen = () => panel.classList.contains('is-open');
@@ -5197,11 +5247,13 @@
                         state.storeDetails(span, null);
                     })
                     .then(() => {
+                        if (destroyed) return;
                         if (!state.cursorKey) state.preferCursorOnPages(currentPages());
                         render();
                         renderHighlights();
                         pumpVisible();
-                    });
+                    })
+                    .catch((e) => console.warn('immersive layout tags render failed', e));
             });
         };
         const pumpVisible = () => {
@@ -5287,7 +5339,7 @@
 
         bag.listen(panel, 'immersive:panel-open', () => {
             ensureIndex().then(() => {
-                if (!panelOpen()) return;
+                if (destroyed || !panelOpen()) return;
                 if (!state.cursorKey) state.preferCursorOnPages(currentPages());
                 refresh(true);
                 if (!state.selected.size && state.allTags().length) {
@@ -5329,6 +5381,7 @@
         syncRange();
         return {
             destroy() {
+                destroyed = true;
                 pick.close();
                 viewer.clearHighlights(OWNER);
                 bag.dispose();
@@ -5438,6 +5491,8 @@
      * @param {string} term      search term
      * @param {Function} fetchFn fetch-compatible function (injectable for tests)
      * @param {number} maxPages  safety cap for the within-paging loop
+     * @throws when the FIRST result page fails -- an unreachable or forbidden search endpoint must
+     *         not read as "no hits"; a later page failing keeps the hits collected so far.
      */
     async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50) {
         const base = `${apiBase}/records/${pi}/manifest/search?q=${encodeURIComponent(term)}`;
@@ -5445,7 +5500,10 @@
         const out = [];
         for (let p = 1; p <= maxPages; p++) {
             const res = await fetchFn(p === 1 ? base : `${base}&page=${p}`);
-            if (!res.ok) break;
+            if (!res.ok) {
+                if (p === 1) throw new Error(`Failed to search "${term}" in "${pi}": HTTP ${res.status}`);
+                break;
+            }
             const list = _parseSearchJson(await res.text());
             const hits = parseSearchHits(list);
             let added = 0;
@@ -5846,6 +5904,8 @@
             );
         }
         let gridMounted = false;
+        let gridLoaderTimer = null;
+        bag.add(() => clearTimeout(gridLoaderTimer));
         let gridTag = null;
         let gridOpener = null;
         let gridTrapHandler = null;
@@ -5887,7 +5947,6 @@
                 })[0];
                 gridMounted = true;
                 let gridLoaderDone = false;
-                let gridLoaderTimer;
                 const hideGridLoader = () => {
                     if (gridLoaderDone) return;
                     gridLoaderDone = true;
@@ -6015,16 +6074,28 @@
         });
 
         const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
+        let resetTimer = null;
+        let resetFrame = 0;
+        let cancelResize = null;
+        bag.add(() => {
+            clearTimeout(resetTimer);
+            cancelAnimationFrame(resetFrame);
+            if (cancelResize) cancelResize();
+        });
         bag.listen(document, 'fullscreenchange', () => {
             let done = false;
             const doReset = () => {
                 if (done) return;
                 done = true;
-                cancelResize();
-                requestAnimationFrame(() => viewer.resetView());
+                clearTimeout(resetTimer);
+                if (cancelResize) cancelResize();
+                cancelResize = null;
+                resetFrame = requestAnimationFrame(() => viewer.resetView());
             };
-            const cancelResize = viewer.onceResized(doReset);
-            setTimeout(doReset, 300);
+            if (cancelResize) cancelResize();
+            cancelResize = viewer.onceResized(doReset);
+            clearTimeout(resetTimer);
+            resetTimer = setTimeout(doReset, 300);
             if (fullscreenBtn) {
                 fullscreenBtn.setAttribute('aria-pressed', String(!!document.fullscreenElement));
                 const exitLabel = fullscreenBtn.dataset.labelExit;

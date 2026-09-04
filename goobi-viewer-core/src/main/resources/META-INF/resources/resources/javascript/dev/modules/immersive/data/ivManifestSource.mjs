@@ -468,7 +468,9 @@ export function parseLayoutAnnotations(json) {
 /**
  * Fetches one page's ALTO layout-tag annotations. The rects share the
  * coordinate space of the page text annotations, so both data sets join by
- * ALTO element id. Null on failure (treated as "no annotations").
+ * ALTO element id. A 404 means the page has no ALTO at all and yields null
+ * ("no annotations"); every other HTTP error rejects, so a forbidden or
+ * broken endpoint is not silently indistinguishable from an unannotated page.
  *
  * @param {string} pi
  * @param {string} apiBase
@@ -478,6 +480,7 @@ export function parseLayoutAnnotations(json) {
  */
 export async function loadPageLayout(pi, apiBase, order, fetchFn = fetch) {
     const res = await fetchFn(`${apiBase}/records/${pi}/pages/${order + 1}/text/layout/`);
-    if (!res.ok) return null;
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Failed to load layout annotations for "${pi}" page ${order + 1}: HTTP ${res.status}`);
     return parseLayoutAnnotations(await res.json());
 }

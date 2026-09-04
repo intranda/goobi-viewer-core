@@ -113,6 +113,18 @@ describe('setupSearchPanel', () => {
         consoleError.mockRestore();
     });
 
+    test('an HTTP error shows the error label, not "no hits"', async () => {
+        global.fetch = jest.fn(async () => ({ ok: false, status: 500 }));
+        const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+        const { viewer, form, input, counter, list } = mountMarkup();
+        submit(form, input, 'wort');
+        await flush();
+        expect(counter.textContent).toBe('Suche fehlgeschlagen');
+        expect(list.textContent).not.toContain('Keine Treffer');
+        expect(viewer.clearHighlights).toHaveBeenCalledWith('search');
+        consoleError.mockRestore();
+    });
+
     test('destroy detaches the form and removes the injected clear button', async () => {
         global.fetch = jest.fn(async () => response(hitList(1)));
         const { panel, form, input } = mountMarkup();

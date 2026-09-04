@@ -135,9 +135,9 @@ describe('search (paged fetch, injected fetchFn)', () => {
         await expect(search('PI', 'http://api', 'w', fetchFn, 5)).resolves.toEqual([]);
     });
 
-    test('returns [] when the first page response is not ok', async () => {
+    test('rejects when the first page response is not ok (a server error is not "no hits")', async () => {
         const fetchFn = jest.fn().mockResolvedValue({ ok: false, status: 500 });
-        await expect(search('PI', 'http://api', 'w', fetchFn, 5)).resolves.toEqual([]);
+        await expect(search('PI', 'http://api', 'w', fetchFn, 5)).rejects.toThrow('HTTP 500');
         expect(fetchFn).toHaveBeenCalledTimes(1);
     });
 

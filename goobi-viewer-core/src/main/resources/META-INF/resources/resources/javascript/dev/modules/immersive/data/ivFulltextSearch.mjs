@@ -100,6 +100,8 @@ function _parseSearchJson(text) {
  * @param {string} term      search term
  * @param {Function} fetchFn fetch-compatible function (injectable for tests)
  * @param {number} maxPages  safety cap for the within-paging loop
+ * @throws when the FIRST result page fails -- an unreachable or forbidden search endpoint must
+ *         not read as "no hits"; a later page failing keeps the hits collected so far.
  */
 export async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50) {
     const base = `${apiBase}/records/${pi}/manifest/search?q=${encodeURIComponent(term)}`;
@@ -107,7 +109,10 @@ export async function search(pi, apiBase, term, fetchFn = fetch, maxPages = 50) 
     const out = [];
     for (let p = 1; p <= maxPages; p++) {
         const res = await fetchFn(p === 1 ? base : `${base}&page=${p}`);
-        if (!res.ok) break;
+        if (!res.ok) {
+            if (p === 1) throw new Error(`Failed to search "${term}" in "${pi}": HTTP ${res.status}`);
+            break;
+        }
         const list = _parseSearchJson(await res.text());
         const hits = parseSearchHits(list);
         let added = 0;

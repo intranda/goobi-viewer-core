@@ -628,12 +628,14 @@ describe('parseLayoutAnnotations / loadPageLayout', () => {
         expect(layout.lines).toEqual([]);
     });
 
-    test('fetches the 1-based layout endpoint and returns null on failure', async () => {
+    test('fetches the 1-based layout endpoint; 404 means "no annotations", other errors reject', async () => {
         const fetchFn = jest.fn(() => Promise.resolve(okResponse({ blocks: [], words: [], lines: [] })));
         const layout = await loadPageLayout('PPN1', 'https://h/api', 2, fetchFn);
         expect(fetchFn).toHaveBeenCalledWith('https://h/api/records/PPN1/pages/3/text/layout/');
         expect(layout).toEqual({ blocks: [], words: [], lines: [] });
-        const failing = jest.fn(() => Promise.resolve({ ok: false, status: 404 }));
-        expect(await loadPageLayout('PPN1', 'https://h/api', 2, failing)).toBeNull();
+        const missing = jest.fn(() => Promise.resolve({ ok: false, status: 404 }));
+        expect(await loadPageLayout('PPN1', 'https://h/api', 2, missing)).toBeNull();
+        const broken = jest.fn(() => Promise.resolve({ ok: false, status: 503 }));
+        await expect(loadPageLayout('PPN1', 'https://h/api', 2, broken)).rejects.toThrow('HTTP 503');
     });
 });
