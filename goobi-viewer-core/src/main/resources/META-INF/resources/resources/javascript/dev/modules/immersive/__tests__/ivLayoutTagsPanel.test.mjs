@@ -223,14 +223,10 @@ describe('setupLayoutTagsPanel', () => {
                 .find((b) => b.dataset.spotKey === '8#gr_jacob_grimm')
                 .classList.contains('alto-annotation--jacob-grimm')
         ).toBe(true);
-        // the type travels as a modifier so hits, dots and highlights share the type's default colour
-        expect(
-            hits()
-                .find((b) => b.dataset.spotKey === '8#gr_unterstrichen')
-                .classList.contains('-type-underline')
-        ).toBe(true);
+        // only a tag with a configured colour gets a dot; a word tag is identified by its name alone
         const dots = Array.from(document.querySelectorAll('[data-immersive-layout-tags="pick-dots"] .immersive__layout-tags-dot'));
-        expect(dots.map((d) => d.className)).toEqual(['immersive__layout-tags-dot -type-underline', 'immersive__layout-tags-dot alto-annotation--jacob-grimm']);
+        expect(dots.map((d) => d.className)).toEqual(['immersive__layout-tags-dot alto-annotation--jacob-grimm']);
+        expect(hits().find((b) => b.dataset.spotKey === '8#gr_unterstrichen').className).toBe('immersive__layout-tags-hit');
 
         hits()
             .find((b) => b.dataset.spotKey === '49#gr_unterstrichen')
@@ -258,6 +254,26 @@ describe('setupLayoutTagsPanel', () => {
         await openPanel(panel);
 
         expect(menu.hidden).toBe(true);
+    });
+
+    test('a hit on another page stays active after the page change it triggers', async () => {
+        installFetch();
+        const panel = mountMarkup();
+        const viewer = fakeViewer([7]);
+        setupLayoutTagsPanel(viewer, 'PI', '/api', fakePanels(), createKeyDispatcher());
+        await openPanel(panel);
+        checkbox('gr_unterstrichen').click();
+        checkbox('gr_jacob_grimm').click();
+        await flush();
+
+        // the second entry of page 49, not the first - the page change must not snap the cursor back
+        hits()
+            .find((b) => b.dataset.spotKey === '49#gr_jacob_grimm')
+            .click();
+        expect(viewer.goToPage).toHaveBeenCalledWith(48);
+        viewer.current = [48];
+        viewer.onPageChange.emit(48);
+        expect(document.querySelector('.immersive__layout-tags-hit.-active').dataset.spotKey).toBe('49#gr_jacob_grimm');
     });
 
     test('the page range is applied explicitly, narrows the list and can be reset', async () => {

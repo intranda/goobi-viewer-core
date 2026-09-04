@@ -1,6 +1,6 @@
 /** Layout-tag hit list: rows grouped by page, per-page counts and error markers, the active row and the progress line. */
 
-import { formatMessage, entryKey, cursorIndex, typeClassOf } from '../../data/ivLayoutTags.mjs';
+import { formatMessage, entryKey, cursorIndex } from '../../data/ivLayoutTags.mjs';
 import { el } from '../../shared/ivDom.mjs';
 
 const REVEAL_MARGIN = 8;
@@ -68,7 +68,7 @@ export function createHitList({ state, labels, mount, panel, sticky, progress, o
             const item = el('li');
             const btn = el('button', 'immersive__layout-tags-hit');
             btn.type = 'button';
-            btn.classList.add(...state.styleTokens(entry.label), ...[typeClassOf(state.tagType(entry.label))].filter(Boolean));
+            btn.classList.add(...state.styleTokens(entry.label));
             btn.dataset.spotIndex = String(i);
             btn.dataset.spotKey = entryKey(entry);
             btn.dataset.pageNo = String(entry.page);

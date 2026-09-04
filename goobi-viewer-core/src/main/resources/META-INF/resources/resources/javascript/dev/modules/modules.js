@@ -4778,11 +4778,11 @@
             if (dots) {
                 dots.replaceChildren();
                 chosen
-                    .filter((tag) => styleClassTokens(tag.styleClass).length || tag.type)
+                    .filter((tag) => styleClassTokens(tag.styleClass).length)
                     .slice(0, TRIGGER_DOTS)
                     .forEach((tag) => {
                         const dot = el('span', 'immersive__layout-tags-dot');
-                        dot.classList.add(...styleClassTokens(tag.styleClass), ...[typeClassOf(tag.type)].filter(Boolean));
+                        dot.classList.add(...styleClassTokens(tag.styleClass));
                         dots.append(dot);
                     });
             }
@@ -4891,7 +4891,7 @@
                 const item = el('li');
                 const btn = el('button', 'immersive__layout-tags-hit');
                 btn.type = 'button';
-                btn.classList.add(...state.styleTokens(entry.label), ...[typeClassOf(state.tagType(entry.label))].filter(Boolean));
+                btn.classList.add(...state.styleTokens(entry.label));
                 btn.dataset.spotIndex = String(i);
                 btn.dataset.spotKey = entryKey(entry);
                 btn.dataset.pageNo = String(entry.page);
@@ -5207,7 +5207,8 @@
             viewer.onPageChange.subscribe(() => {
                 if (!panelOpen() || !state.index) return;
                 const pages = currentPages();
-                const onPage = state.entries().find((e) => pages.includes(e.page));
+                const cursor = state.cursorEntry();
+                const onPage = cursor && pages.includes(cursor.page) ? cursor : state.entries().find((e) => pages.includes(e.page));
                 if (onPage) state.setCursor(entryKey(onPage));
                 hits.markActive();
                 renderHighlights();

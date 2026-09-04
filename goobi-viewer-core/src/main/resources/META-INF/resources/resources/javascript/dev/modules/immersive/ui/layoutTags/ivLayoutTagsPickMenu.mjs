@@ -1,6 +1,6 @@
 /** Layout-tag pick menu: multi-select rows with optional filter; the trigger shows the selection as text and colour dots. */
 
-import { formatMessage, typeClassOf } from '../../data/ivLayoutTags.mjs';
+import { formatMessage } from '../../data/ivLayoutTags.mjs';
 import { styleClassTokens, el } from '../../shared/ivDom.mjs';
 import { createDisposer } from '../../shared/ivLifecycle.mjs';
 import { KEY_PRIORITY } from '../../shared/ivKeys.mjs';
@@ -94,11 +94,11 @@ export function setupPickMenu({ state, labels, trigger, menu, list, dots, text, 
         if (dots) {
             dots.replaceChildren();
             chosen
-                .filter((tag) => styleClassTokens(tag.styleClass).length || tag.type)
+                .filter((tag) => styleClassTokens(tag.styleClass).length)
                 .slice(0, TRIGGER_DOTS)
                 .forEach((tag) => {
                     const dot = el('span', 'immersive__layout-tags-dot');
-                    dot.classList.add(...styleClassTokens(tag.styleClass), ...[typeClassOf(tag.type)].filter(Boolean));
+                    dot.classList.add(...styleClassTokens(tag.styleClass));
                     dots.append(dot);
                 });
         }

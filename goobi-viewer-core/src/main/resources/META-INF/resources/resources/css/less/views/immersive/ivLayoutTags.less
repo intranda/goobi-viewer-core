@@ -6,6 +6,7 @@
 
 @immersive-layout-tags-font: 1.3rem;
 @immersive-layout-tags-dot: 9px;
+@immersive-layout-tags-hit-gap: 3px;
 @immersive-layout-tags-z-sticky: 3;
 @immersive-layout-tags-z-menu: 20;
 
@@ -375,7 +376,10 @@
     }
 
     &__layout-tags-types {
+        display: flex;
         flex: 1 1 auto;
+        flex-direction: column;
+        gap: @immersive-layout-tags-hit-gap;
         min-width: 0;
         margin: 0;
         padding: 0;

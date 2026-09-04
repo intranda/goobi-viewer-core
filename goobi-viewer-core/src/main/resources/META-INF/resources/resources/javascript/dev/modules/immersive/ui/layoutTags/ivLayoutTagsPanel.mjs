@@ -248,7 +248,8 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
         viewer.onPageChange.subscribe(() => {
             if (!panelOpen() || !state.index) return;
             const pages = currentPages();
-            const onPage = state.entries().find((e) => pages.includes(e.page));
+            const cursor = state.cursorEntry();
+            const onPage = cursor && pages.includes(cursor.page) ? cursor : state.entries().find((e) => pages.includes(e.page));
             if (onPage) state.setCursor(entryKey(onPage));
             hits.markActive();
             renderHighlights();
