@@ -1084,7 +1084,7 @@
             (regions || []).forEach((r) => {
                 if (!r.rect) return;
                 const el = document.createElement('div');
-                el.className = `immersive__anno-region immersive__anno-region-${r.modifier}`;
+                el.className = ['immersive__anno-region', `immersive__anno-region-${r.modifier}`, r.className || ''].filter(Boolean).join(' ');
                 el.dataset.ivAnnoId = r.id;
                 this._place(el, item, r.rect);
                 this._annoRegions.push(el);
@@ -3320,6 +3320,21 @@
     }
 
     /**
+     * All CSS classes of a marked word: the type classes (form) plus the configured
+     * style classes (color). Pure + tested.
+     *
+     * @param {{types?:string[], styleClasses?:string[]}} word  a word from the layout endpoint
+     * @returns {string[]}
+     */
+    function wordMarkupClasses(word) {
+        const classes = wordTypeClasses(word && word.types);
+        ((word && word.styleClasses) || []).forEach((cls) => {
+            if (cls && !classes.includes(cls)) classes.push(cls);
+        });
+        return classes;
+    }
+
+    /**
      * Overlay modifier for a drawn line's semantic types — underline, strike or
      * mark; null when none of its types is rendered. Pure + tested.
      *
@@ -3435,13 +3450,15 @@
      * Pure + tested.
      *
      * @param {{lines:Array, blocks:Array}|null} layout
-     * @returns {{id:string, rect:object, modifier:string}[]}
+     * @returns {{id:string, rect:object, modifier:string, className?:string}[]}
      */
     function overlayRegions(layout) {
         const regions = [];
         ((layout && layout.lines) || []).forEach((line) => {
             const modifier = lineTypeModifier(line.types);
-            if (modifier && line.rect) regions.push({ id: line.id, rect: line.rect, modifier });
+            if (!modifier || !line.rect) return;
+            const className = (line.styleClasses || []).filter(Boolean).join(' ');
+            regions.push(className ? { id: line.id, rect: line.rect, modifier, className } : { id: line.id, rect: line.rect, modifier });
         });
         ((layout && layout.blocks) || []).forEach((block) => {
             if (block.author && block.rect) regions.push({ id: block.id, rect: block.rect, modifier: 'note' });
@@ -3568,7 +3585,7 @@
         const els = indexRegionElements(box, pi, pageNo);
         (layout.words || []).forEach((word) => {
             const el = els.get(word.id);
-            if (el) wordTypeClasses(word.types).forEach((cls) => el.classList.add(cls));
+            if (el) wordMarkupClasses(word).forEach((cls) => el.classList.add(cls));
         });
         return els;
     }
@@ -3593,7 +3610,7 @@
         });
         (layout.words || []).forEach((word) => {
             const el = byElementId.get(word.id);
-            if (el) wordTypeClasses(word.types).forEach((cls) => el.classList.add(cls));
+            if (el) wordMarkupClasses(word).forEach((cls) => el.classList.add(cls));
         });
     }
 
@@ -3736,7 +3753,31 @@
     }
 
     /** One card per block, anchored to the nearest printed line; hovering a card lights its anchor line and its image region. */
-    function buildNotes({ blocks, sources, anchors, popovers, getRegionEls }) {
+    /**
+     * Fills a card's text from the block's source elements word by word, so the
+     * words keep their markup (type classes + tag style classes) but none of the
+     * source's region ids or link state.
+     */
+    function renderNoteText(textEl, blockSources, wordsById, pi, pageNo) {
+        blockSources.forEach((srcEl, i) => {
+            if (i > 0) textEl.append(' ');
+            const wordEls = srcEl.querySelectorAll('.immersive__fulltext-word');
+            if (!wordEls.length) {
+                textEl.append(srcEl.textContent.trim());
+                return;
+            }
+            wordEls.forEach((wordEl, j) => {
+                if (j > 0) textEl.append(' ');
+                const span = document.createElement('span');
+                span.textContent = wordEl.textContent;
+                const word = wordsById.get(altoElementId(wordEl.dataset.ivRegionId, pi, pageNo) || '');
+                if (word) span.classList.add(...wordMarkupClasses(word));
+                textEl.append(span);
+            });
+        });
+    }
+
+    function buildNotes({ blocks, sources, anchors, popovers, getRegionEls, wordsById, pi, pageNo }) {
         return blocks
             .map((block) => {
                 const blockSources = sources.get(block.id) || [];
@@ -3750,12 +3791,8 @@
                 noteEl.append(who);
                 const text = document.createElement('span');
                 text.className = 'immersive__anno-note-text';
-                text.textContent = blockSources.length
-                    ? blockSources
-                          .map((el) => el.textContent)
-                          .join(' ')
-                          .trim()
-                    : block.text || '';
+                if (blockSources.length) renderNoteText(text, blockSources, wordsById, pi, pageNo);
+                else text.textContent = block.text || '';
                 noteEl.append(text);
                 popovers.attach(noteEl, block.authorName, text.textContent);
                 const midY = block.rect.y + block.rect.h / 2;
@@ -3956,7 +3993,8 @@
         const sources = markAnnotationSources(blocks, els, lineEls);
         const anchors = lineEls.filter(({ el }) => !el.closest('.immersive__anno-src')).map(({ rect, el }) => ({ y: rect.y, h: rect.h, el }));
         const popovers = createNotePopovers(scrollContainer);
-        const notes = buildNotes({ blocks, sources, anchors, popovers, getRegionEls });
+        const wordsById = new Map(((layout && layout.words) || []).map((w) => [w.id, w]));
+        const notes = buildNotes({ blocks, sources, anchors, popovers, getRegionEls, wordsById, pi, pageNo });
         const anchorListeners = bindAnchorHover(notes);
         const coupling = createRegionCoupling({ notes, sources, scrollContainer });
         const placement = createNoteLayout({ box, notes, anchors, columnsHead, popovers });
@@ -4188,6 +4226,20 @@
 
     const indexCache = new Map();
 
+    /** ALTO element name of a drawn stroke (underline, strikethrough, marginal line). */
+    const STROKE_ELEMENT_TYPE = 'GraphicalElement';
+
+    /**
+     * Modifier class carrying a tag's semantic type; core CSS derives the type's
+     * default colour from it. Empty without a type. Pure + tested.
+     *
+     * @param {string} [type]  underline | strikethrough | mark
+     * @returns {string}
+     */
+    function typeClassOf(type) {
+        return type ? `-type-${type}` : '';
+    }
+
     /** Highest number of pages one visibility-driven detail request spans (the endpoint parses one ALTO per page in range). */
     const VISIBLE_BATCH = 8;
 
@@ -4220,7 +4272,13 @@
             .filter((t) => t && typeof t.label === 'string' && t.label.length > 0)
             .map((t) => {
                 const pages = Array.from(new Set((Array.isArray(t.pages) ? t.pages : []).map(Number).filter((p) => Number.isInteger(p) && p >= 1))).sort((a, b) => a - b);
-                return { label: t.label, name: typeof t.name === 'string' && t.name ? t.name : t.label, styleClass: typeof t.styleClass === 'string' ? t.styleClass : '', pages };
+                return {
+                    label: t.label,
+                    name: typeof t.name === 'string' && t.name ? t.name : t.label,
+                    styleClass: typeof t.styleClass === 'string' ? t.styleClass : '',
+                    type: typeof t.type === 'string' ? t.type : '',
+                    pages,
+                };
             });
         return { pi: typeof src.pi === 'string' ? src.pi : '', pageCount: Number.isInteger(src.pageCount) ? src.pageCount : 0, tags };
     }
@@ -4255,7 +4313,7 @@
      * @param {object} json  the endpoint response (`DocumentReference`)
      * @param {number} start first page of the requested range (1-based, inclusive)
      * @param {number} end   last page of the requested range (inclusive)
-     * @returns {Map<number, Object<string, {id:string, rect:object, content:string}[]>>}
+     * @returns {Map<number, Object<string, {id:string, rect:object, content:string, elementType:string}[]>>}
      */
     function parseLayoutTagDetails(json, start, end) {
         const details = new Map();
@@ -4273,7 +4331,7 @@
                     if (!rect) return;
                     if (!details.has(page)) details.set(page, {});
                     const byLabel = details.get(page);
-                    (byLabel[tag.value] = byLabel[tag.value] || []).push({ id: ref.id || '', rect, content: ref.content || '' });
+                    (byLabel[tag.value] = byLabel[tag.value] || []).push({ id: ref.id || '', rect, content: ref.content || '', elementType: ref.elementType || '' });
                 });
             });
         });
@@ -4560,6 +4618,10 @@
                 const tag = tagByLabel(label);
                 return tag ? styleClassTokens(tag.styleClass) : [];
             },
+            tagType(label) {
+                const tag = tagByLabel(label);
+                return tag && tag.type ? tag.type : '';
+            },
             visibleTags: () => filterTags(allTags(), s),
             inRangeCount: (tag) => tagPages(tag, s.from, s.to).length,
             rangeIsFull: () => s.from === 1 && s.to === pageCount,
@@ -4697,11 +4759,11 @@
             if (dots) {
                 dots.replaceChildren();
                 chosen
-                    .filter((tag) => styleClassTokens(tag.styleClass).length)
+                    .filter((tag) => styleClassTokens(tag.styleClass).length || tag.type)
                     .slice(0, TRIGGER_DOTS)
                     .forEach((tag) => {
                         const dot = el('span', 'immersive__layout-tags-dot');
-                        dot.classList.add(...styleClassTokens(tag.styleClass));
+                        dot.classList.add(...styleClassTokens(tag.styleClass), ...[typeClassOf(tag.type)].filter(Boolean));
                         dots.append(dot);
                     });
             }
@@ -4809,7 +4871,7 @@
                 const item = el('li');
                 const btn = el('button', 'immersive__layout-tags-hit');
                 btn.type = 'button';
-                btn.classList.add(...state.styleTokens(entry.label));
+                btn.classList.add(...state.styleTokens(entry.label), ...[typeClassOf(state.tagType(entry.label))].filter(Boolean));
                 btn.dataset.spotIndex = String(i);
                 btn.dataset.spotKey = entryKey(entry);
                 btn.dataset.pageNo = String(entry.page);
@@ -4894,6 +4956,8 @@
     /** Layout-tag panel wiring: index and detail loading, page range, cursor and image highlights; pick menu and hit list are sub-modules. */
 
     const OWNER = 'layout-tags';
+    /** Modifier drawing an occurrence as a bar instead of a box. */
+    const STROKE_CLASS = '-stroke';
 
     /**
      * Wires the layout-tag panel: the record-wide index is fetched once (on the
@@ -5065,8 +5129,13 @@
                 viewer.clearHighlights(OWNER);
                 return;
             }
-            const className = state.styleTokens(active.label).join(' ');
-            const rects = (state.occurrencesOf(active.page, active.label) || []).map((o) => ({ ...o.rect, order: active.page - 1, className }));
+            const tokens = [...state.styleTokens(active.label), typeClassOf(state.tagType(active.label))];
+            const rects = (state.occurrencesOf(active.page, active.label) || []).map((o) => ({
+                ...o.rect,
+                order: active.page - 1,
+                className: [...tokens, o.elementType === STROKE_ELEMENT_TYPE ? STROKE_CLASS : ''].filter(Boolean).join(' '),
+                active: true,
+            }));
             viewer.setHighlights(rects, OWNER);
         };
 

@@ -2,7 +2,7 @@
 
 import { env } from '../../shared/ivEnv.mjs';
 import { offsetTopWithin, scrollTopToReveal, styleClassTokens } from '../../shared/ivDom.mjs';
-import { altoElementId, nearestAnchorIndex, stackNoteTops, isAboveAnchor } from '../../data/ivAnnotationModel.mjs';
+import { altoElementId, nearestAnchorIndex, stackNoteTops, isAboveAnchor, wordMarkupClasses } from '../../data/ivAnnotationModel.mjs';
 import { indexRegionElements, markAnnotationSources } from './ivAnnotationMarkup.mjs';
 
 /**
@@ -115,7 +115,31 @@ function createNotePopovers(scrollContainer) {
 }
 
 /** One card per block, anchored to the nearest printed line; hovering a card lights its anchor line and its image region. */
-function buildNotes({ blocks, sources, anchors, popovers, getRegionEls }) {
+/**
+ * Fills a card's text from the block's source elements word by word, so the
+ * words keep their markup (type classes + tag style classes) but none of the
+ * source's region ids or link state.
+ */
+function renderNoteText(textEl, blockSources, wordsById, pi, pageNo) {
+    blockSources.forEach((srcEl, i) => {
+        if (i > 0) textEl.append(' ');
+        const wordEls = srcEl.querySelectorAll('.immersive__fulltext-word');
+        if (!wordEls.length) {
+            textEl.append(srcEl.textContent.trim());
+            return;
+        }
+        wordEls.forEach((wordEl, j) => {
+            if (j > 0) textEl.append(' ');
+            const span = document.createElement('span');
+            span.textContent = wordEl.textContent;
+            const word = wordsById.get(altoElementId(wordEl.dataset.ivRegionId, pi, pageNo) || '');
+            if (word) span.classList.add(...wordMarkupClasses(word));
+            textEl.append(span);
+        });
+    });
+}
+
+function buildNotes({ blocks, sources, anchors, popovers, getRegionEls, wordsById, pi, pageNo }) {
     return blocks
         .map((block) => {
             const blockSources = sources.get(block.id) || [];
@@ -129,12 +153,8 @@ function buildNotes({ blocks, sources, anchors, popovers, getRegionEls }) {
             noteEl.append(who);
             const text = document.createElement('span');
             text.className = 'immersive__anno-note-text';
-            text.textContent = blockSources.length
-                ? blockSources
-                      .map((el) => el.textContent)
-                      .join(' ')
-                      .trim()
-                : block.text || '';
+            if (blockSources.length) renderNoteText(text, blockSources, wordsById, pi, pageNo);
+            else text.textContent = block.text || '';
             noteEl.append(text);
             popovers.attach(noteEl, block.authorName, text.textContent);
             const midY = block.rect.y + block.rect.h / 2;
@@ -335,7 +355,8 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
     const sources = markAnnotationSources(blocks, els, lineEls);
     const anchors = lineEls.filter(({ el }) => !el.closest('.immersive__anno-src')).map(({ rect, el }) => ({ y: rect.y, h: rect.h, el }));
     const popovers = createNotePopovers(scrollContainer);
-    const notes = buildNotes({ blocks, sources, anchors, popovers, getRegionEls });
+    const wordsById = new Map(((layout && layout.words) || []).map((w) => [w.id, w]));
+    const notes = buildNotes({ blocks, sources, anchors, popovers, getRegionEls, wordsById, pi, pageNo });
     const anchorListeners = bindAnchorHover(notes);
     const coupling = createRegionCoupling({ notes, sources, scrollContainer });
     const placement = createNoteLayout({ box, notes, anchors, columnsHead, popovers });

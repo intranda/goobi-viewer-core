@@ -44,6 +44,31 @@ describe('mountBlockAnnotations (jsdom)', () => {
         expect(box.style.getPropertyValue('--immersive-anno-shift')).toBe('');
     });
 
+    test('the card text carries the word markup of the annotation (underline + tag class), without region ids', () => {
+        const { box, flat, els } = buildPage();
+        const line = els.get('l-1');
+        line.className = 'immersive__fulltext-line';
+        ['s-1', 's-2'].forEach((id, i) => {
+            if (i > 0) line.append(' ');
+            const word = document.createElement('span');
+            word.className = 'immersive__fulltext-word';
+            word.dataset.ivRegionId = `http://h/api/v1/annotations/alto_PI1_2_${id}/?format=oa`;
+            word.textContent = i ? 'notiz' : 'Rand';
+            line.appendChild(word);
+        });
+        const layout = {
+            blocks: [{ id: 'b-9', author: 'gr_jacob_grimm', authorName: 'Jacob Grimm', rect: { x: 0, y: 90, w: 600, h: 60 }, text: 'Rand notiz' }],
+            words: [{ id: 's-2', tags: ['gr_unterstrichen'], types: ['underline'], styleClasses: ['alto-word--unterstrichen'] }],
+        };
+        const mounted = mountBlockAnnotations({ box, layout, pi: 'PI1', pageNo: 2, flat, els });
+        const text = box.querySelector('.immersive__anno-note-text');
+        expect(text.textContent).toBe('Rand notiz');
+        const spans = Array.from(text.querySelectorAll('span'));
+        expect(spans.map((s) => s.className)).toEqual(['', 'immersive__anno-word-underline alto-word--unterstrichen']);
+        expect(text.querySelector('[data-iv-region-id]')).toBeNull();
+        mounted.destroy();
+    });
+
     test('cards anchored ON their line leave the text unshifted', () => {
         const { box, flat, els } = buildPage();
         const layout = { blocks: [{ id: 'b-9', author: 'gr_jacob_grimm', authorName: 'Jacob Grimm', rect: { x: 0, y: 200, w: 200, h: 20 }, text: 'Randnotiz' }] };
