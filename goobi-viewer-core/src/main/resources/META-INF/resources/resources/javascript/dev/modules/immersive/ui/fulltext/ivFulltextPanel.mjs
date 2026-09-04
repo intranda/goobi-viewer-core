@@ -45,6 +45,10 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     const panelOpen = () => !!fulltextPanel && fulltextPanel.classList.contains('is-open');
 
     let layoutReq = 0;
+    /** Invalidates an in-flight layout request, so a late response cannot draw into a torn-down panel. */
+    const cancelLayout = () => {
+        layoutReq++;
+    };
     let currentLayout = null;
     let currentFlat = null;
     let currentAnnotations = null;
@@ -105,7 +109,8 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
         let layout = null;
         try {
             layout = await loadPageLayout(pi, apiBase, viewer.getCurrentOrder());
-        } catch {
+        } catch (e) {
+            console.warn('immersive layout annotations failed', e);
             layout = null;
         }
         if (req !== layoutReq) return;
@@ -116,6 +121,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     };
 
     if (annotations) {
+        bag.add(cancelLayout);
         bag.add(viewer.onPageChange.subscribe(refreshLayout));
         bag.add(viewer.onOpen.subscribe(mountOverlays));
         bag.add(

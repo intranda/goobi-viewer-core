@@ -101,6 +101,25 @@ test('fullscreenchange re-fits the view once OSD has resized and relabels the bu
     expect(btn.getAttribute('aria-label')).toBe('Vollbild');
 });
 
+test('destroy cancels the pending fullscreen re-fit', () => {
+    jest.useFakeTimers();
+    try {
+        const viewer = fakeViewer();
+        const cancelResize = jest.fn();
+        viewer.onceResized = jest.fn(() => cancelResize);
+        const { bar } = mountMarkup(viewer);
+        document.dispatchEvent(new Event('fullscreenchange'));
+        // Bars of the earlier tests still listen on `document`, so only the delta is ours.
+        const pending = jest.getTimerCount();
+        bar.destroy();
+        expect(jest.getTimerCount()).toBe(pending - 1);
+        expect(cancelResize).toHaveBeenCalled();
+        expect(viewer.resetView).not.toHaveBeenCalled();
+    } finally {
+        jest.useRealTimers();
+    }
+});
+
 test('destroy detaches the buttons and the page-change subscription', () => {
     const viewer = fakeViewer();
     const { bar, click, indicator } = mountMarkup(viewer);

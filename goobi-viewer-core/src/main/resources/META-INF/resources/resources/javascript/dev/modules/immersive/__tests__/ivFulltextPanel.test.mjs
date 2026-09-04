@@ -6,6 +6,12 @@ import { Emitter } from '../engine/ivViewer.mjs';
 
 const flush = () => new Promise((r) => setTimeout(r, 0));
 
+const deferred = () => {
+    let resolve;
+    const promise = new Promise((res) => (resolve = res));
+    return { promise, resolve };
+};
+
 function fakeViewer() {
     return {
         getCurrentOrder: () => 0,
@@ -86,6 +92,22 @@ test('double-page mode disables the rail button and closes an open fulltext pane
     viewer.isDoublePage.mockReturnValue(false);
     fulltext.updateFulltextAvail();
     expect(btn.getAttribute('title')).toBe('Volltext');
+});
+
+test('destroy drops an in-flight layout request instead of drawing its overlays', async () => {
+    const layout = deferred();
+    global.fetch = jest.fn((url) => (url.includes('/text/layout/') ? layout.promise : Promise.resolve({ ok: true, status: 200, json: async () => ({ resources: [] }) })));
+    const { fulltext, viewer, open } = mountMarkup();
+    open();
+    await flush();
+    fulltext.destroy();
+    const drawn = viewer.setAnnotationRegions.mock.calls.length;
+
+    layout.resolve({ ok: true, status: 200, json: async () => ({ blocks: [], words: [], lines: [{ id: 'l1', types: ['underline'], rect: { x: 0, y: 0, w: 1, h: 1 } }] }) });
+    await flush();
+    await flush();
+
+    expect(viewer.setAnnotationRegions.mock.calls).toHaveLength(drawn);
 });
 
 test('destroy unregisters the close hook and stops reacting to panel-open', async () => {

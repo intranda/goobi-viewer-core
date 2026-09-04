@@ -451,6 +451,31 @@ describe('setupLayoutTagsPanel', () => {
         warn.mockRestore();
     });
 
+    test('a detail batch arriving after destroy neither renders nor touches the viewer', async () => {
+        let resolveDetails;
+        global.fetch = jest.fn((url) => {
+            if (url.includes('/layout/tags/index')) return Promise.resolve({ ok: true, json: () => Promise.resolve(INDEX) });
+            return new Promise((resolve) => {
+                resolveDetails = () => resolve({ ok: true, json: () => Promise.resolve(detailsResponse(7, 8)) });
+            });
+        });
+        const panel = mountMarkup();
+        const viewer = fakeViewer([7]);
+        const tags = setupLayoutTagsPanel(viewer, 'PI', '/api', fakePanels(), createKeyDispatcher());
+        await openPanel(panel);
+        checkbox('gr_unterstrichen').click();
+        await flush();
+        expect(hits()[0].classList.contains('-pending')).toBe(true);
+
+        tags.destroy();
+        viewer.setHighlights.mockClear();
+        resolveDetails();
+        await flush();
+
+        expect(viewer.setHighlights).not.toHaveBeenCalled();
+        expect(hits()[0].classList.contains('-pending')).toBe(true);
+    });
+
     test('bails without the panel markup', () => {
         document.body.innerHTML = '<div class="immersive"></div>';
         expect(() => setupLayoutTagsPanel(fakeViewer(), 'PI', '/api', fakePanels(), createKeyDispatcher())).not.toThrow();

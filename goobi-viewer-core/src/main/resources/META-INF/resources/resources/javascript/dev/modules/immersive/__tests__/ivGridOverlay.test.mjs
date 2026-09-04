@@ -102,6 +102,19 @@ test('destroy closes the grid and detaches slider and Escape', () => {
     expect(keys.handleEvent({ key: 'Escape' })).toBe(false);
 });
 
+test('destroy clears the pending grid-loader timeout', () => {
+    jest.useFakeTimers();
+    try {
+        const { grid } = mountMarkup();
+        grid.toggleGrid();
+        expect(jest.getTimerCount()).toBe(1);
+        grid.destroy();
+        expect(jest.getTimerCount()).toBe(0);
+    } finally {
+        jest.useRealTimers();
+    }
+});
+
 test('destroy unmounts the riot grid but keeps its mount element', () => {
     const { grid, tag } = mountMarkup();
     grid.toggleGrid();

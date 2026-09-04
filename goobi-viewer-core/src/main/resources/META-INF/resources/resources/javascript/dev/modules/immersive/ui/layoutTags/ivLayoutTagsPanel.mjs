@@ -52,6 +52,7 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
     const hitsMount = q('[data-immersive-layout-tags="hits"]');
     if (!rangeFrom || !rangeTo || !pickTrigger || !pickMenu || !pickList || !hitsMount) return noop;
     const bag = createDisposer();
+    let destroyed = false;
     const labels = panel.dataset;
     const state = createLayoutTagsState(viewer.getPageCount());
     const panelOpen = () => panel.classList.contains('is-open');
@@ -139,11 +140,13 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
                     state.storeDetails(span, null);
                 })
                 .then(() => {
+                    if (destroyed) return;
                     if (!state.cursorKey) state.preferCursorOnPages(currentPages());
                     render();
                     renderHighlights();
                     pumpVisible();
-                });
+                })
+                .catch((e) => console.warn('immersive layout tags render failed', e));
         });
     };
     const pumpVisible = () => {
@@ -229,7 +232,7 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
 
     bag.listen(panel, 'immersive:panel-open', () => {
         ensureIndex().then(() => {
-            if (!panelOpen()) return;
+            if (destroyed || !panelOpen()) return;
             if (!state.cursorKey) state.preferCursorOnPages(currentPages());
             refresh(true);
             if (!state.selected.size && state.allTags().length) {
@@ -271,6 +274,7 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
     syncRange();
     return {
         destroy() {
+            destroyed = true;
             pick.close();
             viewer.clearHighlights(OWNER);
             bag.dispose();

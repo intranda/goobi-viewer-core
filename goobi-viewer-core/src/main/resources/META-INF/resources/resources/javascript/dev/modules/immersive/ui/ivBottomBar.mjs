@@ -59,16 +59,28 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
     });
 
     const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
+    let resetTimer = null;
+    let resetFrame = 0;
+    let cancelResize = null;
+    bag.add(() => {
+        clearTimeout(resetTimer);
+        cancelAnimationFrame(resetFrame);
+        if (cancelResize) cancelResize();
+    });
     bag.listen(document, 'fullscreenchange', () => {
         let done = false;
         const doReset = () => {
             if (done) return;
             done = true;
-            cancelResize();
-            requestAnimationFrame(() => viewer.resetView());
+            clearTimeout(resetTimer);
+            if (cancelResize) cancelResize();
+            cancelResize = null;
+            resetFrame = requestAnimationFrame(() => viewer.resetView());
         };
-        const cancelResize = viewer.onceResized(doReset);
-        setTimeout(doReset, 300);
+        if (cancelResize) cancelResize();
+        cancelResize = viewer.onceResized(doReset);
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(doReset, 300);
         if (fullscreenBtn) {
             fullscreenBtn.setAttribute('aria-pressed', String(!!document.fullscreenElement));
             const exitLabel = fullscreenBtn.dataset.labelExit;

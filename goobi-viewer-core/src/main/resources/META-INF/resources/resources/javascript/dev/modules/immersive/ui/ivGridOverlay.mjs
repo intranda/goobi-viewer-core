@@ -69,6 +69,8 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
         );
     }
     let gridMounted = false;
+    let gridLoaderTimer = null;
+    bag.add(() => clearTimeout(gridLoaderTimer));
     let gridTag = null;
     let gridOpener = null;
     let gridTrapHandler = null;
@@ -110,7 +112,6 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
             })[0];
             gridMounted = true;
             let gridLoaderDone = false;
-            let gridLoaderTimer;
             const hideGridLoader = () => {
                 if (gridLoaderDone) return;
                 gridLoaderDone = true;
