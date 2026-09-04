@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import less from 'less';
 import { PANEL_SHORTCUT_IDS } from '../ui/ivPanelsWiring.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -70,4 +71,33 @@ test('Alt+digit order equals the rail button order and the shortcuts-modal rows'
         .filter((row) => row.includes('data-key="alt"'))
         .map((row) => ({ msg: row.match(/#\{msg\.(\w+)\}/)[1], digit: Number(row.match(/<kbd>(\d)<\/kbd>/)[1]) }));
     expect(altRows).toEqual(rail.map((r, i) => ({ msg: r.msg, digit: i + 1 })));
+});
+
+/**
+ * Compiles one core view stylesheet on its own: every LESS variable and every
+ * `.mx-*()` mixin it references is stubbed, so only its own rules are under test.
+ */
+function compileView(file) {
+    const src = fs.readFileSync(file, 'utf8');
+    const atRules = new Set(['media', 'import', 'supports', 'keyframes', 'font-face', 'charset', 'page', 'container']);
+    const vars = new Set(matches(src, /@([a-zA-Z][\w-]*)/g).filter((v) => !atRules.has(v)));
+    const mixins = new Set(matches(src, /\.(mx-[\w-]+)\(/g));
+    const stubs = [...[...vars].map((v) => `@${v}: 0;`), ...[...mixins].map((m) => `.${m}() {}`)].join('\n');
+    let css = '';
+    less.render(`${stubs}\n${src}`, { filename: file }, (err, out) => {
+        if (err) throw err;
+        css = out.css;
+    });
+    return Array.from(css.matchAll(/([^{}]+)\{([^{}]*)\}/g), (m) => ({ selector: m[1].trim(), body: m[2].replace(/\s+/g, '') }));
+}
+
+describe('LESS contract: margin notes stay hidden while annotations are switched off', () => {
+    test('no rule displays an .immersive__anno-note outside the -annotations-on state', () => {
+        const rules = compileView(path.join(RESOURCES, 'css/less/views/immersive/ivAnnotations.less'));
+        expect(rules.length).toBeGreaterThan(20);
+        const showing = rules.filter((r) => /__anno-note(?![\w-])/.test(r.selector) && /display:(?!none)/.test(r.body));
+        expect(showing.length).toBeGreaterThan(0);
+        const unguarded = showing.filter((r) => !r.selector.includes('-annotations-on')).map((r) => r.selector);
+        expect(unguarded).toEqual([]);
+    });
 });
