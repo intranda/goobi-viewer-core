@@ -4,7 +4,9 @@
     xmlns:util="http://goobi.io/util">
     <div class="immersive__overlay-top">
         <div class="immersive__title">
+            <!-- TITLE + PAGE PICKER -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+                <!-- PICKER TRIGGER -->
                 <button
                     type="button"
                     class="immersive__title-trigger"
@@ -24,12 +26,14 @@
                         icon="chevron-down"
                         svgClass="immersive__title-caret" />
                 </button>
+                <!-- PAGE DROPDOWN -->
                 <div
                     class="immersive__page-dropdown"
                     id="immersivePageDropdown"
                     role="dialog"
                     aria-label="#{msg.aria_label__select_page}"
                     hidden="hidden">
+                    <!-- JUMP TO PAGE -->
                     <div class="immersive__page-dropdown-jump">
                         <label
                             class="immersive__page-dropdown-label"
@@ -44,12 +48,14 @@
                             inputmode="numeric"
                             autocomplete="off" />
                     </div>
+                    <!-- PAGE LIST -->
                     <ul
                         class="immersive__page-dropdown-list"
                         id="immersivePageList"
                         role="listbox" />
                 </div>
             </ui:fragment>
+            <!-- STATIC TITLE (NO IMAGE ACCESS) -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
                 <span class="immersive__title-trigger immersive__title-trigger-static">
                     <util:icon

@@ -22,12 +22,15 @@
             data-label-progress-loading="#{msg.immersive__layout_tags_progress_loading}"
             data-label-progress-done="#{msg.immersive__layout_tags_progress_done}"
             data-label-progress-done-one="#{msg.immersive__layout_tags_progress_done_one}">
+            <!-- STICKY HEAD -->
             <div
                 class="immersive__layout-tags-sticky"
                 data-immersive-layout-tags="sticky">
+                <!-- PANEL HEADER -->
                 <div class="immersive__panel-header">
                     <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
                 </div>
+                <!-- PAGE RANGE -->
                 <div class="immersive__layout-tags-range">
                     <label
                         class="immersive__layout-tags-range-label"
@@ -78,7 +81,9 @@
                             svgClass="immersive__layout-tags-range-reset-icon" />
                     </button>
                 </div>
+                <!-- TAG PICKER -->
                 <div class="immersive__layout-tags-pick">
+                    <!-- PICKER TRIGGER -->
                     <button
                         type="button"
                         class="immersive__layout-tags-pick-trigger"
@@ -100,11 +105,13 @@
                             icon="chevron-down"
                             svgClass="immersive__layout-tags-pick-chevron" />
                     </button>
+                    <!-- PICKER MENU -->
                     <div
                         id="immersiveLayoutTagsPickMenu"
                         class="immersive__layout-tags-pick-menu"
                         data-immersive-layout-tags="pick-menu"
                         hidden="hidden">
+                        <!-- TAG FILTER -->
                         <div
                             class="immersive__layout-tags-filter"
                             data-immersive-layout-tags="filter"
@@ -121,6 +128,7 @@
                                 placeholder="#{msg.immersive__layout_tags_filter}"
                                 autocomplete="off" />
                         </div>
+                        <!-- TAG LIST -->
                         <div
                             class="immersive__layout-tags-pick-list"
                             data-immersive-layout-tags="pick-list"
@@ -129,6 +137,7 @@
                     </div>
                 </div>
             </div>
+            <!-- LOADER -->
             <div
                 class="immersive__layout-tags-loader"
                 data-immersive-layout-tags="loader"
@@ -139,9 +148,11 @@
                     class="ajax-loader__animated-image"
                     alt="" />
             </div>
+            <!-- HITS MOUNT -->
             <div
                 class="immersive__layout-tags-hits-mount"
                 data-immersive-layout-tags="hits" />
+            <!-- INDEXING PROGRESS -->
             <p
                 class="immersive__layout-tags-progress"
                 data-immersive-layout-tags="progress"

@@ -9,14 +9,18 @@
         aria-label="#{msg.search}"
         aria-hidden="true"
         inert="inert">
+        <!-- PANEL HEADER -->
         <div class="immersive__panel-header">
             <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
         </div>
+        <!-- HINT: NO FULLTEXT AVAILABLE -->
         <ui:fragment rendered="#{not displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
             <p class="immersive__search-hint">#{msg.immersive__search_hint_no_fulltext}</p>
         </ui:fragment>
         <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
+            <!-- SEARCH FORM -->
             <widgetComponent:widget_searchInCurrentItem />
+            <!-- RESULTS -->
             <div
                 id="immersiveSearchResults"
                 class="immersive__results"
@@ -24,6 +28,7 @@
                 data-label-error="#{msg.immersive__search_error}"
                 data-label-reset="#{msg.searchList_resetCurrentSearch}"
                 hidden="hidden">
+                <!-- HIT COUNT + HIT NAVIGATION -->
                 <div class="immersive__results-head">
                     <span
                         class="immersive__results-count"
@@ -53,6 +58,7 @@
                         </button>
                     </span>
                 </div>
+                <!-- HIT LIST -->
                 <ul
                     class="immersive__results-list"
                     id="immersiveResultsList" />

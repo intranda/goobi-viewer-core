@@ -8,10 +8,12 @@
         aria-label="#{msg.metadata}"
         aria-hidden="true"
         inert="inert">
+        <!-- PANEL HEADER -->
         <div class="immersive__panel-header">
             <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
         </div>
         <div class="metadata">
+            <!-- VISIBLE METADATA ELEMENTS (RECORD, PLUS VOLUME IF ANCHOR) -->
             <c:set
                 scope="request"
                 var="mdList"
@@ -32,6 +34,7 @@
                 </ui:fragment>
             </c:forEach>
             <ui:fragment rendered="#{not empty mdList and mdList.size() gt mdCount}">
+                <!-- FOLDED METADATA ELEMENTS -->
                 <div
                     id="immersiveMetadataMore"
                     hidden="hidden">
@@ -48,6 +51,7 @@
                         </ui:fragment>
                     </c:forEach>
                 </div>
+                <!-- SHOW MORE / LESS -->
                 <button
                     type="button"
                     class="immersive__metadata-toggle"

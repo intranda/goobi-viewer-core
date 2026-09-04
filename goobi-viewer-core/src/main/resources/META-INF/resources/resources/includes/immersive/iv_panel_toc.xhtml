@@ -10,8 +10,10 @@
             aria-label="#{msg.toc}"
             aria-hidden="true"
             inert="inert">
+            <!-- PANEL HEADER -->
             <div class="immersive__panel-header">
                 <span class="immersive__panel-title">#{activeDocumentBean.titleBarLabel}</span>
+                <!-- COLLAPSE ALL -->
                 <button
                     type="button"
                     class="immersive__toc-collapse"
@@ -29,6 +31,7 @@
                         svgClass="immersive__toc-collapse-icon immersive__toc-collapse-icon-expand" />
                 </button>
             </div>
+            <!-- TOC TREE -->
             <widgetComponent:widget_toc />
         </aside>
     </ui:fragment>
