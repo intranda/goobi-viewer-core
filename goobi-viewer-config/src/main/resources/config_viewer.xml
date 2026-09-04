@@ -55,11 +55,15 @@
          - wordTag:       word-level layout tag; @type states its semantic meaning (one of "underline",
                           "strikethrough" or "mark" - the latter for drawn-line marking) and is rendered by both
                           the classic full-text and the immersive view without any theme CSS. @styleClass
-                          (optional) adds a further CSS class verbatim; it only has a visual effect if the active
-                          theme defines matching CSS.
+                          (optional) names the CSS class the theme colors this tag with - in every view, exactly
+                          like an annotationTag's styleClass (see altoLayoutTags.less in the reference theme);
+                          without it the tag keeps the default color of its type. A declared word tag also
+                          determines what the immersive view's layout-tag panel counts and highlights: the drawn
+                          marks (ALTO <GraphicalElement>), not the words they run across - pages whose ALTO
+                          records no mark keep their word references.
          - annotationTag: annotation-author tag -> CSS class + display name for the annotation block; both views
                           carry the styleClass verbatim, so the theme colors the author vocabulary via CSS (see
-                          annotationTags.less in the reference theme for the pattern).
+                          altoLayoutTags.less in the reference theme for the pattern).
          Example (replace the placeholder LABELs and style classes with your own; class names must not contain
          a double hyphen here because this example lives in an XML comment):
     <altoLayoutTags printedLabel="printed">

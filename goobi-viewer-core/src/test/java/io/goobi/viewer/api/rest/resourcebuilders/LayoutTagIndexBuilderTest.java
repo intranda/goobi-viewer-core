@@ -114,14 +114,21 @@ class LayoutTagIndexBuilderTest extends AbstractTest {
 
     /**
      * @see LayoutTagIndexBuilder#build(String,int,SolrDocumentList)
-     * @verifies deliver style classes for configured annotation tags only
+     * @verifies deliver style classes for all configured tags
+     * @verifies deliver word tag types
      */
     @Test
-    void build_shouldDeliverStyleClassesForConfiguredAnnotationTagsOnly() {
-        LayoutTagIndex index = builder().build(PI, 10, docs(page(1, "gr_jacob_grimm", "gr_unterstrichen", "xx_custom")));
+    void build_shouldDeliverStyleClassesForAllConfiguredTagsAndWordTagTypes() {
+        LayoutTagIndex index = builder().build(PI, 10, docs(page(1, "gr_jacob_grimm", "gr_unterstrichen", "test_angestrichen", "xx_custom")));
         Assertions.assertEquals("test-jacob", tag(index, "gr_jacob_grimm").getStyleClass());
-        Assertions.assertNull(tag(index, "gr_unterstrichen").getStyleClass());
+        Assertions.assertNull(tag(index, "gr_jacob_grimm").getType());
+        Assertions.assertEquals("test-underline", tag(index, "gr_unterstrichen").getStyleClass());
+        Assertions.assertEquals("underline", tag(index, "gr_unterstrichen").getType());
+        // word tag configured without a styleClass: the type still travels
+        Assertions.assertNull(tag(index, "test_angestrichen").getStyleClass());
+        Assertions.assertEquals("mark", tag(index, "test_angestrichen").getType());
         Assertions.assertNull(tag(index, "xx_custom").getStyleClass());
+        Assertions.assertNull(tag(index, "xx_custom").getType());
     }
 
     /**

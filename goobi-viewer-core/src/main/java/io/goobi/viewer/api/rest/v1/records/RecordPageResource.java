@@ -404,7 +404,7 @@ public class RecordPageResource {
             Configuration config = DataManager.getInstance().getConfiguration();
             return new AltoLayoutAnnotationBuilder(config.getAltoLayoutPrintedLabel(),
                     ALTOTools.translateAnnotationTagNames(config.getAltoLayoutAnnotationTags(), null),
-                    config.getAltoLayoutWordTagTypes()).build(alto.getOne(), alto.getTwo());
+                    config.getAltoLayoutWordTagTypes(), config.getAltoLayoutWordTags()).build(alto.getOne(), alto.getTwo());
         } catch (FileNotFoundException e) {
             logger.debug("No ALTO file found for {}, page {}: {}", pi, pageNo, e.getMessage());
         } catch (IOException | JDOMException e) {

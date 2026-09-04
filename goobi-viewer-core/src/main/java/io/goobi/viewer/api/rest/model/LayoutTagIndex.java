@@ -44,18 +44,21 @@ public class LayoutTagIndex {
         private final String label;
         private final String name;
         private final String styleClass;
+        private final String type;
         private final List<Integer> pages;
 
         /**
          * @param label raw layout-tag LABEL (stable key for the page-range endpoint)
          * @param name resolved display name
-         * @param styleClass configured CSS class of an annotation tag, or null for tags without one
+         * @param styleClass configured CSS class of the tag, or null for tags without one
+         * @param type semantic type of a word tag (underline/strikethrough/mark), or null for other tags
          * @param pages ascending, duplicate-free page orders carrying the tag
          */
-        public Tag(String label, String name, String styleClass, List<Integer> pages) {
+        public Tag(String label, String name, String styleClass, String type, List<Integer> pages) {
             this.label = label;
             this.name = name;
             this.styleClass = styleClass;
+            this.type = type;
             this.pages = pages != null ? pages : new ArrayList<>();
         }
 
@@ -69,6 +72,10 @@ public class LayoutTagIndex {
 
         public String getStyleClass() {
             return styleClass;
+        }
+
+        public String getType() {
+            return type;
         }
 
         public List<Integer> getPages() {

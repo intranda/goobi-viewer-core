@@ -69,6 +69,7 @@ public class LayoutTagIndexBuilder {
     private final String printedLabel;
     private final Map<String, AnnotationStyle> annotationTags;
     private final Map<String, String> wordTagTypes;
+    private final Map<String, String> wordTagStyleClasses;
     private final Locale locale;
 
     /**
@@ -79,6 +80,7 @@ public class LayoutTagIndexBuilder {
         this.printedLabel = config.getAltoLayoutPrintedLabel();
         this.annotationTags = ALTOTools.translateAnnotationTagNames(config.getAltoLayoutAnnotationTags(), locale);
         this.wordTagTypes = config.getAltoLayoutWordTagTypes();
+        this.wordTagStyleClasses = config.getAltoLayoutWordTags();
         this.locale = locale;
     }
 
@@ -127,7 +129,8 @@ public class LayoutTagIndexBuilder {
      * @should collect pages ascending without duplicates
      * @should sort tags by descending page count then label
      * @should resolve display names in configured order
-     * @should deliver style classes for configured annotation tags only
+     * @should deliver style classes for all configured tags
+     * @should deliver word tag types
      * @should skip documents without order
      */
     public LayoutTagIndex build(String pi, int pageCount, SolrDocumentList pageDocs) {
@@ -152,7 +155,7 @@ public class LayoutTagIndexBuilder {
         List<LayoutTagIndex.Tag> tags = new ArrayList<>(pagesByLabel.size());
         for (Map.Entry<String, SortedSet<Integer>> entry : pagesByLabel.entrySet()) {
             String label = entry.getKey();
-            tags.add(new LayoutTagIndex.Tag(label, displayName(label), styleClass(label), new ArrayList<>(entry.getValue())));
+            tags.add(new LayoutTagIndex.Tag(label, displayName(label), styleClass(label), wordTagTypes.get(label), new ArrayList<>(entry.getValue())));
         }
         tags.sort(Comparator.comparingInt((LayoutTagIndex.Tag t) -> t.getPages().size()).reversed().thenComparing(LayoutTagIndex.Tag::getLabel));
         return new LayoutTagIndex(pi, pageCount, tags);
@@ -182,10 +185,14 @@ public class LayoutTagIndexBuilder {
 
     /**
      * @param label raw layout-tag LABEL
-     * @return the configured CSS class of an annotation tag, or null
+     * @return the configured CSS class of an annotation or word tag, or null
      */
     String styleClass(String label) {
         AnnotationStyle style = annotationTags.get(label);
-        return style != null && StringUtils.isNotBlank(style.styleClass()) ? style.styleClass() : null;
+        if (style != null && StringUtils.isNotBlank(style.styleClass())) {
+            return style.styleClass();
+        }
+        String wordStyleClass = wordTagStyleClasses.get(label);
+        return StringUtils.isNotBlank(wordStyleClass) ? wordStyleClass : null;
     }
 }

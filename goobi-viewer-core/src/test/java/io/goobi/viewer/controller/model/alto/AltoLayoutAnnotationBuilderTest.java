@@ -49,6 +49,10 @@ class AltoLayoutAnnotationBuilderTest {
             "gr_unterstrichen", "underline",
             "gr_durchgestrichen", "strikethrough");
 
+    private static final Map<String, String> WORD_STYLES = Map.of(
+            "gr_unterstrichen", "test-underline",
+            "gr_durchgestrichen", "test-strike");
+
     private String alto;
 
     @BeforeEach
@@ -59,7 +63,7 @@ class AltoLayoutAnnotationBuilderTest {
     }
 
     private LayoutAnnotations build() throws Exception {
-        return new AltoLayoutAnnotationBuilder("gr_printed", STYLES, TYPES).build(alto, StringTools.DEFAULT_ENCODING);
+        return new AltoLayoutAnnotationBuilder("gr_printed", STYLES, TYPES, WORD_STYLES).build(alto, StringTools.DEFAULT_ENCODING);
     }
 
     private static Optional<BlockAnnotation> block(LayoutAnnotations result, String id) {
@@ -104,7 +108,7 @@ class AltoLayoutAnnotationBuilderTest {
     void build_shouldUseTheConfiguredAnnotationStylesAsAuthorAuthority() throws Exception {
         Map<String, AltoHtmlBuilder.AnnotationStyle> custom =
                 Map.of("gr_wilhelm_grimm", new AltoHtmlBuilder.AnnotationStyle("custom-wilhelm", "Wilhelm (konfiguriert)"));
-        LayoutAnnotations result = new AltoLayoutAnnotationBuilder(null, custom, null).build(alto, StringTools.DEFAULT_ENCODING);
+        LayoutAnnotations result = new AltoLayoutAnnotationBuilder(null, custom, null, null).build(alto, StringTools.DEFAULT_ENCODING);
         // Only the configured label counts as handwriting now: b-2 (Wilhelm) stays, Jacob blocks disappear.
         Assertions.assertTrue(block(result, "b-2").isPresent());
         Assertions.assertEquals("Wilhelm (konfiguriert)", block(result, "b-2").orElseThrow().getAuthorName());
@@ -141,6 +145,7 @@ class AltoLayoutAnnotationBuilderTest {
         Assertions.assertNotNull(word);
         Assertions.assertEquals(List.of("gr_unterstrichen"), word.getTags());
         Assertions.assertEquals(List.of("underline"), word.getTypes());
+        Assertions.assertEquals(List.of("test-underline"), word.getStyleClasses());
         Assertions.assertEquals(1077, word.getRect().getX());
         Assertions.assertEquals(1994, word.getRect().getY());
         Assertions.assertEquals(84, word.getRect().getW());
@@ -148,6 +153,7 @@ class AltoLayoutAnnotationBuilderTest {
         // s-151 carries both word-level tags and must map to both types.
         TaggedElement both = result.getWords().stream().filter(w -> "s-151".equals(w.getId())).findFirst().orElseThrow();
         Assertions.assertEquals(List.of("underline", "strikethrough"), both.getTypes());
+        Assertions.assertEquals(List.of("test-underline", "test-strike"), both.getStyleClasses());
     }
 
     /**
@@ -162,6 +168,7 @@ class AltoLayoutAnnotationBuilderTest {
         Assertions.assertNotNull(line);
         Assertions.assertEquals(List.of("gr_unterstrichen"), line.getTags());
         Assertions.assertEquals(List.of("underline"), line.getTypes());
+        Assertions.assertEquals(List.of("test-underline"), line.getStyleClasses());
         Assertions.assertEquals(867, line.getRect().getX());
         Assertions.assertEquals(2105, line.getRect().getY());
     }
@@ -178,7 +185,7 @@ class AltoLayoutAnnotationBuilderTest {
         Map<String, AltoHtmlBuilder.AnnotationStyle> customStyles =
                 Map.of("gr_wilhelm_grimm", new AltoHtmlBuilder.AnnotationStyle("kunde--hand-a", "Hand A"));
         Map<String, String> customTypes = Map.of("gr_unterstrichen", "mark");
-        LayoutAnnotations result = new AltoLayoutAnnotationBuilder(null, customStyles, customTypes).build(alto, StringTools.DEFAULT_ENCODING);
+        LayoutAnnotations result = new AltoLayoutAnnotationBuilder(null, customStyles, customTypes, null).build(alto, StringTools.DEFAULT_ENCODING);
         BlockAnnotation blockAnnotation = block(result, "b-2").orElseThrow();
         Assertions.assertEquals("kunde--hand-a", blockAnnotation.getStyleClass());
         Assertions.assertEquals("Hand A", blockAnnotation.getAuthorName());

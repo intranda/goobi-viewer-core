@@ -69,11 +69,12 @@ public class AltoLayoutAnnotationBuilder {
 
     private final Map<String, AnnotationStyle> annotationStyles;
     private final Map<String, String> tagTypes;
+    private final Map<String, String> wordTagStyleClasses;
     private final MarginColumnDetector marginDetector;
 
     /** Applies no mappings at all (no anchor, no authors, no types) — the result is always empty. */
     public AltoLayoutAnnotationBuilder() {
-        this(null, null, null);
+        this(null, null, null, null);
     }
 
     /**
@@ -83,10 +84,14 @@ public class AltoLayoutAnnotationBuilder {
      *            empty (no author blocks) — the same source as the HTML path, so both stay in agreement
      * @param tagTypes mapping of word/line layout-tag LABEL to semantic type (underline/strikethrough/mark); null is
      *            treated as empty (no types delivered)
+     * @param wordTagStyleClasses mapping of word/line layout-tag LABEL to its configured CSS class; null is treated as
+     *            empty (no classes delivered)
      */
-    public AltoLayoutAnnotationBuilder(String printedLabel, Map<String, AnnotationStyle> annotationStyles, Map<String, String> tagTypes) {
+    public AltoLayoutAnnotationBuilder(String printedLabel, Map<String, AnnotationStyle> annotationStyles, Map<String, String> tagTypes,
+            Map<String, String> wordTagStyleClasses) {
         this.annotationStyles = (annotationStyles == null) ? Collections.emptyMap() : annotationStyles;
         this.tagTypes = (tagTypes == null) ? Collections.emptyMap() : tagTypes;
+        this.wordTagStyleClasses = (wordTagStyleClasses == null) ? Collections.emptyMap() : wordTagStyleClasses;
         this.marginDetector = new MarginColumnDetector(printedLabel, MarginColumnDetector.DEFAULT_TOLERANCE);
     }
 
@@ -156,13 +161,18 @@ public class AltoLayoutAnnotationBuilder {
         List<String> labels = layoutTagLabels(element);
         if (!labels.isEmpty()) {
             List<String> types = new ArrayList<>();
+            List<String> styleClasses = new ArrayList<>();
             for (String label : labels) {
                 String type = tagTypes.get(label);
                 if (type != null && !types.contains(type)) {
                     types.add(type);
                 }
+                String styleClass = wordTagStyleClasses.get(label);
+                if (StringUtils.isNotBlank(styleClass) && !styleClasses.contains(styleClass)) {
+                    styleClasses.add(styleClass);
+                }
             }
-            target.add(new TaggedElement(element.getId(), area(element.getBounds()), labels, types));
+            target.add(new TaggedElement(element.getId(), area(element.getBounds()), labels, types, styleClasses));
         }
     }
 
@@ -271,12 +281,14 @@ public class AltoLayoutAnnotationBuilder {
         private final Area rect;
         private final List<String> tags;
         private final List<String> types;
+        private final List<String> styleClasses;
 
-        TaggedElement(String id, Area rect, List<String> tags, List<String> types) {
+        TaggedElement(String id, Area rect, List<String> tags, List<String> types, List<String> styleClasses) {
             this.id = id;
             this.rect = rect;
             this.tags = Collections.unmodifiableList(tags);
             this.types = Collections.unmodifiableList(types);
+            this.styleClasses = Collections.unmodifiableList(styleClasses);
         }
 
         public String getId() {
@@ -295,6 +307,12 @@ public class AltoLayoutAnnotationBuilder {
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         public List<String> getTypes() {
             return types;
+        }
+
+        /** The configured CSS classes of the element's word tags — the theme colors these. */
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        public List<String> getStyleClasses() {
+            return styleClasses;
         }
     }
 
