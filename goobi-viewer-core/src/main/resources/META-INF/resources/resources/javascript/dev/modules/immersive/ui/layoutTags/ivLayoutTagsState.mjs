@@ -83,6 +83,10 @@ export function createLayoutTagsState(pageCount) {
             const tag = tagByLabel(label);
             return tag ? styleClassTokens(tag.styleClass) : [];
         },
+        tagType(label) {
+            const tag = tagByLabel(label);
+            return tag && tag.type ? tag.type : '';
+        },
         visibleTags: () => filterTags(allTags(), s),
         inRangeCount: (tag) => tagPages(tag, s.from, s.to).length,
         rangeIsFull: () => s.from === 1 && s.to === pageCount,

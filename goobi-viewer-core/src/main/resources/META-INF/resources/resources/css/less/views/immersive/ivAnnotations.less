@@ -44,13 +44,13 @@
     &.-annotations-on &__anno-word-underline {
         text-decoration: underline;
         text-decoration-thickness: 2px;
-        text-decoration-color: ~'rgb(var(--immersive-anno-underline-rgb))';
+        text-decoration-color: var(--alto-tag-color, var(--alto-underline-color));
     }
 
     &.-annotations-on &__anno-word-strike {
         text-decoration: line-through;
         text-decoration-thickness: 2px;
-        text-decoration-color: ~'rgb(var(--immersive-anno-strike-rgb))';
+        text-decoration-color: var(--alto-tag-color, var(--alto-strikethrough-color));
     }
 
     &.-annotations-on &__panel-fulltext {
@@ -122,7 +122,7 @@
         font-family: inherit;
         cursor: pointer;
         background-color: var(--immersive-anno-note-bg);
-        border-left: 3px solid @immersive-chrome-border-color;
+        border-left: 3px solid var(--alto-tag-color, @immersive-chrome-border-color);
         border-radius: 0 4px 4px 0;
         padding: 2px 8px;
         font-size: @immersive-anno-font-note;
@@ -143,7 +143,6 @@
 
         &.-inline {
             position: static;
-            display: block;
             width: 100%;
             margin: 4px 0 4px 16px;
         }
@@ -158,6 +157,7 @@
     }
 
     &__anno-note-text {
+        --alto-tag-color: initial;
         display: block;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -232,8 +232,8 @@
     &__text-region&__anno-word-underline.is-linked-active {
         background-image: linear-gradient(
             to top,
-            ~'rgb(var(--immersive-anno-underline-rgb))' 0,
-            ~'rgb(var(--immersive-anno-underline-rgb))' @immersive-anno-bar,
+            var(--alto-tag-color, var(--alto-underline-color)) 0,
+            var(--alto-tag-color, var(--alto-underline-color)) @immersive-anno-bar,
             transparent @immersive-anno-bar
         );
     }
@@ -242,8 +242,8 @@
         background-image: linear-gradient(
             to bottom,
             transparent calc(50% - (@immersive-anno-bar / 2)),
-            ~'rgb(var(--immersive-anno-strike-rgb))' calc(50% - (@immersive-anno-bar / 2)),
-            ~'rgb(var(--immersive-anno-strike-rgb))' calc(50% + (@immersive-anno-bar / 2)),
+            var(--alto-tag-color, var(--alto-strikethrough-color)) calc(50% - (@immersive-anno-bar / 2)),
+            var(--alto-tag-color, var(--alto-strikethrough-color)) calc(50% + (@immersive-anno-bar / 2)),
             transparent calc(50% + (@immersive-anno-bar / 2))
         );
     }

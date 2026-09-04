@@ -26,10 +26,14 @@ test('text and annotation regions carry their ids and level or modifier classes;
     expect(text.get('w1').className).toBe('immersive__text-region immersive__text-region-word');
     expect(text.get('w1').dataset.ivRegionId).toBe('w1');
     expect(text.has('none')).toBe(false);
-    const anno = overlays.setAnnotationRegions([{ id: 'a1', rect: { x: 1, y: 1, w: 1, h: 1 }, modifier: 'note' }]);
+    const anno = overlays.setAnnotationRegions([
+        { id: 'a1', rect: { x: 1, y: 1, w: 1, h: 1 }, modifier: 'note' },
+        { id: 'a2', rect: { x: 2, y: 2, w: 2, h: 2 }, modifier: 'underline', className: 'alto-word--unterstrichen' },
+    ]);
     expect(anno.get('a1').className).toBe('immersive__anno-region immersive__anno-region-note');
+    expect(anno.get('a2').className).toBe('immersive__anno-region immersive__anno-region-underline alto-word--unterstrichen');
     overlays.destroy();
-    expect(osd.removeOverlay).toHaveBeenCalledTimes(2);
+    expect(osd.removeOverlay).toHaveBeenCalledTimes(3);
 });
 
 test('without a current item nothing is drawn', () => {

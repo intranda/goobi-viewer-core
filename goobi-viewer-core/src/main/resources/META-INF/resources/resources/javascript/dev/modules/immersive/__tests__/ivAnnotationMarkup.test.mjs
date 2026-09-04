@@ -45,9 +45,10 @@ describe('applyTextMarkup (jsdom)', () => {
         word.dataset.ivRegionId = 'http://h/api/v1/annotations/alto_PI1_2_s-1/?format=oa';
         block.appendChild(word);
         box.appendChild(block);
-        const layout = { words: [{ id: 's-1', tags: ['gr_unterstrichen'], types: ['underline'] }] };
+        const layout = { words: [{ id: 's-1', tags: ['gr_unterstrichen'], types: ['underline'], styleClasses: ['alto-word--unterstrichen'] }] };
         const els = applyTextMarkup(box, layout, 'PI1', 2);
         expect(word.classList.contains('immersive__anno-word-underline')).toBe(true);
+        expect(word.classList.contains('alto-word--unterstrichen')).toBe(true);
         expect(els.get('b-2')).toBe(block);
     });
 });

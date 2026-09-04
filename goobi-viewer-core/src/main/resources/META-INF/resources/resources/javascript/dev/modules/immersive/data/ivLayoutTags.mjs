@@ -2,6 +2,20 @@
 
 const indexCache = new Map();
 
+/** ALTO element name of a drawn stroke (underline, strikethrough, marginal line). */
+export const STROKE_ELEMENT_TYPE = 'GraphicalElement';
+
+/**
+ * Modifier class carrying a tag's semantic type; core CSS derives the type's
+ * default colour from it. Empty without a type. Pure + tested.
+ *
+ * @param {string} [type]  underline | strikethrough | mark
+ * @returns {string}
+ */
+export function typeClassOf(type) {
+    return type ? `-type-${type}` : '';
+}
+
 /** Highest number of pages one visibility-driven detail request spans (the endpoint parses one ALTO per page in range). */
 export const VISIBLE_BATCH = 8;
 
@@ -34,7 +48,13 @@ export function parseLayoutTagIndex(json) {
         .filter((t) => t && typeof t.label === 'string' && t.label.length > 0)
         .map((t) => {
             const pages = Array.from(new Set((Array.isArray(t.pages) ? t.pages : []).map(Number).filter((p) => Number.isInteger(p) && p >= 1))).sort((a, b) => a - b);
-            return { label: t.label, name: typeof t.name === 'string' && t.name ? t.name : t.label, styleClass: typeof t.styleClass === 'string' ? t.styleClass : '', pages };
+            return {
+                label: t.label,
+                name: typeof t.name === 'string' && t.name ? t.name : t.label,
+                styleClass: typeof t.styleClass === 'string' ? t.styleClass : '',
+                type: typeof t.type === 'string' ? t.type : '',
+                pages,
+            };
         });
     return { pi: typeof src.pi === 'string' ? src.pi : '', pageCount: Number.isInteger(src.pageCount) ? src.pageCount : 0, tags };
 }
@@ -69,7 +89,7 @@ export function parseCoordinates(coordinates) {
  * @param {object} json  the endpoint response (`DocumentReference`)
  * @param {number} start first page of the requested range (1-based, inclusive)
  * @param {number} end   last page of the requested range (inclusive)
- * @returns {Map<number, Object<string, {id:string, rect:object, content:string}[]>>}
+ * @returns {Map<number, Object<string, {id:string, rect:object, content:string, elementType:string}[]>>}
  */
 export function parseLayoutTagDetails(json, start, end) {
     const details = new Map();
@@ -87,7 +107,7 @@ export function parseLayoutTagDetails(json, start, end) {
                 if (!rect) return;
                 if (!details.has(page)) details.set(page, {});
                 const byLabel = details.get(page);
-                (byLabel[tag.value] = byLabel[tag.value] || []).push({ id: ref.id || '', rect, content: ref.content || '' });
+                (byLabel[tag.value] = byLabel[tag.value] || []).push({ id: ref.id || '', rect, content: ref.content || '', elementType: ref.elementType || '' });
             });
         });
     });

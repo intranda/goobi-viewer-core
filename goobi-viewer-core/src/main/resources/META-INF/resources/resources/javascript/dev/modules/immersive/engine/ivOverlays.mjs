@@ -89,7 +89,7 @@ export class IvOverlays {
         (regions || []).forEach((r) => {
             if (!r.rect) return;
             const el = document.createElement('div');
-            el.className = `immersive__anno-region immersive__anno-region-${r.modifier}`;
+            el.className = ['immersive__anno-region', `immersive__anno-region-${r.modifier}`, r.className || ''].filter(Boolean).join(' ');
             el.dataset.ivAnnoId = r.id;
             this._place(el, item, r.rect);
             this._annoRegions.push(el);

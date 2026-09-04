@@ -6,6 +6,7 @@ import { jest } from '@jest/globals';
 import {
     formatMessage,
     parseLayoutTagIndex,
+    typeClassOf,
     parseCoordinates,
     parseLayoutTagDetails,
     tagPages,
@@ -36,19 +37,28 @@ describe('formatMessage', () => {
     });
 });
 
+describe('typeClassOf', () => {
+    test('derives the type modifier and stays empty without a type', () => {
+        expect(typeClassOf('underline')).toBe('-type-underline');
+        expect(typeClassOf('strikethrough')).toBe('-type-strikethrough');
+        expect(typeClassOf('')).toBe('');
+        expect(typeClassOf(undefined)).toBe('');
+    });
+});
+
 describe('parseLayoutTagIndex', () => {
     test('normalizes tags: label required, name falls back to label, pages ascending and unique', () => {
         const parsed = parseLayoutTagIndex({
             pi: 'PI',
             pageCount: 10,
-            tags: [{ label: 'a', pages: [5, 3, 3, '4', 0] }, { name: 'no label' }, { label: 'b', name: 'B', styleClass: 'x', pages: [] }],
+            tags: [{ label: 'a', pages: [5, 3, 3, '4', 0] }, { name: 'no label' }, { label: 'b', name: 'B', styleClass: 'x', type: 'underline', pages: [] }],
         });
         expect(parsed).toEqual({
             pi: 'PI',
             pageCount: 10,
             tags: [
-                { label: 'a', name: 'a', styleClass: '', pages: [3, 4, 5] },
-                { label: 'b', name: 'B', styleClass: 'x', pages: [] },
+                { label: 'a', name: 'a', styleClass: '', type: '', pages: [3, 4, 5] },
+                { label: 'b', name: 'B', styleClass: 'x', type: 'underline', pages: [] },
             ],
         });
     });
@@ -82,8 +92,8 @@ describe('parseLayoutTagDetails', () => {
                     {
                         value: 'gr_jacob_grimm',
                         references: [
-                            { id: 'b-3', coordinates: '367.0,1239.0,509.0,1274.0', content: 'male.', page: 47 },
-                            { id: 'b-4', coordinates: '1595.0,1234.0,1819.0,1299.0', content: 'unten', page: 47 },
+                            { id: 'b-3', coordinates: '367.0,1239.0,509.0,1274.0', content: 'male.', elementType: 'TextBlock', page: 47 },
+                            { id: 'b-4', coordinates: '1595.0,1234.0,1819.0,1299.0', content: 'unten', elementType: 'TextBlock', page: 47 },
                         ],
                     },
                     { value: 'gr_printed', references: [{ id: 'b-1', coordinates: '0.0,0.0,0.0,0.0', content: '', page: 47 }] },
@@ -100,8 +110,8 @@ describe('parseLayoutTagDetails', () => {
         expect(details.get(48)).toEqual({});
         expect(details.get(47).gr_printed).toBeUndefined();
         expect(details.get(47).gr_jacob_grimm).toEqual([
-            { id: 'b-3', rect: { x: 367, y: 1239, w: 142, h: 35 }, content: 'male.' },
-            { id: 'b-4', rect: { x: 1595, y: 1234, w: 224, h: 65 }, content: 'unten' },
+            { id: 'b-3', rect: { x: 367, y: 1239, w: 142, h: 35 }, content: 'male.', elementType: 'TextBlock' },
+            { id: 'b-4', rect: { x: 1595, y: 1234, w: 224, h: 65 }, content: 'unten', elementType: 'TextBlock' },
         ]);
     });
 

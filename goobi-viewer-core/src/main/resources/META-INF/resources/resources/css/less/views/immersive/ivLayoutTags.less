@@ -10,6 +10,30 @@
 @immersive-layout-tags-z-menu: 20;
 
 .immersive {
+    /* TAG COLOUR SLOTS */
+    each(range(8), {
+        .alto-tag-color-@{value} {
+            --alto-tag-color: ~'var(--alto-tag-color-@{value})';
+            --alto-tag-fill: color-mix(in srgb, ~'var(--alto-tag-color-@{value})' var(--alto-tag-fill-alpha), transparent);
+        }
+    });
+
+    /* TAG TYPE DEFAULTS */
+    .-type-underline {
+        --alto-type-color: var(--alto-underline-color);
+        --alto-type-fill: color-mix(in srgb, var(--alto-underline-color) var(--alto-tag-fill-alpha), transparent);
+    }
+
+    .-type-strikethrough {
+        --alto-type-color: var(--alto-strikethrough-color);
+        --alto-type-fill: color-mix(in srgb, var(--alto-strikethrough-color) var(--alto-tag-fill-alpha), transparent);
+    }
+
+    .-type-mark {
+        --alto-type-color: var(--alto-mark-color);
+        --alto-type-fill: color-mix(in srgb, var(--alto-mark-color) var(--alto-tag-fill-alpha), transparent);
+    }
+
     &__panel-layout-tags {
         color: @immersive-chrome-fg;
     }
@@ -303,7 +327,7 @@
         width: @immersive-layout-tags-dot;
         height: @immersive-layout-tags-dot;
         border-radius: 50%;
-        background-color: var(--immersive-tag-color, transparent);
+        background-color: var(--alto-tag-color, var(--alto-type-color, transparent));
     }
 
     &__layout-tags-loader {
@@ -386,7 +410,7 @@
         /* Active hit */
         &.-active {
             background-color: @immersive-chrome-hover-bg;
-            border-left-color: var(--immersive-tag-color, @immersive-accent);
+            border-left-color: var(--alto-tag-color, var(--alto-type-color, @immersive-accent));
             font-weight: 600;
         }
 

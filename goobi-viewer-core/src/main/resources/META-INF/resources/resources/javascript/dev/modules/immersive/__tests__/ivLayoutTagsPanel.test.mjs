@@ -13,7 +13,7 @@ const INDEX = {
     pi: 'PI',
     pageCount: 626,
     tags: [
-        { label: 'gr_unterstrichen', name: 'Unterstreichungen', pages: [7, 8, 25, 49, 300] },
+        { label: 'gr_unterstrichen', name: 'Unterstreichungen', type: 'underline', pages: [7, 8, 25, 49, 300] },
         { label: 'gr_jacob_grimm', name: 'Jacob Grimm', styleClass: 'alto-annotation--jacob-grimm', pages: [8, 49] },
     ],
 };
@@ -30,7 +30,14 @@ function detailsResponse(start, end) {
     for (let p = start; p <= end; p++) {
         const tags = Object.entries(DETAILS[p] || {}).map(([value, boxes]) => ({
             value,
-            references: boxes.map((coordinates, i) => ({ id: `${p}-${i}`, coordinates, content: 'x', page: p })),
+            references: boxes.map((coordinates, i) => ({
+                id: `${p}-${i}`,
+                coordinates,
+                content: 'x',
+                // underlines are drawn marks, handwriting tags are text regions
+                elementType: value === 'gr_unterstrichen' ? 'GraphicalElement' : 'TextBlock',
+                page: p,
+            })),
         }));
         pages.push({ pageOrder: p, tags });
     }
@@ -203,19 +210,27 @@ describe('setupLayoutTagsPanel', () => {
         expect(viewer.goToPage).not.toHaveBeenCalled();
         expect(viewer.setHighlights.mock.lastCall[1]).toBe('layout-tags');
         expect(viewer.setHighlights.mock.lastCall[0]).toEqual([
-            { x: 10, y: 10, w: 40, h: 10, order: 7, className: '' },
-            { x: 10, y: 30, w: 40, h: 10, order: 7, className: '' },
+            { x: 10, y: 10, w: 40, h: 10, order: 7, className: '-type-underline -stroke', active: true },
+            { x: 10, y: 30, w: 40, h: 10, order: 7, className: '-type-underline -stroke', active: true },
         ]);
 
         hits()
             .find((b) => b.dataset.spotKey === '8#gr_jacob_grimm')
             .click();
-        expect(viewer.setHighlights.mock.lastCall[0]).toEqual([{ x: 100, y: 100, w: 200, h: 100, order: 7, className: 'alto-annotation--jacob-grimm' }]);
+        expect(viewer.setHighlights.mock.lastCall[0]).toEqual([{ x: 100, y: 100, w: 200, h: 100, order: 7, className: 'alto-annotation--jacob-grimm', active: true }]);
         expect(
             hits()
                 .find((b) => b.dataset.spotKey === '8#gr_jacob_grimm')
                 .classList.contains('alto-annotation--jacob-grimm')
         ).toBe(true);
+        // the type travels as a modifier so hits, dots and highlights share the type's default colour
+        expect(
+            hits()
+                .find((b) => b.dataset.spotKey === '8#gr_unterstrichen')
+                .classList.contains('-type-underline')
+        ).toBe(true);
+        const dots = Array.from(document.querySelectorAll('[data-immersive-layout-tags="pick-dots"] .immersive__layout-tags-dot'));
+        expect(dots.map((d) => d.className)).toEqual(['immersive__layout-tags-dot -type-underline', 'immersive__layout-tags-dot alto-annotation--jacob-grimm']);
 
         hits()
             .find((b) => b.dataset.spotKey === '49#gr_unterstrichen')

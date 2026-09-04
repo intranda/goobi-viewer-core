@@ -3,6 +3,7 @@ import {
     altoElementId,
     hasAnnotations,
     wordTypeClasses,
+    wordMarkupClasses,
     lineTypeModifier,
     nearestAnchorIndex,
     stackNoteTops,
@@ -42,6 +43,19 @@ describe('hasAnnotations', () => {
         expect(hasAnnotations({ blocks: [{}], words: [], lines: [] })).toBe(true);
         expect(hasAnnotations({ blocks: [], words: [{}], lines: [] })).toBe(true);
         expect(hasAnnotations({ blocks: [], words: [], lines: [{}] })).toBe(true);
+    });
+});
+
+describe('wordMarkupClasses', () => {
+    test('joins the type classes with the configured style classes, without duplicates', () => {
+        expect(wordMarkupClasses({ types: ['underline'], styleClasses: ['alto-word--unterstrichen'] })).toEqual(['immersive__anno-word-underline', 'alto-word--unterstrichen']);
+        expect(wordMarkupClasses({ types: ['underline', 'strikethrough'], styleClasses: ['a', 'a'] })).toEqual([
+            'immersive__anno-word-underline',
+            'immersive__anno-word-strike',
+            'a',
+        ]);
+        expect(wordMarkupClasses({ types: ['underline'] })).toEqual(['immersive__anno-word-underline']);
+        expect(wordMarkupClasses({})).toEqual([]);
     });
 });
 
@@ -181,12 +195,16 @@ describe('overlayRegions', () => {
     test('maps rendered line types to overlay descriptors and skips unrendered ones', () => {
         const layout = {
             lines: [
-                { id: 'g-1', rect: { x: 1, y: 2, w: 3, h: 4 }, tags: ['gr_unterstrichen'], types: ['underline'] },
+                { id: 'g-1', rect: { x: 1, y: 2, w: 3, h: 4 }, tags: ['gr_unterstrichen'], types: ['underline'], styleClasses: ['alto-word--unterstrichen'] },
                 { id: 'g-2', rect: { x: 5, y: 6, w: 7, h: 8 }, tags: ['gr_andere_linie'] },
                 { id: 'g-3', rect: null, tags: ['gr_durchgestrichen'], types: ['strikethrough'] },
+                { id: 'g-4', rect: { x: 9, y: 9, w: 9, h: 9 }, tags: ['gr_durchgestrichen'], types: ['strikethrough'] },
             ],
         };
-        expect(overlayRegions(layout)).toEqual([{ id: 'g-1', rect: { x: 1, y: 2, w: 3, h: 4 }, modifier: 'underline' }]);
+        expect(overlayRegions(layout)).toEqual([
+            { id: 'g-1', rect: { x: 1, y: 2, w: 3, h: 4 }, modifier: 'underline', className: 'alto-word--unterstrichen' },
+            { id: 'g-4', rect: { x: 9, y: 9, w: 9, h: 9 }, modifier: 'strike' },
+        ]);
         expect(overlayRegions(null)).toEqual([]);
     });
 

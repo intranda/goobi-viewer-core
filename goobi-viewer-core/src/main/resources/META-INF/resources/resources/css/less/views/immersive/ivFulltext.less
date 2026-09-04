@@ -3,6 +3,9 @@
    style declarations for viewImmersive.xhtml (fulltext panel and text-image highlights)
    ==============================================================*/
 
+@immersive-stroke-min-height: 5px;
+@immersive-stroke-radius: 2px;
+
 .immersive {
     &__panel-fulltext {
         padding: 16px 16px 18px;
@@ -42,14 +45,22 @@
     }
 
     &__highlight {
-        border: 2px solid var(--immersive-tag-color, @immersive-accent);
+        border: 2px solid var(--alto-tag-color, var(--alto-type-color, @immersive-accent));
         background-color: transparent;
         pointer-events: none;
         border-radius: 1px;
         transition: background-color @immersive-transition;
 
         &.-active {
-            background-color: @immersive-highlight-bg;
+            background-color: var(--alto-tag-fill, var(--alto-type-fill, @immersive-highlight-bg));
+        }
+
+        /* DRAWN STROKE */
+        &.-stroke {
+            min-height: @immersive-stroke-min-height;
+            border: 0;
+            border-radius: @immersive-stroke-radius;
+            background-color: color-mix(in srgb, var(--alto-tag-color, var(--alto-type-color, @immersive-accent)) var(--alto-stroke-fill-alpha), transparent);
         }
     }
 

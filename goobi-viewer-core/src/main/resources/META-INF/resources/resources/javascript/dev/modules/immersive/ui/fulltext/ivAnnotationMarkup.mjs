@@ -1,6 +1,6 @@
 /** Joins ALTO annotations onto the rendered page text and its image overlays by element id. */
 
-import { altoElementId, wordTypeClasses, rectCenterInside } from '../../data/ivAnnotationModel.mjs';
+import { altoElementId, wordMarkupClasses, rectCenterInside } from '../../data/ivAnnotationModel.mjs';
 
 /**
  * Indexes the panel's region elements by ALTO element id (blocks, lines and
@@ -38,7 +38,7 @@ export function applyTextMarkup(box, layout, pi, pageNo) {
     const els = indexRegionElements(box, pi, pageNo);
     (layout.words || []).forEach((word) => {
         const el = els.get(word.id);
-        if (el) wordTypeClasses(word.types).forEach((cls) => el.classList.add(cls));
+        if (el) wordMarkupClasses(word).forEach((cls) => el.classList.add(cls));
     });
     return els;
 }
@@ -63,7 +63,7 @@ export function applyRegionMarkup(regionEls, layout, pi, pageNo) {
     });
     (layout.words || []).forEach((word) => {
         const el = byElementId.get(word.id);
-        if (el) wordTypeClasses(word.types).forEach((cls) => el.classList.add(cls));
+        if (el) wordMarkupClasses(word).forEach((cls) => el.classList.add(cls));
     });
 }
 

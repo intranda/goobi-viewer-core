@@ -68,6 +68,21 @@ export function wordTypeClasses(types) {
 }
 
 /**
+ * All CSS classes of a marked word: the type classes (form) plus the configured
+ * style classes (color). Pure + tested.
+ *
+ * @param {{types?:string[], styleClasses?:string[]}} word  a word from the layout endpoint
+ * @returns {string[]}
+ */
+export function wordMarkupClasses(word) {
+    const classes = wordTypeClasses(word && word.types);
+    ((word && word.styleClasses) || []).forEach((cls) => {
+        if (cls && !classes.includes(cls)) classes.push(cls);
+    });
+    return classes;
+}
+
+/**
  * Overlay modifier for a drawn line's semantic types — underline, strike or
  * mark; null when none of its types is rendered. Pure + tested.
  *
@@ -183,13 +198,15 @@ export function rectCenterInside(inner, outer) {
  * Pure + tested.
  *
  * @param {{lines:Array, blocks:Array}|null} layout
- * @returns {{id:string, rect:object, modifier:string}[]}
+ * @returns {{id:string, rect:object, modifier:string, className?:string}[]}
  */
 export function overlayRegions(layout) {
     const regions = [];
     ((layout && layout.lines) || []).forEach((line) => {
         const modifier = lineTypeModifier(line.types);
-        if (modifier && line.rect) regions.push({ id: line.id, rect: line.rect, modifier });
+        if (!modifier || !line.rect) return;
+        const className = (line.styleClasses || []).filter(Boolean).join(' ');
+        regions.push(className ? { id: line.id, rect: line.rect, modifier, className } : { id: line.id, rect: line.rect, modifier });
     });
     ((layout && layout.blocks) || []).forEach((block) => {
         if (block.author && block.rect) regions.push({ id: block.id, rect: block.rect, modifier: 'note' });

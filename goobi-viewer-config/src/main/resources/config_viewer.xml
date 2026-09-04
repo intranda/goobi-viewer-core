@@ -55,22 +55,23 @@
          - wordTag:       word-level layout tag; @type states its semantic meaning (one of "underline",
                           "strikethrough" or "mark" - the latter for drawn-line marking) and is rendered by both
                           the classic full-text and the immersive view without any theme CSS. @styleClass
-                          (optional) names the CSS class the theme colors this tag with - in every view, exactly
-                          like an annotationTag's styleClass (see altoLayoutTags.less in the reference theme);
-                          without it the tag keeps the default color of its type. A declared word tag also
-                          determines what the immersive view's layout-tag panel counts and highlights: the drawn
-                          marks (ALTO <GraphicalElement>), not the words they run across - pages whose ALTO
-                          records no mark keep their word references.
-         - annotationTag: annotation-author tag -> CSS class + display name for the annotation block; both views
-                          carry the styleClass verbatim, so the theme colors the author vocabulary via CSS (see
-                          altoLayoutTags.less in the reference theme for the pattern).
-         Example (replace the placeholder LABELs and style classes with your own; class names must not contain
-         a double hyphen here because this example lives in an XML comment):
+                          (optional) picks the tag's colour in the immersive view: one of the eight colour slots
+                          alto-tag-color-1 ... alto-tag-color-8 (palette in the theme, see
+                          views/immersive/ivLayoutTagColors.less); without it the tag keeps the default colour of
+                          its type. A declared word tag also determines what the immersive view's layout-tag panel
+                          counts and highlights: the drawn strokes (ALTO <GraphicalElement>), not the words they run
+                          across - pages whose ALTO records no stroke keep their word references.
+         - annotationTag: annotation-author tag; @styleClass picks the colour slot the immersive view uses for the
+                          author's blocks, margin notes and highlights (see wordTag), @name the display name
+                          (message key or literal). Any other class works as well when the theme defines its
+                          colour itself.
+         Example (replace the placeholder LABELs with the ones your ALTO uses):
     <altoLayoutTags printedLabel="printed">
         <wordTag label="underlined" type="underline" />
         <wordTag label="struckthrough" type="strikethrough" />
         <wordTag label="marked" type="mark" />
-        <annotationTag label="annotator_a" styleClass="fulltext-annotator-a" name="Annotator A" />
+        <annotationTag label="annotator_a" styleClass="alto-tag-color-1" name="Annotator A" />
+        <annotationTag label="annotator_b" styleClass="alto-tag-color-2" name="Annotator B" />
     </altoLayoutTags>
     -->
 

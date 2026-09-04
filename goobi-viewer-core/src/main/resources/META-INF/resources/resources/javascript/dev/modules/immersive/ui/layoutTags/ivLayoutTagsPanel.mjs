@@ -1,12 +1,24 @@
 /** Layout-tag panel wiring: index and detail loading, page range, cursor and image highlights; pick menu and hit list are sub-modules. */
 
-import { VISIBLE_BATCH, FILTER_THRESHOLD, entryKey, visiblePages, batchRanges, loadLayoutTagIndex, loadLayoutTagDetails } from '../../data/ivLayoutTags.mjs';
+import {
+    VISIBLE_BATCH,
+    FILTER_THRESHOLD,
+    STROKE_ELEMENT_TYPE,
+    entryKey,
+    typeClassOf,
+    visiblePages,
+    batchRanges,
+    loadLayoutTagIndex,
+    loadLayoutTagDetails,
+} from '../../data/ivLayoutTags.mjs';
 import { createDisposer, noop } from '../../shared/ivLifecycle.mjs';
 import { createLayoutTagsState } from './ivLayoutTagsState.mjs';
 import { setupPickMenu } from './ivLayoutTagsPickMenu.mjs';
 import { createHitList } from './ivLayoutTagsHitList.mjs';
 
 const OWNER = 'layout-tags';
+/** Modifier drawing an occurrence as a bar instead of a box. */
+const STROKE_CLASS = '-stroke';
 
 /**
  * Wires the layout-tag panel: the record-wide index is fetched once (on the
@@ -178,8 +190,13 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
             viewer.clearHighlights(OWNER);
             return;
         }
-        const className = state.styleTokens(active.label).join(' ');
-        const rects = (state.occurrencesOf(active.page, active.label) || []).map((o) => ({ ...o.rect, order: active.page - 1, className }));
+        const tokens = [...state.styleTokens(active.label), typeClassOf(state.tagType(active.label))];
+        const rects = (state.occurrencesOf(active.page, active.label) || []).map((o) => ({
+            ...o.rect,
+            order: active.page - 1,
+            className: [...tokens, o.elementType === STROKE_ELEMENT_TYPE ? STROKE_CLASS : ''].filter(Boolean).join(' '),
+            active: true,
+        }));
         viewer.setHighlights(rects, OWNER);
     };
 
