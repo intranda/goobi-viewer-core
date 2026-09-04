@@ -232,6 +232,9 @@ export function setupLayoutTagsPanel(viewer, pi, apiBase, panels, keys) {
             if (!panelOpen()) return;
             if (!state.cursorKey) state.preferCursorOnPages(currentPages());
             refresh(true);
+            if (!state.selected.size && state.allTags().length) {
+                pick.open({ focus: false });
+            }
         });
     });
     bag.add(

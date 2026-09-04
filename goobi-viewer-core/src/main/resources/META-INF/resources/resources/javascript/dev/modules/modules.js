@@ -4712,11 +4712,13 @@
         const onOutside = (e) => {
             if (!menu.contains(e.target) && !trigger.contains(e.target)) close();
         };
-        const open = () => {
+        /** Opens the menu; `focus` is false when it opens on its own, so it never steals the focus. */
+        const open = ({ focus = true } = {}) => {
             if (isOpen()) return;
             menu.hidden = false;
             trigger.setAttribute('aria-expanded', 'true');
             document.addEventListener('pointerdown', onOutside, true);
+            if (!focus) return;
             const first = filterWrap && !filterWrap.hidden && filterInput ? filterInput : menu.querySelector('input[type="checkbox"]:not([disabled])');
             if (first) first.focus();
         };
@@ -4810,6 +4812,7 @@
         return {
             build,
             sync,
+            open,
             close,
             setFilterVisible(visible) {
                 if (filterWrap) filterWrap.hidden = !visible;
@@ -5188,6 +5191,9 @@
                 if (!panelOpen()) return;
                 if (!state.cursorKey) state.preferCursorOnPages(currentPages());
                 refresh(true);
+                if (!state.selected.size && state.allTags().length) {
+                    pick.open({ focus: false });
+                }
             });
         });
         bag.add(

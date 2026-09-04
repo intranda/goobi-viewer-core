@@ -242,6 +242,24 @@ describe('setupLayoutTagsPanel', () => {
         expect(viewer.clearHighlights).toHaveBeenCalledWith('layout-tags');
     });
 
+    test('the pick menu opens itself only while nothing is selected', async () => {
+        installFetch();
+        const panel = mountMarkup();
+        const panels = fakePanels();
+        setupLayoutTagsPanel(fakeViewer(), 'PI', '/api', panels, createKeyDispatcher());
+        const menu = document.querySelector('[data-immersive-layout-tags="pick-menu"]');
+        await openPanel(panel);
+        expect(menu.hidden).toBe(false);
+
+        checkbox('gr_unterstrichen').click();
+        await flush();
+        panels.hooks.forEach((h) => h());
+        panel.classList.remove('is-open');
+        await openPanel(panel);
+
+        expect(menu.hidden).toBe(true);
+    });
+
     test('the page range is applied explicitly, narrows the list and can be reset', async () => {
         installFetch();
         const panel = mountMarkup();
@@ -303,6 +321,12 @@ describe('setupLayoutTagsPanel', () => {
         await openPanel(panel);
         const trigger = document.querySelector('[data-immersive-layout-tags="pick-trigger"]');
         const menu = document.querySelector('[data-immersive-layout-tags="pick-menu"]');
+
+        // nothing is selected yet, so the menu shows itself - but without taking the focus
+        expect(menu.hidden).toBe(false);
+        expect(document.activeElement).not.toBe(checkbox('gr_unterstrichen'));
+        trigger.click();
+        expect(menu.hidden).toBe(true);
 
         trigger.click();
         expect(menu.hidden).toBe(false);
