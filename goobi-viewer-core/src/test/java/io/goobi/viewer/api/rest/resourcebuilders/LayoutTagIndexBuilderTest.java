@@ -86,13 +86,18 @@ class LayoutTagIndexBuilderTest extends AbstractTest {
 
     /**
      * @see LayoutTagIndexBuilder#build(String,int,SolrDocumentList)
-     * @verifies sort tags by descending page count then label
+     * @verifies sort configured tags in configured order
+     * @verifies sort undeclared tags last by descending page count then label
      */
     @Test
-    void build_shouldSortTagsByDescendingPageCountThenLabel() {
-        LayoutTagIndex index = builder().build(PI, 10,
-                docs(page(1, "zz_rare", "aa_rare", "gr_unterstrichen"), page(2, "gr_unterstrichen"), page(3, "gr_unterstrichen")));
-        Assertions.assertEquals(List.of("gr_unterstrichen", "aa_rare", "zz_rare"), index.getTags().stream().map(LayoutTagIndex.Tag::getLabel).toList());
+    void build_shouldSortTagsInConfiguredOrderThenUndeclaredByPageCount() {
+        LayoutTagIndex index = builder().build(PI, 10, docs(page(1, "zz_rare", "aa_rare", "gr_durchgestrichen"), page(2, "gr_durchgestrichen"),
+                page(3, "gr_durchgestrichen", "gr_unterstrichen", "gr_jacob_grimm"), page(4, "aa_rare")));
+        // the declared tags keep the order of config_viewer.test.xml - the annotation tag stands between the word
+        // tags, and gr_durchgestrichen comes last of them although it occurs most often; undeclared labels follow,
+        // the more frequent one first
+        Assertions.assertEquals(List.of("gr_unterstrichen", "gr_jacob_grimm", "gr_durchgestrichen", "aa_rare", "zz_rare"),
+                index.getTags().stream().map(LayoutTagIndex.Tag::getLabel).toList());
     }
 
     /**

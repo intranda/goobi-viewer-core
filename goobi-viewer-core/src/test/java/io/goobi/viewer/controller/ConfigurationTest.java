@@ -364,6 +364,17 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getAltoLayoutTagOrder()
+     * @verifies return labels in document order
+     */
+    @Test
+    void getAltoLayoutTagOrder_shouldReturnLabelsInDocumentOrder() {
+        // the annotation tag sits between the word tags in config_viewer.test.xml, so element type must not group
+        assertEquals(List.of("gr_unterstrichen", "gr_jacob_grimm", "gr_durchgestrichen", "test_angestrichen"),
+                DataManager.getInstance().getConfiguration().getAltoLayoutTagOrder());
+    }
+
+    /**
      * @see Configuration#getAltoLayoutAnnotationTags()
      * @verifies return configured annotation tags
      */

@@ -2043,6 +2043,34 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
+     * LABELs of the {@code <wordTag>} and {@code <annotationTag>} elements in the order they are declared inside
+     * {@code <altoLayoutTags>}, element types not grouped — the immersive view's layout-tag panel lists its entries
+     * in this order, so it is the same for every record.
+     *
+     * @return the declared LABELs in document order; empty if none are configured
+     * @should return labels in document order
+     */
+    public List<String> getAltoLayoutTagOrder() {
+        List<HierarchicalConfiguration<ImmutableNode>> children;
+        try {
+            children = getConfigLocal().childConfigurationsAt("altoLayoutTags");
+            if (children == null || children.isEmpty()) {
+                children = getConfig().childConfigurationsAt("altoLayoutTags");
+            }
+        } catch (IllegalArgumentException e) {
+            children = getConfig().childConfigurationsAt("altoLayoutTags");
+        }
+        List<String> ret = new ArrayList<>(children.size());
+        for (HierarchicalConfiguration<ImmutableNode> child : children) {
+            String label = child.getString(XML_PATH_ATTRIBUTE_LABEL);
+            if (StringUtils.isNotEmpty(label) && !ret.contains(label)) {
+                ret.add(label);
+            }
+        }
+        return ret;
+    }
+
+    /**
      * Mapping of word-level ALTO layout-tag LABEL to an additional CSS class applied verbatim to the enclosing span
      * in the fulltext view — an optional hook for theme CSS. The semantic markup itself is derived from
      * {@link #getAltoLayoutWordTagTypes()}.

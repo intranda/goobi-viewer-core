@@ -59,7 +59,9 @@ import jakarta.servlet.http.HttpServletRequest;
  * Builds the record-wide {@link LayoutTagIndex} from the indexed {@code MD_LAYOUTTAG} values of the page documents.
  * Unlike {@link LayoutTagBuilder} no ALTO file is read: one Solr query answers which tag occurs on which pages. The
  * configured printed-text label is dropped (it anchors margin detection and marks nothing), display names are resolved
- * server-side in the order configured annotation-tag name → translated word-tag type → translated raw label.
+ * server-side in the order configured annotation-tag name → translated word-tag type → translated raw label. The tag
+ * order follows the configuration, so it stays the same across records; labels the ALTO carries but the configuration
+ * does not declare come last.
  */
 public class LayoutTagIndexBuilder {
 
@@ -70,6 +72,8 @@ public class LayoutTagIndexBuilder {
     private final Map<String, AnnotationStyle> annotationTags;
     private final Map<String, String> wordTagTypes;
     private final Map<String, String> wordTagStyleClasses;
+    /** LABEL → position in the configuration, in the order the tags are declared. */
+    private final Map<String, Integer> configuredOrder;
     private final Locale locale;
 
     /**
@@ -81,6 +85,10 @@ public class LayoutTagIndexBuilder {
         this.annotationTags = ALTOTools.translateAnnotationTagNames(config.getAltoLayoutAnnotationTags(), locale);
         this.wordTagTypes = config.getAltoLayoutWordTagTypes();
         this.wordTagStyleClasses = config.getAltoLayoutWordTags();
+        this.configuredOrder = new HashMap<>();
+        for (String label : config.getAltoLayoutTagOrder()) {
+            configuredOrder.putIfAbsent(label, configuredOrder.size());
+        }
         this.locale = locale;
     }
 
@@ -119,7 +127,8 @@ public class LayoutTagIndexBuilder {
 
     /**
      * Pure transformation of the page documents into the index: pages are collected per label (ascending, without
-     * duplicates), the printed-text label is skipped, tags are sorted by descending page count, then by label.
+     * duplicates), the printed-text label is skipped, tags are ordered as configured and undeclared labels follow by
+     * descending page count, then by label.
      *
      * @param pi record identifier
      * @param pageCount total number of pages of the record
@@ -127,7 +136,8 @@ public class LayoutTagIndexBuilder {
      * @return the index
      * @should drop the printed label
      * @should collect pages ascending without duplicates
-     * @should sort tags by descending page count then label
+     * @should sort configured tags in configured order
+     * @should sort undeclared tags last by descending page count then label
      * @should resolve display names in configured order
      * @should deliver style classes for all configured tags
      * @should deliver word tag types
@@ -157,7 +167,9 @@ public class LayoutTagIndexBuilder {
             String label = entry.getKey();
             tags.add(new LayoutTagIndex.Tag(label, displayName(label), styleClass(label), wordTagTypes.get(label), new ArrayList<>(entry.getValue())));
         }
-        tags.sort(Comparator.comparingInt((LayoutTagIndex.Tag t) -> t.getPages().size()).reversed().thenComparing(LayoutTagIndex.Tag::getLabel));
+        tags.sort(Comparator.comparingInt((LayoutTagIndex.Tag t) -> configuredOrder.getOrDefault(t.getLabel(), Integer.MAX_VALUE))
+                .thenComparing(Comparator.comparingInt((LayoutTagIndex.Tag t) -> t.getPages().size()).reversed())
+                .thenComparing(LayoutTagIndex.Tag::getLabel));
         return new LayoutTagIndex(pi, pageCount, tags);
     }
 

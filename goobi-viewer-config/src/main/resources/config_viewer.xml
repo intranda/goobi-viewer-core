@@ -49,7 +49,9 @@
 
     <!-- altoLayoutTags (optional): maps ALTO <LayoutTag> LABELs to the markup used when rendering full-text from
          ALTO. There are no built-in mappings, because LayoutTag LABELs are specific to how a collection's ALTO was
-         produced; configure the labels your ALTO actually uses.
+         produced; configure the labels your ALTO actually uses. The immersive view's layout-tag panel lists the
+         declared tags in exactly the order they appear below, wordTag and annotationTag mixed as you write them;
+         labels an ALTO carries without being declared here follow at the end, the most frequent first.
          - @printedLabel: LABEL marking printed-text blocks; anchors detection of handwritten margin annotations
                           (blocks outside the printed-text column are shown in a side column). Omit to disable.
          - wordTag:       word-level layout tag; @type states its semantic meaning (one of "underline",
