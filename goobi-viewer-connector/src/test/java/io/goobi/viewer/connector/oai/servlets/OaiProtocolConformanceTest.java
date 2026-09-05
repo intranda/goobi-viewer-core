@@ -72,14 +72,26 @@ class OaiProtocolConformanceTest extends AbstractTest {
      * @return the response document
      */
     private static Document callServlet(Map<String, String> parameters) throws Exception {
+        return callServlet(parameters, Map.of());
+    }
+
+    /**
+     * Runs the servlet with the given request parameters and returns the parsed response.
+     *
+     * @param parameters query parameters of the protocol request
+     * @param repeatedValues values for arguments that are supplied more than once
+     * @return the response document
+     */
+    private static Document callServlet(Map<String, String> parameters, Map<String, String[]> repeatedValues) throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/viewer/oai"));
         when(request.getQueryString()).thenReturn(null);
         Map<String, String[]> parameterMap = new HashMap<>();
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            parameterMap.put(entry.getKey(), new String[] { entry.getValue() });
+            String[] values = repeatedValues.getOrDefault(entry.getKey(), new String[] { entry.getValue() });
+            parameterMap.put(entry.getKey(), values);
             when(request.getParameter(entry.getKey())).thenReturn(entry.getValue());
-            when(request.getParameterValues(entry.getKey())).thenReturn(new String[] { entry.getValue() });
+            when(request.getParameterValues(entry.getKey())).thenReturn(values);
         }
         when(request.getParameterMap()).thenReturn(parameterMap);
 
@@ -105,6 +117,20 @@ class OaiProtocolConformanceTest extends AbstractTest {
 
         new OaiServlet().doGet(request, response);
         return OaiResponseValidator.assertValid(out.toString(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Runs the servlet with an argument that is supplied twice.
+     *
+     * @param repeated name of the repeated argument
+     * @param values the two values
+     * @param other further arguments
+     * @return the response document
+     */
+    private static Document callServletWithRepeatedArgument(String repeated, String[] values, Map<String, String> other) throws Exception {
+        Map<String, String> parameters = new HashMap<>(other);
+        parameters.put(repeated, values[0]);
+        return callServlet(parameters, Map.of(repeated, values));
     }
 
     private static Map<String, String> params(String... keyValuePairs) {
@@ -243,6 +269,31 @@ class OaiProtocolConformanceTest extends AbstractTest {
     void doGet_shouldAnswerBadArgumentIfTheResumptionTokenIsCombinedWithAnotherArgument() throws Exception {
         assertError(callServlet(params("verb", "ListRecords", "resumptionToken", "oai_1634822246437",
                 "metadataPrefix", "oai_dc")), "badArgument");
+    }
+
+    /**
+     * @verifies answer badVerb if the verb is repeated
+     */
+    @Test
+    void doGet_shouldAnswerBadVerbIfTheVerbIsRepeated() throws Exception {
+        assertError(callServletWithRepeatedArgument("verb", new String[] { "Identify", "ListSets" }, Map.of()), "badVerb");
+    }
+
+    /**
+     * @verifies answer badArgument if an argument is repeated
+     */
+    @Test
+    void doGet_shouldAnswerBadArgumentIfAnArgumentIsRepeated() throws Exception {
+        assertError(callServletWithRepeatedArgument("metadataPrefix", new String[] { "oai_dc", "mets" },
+                Map.of("verb", "ListRecords")), "badArgument");
+    }
+
+    /**
+     * @verifies answer badArgument if the request carries an argument the protocol does not define
+     */
+    @Test
+    void doGet_shouldAnswerBadArgumentIfTheRequestCarriesAnArgumentTheProtocolDoesNotDefine() throws Exception {
+        assertError(callServlet(params("verb", "ListMetadataFormats", "nosuchargument", "value")), "badArgument");
     }
 
     /**
