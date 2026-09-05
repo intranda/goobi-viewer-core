@@ -87,6 +87,11 @@
 		<versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
 		<dependency-check-maven.version>12.2.1</dependency-check-maven.version>
 		<flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+
+		<!-- Mockito is shared by core and connector. The agent jar is handed to surefire explicitly because
+		     the JDK deprecates self-attaching agents. -->
+		<mockito.version>5.23.0</mockito.version>
+		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 	</properties>
 
 	<dependencyManagement>
@@ -110,6 +115,12 @@
 			</dependency>
 
 			<!-- Shared direct dependencies between core and connector -->
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito.version}</version>
+				<scope>test</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-configuration2</artifactId>

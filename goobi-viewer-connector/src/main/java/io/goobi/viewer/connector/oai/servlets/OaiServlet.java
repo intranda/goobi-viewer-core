@@ -96,18 +96,12 @@ public class OaiServlet extends HttpServlet {
 
         // handle request
         if (handler.getVerb() == null) {
-            Element requestType = new Element("request", Format.OAI_NS);
-            requestType.setAttribute("verb", "missing");
-            if (DataManager.getInstance().getConfiguration().isBaseUrlUseInRequestElement()) {
-                requestType.setText(DataManager.getInstance().getConfiguration().getBaseURL());
-            } else {
-                requestType.setText(request.getRequestURL().toString().replace("/M2M/", "/viewer/"));
-            }
-            root.addContent(requestType);
+            root.addContent(createBaseUrlOnlyRequestElement(request));
             root.addContent(new ErrorCode().getBadVerb());
         } else if (!checkDatestamps(handler.getFrom(), handler.getUntil())) {
             // Check for invalid from/until parameters
             logger.trace("Invalid timestamps");
+            root.addContent(createBaseUrlOnlyRequestElement(request));
             root.addContent(new ErrorCode().getBadArgument());
         } else {
             Element requestType = new Element("request", Format.OAI_NS);
@@ -292,6 +286,26 @@ public class OaiServlet extends HttpServlet {
                 }
             }
         }
+    }
+
+    /**
+     * Creates the request element for a badVerb or badArgument response.
+     *
+     * <p>The OAI-PMH specification requires the base URL of the request and nothing else in these two cases: the
+     * arguments must not be echoed, because they are the ones that could not be interpreted.
+     *
+     * @param request request being answered
+     * @return request element carrying the base URL as its only content
+     * @should carry no attributes
+     */
+    static Element createBaseUrlOnlyRequestElement(HttpServletRequest request) {
+        Element requestType = new Element("request", Format.OAI_NS);
+        if (DataManager.getInstance().getConfiguration().isBaseUrlUseInRequestElement()) {
+            requestType.setText(DataManager.getInstance().getConfiguration().getBaseURL());
+        } else {
+            requestType.setText(request.getRequestURL().toString().replace("/M2M/", "/viewer/"));
+        }
+        return requestType;
     }
 
     /**
