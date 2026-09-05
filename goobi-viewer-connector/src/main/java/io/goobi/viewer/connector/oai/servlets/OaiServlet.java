@@ -103,6 +103,10 @@ public class OaiServlet extends HttpServlet {
             logger.trace("Invalid timestamps");
             root.addContent(createBaseUrlOnlyRequestElement(request));
             root.addContent(new ErrorCode().getBadArgument());
+        } else if (isExclusiveResumptionTokenViolated(request)) {
+            logger.trace("resumptionToken combined with other arguments");
+            root.addContent(createBaseUrlOnlyRequestElement(request));
+            root.addContent(new ErrorCode().getBadArgument());
         } else {
             Element requestType = new Element("request", Format.OAI_NS);
             requestType.setAttribute("verb", handler.getVerb().getTitle());
@@ -286,6 +290,30 @@ public class OaiServlet extends HttpServlet {
                 }
             }
         }
+    }
+
+    /**
+     * Returns whether the request combines the exclusive resumptionToken argument with another one.
+     *
+     * <p>The specification declares resumptionToken exclusive: a request carrying it must not carry any argument
+     * besides the verb. The combination is rejected before the token itself is looked at, because the request is
+     * already malformed regardless of whether the token would have been valid.
+     *
+     * @param request request being answered
+     * @return true if a resumption token is present alongside another argument
+     * @should return false if only a resumption token is given
+     * @should return true if another argument accompanies the resumption token
+     */
+    static boolean isExclusiveResumptionTokenViolated(HttpServletRequest request) {
+        if (request.getParameter(PARAM_RESUMPTION_TOKEN) == null) {
+            return false;
+        }
+        for (String parameter : request.getParameterMap().keySet()) {
+            if (!"verb".equals(parameter) && !PARAM_RESUMPTION_TOKEN.equals(parameter)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

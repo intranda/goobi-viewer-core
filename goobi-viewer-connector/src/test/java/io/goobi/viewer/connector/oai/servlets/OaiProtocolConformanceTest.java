@@ -75,11 +75,13 @@ class OaiProtocolConformanceTest extends AbstractTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/viewer/oai"));
         when(request.getQueryString()).thenReturn(null);
-        when(request.getParameterMap()).thenReturn(Collections.emptyMap());
+        Map<String, String[]> parameterMap = new HashMap<>();
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            parameterMap.put(entry.getKey(), new String[] { entry.getValue() });
             when(request.getParameter(entry.getKey())).thenReturn(entry.getValue());
             when(request.getParameterValues(entry.getKey())).thenReturn(new String[] { entry.getValue() });
         }
+        when(request.getParameterMap()).thenReturn(parameterMap);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -214,6 +216,33 @@ class OaiProtocolConformanceTest extends AbstractTest {
             Assertions.assertNotNull(metadataFormat.getChildText("schema", OAI_NS));
             Assertions.assertNotNull(metadataFormat.getChildText("metadataNamespace", OAI_NS));
         }
+    }
+
+    /**
+     * @verifies answer badArgument if GetRecord is called without an identifier
+     */
+    @Test
+    void doGet_shouldAnswerBadArgumentIfGetRecordIsCalledWithoutAnIdentifier() throws Exception {
+        assertError(callServlet(params("verb", "GetRecord", "metadataPrefix", "oai_dc")), "badArgument");
+    }
+
+    /**
+     * @verifies answer badResumptionToken if the resumption token is malformed
+     */
+    @Test
+    void doGet_shouldAnswerBadResumptionTokenIfTheResumptionTokenIsMalformed() throws Exception {
+        assertError(callServlet(params("verb", "ListRecords", "resumptionToken", "not-a-token")), "badResumptionToken");
+    }
+
+    /**
+     * The specification declares resumptionToken an exclusive argument, so it may not be combined with any other.
+     *
+     * @verifies answer badArgument if the resumption token is combined with another argument
+     */
+    @Test
+    void doGet_shouldAnswerBadArgumentIfTheResumptionTokenIsCombinedWithAnotherArgument() throws Exception {
+        assertError(callServlet(params("verb", "ListRecords", "resumptionToken", "oai_1634822246437",
+                "metadataPrefix", "oai_dc")), "badArgument");
     }
 
     /**
