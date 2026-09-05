@@ -173,6 +173,50 @@ class OaiProtocolConformanceTest extends AbstractTest {
     }
 
     /**
+     * @verifies answer badArgument if ListIdentifiers is called without a metadata prefix
+     */
+    @Test
+    void doGet_shouldAnswerBadArgumentIfListIdentifiersIsCalledWithoutAMetadataPrefix() throws Exception {
+        assertError(callServlet(params("verb", "ListIdentifiers")), "badArgument");
+    }
+
+    /**
+     * @verifies answer badArgument if ListRecords is called without a metadata prefix
+     */
+    @Test
+    void doGet_shouldAnswerBadArgumentIfListRecordsIsCalledWithoutAMetadataPrefix() throws Exception {
+        assertError(callServlet(params("verb", "ListRecords")), "badArgument");
+    }
+
+    /**
+     * The specification reserves badArgument for missing or syntactically illegal arguments; a syntactically fine
+     * prefix that the repository does not support is a cannotDisseminateFormat condition.
+     *
+     * @verifies answer cannotDisseminateFormat if the metadata prefix is unknown
+     */
+    @Test
+    void doGet_shouldAnswerCannotDisseminateFormatIfTheMetadataPrefixIsUnknown() throws Exception {
+        assertError(callServlet(params("verb", "ListRecords", "metadataPrefix", "no_such_format")), "cannotDisseminateFormat");
+    }
+
+    /**
+     * @verifies describe every metadata format with prefix, schema and namespace
+     */
+    @Test
+    void doGet_shouldDescribeEveryMetadataFormatWithPrefixSchemaAndNamespace() throws Exception {
+        Element listMetadataFormats = callServlet(params("verb", "ListMetadataFormats"))
+                .getRootElement()
+                .getChild("ListMetadataFormats", OAI_NS);
+        Assertions.assertNotNull(listMetadataFormats);
+        Assertions.assertFalse(listMetadataFormats.getChildren("metadataFormat", OAI_NS).isEmpty());
+        for (Element metadataFormat : listMetadataFormats.getChildren("metadataFormat", OAI_NS)) {
+            Assertions.assertNotNull(metadataFormat.getChildText("metadataPrefix", OAI_NS));
+            Assertions.assertNotNull(metadataFormat.getChildText("schema", OAI_NS));
+            Assertions.assertNotNull(metadataFormat.getChildText("metadataNamespace", OAI_NS));
+        }
+    }
+
+    /**
      * @verifies state the response date in UTC
      */
     @Test

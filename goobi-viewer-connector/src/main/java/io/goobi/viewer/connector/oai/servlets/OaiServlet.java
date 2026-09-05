@@ -151,7 +151,7 @@ public class OaiServlet extends HttpServlet {
                     case LISTIDENTIFIERS:
                         logger.debug("ListIdentifiers");
                         if (handler.getMetadataPrefix() == null) {
-                            root.addContent(new ErrorCode().getBadArgument());
+                            root.addContent(createUnresolvedMetadataPrefixError(handler));
                         } else if (!DataManager.getInstance()
                                 .getConfiguration()
                                 .isMetadataFormatEnabled(handler.getMetadataPrefix().getMetadataPrefix())) {
@@ -186,7 +186,7 @@ public class OaiServlet extends HttpServlet {
                         break;
                     case LISTRECORDS:
                         if (handler.getMetadataPrefix() == null) {
-                            root.addContent(new ErrorCode().getBadArgument());
+                            root.addContent(createUnresolvedMetadataPrefixError(handler));
                         } else if (!DataManager.getInstance()
                                 .getConfiguration()
                                 .isMetadataFormatEnabled(handler.getMetadataPrefix().getMetadataPrefix())) {
@@ -227,7 +227,7 @@ public class OaiServlet extends HttpServlet {
                         break;
                     case GETRECORD:
                         if (handler.getMetadataPrefix() == null) {
-                            root.addContent(new ErrorCode().getBadArgument());
+                            root.addContent(createUnresolvedMetadataPrefixError(handler));
                         } else if (!DataManager.getInstance()
                                 .getConfiguration()
                                 .isMetadataFormatEnabled(handler.getMetadataPrefix().getMetadataPrefix())) {
@@ -286,6 +286,24 @@ public class OaiServlet extends HttpServlet {
                 }
             }
         }
+    }
+
+    /**
+     * Creates the error for a request whose metadata prefix could not be resolved.
+     *
+     * <p>A prefix that was not supplied at all is a missing argument; one that was supplied but names no known format
+     * is a format the repository cannot disseminate. The specification reserves badArgument for the former case.
+     *
+     * @param handler request being answered
+     * @return badArgument if no prefix was given, cannotDisseminateFormat otherwise
+     * @should return badArgument if no prefix was given
+     * @should return cannotDisseminateFormat if the prefix is unknown
+     */
+    static Element createUnresolvedMetadataPrefixError(RequestHandler handler) {
+        if (handler.getRawMetadataPrefix() == null) {
+            return new ErrorCode().getBadArgument();
+        }
+        return new ErrorCode().getCannotDisseminateFormat();
     }
 
     /**
