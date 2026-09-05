@@ -402,10 +402,32 @@ public class SolrSearchIndex implements Closeable {
      * @throws IOException
      * @throws IndexUnreachableException
      */
+    /**
+     * Removes the repository prefix from an identifier as it arrives from a harvester.
+     *
+     * <p>The interface prepends the configured repositoryIdentifier to every identifier it publishes, and a harvester
+     * is expected to feed exactly that identifier back in a GetRecord request. The index knows the bare record
+     * identifier, so the prefix has to come off again before the query.
+     *
+     * @param identifier identifier as supplied by the harvester
+     * @return the identifier without the configured repository prefix
+     * @should remove the configured prefix
+     * @should return the identifier unchanged if it does not carry the prefix
+     * @should return the identifier unchanged if no prefix is configured
+     */
+    static String stripRepositoryIdentifier(String identifier) {
+        String repositoryIdentifier = DataManager.getInstance().getConfiguration().getOaiIdentifier().get("repositoryIdentifier");
+        if (StringUtils.isNotEmpty(repositoryIdentifier) && identifier != null && identifier.startsWith(repositoryIdentifier)) {
+            return identifier.substring(repositoryIdentifier.length());
+        }
+
+        return identifier;
+    }
+
     private SolrDocumentList queryForIdentifier(final String identifier, int rows, List<String> fieldList, String filterQuerySuffix)
             throws SolrServerException, IOException {
         // String useIdentifier = ClientUtils.escapeQueryChars(identifier);
-        String useIdentifier = identifier;
+        String useIdentifier = stripRepositoryIdentifier(identifier);
 
         StringBuilder sb = new StringBuilder();
         sb.append("+(")

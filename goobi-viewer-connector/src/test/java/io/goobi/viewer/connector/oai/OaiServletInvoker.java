@@ -110,6 +110,49 @@ public final class OaiServletInvoker {
     }
 
     /**
+     * Runs the servlet through doPost with the given request parameters and asserts that the response is schema-valid.
+     *
+     * @param parameters query parameters of the protocol request
+     * @return the parsed response
+     */
+    public static Document callPost(Map<String, String> parameters) throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/viewer/oai"));
+        when(request.getQueryString()).thenReturn(null);
+
+        Map<String, String[]> parameterMap = new HashMap<>();
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            parameterMap.put(entry.getKey(), new String[] { entry.getValue() });
+            when(request.getParameter(entry.getKey())).thenReturn(entry.getValue());
+            when(request.getParameterValues(entry.getKey())).thenReturn(new String[] { entry.getValue() });
+        }
+        when(request.getParameterMap()).thenReturn(parameterMap);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
+
+            @Override
+            public void write(int b) throws IOException {
+                out.write(b);
+            }
+
+            @Override
+            public boolean isReady() {
+                return true;
+            }
+
+            @Override
+            public void setWriteListener(WriteListener writeListener) {
+                // no asynchronous writing in this test
+            }
+        });
+
+        new OaiServlet().doPost(request, response);
+        return OaiResponseValidator.assertValid(out.toString(StandardCharsets.UTF_8));
+    }
+
+    /**
      * Builds a parameter map from alternating keys and values.
      *
      * @param keyValuePairs alternating argument names and values

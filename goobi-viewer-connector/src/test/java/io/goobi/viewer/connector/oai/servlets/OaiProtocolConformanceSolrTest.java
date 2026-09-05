@@ -15,12 +15,15 @@
  */
 package io.goobi.viewer.connector.oai.servlets;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -103,6 +106,153 @@ class OaiProtocolConformanceSolrTest extends AbstractSolrEnabledTest {
             Assertions.assertNotNull(header.getChildText("identifier", OAI_NS));
             Assertions.assertNotNull(header.getChildText("datestamp", OAI_NS));
         }
+    }
+
+    /**
+     * Returns the identifiers listed in the given ListIdentifiers response.
+     *
+     * @param listIdentifiers the ListIdentifiers element
+     * @return the identifiers, in document order
+     */
+    private static List<String> identifiersOf(Element listIdentifiers) {
+        return listIdentifiers.getChildren("header", OAI_NS).stream().map(header -> header.getChildText("identifier", OAI_NS)).toList();
+    }
+
+    /**
+     * An incomplete list must be continued with the token it carries, and the continuation must neither repeat nor
+     * skip entries. The size of the complete list must not change between pages.
+     *
+     * @verifies continue an incomplete list without repeating entries
+     */
+    @Test
+    void doGet_shouldContinueAnIncompleteListWithoutRepeatingEntries() throws Exception {
+        Element firstPage = OaiServletInvoker.call(OaiServletInvoker.params("verb", "ListIdentifiers", "metadataPrefix", "oai_dc"))
+                .getRootElement()
+                .getChild("ListIdentifiers", OAI_NS);
+        Element token = firstPage.getChild("resumptionToken", OAI_NS);
+        Assumptions.assumeTrue(token != null && StringUtils.isNotBlank(token.getText()),
+                "The test index holds too few records to page through");
+
+        Element secondPage = OaiServletInvoker.call(OaiServletInvoker.params("verb", "ListIdentifiers", "resumptionToken", token.getText()))
+                .getRootElement()
+                .getChild("ListIdentifiers", OAI_NS);
+        Assertions.assertNotNull(secondPage, "The resumption token was not accepted");
+
+        List<String> first = identifiersOf(firstPage);
+        List<String> second = identifiersOf(secondPage);
+        Assertions.assertFalse(second.isEmpty(), "The continuation must not be empty");
+        Assertions.assertTrue(Collections.disjoint(first, second), "The continuation must not repeat entries of the first page");
+
+        Element secondToken = secondPage.getChild("resumptionToken", OAI_NS);
+        if (secondToken != null && secondToken.getAttributeValue("cursor") != null && token.getAttributeValue("cursor") != null) {
+            Assertions.assertTrue(Integer.parseInt(secondToken.getAttributeValue("cursor")) > Integer.parseInt(token.getAttributeValue("cursor")),
+                    "The cursor must advance from page to page");
+        }
+        if (secondToken != null && secondToken.getAttributeValue("completeListSize") != null
+                && token.getAttributeValue("completeListSize") != null) {
+            Assertions.assertEquals(token.getAttributeValue("completeListSize"), secondToken.getAttributeValue("completeListSize"),
+                    "The size of the complete list must not change between pages");
+        }
+    }
+
+    /**
+     * The bounds are inclusive: "from" means greater than or equal, "until" means less than or equal.
+     *
+     * @verifies treat the datestamp bounds as inclusive
+     */
+    @Test
+    void doGet_shouldTreatTheDatestampBoundsAsInclusive() throws Exception {
+        Element header = OaiServletInvoker.call(OaiServletInvoker.params("verb", "ListIdentifiers", "metadataPrefix", "oai_dc"))
+                .getRootElement()
+                .getChild("ListIdentifiers", OAI_NS)
+                .getChildren("header", OAI_NS)
+                .get(0);
+        String identifier = header.getChildText("identifier", OAI_NS);
+        String day = header.getChildText("datestamp", OAI_NS).substring(0, 10);
+
+        Element listIdentifiers = OaiServletInvoker.call(OaiServletInvoker.params("verb", "ListIdentifiers", "metadataPrefix", "oai_dc",
+                "from", day, "until", day)).getRootElement().getChild("ListIdentifiers", OAI_NS);
+        Assertions.assertNotNull(listIdentifiers, "A range covering the record's own datestamp must return it");
+        Assertions.assertTrue(identifiersOf(listIdentifiers).contains(identifier),
+                "A range whose bounds equal the record's datestamp must include that record");
+    }
+
+    /**
+     * @verifies state datestamps in the granularity it announces
+     */
+    @Test
+    void doGet_shouldStateDatestampsInTheGranularityItAnnounces() throws Exception {
+        String granularity = OaiServletInvoker.call(OaiServletInvoker.params("verb", "Identify"))
+                .getRootElement()
+                .getChild("Identify", OAI_NS)
+                .getChildText("granularity", OAI_NS);
+        String pattern = "YYYY-MM-DD".equals(granularity) ? "\\d{4}-\\d{2}-\\d{2}" : "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z";
+
+        Element listIdentifiers = OaiServletInvoker.call(OaiServletInvoker.params("verb", "ListIdentifiers", "metadataPrefix", "oai_dc"))
+                .getRootElement()
+                .getChild("ListIdentifiers", OAI_NS);
+        for (Element header : listIdentifiers.getChildren("header", OAI_NS)) {
+            String datestamp = header.getChildText("datestamp", OAI_NS);
+            Assertions.assertTrue(datestamp.matches(pattern),
+                    "Datestamp '" + datestamp + "' does not match the announced granularity " + granularity);
+        }
+    }
+
+    /**
+     * A repository either offers a set hierarchy, in which case every set needs a spec and a name, or it says that it
+     * has none.
+     *
+     * @verifies either describe its sets or state that it has none
+     */
+    @Test
+    void doGet_shouldEitherDescribeItsSetsOrStateThatItHasNone() throws Exception {
+        Element root = OaiServletInvoker.call(OaiServletInvoker.params("verb", "ListSets")).getRootElement();
+        Element listSets = root.getChild("ListSets", OAI_NS);
+        if (listSets == null) {
+            assertError(root.getDocument(), "noSetHierarchy");
+            return;
+        }
+        Assertions.assertFalse(listSets.getChildren("set", OAI_NS).isEmpty(), "ListSets must describe at least one set");
+        for (Element set : listSets.getChildren("set", OAI_NS)) {
+            Assertions.assertNotNull(set.getChildText("setSpec", OAI_NS));
+            Assertions.assertNotNull(set.getChildText("setName", OAI_NS));
+        }
+    }
+
+    /**
+     * @verifies return exactly the requested record
+     */
+    @Test
+    void doGet_shouldReturnExactlyTheRequestedRecord() throws Exception {
+        String identifier = OaiServletInvoker.call(OaiServletInvoker.params("verb", "ListIdentifiers", "metadataPrefix", "oai_dc"))
+                .getRootElement()
+                .getChild("ListIdentifiers", OAI_NS)
+                .getChildren("header", OAI_NS)
+                .get(0)
+                .getChildText("identifier", OAI_NS);
+
+        Element getRecord = OaiServletInvoker.call(OaiServletInvoker.params("verb", "GetRecord", "metadataPrefix", "oai_dc",
+                "identifier", identifier)).getRootElement().getChild("GetRecord", OAI_NS);
+        Assertions.assertNotNull(getRecord, "GetRecord must answer with a record for an identifier it just listed");
+        List<Element> records = getRecord.getChildren("record", OAI_NS);
+        Assertions.assertEquals(1, records.size(), "GetRecord must return exactly one record");
+        Element record = records.get(0);
+        Assertions.assertEquals(identifier, record.getChild("header", OAI_NS).getChildText("identifier", OAI_NS));
+        Assertions.assertNotNull(record.getChild("metadata", OAI_NS), "A record that is not deleted must carry metadata");
+    }
+
+    /**
+     * The specification requires repositories to support both GET and POST.
+     *
+     * @verifies answer a request submitted by POST
+     */
+    @Test
+    void doGet_shouldAnswerARequestSubmittedByPost() throws Exception {
+        Element identify = OaiServletInvoker.callPost(OaiServletInvoker.params("verb", "Identify"))
+                .getRootElement()
+                .getChild("Identify", OAI_NS);
+        Assertions.assertNotNull(identify, "A request submitted by POST must be answered like one submitted by GET");
+        Assertions.assertEquals("2.0", identify.getChildText("protocolVersion", OAI_NS));
     }
 
     /**
