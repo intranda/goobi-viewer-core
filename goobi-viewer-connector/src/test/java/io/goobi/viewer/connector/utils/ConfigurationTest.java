@@ -168,7 +168,7 @@ class ConfigurationTest extends AbstractTest {
      */
     @Test
     void getResumptionTokenFolder_shouldReturnCorrectValue() {
-        Assertions.assertEquals("src/test/resources/oai/token/", DataManager.getInstance().getConfiguration().getResumptionTokenFolder());
+        Assertions.assertEquals("target/oai-token/", DataManager.getInstance().getConfiguration().getResumptionTokenFolder());
     }
 
     /**

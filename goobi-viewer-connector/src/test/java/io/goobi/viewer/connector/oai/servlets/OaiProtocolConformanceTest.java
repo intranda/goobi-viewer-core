@@ -15,13 +15,7 @@
  */
 package io.goobi.viewer.connector.oai.servlets;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,13 +27,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.connector.AbstractTest;
-import io.goobi.viewer.connector.oai.OaiResponseValidator;
-import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.connector.oai.OaiServletInvoker;
 import io.goobi.viewer.exceptions.DAOException;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.WriteListener;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Checks the OAI-PMH envelope against the protocol specification.
@@ -59,86 +48,21 @@ class OaiProtocolConformanceTest extends AbstractTest {
      */
     @BeforeAll
     static void injectEmptyDao() throws DAOException {
-        IDAO dao = mock(IDAO.class);
-        when(dao.getRecordLicenseTypes()).thenReturn(Collections.emptyList());
-        when(dao.getAllLicenseTypes()).thenReturn(Collections.emptyList());
-        io.goobi.viewer.controller.DataManager.getInstance().injectDao(dao);
+        OaiServletInvoker.injectEmptyDao();
     }
 
-    /**
-     * Runs the servlet with the given request parameters and returns the parsed response.
-     *
-     * @param parameters query parameters of the protocol request
-     * @return the response document
-     */
     private static Document callServlet(Map<String, String> parameters) throws Exception {
-        return callServlet(parameters, Map.of());
+        return OaiServletInvoker.call(parameters);
     }
 
-    /**
-     * Runs the servlet with the given request parameters and returns the parsed response.
-     *
-     * @param parameters query parameters of the protocol request
-     * @param repeatedValues values for arguments that are supplied more than once
-     * @return the response document
-     */
-    private static Document callServlet(Map<String, String> parameters, Map<String, String[]> repeatedValues) throws Exception {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURL()).thenReturn(new StringBuffer("http://localhost:8080/viewer/oai"));
-        when(request.getQueryString()).thenReturn(null);
-        Map<String, String[]> parameterMap = new HashMap<>();
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            String[] values = repeatedValues.getOrDefault(entry.getKey(), new String[] { entry.getValue() });
-            parameterMap.put(entry.getKey(), values);
-            when(request.getParameter(entry.getKey())).thenReturn(entry.getValue());
-            when(request.getParameterValues(entry.getKey())).thenReturn(values);
-        }
-        when(request.getParameterMap()).thenReturn(parameterMap);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
-
-            @Override
-            public void write(int b) throws IOException {
-                out.write(b);
-            }
-
-            @Override
-            public boolean isReady() {
-                return true;
-            }
-
-            @Override
-            public void setWriteListener(WriteListener writeListener) {
-                // no asynchronous writing in this test
-            }
-        });
-
-        new OaiServlet().doGet(request, response);
-        return OaiResponseValidator.assertValid(out.toString(StandardCharsets.UTF_8));
-    }
-
-    /**
-     * Runs the servlet with an argument that is supplied twice.
-     *
-     * @param repeated name of the repeated argument
-     * @param values the two values
-     * @param other further arguments
-     * @return the response document
-     */
     private static Document callServletWithRepeatedArgument(String repeated, String[] values, Map<String, String> other) throws Exception {
         Map<String, String> parameters = new HashMap<>(other);
         parameters.put(repeated, values[0]);
-        return callServlet(parameters, Map.of(repeated, values));
+        return OaiServletInvoker.call(parameters, Map.of(repeated, values));
     }
 
     private static Map<String, String> params(String... keyValuePairs) {
-        Map<String, String> ret = new HashMap<>();
-        for (int i = 0; i < keyValuePairs.length; i += 2) {
-            ret.put(keyValuePairs[i], keyValuePairs[i + 1]);
-        }
-        return ret;
+        return OaiServletInvoker.params(keyValuePairs);
     }
 
     /**

@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -50,6 +51,9 @@ public final class OaiResponseValidator {
     /** Local copy of https://www.openarchives.org/OAI/2.0/OAI-PMH.xsd (the schema referenced by every response). */
     private static final File SCHEMA_FILE = new File("src/test/resources/oai/OAI-PMH.xsd");
 
+    /** Declares the element that stands in for the metadata payloads. */
+    private static final File PLACEHOLDER_SCHEMA_FILE = new File("src/test/resources/oai/payload-placeholder.xsd");
+
     private static final Namespace OAI_NS = Namespace.getNamespace("http://www.openarchives.org/OAI/2.0/");
 
     /** Namespace of the placeholder that replaces metadata payloads; anything but the OAI namespace satisfies {@code ##other}. */
@@ -68,7 +72,7 @@ public final class OaiResponseValidator {
         try {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             restrictExternalAccess(factory);
-            Schema schema = factory.newSchema(SCHEMA_FILE);
+            Schema schema = factory.newSchema(new Source[] { new StreamSource(SCHEMA_FILE), new StreamSource(PLACEHOLDER_SCHEMA_FILE) });
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))));
         } catch (SAXException e) {

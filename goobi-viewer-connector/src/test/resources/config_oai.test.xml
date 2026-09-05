@@ -23,7 +23,7 @@
 		<solrUrl>https://viewer-testing-index.goobi.io/solr/collection1</solrUrl>
 	</solr>
 	<oaiFolder>src/test/resources/oai/</oaiFolder>
-	<resumptionTokenFolder>src/test/resources/oai/token/</resumptionTokenFolder>
+	<resumptionTokenFolder>target/oai-token/</resumptionTokenFolder>
 	<urnResolverUrl>http://localhost/viewer/resolver?urn=</urnResolverUrl>
 	<piResolverUrl>http://localhost/viewer/piresolver?id=</piResolverUrl>
 	<!-- documentResolverUrl: URL to the METS/LIDO resolver -->
