@@ -115,7 +115,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_PAGES_CANVAS = "/{pageNo}/canvas";
     public static final String RECORDS_PAGES_MANIFEST = "/{pageNo}/manifest";
     public static final String RECORDS_PAGES_NER_TAGS = "/{pageNo}/ner/tags";
-    public static final String RECORDS_PAGES_LAYOUT_TAGS = "/{pageNo}/layout/tags";
     public static final String RECORDS_PAGES_ANNOTATIONS = "/{pageNo}/annotations";
     public static final String RECORDS_PAGES_COMMENTS = "/{pageNo}/comments";
     public static final String RECORDS_PAGES_COMMENTS_COMMENT = "/{pageNo}/comments/{id}";

@@ -198,12 +198,6 @@ var viewerJS = (function () {
             this.nerFacetting.init(nerFacettingConfig);
         }
 
-        // set sidebar position for the layout-tag facetting widget (same architecture as NER)
-        if ($('#widgetLayoutTagFacetting').length > 0) {
-            layoutTagFacettingConfig.sidebarRight = _defaults.widgetNerSidebarRight;
-            this.layoutTagFacetting.init(layoutTagFacettingConfig);
-        }
-
         // fire search query in autocomplete on enter
         $('body').on('keyup', '#pfAutocomplete_input, [id*="\\:pfAutocomplete_input"]', function (event) {
             if (event.keyCode == 13) {

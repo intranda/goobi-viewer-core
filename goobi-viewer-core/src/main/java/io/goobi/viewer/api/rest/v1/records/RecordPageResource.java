@@ -28,7 +28,6 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_CANVAS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_COMMENTS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_LAYOUT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_MANIFEST;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_LAYOUT_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_SEQUENCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PAGES_TEXT;
@@ -75,7 +74,6 @@ import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
-import io.goobi.viewer.api.rest.resourcebuilders.LayoutTagBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.ALTOTools;
@@ -153,24 +151,6 @@ public class RecordPageResource {
         requireValidPageNo(pageNo);
         NERBuilder builder = new NERBuilder();
         return builder.getNERTags(pi, type, pageNo, pageNo, 1, servletRequest);
-    }
-
-    @GET
-    @jakarta.ws.rs.Path(RECORDS_PAGES_LAYOUT_TAGS)
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records" }, summary = "Get ALTO layout tags for a single page")
-    @ApiResponse(responseCode = "200", description = "Layout tags for the requested page")
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
-    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
-    @ApiResponse(responseCode = "500", description = "Solr index unreachable")
-    public DocumentReference getLayoutTags(
-            @Parameter(description = "Page number (1-based)",
-                    schema = @Schema(minimum = "1", maximum = "2147483647")) @PathParam("pageNo") Integer pageNo,
-            @Parameter(description = "Layout-tag label to filter by; omit for all labels") @QueryParam("type") String label)
-            throws PresentationException, IndexUnreachableException {
-        requireValidPageNo(pageNo);
-        LayoutTagBuilder builder = new LayoutTagBuilder();
-        return builder.getLayoutTags(pi, label, pageNo, pageNo, 1, servletRequest);
     }
 
     @GET

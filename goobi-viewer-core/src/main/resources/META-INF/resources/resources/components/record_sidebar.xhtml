@@ -108,11 +108,6 @@
                         <widgetComponent:widget_nerFacetting rendered="#{displayConditions.matchRecord('{pageType: [viewObject]}')}" />
                     </ui:fragment>
 
-                    <!-- WIDGET LAYOUT TAGS -->
-                    <ui:fragment rendered="#{widgetName == 'layout-tags'}">
-                        <widgetComponent:widget_layoutTagFacetting rendered="#{displayConditions.matchRecord('{pageType: [viewImage, viewObject]}')}" />
-                    </ui:fragment>
-
                     <!-- WIDGET RECORD NOTES -->
                     <ui:fragment rendered="#{widgetName == 'record-notes'}">
                         <widgetComponent:widget_recordNotes notes="#{cmsRecordNotesBean.getNotesForRecord(activeDocumentBean.viewManager.pi)}" />

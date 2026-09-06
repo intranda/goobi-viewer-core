@@ -1815,7 +1815,6 @@
                 <displayWidget name="search-in-current-item" />
                 <displayWidget name="archives" />
                 <displayWidget name="named-entities" />
-                <displayWidget name="layout-tags" />
                 <displayWidget name="metadata" />
                 <displayWidget name="geomap" />
                 <displayWidget name="annotations" />
@@ -1845,7 +1844,6 @@
                 <displayWidget name="search-in-current-item" />
                 <displayWidget name="statistics-usage" />
                 <displayWidget name="named-entities" />
-                <displayWidget name="layout-tags" />
                 <displayWidget name="geomap" />
                 <displayWidget name="annotations" />
                 <displayWidget name="record-notes" />
@@ -1862,14 +1860,6 @@
                 <displayWidget name="record-notes" />
                 <displayWidget name="version-history" />
             </view>
-            <view name="layout-tags">
-                <displayWidget name="views" />
-                <displayWidget name="search-result-navigation" />
-                <displayWidget name="geomap" />
-                <displayWidget name="annotations" />
-                <displayWidget name="record-notes" />
-                <displayWidget name="version-history" />
-            </view>
             <view name="object">
                 <displayWidget name="views" collapsible="false" collapsedByDefault="false" /> 
                 <displayWidget name="copyright" />
@@ -1877,7 +1867,6 @@
 				<displayWidget name="search-in-current-item" />
 				<displayWidget name="calendar" />
                 <displayWidget name="named-entities" />
-                <displayWidget name="layout-tags" />
                 <displayWidget name="metadata" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="metadata-tech" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="geomap" />
@@ -1915,7 +1904,6 @@
                 <displayWidget name="search-result-navigation" />
                 <displayWidget name="search-in-current-item" />
                 <displayWidget name="named-entities" />
-                <displayWidget name="layout-tags" />
                 <displayWidget name="metadata" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="metadata-tech" collapsible="false" collapsedByDefault="false" />
                 <displayWidget name="geomap" />
