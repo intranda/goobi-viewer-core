@@ -2123,10 +2123,12 @@ public class Configuration extends AbstractConfiguration {
 
     /**
      * Mapping of ALTO handwriting-author layout-tag LABEL to its {@link AnnotationStyle} (CSS class + display name),
-     * used to style and label handwritten annotation blocks in the fulltext view.
+     * used to style and label handwritten annotation blocks in the fulltext view. Without a configured name the label
+     * itself serves as display name, so it doubles as message key.
      *
      * @return an ordered map of label to annotation style; empty if none configured (callers fall back to defaults)
      * @should return configured annotation tags
+     * @should default the name to the label
      */
     public Map<String, AnnotationStyle> getAltoLayoutAnnotationTags() {
         Map<String, AnnotationStyle> ret = new LinkedHashMap<>();
@@ -2135,7 +2137,7 @@ public class Configuration extends AbstractConfiguration {
             for (HierarchicalConfiguration<ImmutableNode> tag : tags) {
                 String label = tag.getString("[@label]");
                 String styleClass = tag.getString("[@styleClass]");
-                String name = tag.getString("[@name]");
+                String name = tag.getString("[@name]", label);
                 if (StringUtils.isNotEmpty(label) && StringUtils.isNotEmpty(styleClass)) {
                     ret.put(label, new AnnotationStyle(styleClass, name));
                 }
