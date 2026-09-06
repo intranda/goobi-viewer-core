@@ -5,6 +5,7 @@ import { buildTextLevels, mountTextImageLink } from './ivTextImageLink.mjs';
 import { setupAnnotationsToggle } from './ivAnnotations.mjs';
 import { applyTextMarkup, applyRegionMarkup } from './ivAnnotationMarkup.mjs';
 import { mountBlockAnnotations } from './ivAnnotationNotes.mjs';
+import { setupAnnotationColumnResize } from './ivAnnotationResize.mjs';
 import { overlayRegions } from '../../data/ivAnnotationModel.mjs';
 import { createDisposer } from '../../shared/ivLifecycle.mjs';
 import { localStore } from '../../shared/ivPrefs.mjs';
@@ -41,6 +42,12 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
     const storage = localStore();
     const annotations = annoCheckbox && immersiveRoot ? setupAnnotationsToggle({ root: immersiveRoot, checkbox: annoCheckbox, storage, keys }) : null;
     if (annotations) bag.add(() => annotations.destroy());
+    const annoResize = setupAnnotationColumnResize({
+        panel: fulltextPanel,
+        box: fulltextBox,
+        label: annoColumnsHead ? annoColumnsHead.dataset.labelResize : '',
+    });
+    bag.add(() => annoResize.destroy());
 
     const panelOpen = () => !!fulltextPanel && fulltextPanel.classList.contains('is-open');
 
@@ -77,6 +84,7 @@ export function setupFulltextPanel(viewer, pi, apiBase, panels, keys) {
             columnsHead: annoColumnsHead,
             scrollContainer: fulltextPanel,
             getRegionEls: () => overlayEls,
+            resizer: annoResize.handle ? annoResize : null,
         });
         if (currentAnnotations) currentAnnotations.attachRegions(overlayEls, textRegionEls);
     };

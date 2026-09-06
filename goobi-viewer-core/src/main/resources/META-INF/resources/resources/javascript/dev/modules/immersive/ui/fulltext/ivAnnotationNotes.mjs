@@ -280,9 +280,10 @@ function markTruncation(notes) {
     });
 }
 
-function createNoteLayout({ box, notes, anchors, columnsHead, popovers }) {
+function createNoteLayout({ box, notes, anchors, columnsHead, popovers, resizer }) {
     const column = document.createElement('div');
     column.className = 'immersive__anno-margin';
+    const handle = resizer ? resizer.handle : null;
     const inlineNotes = [];
     const relayout = () => {
         popovers.hide();
@@ -293,6 +294,7 @@ function createNoteLayout({ box, notes, anchors, columnsHead, popovers }) {
         box.classList.toggle('-anno-collapsed', collapsed);
         if (columnsHead) columnsHead.hidden = collapsed;
         if (collapsed) {
+            if (handle) handle.remove();
             notes.forEach(({ noteEl, anchor, aboveAnchor }) => {
                 noteEl.classList.add('-inline');
                 noteEl.style.top = '';
@@ -308,7 +310,9 @@ function createNoteLayout({ box, notes, anchors, columnsHead, popovers }) {
             noteEl.classList.remove('-inline');
             column.appendChild(noteEl);
         });
+        if (handle && handle.parentNode !== box) box.appendChild(handle);
         box.appendChild(column);
+        markTruncation(notes);
         const rowHeight = anchors.length ? parseFloat(getComputedStyle(anchors[0].el).lineHeight) || 0 : 0;
         const desired = notes
             .map(({ noteEl, anchor, aboveAnchor }) => {
@@ -331,16 +335,16 @@ function createNoteLayout({ box, notes, anchors, columnsHead, popovers }) {
         stackNoteTops(desired, NOTE_GAP).forEach((top, i) => {
             desired[i].noteEl.style.top = `${top}px`;
         });
-        markTruncation(notes);
     };
     const destroy = () => {
         inlineNotes.splice(0).forEach((el) => el.remove());
         column.remove();
+        if (handle) handle.remove();
         box.classList.remove('-anno-collapsed');
         box.style.removeProperty('--immersive-anno-shift');
         if (columnsHead) columnsHead.hidden = true;
     };
-    return { relayout, destroy };
+    return { relayout, destroy, column };
 }
 
 /**
@@ -360,11 +364,12 @@ function createNoteLayout({ box, notes, anchors, columnsHead, popovers }) {
  * @param {Map<string, HTMLElement>} [opts.els]  region element index from applyTextMarkup; indexed fresh when absent
  * @param {HTMLElement} [opts.columnsHead]  the "printed text | annotations" column header, shown only while the side column is active
  * @param {HTMLElement} [opts.scrollContainer]  scrollable panel; region hover reveals the card in it
+ * @param {{handle: HTMLElement}} [opts.resizer]  the column splitter, placed next to the side column while it is active
  * @param {() => Map<string, HTMLElement>} [opts.getRegionEls]  live accessor for the image overlay elements by ALTO element id
  * @returns {{relayout: function():void, attachRegions: function(Map, Map):void, destroy: function():void}|null}
  *          destroy() removes cards, listeners and marker classes; the reading order of repositioned inline sources is restored by the panel rebuild on page open
  */
-export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: givenEls, columnsHead, scrollContainer, getRegionEls }) {
+export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: givenEls, columnsHead, scrollContainer, getRegionEls, resizer }) {
     const blocks = ((layout && layout.blocks) || []).filter((b) => b.author && b.rect);
     if (!blocks.length) return null;
     const els = givenEls || indexRegionElements(box, pi, pageNo);
@@ -376,11 +381,14 @@ export function mountBlockAnnotations({ box, layout, pi, pageNo, flat, els: give
     const notes = buildNotes({ blocks, sources, anchors, popovers, getRegionEls, wordsById, pi, pageNo });
     const anchorListeners = bindAnchorHover(notes);
     const coupling = createRegionCoupling({ notes, sources, scrollContainer });
-    const placement = createNoteLayout({ box, notes, anchors, columnsHead, popovers });
+    const placement = createNoteLayout({ box, notes, anchors, columnsHead, popovers, resizer });
+    /* The split is anchored to the text, so a panel resize changes only the column's
+       width; the box's content box does not see that. */
     let observer = null;
     if (typeof ResizeObserver !== 'undefined') {
         observer = new ResizeObserver(() => placement.relayout());
         observer.observe(box);
+        observer.observe(placement.column);
     }
     placement.relayout();
     return {
