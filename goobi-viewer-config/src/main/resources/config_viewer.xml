@@ -491,6 +491,15 @@
             <!-- <sites></sites> -->
         </pageTypes>
 
+        <!-- immersive: the immersive record view (/immersive/).
+             @fullscreen decides which records the fullscreen view (/fullscreen/) renders in the immersive layout
+             instead of the classic one - the object view's fullscreen button then leads straight into it, and the
+             immersive view's own fullscreen icon becomes the link between the two pages. Values:
+             * "off"        - never, the classic fullscreen view is always used (default)
+             * "alto"       - only records whose ALTO carries layout tags (see altoLayoutTags)
+             * "all"        - every record -->
+        <immersive fullscreen="off" />
+
         <!-- recordTargetPageTypes: Overrides the default target view URL for given publication types.
              An optional _DEFAULT configuration can be used for all publication types without an explicit configuration.
              These targets are also used for PURL generation. -->

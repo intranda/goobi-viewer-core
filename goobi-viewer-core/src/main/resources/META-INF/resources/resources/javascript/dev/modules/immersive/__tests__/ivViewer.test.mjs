@@ -190,29 +190,13 @@ describe('IvViewer construction', () => {
         }
     });
 
-    test('onceTileLoaded, onceResized and redraw wrap the OpenSeadragon instance', () => {
+    test('onceTileLoaded and redraw wrap the OpenSeadragon instance', () => {
         const v = new IvViewer({ element: {}, services: services(3) });
-        const handlers = {};
-        const osd = {
-            addHandler: (name, fn) => (handlers[name] = handlers[name] || []).push(fn),
-            removeHandler: (name, fn) => (handlers[name] = (handlers[name] || []).filter((h) => h !== fn)),
-            addOnceHandler: jest.fn(),
-            forceRedraw: jest.fn(),
-            fire: (name) => (handlers[name] || []).slice().forEach((fn) => fn()),
-        };
+        const osd = { addOnceHandler: jest.fn(), forceRedraw: jest.fn() };
         v.viewer.openseadragon = osd;
         const tile = jest.fn();
         v.onceTileLoaded(tile);
         expect(osd.addOnceHandler).toHaveBeenCalledWith('tile-loaded', tile);
-        const resized = jest.fn();
-        v.onceResized(resized);
-        osd.fire('resize');
-        osd.fire('resize');
-        expect(resized).toHaveBeenCalledTimes(1);
-        expect(handlers.resize).toHaveLength(0);
-        const cancel = v.onceResized(resized);
-        cancel();
-        expect(handlers.resize).toHaveLength(0);
         v.redraw();
         expect(osd.forceRedraw).toHaveBeenCalledTimes(1);
     });

@@ -607,17 +607,6 @@ export default class IvViewer {
         this.viewer.openseadragon.addOnceHandler('tile-loaded', fn);
     }
 
-    /** Runs `fn` on the next viewport resize; returns a cancel function. */
-    onceResized(fn) {
-        const osd = this.viewer.openseadragon;
-        const handler = () => {
-            osd.removeHandler('resize', handler);
-            fn();
-        };
-        osd.addHandler('resize', handler);
-        return () => osd.removeHandler('resize', handler);
-    }
-
     /** Forces a redraw of the current frame. */
     redraw() {
         this.viewer.openseadragon.forceRedraw();

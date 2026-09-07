@@ -91,6 +91,24 @@ function compileView(file) {
     return Array.from(css.matchAll(/([^{}]+)\{([^{}]*)\}/g), (m) => ({ selector: m[1].trim(), body: m[2].replace(/\s+/g, '') }));
 }
 
+/**
+ * The fullscreen page is a bare <body> -- no wrapper carries a height or a flex
+ * context -- so everything inside the viewer (absolutely positioned chrome, a
+ * canvas at height:100%) collapses unless the layout mode sizes itself.
+ */
+describe('LESS contract: the fullscreen layout brings its own height', () => {
+    test('the mode fills the viewport itself and hands the room to the viewer', () => {
+        const rules = compileView(path.join(RESOURCES, 'css/less/views/immersive/ivStage.less'));
+        const mode = rules.find((r) => r.selector === '.immersive--fullscreen');
+        expect(mode).toBeDefined();
+        expect(mode.body).toMatch(/height:100vh/);
+        expect(mode.body).toMatch(/display:flex/);
+        const viewer = rules.find((r) => r.selector === '.immersive--fullscreen .immersive__viewer');
+        expect(viewer).toBeDefined();
+        expect(viewer.body).toMatch(/flex:1/);
+    });
+});
+
 describe('LESS contract: margin notes stay hidden while annotations are switched off', () => {
     test('no rule displays an .immersive__anno-note outside the -annotations-on state', () => {
         const rules = compileView(path.join(RESOURCES, 'css/less/views/immersive/ivAnnotations.less'));

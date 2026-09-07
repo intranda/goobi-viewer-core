@@ -3183,6 +3183,25 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getImmersiveFullscreenMode()
+     * @verifies return correct value
+     */
+    @Test
+    void getImmersiveFullscreenMode_shouldReturnCorrectValue() {
+        assertEquals("alto", DataManager.getInstance().getConfiguration().getImmersiveFullscreenMode());
+    }
+
+    /**
+     * @see Configuration#getImmersiveFullscreenMode()
+     * @verifies return off if not configured
+     */
+    @Test
+    void getImmersiveFullscreenMode_shouldReturnOffIfNotConfigured() {
+        Configuration config = new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath());
+        assertEquals("off", config.getImmersiveFullscreenMode());
+    }
+
+    /**
      * @see Configuration#getFulltextPercentageWarningThreshold()
      * @verifies return correct value
      */

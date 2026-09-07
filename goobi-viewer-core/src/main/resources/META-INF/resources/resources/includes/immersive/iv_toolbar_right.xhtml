@@ -65,9 +65,9 @@
         <h:panelGroup
             layout="block"
             styleClass="immersive__toolbar-group"
-            rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
+            rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage or immersiveFullscreen}">
             <!-- DOUBLE PAGE -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage and activeDocumentBean.viewManager.imagesCount ge 2}">
                 <button
                     type="button"
                     class="immersive__tool-btn immersive__btn-double-page"
@@ -81,7 +81,7 @@
                 </button>
             </ui:fragment>
             <!-- OVERVIEW -->
-            <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage and activeDocumentBean.viewManager.imagesCount ge 2}">
                 <button
                     type="button"
                     class="immersive__tool-btn immersive__btn-overview"
@@ -95,20 +95,29 @@
                         svgClass="immersive__tool-icon" />
                 </button>
             </ui:fragment>
-            <!-- FULLSCREEN -->
-            <button
-                type="button"
-                class="immersive__tool-btn immersive__btn-fullscreen"
-                data-immersive-action="fullscreen"
-                data-label-enter="#{msg.fullscreen_enter}"
-                data-label-exit="#{msg.fullscreen_exit}"
-                title="#{msg.fullscreen_enter}"
-                aria-label="#{msg.fullscreen_enter}"
-                aria-pressed="false">
-                <util:icon
-                    icon="maximize"
-                    svgClass="immersive__tool-icon" />
-            </button>
+            <!-- FULLSCREEN: a page of its own, so the icon links between the two and shows which one is active -->
+            <ui:fragment rendered="#{!immersiveFullscreen and activeDocumentBean.viewManager.immersiveFullscreen}">
+                <a
+                    class="immersive__tool-btn immersive__btn-fullscreen"
+                    href="#{activeDocumentBean.fullscreenImageUrl}"
+                    title="#{msg.fullscreen_enter}"
+                    aria-label="#{msg.fullscreen_enter}">
+                    <util:icon
+                        icon="maximize"
+                        svgClass="immersive__tool-icon" />
+                </a>
+            </ui:fragment>
+            <ui:fragment rendered="#{immersiveFullscreen}">
+                <a
+                    class="immersive__tool-btn immersive__btn-fullscreen -active"
+                    href="#{request.contextPath}#{navigationHelper.exitUrl}"
+                    title="#{msg.fullscreen_exit}"
+                    aria-label="#{msg.fullscreen_exit}">
+                    <util:icon
+                        icon="minimize"
+                        svgClass="immersive__tool-icon" />
+                </a>
+            </ui:fragment>
         </h:panelGroup>
     </div>
 </ui:composition>

@@ -388,6 +388,9 @@
 			<viewImage>viewImage_value</viewImage>
 		</pageTypes>
 
+		<!-- immersive: which records the fullscreen view shows in the immersive layout -->
+		<immersive fullscreen="alto" />
+
         <!-- recordTargetPageTypes: Overrides the default target view URL for given publication types.
              An optional _DEFAULT configuration can be used for all publication types without an explicit configuration.
              These targets are also used for PURL generation. -->

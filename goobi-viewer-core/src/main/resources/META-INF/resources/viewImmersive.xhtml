@@ -35,7 +35,11 @@
     <ui:define name="content-immersive">
         <!-- IMMERSIVE VIEWER -->
         <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-            <ui:include src="/resources/includes/immersive/iv_layout.xhtml" />
+            <ui:include src="/resources/includes/immersive/iv_layout.xhtml">
+                <ui:param
+                    name="immersiveFullscreen"
+                    value="#{false}" />
+            </ui:include>
         </ui:fragment>
 
         <!-- ACCESS TICKET REQUIRED -->

@@ -7,7 +7,6 @@ function fakeViewer(total = 5) {
     let current = [0];
     let double = false;
     return {
-        onceResized: jest.fn(() => jest.fn()),
         getPageCount: () => total,
         getCurrentPages: () => current,
         show(pages) {
@@ -34,7 +33,7 @@ function mountMarkup(viewer) {
                 <div data-immersive-image><div class="openseadragon-canvas"></div></div>
                 <button class="immersive__btn-double-page" data-immersive-action="double-page" aria-pressed="false"></button>
                 <button data-immersive-action="overview"></button>
-                <button data-immersive-action="fullscreen" data-label-enter="Vollbild" data-label-exit="Vollbild verlassen" aria-label="Vollbild"></button>
+                <a class="immersive__tool-btn immersive__btn-fullscreen"></a>
                 <div class="immersive__bottombar">
                     <button class="immersive__bar-btn" data-immersive-page="prev"></button>
                     <span id="immersivePageIndicator"></span>
@@ -91,33 +90,16 @@ test('double page toggles the viewer state class, the pressed state and the full
     expect(hooks.updateFulltextAvail).toHaveBeenCalledTimes(1);
 });
 
-test('fullscreenchange re-fits the view once OSD has resized and relabels the button', () => {
+/** Fullscreen is a page of its own, reached by a link; the bar neither calls the Fullscreen API nor watches it. */
+test('the bar leaves the fullscreen link alone and keeps no fullscreen bookkeeping', () => {
     const viewer = fakeViewer();
     mountMarkup(viewer);
+    const hero = document.querySelector('.immersive__viewer');
+    hero.requestFullscreen = jest.fn();
+    document.querySelector('.immersive__btn-fullscreen').click();
     document.dispatchEvent(new Event('fullscreenchange'));
-    expect(viewer.onceResized).toHaveBeenCalledWith(expect.any(Function));
-    const btn = document.querySelector('[data-immersive-action="fullscreen"]');
-    expect(btn.getAttribute('aria-pressed')).toBe('false');
-    expect(btn.getAttribute('aria-label')).toBe('Vollbild');
-});
-
-test('destroy cancels the pending fullscreen re-fit', () => {
-    jest.useFakeTimers();
-    try {
-        const viewer = fakeViewer();
-        const cancelResize = jest.fn();
-        viewer.onceResized = jest.fn(() => cancelResize);
-        const { bar } = mountMarkup(viewer);
-        document.dispatchEvent(new Event('fullscreenchange'));
-        // Bars of the earlier tests still listen on `document`, so only the delta is ours.
-        const pending = jest.getTimerCount();
-        bar.destroy();
-        expect(jest.getTimerCount()).toBe(pending - 1);
-        expect(cancelResize).toHaveBeenCalled();
-        expect(viewer.resetView).not.toHaveBeenCalled();
-    } finally {
-        jest.useRealTimers();
-    }
+    expect(hero.requestFullscreen).not.toHaveBeenCalled();
+    expect(viewer.resetView).not.toHaveBeenCalled();
 });
 
 test('destroy detaches the buttons and the page-change subscription', () => {

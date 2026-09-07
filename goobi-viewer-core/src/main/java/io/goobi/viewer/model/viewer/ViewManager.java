@@ -3286,6 +3286,27 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Whether the fullscreen view renders this record in the immersive layout instead of the classic one, following
+     * {@code <immersive @fullscreen>}: {@code all} takes every record, {@code alto} only those whose ALTO
+     * carries layout tags, {@code off} none.
+     *
+     * @return true if the fullscreen view is the immersive one for this record; false otherwise
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     */
+    public boolean isImmersiveFullscreen() throws IndexUnreachableException, PresentationException {
+        String mode = DataManager.getInstance().getConfiguration().getImmersiveFullscreenMode();
+        if ("all".equalsIgnoreCase(mode)) {
+            return true;
+        }
+        if (!"alto".equalsIgnoreCase(mode)) {
+            return false;
+        }
+        StructElement top = getTopStructElement();
+        return top != null && top.isLayoutTagAvailable();
+    }
+
+    /**
      * setTopStructElement.
      *
      * @param topStructElement the top-level structure element of the current record

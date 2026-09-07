@@ -53,12 +53,24 @@
 
             <!-- No access ticket required or already unlocked -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
-                <div class="fullscreen">
-                    <!-- LAYOUT -->
-                    <ui:include src="/resources/includes/fullscreen/fs_layout.xhtml" />
+                <!-- IMMERSIVE LAYOUT -->
+                <ui:fragment rendered="#{activeDocumentBean.viewManager.immersiveFullscreen}">
+                    <ui:include src="/resources/includes/immersive/iv_layout.xhtml">
+                        <ui:param
+                            name="immersiveFullscreen"
+                            value="#{true}" />
+                    </ui:include>
+                </ui:fragment>
 
-                    <viewerComponent:modalFeedbackForm id="feedbackModal" />
-                </div>
+                <!-- CLASSIC LAYOUT -->
+                <ui:fragment rendered="#{!activeDocumentBean.viewManager.immersiveFullscreen}">
+                    <div class="fullscreen">
+                        <!-- LAYOUT -->
+                        <ui:include src="/resources/includes/fullscreen/fs_layout.xhtml" />
+
+                        <viewerComponent:modalFeedbackForm id="feedbackModal" />
+                    </div>
+                </ui:fragment>
             </ui:fragment>
 
             <!-- Access ticket required -->
@@ -80,33 +92,36 @@
                 </div>
             </ui:fragment>
 
-            <script>
-                // mount riot tags
-                var fsConfig = {
-                    thumbnailUrl:
-                        '#{request.contextPath}' +
-                        '/api/v1/records/#{activeDocumentBean.persistentIdentifier}/pages/sequence/base/?mode=thumbnails &amp; preferedView=fullscreen',
-                    msg: {
-                        showThumbs: '#{msg.fullscreen_showThumbs}',
-                        hideThumbs: '#{msg.fullscreen_hideThumbs}',
-                    },
-                };
-                riot.mount('fsThumbnails, fsThumbnailImage', fsConfig);
+            <!-- CLASSIC LAYOUT SCRIPTS -->
+            <ui:fragment rendered="#{!activeDocumentBean.viewManager.immersiveFullscreen}">
+                <script>
+                    // mount riot tags
+                    var fsConfig = {
+                        thumbnailUrl:
+                            '#{request.contextPath}' +
+                            '/api/v1/records/#{activeDocumentBean.persistentIdentifier}/pages/sequence/base/?mode=thumbnails &amp; preferedView=fullscreen',
+                        msg: {
+                            showThumbs: '#{msg.fullscreen_showThumbs}',
+                            hideThumbs: '#{msg.fullscreen_hideThumbs}',
+                        },
+                    };
+                    riot.mount('fsThumbnails, fsThumbnailImage', fsConfig);
 
-                var normdataConfig = {
-                    path: '#{request.contextPath}',
-                    lang: {
-                        popoverTitle: '#{msg.normdataPopoverTitle}',
-                        popoverClose: '#{msg.normdataPopoverClose}',
-                        showNormdata: '#{msg.normdataExpand}',
-                    },
-                    elemWrapper: $('#metadataElementWrapper'),
-                };
+                    var normdataConfig = {
+                        path: '#{request.contextPath}',
+                        lang: {
+                            popoverTitle: '#{msg.normdataPopoverTitle}',
+                            popoverClose: '#{msg.normdataPopoverClose}',
+                            showNormdata: '#{msg.normdataExpand}',
+                        },
+                        elemWrapper: $('#metadataElementWrapper'),
+                    };
 
-                viewerJS.normdata.init(normdataConfig);
+                    viewerJS.normdata.init(normdataConfig);
 
-                viewerJS.clipboard.init();
-            </script>
+                    viewerJS.clipboard.init();
+                </script>
+            </ui:fragment>
         </f:view>
     </ui:define>
 </ui:composition>
