@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
@@ -319,12 +320,29 @@ public enum PageType {
      * @should return correct type if name starts with metadata
      */
     public static PageType getByName(String name) {
+        return getByName(name, true);
+    }
+
+    /**
+     * getByName.
+     *
+     * @param name page type name to look up
+     * @param includeConfiguredValues if true (default), allow finding the PageType be the values returned by
+     *            {@link Configuration#getPageType(PageType)}. Otherwise only the actual values of the {@link PageType} enum are resolved
+     * @return the PageType matching the given name, or {@link #other} if not found
+     * @should return correct type for raw names
+     * @should return correct type for mapped names
+     * @should return correct type for enum names
+     * @should return correct type if name starts with metadata
+     */
+    public static PageType getByName(String name, boolean includeConfiguredValues) {
         if (name == null) {
             return null;
         }
+
         for (PageType p : PageType.values()) {
-            if (p.getName().equalsIgnoreCase(name) || p.path.equalsIgnoreCase(name) || p.label.equalsIgnoreCase(name)
-                    || p.name().equalsIgnoreCase(name)) {
+            if (p.path.equalsIgnoreCase(name) || p.label.equalsIgnoreCase(name)
+                    || p.name().equalsIgnoreCase(name) || (includeConfiguredValues && p.getName().equalsIgnoreCase(name))) {
                 return p;
             }
         }

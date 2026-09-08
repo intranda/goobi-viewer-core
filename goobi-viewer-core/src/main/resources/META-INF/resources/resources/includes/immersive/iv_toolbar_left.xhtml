@@ -17,6 +17,18 @@
                 </a>
             </div>
         </ui:fragment>
+        <!-- EXIT IMMERSIVE VIEW: independent of the "back to search results" link above, both may show at once -->
+        <div class="immersive__toolbar-group">
+            <a
+                class="immersive__tool-btn immersive__exit"
+                href="#{request.contextPath}#{navigationHelper.exitUrl}?"
+                title="#{msg.immersive__exit}"
+                aria-label="#{msg.immersive__exit}">
+                <util:icon
+                    icon="door-exit"
+                    svgClass="immersive__tool-icon" />
+            </a>
+        </div>
         <!-- PANELS -->
         <div class="immersive__toolbar-group immersive__toolbar-group-grow">
             <!-- TOC -->

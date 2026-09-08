@@ -182,6 +182,12 @@ public class ActiveDocumentBean implements Serializable {
     private volatile String action = "";
     /** URL parameter 'imageToShow'. */
     private String imageToShow = "1";
+    /**
+     * Whether the immersive view renders in fullscreen display. Defaulted per record from configuration in
+     * {@link #update()}; overridden per request by the 'fullscreen' URL parameter, see
+     * {@link #updateImmersiveFullscreenView()}.
+     */
+    private boolean immersiveFullscreenView = false;
     /** URL parameter 'logid'. */
     private volatile String logid = "";
     /** URL parameter 'tocCurrentPage'. */
@@ -456,6 +462,7 @@ public class ActiveDocumentBean implements Serializable {
                 anchor = false;
                 volume = false;
                 group = false;
+                immersiveFullscreenView = DataManager.getInstance().getConfiguration().isImmersiveViewFullscreenByDefault();
 
                 // Change current hit index only if loading a new record
                 if (searchBean != null && searchBean.getCurrentSearch() != null) {
@@ -1041,6 +1048,28 @@ public class ActiveDocumentBean implements Serializable {
     public String getImageToShow() {
         synchronized (lock) {
             return imageToShow;
+        }
+    }
+
+    /**
+     * @return true if the immersive view was requested to render in fullscreen display
+     */
+    public boolean isImmersiveFullscreenView() {
+        return immersiveFullscreenView;
+    }
+
+    /**
+     * preRenderView listener for viewImmersive.xhtml. Reads the 'fullscreen' request parameter directly instead of
+     * relying on {@code f:viewParam}, whose model update is skipped entirely when the parameter is absent from the
+     * request. Only overwrites the field when the parameter is actually present, so that page-to-page navigation
+     * within the same record (whose links carry no 'fullscreen' parameter) keeps whatever display mode is currently
+     * active; the initial per-record default is applied separately in {@link #update()} when a new record is
+     * loaded, and the immersive view's own toggle links always pass 'fullscreen' explicitly to override it.
+     */
+    public void updateImmersiveFullscreenView() {
+        String value = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("fullscreen");
+        if (value != null) {
+            this.immersiveFullscreenView = Boolean.parseBoolean(value);
         }
     }
 
@@ -1656,6 +1685,28 @@ public class ActiveDocumentBean implements Serializable {
         }
 
         return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
+    }
+
+    /**
+     * getImmersiveUrl.
+     *
+     * @return the absolute URL to the immersive view for the current page
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public String getImmersiveUrl() throws IndexUnreachableException {
+        ViewManager vm = this.viewManager;
+        if (vm != null && vm.isDoublePageMode()) {
+            PhysicalElement currentPage = vm.getCurrentPage();
+            if (currentPage != null && !currentPage.isDoubleImage()) {
+                Optional<PhysicalElement> currentLeftPage = vm.getCurrentLeftPage();
+                Optional<PhysicalElement> currentRightPage = vm.getCurrentRightPage();
+                if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
+                    return getPageUrl(PageType.viewImmersive.getName(), currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder());
+                }
+            }
+        }
+
+        return getPageUrl(PageType.viewImmersive.getName(), imageToShow);
     }
 
     /**

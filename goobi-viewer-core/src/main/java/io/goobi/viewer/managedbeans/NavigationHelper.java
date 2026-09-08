@@ -1698,10 +1698,21 @@ public class NavigationHelper implements Serializable {
     /**
      * Get the {@link PageType} for the page name from {@link NavigationHelper#getCurrentPage()}.
      *
+     * @param includeConfiguredValues if true (default), allow finding the PageType be the values returned by
+     *            {@link Configuration#getPageType(PageType)}. Otherwise only the actual values of the {@link PageType} enum are resolved
+     * @return the PageType corresponding to the current page name
+     */
+    public PageType getCurrentPageType(boolean includeConfiguredValues) {
+        return PageType.getByName(getCurrentPage(), includeConfiguredValues);
+    }
+
+    /**
+     * Get the {@link PageType} for the page name from {@link NavigationHelper#getCurrentPage()}.
+     *
      * @return the PageType corresponding to the current page name
      */
     public PageType getCurrentPageType() {
-        return PageType.getByName(getCurrentPage());
+        return getCurrentPageType(true);
     }
 
     /**
@@ -1762,7 +1773,7 @@ public class NavigationHelper implements Serializable {
     }
 
     public String getExitUrl() {
-        return getExitUrl(getCurrentPageType());
+        return getExitUrl(getCurrentPageType(false));
     }
 
     /**

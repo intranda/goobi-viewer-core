@@ -95,11 +95,11 @@
                         svgClass="immersive__tool-icon" />
                 </button>
             </ui:fragment>
-            <!-- FULLSCREEN: a page of its own, so the icon links between the two and shows which one is active -->
-            <ui:fragment rendered="#{!immersiveFullscreen and activeDocumentBean.viewManager.immersiveFullscreen}">
+            <!-- FULLSCREEN: toggles the immersive view's own fullscreen display via the 'fullscreen' URL parameter -->
+            <ui:fragment rendered="#{!immersiveFullscreen}">
                 <a
                     class="immersive__tool-btn immersive__btn-fullscreen"
-                    href="#{activeDocumentBean.fullscreenImageUrl}"
+                    href="#{activeDocumentBean.immersiveUrl}?fullscreen=true"
                     title="#{msg.fullscreen_enter}"
                     aria-label="#{msg.fullscreen_enter}">
                     <util:icon
@@ -110,7 +110,7 @@
             <ui:fragment rendered="#{immersiveFullscreen}">
                 <a
                     class="immersive__tool-btn immersive__btn-fullscreen -active"
-                    href="#{request.contextPath}#{navigationHelper.exitUrl}"
+                    href="#{activeDocumentBean.immersiveUrl}?fullscreen=false"
                     title="#{msg.fullscreen_exit}"
                     aria-label="#{msg.fullscreen_exit}">
                     <util:icon

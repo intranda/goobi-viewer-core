@@ -4995,15 +4995,12 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Decides which records the fullscreen view shows in the immersive layout instead of the classic one:
-     * {@code off} (never), {@code alto} (only records whose ALTO carries layout tags) or {@code all}.
-     *
-     * @return the configured mode; {@code off} if not configured
+     * @return true if the immersive view should open in fullscreen display by default; false otherwise
      * @should return correct value
-     * @should return off if not configured
+     * @should return false if not configured
      */
-    public String getImmersiveFullscreenMode() {
-        return getLocalString("viewer.immersive[@fullscreen]", "off");
+    public boolean isImmersiveViewFullscreenByDefault() {
+        return getLocalBoolean("viewer.pageTypes." + PageType.viewImmersive.name() + "[@fullscreen]", false);
     }
 
     /**

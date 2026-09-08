@@ -156,6 +156,17 @@
     position: static;
 }
 
+/* FULLSCREEN DISPLAY: hide the surrounding page chrome so the immersive view fills the viewport.
+   Targets the class alone (not #immersiveView): h:body's explicit id is not rendered by this JSF setup. */
+body.is-immersive-fullscreen {
+    #header,
+    #footer,
+    #skipmenu,
+    .admin__topbar-frontend {
+        display: none;
+    }
+}
+
 /* REDUCED MOTION */
 @media (prefers-reduced-motion: reduce) {
     .immersive {
