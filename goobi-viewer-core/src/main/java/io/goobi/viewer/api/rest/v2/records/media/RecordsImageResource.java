@@ -130,9 +130,12 @@ public class RecordsImageResource {
     @ApiResponse(responseCode = "403", description = "Access to this image is restricted")
     @ApiResponse(responseCode = "404", description = "Record or representative image not found")
     public String getImage(
-            @PathParam("region") String region, @PathParam("size") String size,
-            @PathParam("rotation") String rotation, @PathParam("quality") String quality,
-            @PathParam("format") String format)
+            @Parameter(description = "IIIF Image API region: full, square, x,y,w,h or pct:x,y,w,h") @PathParam("region") String region,
+            @Parameter(description = "IIIF Image API size: one of max, full, 'w,', ',h', 'w,h', '!w,h' or 'pct:n'") @PathParam("size") String size,
+            @Parameter(description = "Rotation in degrees, normalised to 0-360; prefix with ! to mirror the image first")
+            @PathParam("rotation") String rotation,
+            @Parameter(description = "IIIF Image API quality: default, color, gray or bitonal") @PathParam("quality") String quality,
+            @Parameter(description = "Image format: jpg, png or tif") @PathParam("format") String format)
             throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
         String filename = getRepresentativeFilename(pi);
         String forwardUrl = new ApiUrls(ApiUrls.API).path(ApiUrls.RECORDS_FILES_IMAGE, ApiUrls.RECORDS_FILES_IMAGE_IIIF)

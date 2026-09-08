@@ -109,7 +109,9 @@ public class TasksResource {
     @ApiResponse(responseCode = "500", description = "Message queue unavailable or internal error")
     // Explicit @Content required to produce a valid OpenAPI requestBody with a content map;
     // @RequestBody(required=true) alone generates {"required":true} which is invalid per OpenAPI 3.
-    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = TaskParameter.class)))
+    @RequestBody(required = true, content = @Content(mediaType = MediaType.APPLICATION_JSON,
+            schema = @Schema(anyOf = { TaskParameter.class, SitemapRequestParameters.class, ToolsRequestParameters.class,
+                    PrerenderPdfsRequestParameters.class })))
     public Response addTask(TaskParameter desc) throws WebApplicationException {
         if (desc == null || desc.getType() == null) {
             throw new WebApplicationException(new IllegalRequestException("Must provide job type"));

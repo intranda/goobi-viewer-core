@@ -239,8 +239,13 @@ public class RecordResource {
     @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: search within the manifest of the given record")
     @ApiResponse(responseCode = "200", description = "IIIF Search result containing matching annotations", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "404", description = "Record not found")
-    public SearchResult searchInManifest(@QueryParam("q") String query, @QueryParam("motivation") String motivation,
-            @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
+    public SearchResult searchInManifest(
+            @Parameter(description = "Search query string") @QueryParam("q") String query,
+            @Parameter(description = "Space- or plus-separated list of annotation motivations to search")
+            @QueryParam("motivation") String motivation,
+            @Parameter(description = "Date filter (not supported; included in 'ignored' property if given)") @QueryParam("date") String date,
+            @Parameter(description = "User filter (not supported; included in 'ignored' property if given)") @QueryParam("user") String user,
+            @Parameter(description = "Page number for paged result sets (default: 1)") @QueryParam("page") Integer page)
             throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation).setDate(date).setUser(user).setPage(page).build();
     }
@@ -263,8 +268,13 @@ public class RecordResource {
     @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: autocomplete search within the manifest of the given record")
     @ApiResponse(responseCode = "200", description = "IIIF AutoSuggest result containing matching terms", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "404", description = "Record not found")
-    public AutoSuggestResult autoCompleteInManifest(@QueryParam("q") String query,
-            @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,
+    public AutoSuggestResult autoCompleteInManifest(
+            @Parameter(description = "Partial search query string for auto-completion") @QueryParam("q") String query,
+            @Parameter(description = "Space- or plus-separated list of annotation motivations to search")
+            @QueryParam("motivation") String motivation,
+            @Parameter(description = "Date filter (not supported; included in 'ignored' property if given)") @QueryParam("date") String date,
+            @Parameter(description = "User filter (not supported; included in 'ignored' property if given)") @QueryParam("user") String user,
+            @Parameter(description = "Page number; not supported for auto-completion, the full term list is always returned")
             @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation)
                 .setDate(date)

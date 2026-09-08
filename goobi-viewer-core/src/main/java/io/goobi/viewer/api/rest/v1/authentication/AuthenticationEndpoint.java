@@ -74,6 +74,7 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
 import io.goobi.viewer.controller.DateTools;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -314,7 +315,10 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "403", description = "Forbidden — no matching provider configured or authentication denied")
     @ApiResponse(responseCode = "500", description = "Internal error")
     @Tag(name = "login")
-    public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
+    public Response headerParameterLogin(
+            @Parameter(description = "URL the login redirects to when the authentication provider has not redirected the client"
+                    + " itself. Must start with the viewer's own application URL or point to a host on the configured redirect"
+                    + " whitelist; other values are rejected with 403.") @QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
         if (redirectUrl != null && !isRedirectUrlAllowed(redirectUrl)) {
             return Response.status(Response.Status.FORBIDDEN)
@@ -421,8 +425,15 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "403", description = "Forbidden - OpenID authentication failed or denied")
     @ApiResponse(responseCode = "500", description = "Internal error")
     @Tag(name = "login")
-    public Response openIdLoginGET(@QueryParam("error") String error, @QueryParam("code") String authCode,
-            @QueryParam("id_token") String accessToken, @QueryParam("state") String state) throws IOException {
+    public Response openIdLoginGET(
+            @Parameter(description = "Error code sent by the OpenID provider when authentication failed or was denied; if present,"
+                    + " the login is rejected with 403") @QueryParam("error") String error,
+            @Parameter(description = "Authorization code issued by the OpenID provider; exchanged for an ID token. Either code or"
+                    + " id_token must be present") @QueryParam("code") String authCode,
+            @Parameter(description = "ID token passed directly by the provider (implicit flow); used instead of exchanging a code")
+            @QueryParam("id_token") String accessToken,
+            @Parameter(description = "State value from the authorization request; must match the state registered for the"
+                    + " OpenID provider that started the login") @QueryParam("state") String state) throws IOException {
         logger.trace("openIdLoginGET");
         //        for (String key : servletRequest.getParameterMap().keySet()) {
         //            logger.trace("{}:{}", key, servletRequest.getParameterMap().get(key));

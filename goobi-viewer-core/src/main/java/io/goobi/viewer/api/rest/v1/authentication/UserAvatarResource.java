@@ -84,6 +84,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -222,7 +223,12 @@ public class UserAvatarResource extends ImageResource {
     @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" })
     // required=true signals schemathesis that an empty body is not a valid test case,
     // preventing false "schema-compliant request rejected" failures for empty POSTs.
-    @RequestBody(required = true, content = @Content(mediaType = "multipart/form-data"))
+    @RequestBody(required = true, content = @Content(mediaType = "multipart/form-data",
+            schemaProperties = {
+                    @SchemaProperty(name = "file", schema = @Schema(type = "string", format = "binary", description = "The avatar image file")),
+                    @SchemaProperty(name = "filename", schema = @Schema(type = "string", description = "File name to store the avatar under")),
+                    @SchemaProperty(name = "enabled",
+                            schema = @Schema(type = "boolean", description = "Whether the avatar is enabled after upload (defaults to true)")) }))
     @ApiResponse(responseCode = "200", description = "Avatar uploaded successfully")
     // 400 is returned when the {userId} path parameter is not a valid integer, or when
     // the framework rejects a missing/malformed multipart body before the method is invoked.
@@ -241,7 +247,7 @@ public class UserAvatarResource extends ImageResource {
             @FormDataParam("filename")
             String uploadFilename,
             @FormDataParam("file")
-            InputStream uploadedInputStream, @FormDataParam("file")
+            InputStream uploadedInputStream, @Parameter(hidden = true) @FormDataParam("file")
             FormDataContentDisposition fileDetail) {
 
         if (uploadedInputStream == null) {

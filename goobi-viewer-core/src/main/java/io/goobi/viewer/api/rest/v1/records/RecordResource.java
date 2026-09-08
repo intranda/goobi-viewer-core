@@ -603,7 +603,7 @@ public class RecordResource {
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public SearchResult searchInManifest(
             @Parameter(description = "Search query string") @QueryParam("q") String query,
-            @Parameter(description = "Space-separated list of annotation motivations to search")
+            @Parameter(description = "Space- or plus-separated list of annotation motivations to search")
                     @QueryParam("motivation") String motivation,
             @Parameter(description = "Date filter (not supported; included in 'ignored' property if given)") @QueryParam("date") String date,
             @Parameter(description = "User filter (not supported; included in 'ignored' property if given)") @QueryParam("user") String user,
@@ -633,11 +633,11 @@ public class RecordResource {
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public AutoSuggestResult autoCompleteInManifest(
             @Parameter(description = "Partial search query string for auto-completion") @QueryParam("q") String query,
-            @Parameter(description = "Space-separated list of annotation motivations to search")
+            @Parameter(description = "Space- or plus-separated list of annotation motivations to search")
                     @QueryParam("motivation") String motivation,
             @Parameter(description = "Date filter (not supported; included in 'ignored' property if given)") @QueryParam("date") String date,
             @Parameter(description = "User filter (not supported; included in 'ignored' property if given)") @QueryParam("user") String user,
-            @Parameter(description = "Page number for paged result sets (default: 1)")
+            @Parameter(description = "Page number; not supported for auto-completion, the full term list is always returned")
                     @QueryParam("page") Integer page) throws IndexUnreachableException, PresentationException {
         return new IIIFSearchBuilder(urls, query, pi, servletRequest).setMotivation(motivation)
                 .setDate(date)
@@ -760,7 +760,8 @@ public class RecordResource {
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Missing record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier or template configuration not found")
-    public Response getRecordMetadataAsJson(@PathParam("template") String template)
+    public Response getRecordMetadataAsJson(
+            @Parameter(description = "Template name for the JSON configuration") @PathParam("template") String template)
             throws IndexUnreachableException, PresentationException {
         logger.trace("getRecordMetadataAsJson: {}/{}", pi, template);
         if (StringUtils.isEmpty(pi)) {

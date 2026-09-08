@@ -32,13 +32,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.tags.Tag;
 
@@ -113,6 +117,104 @@ class OpenApiSpecGeneratorTest {
     @Test
     void buildOpenApi_shouldDeclareABodySchemaForEverySuccessResponseForV2() throws Exception {
         assertSuccessResponsesDeclareBodySchema("v2");
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies describe every parameter for v1
+     */
+    @Test
+    void buildOpenApi_shouldDescribeEveryParameterForV1() throws Exception {
+        assertParametersDescribed("v1");
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies describe every parameter for v2
+     */
+    @Test
+    void buildOpenApi_shouldDescribeEveryParameterForV2() throws Exception {
+        assertParametersDescribed("v2");
+    }
+
+    /**
+     * Fails with the offending parameters when an operation parameter has no description. Parameters are
+     * the only place Scalar can explain query and path values, and Spectral's default ruleset does not check them.
+     *
+     * @param version "v1" or "v2"
+     */
+    private static void assertParametersDescribed(String version) throws Exception {
+        OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+        List<String> offenders = new ArrayList<>();
+        openApi.getPaths().forEach((path, pathItem) -> pathItem.readOperationsMap().forEach((method, operation) -> {
+            List<Parameter> parameters = new ArrayList<>();
+            if (pathItem.getParameters() != null) {
+                parameters.addAll(pathItem.getParameters());
+            }
+            if (operation.getParameters() != null) {
+                parameters.addAll(operation.getParameters());
+            }
+            for (Parameter parameter : parameters) {
+                if (StringUtils.isBlank(parameter.getDescription())) {
+                    offenders.add(version + " " + method.name() + " " + path + " ?" + parameter.getName());
+                }
+            }
+        }));
+        assertTrue(offenders.isEmpty(), version + " parameters without description: " + offenders);
+    }
+
+    /**
+     * Component schemas that no {@code $ref} in the spec points to. Names are removed as the corresponding schemas
+     * become referenced; what remains are interfaces Swagger registers from return types although the operation
+     * declares a concrete schema, plus a type whose serializer diverges from its Java shape.
+     */
+    private static final Set<String> KNOWN_UNREFERENCED_SCHEMAS = Set.of(
+            "IAnnotationCollection",
+            "IPresentationModelElement",
+            "Translation");
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies reference every component schema for v1
+     */
+    @Test
+    void buildOpenApi_shouldReferenceEveryComponentSchemaForV1() throws Exception {
+        assertComponentsReferenced("v1");
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies reference every component schema for v2
+     */
+    @Test
+    void buildOpenApi_shouldReferenceEveryComponentSchemaForV2() throws Exception {
+        assertComponentsReferenced("v2");
+    }
+
+    /**
+     * Fails with the orphaned schema names when a component schema is never referenced by a {@code $ref} anywhere in the
+     * spec — the condition Spectral reports as "oas3-unused-component". Serializing the model and scanning the JSON for
+     * {@code $ref} properties mirrors what Spectral does (discriminator mappings are plain strings and count for neither)
+     * and catches references from parameters, bodies, responses and nested schemas alike.
+     *
+     * @param version "v1" or "v2"
+     */
+    private static void assertComponentsReferenced(String version) throws Exception {
+        OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+        String json = Json.mapper().writeValueAsString(openApi);
+        Set<String> referenced = new TreeSet<>();
+        Matcher matcher = Pattern.compile("\"\\$ref\"\\s*:\\s*\"#/components/schemas/([A-Za-z0-9_.]+)\"").matcher(json);
+        while (matcher.find()) {
+            referenced.add(matcher.group(1));
+        }
+        Set<String> orphans = openApi.getComponents()
+                .getSchemas()
+                .keySet()
+                .stream()
+                .filter(name -> !referenced.contains(name))
+                .filter(name -> !KNOWN_UNREFERENCED_SCHEMAS.contains(name))
+                .collect(Collectors.toCollection(TreeSet::new));
+        assertTrue(orphans.isEmpty(), version + " component schemas nothing references: " + orphans);
     }
 
     /**
