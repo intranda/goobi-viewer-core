@@ -86,6 +86,7 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -145,7 +146,7 @@ public class RecordFileResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page")
-    @ApiResponse(responseCode = "200", description = "ALTO XML for the requested page")
+    @ApiResponse(responseCode = "200", description = "ALTO XML for the requested page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "ALTO file not found")
@@ -165,7 +166,7 @@ public class RecordFileResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
-    @ApiResponse(responseCode = "200", description = "Plaintext content for the requested page")
+    @ApiResponse(responseCode = "200", description = "Plaintext content for the requested page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "Text file not found")
@@ -186,7 +187,7 @@ public class RecordFileResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_TEI)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
-    @ApiResponse(responseCode = "200", description = "TEI XML for the requested page")
+    @ApiResponse(responseCode = "200", description = "TEI XML for the requested page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "TEI file not found")
@@ -206,7 +207,7 @@ public class RecordFileResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_MEI)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get MEI document for the record")
-    @ApiResponse(responseCode = "200", description = "MEI document for the record")
+    @ApiResponse(responseCode = "200", description = "MEI document for the record", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "MEI file not found")
@@ -223,7 +224,8 @@ public class RecordFileResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_SOURCE)
     @Operation(tags = { "records" }, summary = "Get source files of record")
-    @ApiResponse(responseCode = "200", description = "Source file content")
+    @ApiResponse(responseCode = "200", description = "Source file content",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid filename")
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Source file not found")
@@ -273,7 +275,8 @@ public class RecordFileResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_MEDIA)
     @Operation(tags = { "records" }, summary = "Get media files of record")
-    @ApiResponse(responseCode = "200", description = "Media file content")
+    @ApiResponse(responseCode = "200", description = "Media file content",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid filename")
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "Media file not found")
@@ -386,7 +389,7 @@ public class RecordFileResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_CMDI)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
-    @ApiResponse(responseCode = "200", description = "CMDI metadata for the requested file")
+    @ApiResponse(responseCode = "200", description = "CMDI metadata for the requested file", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "CMDI file not found")
@@ -421,7 +424,8 @@ public class RecordFileResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
     @Operation(tags = { "records" }, summary = "Download an external resource previously downloaded to the viewer server")
-    @ApiResponse(responseCode = "200", description = "Downloaded external resource file")
+    @ApiResponse(responseCode = "200", description = "Downloaded external resource file",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid file path")
     @ApiResponse(responseCode = "404", description = "Resource not found on server")
     @ApiResponse(responseCode = "500", description = "IO error reading resource")

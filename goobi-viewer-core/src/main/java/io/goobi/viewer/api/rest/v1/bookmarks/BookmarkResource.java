@@ -147,7 +147,7 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Get all bookmark lists owned by the current user. If not logged in, a single temporary bookmark list is stored"
                     + " in the http session which is returned")
-    @ApiResponse(responseCode = "200", description = "List of bookmark lists owned by the current user")
+    @ApiResponse(responseCode = "200", description = "List of bookmark lists owned by the current user", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public List<BookmarkList> getOwnedBookmarkLists() throws DAOException, IOException, RestApiException {
         return builder.getAllBookmarkLists();
@@ -159,7 +159,8 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add a new bookmark list for the current user.")
-    @ApiResponse(responseCode = "201", description = "Bookmark list created successfully, returns the new list")
+    @ApiResponse(responseCode = "201", description = "Bookmark list created successfully, returns the new list",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = BookmarkList.class)))
     @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
     @ApiResponse(responseCode = "409", description = "Session users may only have one bookmark list")
     @ApiResponse(responseCode = "500", description = "Error querying database")
@@ -193,7 +194,7 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Get a bookmarklist owned by the current user by its id. If not logged in, the single bookmark list stored"
                     + " in the session is always returned")
-    @ApiResponse(responseCode = "200", description = "Bookmark list")
+    @ApiResponse(responseCode = "200", description = "Bookmark list", useReturnTypeSchema = true)
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
@@ -213,7 +214,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Set passed attributes to the bookmarkList")
-    @ApiResponse(responseCode = "200", description = "Updated bookmark list")
+    @ApiResponse(responseCode = "200", description = "Updated bookmark list", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
     @ApiResponse(responseCode = "404", description = "No bookmark list found for the given id")
     @ApiResponse(responseCode = "409", description = "Session bookmark lists cannot be updated")
@@ -254,7 +255,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Delete a bookmark list")
-    @ApiResponse(responseCode = "200", description = "Bookmark list deleted successfully")
+    @ApiResponse(responseCode = "200", description = "Bookmark list deleted successfully", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Not logged in, session bookmark list may not be deleted")
     // 404 is returned when JAX-RS cannot parse {listId} as a valid Long (non-integer path parameter value)
     @ApiResponse(responseCode = "404", description = "Bookmark list not found or list ID could not be parsed")
@@ -274,7 +275,8 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Add bookmark to list. Only pi, LogId and order are used")
-    @ApiResponse(responseCode = "201", description = "Bookmark added; returns the created bookmark")
+    @ApiResponse(responseCode = "201", description = "Bookmark added; returns the created bookmark",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Bookmark.class)))
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID or bookmark data")
     @ApiResponse(responseCode = "404", description = "Bookmark list or record not found")
@@ -309,6 +311,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Get a bookmark by its id and the id of the containing list")
+    @ApiResponse(responseCode = "200", description = "The bookmark", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID or bookmark ID")
     @ApiResponse(responseCode = "404", description = "Bookmark not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
@@ -333,6 +336,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Delete a bookmark from a list")
+    @ApiResponse(responseCode = "200", description = "Bookmark deleted", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID or bookmark ID")
     @ApiResponse(responseCode = "404", description = "Bookmark not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
@@ -359,7 +363,7 @@ public class BookmarkResource {
             tags = { "bookmarks", "iiif" },
             summary = "Get a bookmarklist owned by the current user by its id and return it as a IIIF Presentation 2.1.1 collection resource."
                     + " If not logged in, the single bookmark list stored in the session is always returned")
-    @ApiResponse(responseCode = "200", description = "Bookmark list as IIIF collection")
+    @ApiResponse(responseCode = "200", description = "Bookmark list as IIIF collection", useReturnTypeSchema = true)
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
@@ -379,7 +383,8 @@ public class BookmarkResource {
             tags = { "bookmarks" },
             summary = "Get a bookmarklist owned by the current user by its id and return it as a Mirador viewe config object. If not logged in,"
                     + " the single bookmark list stored in the session is always returned")
-    @ApiResponse(responseCode = "200", description = "Bookmark list as Mirador viewer config")
+    @ApiResponse(responseCode = "200", description = "Bookmark list as Mirador viewer config",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
@@ -400,7 +405,7 @@ public class BookmarkResource {
             tags = { "bookmarks", "rss" },
             summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed. If not logged in,"
                     + " the single bookmark list stored in the session is always returned")
-    @ApiResponse(responseCode = "200", description = "RSS feed for the bookmark list")
+    @ApiResponse(responseCode = "200", description = "RSS feed for the bookmark list", useReturnTypeSchema = true)
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
@@ -426,7 +431,7 @@ public class BookmarkResource {
             tags = { "bookmarks", "rss" },
             summary = "Get a bookmarklist owned by the current user by its id and return it as an RSS feed in json format. If not logged in,"
                     + " the single bookmark list stored in the session is always returned")
-    @ApiResponse(responseCode = "200", description = "RSS feed for the bookmark list as JSON")
+    @ApiResponse(responseCode = "200", description = "RSS feed for the bookmark list as JSON", useReturnTypeSchema = true)
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
@@ -451,7 +456,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Get all public bookmark lists")
-    @ApiResponse(responseCode = "200", description = "List of all public bookmark lists")
+    @ApiResponse(responseCode = "200", description = "List of all public bookmark lists", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public List<BookmarkList> getPublicBookmarkLists()
             throws DAOException, IOException, RestApiException {
@@ -464,6 +469,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Get a public or shared bookmark list by its share key")
+    @ApiResponse(responseCode = "200", description = "The shared bookmark list", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid share key format")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
@@ -480,6 +486,8 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks" },
             summary = "Get a public or shared bookmark list by its share key as a Mirador viewer config")
+    @ApiResponse(responseCode = "200", description = "Mirador configuration for the shared bookmark list",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Invalid share key format")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
@@ -496,6 +504,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks", "iiif" },
             summary = "Get a public or shared bookmark list by its share key as a IIIF Presentation 2.1.1 collection")
+    @ApiResponse(responseCode = "200", description = "The shared bookmark list as IIIF Presentation 2.1.1 collection", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid share key format")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
@@ -552,6 +561,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks", "rss" },
             summary = "Get a public or shared bookmark list by its share key as an RSS feed in json format")
+    @ApiResponse(responseCode = "200", description = "The shared bookmark list as RSS feed in JSON", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid share key format")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
@@ -574,6 +584,7 @@ public class BookmarkResource {
     @Operation(
             tags = { "bookmarks", "rss" },
             summary = "Get a  bookmark list by its share key as an RSS feed")
+    @ApiResponse(responseCode = "200", description = "The shared bookmark list as RSS feed", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid share key format")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")

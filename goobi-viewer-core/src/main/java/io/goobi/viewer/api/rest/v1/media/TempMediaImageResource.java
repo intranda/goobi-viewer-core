@@ -134,7 +134,7 @@ public class TempMediaImageResource extends ImageResource {
     @ContentServerImageInfoBinding
     @Operation(tags = { "iiif" },
             summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
-    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 image information object")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "400", description = "Invalid filename (e.g. unsupported format)")
     @ApiResponse(responseCode = "401", description = "Not authenticated")
     @ApiResponse(responseCode = "403", description = "Not authorized (admin login required)")

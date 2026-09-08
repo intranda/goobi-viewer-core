@@ -87,7 +87,7 @@ public class RecordSectionsResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "IIIF 3.0 range of the section")
-    @ApiResponse(responseCode = "200", description = "IIIF 3.0 range for the given section")
+    @ApiResponse(responseCode = "200", description = "IIIF 3.0 range for the given section", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
     @ApiResponse(responseCode = "404", description = "Record or section not found")
     @IIIFPresentationBinding

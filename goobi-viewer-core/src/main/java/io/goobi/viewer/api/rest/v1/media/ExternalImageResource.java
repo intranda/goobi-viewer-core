@@ -59,6 +59,7 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -187,7 +188,8 @@ public class ExternalImageResource extends ImageResource {
     @Produces("application/pdf")
     @ContentServerPdfBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
-    @ApiResponse(responseCode = "200", description = "PDF document")
+    @ApiResponse(responseCode = "200", description = "PDF document",
+            content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid filename (e.g. non-ASCII characters)")
     // 403 is returned as application/json when access to the resource is restricted
     @ApiResponse(responseCode = "403", description = "Access denied due to access conditions")
@@ -219,7 +221,7 @@ public class ExternalImageResource extends ImageResource {
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
-    @ApiResponse(responseCode = "200", description = "IIIF image information object")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "400", description = "Invalid filename (non-ASCII or malformed URI)")
     @ApiResponse(responseCode = "403", description = "Access denied due to access conditions")
     // The external image server may return an HTML error page that the proxy passes through,

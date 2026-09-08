@@ -58,7 +58,10 @@ import de.intranda.api.iiif.presentation.IPresentationModelElement;
 import de.intranda.api.iiif.presentation.enums.AnnotationType;
 import de.intranda.api.iiif.presentation.v2.AnnotationList;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
+import de.intranda.api.iiif.presentation.v2.Collection2;
 import de.intranda.api.iiif.presentation.v2.Layer;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
+import de.intranda.api.iiif.presentation.v2.Sequence;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -88,6 +91,7 @@ import io.goobi.viewer.model.viewer.PhysicalElement;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -126,7 +130,7 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_NER_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get NER tags for a single page")
-    @ApiResponse(responseCode = "200", description = "NER tags for the requested page")
+    @ApiResponse(responseCode = "200", description = "NER tags for the requested page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
@@ -144,7 +148,8 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_SEQUENCE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 base sequence")
-    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 base sequence for the record")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 base sequence for the record",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Sequence.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -169,7 +174,8 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
-    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the given page")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the given page",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Manifest2.class, Collection2.class })))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     // 403 is returned by AccessConditionRequestFilter when the record is not found in the Solr index
     @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
@@ -193,7 +199,8 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 canvas for a page")
-    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 canvas for the given page")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 canvas for the given page",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Canvas2.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No record or page found for the given identifiers")
@@ -211,7 +218,8 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
-    @ApiResponse(responseCode = "200", description = "Annotation collection for the given page")
+    @ApiResponse(responseCode = "200", description = "Annotation collection for the given page",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationList.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getAnnotationsForRecord(
@@ -228,7 +236,8 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
-    @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the given page")
+    @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the given page",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationList.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getCommentsForPage(
@@ -258,7 +267,8 @@ public class RecordPageResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the text content of a single page as annotations", tags = { "records" })
-    @ApiResponse(responseCode = "200", description = "Annotation collection containing page text")
+    @ApiResponse(responseCode = "200", description = "Annotation collection containing page text",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationList.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or page number")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getTextForPage(

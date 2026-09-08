@@ -85,6 +85,8 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -121,7 +123,8 @@ public class SearchResultResource {
     @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "search" }, summary = "Download current search as RIS export file")
-    @ApiResponse(responseCode = "200", description = "RIS export file for the current search results")
+    @ApiResponse(responseCode = "200", description = "RIS export file for the current search results",
+            content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
     @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     @AccessConditionBinding
@@ -168,7 +171,8 @@ public class SearchResultResource {
     @jakarta.ws.rs.Path(SEARCH_EXPORT_XML)
     @Produces({ MediaType.APPLICATION_XML })
     @Operation(tags = { "search" }, summary = "Export search results as Solr XML")
-    @ApiResponse(responseCode = "200", description = "Solr XML containing the matching documents")
+    @ApiResponse(responseCode = "200", description = "Solr XML containing the matching documents",
+            content = @Content(mediaType = MediaType.APPLICATION_XML, schema = @Schema(type = "string")))
     @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable or XML serialisation error")
     @AccessConditionBinding
@@ -207,7 +211,8 @@ public class SearchResultResource {
     @GET
     @jakarta.ws.rs.Path(SEARCH_EXPORT_FORMAT)
     @Operation(tags = { "search" }, summary = "Export search results in a configured format (e.g. excel, csv, endnote, bibtex, ris)")
-    @ApiResponse(responseCode = "200", description = "Export in the requested format")
+    @ApiResponse(responseCode = "200", description = "Export in the requested format",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
     @ApiResponse(responseCode = "403",
             description = "The requested export format is disabled, or the caller may not download metadata for the matching records")

@@ -99,7 +99,9 @@ public class ClientApplicationsResource {
     @jakarta.ws.rs.Path(CLIENTS_REGISTER)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Request registration as a trusted client application", tags = { "clients" })
-    @ApiResponse(responseCode = "201", description = "Client registered successfully; registration is pending approval")
+    @ApiResponse(responseCode = "201", description = "Client registered successfully; registration is pending approval",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(type = "object", example = "{\"status\":\"REQUESTED\"}")))
     @ApiResponse(responseCode = "400", description = "A client with this machine identifier is already registered")
     public Response register() throws ContentLibException, DAOException {
         String clientIdentifier = ClientApplicationManager.getClientIdentifier(servletRequest);
@@ -115,7 +117,9 @@ public class ClientApplicationsResource {
     @jakarta.ws.rs.Path(CLIENTS_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Request access for a registered client application", tags = { "clients" })
-    @ApiResponse(responseCode = "200", description = "Access status for the requesting client")
+    @ApiResponse(responseCode = "200", description = "Access status for the requesting client",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(type = "object", example = "{\"access\":true,\"status\":\"GRANTED\"}")))
     @ApiResponse(responseCode = "400", description = "Client not yet registered")
     @ApiResponse(responseCode = "401", description = "Missing client identifier header (X-goobi-content-protection)")
     public String request() throws ContentLibException, DAOException {
@@ -155,7 +159,8 @@ public class ClientApplicationsResource {
                     + " Requires an access token in the query paramter or header field 'token'.",
             tags = { "clients" })
     @ApiResponse(responseCode = "200",
-            description = "Any changes requested have been persisted. The current state of the client is contained within the response body as JSON")
+            description = "Any changes requested have been persisted. The current state of the client is contained within the response body as JSON",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "The body is not a valid JSON object or contains invalid data")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
@@ -226,7 +231,7 @@ public class ClientApplicationsResource {
     @Operation(summary = "Get a list of all registered clients", tags = { "clients" },
             description = "Clients are returned as json objects. Requires an access token in the query paramter or header field 'token'."
                     + " Optional 'first' and 'count' query parameters paginate the response; omitting both returns the full list.")
-    @ApiResponse(responseCode = "200", description = "List of all registered client applications")
+    @ApiResponse(responseCode = "200", description = "List of all registered client applications", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Negative pagination parameter")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
@@ -269,7 +274,7 @@ public class ClientApplicationsResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the client with the given client identifier", tags = { "clients" },
             description = "The client is returned as a json object. Requires an access token in the query paramter or header field 'token'.")
-    @ApiResponse(responseCode = "200", description = "Client application object")
+    @ApiResponse(responseCode = "200", description = "Client application object", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "The requested client identifier refers to an internal resource")
     @ApiResponse(responseCode = "401",
             description = "No authorization for access to this resource. See documentation about accessing protected resources")

@@ -39,8 +39,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.IAnnotationCollection;
+import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.intranda.api.iiif.presentation.v3.Collection3;
+import de.intranda.api.iiif.presentation.v3.Manifest3;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -62,6 +65,8 @@ import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
 import io.goobi.viewer.model.iiif.search.IIIFSearchBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -125,6 +130,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 manifest for record")
+    @ApiResponse(responseCode = "200", description = "IIIF 3.0 manifest of the record, or a collection for anchor records",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Manifest3.class, Collection3.class })))
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest()
             throws PresentationException, IndexUnreachableException, URISyntaxException, ViewerConfigurationException,
@@ -145,6 +152,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as annotation collection")
+    @ApiResponse(responseCode = "200", description = "Annotation collection of the record",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationCollection.class)))
     public IAnnotationCollection getAnnotationsForRecord() throws DAOException, IllegalRequestException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
@@ -157,6 +166,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a record as an annotation collection")
+    @ApiResponse(responseCode = "200", description = "Comment collection of the record",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationCollection.class)))
     public IAnnotationCollection getCommentsForRecord() throws DAOException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_COMMENTS).params(pi);
@@ -168,6 +179,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_ANNOTATIONS_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as an annotation collection page")
+    @ApiResponse(responseCode = "200", description = "First page of the record's annotation collection", useReturnTypeSchema = true)
     public AnnotationPage getAnnotationsPageForRecord() throws DAOException, IllegalRequestException {
 
         ApiPath apiPath = urls.path(RECORDS_RECORD, RECORDS_ANNOTATIONS).params(pi);
@@ -185,6 +197,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_COMMENTS_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a record as an annotation collection page")
+    @ApiResponse(responseCode = "200", description = "First page of the record's comment collection",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationPage.class)))
     public IAnnotationCollection getCommentsForRecordPage()
             throws DAOException {
 
@@ -223,7 +237,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: search within the manifest of the given record")
-    @ApiResponse(responseCode = "200", description = "IIIF Search result containing matching annotations")
+    @ApiResponse(responseCode = "200", description = "IIIF Search result containing matching annotations", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "404", description = "Record not found")
     public SearchResult searchInManifest(@QueryParam("q") String query, @QueryParam("motivation") String motivation,
             @QueryParam("date") String date, @QueryParam("user") String user, @QueryParam("page") Integer page)
@@ -247,7 +261,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: autocomplete search within the manifest of the given record")
-    @ApiResponse(responseCode = "200", description = "IIIF AutoSuggest result containing matching terms")
+    @ApiResponse(responseCode = "200", description = "IIIF AutoSuggest result containing matching terms", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "404", description = "Record not found")
     public AutoSuggestResult autoCompleteInManifest(@QueryParam("q") String query,
             @QueryParam("motivation") String motivation, @QueryParam("date") String date, @QueryParam("user") String user,

@@ -202,8 +202,7 @@ public class UserAvatarResource extends ImageResource {
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
     @Operation(tags = { "users" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object")
-    @ApiResponse(responseCode = "200", description = "Avatar image information")
-    @ApiResponse(responseCode = "302", description = "Redirect to canonical IIIF image info URL")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     // 400 is returned when the path parameter {userId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid user ID")
     @ApiResponse(responseCode = "404", description = "No avatar found for the given user")

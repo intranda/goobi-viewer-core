@@ -77,7 +77,8 @@ public class CollectionsResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 3.0 collection")
-    @ApiResponse(responseCode = "200", description = "IIIF Presentation 3.0 collection containing all collections for this field")
+    @ApiResponse(responseCode = "200", description = "IIIF Presentation 3.0 collection containing all collections for this field",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid collection field parameter")
     @ApiResponse(responseCode = "500", description = "Internal server error")
     public Collection3 getAllCollections() throws IndexUnreachableException {
@@ -88,7 +89,8 @@ public class CollectionsResource {
     @jakarta.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation 3.0 collection")
-    @ApiResponse(responseCode = "200", description = "IIIF Presentation 3.0 collection for the given collection name")
+    @ApiResponse(responseCode = "200", description = "IIIF Presentation 3.0 collection for the given collection name",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid collection field parameter")
     @ApiResponse(responseCode = "404", description = "Collection not found")
     @ApiResponse(responseCode = "500", description = "Internal server error")

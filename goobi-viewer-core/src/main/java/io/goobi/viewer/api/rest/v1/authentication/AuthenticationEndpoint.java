@@ -74,6 +74,8 @@ import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserToken;
 import io.goobi.viewer.controller.DateTools;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -143,7 +145,8 @@ public class AuthenticationEndpoint {
             description = "Authenticates a local user (e-mail + password) and returns a Bearer token. "
                     + "Store the token securely; it is returned only once and cannot be retrieved again. "
                     + "Do not log or expose it in URLs.")
-    @ApiResponse(responseCode = "200", description = "Login successful; plaintext token returned in response body")
+    @ApiResponse(responseCode = "200", description = "Login successful; plaintext token returned in response body",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AuthenticationResponse.class)))
     @ApiResponse(responseCode = "401", description = "Invalid credentials, user inactive or suspended")
     @ApiResponse(responseCode = "429", description = "Too many failed attempts; retryAfterSeconds indicates seconds until retry")
     @ApiResponse(responseCode = "500", description = "Internal error")
@@ -250,7 +253,8 @@ public class AuthenticationEndpoint {
     @Operation(
             summary = "Logout / revoke token",
             description = "Revokes a UserToken when called with Authorization: Bearer, or invalidates the HTTP session.")
-    @ApiResponse(responseCode = "200", description = "Token revoked or session invalidated")
+    @ApiResponse(responseCode = "200", description = "Token revoked or session invalidated",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AuthenticationResponse.class)))
     @ApiResponse(responseCode = "401", description = "No valid session or no authenticated user in session")
     @Tag(name = "auth")
     public Response logout() {
@@ -303,7 +307,10 @@ public class AuthenticationEndpoint {
     @GET
     @Path(ApiUrls.AUTH_HEADER)
     @Operation(summary = "Header login", description = "Checks a configurable header for a username and logs in the user if it is found in the DB")
-    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "200", description = "OK",
+            content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    @ApiResponse(responseCode = "302",
+            description = "Redirect to the given redirectUrl (or the application root) after a successful login")
     @ApiResponse(responseCode = "403", description = "Forbidden — no matching provider configured or authentication denied")
     @ApiResponse(responseCode = "500", description = "Internal error")
     @Tag(name = "login")
@@ -407,7 +414,9 @@ public class AuthenticationEndpoint {
     @GET
     @Path(ApiUrls.AUTH_OAUTH)
     @Operation(summary = "OpenID Connect callback (GET method)", description = "Verifies an openID claim and starts a session for the user")
-    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "200", description = "OK",
+            content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    @ApiResponse(responseCode = "303", description = "Redirect to the provider's configured redirect URL after a successful login")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "403", description = "Forbidden - OpenID authentication failed or denied")
     @ApiResponse(responseCode = "500", description = "Internal error")
@@ -437,7 +446,9 @@ public class AuthenticationEndpoint {
     // (e.g. automated tools like schemathesis that omit the header).
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Operation(summary = "OpenID Connect callback (POST method)", description = "Verifies an openID claim and starts a session for the user")
-    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "200", description = "OK",
+            content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
+    @ApiResponse(responseCode = "303", description = "Redirect to the provider's configured redirect URL after a successful login")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "403", description = "Forbidden - OpenID authentication failed or denied")
     @ApiResponse(responseCode = "500", description = "Internal error")

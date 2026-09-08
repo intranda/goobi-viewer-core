@@ -44,6 +44,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -76,7 +77,8 @@ public class CacheResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Return information about internal cache status", tags = { "cache" })
-    @ApiResponse(responseCode = "200", description = "Cache status information including item counts")
+    @ApiResponse(responseCode = "200", description = "Cache status information including item counts",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     public String getCacheInfo() throws ContentServerCacheException {
         //        ContentServerCache content = ContentServerCache.getContentCache();
         //        ContentServerCache pdf = ContentServerCache.getPdfCache();
@@ -120,7 +122,7 @@ public class CacheResource {
     @DELETE
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
-    @ApiResponse(responseCode = "200", description = "Cache cleared successfully")
+    @ApiResponse(responseCode = "200", description = "Cache cleared successfully", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid query parameters")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" })
@@ -148,7 +150,7 @@ public class CacheResource {
     @DELETE
     @Path(ApiUrls.CACHE_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode = "200", description = "Return the number of deleted cache items")
+    @ApiResponse(responseCode = "200", description = "Return the number of deleted cache items", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Missing or empty record identifier")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     // 404 is returned when the {pi} path parameter does not match any record in the cache

@@ -102,7 +102,7 @@ public class RecordsImageResource {
             summary = "IIIF image identifier for the representative image of the process given by the identifier."
                     + " Returns a IIIF 2.1.1 image information object",
             tags = { "iiif", "records" })
-    @ApiResponse(responseCode = "200", description = "Get the IIIF image information object as json")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Either the record or the file for the representative image doesn't exist")
     @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")

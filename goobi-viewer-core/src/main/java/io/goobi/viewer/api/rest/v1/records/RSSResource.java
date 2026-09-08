@@ -61,7 +61,7 @@ public class RSSResource {
             tags = { "records", "rss" },
             summary = "Get an rss feed of the most recent records")
     @ApiResponse(responseCode = "200", description = "RSS feed in XML format",
-            content = @Content(mediaType = MediaType.TEXT_XML))
+            content = @Content(mediaType = MediaType.TEXT_XML, schema = @Schema(type = "string")))
     @ApiResponse(responseCode = "400", description = "The provided query parameter contains invalid Solr query syntax")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public String getRssFeed(
@@ -91,8 +91,7 @@ public class RSSResource {
     @Operation(
             tags = { "records", "rss" },
             summary = "Get a JSON representation of an RSS feed of the most recent records")
-    @ApiResponse(responseCode = "200", description = "RSS feed as JSON object",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "200", description = "RSS feed as JSON object", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "The provided query parameter contains invalid Solr query syntax")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public Channel getRssJsonFeed(

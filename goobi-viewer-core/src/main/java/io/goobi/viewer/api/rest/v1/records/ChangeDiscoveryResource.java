@@ -95,7 +95,8 @@ public class ChangeDiscoveryResource {
     @Operation(
             tags = { "records", "iiif" },
             summary = "Get a IIIF change discovery activity stream of all record changes")
-    @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification")
+    @ApiResponse(responseCode = "200", description = "Return activity stream according to IIIF change discovery specification",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid date format for 'start' parameter (expected yyyy-MM-dd)")
     @ApiResponse(responseCode = "500", description = "An internal error occurred, possibly due to an unreachable Solr index")
     public OrderedCollection<Activity> getAllChanges(

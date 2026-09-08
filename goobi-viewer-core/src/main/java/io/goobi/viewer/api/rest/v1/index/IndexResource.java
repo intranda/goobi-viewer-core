@@ -87,6 +87,8 @@ import io.goobi.viewer.solr.SolrSearchIndex;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -169,7 +171,8 @@ public class IndexResource {
     @Operation(
             tags = { "index" },
             summary = "Statistics about indexed records")
-    @ApiResponse(responseCode = "200", description = "JSON object with record count statistics")
+    @ApiResponse(responseCode = "200", description = "JSON object with record count statistics",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Invalid Solr query syntax")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getStatistics(
@@ -224,7 +227,8 @@ public class IndexResource {
     @Operation(
             tags = { "index" },
             summary = "Post a query directly to the Solr index")
-    @ApiResponse(responseCode = "200", description = "JSON object with matched documents and optional facets")
+    @ApiResponse(responseCode = "200", description = "JSON object with matched documents and optional facets",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Illegal query or query parameters")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public String getRecordsForQuery(RecordsRequestParameters params)
@@ -329,7 +333,7 @@ public class IndexResource {
             description = "The response is cached server-side for 5 minutes; updates to the Solr"
                     + " schema may take up to that long to become visible here.",
             tags = { "index" })
-    @ApiResponse(responseCode = "200", description = "JSON array of Solr field metadata")
+    @ApiResponse(responseCode = "200", description = "JSON array of Solr field metadata", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public List<SolrFieldInfo> getAllIndexFields() throws IOException {
         logger.trace("getAllIndexFields");
@@ -374,7 +378,8 @@ public class IndexResource {
     @Path(INDEX_SPATIAL_HEATMAP)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Returns a heatmap of geospatial search results", tags = { "index" })
-    @ApiResponse(responseCode = "200", description = "JSON heatmap data for the given spatial query")
+    @ApiResponse(responseCode = "200", description = "JSON heatmap data for the given spatial query",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Invalid heatmap parameters or Solr field name format")
     @ApiResponse(responseCode = "404", description = "Solr field not found in index")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
@@ -457,7 +462,8 @@ public class IndexResource {
     @Path(INDEX_SPATIAL_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Returns results of a geospatial search as GeoJson objects", tags = { "index" })
-    @ApiResponse(responseCode = "200", description = "JSON array of GeoJSON feature objects")
+    @ApiResponse(responseCode = "200", description = "JSON array of GeoJSON feature objects",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, array = @ArraySchema(schema = @Schema(type = "object"))))
     @ApiResponse(responseCode = "400", description = "Invalid Solr field name format or query syntax")
     @ApiResponse(responseCode = "404", description = "Solr field not found in index")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")

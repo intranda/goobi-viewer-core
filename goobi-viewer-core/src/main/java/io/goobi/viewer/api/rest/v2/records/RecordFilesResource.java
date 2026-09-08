@@ -66,6 +66,8 @@ import io.goobi.viewer.model.translations.language.Language;
 import io.goobi.viewer.model.viewer.StringPair;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -109,6 +111,7 @@ public class RecordFilesResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page")
+    @ApiResponse(responseCode = "200", description = "ALTO document of the page", useReturnTypeSchema = true)
     // Access-denied and not-found responses are returned as application/json even though the success content type is text/xml
     @ApiResponse(responseCode = "403", description = "Access to this fulltext file is restricted")
     @ApiResponse(responseCode = "404", description = "ALTO file not found for the given record and filename")
@@ -129,6 +132,7 @@ public class RecordFilesResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
+    @ApiResponse(responseCode = "200", description = "Plain text of the page", useReturnTypeSchema = true)
     // Access-denied and not-found responses are returned as application/json even though the success content type is text/plain
     @ApiResponse(responseCode = "403", description = "Access to this fulltext file is restricted")
     @ApiResponse(responseCode = "404", description = "Plaintext file not found for the given record and filename")
@@ -147,6 +151,7 @@ public class RecordFilesResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_TEI)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
+    @ApiResponse(responseCode = "200", description = "TEI document of the page", useReturnTypeSchema = true)
     // Access-denied and not-found responses are returned as application/json even though the success content type is text/xml
     @ApiResponse(responseCode = "403", description = "Access to this fulltext file is restricted")
     @ApiResponse(responseCode = "404", description = "TEI file not found for the given record and filename")
@@ -164,6 +169,8 @@ public class RecordFilesResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_SOURCE)
     @Operation(tags = { "records" }, summary = "Get source files of record")
+    @ApiResponse(responseCode = "200", description = "Source file of the record",
+            content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     // Error responses (404, 403) are returned as application/json even though success is application/octet-stream
     @ApiResponse(responseCode = "403", description = "Access to this source file is restricted")
     @ApiResponse(responseCode = "404", description = "Source file not found")
@@ -200,6 +207,8 @@ public class RecordFilesResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_CMDI)
     @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @ApiResponse(responseCode = "200", description = "CMDI document of the record file",
+            content = @Content(mediaType = MediaType.TEXT_XML, schema = @Schema(type = "string")))
     // Access-denied and not-found responses are returned as application/json
     @ApiResponse(responseCode = "403", description = "Access to this file is restricted")
     @ApiResponse(responseCode = "404", description = "CMDI file not found for the given record and filename")

@@ -75,7 +75,7 @@ public class OpenSearchResource {
     @GET
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "search" }, summary = "OpenSearch description document")
-    @ApiResponse(responseCode = "200", description = "OpenSearch description XML")
+    @ApiResponse(responseCode = "200", description = "OpenSearch description XML", useReturnTypeSchema = true)
     public String getXml() {
         String xml = null;
         try {

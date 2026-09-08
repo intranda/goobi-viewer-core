@@ -36,8 +36,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.intranda.api.annotation.IAnnotation;
+import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.intranda.api.iiif.presentation.v3.Canvas3;
+import de.intranda.api.iiif.presentation.v3.Collection3;
+import de.intranda.api.iiif.presentation.v3.Manifest3;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -56,6 +60,8 @@ import io.goobi.viewer.model.iiif.presentation.v3.builder.ManifestBuilder;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -100,7 +106,8 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 canvas for page")
-    @ApiResponse(responseCode = "200", description = "IIIF 3.0 canvas for the given page")
+    @ApiResponse(responseCode = "200", description = "IIIF 3.0 canvas for the given page",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Canvas3.class)))
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
     @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
     @ApiResponse(responseCode = "404", description = "Record or page not found")
@@ -114,7 +121,7 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_MEDIA)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get media resources for page")
-    @ApiResponse(responseCode = "200", description = "Annotation page containing media resources for the given page")
+    @ApiResponse(responseCode = "200", description = "Annotation page containing media resources for the given page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
     @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
     @ApiResponse(responseCode = "404", description = "Record, page, or media annotations not found")
@@ -134,7 +141,8 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_MEDIA + "/{itemid}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get a single media annotation for a page by its identifier")
-    @ApiResponse(responseCode = "200", description = "The media annotation for the given identifier")
+    @ApiResponse(responseCode = "200", description = "The media annotation for the given identifier",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = WebAnnotation.class)))
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
     @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
     @ApiResponse(responseCode = "404", description = "Record, page, or media annotation not found")
@@ -156,7 +164,8 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get fulltext annotations for page")
-    @ApiResponse(responseCode = "200", description = "Annotation page containing fulltext annotations for the given page")
+    @ApiResponse(responseCode = "200", description = "Annotation page containing fulltext annotations for the given page",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
     @ApiResponse(responseCode = "403", description = "Access to fulltext for this record is restricted")
     @ApiResponse(responseCode = "404", description = "Record or page not found")
@@ -170,7 +179,7 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
-    @ApiResponse(responseCode = "200", description = "Annotation page containing annotations for the given page")
+    @ApiResponse(responseCode = "200", description = "Annotation page containing annotations for the given page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
     @ApiResponse(responseCode = "403", description = "Access to user-generated content for this record is restricted")
     @AccessRightsBinding({ IPrivilegeHolder.PRIV_VIEW_UGC })
@@ -191,7 +200,7 @@ public class RecordPagesResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @AccessRightsBinding({ IPrivilegeHolder.PRIV_VIEW_UGC })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
-    @ApiResponse(responseCode = "200", description = "Annotation page containing comments for the given page")
+    @ApiResponse(responseCode = "200", description = "Annotation page containing comments for the given page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
     @ApiResponse(responseCode = "403", description = "Access to user-generated content for this record is restricted")
     public AnnotationPage getCommentsForPage() throws DAOException {
@@ -204,7 +213,8 @@ public class RecordPagesResource {
     @jakarta.ws.rs.Path(RECORDS_PAGES_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 manifest for record starting at the given page")
-    @ApiResponse(responseCode = "200", description = "IIIF 3.0 manifest for the given record")
+    @ApiResponse(responseCode = "200", description = "IIIF 3.0 manifest for the given record",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Manifest3.class, Collection3.class })))
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
     @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
     @ApiResponse(responseCode = "404", description = "Record or page not found")

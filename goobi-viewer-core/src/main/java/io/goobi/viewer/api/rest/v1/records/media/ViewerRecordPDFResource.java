@@ -110,7 +110,8 @@ public class ViewerRecordPDFResource {
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Get PDF for entire record")
-    @ApiResponse(responseCode = "200", description = "PDF file", content = @Content(mediaType = "application/pdf"))
+    @ApiResponse(responseCode = "200", description = "PDF file",
+            content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "Record not found")
@@ -143,8 +144,7 @@ public class ViewerRecordPDFResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
     @Operation(tags = { "records" }, summary = "Get information about PDF for entire record")
-    @ApiResponse(responseCode = "200", description = "PDF information object",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "200", description = "PDF information object", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Record not found")
     @ApiResponse(responseCode = "500", description = "Error reading PDF information")
@@ -180,8 +180,7 @@ public class ViewerRecordPDFResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
     @Operation(tags = { "records" }, summary = "Get information about epub for entire record")
-    @ApiResponse(responseCode = "200", description = "ePub information object",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "200", description = "ePub information object", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Record not found")
     @ApiResponse(responseCode = "500", description = "Error reading ePub information")

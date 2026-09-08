@@ -58,6 +58,8 @@ import io.goobi.viewer.controller.NetTools;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -137,6 +139,8 @@ public class ExternalImageResource extends ImageResource {
     @Produces("application/pdf")
     @ContentServerPdfBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    @ApiResponse(responseCode = "200", description = "PDF rendition of the image",
+            content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
     // Access-denied and error responses are returned as application/json even though the declared content type is application/pdf
     @ApiResponse(responseCode = "403", description = "Access denied due to access conditions")
     @ApiResponse(responseCode = "404", description = "Image not found")
@@ -167,6 +171,8 @@ public class ExternalImageResource extends ImageResource {
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 3.0 image information object")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
+    @ApiResponse(responseCode = "404", description = "Image not found")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();
     }

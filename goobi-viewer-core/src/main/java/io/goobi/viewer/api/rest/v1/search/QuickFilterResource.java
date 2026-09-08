@@ -54,6 +54,8 @@ import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.search.SearchHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -69,7 +71,9 @@ public class QuickFilterResource {
     @Path(ApiUrls.QUICKFILTERS_FACETS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "search" }, summary = "Get translated facet values for a quick filter dropdown")
-    @ApiResponse(responseCode = "200", description = "Map of first-letter groups to facet value entries with translated labels")
+    @ApiResponse(responseCode = "200", description = "Map of first-letter groups to facet value entries with translated labels",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(type = "object", description = "Facet values grouped by group label")))
     @ApiResponse(responseCode = "400", description = "Missing or invalid 'field' parameter")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public Response getFacetValues(

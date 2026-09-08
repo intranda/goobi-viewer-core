@@ -45,6 +45,8 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.model.export.bagit.CollectionArchiveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BadRequestException;
@@ -97,7 +99,7 @@ public class CollectionArchiveResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "collections" }, summary = "Information about the downloadable BagIt archive for a collection")
-    @ApiResponse(responseCode = "200", description = "Archive availability and metadata")
+    @ApiResponse(responseCode = "200", description = "Archive availability and metadata", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "401", description = "User is not logged in")
     public Map<String, Object> getArchiveInfo() throws IOException {
         assertFieldConfigured();
@@ -124,7 +126,8 @@ public class CollectionArchiveResource {
     @GET
     @jakarta.ws.rs.Path(COLLECTIONS_ARCHIVE_DOWNLOAD)
     @Operation(tags = { "collections" }, summary = "Download the BagIt archive for a collection")
-    @ApiResponse(responseCode = "200", description = "The zipped BagIt archive")
+    @ApiResponse(responseCode = "200", description = "The zipped BagIt archive",
+            content = @Content(mediaType = "application/zip", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "401", description = "User is not logged in")
     @ApiResponse(responseCode = "404", description = "No archive available for the collection")
     public Response downloadArchive() throws IOException, ContentNotFoundException {

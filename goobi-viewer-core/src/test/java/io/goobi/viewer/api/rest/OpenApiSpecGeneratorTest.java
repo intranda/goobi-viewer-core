@@ -26,7 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -37,6 +39,7 @@ import org.junit.jupiter.api.Test;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.tags.Tag;
 
 class OpenApiSpecGeneratorTest {
@@ -85,6 +88,31 @@ class OpenApiSpecGeneratorTest {
         assertNotNull(openApi.getInfo(), "v2 info must not be null");
         assertNotNull(openApi.getInfo().getTitle(), "v2 info title must be set");
         assertNotNull(openApi.getInfo().getVersion(), "v2 info version must be set");
+    }
+
+    /**
+     * Operations whose success response legitimately has no body: the endpoint answers with a bare
+     * status code, so there is no schema to declare.
+     */
+    private static final Set<String> SUCCESS_WITHOUT_BODY = Set.of(
+            "v1 POST /users/{userId}/avatar");
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies declare a body schema for every success response for v1
+     */
+    @Test
+    void buildOpenApi_shouldDeclareABodySchemaForEverySuccessResponseForV1() throws Exception {
+        assertSuccessResponsesDeclareBodySchema("v1");
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies declare a body schema for every success response for v2
+     */
+    @Test
+    void buildOpenApi_shouldDeclareABodySchemaForEverySuccessResponseForV2() throws Exception {
+        assertSuccessResponsesDeclareBodySchema("v2");
     }
 
     /**
@@ -149,5 +177,36 @@ class OpenApiSpecGeneratorTest {
                 .collect(Collectors.toCollection(TreeSet::new));
         assertTrue(undeclared.isEmpty(),
                 version + " operations use tags that OpenApiResource.getTags() does not declare: " + undeclared);
+    }
+
+    /**
+     * Fails with the offending operations when one has no 2xx/3xx response at all, or when one of its
+     * 2xx responses has no content schema. 3xx responses are redirects and carry no body.
+     *
+     * @param version "v1" or "v2"
+     */
+    private static void assertSuccessResponsesDeclareBodySchema(String version) throws Exception {
+        OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+        List<String> offenders = new ArrayList<>();
+        openApi.getPaths().forEach((path, pathItem) -> pathItem.readOperationsMap().forEach((method, operation) -> {
+            String key = version + " " + method.name() + " " + path;
+            if (SUCCESS_WITHOUT_BODY.contains(key)) {
+                return;
+            }
+            Map<String, ApiResponse> responses = operation.getResponses() == null ? Map.of() : operation.getResponses();
+            boolean hasSuccess = responses.keySet().stream().anyMatch(code -> code.startsWith("2") || code.startsWith("3"));
+            boolean bodiesHaveSchema = responses.entrySet()
+                    .stream()
+                    .filter(e -> e.getKey().startsWith("2"))
+                    .allMatch(e -> hasSchema(e.getValue()));
+            if (!hasSuccess || !bodiesHaveSchema) {
+                offenders.add(key);
+            }
+        }));
+        assertTrue(offenders.isEmpty(), version + " success responses without a body schema: " + offenders);
+    }
+
+    private static boolean hasSchema(ApiResponse response) {
+        return response.getContent() != null && response.getContent().values().stream().allMatch(mediaType -> mediaType.getSchema() != null);
     }
 }

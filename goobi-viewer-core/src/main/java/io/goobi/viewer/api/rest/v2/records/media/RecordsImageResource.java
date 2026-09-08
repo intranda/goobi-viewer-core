@@ -57,6 +57,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -91,7 +93,7 @@ public class RecordsImageResource {
             summary = "IIIF image identifier for the representative image of the process given by the identifier."
                     + " Returns a IIIF 3.0 image information object",
             tags = { "iiif", "records" })
-    @ApiResponse(responseCode = "200", description = "Get the IIIF image information object as json")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "404", description = "Either the record or the file for the representative image doesn't exist")
     @ApiResponse(responseCode = "500", description = "Internal error reading image or querying index")
     public Response getImageBase() throws URISyntaxException {
@@ -105,7 +107,9 @@ public class RecordsImageResource {
     @Path(RECORDS_IMAGE_INFO)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
     @Operation(summary = "IIIF image information for the representative image of the record", tags = { "iiif", "records" })
-    @ApiResponse(responseCode = "200", description = "IIIF 3.0 image information object")
+    @ApiResponse(responseCode = "200", description = "IIIF 3.0 image information object",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")),
+                    @Content(mediaType = "application/ld+json", schema = @Schema(type = "object")) })
     @ApiResponse(responseCode = "404", description = "Record or representative image not found")
     public String getImageInfo() throws PresentationException, IndexUnreachableException, ServletException, IOException, ContentNotFoundException {
         String filename = getRepresentativeFilename(pi);
@@ -119,7 +123,10 @@ public class RecordsImageResource {
     @Path(RECORDS_IMAGE_IIIF)
     @Produces({ "image/jpg", "image/png", "image/tif" })
     @Operation(summary = "Get the representative image of the record as a IIIF image request", tags = { "iiif", "records" })
-    @ApiResponse(responseCode = "200", description = "Image data in the requested format")
+    @ApiResponse(responseCode = "200", description = "Image data in the requested format",
+            content = { @Content(mediaType = "image/jpg", schema = @Schema(type = "string", format = "binary")),
+                    @Content(mediaType = "image/png", schema = @Schema(type = "string", format = "binary")),
+                    @Content(mediaType = "image/tif", schema = @Schema(type = "string", format = "binary")) })
     @ApiResponse(responseCode = "403", description = "Access to this image is restricted")
     @ApiResponse(responseCode = "404", description = "Record or representative image not found")
     public String getImage(

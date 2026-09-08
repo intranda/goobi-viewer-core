@@ -70,6 +70,8 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -162,6 +164,8 @@ public class RecordsFilesImageResource extends ImageResource {
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    @ApiResponse(responseCode = "200", description = "PDF rendition of the image",
+            content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
     // Access-denied and error responses are returned as application/json even though the declared content type is application/pdf
     @ApiResponse(responseCode = "403", description = "Access denied or record not found in index")
     @ApiResponse(responseCode = "404", description = "Image or record not found")
@@ -193,6 +197,8 @@ public class RecordsFilesImageResource extends ImageResource {
     @AccessConditionBinding
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
+    @ApiResponse(responseCode = "404", description = "Image not found")
     @Override
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();

@@ -70,6 +70,7 @@ import io.goobi.viewer.model.security.IPrivilegeHolder;
 import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -163,7 +164,8 @@ public class RecordsFilesImageResource extends ImageResource {
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
     @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
-    @ApiResponse(responseCode = "200", description = "PDF document")
+    @ApiResponse(responseCode = "200", description = "PDF document",
+            content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
     // 403 is returned as application/json when the record is not found in the index or access is restricted
     @ApiResponse(responseCode = "403", description = "Access denied or record not found in index")
@@ -210,7 +212,7 @@ public class RecordsFilesImageResource extends ImageResource {
     @AccessConditionBinding
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
-    @ApiResponse(responseCode = "200", description = "IIIF image information object")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "403", description = "Access denied due to access conditions")
     @ApiResponse(responseCode = "404", description = "Record or image not found")
     // Requests with special characters in the PI may be rejected by the reverse proxy before

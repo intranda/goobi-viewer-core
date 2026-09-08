@@ -61,8 +61,13 @@ import org.apache.solr.common.SolrDocumentList;
 import org.json.JSONObject;
 
 import de.intranda.api.annotation.IAnnotationCollection;
+import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.intranda.api.iiif.presentation.v2.AnnotationList;
+import de.intranda.api.iiif.presentation.v2.Collection2;
+import de.intranda.api.iiif.presentation.v2.Layer;
+import de.intranda.api.iiif.presentation.v2.Manifest2;
 import de.intranda.api.iiif.search.AutoSuggestResult;
 import de.intranda.api.iiif.search.SearchResult;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
@@ -111,6 +116,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
@@ -167,7 +173,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Download ris as file")
-    @ApiResponse(responseCode = "200", description = "RIS citation downloaded as plain text file")
+    @ApiResponse(responseCode = "200", description = "RIS citation downloaded as plain text file", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @AccessConditionBinding
@@ -195,7 +201,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get ris as text")
-    @ApiResponse(responseCode = "200", description = "RIS citation as plain text")
+    @ApiResponse(responseCode = "200", description = "RIS citation as plain text", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public String getRISAsText()
@@ -211,7 +217,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_TOC)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get table of contents of records")
-    @ApiResponse(responseCode = "200", description = "Table of contents as plain text")
+    @ApiResponse(responseCode = "200", description = "Table of contents as plain text", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public String getTOCAsText()
@@ -226,7 +232,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record")
-    @ApiResponse(responseCode = "200", description = "Annotation collection for the record")
+    @ApiResponse(responseCode = "200", description = "Annotation collection for the record",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { AnnotationList.class, AnnotationPage.class })))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getAnnotationsForRecord(
@@ -248,7 +255,9 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "annotations" }, summary = "List comments for a record")
-    @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the record")
+    @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the record",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(oneOf = { AnnotationList.class, AnnotationCollection.class })))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     public IAnnotationCollection getCommentsForRecord(
@@ -271,7 +280,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get a page of comments for a record", tags = { "records", "annotations" })
-    @ApiResponse(responseCode = "200", description = "Annotation page containing comments")
+    @ApiResponse(responseCode = "200", description = "Annotation page containing comments", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "If the page number is less than 1")
     @ApiResponse(responseCode = "404", description = "No record found or no comments for the given identifier")
     public AnnotationPage getCommentPageForRecord(
@@ -288,7 +297,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_METADATA_SOURCE)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get record metadata source file")
-    @ApiResponse(responseCode = "200", description = "Metadata source file content")
+    @ApiResponse(responseCode = "200", description = "Metadata source file content",
+            content = @Content(mediaType = MediaType.TEXT_XML, schema = @Schema(type = "string")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No source file found for the given record")
     public StreamingOutput getSource() throws ContentNotFoundException, PresentationException, IndexUnreachableException {
@@ -322,7 +332,8 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the record")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 manifest for the record",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Manifest2.class, Collection2.class })))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     // 403 is returned by AccessConditionRequestFilter when the record is not found in the Solr index
     @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
@@ -356,7 +367,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_LAYER)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF 2.1.1 manifest")
-    @ApiResponse(responseCode = "200", description = "IIIF layer for the given record and layer name")
+    @ApiResponse(responseCode = "200", description = "IIIF layer for the given record and layer name",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Layer.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     // 403 is returned by AccessConditionRequestFilter when the record is not found in the Solr index
     @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
@@ -378,7 +390,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_NER_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get NER tags for a record")
-    @ApiResponse(responseCode = "200", description = "NER tags for the given record")
+    @ApiResponse(responseCode = "200", description = "NER tags for the given record", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
@@ -399,7 +411,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record within a single text file")
-    @ApiResponse(responseCode = "200", description = "Full plaintext of the record")
+    @ApiResponse(responseCode = "200", description = "Full plaintext of the record", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400",
             description = "Invalid record identifier, or aggregate response would exceed the configured size limit"
                     + " (use /plaintext.zip instead)")
@@ -421,7 +433,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_PLAINTEXT_ZIP)
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get entire plaintext of record as a zip archive of text files per page")
-    @ApiResponse(responseCode = "200", description = "ZIP archive containing one text file per page")
+    @ApiResponse(responseCode = "200", description = "ZIP archive containing one text file per page",
+            content = @Content(mediaType = "application/zip", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -442,7 +455,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_ALTO)
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get entire alto document for record")
-    @ApiResponse(responseCode = "200", description = "ALTO XML document for the full record")
+    @ApiResponse(responseCode = "200", description = "ALTO XML document for the full record", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400",
             description = "Invalid record identifier, or aggregate response would exceed the configured size limit"
                     + " (use /alto.zip instead)")
@@ -460,7 +473,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_ALTO_ZIP)
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get a zip archive of alto documents per page")
-    @ApiResponse(responseCode = "200", description = "ZIP archive containing one ALTO file per page")
+    @ApiResponse(responseCode = "200", description = "ZIP archive containing one ALTO file per page",
+            content = @Content(mediaType = "application/zip", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -480,7 +494,7 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get CMDI record file in the requested language.",
             description = "If possible, directly read a CMDI file associated with the record")
-    @ApiResponse(responseCode = "200", description = "CMDI record file in the requested language")
+    @ApiResponse(responseCode = "200", description = "CMDI record file in the requested language", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or language code")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No CMDI file found for the given record")
@@ -501,7 +515,7 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get TEI record file in the requested language.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
-    @ApiResponse(responseCode = "200", description = "TEI record file in the requested language")
+    @ApiResponse(responseCode = "200", description = "TEI record file in the requested language", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or language code")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No TEI file found for the given record")
@@ -522,7 +536,7 @@ public class RecordResource {
     @Produces({ MediaType.TEXT_XML })
     @Operation(tags = { "records" }, summary = "Get text of record in TEI format.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
-    @ApiResponse(responseCode = "200", description = "Record text in TEI format")
+    @ApiResponse(responseCode = "200", description = "Record text in TEI format", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -540,7 +554,8 @@ public class RecordResource {
     @Produces({ "application/zip" })
     @Operation(tags = { "records" }, summary = "Get text of record in TEI format as a zip file.",
             description = "If possible, directly read a TEI file associated with the record, otherwise convert all fulltexts to TEI documents")
-    @ApiResponse(responseCode = "200", description = "ZIP archive of TEI files")
+    @ApiResponse(responseCode = "200", description = "ZIP archive of TEI files",
+            content = @Content(mediaType = "application/zip", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     // 403 is returned by checkFulltextAccessConditions when the record is not accessible
     @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
@@ -583,7 +598,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Search within a IIIF manifest", tags = { "records", "iiif" })
-    @ApiResponse(responseCode = "200", description = "IIIF search result")
+    @ApiResponse(responseCode = "200", description = "IIIF search result", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or query")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public SearchResult searchInManifest(
@@ -613,7 +628,7 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Auto-complete suggestions for searching within a IIIF manifest", tags = { "records", "iiif" })
-    @ApiResponse(responseCode = "200", description = "IIIF auto-suggest result")
+    @ApiResponse(responseCode = "200", description = "IIIF auto-suggest result", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or query")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     public AutoSuggestResult autoCompleteInManifest(
@@ -665,7 +680,8 @@ public class RecordResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
     @AuthorizationBinding
-    @ApiResponse(responseCode = "200", description = "Record deletion accepted")
+    @ApiResponse(responseCode = "200", description = "Record deletion accepted",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @ApiResponse(responseCode = "403", description = "Deletion not allowed because child volumes are still present")
@@ -740,7 +756,8 @@ public class RecordResource {
     @jakarta.ws.rs.Path(RECORDS_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
-    @ApiResponse(responseCode = "200", description = "Record metadata as JSON")
+    @ApiResponse(responseCode = "200", description = "Record metadata as JSON",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Missing record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier or template configuration not found")
     public Response getRecordMetadataAsJson(@PathParam("template") String template)

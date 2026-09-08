@@ -102,7 +102,8 @@ public class TasksResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" }, summary = "Create a (possibly time consuming) task to execute in a limited thread pool. See javadoc for details")
-    @ApiResponse(responseCode = "200", description = "Task has been accepted and started")
+    @ApiResponse(responseCode = "200", description = "Task has been accepted and started",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Task.class, ViewerMessage.class })))
     @ApiResponse(responseCode = "400", description = "No task type provided or task type is invalid")
     @ApiResponse(responseCode = "401", description = "Not authorized to create this type of task")
     @ApiResponse(responseCode = "500", description = "Message queue unavailable or internal error")
@@ -195,7 +196,8 @@ public class TasksResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" },
             summary = "Return the task with the given id, provided it is accessible by the request (determined by session or access token)")
-    @ApiResponse(responseCode = "200", description = "The task with the given id")
+    @ApiResponse(responseCode = "200", description = "The task with the given id",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Task.class, ViewerMessage.class })))
     // 400 is returned when the id contains characters not allowed by the schema pattern ^[A-Za-z0-9_-]+$
     @ApiResponse(responseCode = "400", description = "Invalid task id — must match ^[A-Za-z0-9_-]+$")
     @ApiResponse(responseCode = "404", description = "No task found for the given id, or the request is not authorized to access it")
@@ -255,7 +257,7 @@ public class TasksResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "tasks" }, summary = "Return a list of all tasks accessible to the request (determined by session or access token)")
-    @ApiResponse(responseCode = "200", description = "List of tasks accessible to the current request")
+    @ApiResponse(responseCode = "200", description = "List of tasks accessible to the current request", useReturnTypeSchema = true)
     public List<Task> getTasks() {
         return DataManager.getInstance()
                 .getRestApiJobManager()

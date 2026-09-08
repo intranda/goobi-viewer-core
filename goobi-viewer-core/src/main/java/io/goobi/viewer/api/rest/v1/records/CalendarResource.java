@@ -51,6 +51,8 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -100,7 +102,8 @@ public class CalendarResource {
     @jakarta.ws.rs.Path(RECORDS_CALENDAR_YEAR_REGEX)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get calendar entries for a record and year")
-    @ApiResponse(responseCode = "200", description = "JSON array of calendar entries for the record and year")
+    @ApiResponse(responseCode = "200", description = "JSON array of calendar entries for the record and year",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, array = @ArraySchema(schema = @Schema(type = "object"))))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or year value")
     @ApiResponse(responseCode = "404", description = "Record not found for the given identifier")
     public Response getCalendarEntries(
@@ -176,7 +179,8 @@ public class CalendarResource {
     @jakarta.ws.rs.Path(RECORDS_CALENDAR_MONTHS)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "Get all year-month combinations that have calendar entries")
-    @ApiResponse(responseCode = "200", description = "JSON array of YYYY-MM strings for months with calendar entries")
+    @ApiResponse(responseCode = "200", description = "JSON array of YYYY-MM strings for months with calendar entries",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, array = @ArraySchema(schema = @Schema(type = "string"))))
     // 400 is returned by the constructor when the PI fails validation (BadRequestException)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Record not found for the given identifier")

@@ -60,6 +60,8 @@ public final class OpenApiSpecGenerator {
      * @should declare every operation tag globally for v1
      * @should declare every operation tag globally for v2
      * @should set a description for every declared tag
+     * @should declare a body schema for every success response for v1
+     * @should declare a body schema for every success response for v2
      */
     public static OpenAPI buildOpenApi(String version) throws OpenApiConfigurationException {
         switch (version) {

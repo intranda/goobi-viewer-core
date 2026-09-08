@@ -45,7 +45,9 @@ import de.intranda.api.annotation.AbstractAnnotation;
 import de.intranda.api.annotation.IAnnotation;
 import de.intranda.api.annotation.IResource;
 import de.intranda.api.annotation.IncomingAnnotation;
+import de.intranda.api.annotation.oa.OpenAnnotation;
 import de.intranda.api.annotation.wa.SpecificResource;
+import de.intranda.api.annotation.wa.WebAnnotation;
 import de.intranda.api.annotation.wa.collection.AnnotationCollection;
 import de.intranda.api.annotation.wa.collection.AnnotationPage;
 import de.intranda.api.iiif.presentation.v2.Canvas2;
@@ -132,7 +134,7 @@ public class AnnotationResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation collection over all annotations")
-    @ApiResponse(responseCode = "200", description = "Annotation collection containing all annotations")
+    @ApiResponse(responseCode = "200", description = "Annotation collection containing all annotations", useReturnTypeSchema = true)
     public AnnotationCollection getAnnotationCollection() throws PresentationException, IndexUnreachableException {
         AnnotationsResourceBuilder builder = new AnnotationsResourceBuilder(urls, servletRequest);
         return builder.getWebAnnotationCollection();
@@ -152,7 +154,7 @@ public class AnnotationResource {
     @jakarta.ws.rs.Path("/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get a page within the annotation collection over all annotations")
-    @ApiResponse(responseCode = "200", description = "A page of annotations from the annotation collection")
+    @ApiResponse(responseCode = "200", description = "A page of annotations from the annotation collection", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
     // Added 404 response: JAX-RS returns 404 when the {page} path parameter cannot be parsed as an integer (non-integer input)
     @ApiResponse(responseCode = "404", description = "No annotation collection page found for the given page number")
@@ -188,7 +190,8 @@ public class AnnotationResource {
     @jakarta.ws.rs.Path("/alto_{pi}_{pageNo:[0-9]+}_{elementId}")
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an ALTO text annotation by its composite identifier")
-    @ApiResponse(responseCode = "200", description = "Returns the annotation for the given ALTO element")
+    @ApiResponse(responseCode = "200", description = "Returns the annotation for the given ALTO element",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { WebAnnotation.class, OpenAnnotation.class })))
     // 400 is returned when the persistent identifier fails validation or the page number is invalid
     @ApiResponse(responseCode = "400", description = "Invalid persistent identifier or page number")
     @ApiResponse(responseCode = "404", description = "No page, ALTO file, or element found for the given identifier")
@@ -274,7 +277,8 @@ public class AnnotationResource {
     @jakarta.ws.rs.Path(ANNOTATIONS_ANNOTATION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get an annotation by its identifier")
-    @ApiResponse(responseCode = "200", description = "Return the annotation with the given id")
+    @ApiResponse(responseCode = "200", description = "Return the annotation with the given id",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = WebAnnotation.class)))
     @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "404", description = "No annotation found for the given id")
     public IAnnotation getAnnotation(@Parameter(description = "Identifier of the annotation",
@@ -301,7 +305,8 @@ public class AnnotationResource {
     @jakarta.ws.rs.Path(ANNOTATIONS_COMMENT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Get a comment annotation by its identifier")
-    @ApiResponse(responseCode = "200", description = "Return the comment annotation with the given id")
+    @ApiResponse(responseCode = "200", description = "Return the comment annotation with the given id",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = WebAnnotation.class)))
     @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "404", description = "No comment annotation found for the given id")
     public IAnnotation getComment(@Parameter(description = "Identifier of the annotation",
@@ -325,7 +330,8 @@ public class AnnotationResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Create a new annotation")
-    @ApiResponse(responseCode = "201", description = "The created annotation")
+    @ApiResponse(responseCode = "201", description = "The created annotation",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = WebAnnotation.class)))
     @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
     @ApiResponse(responseCode = "404",
             description = "Annotation target not found or annotation type not supported. Only W3C Web Annotations targeting a manifest,"
@@ -365,7 +371,8 @@ public class AnnotationResource {
     @Path(ANNOTATIONS_ANNOTATION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "annotations" }, summary = "Delete an existing annotation")
-    @ApiResponse(responseCode = "200", description = "Return the deleted annotation")
+    @ApiResponse(responseCode = "200", description = "Return the deleted annotation",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = WebAnnotation.class)))
     @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "403", description = "Not authorized to delete this annotation (not logged in or not the creator)")
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")

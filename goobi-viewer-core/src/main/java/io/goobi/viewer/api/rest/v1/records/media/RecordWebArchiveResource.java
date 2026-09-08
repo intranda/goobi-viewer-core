@@ -68,7 +68,9 @@ import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrSearchIndex;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.GET;
@@ -76,6 +78,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
@@ -133,6 +136,10 @@ public class RecordWebArchiveResource {
     @Path(ApiUrls.RECORDS_WEBARCHIVE)
     @Produces("application/json")
     @Operation(tags = { "records" }, summary = "Get json containing all webarchive resources")
+    @ApiResponse(responseCode = "200", description = "ReplayWeb.page configuration for the record's web archives",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ReplayJson.class)))
+    @ApiResponse(responseCode = "302", description = "Redirect to the single external web archive of the record")
+    @ApiResponse(responseCode = "404", description = "Record not found or has no web archive resources")
     public Response getWebarchiveJson() throws IndexUnreachableException, PresentationException {
 
         SolrSearchIndex search = DataManager.getInstance().getSearchIndex();

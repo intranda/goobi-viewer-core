@@ -91,7 +91,8 @@ public class CollectionsResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 2.1.1 collection")
-    @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection containing all collections for this field")
+    @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection containing all collections for this field",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid or missing collection field parameter")
     @ApiResponse(responseCode = "404", description = "No collections available for field")
     @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -119,7 +120,8 @@ public class CollectionsResource {
     @jakarta.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF Presentation 2.1.1 collection")
-    @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection for the given collection name")
+    @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection for the given collection name",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid or missing collection field or name parameter")
     @ApiResponse(responseCode = "404", description = "Collection not found for given field and name")
     @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -160,7 +162,7 @@ public class CollectionsResource {
     @jakarta.ws.rs.Path(COLLECTIONS_CONTENTASSIST)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "iiif" }, summary = "Return a list of collection names starting with the given input for content assist")
-    @ApiResponse(responseCode = "200", description = "List of matching collection names")
+    @ApiResponse(responseCode = "200", description = "List of matching collection names", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid collection field name")
     @ApiResponse(responseCode = "404", description = "Solr field not found in index")
     @ApiResponse(responseCode = "500", description = "Internal server error")

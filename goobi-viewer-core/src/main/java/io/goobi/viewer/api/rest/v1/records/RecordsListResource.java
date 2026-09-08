@@ -55,6 +55,8 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.solr.SolrTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
@@ -92,7 +94,7 @@ public class RecordsListResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records" }, summary = "List records in an ordered collection page, use query parameter for filtering")
-    @ApiResponse(responseCode = "200", description = "Ordered collection page of record manifests")
+    @ApiResponse(responseCode = "200", description = "Ordered collection page of record manifests", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid query or date parameters")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public OrderedCollectionPage<IPresentationModelElement> listManifests(
@@ -143,7 +145,8 @@ public class RecordsListResource {
     @jakarta.ws.rs.Path(RECORDS_LIST_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
-    @ApiResponse(responseCode = "200", description = "Record metadata as JSON array")
+    @ApiResponse(responseCode = "200", description = "Record metadata as JSON array",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, array = @ArraySchema(schema = @Schema(type = "object"))))
     @ApiResponse(responseCode = "400", description = "Missing template name")
     @ApiResponse(responseCode = "404", description = "Template configuration not found")
     public Response getRecordMetadataAsJson(

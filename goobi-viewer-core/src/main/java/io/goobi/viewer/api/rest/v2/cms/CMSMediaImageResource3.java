@@ -124,7 +124,7 @@ public class CMSMediaImageResource3 extends ImageResource {
     @ContentServerImageInfoBinding
     @Operation(tags = { "iiif" },
             summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 3.0 image information object")
-    @ApiResponse(responseCode = "200", description = "IIIF image information object")
+    @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "400", description = "Invalid filename — non-image extension filenames are rejected by the fallback handler")
     @ApiResponse(responseCode = "404", description = "Image not found — may be returned as text/html for filenames with non-ASCII characters")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {

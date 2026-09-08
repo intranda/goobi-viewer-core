@@ -124,7 +124,7 @@ public class ViewerSectionPDFResource {
     @ContentServerPdfBinding
     @Operation(tags = { "records" }, summary = "Get PDF for section of record")
     @ApiResponse(responseCode = "200", description = "PDF file for the requested section",
-            content = @Content(mediaType = "application/pdf"))
+            content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or section")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "Record or section not found")
@@ -157,8 +157,7 @@ public class ViewerSectionPDFResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
     @Operation(tags = { "records" }, summary = "Get information about PDF for section of record")
-    @ApiResponse(responseCode = "200", description = "PDF information object for the requested section",
-            content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @ApiResponse(responseCode = "200", description = "PDF information object for the requested section", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or section")
     @ApiResponse(responseCode = "404", description = "Record or section not found")
     @ApiResponse(responseCode = "500", description = "Error reading PDF information")

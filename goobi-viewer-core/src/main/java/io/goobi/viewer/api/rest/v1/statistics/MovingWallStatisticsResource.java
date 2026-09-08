@@ -37,6 +37,8 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.statistics.MovingWallAnnualStatistics;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 /**
@@ -54,7 +56,10 @@ public class MovingWallStatisticsResource {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
     @AuthorizationBinding
     @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identifiers for the given year", tags = { "statistics" })
-    @ApiResponse(responseCode = "200", description = "CSV list of record identifiers unlocked by the moving wall for the given year")
+    @ApiResponse(responseCode = "200", description = "CSV list of record identifiers unlocked by the moving wall for the given year",
+            content = { @Content(mediaType = "text/csv", schema = @Schema(type = "string")),
+                    @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")),
+                    @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")) })
     @ApiResponse(responseCode = "400", description = "Invalid year value (not an integer)")
     // Added 404 response: JAX-RS returns 404 when the {year} path parameter cannot be parsed as an integer (non-integer input)
     @ApiResponse(responseCode = "404", description = "Year parameter could not be parsed as an integer")

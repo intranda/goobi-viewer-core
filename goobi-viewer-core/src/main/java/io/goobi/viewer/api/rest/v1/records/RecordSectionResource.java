@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import de.intranda.api.iiif.presentation.IPresentationModelElement;
+import de.intranda.api.iiif.presentation.v2.Range2;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
@@ -63,6 +64,7 @@ import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -112,7 +114,7 @@ public class RecordSectionResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Download ris as file")
-    @ApiResponse(responseCode = "200", description = "RIS citation for the section downloaded as plain text file")
+    @ApiResponse(responseCode = "200", description = "RIS citation for the section downloaded as plain text file", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
     public String getRISAsFile()
@@ -138,7 +140,7 @@ public class RecordSectionResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
     @Operation(tags = { "records" }, summary = "Get ris as text")
-    @ApiResponse(responseCode = "200", description = "RIS citation for the section as plain text")
+    @ApiResponse(responseCode = "200", description = "RIS citation for the section as plain text", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
     public String getRISAsText()
@@ -152,7 +154,8 @@ public class RecordSectionResource {
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 range for section")
-    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 range for the requested section")
+    @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 range for the requested section",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Range2.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")

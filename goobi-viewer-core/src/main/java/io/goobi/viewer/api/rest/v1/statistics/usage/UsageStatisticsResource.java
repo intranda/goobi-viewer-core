@@ -58,6 +58,7 @@ import io.goobi.viewer.model.statistics.usage.StatisticsSummaryFilter;
 import io.goobi.viewer.controller.DateTools;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
@@ -86,7 +87,10 @@ public class UsageStatisticsResource {
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, StringConstants.MIMETYPE_TEXT_CSV })
     @Operation(summary = "Get usage statistics for a single day", tags = { "statistics" })
-    @ApiResponse(responseCode = "200", description = "Usage statistics for the given day")
+    @ApiResponse(responseCode = "200", description = "Usage statistics for the given day",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = StatisticsSummary.class)),
+                    @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")),
+                    @Content(mediaType = "text/csv", schema = @Schema(type = "string")) })
     @ApiResponse(responseCode = "400", description = "Invalid date format; expected yyyy-MM-dd")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @ApiResponse(responseCode = "404", description = "No usage statistics found for the given date")
@@ -125,7 +129,10 @@ public class UsageStatisticsResource {
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE_RANGE)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, StringConstants.MIMETYPE_TEXT_CSV })
     @Operation(summary = "Get a list of usage statistics for a time frame", tags = { "statistics" })
-    @ApiResponse(responseCode = "200", description = "Usage statistics for the given time frame")
+    @ApiResponse(responseCode = "200", description = "Usage statistics for the given time frame",
+            content = { @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UsageStatisticsResponse.class)),
+                    @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")),
+                    @Content(mediaType = "text/csv", schema = @Schema(type = "string")) })
     @ApiResponse(responseCode = "400", description = "Invalid date format; expected yyyy-MM-dd")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     // 404 is returned when date path parameters cannot be parsed (e.g. non-numeric values rejected by JAX-RS routing)

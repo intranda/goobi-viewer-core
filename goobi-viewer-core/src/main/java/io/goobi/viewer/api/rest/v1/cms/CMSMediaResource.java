@@ -158,7 +158,7 @@ public class CMSMediaResource {
     @Operation(
             tags = { "media" },
             summary = "Get a list of CMS-Media Items of one or more categories")
-    @ApiResponse(responseCode = "200", description = "List of CMS media items matching the given categories")
+    @ApiResponse(responseCode = "200", description = "List of CMS media items matching the given categories", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid parameter value (e.g. negative max or prioritySlots)")
     @ApiResponse(responseCode = "403", description = "Access to CMS media is restricted")
     // 404 is returned by the underlying framework when the path cannot be resolved (e.g. special chars in tags)
@@ -207,7 +207,7 @@ public class CMSMediaResource {
     @Operation(
             tags = { "media" },
             summary = "Get a list of CMS-Media Items")
-    @ApiResponse(responseCode = "200", description = "List of CMS media items")
+    @ApiResponse(responseCode = "200", description = "List of CMS media items", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "401", description = "Not authorized")
     @ApiResponse(responseCode = "500", description = "Internal server error - e.g. database unavailable")
     @AuthorizationBinding
