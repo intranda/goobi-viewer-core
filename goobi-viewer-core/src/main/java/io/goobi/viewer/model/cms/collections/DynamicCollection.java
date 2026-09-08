@@ -590,6 +590,16 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
         return Optional.empty();
     }
 
+    /**
+     * Returns the search facet token identifying this collection, i.e. {@code DC_DYNAMIC:<identifier>}. Passed as the facets segment of a search URL,
+     * it makes the search list the collection's records with the collection selected as the active facet.
+     *
+     * @return the unencoded facet token of this collection
+     */
+    public String getFacetString() {
+        return SolrConstants.DC_DYNAMIC + ":" + identifier;
+    }
+
     /** {@inheritDoc} */
     @Override
     public URI getLinkURI() {
@@ -600,7 +610,7 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
      * {@inheritDoc}
      *
      * @should honor a custom collection url
-     * @should build a records search url from the request without a faces context
+     * @should build a facet search url from the request without a faces context
      * @should return null when no query and no custom url
      */
     @Override
@@ -615,16 +625,15 @@ public class DynamicCollection implements Comparable<DynamicCollection>, BrowseE
             return applicationUri.resolve(getCollectionUrl().replaceAll("^\\/", "").trim());
         }
 
-        // No custom collection URL: default to a search listing the records matching this collection's stored query. This makes a dynamic collection
-        // usable as a collection-listing entry regardless of whether the DC_DYNAMIC search facet is configured. The URL is built directly from the
-        // request rather than via PrettyUrlTools, because this method is also called from the IIIF collection REST endpoint, which runs without a
-        // FacesContext (PrettyContext.getCurrentInstance() would throw there). The path mirrors the "newSearch5" pretty mapping
-        // /search/{context}/{query}/{page}/{sort}/{facets}/.
+        // No custom collection URL: default to a search filtered by this collection's DC_DYNAMIC facet value, so that the collection shows up as
+        // the selected facet in the search sidebar. The URL is built directly from the request rather than via PrettyUrlTools, because this method is
+        // also called from the IIIF collection REST endpoint, which runs without a FacesContext (PrettyContext.getCurrentInstance() would throw
+        // there). The path mirrors the "newSearch5" pretty mapping /search/{context}/{query}/{page}/{sort}/{facets}/.
         if (StringUtils.isNotBlank(getSolrQuery())) {
             String applicationUrl = getApplicationUrl(request);
             if (StringUtils.isNotBlank(applicationUrl)) {
-                String query = StringTools.encodeUrl(StringUtils.trimToEmpty(getSolrQuery()), true);
-                return URI.create(applicationUrl + "/search/-/" + query + "/1/-/-/");
+                String facetString = StringTools.encodeUrl(getFacetString(), true);
+                return URI.create(applicationUrl + "/search/-/-/1/-/" + facetString + "/");
             }
         }
 

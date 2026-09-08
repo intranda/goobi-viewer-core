@@ -41,10 +41,12 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
 import io.goobi.viewer.AbstractSolrEnabledTest;
 import io.goobi.viewer.TestUtils;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
@@ -148,6 +150,23 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
         } finally {
             DataManager.getInstance().getDao().deleteDynamicCollection(dc);
         }
+    }
+
+    /**
+     * Collection listings link to the DC_DYNAMIC facet whether or not the facet is configured for display, so the pseudo field has to be resolved as
+     * a query facet in any case; passing it on to Solr as a real field would fail.
+     *
+     * @see SearchFacets#isFieldQueryFacet(String)
+     * @verifies return true for the dynamic collection field even if not configured as a facet
+     */
+    @Test
+    void isFieldQueryFacet_shouldReturnTrueForTheDynamicCollectionFieldEvenIfNotConfiguredAsAFacet() {
+        Configuration configuration = Mockito.mock(Configuration.class);
+        Mockito.when(configuration.isQueryFacetField(Mockito.anyString())).thenReturn(false);
+        DataManager.getInstance().injectConfiguration(configuration);
+
+        Assertions.assertTrue(SearchFacets.isFieldQueryFacet(SolrConstants.DC_DYNAMIC));
+        Assertions.assertFalse(SearchFacets.isFieldQueryFacet("MD_TITLE"));
     }
 
     /**

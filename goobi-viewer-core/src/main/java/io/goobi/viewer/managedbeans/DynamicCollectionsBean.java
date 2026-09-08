@@ -445,14 +445,14 @@ public class DynamicCollectionsBean implements Serializable {
     }
 
     /**
-     * Builds the search-result URL listing the records of the given collection. The collection's stored Solr query is used directly as the search
-     * query, so the link works regardless of whether the {@code DC_DYNAMIC} facet is configured in the viewer config.
+     * Builds the search-result URL listing the records of the given collection. The collection is passed as the active {@code DC_DYNAMIC} facet, so
+     * the search shows it as the selected collection, matching the links of the collection listings in the frontend.
      *
      * @param collection collection to build the search URL for
      * @return an absolute search page URL listing the collection's records
      */
     public String getSearchUrl(DynamicCollection collection) {
-        String query = StringTools.encodeUrl(StringUtils.trimToEmpty(collection.getSolrQuery()));
-        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", query, 1, "-", "-");
+        String facetString = StringTools.encodeUrl(collection.getFacetString(), true);
+        return PrettyUrlTools.getAbsolutePageUrl("newSearch5", "-", "-", 1, "-", facetString);
     }
 }
