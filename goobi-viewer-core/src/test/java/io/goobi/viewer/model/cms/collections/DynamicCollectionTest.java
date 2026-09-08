@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.cms.collections;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,14 +38,15 @@ import jakarta.servlet.http.HttpServletRequest;
 class DynamicCollectionTest extends AbstractTest {
 
     /**
-     * A dynamic collection without a custom collection URL must resolve to a records search built directly from the request, without relying on a
-     * FacesContext / PrettyContext. This is required for the IIIF collection REST endpoint, which runs outside of JSF.
+     * A dynamic collection without a custom collection URL must resolve to a search filtered by its DC_DYNAMIC facet value, built directly from the
+     * request without relying on a FacesContext / PrettyContext. The facet value is required so that the collection is shown as selected in the
+     * search sidebar; building it from the request is required for the IIIF collection REST endpoint, which runs outside of JSF.
      *
      * @see DynamicCollection#getLinkURI(HttpServletRequest)
-     * @verifies build a records search url from the request without a faces context
+     * @verifies build a facet search url from the request without a faces context
      */
     @Test
-    void getLinkURI_shouldBuildRecordsSearchUrlFromRequestWithoutFacesContext() {
+    void getLinkURI_shouldBuildFacetSearchUrlFromRequestWithoutFacesContext() {
         DynamicCollection dc = new DynamicCollection("test_link");
         dc.setSolrQuery("YEAR:[1980 TO 2000]");
 
@@ -55,10 +57,8 @@ class DynamicCollectionTest extends AbstractTest {
         when(request.getContextPath()).thenReturn("/viewer");
 
         URI uri = dc.getLinkURI(request);
-        assertNotNull(uri, "A records search URL should be built even without a FacesContext");
-        String url = uri.toString();
-        assertTrue(url.startsWith("http://localhost:8080/viewer/search/-/"), "Unexpected URL: " + url);
-        assertTrue(url.endsWith("/1/-/-/"), "Unexpected URL: " + url);
+        assertNotNull(uri, "A search URL should be built even without a FacesContext");
+        assertEquals("http://localhost:8080/viewer/search/-/-/1/-/DC_DYNAMIC%3Atest_link/", uri.toString());
     }
 
     /**

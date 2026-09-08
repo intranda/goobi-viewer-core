@@ -698,9 +698,13 @@ public class SearchFacets implements Serializable {
      *
      * @param field Solr facet field name to test for query-facet configuration
      * @return true if field is a query-type facet (e.g. the dynamic-collection facet); false otherwise
+     * @should return true for the dynamic collection field even if not configured as a facet
      */
     static boolean isFieldQueryFacet(String field) {
-        return DataManager.getInstance().getConfiguration().isQueryFacetField(field);
+        // DC_DYNAMIC is a reserved pseudo field with no counterpart in the index. Its values must always be resolved to the stored query of the
+        // matching dynamic collection, also when the facet itself is not configured for display: collection listings link to it either way, and
+        // passing the raw field name on to Solr would fail with "undefined field DC_DYNAMIC"
+        return SolrConstants.DC_DYNAMIC.equals(field) || DataManager.getInstance().getConfiguration().isQueryFacetField(field);
     }
 
     /**
