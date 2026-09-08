@@ -183,9 +183,8 @@ public class ActiveDocumentBean implements Serializable {
     /** URL parameter 'imageToShow'. */
     private String imageToShow = "1";
     /**
-     * Whether the immersive view renders in fullscreen display. Defaulted per record from configuration in
-     * {@link #update()}; overridden per request by the 'fullscreen' URL parameter, see
-     * {@link #updateImmersiveFullscreenView()}.
+     * Whether the immersive view renders in fullscreen display. Defaulted per record from configuration in {@link #update()}; overridden per request
+     * by the 'fullscreen' URL parameter, see {@link #updateImmersiveFullscreenView()}.
      */
     private boolean immersiveFullscreenView = false;
     /** URL parameter 'logid'. */
@@ -1059,12 +1058,11 @@ public class ActiveDocumentBean implements Serializable {
     }
 
     /**
-     * preRenderView listener for viewImmersive.xhtml. Reads the 'fullscreen' request parameter directly instead of
-     * relying on {@code f:viewParam}, whose model update is skipped entirely when the parameter is absent from the
-     * request. Only overwrites the field when the parameter is actually present, so that page-to-page navigation
-     * within the same record (whose links carry no 'fullscreen' parameter) keeps whatever display mode is currently
-     * active; the initial per-record default is applied separately in {@link #update()} when a new record is
-     * loaded, and the immersive view's own toggle links always pass 'fullscreen' explicitly to override it.
+     * preRenderView listener for viewImmersive.xhtml. Reads the 'fullscreen' request parameter directly instead of relying on {@code f:viewParam},
+     * whose model update is skipped entirely when the parameter is absent from the request. Only overwrites the field when the parameter is actually
+     * present, so that page-to-page navigation within the same record (whose links carry no 'fullscreen' parameter) keeps whatever display mode is
+     * currently active; the initial per-record default is applied separately in {@link #update()} when a new record is loaded, and the immersive
+     * view's own toggle links always pass 'fullscreen' explicitly to override it.
      */
     public void updateImmersiveFullscreenView() {
         String value = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("fullscreen");
@@ -1666,10 +1664,14 @@ public class ActiveDocumentBean implements Serializable {
      *
      * @return the absolute URL to the fullscreen image view for the current page
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws PresentationException
      * @should not throw NPE when getCurrentPage returns null in double page mode
      * @should not throw NPE when current page is null
      */
-    public String getFullscreenImageUrl() throws IndexUnreachableException {
+    public String getFullscreenImageUrl() throws IndexUnreachableException, PresentationException {
+
+        PageType preferredPageType = isRedirectToImmersiveView() ? PageType.viewImmersive : PageType.viewFullscreen;
+
         // Capture vm once so that a concurrent reset() cannot null the volatile field mid-method.
         // Also capture getCurrentPage() once to avoid TOCTOU between the null check and isDoubleImage().
         ViewManager vm = this.viewManager;
@@ -1679,12 +1681,24 @@ public class ActiveDocumentBean implements Serializable {
                 Optional<PhysicalElement> currentLeftPage = vm.getCurrentLeftPage();
                 Optional<PhysicalElement> currentRightPage = vm.getCurrentRightPage();
                 if (currentLeftPage.isPresent() && currentRightPage.isPresent()) {
-                    return getPageUrl(PageType.viewFullscreen.getName(), currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder());
+                    return getPageUrl(preferredPageType.getName(), currentLeftPage.get().getOrder() + "-" + currentRightPage.get().getOrder());
                 }
             }
         }
 
-        return getPageUrl(PageType.viewFullscreen.getName(), imageToShow);
+        return getPageUrl(preferredPageType.getName(), imageToShow);
+    }
+
+    private boolean isRedirectToImmersiveView() throws IndexUnreachableException, PresentationException {
+        String immersiveViewCondition = DataManager.getInstance().getConfiguration().getUseImmersiveViewForFullscreenCondition();
+        if ("all".equalsIgnoreCase(immersiveViewCondition)) {
+            return true;
+        } else if ("alto".equalsIgnoreCase(immersiveViewCondition)) {
+            StructElement top = getViewManager().getTopStructElement();
+            return top != null && top.isLayoutTagAvailable();
+        } else {
+            return false;
+        }
     }
 
     /**

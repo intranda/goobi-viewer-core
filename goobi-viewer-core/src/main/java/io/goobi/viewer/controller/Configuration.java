@@ -82,10 +82,10 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.ViewerResourceBundle;
 import io.goobi.viewer.model.citation.CitationLink;
 import io.goobi.viewer.model.cms.Highlight;
-import io.goobi.viewer.model.export.bagit.ArchiveContentType;
-import io.goobi.viewer.model.export.bagit.CollectionArchiveConfig;
 import io.goobi.viewer.model.export.ExportFieldConfiguration;
 import io.goobi.viewer.model.export.ExportFormat;
+import io.goobi.viewer.model.export.bagit.ArchiveContentType;
+import io.goobi.viewer.model.export.bagit.CollectionArchiveConfig;
 import io.goobi.viewer.model.job.ITaskType;
 import io.goobi.viewer.model.job.TaskType;
 import io.goobi.viewer.model.job.download.DownloadOption;
@@ -2036,8 +2036,7 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Layout-tag LABEL identifying printed text in ALTO documents, used to anchor margin-annotation detection in the
-     * fulltext view.
+     * Layout-tag LABEL identifying printed text in ALTO documents, used to anchor margin-annotation detection in the fulltext view.
      *
      * @return the configured printed-text label, or an empty string if not configured (margin detection disabled)
      * @should return configured value
@@ -2048,9 +2047,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * LABELs of the {@code <wordTag>} and {@code <annotationTag>} elements in the order they are declared inside
-     * {@code <altoLayoutTags>}, element types not grouped — the immersive view's layout-tag panel lists its entries
-     * in this order, so it is the same for every record.
+     * LABELs of the {@code <wordTag>} and {@code <annotationTag>} elements in the order they are declared inside {@code <altoLayoutTags>}, element
+     * types not grouped — the immersive view's layout-tag panel lists its entries in this order, so it is the same for every record.
      *
      * @return the declared LABELs in document order; empty if none are configured
      * @should return labels in document order
@@ -2076,9 +2074,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Mapping of word-level ALTO layout-tag LABEL to an additional CSS class applied verbatim to the enclosing span
-     * in the fulltext view — an optional hook for theme CSS. The semantic markup itself is derived from
-     * {@link #getAltoLayoutWordTagTypes()}.
+     * Mapping of word-level ALTO layout-tag LABEL to an additional CSS class applied verbatim to the enclosing span in the fulltext view — an
+     * optional hook for theme CSS. The semantic markup itself is derived from {@link #getAltoLayoutWordTagTypes()}.
      *
      * @return an ordered map of label to CSS style class; empty if none configured (callers fall back to defaults)
      * @should return configured word tags
@@ -2099,9 +2096,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Mapping of word/line-level ALTO layout-tag LABEL to its semantic type ({@code underline}, {@code strikethrough}
-     * or {@code mark}), used by the immersive view to render word markup and drawn-line overlays and by the fulltext
-     * view to derive the {@code alto-tag--<type>} markup classes, for arbitrary customer label vocabularies.
+     * Mapping of word/line-level ALTO layout-tag LABEL to its semantic type ({@code underline}, {@code strikethrough} or {@code mark}), used by the
+     * immersive view to render word markup and drawn-line overlays and by the fulltext view to derive the {@code alto-tag--<type>} markup classes,
+     * for arbitrary customer label vocabularies.
      *
      * @return an ordered map of label to semantic type; empty if none configured (callers fall back to defaults)
      * @should return configured word tag types
@@ -2122,9 +2119,9 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Mapping of ALTO handwriting-author layout-tag LABEL to its {@link AnnotationStyle} (CSS class + display name),
-     * used to style and label handwritten annotation blocks in the fulltext view. Without a configured name the label
-     * itself serves as display name, so it doubles as message key.
+     * Mapping of ALTO handwriting-author layout-tag LABEL to its {@link AnnotationStyle} (CSS class + display name), used to style and label
+     * handwritten annotation blocks in the fulltext view. Without a configured name the label itself serves as display name, so it doubles as message
+     * key.
      *
      * @return an ordered map of label to annotation style; empty if none configured (callers fall back to defaults)
      * @should return configured annotation tags
@@ -5003,6 +5000,10 @@ public class Configuration extends AbstractConfiguration {
         return getLocalBoolean("viewer.pageTypes." + PageType.viewImmersive.name() + "[@fullscreen]", false);
     }
 
+    public String getUseImmersiveViewForFullscreenCondition() {
+        return getLocalString("viewer.pageTypes." + PageType.viewFullscreen.name() + "[@useImmersive]", "off");
+    }
+
     /**
      * getFulltextPercentageWarningThreshold.
      *
@@ -5115,9 +5116,9 @@ public class Configuration extends AbstractConfiguration {
     /**
      * Returns the cache policy for dynamic pages.
      *
-     * <p>Accepted values are {@code no-cache} (emit {@code private, no-cache}), {@code no-store}
-     * and {@code off} (emit no header at all). Account-bound paths are always {@code no-store},
-     * regardless of this setting.
+     * <p>
+     * Accepted values are {@code no-cache} (emit {@code private, no-cache}), {@code no-store} and {@code off} (emit no header at all). Account-bound
+     * paths are always {@code no-store}, regardless of this setting.
      *
      * @return configured policy token
      * @should return correct value
@@ -5973,8 +5974,8 @@ public class Configuration extends AbstractConfiguration {
     }
 
     /**
-     * Returns the effective set of enabled archive content types for a single collection, resolving the {@code <default>} block for the
-     * given field and merging the matching {@code <collection name="…" field="…">} sparse override on top of it.
+     * Returns the effective set of enabled archive content types for a single collection, resolving the {@code <default>} block for the given field
+     * and merging the matching {@code <collection name="…" field="…">} sparse override on top of it.
      *
      * @param field the collection Solr field (e.g. {@code DC}); may not be null
      * @param collectionName the collection name; when null or with no matching override, the pure default is returned
@@ -6095,9 +6096,10 @@ public class Configuration extends AbstractConfiguration {
      * Timeout in seconds for generating a search result export before it is aborted. Read from the {@code timeout} attribute of the
      * {@code <search><export>} element and applied to every export format (Excel, CSV and XSLT-based formats such as RIS).
      *
-     * <p>The setting previously lived at {@code <export><excel><timeout>}, but the dedicated {@code <excel>} element was replaced by
-     * {@code <format name="excel">} during the export config normalization; the timeout therefore moved to the shared {@code <export>}
-     * element so it keeps working and now governs all formats, not just Excel.
+     * <p>
+     * The setting previously lived at {@code <export><excel><timeout>}, but the dedicated {@code <excel>} element was replaced by
+     * {@code <format name="excel">} during the export config normalization; the timeout therefore moved to the shared {@code <export>} element so it
+     * keeps working and now governs all formats, not just Excel.
      *
      * @return the configured export timeout in seconds; 120 if not set
      * @should return correct value
