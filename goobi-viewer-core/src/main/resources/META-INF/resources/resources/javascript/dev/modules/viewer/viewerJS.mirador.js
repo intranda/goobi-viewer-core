@@ -82,11 +82,15 @@ var viewerJS = (function (viewer) {
             let miradorConfigPromise = null;
             if (manifests.length > 0) {
                 // URL identifiers
-                console.log('loading manifests ', manifests);
+                if (_debug) {
+                    console.log('loading manifests ', manifests);
+                }
                 miradorConfigPromise = _getMiradorConfigForManifestUrls(manifests, this.config);
             } else if (_getBookmarkListId() != null) {
                 // User bookmarks
-                console.log('Load bookmarklist ', _getBookmarkListId());
+                if (_debug) {
+                    console.log('Load bookmarklist ', _getBookmarkListId());
+                }
                 miradorConfigPromise = _getUserMiradorObjects(this.config.restEndpoint, _getBookmarkListId())
                     .then((response) => response.json())
                     .then((json) => json.members.filter((manifest) => manifest['@type'] == 'sc:Manifest' || manifest.type == 'Manifest'))
@@ -94,7 +98,9 @@ var viewerJS = (function (viewer) {
                     .then((members) => _getMiradorConfigForManifestUrls(members, this.config));
             } else if (_getBookmarkListKey() != null) {
                 //public/shared bookmarks
-                console.log('Load bookmarklist with key ', _getBookmarkListKey());
+                if (_debug) {
+                    console.log('Load bookmarklist with key ', _getBookmarkListKey());
+                }
                 miradorConfigPromise = _getSharedMiradorObjects(this.config.restEndpoint, _getBookmarkListKey())
                     .then((response) => response.json())
                     .then((json) => json.members.filter((manifest) => manifest['@type'] == 'sc:Manifest' || manifest.type == 'Manifest'))
@@ -102,14 +108,18 @@ var viewerJS = (function (viewer) {
                     .then((ids) => _getMiradorConfigForManifestUrls(ids, this.config));
             } else if (_getBookmarkListId() !== null) {
                 // Session mark list
-                console.log('load session bookmark list');
+                if (_debug) {
+                    console.log('load session bookmark list');
+                }
                 miradorConfigPromise = _getMiradorSessionObjects(this.config.restEndpoint)
                     .then((response) => response.json())
                     .then((json) => json.members.filter((manifest) => manifest['@type'] == 'sc:Manifest' || manifest.type == 'Manifest'))
                     //.then( members => members.map(manifest => manifest["@id"] ? manifest["@id"] : manifest.id).filter(id => id != undefined) )
                     .then((ids) => _getMiradorConfigForManifestUrls(ids, this.config));
             } else {
-                console.log('TODO: Load empty Mirador');
+                if (_debug) {
+                    console.log('TODO: Load empty Mirador');
+                }
                 miradorConfigPromise = Promise.resolve({
                     id: 'miradorViewer',
                 });
@@ -122,7 +132,9 @@ var viewerJS = (function (viewer) {
                     })
                     .then((elements) => {
                         this.miradorConfig = elements;
-                        console.log('init Mirador with ', this.miradorConfig);
+                        if (_debug) {
+                            console.log('init Mirador with ', this.miradorConfig);
+                        }
                         this.mirador = Mirador.viewer(this.miradorConfig);
                     })
                     .then(() => translator.init(messageKeys))
@@ -231,7 +243,9 @@ var viewerJS = (function (viewer) {
     function _getMiradorConfigForManifestUrls(manifests, config) {
         var columns = Math.ceil(Math.sqrt(manifests.length));
         var rows = Math.ceil(manifests.length / columns);
-        console.log('create manifests ', manifests);
+        if (_debug) {
+            console.log('create manifests ', manifests);
+        }
         var miradorConfig = {
             id: 'miradorViewer',
             manifests: manifests.map((man) => {

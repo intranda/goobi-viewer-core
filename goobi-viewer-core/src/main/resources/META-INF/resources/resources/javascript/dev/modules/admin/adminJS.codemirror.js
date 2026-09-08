@@ -44,9 +44,6 @@ adminJS.codemirror = function (element, mode, readonly, config) {
                 cm.setOption('theme', cm.getOption('theme') == 'default' ? 'dracula' : 'default');
             },
             'Ctrl-S': (cm) => {
-                // if ( _debug ) {
-                console.log('manually saved with key combo');
-                // }
                 if (!readonly) {
                     document.querySelector('[data-cm="save"]').click();
                 }
