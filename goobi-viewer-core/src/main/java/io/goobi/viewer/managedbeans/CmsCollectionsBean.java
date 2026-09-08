@@ -359,6 +359,7 @@ public class CmsCollectionsBean implements Serializable {
      * last collection is deleted).
      *
      * @return the source options for the sidebar widget
+     * @should label the dynamic source with the admin message key
      */
     public List<SelectItem> getSourceSelectItems() {
         List<SelectItem> items = new ArrayList<>();
@@ -366,7 +367,7 @@ public class CmsCollectionsBean implements Serializable {
             items.add(new SelectItem(field, field));
         }
         if (isDynamicCollectionsSource() || hasDynamicCollections()) {
-            items.add(new SelectItem(SolrConstants.DC_DYNAMIC, ViewerResourceBundle.getTranslation(SolrConstants.DC_DYNAMIC + "_DD", null)));
+            items.add(new SelectItem(SolrConstants.DC_DYNAMIC, ViewerResourceBundle.getTranslation("admin__dynamic_collections", null)));
         }
         return items;
     }

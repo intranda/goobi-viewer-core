@@ -61,7 +61,7 @@
                                 <!-- DYNAMIC COLLECTIONS: offered when at least one exists, or kept when already selected so the value stays valid -->
                                 <f:selectItem
                                     itemValue="DC_DYNAMIC"
-                                    itemLabel="#{msg.DC_DYNAMIC_DD}"
+                                    itemLabel="#{msg.admin__dynamic_collections}"
                                     rendered="#{cmsBean.isDynamicCollectionsAvailable() or cc.attrs.contentItem.content.solrField eq 'DC_DYNAMIC'}" />
                                 <f:ajax render="collectionHierarchyOptions" />
                                 <f:passThroughAttribute
@@ -81,103 +81,102 @@
                 <h:panelGroup
                     layout="block"
                     rendered="#{cc.attrs.contentItem.content.solrField ne 'DC_DYNAMIC'}">
-
-            <!-- BASE COLLECTION -->
-            <div class="admin__content-component-input-group">
-                <!-- LABEL -->
-                <div class="admin__content-component-input-label">
-                    <label for="baseCollection">#{msg.cms_itemBaseCollection}:</label>
-                </div>
-
-                <div class="admin__content-component-input-field">
-                    <!-- AREA FOR AJAX REFRESH -->
-                    <h:panelGroup id="baseCollectionGroup">
-                        <!-- VALIDATION MESSAGE -->
-                        <div class="cms-module__option-message">
-                            <h:messages
-                                for="baseCollection"
-                                infoClass="cms-module__option-message-status success"
-                                warnClass="cms-module__option-message-status warning"
-                                errorClass="cms-module__option-message-status danger" />
-
-                            <div class="cms-module__option-message-mark">
-                                <i
-                                    class="fa fa-check"
-                                    aria-hidden="true" />
-                                <i
-                                    class="fa fa-exclamation"
-                                    aria-hidden="true" />
-                            </div>
+                    <!-- BASE COLLECTION -->
+                    <div class="admin__content-component-input-group">
+                        <!-- LABEL -->
+                        <div class="admin__content-component-input-label">
+                            <label for="baseCollection">#{msg.cms_itemBaseCollection}:</label>
                         </div>
 
-                        <!-- SELECT MENU -->
-                        <div class="custom-control custom-control--select">
-                            <h:selectOneMenu
-                                id="baseCollection"
-                                styleClass="form-control"
-                                value="#{cc.attrs.contentItem.content.collectionName}"
-                                disabled="#{empty cc.attrs.contentItem.content.solrField}">
-                                <f:selectItems value="#{collectionViewBean.getPossibleBaseCollectionList(cc.attrs.contentItem.content)}" />
-                                <f:ajax render="#{cc.attrs.renderingGroup}" />
-                                <f:passThroughAttribute
-                                    name="aria-label"
-                                    value="#{msg.cms_itemBaseCollection}" />
-                            </h:selectOneMenu>
+                        <div class="admin__content-component-input-field">
+                            <!-- AREA FOR AJAX REFRESH -->
+                            <h:panelGroup id="baseCollectionGroup">
+                                <!-- VALIDATION MESSAGE -->
+                                <div class="cms-module__option-message">
+                                    <h:messages
+                                        for="baseCollection"
+                                        infoClass="cms-module__option-message-status success"
+                                        warnClass="cms-module__option-message-status warning"
+                                        errorClass="cms-module__option-message-status danger" />
+
+                                    <div class="cms-module__option-message-mark">
+                                        <i
+                                            class="fa fa-check"
+                                            aria-hidden="true" />
+                                        <i
+                                            class="fa fa-exclamation"
+                                            aria-hidden="true" />
+                                    </div>
+                                </div>
+
+                                <!-- SELECT MENU -->
+                                <div class="custom-control custom-control--select">
+                                    <h:selectOneMenu
+                                        id="baseCollection"
+                                        styleClass="form-control"
+                                        value="#{cc.attrs.contentItem.content.collectionName}"
+                                        disabled="#{empty cc.attrs.contentItem.content.solrField}">
+                                        <f:selectItems value="#{collectionViewBean.getPossibleBaseCollectionList(cc.attrs.contentItem.content)}" />
+                                        <f:ajax render="#{cc.attrs.renderingGroup}" />
+                                        <f:passThroughAttribute
+                                            name="aria-label"
+                                            value="#{msg.cms_itemBaseCollection}" />
+                                    </h:selectOneMenu>
+                                </div>
+                            </h:panelGroup>
                         </div>
-                    </h:panelGroup>
-                </div>
-            </div>
+                    </div>
 
-            <!-- IGNORE COLLECTION -->
-            <div class="admin__content-component-input-group">
-                <!-- LABEL -->
-                <div class="admin__content-component-input-label">
-                    <label for="ignoreCollection">#{msg.cms_itemIgnoreCollections}:</label>
-                </div>
-
-                <div class="admin__content-component-input-field">
-                    <!-- AREA FOR AJAX REFRESH -->
-                    <h:panelGroup id="ignoreCollectionGroup">
-                        <!-- VALIDATION MESSAGE -->
-                        <div class="cms-module__option-message">
-                            <h:messages
-                                for="ignoreCollection"
-                                infoClass="cms-module__option-message-status success"
-                                warnClass="cms-module__option-message-status warning"
-                                errorClass="cms-module__option-message-status danger" />
-
-                            <div class="cms-module__option-message-mark">
-                                <i
-                                    class="fa fa-check"
-                                    aria-hidden="true" />
-                                <i
-                                    class="fa fa-exclamation"
-                                    aria-hidden="true" />
-                            </div>
+                    <!-- IGNORE COLLECTION -->
+                    <div class="admin__content-component-input-group">
+                        <!-- LABEL -->
+                        <div class="admin__content-component-input-label">
+                            <label for="ignoreCollection">#{msg.cms_itemIgnoreCollections}:</label>
                         </div>
 
-                        <!-- MULTI SELECT MENU -->
-                        <div class="custom-control custom-control--select multiple">
-                            <h:selectManyMenu
-                                id="ignoreCollection"
-                                styleClass="form-control"
-                                value="#{cc.attrs.contentItem.content.ignoreCollectionsAsList}"
-                                disabled="#{empty cc.attrs.contentItem.content.solrField}">
-                                <f:selectItem itemLabel="#{msg.cms_itemIgnoreNoCollection}" />
-                                <f:selectItems
-                                    value="#{collectionViewBean.getPossibleIgnoreCollectionList(cc.attrs.contentItem.content, cc.attrs.contentItem.content.ignoreHierarchy)}"
-                                    var="field"
-                                    itemValue="#{field}"
-                                    itemLabel="#{field}" />
-                                <f:ajax render="@none" />
-                                <f:passThroughAttribute
-                                    name="aria-label"
-                                    value="#{msg.cms_itemIgnoreCollections}" />
-                            </h:selectManyMenu>
+                        <div class="admin__content-component-input-field">
+                            <!-- AREA FOR AJAX REFRESH -->
+                            <h:panelGroup id="ignoreCollectionGroup">
+                                <!-- VALIDATION MESSAGE -->
+                                <div class="cms-module__option-message">
+                                    <h:messages
+                                        for="ignoreCollection"
+                                        infoClass="cms-module__option-message-status success"
+                                        warnClass="cms-module__option-message-status warning"
+                                        errorClass="cms-module__option-message-status danger" />
+
+                                    <div class="cms-module__option-message-mark">
+                                        <i
+                                            class="fa fa-check"
+                                            aria-hidden="true" />
+                                        <i
+                                            class="fa fa-exclamation"
+                                            aria-hidden="true" />
+                                    </div>
+                                </div>
+
+                                <!-- MULTI SELECT MENU -->
+                                <div class="custom-control custom-control--select multiple">
+                                    <h:selectManyMenu
+                                        id="ignoreCollection"
+                                        styleClass="form-control"
+                                        value="#{cc.attrs.contentItem.content.ignoreCollectionsAsList}"
+                                        disabled="#{empty cc.attrs.contentItem.content.solrField}">
+                                        <f:selectItem itemLabel="#{msg.cms_itemIgnoreNoCollection}" />
+                                        <f:selectItems
+                                            value="#{collectionViewBean.getPossibleIgnoreCollectionList(cc.attrs.contentItem.content, cc.attrs.contentItem.content.ignoreHierarchy)}"
+                                            var="field"
+                                            itemValue="#{field}"
+                                            itemLabel="#{field}" />
+                                        <f:ajax render="@none" />
+                                        <f:passThroughAttribute
+                                            name="aria-label"
+                                            value="#{msg.cms_itemIgnoreCollections}" />
+                                    </h:selectManyMenu>
+                                </div>
+                            </h:panelGroup>
                         </div>
-                    </h:panelGroup>
-                </div>
-            </div>
+                    </div>
                 </h:panelGroup>
             </h:panelGroup>
 
