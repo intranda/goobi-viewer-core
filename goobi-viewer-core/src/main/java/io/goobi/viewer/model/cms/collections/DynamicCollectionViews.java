@@ -68,17 +68,11 @@ public final class DynamicCollectionViews {
         collection.setSubtheme(StringUtils.trimToEmpty(subtheme));
         // Dynamic collections are a flat set, not a Solr hierarchy
         collection.setIgnoreHierarchy(true);
+        // An empty string marks "no base collection" the same way the regular collection views do; leaving it null makes callers that compare the
+        // base element name against a blank configuration value repopulate the view on every access
+        collection.setBaseElementName("");
+        // Populating attaches the DB collection info (label, description, thumbnail, link) to each entry
         collection.populateCollectionList();
-
-        // Attach the DB collection info (label, description, thumbnail, link) to each entry. The visible elements share the same object references as
-        // the complete list, so no recalculation is necessary.
-        try {
-            for (DynamicCollection dynamicCollection : DataManager.getInstance().getDao().getAllDynamicCollections()) {
-                collection.setCollectionInfo(dynamicCollection.getIdentifier(), dynamicCollection);
-            }
-        } catch (DAOException e) {
-            logger.error("Error attaching dynamic collection info: {}", e.getMessage());
-        }
         return collection;
     }
 

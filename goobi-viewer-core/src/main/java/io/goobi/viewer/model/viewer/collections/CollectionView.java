@@ -54,6 +54,7 @@ import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.managedbeans.NavigationHelper;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.collections.CMSCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
 import io.goobi.viewer.model.search.CollectionResult;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.viewer.PageType;
@@ -125,6 +126,7 @@ public class CollectionView implements Serializable {
      * @throws IllegalRequestException
      * @should return top elements sorted by size
      * @should sort subcollections ascending and descending
+     * @should reattach dynamic collection info when repopulating
      */
     public void populateCollectionList() throws IndexUnreachableException, IllegalRequestException {
         synchronized (this) {
@@ -290,10 +292,30 @@ public class CollectionView implements Serializable {
      */
     public void associateElementsWithCMSData() {
         try {
+            if (SolrConstants.DC_DYNAMIC.equals(this.field)) {
+                associateElementsWithDynamicCollections();
+                return;
+            }
             List<CMSCollection> cmsCollections = DataManager.getInstance().getDao().getCMSCollections(this.field);
             associateElementsWithCMSData(cmsCollections);
         } catch (DAOException e) {
             logger.error("Failed to associate collections with media items: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Attaches the {@link io.goobi.viewer.model.cms.collections.DynamicCollection} with the matching identifier to each browse element, so that
+     * label, description, thumbnail and link resolve from the database.
+     *
+     * <p>Counterpart of {@link #associateElementsWithCMSData()} for the {@link io.goobi.viewer.solr.SolrConstants#DC_DYNAMIC} pseudo field. It has to
+     * run at the end of every populate cycle, because {@link #populateCollectionList()} creates new browse elements and thus drops any info attached
+     * to the previous ones.
+     *
+     * @throws DAOException if the dynamic collections cannot be loaded
+     */
+    private void associateElementsWithDynamicCollections() throws DAOException {
+        for (DynamicCollection dynamicCollection : DataManager.getInstance().getDao().getAllDynamicCollections()) {
+            setCollectionInfo(dynamicCollection.getIdentifier(), dynamicCollection);
         }
     }
 

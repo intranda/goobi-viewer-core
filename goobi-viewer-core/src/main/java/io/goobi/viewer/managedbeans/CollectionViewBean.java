@@ -107,6 +107,7 @@ public class CollectionViewBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if any.
+     * @should keep dynamic collection labels when called repeatedly
      */
     public CollectionView getCollection(CMSCollectionContent content, final String topVisibleElement)
             throws PresentationException, IndexUnreachableException, IllegalRequestException {

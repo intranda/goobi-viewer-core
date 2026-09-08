@@ -23,6 +23,7 @@ package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -98,6 +99,38 @@ class CollectionViewBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         } finally {
             DataManager.getInstance().getDao().deleteDynamicCollection(dc1);
             DataManager.getInstance().getDao().deleteDynamicCollection(dc2);
+        }
+    }
+
+    /**
+     * The bean caches the CollectionView for the whole session. A repeated lookup must return the cached view with its database labels intact
+     * instead of repopulating it, which would replace all browse elements with untranslated ones.
+     *
+     * @see CollectionViewBean#getCollection(CMSCollectionContent, String)
+     * @verifies keep dynamic collection labels when called repeatedly
+     */
+    @Test
+    void getCollection_shouldKeepDynamicCollectionLabelsWhenCalledRepeatedly() throws Exception {
+        String language = BeanUtils.getLocale() != null ? BeanUtils.getLocale().getLanguage() : Locale.ENGLISH.getLanguage();
+
+        DynamicCollection dc1 = new DynamicCollection("cvb_dyncol_3");
+        dc1.setSolrQuery("ISWORK:true");
+        dc1.addLabel(new DynamicCollectionTranslation(language, "Dynamic collection three"));
+
+        DataManager.getInstance().getDao().addDynamicCollection(dc1);
+        try {
+            CMSCollectionContent content = new CMSCollectionContent();
+            content.setSolrField(SolrConstants.DC_DYNAMIC);
+
+            CollectionViewBean bean = new CollectionViewBean();
+            CollectionView view = bean.getCollection(content);
+            assertEquals("Dynamic collection three", getElement(view.getVisibleDcElements(), "cvb_dyncol_3").getLabel());
+
+            CollectionView cachedView = bean.getCollection(content);
+            assertSame(view, cachedView, "The bean should return the cached view");
+            assertEquals("Dynamic collection three", getElement(cachedView.getVisibleDcElements(), "cvb_dyncol_3").getLabel());
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(dc1);
         }
     }
 
