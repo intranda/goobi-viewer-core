@@ -609,6 +609,7 @@ public class SearchFacets implements Serializable {
      * @should skip facet links with leading semicolon caused by triple separators in URL
      * @should parse exclusion marker correctly
      * @should skip invalid facet links carrying an exclusion marker
+     * @should use the dynamic collection label as label for query facets
      */
     static void parseFacetString(final String facetString, final List<IFacetItem> facetItems, final Map<String, String> labelMap) {
         if (facetItems == null) {
@@ -662,13 +663,17 @@ public class SearchFacets implements Serializable {
                 item.setValue(facetLink.substring(facetLink.indexOf(":") + 1));
                 facetItems.add(item);
             } else if (isFieldQueryFacet(facetField)) {
-                // Query facet (e.g. dynamic collection): the value is an identifier resolved to the collection's stored Solr query
+                // Query facet (e.g. dynamic collection): the value is an identifier resolved to the collection's stored Solr query and label
                 String name = facetLink.substring(facetLink.indexOf(":") + 1);
+                DynamicCollection collection = getDynamicCollection(name);
                 String label = labelMap != null && labelMap.containsKey(facetLink) ? labelMap.get(facetLink) : null;
+                if (label == null && collection != null) {
+                    label = collection.getLabel(BeanUtils.getLocale());
+                }
                 String itemLink = itemExcluded ? FacetItem.EXCLUDE_PREFIX + facetLink : facetLink;
                 FacetItem item = new FacetItem(itemLink, label, false);
                 item.setType(FacetType.QUERY);
-                item.setFacetQuery(getDynamicCollectionQuery(name));
+                item.setFacetQuery(collection != null ? collection.getSolrQuery() : null);
                 facetItems.add(item);
             } else {
                 // If there is a cached pre-generated label for this facet link (separate label field), use it so that there's no empty label
@@ -699,17 +704,14 @@ public class SearchFacets implements Serializable {
     }
 
     /**
-     * Resolves the stored Solr query of the dynamic collection with the given name.
+     * Resolves the dynamic collection with the given name, which carries both the stored Solr query and the localized label of a query facet.
      *
      * @param name unique name of the dynamic collection
-     * @return the collection's Solr query, or null if no such collection exists or on DAO error
+     * @return the collection, or null if no such collection exists or on DAO error
      */
-    static String getDynamicCollectionQuery(String name) {
+    static DynamicCollection getDynamicCollection(String name) {
         try {
-            DynamicCollection collection = DataManager.getInstance().getDao().getDynamicCollection(name);
-            if (collection != null) {
-                return collection.getSolrQuery();
-            }
+            return DataManager.getInstance().getDao().getDynamicCollection(name);
         } catch (DAOException e) {
             logger.trace("Error retrieving dynamic collection '{}' from DAO", name);
         }
