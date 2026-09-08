@@ -572,6 +572,8 @@
         <!--          'style' may habe a value of either 'slider', which is the default, or 'graph' -->
         <!-- geo: the field contains geographical coordinates which are displayed on a map -->
         <!-- hierarchical: The field contains hierarchical values, usually a type of digital collection -->
+        <!-- query: The values are not taken from a Solr field but from a set of stored Solr queries. Only supported for the
+             reserved pseudo field DC_DYNAMIC, whose values are the dynamic collections defined in the database. -->
         <facets>
             <!-- Facet fields are grouped into named <template> blocks (like metadata templates). The "_DEFAULT"
                  template is the sidebar facet set. Additional named templates can be referenced elsewhere, e.g. by
@@ -590,6 +592,7 @@
                 <field initialElementNumber="3">DOCSTRCT_SUB</field>
                 <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_CREATOR</field>
                 <field initialElementNumber="3" sortOrder="alphabetical_raw_asc">MD_PLACEPUBLISH</field>
+                <!-- <field type="query" initialElementNumber="3">DC_DYNAMIC</field> -->
                 <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">FULLTEXTAVAILABLE</field> -->
                 <!-- <field initialElementNumber="3" sortOrder="alphabetical_asc" displayValueFilter="false">BOOL_IMAGEAVAILABLE</field> -->
                 <!-- <field labelField="MD_LABEL">MD_VALUE</field> -->
