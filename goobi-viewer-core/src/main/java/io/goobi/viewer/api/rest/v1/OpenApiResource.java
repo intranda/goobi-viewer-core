@@ -48,6 +48,7 @@ import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.tags.Tag;
 
 /**
  * @author Florian Alpers
@@ -93,6 +94,7 @@ public class OpenApiResource {
             oApi.setServers(servers);
 
             oApi.setInfo(getInfo());
+            oApi.setTags(getTags());
 
             return oApi;
         } catch (OpenApiConfigurationException e) {
@@ -128,6 +130,46 @@ public class OpenApiResource {
                 .license(new License()
                         .name("GPL2 or later")
                         .url("https://github.com/intranda/goobi-viewer-core/blob/master/LICENSE"));
+    }
+
+    /**
+     * Returns the global tag list of the v1 API.
+     *
+     * <p>Operations reference these tags by name only. Declaring them here is what gives each group in the API
+     * documentation a description, and this list's order is the order in which the groups are presented. A tag
+     * used by an operation but missing here still forms a group, just an undescribed one at the end.
+     *
+     * <p>Static for the same reason as {@link #getInfo()}: the build-time spec generator reuses it, so the
+     * validated spec stays identical to what this resource serves.
+     *
+     * @return tags of the v1 API, in presentation order
+     */
+    public static List<Tag> getTags() {
+        return List.of(
+                tag("records", "Records addressed by persistent identifier: metadata, pages, files, images and downloads."),
+                tag("iiif", "IIIF Presentation 2.1.1, Image, Search and Change Discovery resources."),
+                tag("collections", "Information about and downloads of BagIt archives for a whole collection."),
+                tag("search", "OpenSearch description, quick filter facets and search result exports."),
+                tag("index", "Direct Solr index access: field list, geospatial search, heatmaps, queries and statistics."),
+                tag("annotations", "Web Annotations on records and pages, including comments and ALTO text annotations."),
+                tag("bookmarks", "Bookmark lists of the current user and public lists addressed by their share key."),
+                tag("rss", "RSS feeds of recent records and of bookmark lists, as XML or JSON."),
+                tag("json", "Record metadata rendered through statically configured JSON templates."),
+                tag("media", "CMS media items, optionally filtered by category."),
+                tag("authority", "Resolver for normdata authority resources addressed by their escaped URL."),
+                tag("localization", "Translations for message keys in the configured languages."),
+                tag("statistics", "Usage statistics per day or time frame, and moving wall information."),
+                tag("auth", "Session login and logout."),
+                tag("login", "OpenID Connect callbacks and header based login."),
+                tag("users", "Information about the current user and upload of avatar images."),
+                tag("clients", "Registration and administration of trusted client applications."),
+                tag("tasks", "Queueing of long running tasks in a limited thread pool, and their status."),
+                tag("cache", "Status of the internal image, thumbnail and PDF cache, and endpoints to clear it."),
+                tag("monitoring", "Availability report for the data providing services the viewer depends on."));
+    }
+
+    private static Tag tag(String name, String description) {
+        return new Tag().name(name).description(description);
     }
 
 }

@@ -306,6 +306,7 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "200", description = "OK")
     @ApiResponse(responseCode = "403", description = "Forbidden — no matching provider configured or authentication denied")
     @ApiResponse(responseCode = "500", description = "Internal error")
+    @Tag(name = "login")
     public Response headerParameterLogin(@QueryParam("redirectUrl") String redirectUrl) {
         logger.debug("headerParameterLogin");
         if (redirectUrl != null && !isRedirectUrlAllowed(redirectUrl)) {
@@ -410,7 +411,7 @@ public class AuthenticationEndpoint {
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "403", description = "Forbidden - OpenID authentication failed or denied")
     @ApiResponse(responseCode = "500", description = "Internal error")
-    //    @Tag(name = "login")
+    @Tag(name = "login")
     public Response openIdLoginGET(@QueryParam("error") String error, @QueryParam("code") String authCode,
             @QueryParam("id_token") String accessToken, @QueryParam("state") String state) throws IOException {
         logger.trace("openIdLoginGET");

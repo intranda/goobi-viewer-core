@@ -57,6 +57,9 @@ public final class OpenApiSpecGenerator {
      * @should generate non empty paths for v2
      * @should set info for v1
      * @should set info for v2
+     * @should declare every operation tag globally for v1
+     * @should declare every operation tag globally for v2
+     * @should set a description for every declared tag
      */
     public static OpenAPI buildOpenApi(String version) throws OpenApiConfigurationException {
         switch (version) {
@@ -74,6 +77,7 @@ public final class OpenApiSpecGenerator {
                 // could drift out of sync. Referenced by fully-qualified name here (not imported)
                 // because the short name "OpenApiResource" is already taken by the v2 import above.
                 v1Api.setInfo(io.goobi.viewer.api.rest.v1.OpenApiResource.getInfo());
+                v1Api.setTags(io.goobi.viewer.api.rest.v1.OpenApiResource.getTags());
                 return v1Api;
             case "v2":
                 // v2 publishes an explicit class set (no package scan) - reuse it verbatim.
@@ -82,6 +86,7 @@ public final class OpenApiSpecGenerator {
                 // v2/OpenApiResource.getInfo() is public static, so reuse it verbatim to stay
                 // runtime-faithful; otherwise the generated spec lacks the required "info" object.
                 v2Api.setInfo(OpenApiResource.getInfo());
+                v2Api.setTags(OpenApiResource.getTags());
                 return v2Api;
             default:
                 throw new IllegalArgumentException("Unknown API version: " + version);

@@ -26,9 +26,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.tags.Tag;
 
 class OpenApiSpecGeneratorTest {
 
@@ -86,5 +95,59 @@ class OpenApiSpecGeneratorTest {
     void requireNonEmptyPaths_shouldThrowWhenPathsAreEmpty() {
         assertThrows(IllegalStateException.class,
                 () -> OpenApiSpecGenerator.requireNonEmptyPaths(new OpenAPI(), "test"));
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies declare every operation tag globally for v1
+     */
+    @Test
+    void buildOpenApi_shouldDeclareEveryOperationTagGloballyForV1() throws Exception {
+        assertUndeclaredTags("v1");
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies declare every operation tag globally for v2
+     */
+    @Test
+    void buildOpenApi_shouldDeclareEveryOperationTagGloballyForV2() throws Exception {
+        assertUndeclaredTags("v2");
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies set a description for every declared tag
+     */
+    @Test
+    void buildOpenApi_shouldSetADescriptionForEveryDeclaredTag() throws Exception {
+        for (String version : List.of("v1", "v2")) {
+            for (Tag tag : OpenApiSpecGenerator.buildOpenApi(version).getTags()) {
+                assertTrue(StringUtils.isNotBlank(tag.getDescription()),
+                        version + " tag '" + tag.getName() + "' must have a description");
+            }
+        }
+    }
+
+    /**
+     * Fails with the offending tag names when an operation uses a tag that the spec does not declare
+     * globally, the condition Spectral reports as "operation-tag-defined".
+     *
+     * @param version "v1" or "v2"
+     */
+    private static void assertUndeclaredTags(String version) throws Exception {
+        OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+        Set<String> declared = openApi.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
+        Set<String> undeclared = openApi.getPaths()
+                .values()
+                .stream()
+                .flatMap(pathItem -> pathItem.readOperations().stream())
+                .map(Operation::getTags)
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .filter(tag -> !declared.contains(tag))
+                .collect(Collectors.toCollection(TreeSet::new));
+        assertTrue(undeclared.isEmpty(),
+                version + " operations use tags that OpenApiResource.getTags() does not declare: " + undeclared);
     }
 }
