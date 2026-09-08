@@ -51,6 +51,9 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.SearchBean;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.collections.DynamicCollection;
+import io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation;
 import io.goobi.viewer.solr.SolrConstants;
 
 class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -121,6 +124,27 @@ class SearchFacetsTest extends AbstractDatabaseAndSolrEnabledTest {
             // The filter query is the stored solr query in parentheses, and the link round-trips as DC_DYNAMIC:<name>
             Assertions.assertEquals("(DOCSTRCT:monograph)", item.getQueryEscapedLink());
             Assertions.assertEquals(SolrConstants.DC_DYNAMIC + ":dyncol_parse_test", item.getLink());
+        } finally {
+            DataManager.getInstance().getDao().deleteDynamicCollection(dc);
+        }
+    }
+
+    /**
+     * @see SearchFacets#parseFacetString(String,List,Map)
+     * @verifies use the dynamic collection label as label for query facets
+     */
+    @Test
+    void parseFacetString_shouldUseTheDynamicCollectionLabelAsLabelForQueryFacets() throws DAOException {
+        DynamicCollection dc = new DynamicCollection("dyncol_label_test");
+        dc.setSolrQuery("DOCSTRCT:monograph");
+        dc.addLabel(new DynamicCollectionTranslation(BeanUtils.getLocale().getLanguage(), "Fine Collection"));
+        DataManager.getInstance().getDao().addDynamicCollection(dc);
+        try {
+            List<IFacetItem> facetItems = new ArrayList<>();
+            SearchFacets.parseFacetString(SolrConstants.DC_DYNAMIC + ":dyncol_label_test;;", facetItems, null);
+            Assertions.assertEquals(1, facetItems.size());
+            Assertions.assertEquals("Fine Collection", facetItems.get(0).getLabel());
+            Assertions.assertEquals("Fine Collection", facetItems.get(0).getTranslatedLabel());
         } finally {
             DataManager.getInstance().getDao().deleteDynamicCollection(dc);
         }
