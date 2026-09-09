@@ -24,12 +24,14 @@ package io.goobi.viewer.api.rest.v1.statistics.usage;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -109,8 +111,7 @@ public class UsageStatisticsResource {
                     @Content(mediaType = "text/csv", schema = @Schema(type = "string")) })
     @ApiResponse(responseCode = "400", description = "Invalid date format; expected yyyy-MM-dd")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
-    @ApiResponse(responseCode = "500", description = "The date could not be parsed, no record matches the filter query, or Solr or the"
-            + " database is unavailable")
+    @ApiResponse(responseCode = "500", description = "No record matches the filter query, or Solr or the database is unavailable")
     public Response getStatisticsForDay(
             @Parameter(description = "date to observe, in format yyyy-MM-dd",
                     schema = @Schema(pattern = "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) @PathParam("date") String date,
@@ -174,11 +175,11 @@ public class UsageStatisticsResource {
             content = { @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UsageStatisticsResponse.class)),
                     @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")),
                     @Content(mediaType = "text/csv", schema = @Schema(type = "string")) })
-    @ApiResponse(responseCode = "400", description = "The 'step' query parameter is not a number")
+    @ApiResponse(responseCode = "400", description = "Invalid date format (expected yyyy-MM-dd), or the 'step' query parameter is not a"
+            + " number")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @ApiResponse(responseCode = "416", description = "The requested date range is invalid (end date before start date)")
-    @ApiResponse(responseCode = "500", description = "A date could not be parsed, no record matches the filter query, or Solr or the"
-            + " database is unavailable")
+    @ApiResponse(responseCode = "500", description = "No record matches the filter query, or Solr or the database is unavailable")
     public Response getStatisticsListForDates(
             @Parameter(description = "first date to observe, in format yyyy-MM-dd",
                     schema = @Schema(pattern = "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$")) @PathParam("startDate") String start,
@@ -271,7 +272,21 @@ public class UsageStatisticsResource {
         return stepPeriod;
     }
 
+    /**
+     * Parses the given date string in the format this resource expects.
+     *
+     * @param date date string to parse
+     * @return the parsed {@link LocalDate}
+     * @throws BadRequestException if the string does not match the expected format
+     * @should parse date
+     * @should throw BadRequestException when date is malformed
+     */
     LocalDate getLocalDate(String date) {
-        return LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_FORMAT));
+        try {
+            return LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_FORMAT));
+        } catch (DateTimeParseException e) {
+            // Without this the unmapped DateTimeParseException would surface as 500 for a plain client input error.
+            throw new BadRequestException("Invalid date, expected format " + DATE_FORMAT);
+        }
     }
 }

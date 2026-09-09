@@ -200,7 +200,9 @@ public class TasksResource {
                 String messageId = this.messageBroker.addToQueue(message);
                 message.setMessageId(messageId);
             } catch (MessageQueueException e) {
-                throw new WebApplicationException(e);
+                logger.error("Failed to add task to the message queue", e);
+                // Passing the cause instead would let the mapper classify a broker outage as a client error.
+                throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
             }
 
             // TODO create useful response, containing the message id

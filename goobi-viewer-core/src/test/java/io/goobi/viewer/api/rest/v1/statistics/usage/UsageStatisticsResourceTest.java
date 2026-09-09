@@ -22,11 +22,14 @@
 package io.goobi.viewer.api.rest.v1.statistics.usage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.Month;
 
 import org.junit.jupiter.api.Test;
+
+import jakarta.ws.rs.BadRequestException;
 
 class UsageStatisticsResourceTest {
 
@@ -45,4 +48,14 @@ class UsageStatisticsResourceTest {
     
     
 
+
+    /**
+     * @verifies throw BadRequestException when date is malformed
+     * @see UsageStatisticsResource#getLocalDate
+     */
+    @Test
+    void getLocalDate_shouldThrowBadRequestExceptionWhenDateIsMalformed() {
+        UsageStatisticsResource resource = new UsageStatisticsResource();
+        assertThrows(BadRequestException.class, () -> resource.getLocalDate("13.07.2022"));
+    }
 }

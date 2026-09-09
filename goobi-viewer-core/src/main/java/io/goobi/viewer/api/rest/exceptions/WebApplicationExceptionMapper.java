@@ -63,7 +63,15 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     @Context
     private HttpServletRequest request;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should return 400 when number format exception cause
+     * @should not leak java class name when number format exception cause message
+     * @should return 400 when number format exception nested in runtime exception
+     * @should return 500 when response status is set without cause
+     * @should return 501 when not implemented exception cause
+     */
     @Override
     public Response toResponse(WebApplicationException eParent) {
         Response.Status status = null;
