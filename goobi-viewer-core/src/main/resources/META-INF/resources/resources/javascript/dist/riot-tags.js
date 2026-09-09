@@ -3634,9 +3634,6 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	    fetch(this.itemSource)
 	    .then(response => this.handleServerResponse(response))
 	    .then( itemConfig => this.loadItem(itemConfig))
-	    .then( () => this.fetch(this.annotationSource))
-	    .then(response => this.handleServerResponse(response))
-	    .then( annotations => this.initAnnotations(annotations))
 	    .then( () => this.item.notifyItemInitialized())
 		.catch( error => {
 		   	this.handleError(error);
@@ -3658,6 +3655,10 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 		return fetch(this.item.imageSource)
 		.then(response => this.handleServerResponse(response))
 		.then( imageSource => this.item.initViewer(imageSource))
+
+		.then( () => this.fetch(this.annotationSource))
+		.then(response => this.handleServerResponse(response))
+		.then( annotations => this.initAnnotations(annotations))
 		.then( () => this.loading = false)
 		.then( () => this.update())
 		.then( () => this.item.onImageOpen( () => {this.loading = false; this.update()}))
@@ -3848,7 +3849,8 @@ riot.tag2('campaignitem', '<div if="{!opts.pi}" class="crowdsourcing-annotations
 	            recordStatus: status,
 	            creator: this.item.getCreator().id,
 	    }
-	    return fetch(this.itemSource + (this.item.currentCanvasIndex + 1 ) + "/", {
+
+	    return fetch(this.itemSource + this.item.getCurrentPageOrder() + "/", {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
@@ -4344,7 +4346,6 @@ riot.tag2('imagecontrols', '<div class="image_controls"><div class="image-contro
     }.bind(this)
 
     this.toggleThumbs = function() {
-    	console.log("toggle thumbs " + this.opts.showthumbs);
     	this.opts.showthumbs = !this.opts.showthumbs;
     	this.handleAction("toggleThumbs", this.opts.showthumbs)
     }.bind(this)
@@ -4508,7 +4509,6 @@ riot.tag2('imageview', '<div id="wrapper_{opts.id}" class="imageview_wrapper"><s
 	}.bind(this)
 
 	this.handleImageControlAction = function(event) {
-		console.log("image action ", event.action);
 		switch(event.action) {
 			case "toggleThumbs":
 				this.showThumbs = event.value;
