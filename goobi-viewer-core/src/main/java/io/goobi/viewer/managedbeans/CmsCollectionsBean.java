@@ -354,6 +354,16 @@ public class CmsCollectionsBean implements Serializable {
     }
 
     /**
+     * Selects the database-defined dynamic collections as the collection source, so that the collection listing shows them without the user having to
+     * switch the source in the sidebar.
+     *
+     * @should select the dynamic collections pseudo field
+     */
+    public void selectDynamicCollectionsSource() {
+        setSolrField(SolrConstants.DC_DYNAMIC);
+    }
+
+    /**
      * Options for the collection source dropdown: all configured collection Solr fields plus the dynamic collections pseudo field. The dynamic
      * entry only appears once at least one dynamic collection exists (or while it is the selected source, so the selection stays valid after the
      * last collection is deleted).
