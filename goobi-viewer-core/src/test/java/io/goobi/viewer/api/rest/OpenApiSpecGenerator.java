@@ -88,6 +88,7 @@ public final class OpenApiSpecGenerator {
                 // because the short name "OpenApiResource" is already taken by the v2 import above.
                 v1Api.setInfo(io.goobi.viewer.api.rest.v1.OpenApiResource.getInfo());
                 v1Api.setTags(io.goobi.viewer.api.rest.v1.OpenApiResource.getTags());
+                io.goobi.viewer.api.rest.v1.OpenApiResource.applyTokenSecurityScheme(v1Api);
                 return v1Api;
             case "v2":
                 // v2 publishes an explicit class set (no package scan) - reuse it verbatim.

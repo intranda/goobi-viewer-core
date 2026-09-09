@@ -42,11 +42,13 @@ import io.goobi.viewer.api.rest.model.IResponseMessage;
 import io.goobi.viewer.api.rest.model.SuccessMessage;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.model.job.download.PdfDownloadJob;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BadRequestException;
@@ -141,6 +143,7 @@ public class CacheResource {
     @DELETE
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @ApiResponse(responseCode = "200", description = "Cache cleared successfully", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" },
@@ -175,6 +178,7 @@ public class CacheResource {
     @ApiResponse(responseCode = "200", description = "Return the number of deleted cache items", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" },
             description = "Authorization works as for the record-independent variant. Deletion matches cache keys equal to the record"
                     + " identifier or prefixed with it followed by an underscore; enabling pdf additionally matches keys containing the"

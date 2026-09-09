@@ -39,11 +39,16 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.v1.OpenApiResource;
 import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
 
 class OpenApiSpecGeneratorTest {
@@ -402,6 +407,178 @@ class OpenApiSpecGeneratorTest {
             }));
         }
         assertTrue(offenders.isEmpty(), "declared responses without a description: " + offenders);
+    }
+
+    /**
+     * The 13 operations for which the API token is the decisive prerequisite: the 12 reachable via {@code @AuthorizationBinding} plus
+     * {@code POST /tasks}, which enforces the token programmatically. The two sibling {@code /tasks} GETs are absent on purpose —
+     * they filter their result or answer 404 rather than rejecting, so a requirement would be a false promise.
+     */
+    private static final Set<String> TOKEN_PROTECTED_V1_OPERATIONS = Set.of(
+            "DELETE /cache",
+            "DELETE /cache/{pi}",
+            "GET /cms/media",
+            "GET /clients",
+            "GET /clients/{id}",
+            "PUT /clients/{id}",
+            "DELETE /records/{pi}",
+            "GET /statistics/movingwall/{year}",
+            "GET /statistics/usage/{date}",
+            "GET /statistics/usage/{startDate}/{endDate}",
+            "POST /tasks",
+            "POST /tasks/center3d",
+            "POST /tasks/center3d/{pi}");
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies declare the token security scheme for v1
+     */
+    @Test
+    void buildOpenApi_shouldDeclareTheTokenSecuritySchemeForV1() throws Exception {
+        OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi("v1");
+        assertNotNull(openApi.getComponents(), "v1 components must not be null");
+        Map<String, SecurityScheme> schemes = openApi.getComponents().getSecuritySchemes();
+        assertNotNull(schemes, "v1 must declare security schemes");
+        SecurityScheme scheme = schemes.get(AuthorizationFilter.SECURITY_SCHEME_TOKEN);
+        assertNotNull(scheme, "v1 must declare the token security scheme");
+        assertTrue(SecurityScheme.Type.APIKEY == scheme.getType(), "token scheme must be an apiKey scheme");
+        assertTrue(SecurityScheme.In.HEADER == scheme.getIn(), "token scheme must live in the header");
+        assertTrue(AuthorizationFilter.TOKEN_HEADER.equals(scheme.getName()), "token scheme must name the token header");
+        assertFalse(StringUtils.isBlank(scheme.getDescription()), "token scheme must carry a description");
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies require the token scheme for every token protected operation for v1
+     */
+    @Test
+    void buildOpenApi_shouldRequireTheTokenSchemeForEveryTokenProtectedOperationForV1() throws Exception {
+        assertTrue(TOKEN_PROTECTED_V1_OPERATIONS.equals(collectTokenProtectedOperations("v1")),
+                "operations requiring the token scheme differ from the expected set; found: "
+                        + new TreeSet<>(collectTokenProtectedOperations("v1")));
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies not require the token scheme for any operation for v2
+     */
+    @Test
+    void buildOpenApi_shouldNotRequireTheTokenSchemeForAnyOperationForV2() throws Exception {
+        assertTrue(collectTokenProtectedOperations("v2").isEmpty(),
+                "v2 publishes no token protected resource class, so no operation may require the scheme: "
+                        + new TreeSet<>(collectTokenProtectedOperations("v2")));
+    }
+
+    private static Set<String> collectTokenProtectedOperations(String version) throws Exception {
+        Set<String> found = new TreeSet<>();
+        OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+        openApi.getPaths().forEach((path, pathItem) -> pathItem.readOperationsMap().forEach((method, operation) -> {
+            if (operation.getSecurity() != null
+                    && operation.getSecurity().stream().anyMatch(req -> req.containsKey(AuthorizationFilter.SECURITY_SCHEME_TOKEN))) {
+                found.add(method.name() + " " + path);
+            }
+        }));
+        return found;
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies declare unauthorized for every operation with a security requirement
+     */
+    @Test
+    void buildOpenApi_shouldDeclareUnauthorizedForEveryOperationWithASecurityRequirement() throws Exception {
+        List<String> offenders = new ArrayList<>();
+        for (String version : List.of("v1", "v2")) {
+            OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+            openApi.getPaths().forEach((path, pathItem) -> pathItem.readOperationsMap().forEach((method, operation) -> {
+                Map<String, ApiResponse> responses = operation.getResponses() == null ? Map.of() : operation.getResponses();
+                if (operation.getSecurity() != null && !operation.getSecurity().isEmpty() && !responses.containsKey("401")) {
+                    offenders.add(version + " " + method.name() + " " + path);
+                }
+            }));
+        }
+        assertTrue(offenders.isEmpty(), "operations that require authentication but declare no 401: " + offenders);
+    }
+
+    /**
+     * Spectral cannot be relied on here: {@code oas3-operation-security-defined} carries no severity and therefore only warns, while
+     * the lint run fails on errors only. A mismatch between reference and declaration would pass the build unnoticed.
+     *
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies reference only declared security schemes
+     */
+    @Test
+    void buildOpenApi_shouldReferenceOnlyDeclaredSecuritySchemes() throws Exception {
+        List<String> offenders = new ArrayList<>();
+        for (String version : List.of("v1", "v2")) {
+            OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+            Map<String, SecurityScheme> declared =
+                    openApi.getComponents() == null || openApi.getComponents().getSecuritySchemes() == null
+                            ? Map.of() : openApi.getComponents().getSecuritySchemes();
+            openApi.getPaths().forEach((path, pathItem) -> pathItem.readOperationsMap().forEach((method, operation) -> {
+                if (operation.getSecurity() != null) {
+                    operation.getSecurity().stream().flatMap(req -> req.keySet().stream()).filter(name -> !declared.containsKey(name))
+                            .forEach(name -> offenders.add(version + " " + method.name() + " " + path + " -> " + name));
+                }
+            }));
+        }
+        assertTrue(offenders.isEmpty(), "operations referencing an undeclared security scheme: " + offenders);
+    }
+
+    /**
+     * A root level requirement would mark every open operation as protected and mislead spec driven clients and test tools.
+     *
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies not declare global security
+     */
+    @Test
+    void buildOpenApi_shouldNotDeclareGlobalSecurity() throws Exception {
+        for (String version : List.of("v1", "v2")) {
+            OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+            assertTrue(openApi.getSecurity() == null || openApi.getSecurity().isEmpty(),
+                    version + " must not declare global security: " + openApi.getSecurity());
+        }
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies not declare a security scheme for v2
+     */
+    @Test
+    void buildOpenApi_shouldNotDeclareASecuritySchemeForV2() throws Exception {
+        OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi("v2");
+        Map<String, SecurityScheme> schemes =
+                openApi.getComponents() == null ? null : openApi.getComponents().getSecuritySchemes();
+        assertTrue(schemes == null || schemes.isEmpty(), "v2 declares no token protected operation, so it must declare no scheme");
+    }
+
+    /**
+     * Guards the applier contract directly instead of counting generated schemas: replacing the components map rather than adding to
+     * it would silently drop every model schema.
+     *
+     * @see OpenApiResource#applyTokenSecurityScheme(OpenAPI)
+     * @verifies add the scheme to existing components without replacing them
+     */
+    @Test
+    void applyTokenSecurityScheme_shouldAddTheSchemeToExistingComponentsWithoutReplacingThem() {
+        OpenAPI openApi = new OpenAPI().components(new Components().addSchemas("Existing", new Schema<>()));
+        OpenApiResource.applyTokenSecurityScheme(openApi);
+        assertNotNull(openApi.getComponents().getSchemas().get("Existing"), "pre-existing schemas must survive");
+        assertNotNull(openApi.getComponents().getSecuritySchemes().get(AuthorizationFilter.SECURITY_SCHEME_TOKEN),
+                "the token scheme must be added");
+    }
+
+    /**
+     * @see OpenApiResource#applyTokenSecurityScheme(OpenAPI)
+     * @verifies create components when absent
+     */
+    @Test
+    void applyTokenSecurityScheme_shouldCreateComponentsWhenAbsent() {
+        OpenAPI openApi = new OpenAPI();
+        OpenApiResource.applyTokenSecurityScheme(openApi);
+        assertNotNull(openApi.getComponents(), "components must be created when absent");
+        assertNotNull(openApi.getComponents().getSecuritySchemes().get(AuthorizationFilter.SECURITY_SCHEME_TOKEN),
+                "the token scheme must be added");
     }
 
     private static boolean hasSchema(ApiResponse response) {

@@ -90,6 +90,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaLister;
 import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.cms.media.MediaList;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -97,6 +98,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BadRequestException;
@@ -223,6 +225,7 @@ public class CMSMediaResource {
     @ApiResponse(responseCode = "401", description = "Not authorized")
     @ApiResponse(responseCode = "500", description = "Internal server error - e.g. database unavailable")
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     public MediaList getAllMedia(
             @Parameter(description = "Comma separated list of tags. Only media items with any of these tags"
                     + " will be included") @QueryParam("tags") String tags,
@@ -545,6 +548,7 @@ public class CMSMediaResource {
     @ApiResponse(responseCode = "400", description = "Operation not supported")
     @ApiResponse(responseCode = "401", description = "Not authorized")
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     public void deleteAllFiles() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }
@@ -557,6 +561,7 @@ public class CMSMediaResource {
     @ApiResponse(responseCode = "400", description = "Operation not supported")
     @ApiResponse(responseCode = "401", description = "Not authorized")
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     public void deleteFile() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
     }

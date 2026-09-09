@@ -39,14 +39,17 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.goobi.viewer.controller.DataManager;
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 
@@ -95,6 +98,7 @@ public class OpenApiResource {
 
             oApi.setInfo(getInfo());
             oApi.setTags(getTags());
+            applyTokenSecurityScheme(oApi);
 
             return oApi;
         } catch (OpenApiConfigurationException e) {
@@ -111,6 +115,46 @@ public class OpenApiResource {
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the security scheme describing the API token.
+     *
+     * <p>The token is a static value the operator configures; it is sent in the request header named by
+     * {@link AuthorizationFilter#TOKEN_HEADER}. The deprecated query parameter fall-back is deliberately left
+     * undocumented: a machine readable spec is an invitation to use what it describes, and a token in the URL
+     * leaks into access logs, Referer headers and browser history.
+     *
+     * @return the api key security scheme for the token header
+     * @should describe an api key scheme for the token header
+     */
+    public static SecurityScheme getTokenSecurityScheme() {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.HEADER)
+                .name(AuthorizationFilter.TOKEN_HEADER)
+                .description("Static API token issued by the viewer operator. Send it in the `" + AuthorizationFilter.TOKEN_HEADER
+                        + "` request header. Endpoints without this requirement are open; endpoints protected by a user or admin"
+                        + " session are not covered by this scheme.");
+    }
+
+    /**
+     * Declares the token security scheme on the given spec.
+     *
+     * <p>Adds to the existing {@link Components} rather than replacing them: the reader has already filled in the model
+     * schemas at this point, and {@code setComponents} would drop them. Applied after {@code read()} for the same reason —
+     * the reader assigns the scheme map wholesale, so a pre-populated configuration could be overwritten.
+     *
+     * <p>Static so the build-time spec generator applies the identical scheme, instead of a copy that could drift.
+     *
+     * @param openApi spec to declare the scheme on
+     * @should add the scheme to existing components without replacing them
+     * @should create components when absent
+     */
+    public static void applyTokenSecurityScheme(OpenAPI openApi) {
+        Components components = openApi.getComponents() != null ? openApi.getComponents() : new Components();
+        components.addSecuritySchemes(AuthorizationFilter.SECURITY_SCHEME_TOKEN, getTokenSecurityScheme());
+        openApi.setComponents(components);
     }
 
     /**

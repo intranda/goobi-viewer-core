@@ -114,11 +114,13 @@ import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.viewer.StructElement;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -879,6 +881,7 @@ public class RecordResource {
     @Consumes({ MediaType.APPLICATION_JSON })
     @CORSBinding
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @ApiResponse(responseCode = "200", description = "Record deletion accepted",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")

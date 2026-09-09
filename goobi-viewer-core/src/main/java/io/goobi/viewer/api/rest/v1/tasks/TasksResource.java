@@ -60,6 +60,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -116,6 +117,9 @@ public class TasksResource {
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
+    // Declared although this resource carries no @AuthorizationBinding: the token is checked programmatically per task type.
+    // Only the token variant is expressible here; the description states that admin and session types need something else.
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Operation(tags = { "tasks" }, summary = "Create a (possibly time consuming) task to execute in a limited thread pool. See javadoc for details",
             description = "With the internal message broker enabled, which is the default, only the three types that carry a dedicated"
                     + " request body subtype are queued (sitemap update, data repository name update, PDF pre-rendering); any other type"

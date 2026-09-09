@@ -35,11 +35,13 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.statistics.MovingWallAnnualStatistics;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * REST resource providing statistics about moving wall access restrictions and record availability by publication year.
@@ -64,6 +66,7 @@ public class MovingWallStatisticsResource {
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL_YEAR)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identifiers for the given year", tags = { "statistics" },
             description = "A record is included when it is a work whose release date (the DATE_PUBLICRELEASEDATE Solr field) falls"
                     + " within the given calendar year; entries are sorted by that date. Although json and plain text are also declared"

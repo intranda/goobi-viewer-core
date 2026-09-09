@@ -49,6 +49,15 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LogManager.getLogger(AuthorizationFilter.class);
 
+    /** Name of the request header carrying the API token. */
+    public static final String TOKEN_HEADER = "token";
+
+    /**
+     * Key of the OpenAPI security scheme describing {@link #TOKEN_HEADER}. Kept separate from the header name: this is the
+     * identifier that generated clients and tooling configurations bind to, so it must stay stable even if the header is renamed.
+     */
+    public static final String SECURITY_SCHEME_TOKEN = "token";
+
     @Context
     private HttpServletRequest req;
 
@@ -56,16 +65,15 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
 
-        //  check against configured ip range
         if (!isAuthorized(req)) {
             requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("You are not allowed to access the REST API from IP " + NetTools.getIpAddress(req) + " or your password is wrong.")
+                    .entity("Missing or invalid API token.")
                     .build());
         }
     }
 
     public static boolean isAuthorized(HttpServletRequest request) {
-        String token = request.getHeader("token");
+        String token = request.getHeader(TOKEN_HEADER);
         if (StringUtils.isBlank(token)) {
             // Deprecated since 2026-05-28: token may also be passed as a "token" query parameter.
             // A token in the URL leaks into access logs, Referer headers and browser history, so

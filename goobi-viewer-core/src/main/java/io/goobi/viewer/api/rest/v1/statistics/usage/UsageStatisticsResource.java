@@ -58,11 +58,13 @@ import io.goobi.viewer.model.statistics.usage.StatisticsSummary;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummaryBuilder;
 import io.goobi.viewer.model.statistics.usage.StatisticsSummaryFilter;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * REST resource providing usage statistics and access metrics for records and viewer resources, covering a single day or a range of days.
@@ -71,6 +73,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
  */
 @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE)
 @AuthorizationBinding
+@SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
 public class UsageStatisticsResource {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd";

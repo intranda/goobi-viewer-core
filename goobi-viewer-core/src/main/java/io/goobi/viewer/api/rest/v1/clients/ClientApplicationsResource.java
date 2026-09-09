@@ -59,12 +59,14 @@ import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * REST resource for managing client application registrations and their access credentials.
@@ -180,6 +182,7 @@ public class ClientApplicationsResource {
      */
     @PUT
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @jakarta.ws.rs.Path(CLIENTS_CLIENT)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Set properties of an existing client",
@@ -253,6 +256,7 @@ public class ClientApplicationsResource {
      */
     @GET
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get a list of all registered clients", tags = { "clients" },
             description = "Clients are returned as json objects. Requires an access token in the query paramter or header field 'token'."
@@ -297,6 +301,7 @@ public class ClientApplicationsResource {
     @GET
     @jakarta.ws.rs.Path(CLIENTS_CLIENT)
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Get the client with the given client identifier", tags = { "clients" },
             description = "The client is returned as a json object. Requires an access token in the query paramter or header field 'token'.")

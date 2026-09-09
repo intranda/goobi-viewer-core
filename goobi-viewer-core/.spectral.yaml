@@ -1,1 +1,5 @@
 extends: ["spectral:oas"]
+rules:
+  # Raised from the ruleset default (warn): the lint run fails on errors only, so at warn level a
+  # security requirement naming an undeclared scheme would pass the build unnoticed.
+  oas3-operation-security-defined: error

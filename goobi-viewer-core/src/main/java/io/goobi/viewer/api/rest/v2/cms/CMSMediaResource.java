@@ -107,11 +107,13 @@ import io.goobi.viewer.model.cms.media.CMSMediaItemMetadata;
 import io.goobi.viewer.model.cms.media.CMSMediaLister;
 import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.security.user.User;
+import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * REST resource for accessing CMS media files in the v2 API with category and type filtering.
@@ -183,6 +185,7 @@ public class CMSMediaResource {
             tags = { "media" },
             summary = "Get a list of CMS-Media Items")
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     public MediaList getAllMedia(
             @Parameter(
                     description = "Comma separated list of tags. Only media items with any of these tags will be included") @QueryParam("tags") 
@@ -485,6 +488,7 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Operation(hidden = true)
     public void deleteAllFiles() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
@@ -496,6 +500,7 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE)
     @Produces(MediaType.APPLICATION_JSON)
     @AuthorizationBinding
+    @SecurityRequirement(name = AuthorizationFilter.SECURITY_SCHEME_TOKEN)
     @Operation(hidden = true)
     public void deleteFile() throws IllegalRequestException {
         throw new IllegalRequestException("Deleting cms media files is not supported via REST");
