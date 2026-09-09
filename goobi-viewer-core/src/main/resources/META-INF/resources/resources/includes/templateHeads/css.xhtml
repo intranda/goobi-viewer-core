@@ -14,13 +14,14 @@
         them lets the reference render as its own styles intend; the few components the
         blank template still brings along are styled by misc/rest_api.css instead.
 
-        A CMS page can carry any navigation id, 'API' included, so the cms page flag is
-        part of the condition: restApi.xhtml is the only page that sets this name without
-        it.
+        The condition keys on the view id and not on navigationHelper.currentPage: that
+        name is session scoped and only written by views that call setCurrentPage, so
+        every view that never sets one - login.xhtml among them - would keep seeing 'API'
+        after a visit to the reference and render without any stylesheet at all.
     -->
     <c:set
         var="skipViewerCSS"
-        value="#{navigationHelper.currentPage == 'API' and !navigationHelper.cmsPage}" />
+        value="#{view.viewId == '/restApi.xhtml'}" />
 
     <!-- =======================
         BASE LIBRARIES
