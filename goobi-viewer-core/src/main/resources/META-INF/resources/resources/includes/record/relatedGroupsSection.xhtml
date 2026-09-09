@@ -31,7 +31,7 @@
                     var="detail"
                     value="#{activeDocumentBean.groupMembershipDetailsForSection}">
                     <a
-                        href="#{navigationHelper.imageUrl}/#{detail.pi}/1/"
+                        href="#{navigationHelper.getRecordUrl(detail.pi, detail.docStructType, 1, detail.anchorOrGroup, detail.hasImages)}"
                         class="related-groups-section__card">
                         <div class="related-groups-section__card-image">
                             <h:panelGroup rendered="#{not empty detail.thumbnailUrl}">

@@ -37,13 +37,20 @@ public class GroupMemberDetail implements Serializable {
     private final String subtitle;
     private final String yearPublish;
     private final String thumbnailUrl;
+    private final String docStructType;
+    private final boolean anchorOrGroup;
+    private final boolean hasImages;
 
-    public GroupMemberDetail(String pi, String title, String subtitle, String yearPublish, String thumbnailUrl) {
+    public GroupMemberDetail(String pi, String title, String subtitle, String yearPublish, String thumbnailUrl, String docStructType,
+            boolean anchorOrGroup, boolean hasImages) {
         this.pi = pi;
         this.title = title;
         this.subtitle = subtitle;
         this.yearPublish = yearPublish;
         this.thumbnailUrl = thumbnailUrl;
+        this.docStructType = docStructType;
+        this.anchorOrGroup = anchorOrGroup;
+        this.hasImages = hasImages;
     }
 
     public String getPi() {
@@ -64,5 +71,17 @@ public class GroupMemberDetail implements Serializable {
 
     public String getThumbnailUrl() {
         return thumbnailUrl;
+    }
+
+    public String getDocStructType() {
+        return docStructType;
+    }
+
+    public boolean isAnchorOrGroup() {
+        return anchorOrGroup;
+    }
+
+    public boolean isHasImages() {
+        return hasImages;
     }
 }
