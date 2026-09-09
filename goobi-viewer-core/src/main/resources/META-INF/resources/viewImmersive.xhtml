@@ -9,9 +9,6 @@
         <f:metadata>
             <f:event
                 type="preRenderView"
-                listener="#{activeDocumentBean.updateImmersiveFullscreenView}" />
-            <f:event
-                type="preRenderView"
                 listener="#{navigationHelper.setCurrentView('immersive')}" />
             <f:event
                 type="preRenderView"
@@ -40,8 +37,8 @@
         <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
             <ui:include src="/resources/includes/immersive/iv_layout.xhtml">
                 <ui:param
-                    name="immersiveFullscreen"
-                    value="#{activeDocumentBean.immersiveFullscreenView}" />
+                    name="embedded"
+                    value="#{false}" />
             </ui:include>
         </ui:fragment>
 

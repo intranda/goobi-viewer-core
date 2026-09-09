@@ -1,15 +1,14 @@
 /** Bottom bar and page-status wiring: indicator and actions. */
 
 import { createDisposer } from '../shared/ivLifecycle.mjs';
+import { env } from '../shared/ivEnv.mjs';
 
 /**
  * Wires the paging UI and the bottom-bar actions: page indicator (bottom bar +
- * title pill + canvas aria-label) and the action buttons (zoom, rotate, reset,
- * double page, overview).
- *
- * Fullscreen is not among them: it is a page of its own (the fullscreen route
- * renders this view edge to edge), reached by the plain link in the right
- * toolbar, so nothing here calls or watches the Fullscreen API.
+ * title pill + canvas aria-label), the action buttons
+ * (zoom, rotate, reset, double page, overview, fullscreen) and the
+ * fullscreen-change bookkeeping incl. re-homing Bootstrap popovers into the
+ * fullscreen element.
  *
  * @param {HTMLElement} el  the [data-immersive-image] mount element
  * @param {IvViewer} viewer
@@ -47,6 +46,7 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
             else if (action === 'rotate-left') viewer.rotateLeft();
             else if (action === 'rotate-right') viewer.rotateRight();
             else if (action === 'reset') viewer.resetView();
+            else if (action === 'fullscreen') toggleImmersiveFullscreen();
             else if (action === 'overview') toggleGrid();
             else if (action === 'double-page') {
                 const on = viewer.toggleDoublePage();
@@ -58,5 +58,75 @@ export function setupBottomBar(el, viewer, { toggleGrid, updateFulltextAvail }) 
         });
     });
 
+    const fullscreenBtn = document.querySelector('[data-immersive-action="fullscreen"]');
+    let resetTimer = null;
+    let resetFrame = 0;
+    let cancelResize = null;
+    bag.add(() => {
+        clearTimeout(resetTimer);
+        cancelAnimationFrame(resetFrame);
+        if (cancelResize) cancelResize();
+    });
+    bag.listen(document, 'fullscreenchange', () => {
+        let done = false;
+        const doReset = () => {
+            if (done) return;
+            done = true;
+            clearTimeout(resetTimer);
+            if (cancelResize) cancelResize();
+            cancelResize = null;
+            resetFrame = requestAnimationFrame(() => viewer.resetView());
+        };
+        if (cancelResize) cancelResize();
+        cancelResize = viewer.onceResized(doReset);
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(doReset, 300);
+        if (fullscreenBtn) {
+            const isFullscreen = !!document.fullscreenElement;
+            fullscreenBtn.setAttribute('aria-pressed', String(isFullscreen));
+            const exitLabel = fullscreenBtn.dataset.labelExit;
+            const enterLabel = fullscreenBtn.dataset.labelEnter || fullscreenBtn.getAttribute('aria-label');
+            const label = isFullscreen && exitLabel ? exitLabel : enterLabel;
+            if (label) {
+                fullscreenBtn.setAttribute('aria-label', label);
+                fullscreenBtn.setAttribute('title', label);
+            }
+            const iconUse = fullscreenBtn.querySelector('svg use');
+            const enterIcon = fullscreenBtn.dataset.iconEnter;
+            const exitIcon = fullscreenBtn.dataset.iconExit;
+            if (iconUse && enterIcon && exitIcon) {
+                const iconName = isFullscreen ? exitIcon : enterIcon;
+                const href = iconUse.getAttribute('href') || iconUse.getAttribute('xlink:href') || '';
+                iconUse.setAttribute('href', href.replace(/[^/]+\.svg/, `${iconName}.svg`));
+            }
+        }
+
+        document.querySelectorAll('[data-popover-element]').forEach((trigger) => {
+            const $trigger = env.$ && env.$(trigger);
+            const inst = $trigger && $trigger.data('bs.popover');
+            if (!inst || !inst.config) return;
+            $trigger.popover('hide');
+            if (document.fullscreenElement) {
+                if (inst.config._savedContainer === undefined) {
+                    inst.config._savedContainer = inst.config.container;
+                }
+                inst.config.container = document.fullscreenElement;
+            } else if (inst.config._savedContainer !== undefined) {
+                inst.config.container = inst.config._savedContainer;
+                delete inst.config._savedContainer;
+            }
+        });
+    });
     return { destroy: bag.dispose };
+}
+
+/** Toggles native browser fullscreen on the immersive viewer hero (Esc exits). */
+function toggleImmersiveFullscreen() {
+    const el = document.querySelector('.immersive__viewer');
+    if (!el) return;
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        el.requestFullscreen?.();
+    }
 }

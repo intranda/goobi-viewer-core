@@ -6,7 +6,7 @@
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:c="http://java.sun.com/jsp/jstl/core">
     <!-- CONTENT REGION: below the hero, so the fullscreen page has no room for it -->
-    <ui:fragment rendered="#{!immersiveFullscreen}">
+    <ui:fragment rendered="#{embedded}">
         <div class="immersive__content container">
             <div class="row">
                 <div class="col-12">

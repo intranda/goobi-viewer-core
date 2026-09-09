@@ -4991,15 +4991,6 @@ public class Configuration extends AbstractConfiguration {
         return getLocalString("viewer.pageTypes." + type.name() + "[@exit]");
     }
 
-    /**
-     * @return true if the immersive view should open in fullscreen display by default; false otherwise
-     * @should return correct value
-     * @should return false if not configured
-     */
-    public boolean isImmersiveViewFullscreenByDefault() {
-        return getLocalBoolean("viewer.pageTypes." + PageType.viewImmersive.name() + "[@fullscreen]", false);
-    }
-
     public String getUseImmersiveViewForFullscreenCondition() {
         return getLocalString("viewer.pageTypes." + PageType.viewFullscreen.name() + "[@useImmersive]", "off");
     }
