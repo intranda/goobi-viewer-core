@@ -97,6 +97,7 @@ public class OpenApiResource {
         Reader reader = new Reader(oasConfig);
         OpenAPI spec = reader.read(getResourceClasses());
         spec.setTags(getTags());
+        applySecuritySchemes(spec);
         return spec;
     }
 
@@ -142,6 +143,25 @@ public class OpenApiResource {
             servers.add(server);
         }
         return servers;
+    }
+
+    /**
+     * Declares the token and the bearer security scheme on the given spec.
+     *
+     * <p>Both schemes are defined once for the v1 API and reused verbatim here, so the two specs cannot end up
+     * describing the same header in different words.
+     *
+     * <p>They are declared even though no operation of the published resource set references one: the filters
+     * enforcing them are registered for v2 requests as well, and an operation whose security requirement names
+     * an undeclared scheme renders the whole spec invalid - a trap for the next class added to
+     * {@link #getResourceClasses()}.
+     *
+     * @param openApi spec to declare the schemes on
+     */
+    public static void applySecuritySchemes(OpenAPI openApi) {
+        // Fully qualified because the short name OpenApiResource is this class itself.
+        io.goobi.viewer.api.rest.v1.OpenApiResource.applyTokenSecurityScheme(openApi);
+        io.goobi.viewer.api.rest.v1.OpenApiResource.applyBearerSecurityScheme(openApi);
     }
 
     /**

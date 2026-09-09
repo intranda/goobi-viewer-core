@@ -66,6 +66,7 @@ public final class OpenApiSpecGenerator {
      * @should describe every parameter for v2
      * @should reference every component schema for v1
      * @should reference every component schema for v2
+     * @should declare the token and the bearer security scheme for v2
      * @should describe every operation for v1
      * @should describe every operation for v2
      * @should declare a success or redirect response for every operation
@@ -99,6 +100,7 @@ public final class OpenApiSpecGenerator {
                 // runtime-faithful; otherwise the generated spec lacks the required "info" object.
                 v2Api.setInfo(OpenApiResource.getInfo());
                 v2Api.setTags(OpenApiResource.getTags());
+                OpenApiResource.applySecuritySchemes(v2Api);
                 return v2Api;
             default:
                 throw new IllegalArgumentException("Unknown API version: " + version);

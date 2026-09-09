@@ -546,15 +546,21 @@ class OpenApiSpecGeneratorTest {
     }
 
     /**
+     * No operation of the published v2 resource set references either scheme, yet the token and the logged-in filter guard v2
+     * requests all the same. Both are declared so that the spec stays valid the moment a class carrying a security requirement
+     * joins {@link io.goobi.viewer.api.rest.v2.OpenApiResource#getResourceClasses()}.
+     *
      * @see OpenApiSpecGenerator#buildOpenApi(String)
-     * @verifies not declare a security scheme for v2
+     * @verifies declare the token and the bearer security scheme for v2
      */
     @Test
-    void buildOpenApi_shouldNotDeclareASecuritySchemeForV2() throws Exception {
+    void buildOpenApi_shouldDeclareTheTokenAndTheBearerSecuritySchemeForV2() throws Exception {
         OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi("v2");
-        Map<String, SecurityScheme> schemes =
-                openApi.getComponents() == null ? null : openApi.getComponents().getSecuritySchemes();
-        assertTrue(schemes == null || schemes.isEmpty(), "v2 declares no token protected operation, so it must declare no scheme");
+        assertNotNull(openApi.getComponents(), "v2 components must not be null");
+        Map<String, SecurityScheme> schemes = openApi.getComponents().getSecuritySchemes();
+        assertNotNull(schemes, "v2 must declare security schemes");
+        assertNotNull(schemes.get(AuthorizationFilter.SECURITY_SCHEME_TOKEN), "v2 must declare the token security scheme");
+        assertNotNull(schemes.get(UserLoggedInFilter.SECURITY_SCHEME_BEARER), "v2 must declare the bearer security scheme");
     }
 
     /**
