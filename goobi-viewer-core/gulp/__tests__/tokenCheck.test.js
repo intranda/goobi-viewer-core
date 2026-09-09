@@ -285,7 +285,11 @@ describe('R8 palette tokens are read only by semantic roles', () => {
             opts
         );
 
-        expect(keys(result).filter((k) => k.startsWith('R8'))).toEqual(['R8 misc/tokens.less --color-gray-0', 'R8 views/a.less --color-gray-0', 'R8 misc/some-aliases.less --color-gray-0']);
+        expect(keys(result).filter((k) => k.startsWith('R8'))).toEqual([
+            'R8 misc/tokens.less --color-gray-0',
+            'R8 views/a.less --color-gray-0',
+            'R8 misc/some-aliases.less --color-gray-0',
+        ]);
     });
 });
 
@@ -348,8 +352,8 @@ describe('formatReport', () => {
 });
 
 describe('real LESS tree', () => {
-    it('has no violations beyond the baseline and no stale baseline entries', () => {
-        const result = runTokenCheck();
+    it('has no violations beyond the baseline and no stale baseline entries', async () => {
+        const result = await runTokenCheck();
 
         expect(result.errors.map((v) => `${v.rule} ${v.file}:${v.line} ${v.token}`)).toEqual([]);
         expect(result.stale).toEqual([]);

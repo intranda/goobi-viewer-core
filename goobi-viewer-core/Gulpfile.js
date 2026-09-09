@@ -895,10 +895,10 @@ function watchMode() {
     gulp.watch(joinPosix(paths.jsModulesRoot, 'browsersupport', '**', '*.js')).on('change', (p) => bundleBrowserSupportJS(p));
 
     // Styles & tags
-    gulp.watch(joinPosix(paths.lessRoot, '**', '*.less')).on('change', (p) => {
-        reportTokens();
-        buildStyles(p);
-    });
+    gulp.watch(
+        [joinPosix(paths.lessRoot, '**', '*.less'), joinPosix(tokenCheck.THEME_LESS_ROOT, '**', '*.less')],
+        gulp.series(checkTokens, () => buildStyles())
+    );
     gulp.watch(joinPosix(paths.jsDevRoot, 'tags', '**', '*.tag')).on('change', (p) => compileRiotTags(p));
 
     // Static assets (no dist CSS/JS)
@@ -993,19 +993,19 @@ function printTargets(cb) {
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 /**
- * Fails the build on token-layer violations (rules in gulp/tokenCheck.js).
+ * Reports token-layer violations and returns whether the check failed.
  * Set GV_TOKENWARN=1 to list warnings as well.
  *
- * @param {Function} cb Gulp callback.
+ * @returns {Promise<boolean>} Whether errors or stale baseline entries exist.
  */
-function reportTokens() {
-    const result = tokenCheck.runTokenCheck();
+async function reportTokens() {
+    const result = await tokenCheck.runTokenCheck();
     logBlock('check-tokens', tokenCheck.formatReport(result, { showWarnings: process.env.GV_TOKENWARN === '1' }).split('\n'));
     return result.errors.length > 0 || result.stale.length > 0;
 }
 
-function checkTokens(cb) {
-    cb(reportTokens() ? new Error('token check failed — see [check-tokens] above') : undefined);
+async function checkTokens() {
+    if (await reportTokens()) throw new Error('token check failed — see [check-tokens] above');
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
@@ -1028,7 +1028,7 @@ exports.java = java;
 exports.icons = buildIcons;
 
 /* ── Task exports ────────────────────────────────────────────────────────────────────────────
-   - npm run build      → token check, then styles, JS bundles, riot tags, icons
+   - npm run build      → token check, then styles, JS bundles, riot tags
    - npm run check:tokens → token-layer rules only (gulp/tokenCheck.js, baseline in gulp/tokenCheck.baseline.json)
    - npm run dev        → starts watchers (no initial full sync; run npm run sync separately if needed)
    - npm run copyDeps   → copies declared 3rd-party assets, then regenerates

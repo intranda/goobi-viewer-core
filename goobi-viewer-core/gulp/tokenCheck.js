@@ -5,11 +5,12 @@ Rules
   R1  every var(--x) read in core names a token of the token layer; internal --_ tokens are
       declared in the same file or carry a fallback
   R2  tokens without the --_ prefix are declared only in the token layer, under
-      :root / .color-theme-dark / .color-theme-light (specificity 0,1,0) or inside mixin definitions
+      :root / .color-theme-dark / .color-theme-light (specificity 0,1,0) or inside mixin definitions;
+      emitted CSS and public core overrides in the reference theme must follow the same contract
   R4  --_ tokens never live in the token layer; prefers-color-scheme / .color-theme-* never outside it
   R5  (warning) token declared but read nowhere in core or theme
   R6  token in the theme mixins that core does not know and the theme never reads
-  R7  every .x-light() mixin of the token layer declares the same tokens as .x-dark()
+  R7  light/dark mixins of the token layer require matching counterparts and token sets
   R8  palette tokens are read only by the semantic mixins and never get a LESS alias — features and
       components read roles; only the brand trio --ci-color1, --ci-hovercolor1, --accent-color is exempt
   R9  outside misc/palette.less the token layer holds no color literal; alphas derive via rgb(from …)
@@ -20,6 +21,8 @@ occur are reported as stale so the baseline can only shrink.
 
 const fs = require('fs');
 const path = require('path');
+const less = require('less');
+const postcss = require('postcss');
 
 const MODULE_ROOT = path.resolve(__dirname, '..');
 const LESS_ROOT = 'src/main/resources/META-INF/resources/resources/css/less';
@@ -32,8 +35,12 @@ const TOKEN_SELECTORS = new Set([':root', '.color-theme-dark', '.color-theme-lig
 const PALETTE_FILE = 'misc/palette.less';
 const BRAND_TRIO = /^--(ci-color1|ci-hovercolor1|accent-color)$/;
 const SEMANTIC_MIXIN = /^\.[\w-]*semantic[\w-]*\(\)$/;
-const COLOR_LITERAL = /#[0-9a-f]{3,8}\b|\b(rgba?|hsla?)\(\s*\d|(^|[\s,(])(black|white)(?=[\s,)]|$)/i;
-const MIXIN_DEFINITION = /^\.[\w-]+\([^)]*\)$/;
+const COLOR_LITERAL = new RegExp(
+    `#[0-9a-f]{3,8}\\b|\\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\\((?!\\s*from\\b)|(?:^|[\\s,(])(?:${Object.keys(less.data.colors).join('|')})(?=[\\s,)]|$)`,
+    'i'
+);
+const MIXIN_DEFINITION = /^\.[\w-]+\([^)]*\)(?: when .+)?$/;
+const DETACHED_DEFINITION = /^@[\w-]+:$/;
 const MIXIN_CALL = /^\.[\w-]+(\([^)]*\))?$/;
 const DECLARATION = /^(--[\w-]+)\s*:\s*([\s\S]*)$/;
 const ALIAS = /^@([\w-]+)\s*:\s*var\(\s*(--[\w-]+)/;
@@ -87,8 +94,13 @@ function stripComments(source) {
     return out;
 }
 
+// Ordinary CSS strings are data; LESS escaped strings become CSS syntax.
+function withoutStrings(text) {
+    return text.replace(/(~?)(["'])(?:\\[\s\S]|(?!\2)[^\\])*?\2/g, (match, escaped) => (escaped ? match.slice(2, -1) : ' '));
+}
+
 function collectReads(text, line, stack, into) {
-    for (const m of text.matchAll(READ)) {
+    for (const m of withoutStrings(text).matchAll(READ)) {
         into.push({ name: m[1], fallback: m[2] === ',', line, stack });
     }
 }
@@ -140,6 +152,9 @@ function parseLess(source) {
         const alias = stmt.match(ALIAS);
         if (alias) {
             result.aliases.push({ alias: alias[1], token: alias[2], line: at });
+            const reads = [];
+            collectReads(stmt, at, context, reads);
+            result.reads.push(...reads.map((read) => ({ ...read, alias: alias[1] })));
             return;
         }
         const stat = stmt.match(STATIC);
@@ -220,7 +235,7 @@ function usedTokens(parsedMap) {
     const aliasByToken = new Map();
     const atUsed = new Set();
     for (const p of parsedMap.values()) {
-        for (const r of p.reads) used.add(r.name);
+        for (const r of p.reads) if (!r.alias) used.add(r.name);
         for (const a of p.aliases) aliasByToken.set(a.token, a.alias);
         for (const u of p.atUses) atUsed.add(u);
     }
@@ -228,7 +243,10 @@ function usedTokens(parsedMap) {
     return used;
 }
 const flattened = (stack) => stack.join(' ');
-const allowedInTokenLayer = (stack) => stack.length > 0 && stack.every((h) => TOKEN_SELECTORS.has(h) || MIXIN_DEFINITION.test(h));
+const allowedInTokenLayer = (stack) => {
+    const context = stack.filter((h) => !MIXIN_DEFINITION.test(h) && !DETACHED_DEFINITION.test(h) && h !== '&');
+    return stack.length > 0 && context.every((h) => TOKEN_SELECTORS.has(h)) && context.filter((h) => !h.startsWith('@')).length <= 1;
+};
 
 /**
  * Runs all rules over parsed sources.
@@ -273,20 +291,18 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
             }
             const byMixin = new Map();
             for (const d of p.declarations) {
-                const mixin = d.stack.find((h) => MIXIN_DEFINITION.test(h));
+                const mixin = d.stack.find((h) => MIXIN_DEFINITION.test(h))?.replace(/ when .+$/, '');
                 if (!mixin) continue;
                 if (!byMixin.has(mixin)) byMixin.set(mixin, new Map());
                 byMixin.get(mixin).set(d.name, d.line);
             }
-            for (const [mixin, lightTokens] of byMixin) {
-                const m = mixin.match(/^(\.[\w-]+)-light\(\)$/);
+            for (const [mixin, modeTokens] of byMixin) {
+                const m = mixin.match(/^(\.[\w-]+)-(light|dark)\(\)(?: when .+)?$/);
                 if (!m) continue;
-                const darkName = `${m[1]}-dark()`;
-                const darkTokens = byMixin.get(darkName) || new Map();
-                for (const [name, line] of lightTokens)
-                    if (!darkTokens.has(name)) violations.push(violation('R7', file, name, line, `declared in ${mixin} but not in ${darkName}`));
-                for (const [name, line] of darkTokens)
-                    if (!lightTokens.has(name)) violations.push(violation('R7', file, name, line, `declared in ${darkName} but not in ${mixin}`));
+                const counterpart = `${m[1]}-${m[2] === 'light' ? 'dark' : 'light'}()`;
+                const otherTokens = byMixin.get(counterpart) || new Map();
+                for (const [name, line] of modeTokens)
+                    if (!otherTokens.has(name)) violations.push(violation('R7', file, name, line, `declared in ${mixin} but not in ${counterpart}`));
             }
         } else {
             for (const d of p.declarations) {
@@ -320,7 +336,7 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
     const restricted = new Set([...paletteTokens].filter((n) => !BRAND_TRIO.test(n)));
     for (const [file, p] of parsed) {
         for (const r of p.reads) {
-            if (!restricted.has(r.name)) continue;
+            if (r.alias || !restricted.has(r.name)) continue;
             if (isTokenLayer(file) && r.stack.some((h) => SEMANTIC_MIXIN.test(h))) continue;
             violations.push(violation('R8', file, r.name, r.line, 'palette token read outside the semantic roles — read a semantic role instead'));
         }
@@ -329,7 +345,8 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
         }
         if (paletteParsed && isTokenLayer(file) && file !== paletteFile) {
             for (const d of p.declarations) {
-                if (COLOR_LITERAL.test(d.value)) violations.push(violation('R9', file, d.name, d.line, `color literal "${d.value}" — every color comes from ${paletteFile}`));
+                if (COLOR_LITERAL.test(withoutStrings(d.value)))
+                    violations.push(violation('R9', file, d.name, d.line, `color literal "${d.value}" — every color comes from ${paletteFile}`));
             }
         }
     }
@@ -362,6 +379,86 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
     }
 
     return { violations, warnings, tokens };
+}
+
+/**
+ * Validate emitted CSS as well as source text. LESS expansion is authoritative
+ * for interpolation, guarded/detached mixins and reference imports. Source maps
+ * retain the declaring file so a root declaration in a component is still R2.
+ * Theme-only properties may remain local; public core overrides must inherit.
+ */
+async function checkCompiledTree(root, { entry = 'constructor.less', tokens = new Set(), theme = false } = {}) {
+    const filename = path.join(root, entry);
+    const violations = [];
+    let output;
+    try {
+        output = await less.render(fs.readFileSync(filename, 'utf8'), {
+            filename,
+            paths: [root, path.join(root, 'crowdsourcing')],
+            sourceMap: { outputSourceFiles: true },
+        });
+    } catch (error) {
+        return [violation('LESS', error.filename ? path.relative(root, error.filename) : entry, '', error.line || 1, error.message)];
+    }
+    const css = postcss.parse(output.css, { from: path.join(root, 'token-check.css'), map: { prev: output.map } });
+    const location = (node) => {
+        const { input, start } = node.source;
+        const origin = input.origin(start.line, start.column);
+        return { file: origin ? path.relative(root, origin.file).split(path.sep).join('/') : entry, line: origin ? origin.line : start.line };
+    };
+    const emitted = new Set();
+    const internalFiles = new Map();
+    const add = (rule, node, token, message) => {
+        const { file, line } = location(node);
+        // Repeated mode expansions should not flood the report.
+        if (!violations.some((v) => v.rule === rule && v.file === file && v.line === line && v.token === token && v.message === message)) {
+            violations.push(violation(rule, file, token, line, message));
+        }
+    };
+    const allowedOutput = (node) => {
+        if (node.parent.type !== 'rule' || ![':root', '.color-theme-dark', '.color-theme-light'].includes(node.parent.selector)) return false;
+        for (let parent = node.parent.parent; parent && parent.type !== 'root'; parent = parent.parent) {
+            if (parent.type !== 'atrule' || !TOKEN_SELECTORS.has(`@${parent.name} ${parent.params}`)) return false;
+        }
+        return !node.important;
+    };
+    css.walkDecls((d) => {
+        if (!d.prop.startsWith('--')) return;
+        const { file } = location(d);
+        if (INTERNAL.test(d.prop)) {
+            if (!internalFiles.has(file)) internalFiles.set(file, new Set());
+            internalFiles.get(file).add(d.prop);
+            if (!theme && TOKEN_LAYER.includes(file)) add('R4', d, d.prop, 'internal token emitted by the token layer');
+        } else if ((!theme || tokens.has(d.prop)) && (!allowedOutput(d) || (!theme && !TOKEN_LAYER.includes(file)))) {
+            add('R2', d, d.prop, `public token emitted on "${d.parent.selector}" — use the root token wiring`);
+        } else {
+            emitted.add(d.prop);
+        }
+        if (!theme && TOKEN_LAYER.includes(file) && file !== PALETTE_FILE && COLOR_LITERAL.test(withoutStrings(d.value))) {
+            add('R9', d, d.prop, `emitted color literal "${d.value}" — every color comes from ${PALETTE_FILE}`);
+        }
+    });
+    if (theme) return violations;
+    css.walkDecls((d) => {
+        const { file } = location(d);
+        const reads = [];
+        collectReads(d.value, 0, [], reads);
+        for (const read of reads) {
+            if (INTERNAL.test(read.name)) {
+                if (!read.fallback && !internalFiles.get(file)?.has(read.name)) add('R1', d, read.name, 'emitted internal read without a declaration in this file or fallback');
+            } else if (!emitted.has(read.name)) {
+                add('R1', d, read.name, 'read of a token not emitted by the root token wiring');
+            }
+        }
+    });
+    css.walk((node) => {
+        if (node.type !== 'rule' && node.type !== 'atrule') return;
+        const selector = node.type === 'rule' ? node.selector : `@${node.name} ${node.params}`;
+        if (MODE_BRANCH.test(selector) && !TOKEN_LAYER.includes(location(node).file)) {
+            add('R4', node, selector, 'emitted mode branching outside the token layer');
+        }
+    });
+    return violations;
 }
 
 /* ---------- baseline ---------- */
@@ -427,13 +524,15 @@ function loadBaseline(file = BASELINE_FILE) {
  * Reads the real LESS trees and applies the baseline.
  *
  * @param {{moduleRoot?: string, lessRoot?: string, themeLessRoot?: string, baseline?: string[]}} [options]
- * @returns {{errors: Array, stale: string[], tolerated: Array, warnings: Array, violations: Array, themeChecked: boolean}}
+ * @returns {Promise<{errors: Array, stale: string[], tolerated: Array, warnings: Array, violations: Array, themeChecked: boolean}>}
  */
-function runTokenCheck({ moduleRoot = MODULE_ROOT, lessRoot = LESS_ROOT, themeLessRoot = THEME_LESS_ROOT, baseline = loadBaseline() } = {}) {
+async function runTokenCheck({ moduleRoot = MODULE_ROOT, lessRoot = LESS_ROOT, themeLessRoot = THEME_LESS_ROOT, baseline = loadBaseline() } = {}) {
     const core = readLessTree(path.resolve(moduleRoot, lessRoot));
     const themeDir = path.resolve(moduleRoot, themeLessRoot);
     const theme = fs.existsSync(themeDir) ? readLessTree(themeDir) : null;
-    const { violations, warnings } = checkFiles(core, theme);
+    const { violations, warnings, tokens } = checkFiles(core, theme);
+    violations.push(...(await checkCompiledTree(path.resolve(moduleRoot, lessRoot), { tokens })));
+    if (theme) violations.push(...(await checkCompiledTree(themeDir, { theme: true, tokens })));
     return { ...applyBaseline(violations, baseline), warnings, violations, themeChecked: theme !== null };
 }
 
@@ -449,4 +548,5 @@ module.exports = {
     keyOf,
     loadBaseline,
     runTokenCheck,
+    checkCompiledTree,
 };
