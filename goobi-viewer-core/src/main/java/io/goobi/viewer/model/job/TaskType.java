@@ -33,7 +33,7 @@ public enum TaskType implements ITaskType {
     NOTIFY_SEARCH_UPDATE("0 42 8,12,17 * * ?"),
     /** Remove expired IIIF authorization bearer tokens from application scope. */
     PURGE_EXPIRED_BEARER_TOKENS("0 0 * * * ?"),
-    /** Remove expired born digital content download tickets from the DB. */
+    /** Remove expired access tickets of every type from the DB. */
     PURGE_EXPIRED_DOWNLOAD_TICKETS("0 40 0 * * ?"),
     /** Handle asynchronous generation of excel sheets with search results. */
     SEARCH_EXCEL_EXPORT(""),
