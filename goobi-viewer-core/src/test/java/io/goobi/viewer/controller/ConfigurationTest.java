@@ -3183,22 +3183,22 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
-     * @see Configuration#isImmersiveViewFullscreenByDefault()
+     * @see Configuration#getUseImmersiveViewForFullscreenCondition()
      * @verifies return correct value
      */
     @Test
-    void isImmersiveViewFullscreenByDefault_shouldReturnCorrectValue() {
-        assertTrue(DataManager.getInstance().getConfiguration().isImmersiveViewFullscreenByDefault());
+    void getUseImmersiveViewForFullscreenCondition_shouldReturnCorrectValue() {
+        assertEquals("alto", DataManager.getInstance().getConfiguration().getUseImmersiveViewForFullscreenCondition());
     }
 
     /**
-     * @see Configuration#isImmersiveViewFullscreenByDefault()
-     * @verifies return false if not configured
+     * @see Configuration#getUseImmersiveViewForFullscreenCondition()
+     * @verifies return off if not configured
      */
     @Test
-    void isImmersiveViewFullscreenByDefault_shouldReturnFalseIfNotConfigured() {
+    void getUseImmersiveViewForFullscreenCondition_shouldReturnOffIfNotConfigured() {
         Configuration config = new Configuration(new File("src/test/resources/config_viewer_no_local_access.test.xml").getAbsolutePath());
-        assertFalse(config.isImmersiveViewFullscreenByDefault());
+        assertEquals("off", config.getUseImmersiveViewForFullscreenCondition());
     }
 
     /**

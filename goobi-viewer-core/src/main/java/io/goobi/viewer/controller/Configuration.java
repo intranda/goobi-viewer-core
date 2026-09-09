@@ -4991,6 +4991,15 @@ public class Configuration extends AbstractConfiguration {
         return getLocalString("viewer.pageTypes." + type.name() + "[@exit]");
     }
 
+    /**
+     * Returns the condition under which the fullscreen view renders the immersive layout instead of the classic one.
+     *
+     * <p>Accepted values are {@code all} (every record), {@code alto} (only records whose ALTO carries layout tags) and {@code off} (never).
+     *
+     * @return the configured condition token; "off" if not configured
+     * @should return correct value
+     * @should return off if not configured
+     */
     public String getUseImmersiveViewForFullscreenCondition() {
         return getLocalString("viewer.pageTypes." + PageType.viewFullscreen.name() + "[@useImmersive]", "off");
     }

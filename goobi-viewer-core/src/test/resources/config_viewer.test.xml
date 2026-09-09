@@ -386,7 +386,7 @@
 			in the PageType enum. Sub-elements must have the same names as the enum values. -->
 		<pageTypes>
 			<viewImage>viewImage_value</viewImage>
-			<viewImmersive fullscreen="true"></viewImmersive>
+			<viewFullscreen useImmersive="alto">fullscreen</viewFullscreen>
 		</pageTypes>
 
         <!-- recordTargetPageTypes: Overrides the default target view URL for given publication types.

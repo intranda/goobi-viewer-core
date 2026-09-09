@@ -165,7 +165,8 @@ public class LayoutTagIndexBuilder {
         List<LayoutTagIndex.Tag> tags = new ArrayList<>(pagesByLabel.size());
         for (Map.Entry<String, SortedSet<Integer>> entry : pagesByLabel.entrySet()) {
             String label = entry.getKey();
-            tags.add(new LayoutTagIndex.Tag(label, displayName(label), styleClass(label), wordTagTypes.get(label), new ArrayList<>(entry.getValue())));
+            tags.add(new LayoutTagIndex.Tag(label, displayName(label), styleClass(label), wordTagTypes.get(label),
+                    new ArrayList<>(entry.getValue())));
         }
         tags.sort(Comparator.comparingInt((LayoutTagIndex.Tag t) -> configuredOrder.getOrDefault(t.getLabel(), Integer.MAX_VALUE))
                 .thenComparing(Comparator.comparingInt((LayoutTagIndex.Tag t) -> t.getPages().size()).reversed())

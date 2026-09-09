@@ -1000,11 +1000,12 @@ public class PhysicalElement implements Comparable<PhysicalElement>, IAccessDeni
                 if (StringUtils.isNotEmpty(text)) {
                     // Sanitize the ALTO-produced HTML (which carries NamedEntityEnricher button
                     // markup) through the dedicated allowlist that permits the <button> tag and the
-                    // structural layout markup (div/aside/p/span/br) with their known attribute sets. No <mark> here because Solr-highlight placeholder
-                    // substitution (SearchHelper.replaceHighlightingPlaceholders) only runs on the
-                    // snippet path (BrowseElement.fulltext), not on page-level fulltext rendering.
-                    // Log a warning when the sanitizer had to remove markup, matching the previous
-                    // regex-based behavior.
+                    // structural layout markup (div/aside/p/span/br) with their known attribute
+                    // sets. No <mark> here because Solr-highlight placeholder substitution
+                    // (SearchHelper.replaceHighlightingPlaceholders) only runs on the snippet path
+                    // (BrowseElement.fulltext), not on page-level fulltext rendering. Log a warning
+                    // when the sanitizer had to remove markup, matching the previous regex-based
+                    // behavior.
                     String cleanText = HtmlSanitizer.cleanFulltextWithNamedEntities(text);
                     if (cleanText.length() < text.length()) {
                         text = cleanText;

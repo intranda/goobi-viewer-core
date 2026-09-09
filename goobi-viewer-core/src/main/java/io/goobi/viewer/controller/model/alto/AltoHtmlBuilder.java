@@ -66,6 +66,9 @@ public class AltoHtmlBuilder {
 
     /**
      * The CSS class and human-readable display name to apply to blocks carrying a given handwriting author tag.
+     *
+     * @param styleClass CSS class applied to the annotation block
+     * @param name human-readable display name of the annotation author
      */
     public record AnnotationStyle(String styleClass, String name) {
     }
