@@ -447,8 +447,8 @@ public final class AccessConditionUtils {
             Optional<ClientApplication> client = ClientApplicationManager.getClientFromRequest(request);
 
             Map<Integer, AccessPermission> imageMap = HashMap.newHashMap(pageDocs.size());
-            // Added three additional privilege maps so IIIF builders and PhysicalElement seeding
-            // can rely on a single prefetch for every per-page privilege (refs #27883).
+            // One map per privilege, so that IIIF builders and PhysicalElement seeding can rely
+            // on a single prefetch for every per-page privilege.
             Map<Integer, AccessPermission> thumbnailMap = HashMap.newHashMap(pageDocs.size());
             Map<Integer, AccessPermission> zoomMap = HashMap.newHashMap(pageDocs.size());
             Map<Integer, AccessPermission> downloadMap = HashMap.newHashMap(pageDocs.size());
@@ -1347,12 +1347,10 @@ public final class AccessConditionUtils {
         // logger.debug("Permissions found, " + permissions.size() + " items."); //NOSONAR Debug
         // new pi -> remove PRIV_ caches tied to the previous pi so they do not accumulate
         if (session != null && !pi.equals(session.getAttribute("currentPi"))) {
-            // Previously only the current attributeName was removed, which left stale
-            // PRIV_VIEW_IMAGES_<oldPi>_*, PRIV_DOWNLOAD_PDF_<oldPi>_* etc. lingering in the
-            // session (observed as 3 million attributes on ZLB's crawler session). Capture the
-            // previous pi *before* overwriting currentPi, then remove only PRIV_ keys that refer
-            // to the old pi — this preserves caches for other pis so multi-tab users do not pay
-            // a Solr roundtrip on every tab switch. refs #27880
+            // Remove only PRIV_ keys that refer to the old pi, capturing it before currentPi is
+            // overwritten. Removing just the current attributeName would leave stale
+            // PRIV_VIEW_IMAGES_<oldPi>_* and similar entries accumulating in the session; removing all
+            // PRIV_ keys would cost multi-tab users a Solr roundtrip on every tab switch.
             String oldPi = (String) session.getAttribute("currentPi");
             session.setAttribute("currentPi", pi);
             if (oldPi != null) {
@@ -2041,7 +2039,7 @@ public final class AccessConditionUtils {
      * The middle-match catches the first scheme, the suffix-match catches the other two.
      *
      * <p>
-     * Package-private so the unit test can exercise it in isolation from the Solr/DB-backed permission pipeline. refs #27880
+     * Package-private so the unit test can exercise it in isolation from the Solr/DB-backed permission pipeline.
      *
      * @param session HTTP session whose attribute table is inspected
      * @param pi persistent identifier whose cached PRIV_* attributes should be removed

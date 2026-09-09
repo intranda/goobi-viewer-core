@@ -118,8 +118,8 @@ public class SitelinkBean implements Serializable {
             // iterate a half-built list and throw ConcurrentModificationException (see field comment above).
             List<StringPair> localHits = new ArrayList<>(docList.size());
             // Batch-fetch all anchor labels in a single query instead of one query per result.
-            // Previously, each result with a PI_PARENT triggered an individual Solr lookup,
-            // causing N+1 queries for year views with many volumes (e.g. newspapers).
+            // An individual Solr lookup per result with a PI_PARENT would cause N+1 queries for
+            // year views with many volumes (e.g. newspapers).
             Map<String, SolrDocument> anchorDocsByPi = buildAnchorDocMap(docList, anchorFields);
             for (SolrDocument doc : docList) {
                 StringBuilder sbLabel = new StringBuilder();

@@ -457,9 +457,9 @@ public class IndexResource {
 
         // Exclude polygon docs (otherwise the heatmap saturates) and enforce the access-condition
         // suffix as a *filter query*. Applying these as a filter rather than concatenating them
-        // into the main query means the constraint holds even when mainQuery is a "{!join ...}",
-        // which closes the GVC-2026-25 bypass: the previous "{!join"-prefix branch skipped
-        // getAllSuffixes entirely, letting an unauthenticated caller read across access conditions.
+        // into the main query means the constraint holds even when mainQuery is a "{!join ...}".
+        // Concatenating the suffix into the main query instead would let a join query bypass it
+        // entirely and read across access conditions without authentication.
         // Any user facetQuery is ANDed in as a further filter clause; getHeatMap() runs
         // cleanUpQuery over the whole filter string.
         StringBuilder resultFilter = new StringBuilder()

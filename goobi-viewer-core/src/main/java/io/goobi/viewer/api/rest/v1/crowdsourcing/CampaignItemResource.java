@@ -257,10 +257,10 @@ public class CampaignItemResource {
         }
 
         // Resolve the user that "owns" the status update strictly from the authenticated session,
-        // never from the request body. The body-supplied creatorURI used to drive this lookup,
-        // which let any campaign collaborator attribute updates to arbitrary other users.
+        // never from the request body: a body-supplied creatorURI would let any campaign
+        // collaborator attribute updates to arbitrary other users.
         // The campaign-level @CrowdsourcingCampaignBinding has already validated that the caller
-        // is allowed for this campaign — so the caller IS the rightful user. Same accessor as
+        // is allowed for this campaign - so the caller IS the rightful user. Same accessor as
         // the filter (CrowdsourcingCampaignFilter) to stay consistent.
         User user = BeanUtils.getUserBean() != null ? BeanUtils.getUserBean().getUser() : null;
 

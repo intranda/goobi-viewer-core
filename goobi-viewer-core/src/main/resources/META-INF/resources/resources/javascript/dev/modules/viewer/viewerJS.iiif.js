@@ -97,9 +97,6 @@ var viewerJS = (function (viewer) {
          * @returns {String} The matching metadata value, or empty string if not found.
          */
         getMetadataValue: function (collection, label, locale) {
-            // Previously referenced an undefined `_defaults.displayLanguage`
-            // closure and an undeclared `_getValue` helper; every call threw
-            // a ReferenceError. refs #27937
             var value = '';
             if (!collection || !collection.metadata) {
                 return value;
@@ -161,12 +158,6 @@ var viewerJS = (function (viewer) {
          * @returns the list of tags in the tag service with the given name
          */
         getTags: function (collection, name) {
-            // The single-service else-if branch referenced an undefined
-            // `service` variable, so it threw ReferenceError instead of
-            // returning the tags. The array-branch's second filter was
-            // checking `service === undefined` which can never be true
-            // after the first filter. Both fixed; left-over console.log
-            // dropped. refs #27937
             if (!collection || !collection.service) {
                 return undefined;
             }
@@ -261,9 +252,8 @@ var viewerJS = (function (viewer) {
             let service = manifest.service;
             if (service && Array.isArray(service)) {
                 return service.find((s) => {
-                    // Was `service['@context']` (the array itself), making the
-                    // predicate always falsy and find() always undefined.
-                    // refs #27937
+                    // Read the @context of each element; `service['@context']` would
+                    // be the array itself and the predicate always falsy.
                     let context = s['@context'];
                     return context && context.endsWith(name + '.context.json');
                 });

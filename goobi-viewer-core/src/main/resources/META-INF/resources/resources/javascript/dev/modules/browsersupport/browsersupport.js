@@ -20,10 +20,10 @@ function setupBrowserSupport() {
 }
 
 function getCurrentBrowser() {
-    // The previous form `(indexOf('Opera') || indexOf('OPR')) != -1`
-    // was always falsy when 'Opera' was not present: indexOf returns
-    // -1 (truthy in JS), the OR short-circuits to -1, and -1 != -1
-    // is false. Opera was therefore never detected. refs #27937
+    // Each indexOf() result has to be compared to -1 on its own: the form
+    // `(indexOf('Opera') || indexOf('OPR')) != -1` never detects Opera,
+    // because indexOf returns -1 (truthy in JS), the OR short-circuits to
+    // -1, and -1 != -1 is false.
     if (navigator.userAgent.indexOf('Opera') !== -1 || navigator.userAgent.indexOf('OPR') !== -1) {
         return 'Opera';
     } else if (navigator.userAgent.indexOf('Edg') != -1) {

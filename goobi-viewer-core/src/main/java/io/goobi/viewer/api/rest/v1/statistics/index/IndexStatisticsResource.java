@@ -39,9 +39,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * Index-level statistics for the new Chart.js-driven CMS components. All endpoints emit JSON; the JAX-RS/Jersey stack
- * registers this class via package scanning ({@code io.goobi.viewer.api.rest.v1.*}). Public access (no
- * {@code @AuthorizationBinding}) — see Phase 1 design notes in plan #15809.
+ * Index-level statistics for the Chart.js-driven CMS components. All endpoints emit JSON; the JAX-RS/Jersey stack
+ * registers this class via package scanning ({@code io.goobi.viewer.api.rest.v1.*}). Access is deliberately
+ * unauthenticated (no {@code @AuthorizationBinding}): the charts are embedded in public CMS pages, and every endpoint
+ * returns nothing but aggregate counts that are already computed with the calling session's own access filter.
  *
  * <p>
  * Each endpoint translates {@link StatisticsUnavailableException} (raised by {@link IndexStatisticsService} when Solr

@@ -449,9 +449,7 @@ public class ViewManager implements Serializable {
             case SEQUENCE:
                 // Batch-prefetch + per-page seeding of the five privileges happens inside
                 // getAllPages() (guarded by pagePermissionsPrefetched). Doing it here too
-                // would issue a duplicate Solr/DAO query — refs #27883. Restored after the
-                // develop→master merge re-introduced the inline prefetch that ce180fa49c
-                // had removed.
+                // would issue a duplicate Solr/DAO query.
                 for (PhysicalElement page : this.getAllPages()) {
                     if (page.isHasImage()) {
                         pages.add(page);
@@ -481,9 +479,7 @@ public class ViewManager implements Serializable {
             case SEQUENCE:
                 // Batch-prefetch + per-page seeding of the five privileges happens inside
                 // getAllPages() (guarded by pagePermissionsPrefetched). Doing it here too
-                // would issue a duplicate Solr/DAO query — refs #27883. Restored after the
-                // develop→master merge re-introduced the inline prefetch that ce180fa49c
-                // had removed.
+                // would issue a duplicate Solr/DAO query.
                 for (PhysicalElement page : this.getAllPages()) {
                     if (page.isHasImage()) {
                         infos.put(page.getOrder(), getImageInfo(page, pageType));

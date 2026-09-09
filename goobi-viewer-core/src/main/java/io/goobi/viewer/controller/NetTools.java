@@ -785,7 +785,7 @@ public final class NetTools {
      * <p>
      * The {@code X-Forwarded-For} chain is processed at the container level by Tomcat's {@code RemoteIpValve} (configured in the shipped
      * {@code server.xml}), which rewrites {@code request.getRemoteAddr()} to the real client IP. Application code must therefore <b>never</b> read
-     * {@code X-Forwarded-For} itself &mdash; doing so would re-introduce IP-spoofing (see GVC-2026-12).
+     * {@code X-Forwarded-For} itself &mdash; doing so would re-introduce IP-spoofing.
      * </p>
      *
      * @param request incoming HTTP servlet request to inspect

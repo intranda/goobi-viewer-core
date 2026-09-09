@@ -721,7 +721,7 @@ public class ActiveDocumentBean implements Serializable {
             // hundreds of thousands of dated issues) building the flat issue list would
             // block the request thread for minutes or run out of memory; the calendar
             // view in viewToc.xhtml does not consume TOC data — it issues its own
-            // per-year facet queries. See refs #27905 follow-up.
+            // per-year facet queries.
             if (shouldDeferTocToCalendar(vm)) {
                 logger.trace("Deferring to calendar");
                 return toc;
@@ -1694,7 +1694,7 @@ public class ActiveDocumentBean implements Serializable {
     /**
      * Checks whether the currently loaded record is access-restricted, i.e. carries at least one access condition other than open access.
      * <p>
-     * Added so that the logout redirect (see {@link UserBean#logout()}) can send the user to the start page instead of back to a restricted record
+     * The logout redirect (see {@link UserBean#logout()}) uses this to send the user to the start page instead of back to a restricted record
      * URL that would be unavailable to the now anonymous session and would otherwise trigger a misleading "record not found" error page.
      *
      * @return true if a record is loaded and it has a restricting access condition; false otherwise
@@ -1814,11 +1814,11 @@ public class ActiveDocumentBean implements Serializable {
             return existing;
         }
         // Slow path: build TOC *outside* the ViewManager monitor to eliminate the B1 pattern.
-        // Previously, holding the VM lock during createTOC() (which performs Solr I/O via
-        // CountDownLatch) caused BLOCKED threads in production whenever two requests for the
-        // same record arrived concurrently. Multiple threads may now race through here and each
-        // build a TOC; only the first to acquire the lock will publish its result — the extra
-        // work is bounded (at most one build per concurrent caller) and acceptable.
+        // Holding the VM lock during createTOC() (which performs Solr I/O via CountDownLatch)
+        // blocks threads whenever two requests for the same record arrive concurrently. Multiple
+        // threads may therefore race through here and each build a TOC; only the first to acquire
+        // the lock publishes its result — the extra work is bounded (at most one build per
+        // concurrent caller) and acceptable.
         TOC fresh = createTOC();
         synchronized (vm) {
             if (vm.getToc() == null) {

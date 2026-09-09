@@ -177,12 +177,13 @@ public interface IModule extends IndexAugmenter {
         return Optional.empty();
     }
 
-    // Added for #15809: lets modules contribute CMS component XMLs without changes to core. The default returns
-    // Optional.empty() so existing module implementations remain source-compatible.
     /**
      * Folder URL containing CMS component definition XMLs that this module contributes. The folder is scanned by
      * {@link io.goobi.viewer.model.cms.pages.content.CMSPageContentManager} on startup. May resolve to a JAR-internal
      * location (Tomcat exposes it as {@code jar:file:.../module.jar!/META-INF/...}).
+     *
+     * <p>Declared as a default method returning {@link Optional#empty()} so that modules which ship no components
+     * remain source-compatible.
      *
      * @return URL of the module's CMS component folder (possibly JAR-internal), or {@link Optional#empty()} if the
      *         module ships no components

@@ -359,9 +359,9 @@ public class CMSMediaResource {
         throw new ContentNotFoundException("File " + path + " not found in file system");
     }
 
-    // Return type changed from String to void: MediaDeliveryService streams the payload directly
-    // onto the injected HttpServletResponse, so Jersey must not try to write an extra (empty)
-    // String body on top of the already-committed response.
+    // MediaDeliveryService streams the payload directly onto the injected HttpServletResponse,
+    // so this method returns void: Jersey must not write an extra (empty) String body on top of
+    // the already-committed response.
     @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_VIDEO)
@@ -377,7 +377,6 @@ public class CMSMediaResource {
         serveMediaContent("video", file);
     }
 
-    // Return type changed from String to void, see comment on serveVideoContent.
     @Hidden
     @GET
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES_FILE_AUDIO)
@@ -755,7 +754,6 @@ public class CMSMediaResource {
         return Optional.of(user);
     }
 
-    // Return type changed from String to void, see comment on serveVideoContent.
     private void serveMediaContent(String type, Path file) throws PresentationException, WebApplicationException {
         String mimeType = type + "/" + FilenameUtils.getExtension(file.getFileName().toString());
 

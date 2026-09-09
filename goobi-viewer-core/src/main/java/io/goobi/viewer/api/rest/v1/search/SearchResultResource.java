@@ -154,8 +154,8 @@ public class SearchResultResource {
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
     @AccessConditionBinding
     public Response getRISAsFile(
-            // Previously declared as @PathParam but the path template /search/ris has no {param} segments,
-            // so these were never populated. Changed to @QueryParam so callers can actually pass them.
+            // The path template /search/ris has no {param} segments, so these values have to be passed
+            // as query parameters.
             @Parameter(description = "Search query string") @QueryParam("query") @DefaultValue("") String query,
             @Parameter(description = "Sort string for the search results") @QueryParam("sortString") @DefaultValue("") String sortString,
             @Parameter(description = "Active facet filter string") @QueryParam("activeFacetString") @DefaultValue("") String activeFacetString,
