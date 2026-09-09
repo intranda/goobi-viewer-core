@@ -26,6 +26,7 @@ const autoprefixer = require('autoprefixer');
 const reporter = require('postcss-reporter');
 const { depsPathsJS, depsPathsCSS, tablerIconSources } = require('./gulp/depsPaths');
 const replaywebpagePatch = require('./gulp/replaywebpagePatch');
+const tokenCheck = require('./gulp/tokenCheck');
 
 const isWin = process.platform === 'win32';
 const toPosix = (p) => (p ? p.replace(/\\/g, '/') : p);
@@ -1058,13 +1059,31 @@ function printTargets(cb) {
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Token check                                                          ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/**
+ * Fails the build on token-layer violations (rules in gulp/tokenCheck.js).
+ * Set GV_TOKENWARN=1 to list warnings as well.
+ *
+ * @param {Function} cb Gulp callback.
+ */
+function checkTokens(cb) {
+    const result = tokenCheck.runTokenCheck();
+    const failed = result.errors.length > 0 || result.stale.length > 0;
+    logBlock('check-tokens', tokenCheck.formatReport(result, { showWarnings: process.env.GV_TOKENWARN === '1' }).split('\n'));
+    cb(failed ? new Error('token check failed — see [check-tokens] above') : undefined);
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
    ║ Task composition & exports                                           ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 
 const buildJS = gulp.series(bundleModules, bundleViewerJS, bundleBrowserSupportJS, verovio);
 const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags));
 
-exports.build = buildAll;
+exports.build = gulp.series(checkTokens, buildAll);
+exports['check-tokens'] = checkTokens;
 exports.dev = watchMode;
 // The order matters: patchReplayWebPage overwrites ui.js and must run AFTER
 // copyDependencies, so the patch survives even if a merge reintroduces the
@@ -1076,7 +1095,8 @@ exports.java = java;
 exports.icons = buildIcons;
 
 /* ── Task exports ────────────────────────────────────────────────────────────────────────────
-   - npm run build      → builds styles, JS bundles, riot tags, icons
+   - npm run build      → token check, then styles, JS bundles, riot tags, icons
+   - npm run check:tokens → token-layer rules only (gulp/tokenCheck.js, baseline in gulp/tokenCheck.baseline.json)
    - npm run dev        → starts watchers (no initial full sync; run npm run sync separately if needed)
    - npm run copyDeps   → copies declared 3rd-party assets, then regenerates
                           the patched replaywebpage bundle (see gulp/replaywebpagePatch.js)
