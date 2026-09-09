@@ -51,6 +51,19 @@ class CmsCollectionsBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see CmsCollectionsBean#selectDynamicCollectionsSource()
+     * @verifies select the dynamic collections pseudo field
+     */
+    @Test
+    void selectDynamicCollectionsSource_shouldSelectTheDynamicCollectionsPseudoField() {
+        CmsCollectionsBean bean = new CmsCollectionsBean();
+        bean.setSolrFieldNoUpdates(SolrConstants.DC);
+        bean.selectDynamicCollectionsSource();
+        Assertions.assertEquals(SolrConstants.DC_DYNAMIC, bean.getSolrField());
+        Assertions.assertTrue(bean.isDynamicCollectionsSource());
+    }
+
+    /**
      * @verifies offer the dynamic collections source only when dynamic collections exist or it is already selected
      */
     @Test

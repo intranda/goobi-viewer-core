@@ -226,6 +226,7 @@ public class DynamicCollectionsBean implements Serializable {
             }
             updateCollections();
             invalidateBrowseView(getCurrentCollection());
+            selectDynamicCollectionsSource();
         }
         return "pretty:adminCmsCollections";
     }
@@ -274,6 +275,17 @@ public class DynamicCollectionsBean implements Serializable {
         CollectionBrowseBean collectionBrowseBean = BeanUtils.getCollectionBrowseBean();
         if (collectionBrowseBean != null) {
             collectionBrowseBean.removeDynamicCollectionView(collection.getName());
+        }
+    }
+
+    /**
+     * Switches the collection administration to the dynamic collections source, so that the overview returned to after saving lists the collection
+     * that has just been edited.
+     */
+    private static void selectDynamicCollectionsSource() {
+        CmsCollectionsBean cmsCollectionsBean = BeanUtils.getCMSCollectionsBean();
+        if (cmsCollectionsBean != null) {
+            cmsCollectionsBean.selectDynamicCollectionsSource();
         }
     }
 
