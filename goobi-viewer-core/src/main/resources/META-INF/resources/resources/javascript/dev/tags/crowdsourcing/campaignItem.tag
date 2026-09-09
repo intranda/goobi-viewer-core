@@ -75,9 +75,6 @@
 	    fetch(this.itemSource)
 	    .then(response => this.handleServerResponse(response))
 	    .then( itemConfig => this.loadItem(itemConfig))
-	    .then( () => this.fetch(this.annotationSource))
-	    .then(response => this.handleServerResponse(response))
-	    .then( annotations => this.initAnnotations(annotations))
 	    .then( () => this.item.notifyItemInitialized())
 		.catch( error => {
 		   	this.handleError(error);
@@ -100,6 +97,14 @@
 		return fetch(this.item.imageSource)
 		.then(response => this.handleServerResponse(response))
 		.then( imageSource => this.item.initViewer(imageSource))
+		// Load this item's annotations from the REST endpoint and write them to local storage
+		// *before* the image viewer (and the question tags) are mounted below: mounting starts
+		// loading the image, and once it opens each question reads its annotations back out of
+		// local storage. If that happened before this fetch had written them, the questions
+		// would still find the previous item's annotations in local storage.
+		.then( () => this.fetch(this.annotationSource))
+		.then(response => this.handleServerResponse(response))
+		.then( annotations => this.initAnnotations(annotations))
 		.then( () => this.loading = false)
 		.then( () => this.update())
 		.then( () => this.item.onImageOpen( () => {this.loading = false; this.update()}))
@@ -309,7 +314,11 @@
 	            recordStatus: status,
 	            creator: this.item.getCreator().id,
 	    }
-	    return fetch(this.itemSource + (this.item.currentCanvasIndex + 1 ) + "/", {
+	    // Use the server-assigned page order (parsed from the current canvas id), not
+	    // currentCanvasIndex + 1: those only coincide if the record's pages happen to be
+	    // ordered starting at 1 without gaps, which is not guaranteed (see targetPageOrder
+	    // on annotations, which is always the server-assigned order).
+	    return fetch(this.itemSource + this.item.getCurrentPageOrder() + "/", {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
