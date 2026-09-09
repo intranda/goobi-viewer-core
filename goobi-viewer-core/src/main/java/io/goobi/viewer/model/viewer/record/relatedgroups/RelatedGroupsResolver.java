@@ -135,10 +135,11 @@ public class RelatedGroupsResolver {
     /** Solr fl list covering both card display fields and what the ThumbnailHandler reads internally. */
     private static List<String> queryFields(String titleField, String subtitleField) {
         List<String> fields = new ArrayList<>(List.of(
-                SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.PERSON_ONEFIELD,
-                SolrConstants.MD_YEARPUBLISH, SolrConstants.THUMBNAIL, SolrConstants.MIMETYPE,
-                SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.DATAREPOSITORY,
-                SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.FILENAME));
+                SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
+                SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.MD_YEARPUBLISH,
+                SolrConstants.THUMBNAIL, SolrConstants.MIMETYPE, SolrConstants.DOCSTRCT,
+                SolrConstants.DOCTYPE, SolrConstants.DATAREPOSITORY, SolrConstants.ISANCHOR,
+                SolrConstants.ISWORK, SolrConstants.FILENAME));
         if (StringUtils.isNotBlank(titleField) && !fields.contains(titleField)) {
             fields.add(titleField);
         }
