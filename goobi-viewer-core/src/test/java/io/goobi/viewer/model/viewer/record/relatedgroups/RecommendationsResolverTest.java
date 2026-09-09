@@ -86,6 +86,23 @@ class RecommendationsResolverTest {
         return d;
     }
 
+    private static SolrDocument doc(String pi, String title, String docStruct, String docType, boolean anchor, String filename) {
+        SolrDocument d = doc(pi, title);
+        if (docStruct != null) {
+            d.setField(SolrConstants.DOCSTRCT, docStruct);
+        }
+        if (docType != null) {
+            d.setField(SolrConstants.DOCTYPE, docType);
+        }
+        if (anchor) {
+            d.setField(SolrConstants.ISANCHOR, Boolean.TRUE);
+        }
+        if (filename != null) {
+            d.setField(SolrConstants.FILENAME, filename);
+        }
+        return d;
+    }
+
     private static SolrDocumentList docList(SolrDocument... docs) {
         SolrDocumentList list = new SolrDocumentList();
         for (SolrDocument d : docs) {
@@ -141,6 +158,45 @@ class RecommendationsResolverTest {
             assertTrue(queryCaptor.getValue().contains("MD_TOPIC:\"Arbeitsmarkt\""), queryCaptor.getValue());
             // Security: the access-control suffix must be appended to the query
             assertTrue(queryCaptor.getValue().contains("ACCESSCONDITION"), queryCaptor.getValue());
+        }
+    }
+
+    @Test
+    void resolve_shouldPopulatePageTypeFieldsForCards() throws Exception {
+        when(topStruct.getMetadataValues("IdentifierRelatedWork")).thenReturn(List.of("AC1"));
+        // A group record (no own images) and a plain work with an image page
+        when(searchIndex.search(anyString(), anyInt(), any(), anyList())).thenReturn(docList(
+                doc("PI_GROUP", "Series", "PeriodicalVolume", SolrConstants.DocType.GROUP.name(), false, null),
+                doc("PI_WORK", "Volume", "Monograph", SolrConstants.DocType.DOCSTRCT.name(), false, "0001.tif")));
+
+        try (MockedStatic<DataManager> dmStatic = mockStatic(DataManager.class)) {
+            dmStatic.when(DataManager::getInstance).thenReturn(dataManager);
+            List<GroupMemberDetail> result = new RecommendationsResolver(imageDelivery, new Random(1L)).resolve(viewManager);
+
+            assertEquals(2, result.size());
+            GroupMemberDetail group = result.get(0);
+            assertEquals("PeriodicalVolume", group.getDocStructType());
+            assertTrue(group.isAnchorOrGroup(), "group record must be flagged anchorOrGroup");
+            assertTrue(!group.isHasImages(), "group record without FILENAME must report no images");
+
+            GroupMemberDetail work = result.get(1);
+            assertTrue(!work.isAnchorOrGroup(), "plain work must not be flagged anchorOrGroup");
+            assertTrue(work.isHasImages(), "work with FILENAME must report images");
+        }
+    }
+
+    @Test
+    void resolve_shouldFlagAnchorRecordAsAnchorOrGroup() throws Exception {
+        when(topStruct.getMetadataValues("IdentifierRelatedWork")).thenReturn(List.of("AC1"));
+        when(searchIndex.search(anyString(), anyInt(), any(), anyList())).thenReturn(docList(
+                doc("PI_ANCHOR", "Anchor", "MultiVolumeWork", SolrConstants.DocType.DOCSTRCT.name(), true, null)));
+
+        try (MockedStatic<DataManager> dmStatic = mockStatic(DataManager.class)) {
+            dmStatic.when(DataManager::getInstance).thenReturn(dataManager);
+            List<GroupMemberDetail> result = new RecommendationsResolver(imageDelivery, new Random(1L)).resolve(viewManager);
+
+            assertEquals(1, result.size());
+            assertTrue(result.get(0).isAnchorOrGroup(), "anchor record must be flagged anchorOrGroup");
         }
     }
 

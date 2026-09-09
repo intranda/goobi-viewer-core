@@ -268,7 +268,7 @@ public class RecommendationsResolver {
                 SolrConstants.PI, SolrConstants.PI_TOPSTRUCT, SolrConstants.IDDOC,
                 SolrConstants.LABEL, SolrConstants.TITLE, SolrConstants.PERSON_ONEFIELD,
                 SolrConstants.MD_YEARPUBLISH, SolrConstants.THUMBNAIL, SolrConstants.MIMETYPE,
-                SolrConstants.DOCSTRCT, SolrConstants.DATAREPOSITORY,
+                SolrConstants.DOCSTRCT, SolrConstants.DOCTYPE, SolrConstants.DATAREPOSITORY,
                 SolrConstants.ISANCHOR, SolrConstants.ISWORK, SolrConstants.FILENAME));
     }
 
@@ -286,11 +286,23 @@ public class RecommendationsResolver {
             String subtitle = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PERSON_ONEFIELD);
             String year = SolrTools.getSingleFieldStringValue(doc, SolrConstants.MD_YEARPUBLISH);
             String thumbnailUrl = resolveThumbnailUrl(doc, pi);
-            return new GroupMemberDetail(pi, title, subtitle, year, thumbnailUrl);
+            String docStructType = SolrTools.getSingleFieldStringValue(doc, SolrConstants.DOCSTRCT);
+            boolean anchorOrGroup = isAnchorOrGroup(doc);
+            boolean hasImages = StringUtils.isNotBlank(SolrTools.getSingleFieldStringValue(doc, SolrConstants.FILENAME));
+            return new GroupMemberDetail(pi, title, subtitle, year, thumbnailUrl, docStructType, anchorOrGroup, hasImages);
         } catch (NullPointerException | IllegalArgumentException | IllegalStateException | ClassCastException e) {
             logger.warn("Skipping recommendation card due to error: {}", e.toString());
             return null;
         }
+    }
+
+    /** True if the doc is an anchor (ISANCHOR:true) or a group record (DOCTYPE:GROUP); such records have no own images. */
+    private static boolean isAnchorOrGroup(SolrDocument doc) {
+        if (SolrTools.isAnchor(doc)) {
+            return true;
+        }
+        String docType = SolrTools.getSingleFieldStringValue(doc, SolrConstants.DOCTYPE);
+        return SolrConstants.DocType.GROUP.name().equals(docType);
     }
 
     /** Resolves the thumbnail via the primary handler; returns null on failure. */
