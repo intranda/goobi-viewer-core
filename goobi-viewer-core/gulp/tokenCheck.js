@@ -14,6 +14,7 @@ Rules
   R8  palette tokens are read only by the semantic mixins and never get a LESS alias — features and
       components read roles; only the brand trio --ci-color1, --ci-hovercolor1, --accent-color is exempt
   R9  outside misc/palette.less the token layer holds no color literal; alphas derive via rgb(from …)
+  R10 component property values use tokens, not color literals or static color variables; backend exceptions are explicit
 
 Known violations are tolerated via tokenCheck.baseline.json; entries that no longer
 occur are reported as stale so the baseline can only shrink.
@@ -30,6 +31,8 @@ const TOKEN_LAYER = ['misc/palette.less', 'misc/tokens.less'];
 const THEME_LESS_ROOT = '../goobi-viewer-theme-reference/WebContent/resources/themes/reference/css/less';
 const THEME_MIXINS = 'misc/mixins.less';
 const BASELINE_FILE = path.join(__dirname, 'tokenCheck.baseline.json');
+const VARIABLES_FILE = 'misc/variables.less';
+const COMPONENT_COLOR = /#[\da-f]{3}(?:[\da-f](?:[\da-f]{2}(?:[\da-f]{2})?)?)?\b|\b(?:rgba?|hsla?)\(\s*[+-]?(?:\d|\.\d)|(?<![\w@#.-])(?:black|white)(?![\w-])/i;
 
 const TOKEN_SELECTORS = new Set([':root', '.color-theme-dark', '.color-theme-light', '@media (prefers-color-scheme: dark)', '@media (prefers-color-scheme: light)']);
 const PALETTE_FILE = 'misc/palette.less';
@@ -99,6 +102,27 @@ function withoutStrings(text) {
     return text.replace(/(~?)(["'])(?:\\[\s\S]|(?!\2)[^\\])*?\2/g, (match, escaped) => (escaped ? match.slice(2, -1) : ' '));
 }
 
+function colorValue(text) {
+    return withoutStrings(text).replace(/\burl\((?:[^()]|\([^()]*\))*\)/gi, ' ');
+}
+
+function staticColorNames(parsed) {
+    const definitions = parsed?.statics || [];
+    const names = new Set(definitions.filter((d) => COLOR_LITERAL.test(colorValue(d.value))).map((d) => d.name));
+    let previousSize;
+    do {
+        previousSize = names.size;
+        for (const d of definitions) {
+            if ([...colorValue(d.value).matchAll(AT_USE)].some((m) => names.has(m[1]))) names.add(d.name);
+        }
+    } while (names.size !== previousSize);
+    return names;
+}
+
+function colorExemption(file, exemptions) {
+    return exemptions.find((e) => e.reason?.trim() && (e.path.endsWith('/') ? file.startsWith(e.path) : file === e.path));
+}
+
 function collectReads(text, line, stack, into) {
     for (const m of withoutStrings(text).matchAll(READ)) {
         into.push({ name: m[1], fallback: m[2] === ',', line, stack });
@@ -119,7 +143,7 @@ function collectAtUses(text, into) {
  */
 function parseLess(source) {
     const text = stripComments(source);
-    const result = { declarations: [], reads: [], calls: [], aliases: [], statics: [], imports: [], blocks: [], atUses: new Set() };
+    const result = { declarations: [], properties: [], reads: [], calls: [], aliases: [], statics: [], imports: [], blocks: [], atUses: new Set() };
     const stack = [];
     let buf = '';
     let start = null;
@@ -142,6 +166,10 @@ function parseLess(source) {
             result.imports.push({ target: imp[1], line: at, stack: context });
             return;
         }
+        const property = stmt.match(/^((?:--)?[\w@{}-]+)(?:\+_?)?\s*:\s*([\s\S]*)$/);
+        if (property && (!property[1].startsWith('@') || property[1].startsWith('@{'))) {
+            result.properties.push({ name: property[1], value: property[2].trim(), line: at, stack: context });
+        }
         const declaration = stmt.match(DECLARATION);
         if (declaration) {
             result.declarations.push({ name: declaration[1], value: declaration[2].trim(), line: at, stack: context });
@@ -159,7 +187,7 @@ function parseLess(source) {
         }
         const stat = stmt.match(STATIC);
         if (stat && context.length === 0) {
-            result.statics.push({ name: stat[1], line: at });
+            result.statics.push({ name: stat[1], value: stmt.slice(stmt.indexOf(':') + 1).trim(), line: at });
             collectReads(stmt, at, context, result.reads);
             collectAtUses(stmt, result.atUses);
             return;
@@ -256,7 +284,7 @@ const allowedInTokenLayer = (stack) => {
  * @param {{tokenLayer: string[], aliasFile: string, themeMixins: string}} options
  * @returns {{violations: Array, warnings: Array, tokens: Set<string>}}
  */
-function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALETTE_FILE, themeMixins = THEME_MIXINS } = {}) {
+function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALETTE_FILE, themeMixins = THEME_MIXINS, colorExemptions = loadColorExemptions() } = {}) {
     const parsed = new Map();
     for (const [file, source] of core) parsed.set(file, parseLess(source));
 
@@ -264,6 +292,7 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
     const warnings = [];
     const tokens = new Set();
     const isTokenLayer = (file) => tokenLayer.includes(file);
+    const staticColors = staticColorNames(parsed.get(VARIABLES_FILE));
 
     for (const file of tokenLayer) {
         const p = parsed.get(file);
@@ -272,6 +301,14 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
     }
 
     for (const [file, p] of parsed) {
+        if (!isTokenLayer(file) && file !== VARIABLES_FILE && !colorExemption(file, colorExemptions)) {
+            for (const d of p.properties) {
+                const value = colorValue(d.value);
+                if (!COMPONENT_COLOR.test(value) && ![...value.matchAll(AT_USE)].some((m) => staticColors.has(m[1]))) continue;
+                const token = JSON.stringify([d.stack, d.name, d.value.replace(/\s+/g, ' ')]);
+                violations.push(violation('R10', file, token, d.line, 'static component color — use a semantic role, feature token or brand'));
+            }
+        }
         if (isTokenLayer(file)) {
             for (const d of p.declarations) {
                 if (INTERNAL.test(d.name)) {
@@ -471,19 +508,28 @@ const keyOf = (v) => `${v.rule} ${v.file} ${v.token}`;
  */
 function applyBaseline(violations, baseline) {
     const tolerated = new Set(baseline);
+    const remainingColors = new Map();
+    for (const key of baseline) if (key.startsWith('R10 ')) remainingColors.set(key, (remainingColors.get(key) || 0) + 1);
     const hit = new Set();
     const errors = [];
     const kept = [];
     for (const v of violations) {
         const key = keyOf(v);
-        if (tolerated.has(key)) {
+        if (v.rule === 'R10' ? remainingColors.get(key) > 0 : tolerated.has(key)) {
+            if (v.rule === 'R10') remainingColors.set(key, remainingColors.get(key) - 1);
             hit.add(key);
             kept.push(v);
         } else {
             errors.push(v);
         }
     }
-    return { errors, tolerated: kept, stale: baseline.filter((k) => !hit.has(k)) };
+    const stale = baseline.filter((key) => {
+        if (!key.startsWith('R10 ')) return !hit.has(key);
+        if (!remainingColors.get(key)) return false;
+        remainingColors.set(key, remainingColors.get(key) - 1);
+        return true;
+    });
+    return { errors, tolerated: kept, stale };
 }
 
 function formatReport({ errors, stale, tolerated, warnings }, { showWarnings = true } = {}) {
@@ -518,6 +564,10 @@ function readLessTree(root) {
 
 function loadBaseline(file = BASELINE_FILE) {
     return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')).tolerated : [];
+}
+
+function loadColorExemptions() {
+    return fs.existsSync(BASELINE_FILE) ? JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf8')).colorExemptions || [] : [];
 }
 
 /**

@@ -2,7 +2,7 @@
  * Unit tests for the token check (gulp/tokenCheck.js) against inline LESS
  * fixtures, plus one run against the real LESS tree.
  */
-const { parseLess, checkFiles, applyBaseline, formatReport, runTokenCheck } = require('../tokenCheck');
+const { parseLess, checkFiles, applyBaseline, formatReport, runTokenCheck, keyOf } = require('../tokenCheck');
 
 const TOKENS = 'misc/tokens.less';
 const ALIASES = 'misc/some-aliases.less';
@@ -348,6 +348,133 @@ describe('formatReport', () => {
         expect(text).toContain('R1 a.less:7 --x');
         expect(text).toContain('R2 b.less --y');
         expect(text).toContain('--dead');
+    });
+});
+
+describe('R10 component colors', () => {
+    const scan = (source, file = 'components/example.less', options = {}) =>
+        checkFiles(
+            files({
+                'misc/variables.less': '@white: #fff; @black: #1a1a1a; @brand: rgb(1, 89, 153); @danger: red; @copy: @white; @fontSmall: 1.2rem; @RTL: ~"html[dir=rtl]";',
+                [file]: source,
+            }),
+            null,
+            options
+        ).violations.filter((v) => v.rule === 'R10');
+
+    it.each([
+        '#fff',
+        '#FFFF',
+        '#123456',
+        '#12345678',
+        'black',
+        'WHITE',
+        'rgb(0, 0, 0)',
+        'rgba(0 0 0 / 20%)',
+        'hsl(120 50% 50%)',
+        'hsla(.5turn, 50%, 50%, .5)',
+        '@white',
+        '@black',
+        '@brand',
+        '@danger',
+        '@copy',
+        'fade(@black, 18%)',
+        'darken(@brand, 10%)',
+        'mix(@white, @black, 30%)',
+        '1px solid #ccc',
+        'linear-gradient(#fff, var(--surface))',
+        'var(--surface, white)',
+        '~"rgba(0, 0, 0, .5)"',
+    ])('rejects %s in property values', (value) => {
+        expect(scan(`.a { .b { background: ${value}; } }`)).toEqual([expect.objectContaining({ rule: 'R10', file: 'components/example.less', line: 1 })]);
+    });
+
+    it.each([
+        'color: var(--fg)',
+        'color: var(--white)',
+        'color: var(--black-text)',
+        'color: var(--ci-color1)',
+        'background: transparent',
+        'border-color: currentColor',
+        'color: inherit',
+        'font-size: @fontSmall',
+        'color: rgb(from var(--fg) r g b / 18%)',
+        'color: color-mix(in srgb, var(--brand) 60%, var(--fg))',
+        'content: "black #fff @white rgba(0,0,0,1)"',
+        'background: url(#fff)',
+        'background: url("data:image/svg+xml,<svg fill=\'#fff\'/>")',
+        'background: url(data:image/svg+xml,%23fff)',
+        'width: 100px',
+    ])('allows non-color statics, token expressions and data: %s', (declaration) => {
+        expect(scan(`.a { ${declaration}; }`)).toEqual([]);
+    });
+
+    it('ignores comments, selectors, LESS definitions and mixin defaults', () => {
+        expect(scan('/* color: #fff; */\n// background: @white;\n#fff { color: var(--fg); } @local: #fff; .m(@color: #fff) {}')).toEqual([]);
+    });
+
+    it('records custom properties, merged values and declarations without a final semicolon', () => {
+        const result = scan('.@{RTL} {\n --_local: #fff;\n box-shadow+: 0 0 1px @black;\n color: white\n}');
+        expect(result.map((v) => v.line)).toEqual([2, 3, 4]);
+    });
+
+    it('checks literal colors behind interpolated property names', () => {
+        expect(scan('@property: color; .a { @{property}: #fff; }')).toHaveLength(1);
+    });
+
+    it.each([
+        'misc/palette.less',
+        'misc/tokens.less',
+        'misc/variables.less',
+        'admin/layout/basics.less',
+        'cms/views/cmsCreatePage.less',
+        'cms/includes/mediaSelect.less',
+        'crowdsourcing/admin/adminCrowdCampaigns.less',
+    ])('exempts the token layer, static definitions or approved backend file %s', (file) => {
+        expect(scan('.a { color: #fff; }', file)).toEqual([]);
+    });
+
+    it.each([
+        'misc/helper.less',
+        'cms/modules/options.less',
+        'cms/contentComponents/text.less',
+        'cms/templates/cmsPage.less',
+        'crowdsourcing/crowdsourcing.less',
+        'crowdsourcing/annotations.less',
+        'archives/archivesTree.less',
+    ])('keeps public and shared styles in scope: %s', (file) => {
+        expect(scan('.a { color: #fff; }', file)).toHaveLength(1);
+    });
+
+    it('requires a reason and an exact file or directory boundary for exceptions', () => {
+        expect(scan('.a { color: #fff; }', 'components/example.less', { colorExemptions: [{ path: 'components/', reason: '' }] })).toHaveLength(1);
+        expect(scan('.a { color: #fff; }', 'admin-copy/example.less')).toHaveLength(1);
+        expect(scan('.a { color: #fff; }', 'cms/includes/mediaSelect.less.copy.less')).toHaveLength(1);
+    });
+
+    it('does not exempt backend files from other token rules', () => {
+        const result = checkFiles(files({ 'admin/a.less': '.a { --public: #fff; color: var(--missing); }' }));
+        expect(rules(result)).toEqual(expect.arrayContaining(['R1', 'R2']));
+        expect(rules(result)).not.toContain('R10');
+    });
+
+    it('tolerates line movement but rejects changed selectors, properties or values', () => {
+        const baseline = scan('.a { color: #fff; }').map(keyOf);
+        expect(applyBaseline(scan('\n\n.a {\n color: #fff;\n}'), baseline).errors).toEqual([]);
+        for (const changed of ['.b { color: #fff; }', '.a { background: #fff; }', '.a { color: #000; }']) {
+            const result = applyBaseline(scan(changed), baseline);
+            expect(result.errors).toHaveLength(1);
+            expect(result.stale).toEqual(baseline);
+        }
+    });
+
+    it('counts duplicates so a known declaration cannot be added again', () => {
+        const once = scan('.a { color: #fff; }');
+        const twice = scan('.a { color: #fff; color: #fff; }');
+        expect(applyBaseline(twice, once.map(keyOf)).errors).toHaveLength(1);
+        expect(applyBaseline(twice, twice.map(keyOf)).errors).toEqual([]);
+        expect(applyBaseline(once, twice.map(keyOf)).stale).toEqual(once.map(keyOf));
+        expect(applyBaseline(scan('.a { color: var(--fg); }'), once.map(keyOf)).stale).toEqual(once.map(keyOf));
     });
 });
 
