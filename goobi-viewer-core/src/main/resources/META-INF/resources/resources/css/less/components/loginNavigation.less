@@ -55,13 +55,13 @@
                 width: 260px;
                 padding: 0.35rem 0;
                 font-size: @fontMedium;
-                background: @login-nav-background;
-                border: 1px solid @login-nav-dropdown-border-color;
+                background: var(--login-nav-background);
+                border: 1px solid var(--login-nav-dropdown-border-color);
                 box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18);
                 border-radius: 0.85rem;
                 overflow: hidden;
                 z-index: 2020;
-                color: @login-nav-text-color;
+                color: var(--login-nav-text-color);
                 li {
                     margin: 0;
                 }
@@ -69,7 +69,7 @@
             &__user-dropdown-item {
                 font-size: @fontMedium;
                 &:hover {
-                    background-color: @login-nav-background-hover;
+                    background-color: var(--login-nav-background-hover);
                 }
             }
             &__user-dropdown-item-link {
@@ -80,34 +80,34 @@
                 padding: 0.7rem 1.2rem 0.7rem 1.5rem;
                 line-height: 1;
                 text-decoration: none;
-                color: @login-nav-text-color;
+                color: var(--login-nav-text-color);
                 transition:
                     color 0.2s ease,
                     padding-left 0.18s ease,
                     background-color 0.2s ease;
             }
             &__user-dropdown-item-link:hover {
-                color: @login-nav-text-color-hover;
+                color: var(--login-nav-text-color-hover);
                 padding-left: 1.8rem;
-                background-color: @login-nav-background-hover;
+                background-color: var(--login-nav-background-hover);
             }
             &__user-dropdown-item-text {
                 white-space: nowrap;
-                color: @login-nav-text-color;
+                color: var(--login-nav-text-color);
                 transition: color 0.2s ease;
             }
             &__user-dropdown-item-icon-text {
                 svg {
-                    color: @login-nav-icon-color;
+                    color: var(--login-nav-icon-color);
                     transition: color 0.2s ease;
                 }
             }
             &__user-dropdown-item-link:hover &__user-dropdown-item-icon-text svg {
-                color: @login-nav-icon-color-hover;
+                color: var(--login-nav-icon-color-hover);
             }
             &__user-dropdown-item-caret {
                 margin-left: auto;
-                color: @login-nav-icon-color;
+                color: var(--login-nav-icon-color);
             }
             /* BOOKMARK DROPDOWN */
             &__bookmarks-dropdown {
@@ -117,7 +117,7 @@
             &__bookmarks-small-list {
                 display: none;
                 padding: 0.5rem 1rem 0.5rem 1.5rem;
-                background-color: @login-nav-bookmarks-background;
+                background-color: var(--login-nav-bookmarks-background);
             }
             &__bookmarks-entry {
                 display: flex;
@@ -139,13 +139,13 @@
             &__bookmarks-icon-list .fa,
             &__bookmarks-icon-list svg,
             &__bookmarks-icon-list {
-                color: @login-nav-bookmarks-text-color;
+                color: var(--login-nav-bookmarks-text-color);
                 a {
                     margin-right: 0;
-                    color: @login-nav-bookmarks-text-color;
+                    color: var(--login-nav-bookmarks-text-color);
                 }
                 &:hover {
-                    color: @login-nav-bookmarks-text-color-hover;
+                    color: var(--login-nav-bookmarks-text-color-hover);
                 }
             }
             &__bookmarks-icon-list,
@@ -174,14 +174,14 @@
                 font-size: 1.2rem;
                 color: #fff;
                 border-radius: 2px;
-                background-color: @login-nav-bookmarks-counter-background;
+                background-color: var(--login-nav-bookmarks-counter-background);
                 align-self: center;
             }
             &__bookmarks-overview-link {
                 margin-left: auto;
-                color: @login-nav-bookmarks-text-color;
+                color: var(--login-nav-bookmarks-text-color);
                 &:hover {
-                    color: @login-nav-bookmarks-text-color-hover;
+                    color: var(--login-nav-bookmarks-text-color-hover);
                 }
             }
             &__bookmarks-trigger {

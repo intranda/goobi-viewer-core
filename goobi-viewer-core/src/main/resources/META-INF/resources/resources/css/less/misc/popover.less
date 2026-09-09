@@ -26,13 +26,13 @@ popover {
 
 .popover {
     z-index: 2020;
-    color: @fg-popover;
-    background-color: @bg-popover;
+    color: var(--fg-popover);
+    background-color: var(--bg-popover);
     .popover-title-custom {
         padding: 8px 14px;
         margin: 0;
         font-size: 14px;
-        background-color: @bg-popover;
+        background-color: var(--bg-popover);
         border-bottom: 1px solid #ebebeb;
         border-radius: 5px 5px 0 0;
     }
@@ -67,7 +67,7 @@ imageFilters {
             /* Bootstrap hard-codes .popover-body { color: #212529 }, which is invisible
                on the dark popover surface in dark mode. Pair the label with the popover's
                own --fg-popover token so it tracks light/dark like the surface. */
-            color: @fg-popover;
+            color: var(--fg-popover);
             &-long {
                 flex-basis: 80%;
             }

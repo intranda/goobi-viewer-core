@@ -11,9 +11,9 @@
 .image-controls {
     padding: 10px;
     position: relative;
-    background: @image-controls-background;
-    color: @image-controls-icon-color;
-    border: 1px solid @image-controls-container-border-color;
+    background: var(--image-controls-background);
+    color: var(--image-controls-icon-color);
+    border: 1px solid var(--image-controls-container-border-color);
     &.-ltr,
     .-ltr {
         direction: ltr;
@@ -52,7 +52,7 @@
         align-items: center;
         flex: 0 0 auto;
         margin: 0;
-        color: @image-controls-icon-color;
+        color: var(--image-controls-icon-color);
         font-size: inherit;
         line-height: 1;
 
@@ -83,10 +83,10 @@
 
         &:hover,
         &:focus-within {
-            color: @image-controls-icon-color-hover;
+            color: var(--image-controls-icon-color-hover);
         }
         &:active {
-            color: @image-controls-icon-color-active;
+            color: var(--image-controls-icon-color-active);
         }
 
         &.fulltext {
@@ -216,21 +216,21 @@
     &__action {
         width: 36px;
         height: 36px;
-        border: 1px solid @image-controls-border-color;
-        background: @image-controls-action-background;
+        border: 1px solid var(--image-controls-border-color);
+        background: var(--image-controls-action-background);
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        color: @image-controls-icon-color;
+        color: var(--image-controls-icon-color);
         &:hover,
         &:focus {
-            background-color: @image-controls-action-background-hover;
-            color: @image-controls-icon-color-hover;
+            background-color: var(--image-controls-action-background-hover);
+            color: var(--image-controls-icon-color-hover);
         }
         &:active {
-            background-color: @image-controls-action-background-hover;
-            color: @image-controls-icon-color-active;
+            background-color: var(--image-controls-action-background-hover);
+            color: var(--image-controls-icon-color-active);
         }
         /* ELEMENT */
         a,
@@ -264,7 +264,7 @@
             }
         }
         .custom-control--select::after {
-            border-top-color: @image-controls-icon-color;
+            border-top-color: var(--image-controls-icon-color);
         }
         button {
             white-space: nowrap;
@@ -320,10 +320,10 @@
                 height: 30px;
                 border: none;
                 background: inherit;
-                color: @image-controls-icon-color;
+                color: var(--image-controls-icon-color);
                 select {
                     background: inherit;
-                    color: @image-controls-icon-color;
+                    color: var(--image-controls-icon-color);
                 }
                 &:after {
                 }
@@ -373,14 +373,14 @@
             }
             .zoom-slider {
                 height: 10px;
-                border: 1px solid @image-controls-slider-border-color;
+                border: 1px solid var(--image-controls-slider-border-color);
                 max-width: 100%;
                 //Firefox
                 &::-moz-range-thumb {
                     width: 8px;
                     height: 26px;
                     border: none;
-                    background-color: @image-controls-slider-thumb-background;
+                    background-color: var(--image-controls-slider-thumb-background);
                     border-radius: 0;
                 }
                 //Chrome
@@ -394,7 +394,7 @@
                     width: 8px;
                     height: 26px;
                     border: none;
-                    background-color: @image-controls-slider-thumb-background;
+                    background-color: var(--image-controls-slider-thumb-background);
                     border-radius: 0;
                 }
                 &::-webkit-slider-runnable-track {
@@ -432,7 +432,7 @@
 
 .image-controls__actions-nav .image-controls__icon,
 .image-controls__actions-additional .image-controls__icon {
-    color: @image-controls-icon-color;
+    color: var(--image-controls-icon-color);
 }
 
 .image-controls__icon {

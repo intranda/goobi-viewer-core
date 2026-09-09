@@ -9,11 +9,11 @@
 .popover:has(.widget-social-media),
 .popover:has(imageFilters) {
     max-width: 320px;
-    color: @immersive-chrome-fg;
-    background-color: @immersive-chrome-bg;
-    border: 1px solid @immersive-chrome-border-color;
-    border-radius: @immersive-radius;
-    box-shadow: @immersive-chrome-shadow;
+    color: var(--immersive-chrome-fg);
+    background-color: var(--immersive-chrome-bg);
+    border: 1px solid var(--immersive-chrome-border-color);
+    border-radius: var(--immersive-radius);
+    box-shadow: var(--immersive-chrome-shadow);
 
     & :focus-visible {
         .mx-immersive-focus-ring();
@@ -21,19 +21,19 @@
 
     &.bs-popover-top .arrow::before,
     &.bs-popover-top .arrow::after {
-        border-top-color: @immersive-chrome-bg;
+        border-top-color: var(--immersive-chrome-bg);
     }
     &.bs-popover-right .arrow::before,
     &.bs-popover-right .arrow::after {
-        border-right-color: @immersive-chrome-bg;
+        border-right-color: var(--immersive-chrome-bg);
     }
     &.bs-popover-bottom .arrow::before,
     &.bs-popover-bottom .arrow::after {
-        border-bottom-color: @immersive-chrome-bg;
+        border-bottom-color: var(--immersive-chrome-bg);
     }
     &.bs-popover-left .arrow::before,
     &.bs-popover-left .arrow::after {
-        border-left-color: @immersive-chrome-bg;
+        border-left-color: var(--immersive-chrome-bg);
     }
 
     .popover-body {
@@ -43,7 +43,7 @@
     .popover-header {
         margin: 0;
         padding: 12px 14px 4px;
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
         background: transparent;
         border: 0;
         font-size: @fontSmall;
@@ -74,7 +74,7 @@
 
     .widget-citation__license-text,
     .widget-citation__citerecommendation-text-info {
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
         font-size: @fontSmall;
         opacity: 0.6;
     }
@@ -82,53 +82,53 @@
     .widget-citation__subtitle,
     .widget__badge-container-heading {
         margin-bottom: 6px;
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
         font-size: @fontMedium;
         font-weight: 700;
     }
 
     .widget__badge-container .badge,
     .widget__badge-container .badge-dark {
-        color: @immersive-accent;
-        background-color: rgb(from @immersive-accent r g b / 0.08);
-        border-radius: @immersive-radius;
+        color: var(--immersive-accent);
+        background-color: rgb(from var(--immersive-accent) r g b / 0.08);
+        border-radius: var(--immersive-radius);
 
         &:hover,
         &:active,
         &:focus {
-            color: @immersive-accent;
-            background-color: rgb(from @immersive-accent r g b / 0.1);
+            color: var(--immersive-accent);
+            background-color: rgb(from var(--immersive-accent) r g b / 0.1);
             text-decoration: underline;
         }
     }
 
     .custom-control--select {
-        color: @immersive-chrome-fg;
-        background-color: @immersive-chrome-hover-bg;
-        border: 1px solid @immersive-chrome-border-color;
-        border-radius: @immersive-radius;
+        color: var(--immersive-chrome-fg);
+        background-color: var(--immersive-chrome-hover-bg);
+        border: 1px solid var(--immersive-chrome-border-color);
+        border-radius: var(--immersive-radius);
 
         &::after {
-            border-top-color: @immersive-chrome-fg;
+            border-top-color: var(--immersive-chrome-fg);
         }
 
         select {
-            color: @immersive-chrome-fg;
+            color: var(--immersive-chrome-fg);
             background-color: transparent;
         }
     }
 
     .widget-citation__citerecommendation-text-wrapper .widget-citation__citerecommendation-quote-icon {
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
         opacity: 0.35;
     }
     .widget-citation__citerecommendation-copy-text {
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
 
         &:hover,
         &:active,
         &:focus {
-            color: @immersive-chrome-fg;
+            color: var(--immersive-chrome-fg);
         }
     }
 }
@@ -140,31 +140,31 @@
 
     .widget-social-media__link {
         padding: 6px;
-        border-radius: @immersive-radius-lg;
-        color: @immersive-chrome-fg;
-        transition: background-color @immersive-transition;
+        border-radius: var(--immersive-radius-lg);
+        color: var(--immersive-chrome-fg);
+        transition: background-color var(--immersive-transition);
 
         &:hover {
-            background-color: @immersive-chrome-hover-bg;
+            background-color: var(--immersive-chrome-hover-bg);
         }
 
         &:hover,
         &:focus {
             /* Repeated colour guards against theme a:hover/a:focus rules. */
-            color: @immersive-chrome-fg;
+            color: var(--immersive-chrome-fg);
         }
     }
 
     /* Only the monochrome X logo inverts per theme; brand-coloured logos must not (invert breaks their colour). */
     .widget-social-media__link img[src$='x_logo.svg'] {
-        filter: invert(@immersive-logo-invert);
+        filter: invert(var(--immersive-logo-invert));
     }
 }
 
 .popover:has(imageFilters) {
     input[type='range'],
     input[type='checkbox'] {
-        accent-color: @immersive-accent;
+        accent-color: var(--immersive-accent);
     }
 
     .imagefilters__filter-list {
@@ -172,28 +172,28 @@
     }
 
     .imagefilters__label {
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
     }
 
     .imagefilters__options {
         padding: 6px 14px 14px;
 
         .btn--full {
-            color: @immersive-chrome-fg;
+            color: var(--immersive-chrome-fg);
             background-color: transparent;
-            border: 1px solid @immersive-chrome-border-color;
-            border-radius: @immersive-radius;
+            border: 1px solid var(--immersive-chrome-border-color);
+            border-radius: var(--immersive-radius);
             transition:
-                border-color @immersive-transition,
-                background-color @immersive-transition,
-                color @immersive-transition;
+                border-color var(--immersive-transition),
+                background-color var(--immersive-transition),
+                color var(--immersive-transition);
 
             &:hover,
             &:active,
             &:focus {
-                color: @immersive-chrome-fg;
-                border-color: @immersive-accent;
-                background-color: @immersive-chrome-hover-bg;
+                color: var(--immersive-chrome-fg);
+                border-color: var(--immersive-accent);
+                background-color: var(--immersive-chrome-hover-bg);
             }
         }
     }

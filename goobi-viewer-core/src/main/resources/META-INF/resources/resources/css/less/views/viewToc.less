@@ -122,7 +122,7 @@
                 //				padding-left: 5px !important;
             }
             &:hover {
-                background-color: @toc-page-hover-bg;
+                background-color: var(--toc-page-hover-bg);
             }
         }
     }
@@ -130,13 +130,13 @@
     &__list-full-title {
         a,
         button {
-            color: @toc-page-link-color;
+            color: var(--toc-page-link-color);
             //			display: block;
             //			padding: 5px 0;
             &:hover,
             &:focus,
             &:active {
-                color: @toc-page-link-color-hover;
+                color: var(--toc-page-link-color-hover);
             }
         }
     }
@@ -160,21 +160,21 @@
             }
         }
         .icon-wrapper svg {
-            color: @toc-page-toggle-icon-color;
+            color: var(--toc-page-toggle-icon-color);
         }
     }
     &__list-expandable-download-button,
     &__list-full-download-button {
         display: flex;
         .icon-wrapper svg {
-            color: @toc-page-toggle-icon-color;
+            color: var(--toc-page-toggle-icon-color);
         }
         &:hover .icon-wrapper svg {
-            color: @toc-page-toggle-icon-color-hover;
+            color: var(--toc-page-toggle-icon-color-hover);
         }
         &:focus .icon-wrapper svg,
         &:active .icon-wrapper svg {
-            color: @toc-page-toggle-icon-color;
+            color: var(--toc-page-toggle-icon-color);
         }
     }
     /* EXPAND ALL */
@@ -185,14 +185,14 @@
         gap: 10px;
         .btn {
             .icon-wrapper svg {
-                color: @toc-page-toggle-icon-color;
+                color: var(--toc-page-toggle-icon-color);
             }
             &:hover .icon-wrapper svg {
-                color: @toc-page-toggle-icon-color-hover;
+                color: var(--toc-page-toggle-icon-color-hover);
             }
             &:focus .icon-wrapper svg,
             &:active .icon-wrapper svg {
-                color: @toc-page-toggle-icon-color;
+                color: var(--toc-page-toggle-icon-color);
             }
         }
     }
@@ -209,7 +209,7 @@
     }
     &__list-expandable-elem + &__list-expandable-elem:not(.toc__list-expandable-elem--hidden),
     &__list-full-item + &__list-full-item {
-        border-top: 1px solid @toc-page-border-color;
+        border-top: 1px solid var(--toc-page-border-color);
     }
     &__list-expandable-title-wrapper,
     &__list-full-title-wrapper {
@@ -221,14 +221,14 @@
     &__list-expandable-toggle {
         display: flex;
         .icon-wrapper svg {
-            color: @toc-page-toggle-icon-color;
+            color: var(--toc-page-toggle-icon-color);
         }
         &:hover .icon-wrapper svg {
-            color: @toc-page-toggle-icon-color-hover;
+            color: var(--toc-page-toggle-icon-color-hover);
         }
         &:focus .icon-wrapper svg,
         &:active .icon-wrapper svg {
-            color: @toc-page-toggle-icon-color;
+            color: var(--toc-page-toggle-icon-color);
         }
     }
     &__list-expandable-elem--hidden {

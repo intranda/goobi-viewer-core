@@ -2,10 +2,10 @@
 
 /* Calendar container */
 .flatpickr-calendar {
-    background: @datepicker-bg;
+    background: var(--datepicker-bg);
     border: none;
     border-radius: 6px;
-    color: @datepicker-day-fg;
+    color: var(--datepicker-day-fg);
     font-family: inherit;
     box-shadow:
         0 4px 16px rgba(0, 0, 0, 0.1),
@@ -14,7 +14,7 @@
 
 /* Header */
 .flatpickr-months {
-    background-color: @datepicker-header-bg;
+    background-color: var(--datepicker-header-bg);
     padding: 4px 0;
     position: relative;
 
@@ -29,8 +29,8 @@
 .flatpickr-current-month,
 .flatpickr-current-month .cur-month,
 .flatpickr-current-month input.cur-year {
-    color: @datepicker-header-fg;
-    fill: @datepicker-header-fg;
+    color: var(--datepicker-header-fg);
+    fill: var(--datepicker-header-fg);
     font-weight: 600;
 }
 
@@ -51,12 +51,12 @@
 }
 
 .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
-    background: @datepicker-header-bg;
+    background: var(--datepicker-header-bg);
 }
 
 /* Hide month dropdown arrow + year spinner arrows */
 .flatpickr-current-month select.flatpickr-monthDropdown-months {
-    background: @datepicker-header-bg;
+    background: var(--datepicker-header-bg);
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -65,16 +65,16 @@
 
 .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
     color: white;
-    background: @datepicker-header-bg;
+    background: var(--datepicker-header-bg);
 }
 
 .flatpickr-current-month select.flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
     color: white;
-    background: @datepicker-header-bg;
+    background: var(--datepicker-header-bg);
     &:hover,
     &:focus,
     &:active {
-        background: @datepicker-header-bg !important;
+        background: var(--datepicker-header-bg) !important;
     }
 }
 
@@ -102,7 +102,7 @@
             background: rgba(255, 255, 255, 0.15);
 
             svg {
-                fill: @datepicker-header-fg;
+                fill: var(--datepicker-header-fg);
             }
         }
 
@@ -115,8 +115,8 @@
             display: block;
             width: 10px;
             height: 10px;
-            border-right: 2.5px solid @datepicker-header-fg;
-            border-bottom: 2.5px solid @datepicker-header-fg;
+            border-right: 2.5px solid var(--datepicker-header-fg);
+            border-bottom: 2.5px solid var(--datepicker-header-fg);
         }
     }
 
@@ -141,12 +141,12 @@
 
 /* Weekday names */
 .flatpickr-weekdays {
-    background-color: @datepicker-header-bg;
+    background-color: var(--datepicker-header-bg);
     padding-bottom: 4px;
 }
 
 span.flatpickr-weekday {
-    color: @datepicker-weekday-fg;
+    color: var(--datepicker-weekday-fg);
     background: transparent;
     font-weight: 600;
     font-size: 0.85em;
@@ -154,7 +154,7 @@ span.flatpickr-weekday {
 
 /* Day cells — uniform spacing via margin + calc */
 .flatpickr-day {
-    color: @datepicker-day-fg;
+    color: var(--datepicker-day-fg);
     border-radius: 2px;
     margin: 1px;
     max-width: calc(~'100% / 7 - 2px');
@@ -166,69 +166,69 @@ span.flatpickr-weekday {
         color 0.15s ease;
 
     &:hover {
-        background: @datepicker-day-hover-bg;
-        border-color: @datepicker-day-hover-bg;
+        background: var(--datepicker-day-hover-bg);
+        border-color: var(--datepicker-day-hover-bg);
     }
 
     &.today {
-        border-color: @datepicker-day-today-border-color;
+        border-color: var(--datepicker-day-today-border-color);
         font-weight: 600;
 
         &:hover {
-            background: @datepicker-day-hover-bg;
-            border-color: @datepicker-day-hover-bg;
-            color: @datepicker-day-fg;
+            background: var(--datepicker-day-hover-bg);
+            border-color: var(--datepicker-day-hover-bg);
+            color: var(--datepicker-day-fg);
         }
     }
 
     &.selected,
     &.startRange,
     &.endRange {
-        background: @datepicker-day-selected-bg;
-        border-color: @datepicker-day-selected-bg;
-        color: @datepicker-day-selected-fg;
+        background: var(--datepicker-day-selected-bg);
+        border-color: var(--datepicker-day-selected-bg);
+        color: var(--datepicker-day-selected-fg);
         font-weight: 600;
 
         &:hover {
-            background: @datepicker-day-selected-bg;
-            border-color: @datepicker-day-selected-bg;
+            background: var(--datepicker-day-selected-bg);
+            border-color: var(--datepicker-day-selected-bg);
         }
     }
 
     &.inRange {
-        background: @datepicker-day-range-bg;
-        border-color: @datepicker-day-range-bg;
+        background: var(--datepicker-day-range-bg);
+        border-color: var(--datepicker-day-range-bg);
         box-shadow:
-            -5px 0 0 @datepicker-day-range-bg,
-            5px 0 0 @datepicker-day-range-bg;
+            -5px 0 0 var(--datepicker-day-range-bg),
+            5px 0 0 var(--datepicker-day-range-bg);
     }
 
     &.flatpickr-disabled,
     &.flatpickr-disabled:hover,
     &.prevMonthDay,
     &.nextMonthDay {
-        color: @datepicker-day-disabled-fg;
+        color: var(--datepicker-day-disabled-fg);
     }
 
     /* Custom: newspaper day has data */
     &.-has-data- {
-        background-color: @datepicker-day-hasdata-bg;
-        border-color: @datepicker-day-hasdata-bg;
-        color: @datepicker-day-hasdata-fg;
+        background-color: var(--datepicker-day-hasdata-bg);
+        border-color: var(--datepicker-day-hasdata-bg);
+        color: var(--datepicker-day-hasdata-fg);
         font-weight: 700;
 
         &:hover {
-            background-color: @datepicker-day-hasdata-hover-bg;
-            border-color: @datepicker-day-hasdata-hover-bg;
-            color: @datepicker-day-hasdata-hover-fg;
+            background-color: var(--datepicker-day-hasdata-hover-bg);
+            border-color: var(--datepicker-day-hasdata-hover-bg);
+            color: var(--datepicker-day-hasdata-hover-fg);
         }
     }
 
     /* Custom: currently viewed issue */
     &.-current-issue- {
-        background-color: @datepicker-day-selected-bg;
-        border-color: @datepicker-day-selected-bg;
-        color: @datepicker-day-selected-fg;
+        background-color: var(--datepicker-day-selected-bg);
+        border-color: var(--datepicker-day-selected-bg);
+        color: var(--datepicker-day-selected-fg);
         font-weight: 600;
     }
 }

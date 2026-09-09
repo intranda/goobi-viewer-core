@@ -9,7 +9,7 @@
     }
 
     &__fulltext {
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
         font-size: @fontMedium;
         line-height: 1.7;
         white-space: pre-wrap;
@@ -20,7 +20,7 @@
             padding-top: 8px;
             font-style: italic;
             text-align: center;
-            color: @immersive-chrome-fg;
+            color: var(--immersive-chrome-fg);
             opacity: 0.75;
         }
     }
@@ -42,14 +42,14 @@
     }
 
     &__highlight {
-        border: 2px solid @immersive-accent;
+        border: 2px solid var(--immersive-accent);
         background-color: transparent;
         pointer-events: none;
         border-radius: 1px;
-        transition: background-color @immersive-transition;
+        transition: background-color var(--immersive-transition);
 
         &.-active {
-            background-color: @immersive-highlight-bg;
+            background-color: var(--immersive-highlight-bg);
         }
     }
 
@@ -67,8 +67,8 @@
         }
 
         &.is-linked-active {
-            border-left-color: @immersive-ocr-block;
-            background-color: rgb(from @immersive-ocr-block r g b / 0.08);
+            border-left-color: var(--immersive-ocr-block);
+            background-color: rgb(from var(--immersive-ocr-block) r g b / 0.08);
         }
     }
 
@@ -78,7 +78,7 @@
         transition: background-color 0.1s ease;
 
         &.is-linked-active {
-            background-color: rgb(from @immersive-ocr-line r g b / 0.16);
+            background-color: rgb(from var(--immersive-ocr-line) r g b / 0.16);
         }
     }
 
@@ -89,8 +89,8 @@
         /* Near-opaque chip with its own ink: a translucent fill over the
            stacked line/block tints cannot hold AA contrast in the dark theme. */
         &.is-linked-active {
-            background-color: rgb(from @immersive-ocr-word r g b / 0.9);
-            color: @immersive-ocr-word-fg;
+            background-color: rgb(from var(--immersive-ocr-word) r g b / 0.9);
+            color: var(--immersive-ocr-word-fg);
         }
     }
 
@@ -102,29 +102,29 @@
             background-color 0.1s ease;
 
         &.is-linked-active {
-            border-color: @immersive-accent;
-            background-color: @immersive-highlight-bg;
+            border-color: var(--immersive-accent);
+            background-color: var(--immersive-highlight-bg);
         }
     }
 
     &__text-region-block {
         border-width: 1px;
         border-style: dashed;
-        border-color: rgb(from @immersive-ocr-block r g b / 0.5);
+        border-color: rgb(from var(--immersive-ocr-block) r g b / 0.5);
 
         &.is-linked-active {
-            border-color: @immersive-ocr-block;
-            background-color: rgb(from @immersive-ocr-block r g b / 0.08);
+            border-color: var(--immersive-ocr-block);
+            background-color: rgb(from var(--immersive-ocr-block) r g b / 0.08);
         }
     }
 
     &__text-region-line {
         border-width: 1px;
-        border-color: rgb(from @immersive-ocr-line r g b / 0.25);
+        border-color: rgb(from var(--immersive-ocr-line) r g b / 0.25);
 
         &.is-linked-active {
-            border-color: @immersive-ocr-line;
-            background-color: rgb(from @immersive-ocr-line r g b / 0.16);
+            border-color: var(--immersive-ocr-line);
+            background-color: rgb(from var(--immersive-ocr-line) r g b / 0.16);
         }
     }
 
@@ -132,8 +132,8 @@
         border-width: 1px;
 
         &.is-linked-active {
-            border-color: @immersive-ocr-word;
-            background-color: rgb(from @immersive-ocr-word r g b / 0.35);
+            border-color: var(--immersive-ocr-word);
+            background-color: rgb(from var(--immersive-ocr-word) r g b / 0.35);
         }
     }
 
@@ -142,7 +142,7 @@
         flex-wrap: wrap;
         gap: 4px 14px;
         margin: 10px 0 12px;
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
         font-size: @fontSmall;
     }
 
@@ -162,18 +162,18 @@
     }
 
     &__fulltext-legend-item-block::before {
-        border: 1px dashed @immersive-ocr-block;
-        background-color: rgb(from @immersive-ocr-block r g b / 0.08);
+        border: 1px dashed var(--immersive-ocr-block);
+        background-color: rgb(from var(--immersive-ocr-block) r g b / 0.08);
     }
 
     &__fulltext-legend-item-line::before {
-        border-color: @immersive-ocr-line;
-        background-color: rgb(from @immersive-ocr-line r g b / 0.16);
+        border-color: var(--immersive-ocr-line);
+        background-color: rgb(from var(--immersive-ocr-line) r g b / 0.16);
     }
 
     &__fulltext-legend-item-word::before {
-        border-color: @immersive-ocr-word;
-        background-color: rgb(from @immersive-ocr-word r g b / 0.9);
+        border-color: var(--immersive-ocr-word);
+        background-color: rgb(from var(--immersive-ocr-word) r g b / 0.9);
     }
 }
 

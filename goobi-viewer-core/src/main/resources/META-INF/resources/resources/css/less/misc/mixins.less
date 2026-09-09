@@ -124,16 +124,16 @@
 
 /* IMMERSIVE VIEW: accent-coloured focus ring, scoped to the immersive surface */
 .mx-immersive-focus-ring() {
-    outline: 2px solid @immersive-accent;
+    outline: 2px solid var(--immersive-accent);
     outline-offset: 2px;
 }
 
 /* IMMERSIVE VIEW: floating chrome surface (toolbar, bottombar, back link) */
 .mx-immersive-floating() {
-    background-color: @immersive-chrome-bg;
-    border: 1px solid @immersive-chrome-border-color;
-    border-radius: @immersive-radius;
-    box-shadow: @immersive-chrome-shadow;
+    background-color: var(--immersive-chrome-bg);
+    border: 1px solid var(--immersive-chrome-border-color);
+    border-radius: var(--immersive-radius);
+    box-shadow: var(--immersive-chrome-shadow);
 }
 
 /* IMMERSIVE VIEW: borderless icon button on a chrome surface */
@@ -145,16 +145,16 @@
     height: @size;
     padding: 0;
     border: 0;
-    border-radius: @immersive-radius;
+    border-radius: var(--immersive-radius);
     background: transparent;
-    color: @immersive-chrome-fg;
+    color: var(--immersive-chrome-fg);
     cursor: pointer;
-    transition: background-color @immersive-transition;
+    transition: background-color var(--immersive-transition);
 
     &:hover {
-        background-color: @immersive-chrome-hover-bg;
+        background-color: var(--immersive-chrome-hover-bg);
         /* Repeated colour guards against theme a:hover/button:hover rules. */
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
     }
 }
 
@@ -168,10 +168,10 @@
     padding: 0;
     border: 0;
     background: transparent;
-    color: @immersive-canvas-fg;
+    color: var(--immersive-canvas-fg);
     cursor: pointer;
     opacity: 0.85;
-    filter: @immersive-overlay-shadow;
+    filter: var(--immersive-overlay-shadow);
 
     &:hover {
         opacity: 1;
@@ -185,7 +185,7 @@
     padding: 4px 0;
     border: 0;
     background: transparent;
-    color: @immersive-accent;
+    color: var(--immersive-accent);
     font-size: @fontSmall;
     font-weight: 600;
     text-transform: uppercase;
@@ -193,7 +193,7 @@
     cursor: pointer;
 
     &:hover {
-        color: @immersive-accent;
+        color: var(--immersive-accent);
         background: transparent;
         text-decoration: underline;
     }

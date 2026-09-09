@@ -7,86 +7,98 @@
    derived with rgb(from …).
    ==============================================================*/
 
-/* LAYER 2 — SEMANTIC ROLES, LIGHT */
+/* LAYER 2 — SEMANTIC ROLES, LIGHT (legacy role names kept for theme compatibility) */
 .gv-semantic-light() {
     color-scheme: light;
-    --bg-general: var(--gray-50);
-    --fg-general: var(--gray-900);
-    --lk-general: var(--ci-link);
-    --lh-general: var(--gray-700);
-    --bg-content-box: var(--gray-0);
-    --fg-content-box: var(--gray-900);
-    --lk-content-box: var(--ci-link);
-    --lh-content-box: var(--gray-700);
-    --bg-header: var(--gray-0);
-    --fg-header: var(--slate-600);
-    --bg-canvas: var(--gray-200);
-    --bg-subtle: var(--gray-100);
+    /* SURFACES */
+    --bg-general: var(--color-gray-50);
+    --bg-content-box: var(--color-gray-0);
+    --bg-header: var(--color-gray-0);
+    --bg-canvas: var(--color-gray-200);
+    --bg-subtle: var(--color-gray-100);
+    --bg-popover: var(--color-gray-0);
     --bg-hover: rgb(from var(--ci-color1) r g b / 8%);
-    --fg-hover: var(--gray-900);
-    --bg-active: var(--slate-600);
-    --bg-inverse: var(--gray-700);
-    --bg-inverse-hover: var(--slate-500);
-    --fg-inverse: var(--gray-0);
-    --bg-popover: var(--gray-0);
-    --fg-popover: var(--gray-1000);
-    --fg-muted: var(--gray-500);
-    --fg-controls: var(--gray-0);
-    --fg-danger: var(--danger);
-    --accent: var(--ci-color1);
-    --highlight-color: var(--highlight);
-    --focus-ring-color: var(--focus-ring);
-    --ocr-block: var(--ocr-block-light);
-    --ocr-line: var(--ocr-line-light);
-    --ocr-word: var(--ocr-word-light);
-    --border: 1px solid rgb(from var(--gray-300) r g b / 18%);
-    --border-color: var(--gray-200);
-    --border-strong: var(--gray-300);
-    --border-controls: 1px solid var(--slate-200);
-    --placeholder: rgb(from var(--gray-1000) r g b / 25%);
-    --shadow-color: var(--slate-900);
-    --footer-topnav-bg: color-mix(in srgb, var(--ci-color1) 60%, var(--gray-1000));
+    --bg-active: var(--color-slate-600);
+    --bg-inverse: var(--color-gray-700);
+    --bg-inverse-hover: var(--color-slate-500);
+    /* TEXT */
+    --fg-general: var(--color-gray-900);
+    --fg-content-box: var(--color-gray-900);
+    --fg-header: var(--color-slate-600);
+    --fg-popover: var(--color-gray-1000);
+    --fg-hover: var(--color-gray-900);
+    --fg-muted: var(--color-gray-500);
+    --fg-inverse: var(--color-gray-0);
+    --fg-controls: var(--color-gray-0);
+    --placeholder: rgb(from var(--color-gray-1000) r g b / 25%);
+    /* LINKS AND HEADLINES */
+    --lk-general: var(--color-link);
+    --lk-content-box: var(--color-link);
+    --lh-general: var(--color-gray-700);
+    --lh-content-box: var(--color-gray-700);
+    /* BORDERS */
+    --border: 1px solid rgb(from var(--color-gray-300) r g b / 18%);
+    --border-color: var(--color-gray-200);
+    --border-strong: var(--color-gray-300);
+    --border-controls: 1px solid var(--color-slate-200);
+    /* BRAND AND STATUS */
+    --brand: var(--ci-color1);
+    --brand-strong: color-mix(in srgb, var(--ci-color1) 60%, var(--color-gray-1000));
+    --fg-danger: var(--color-danger);
+    --highlight: var(--color-highlight);
+    --focus-ring: var(--color-focus-ring);
+    --ocr-block: var(--color-ocr-block);
+    --ocr-line: var(--color-ocr-line);
+    --ocr-word: var(--color-ocr-word);
+    /* EFFECTS */
+    --shadow-color: var(--color-slate-900);
 }
 
 /* LAYER 2 — SEMANTIC ROLES, DARK */
 .gv-semantic-dark() {
     color-scheme: dark;
-    --bg-general: var(--slate-900);
-    --fg-general: rgb(from var(--gray-0) r g b / 80%);
-    --lk-general: rgb(from var(--gray-0) r g b / 80%);
-    --lh-general: rgb(from var(--gray-0) r g b / 80%);
-    --bg-content-box: var(--slate-800);
-    --fg-content-box: var(--slate-100);
-    --lk-content-box: var(--slate-100);
-    --lh-content-box: rgb(from var(--gray-0) r g b / 80%);
-    --bg-header: var(--slate-950);
-    --fg-header: rgb(from var(--gray-0) r g b / 80%);
-    --bg-canvas: var(--slate-800);
-    --bg-subtle: var(--slate-600);
-    --bg-hover: var(--slate-500);
-    --fg-hover: var(--slate-200);
-    --bg-active: var(--slate-600);
-    --bg-inverse: var(--slate-700);
-    --bg-inverse-hover: var(--slate-600);
-    --fg-inverse: var(--gray-0);
-    --bg-popover: var(--slate-700);
-    --fg-popover: var(--gray-0);
-    --fg-muted: rgb(from var(--gray-0) r g b / 60%);
-    --fg-controls: var(--slate-700);
-    --fg-danger: var(--danger-dark);
-    --accent: var(--ci-color1-dark);
-    --highlight-color: var(--highlight);
-    --focus-ring-color: var(--focus-ring);
-    --ocr-block: var(--ocr-block-dark);
-    --ocr-line: var(--ocr-line-dark);
-    --ocr-word: var(--ocr-word-dark);
+    /* SURFACES */
+    --bg-general: var(--color-slate-900);
+    --bg-content-box: var(--color-slate-800);
+    --bg-header: var(--color-slate-950);
+    --bg-canvas: var(--color-slate-800);
+    --bg-subtle: var(--color-slate-600);
+    --bg-popover: var(--color-slate-700);
+    --bg-hover: var(--color-slate-500);
+    --bg-active: var(--color-slate-600);
+    --bg-inverse: var(--color-slate-700);
+    --bg-inverse-hover: var(--color-slate-600);
+    /* TEXT */
+    --fg-general: rgb(from var(--color-gray-0) r g b / 80%);
+    --fg-content-box: var(--color-slate-100);
+    --fg-header: rgb(from var(--color-gray-0) r g b / 80%);
+    --fg-popover: var(--color-gray-0);
+    --fg-hover: var(--color-slate-200);
+    --fg-muted: rgb(from var(--color-gray-0) r g b / 60%);
+    --fg-inverse: var(--color-gray-0);
+    --fg-controls: var(--color-slate-700);
+    --placeholder: rgb(from var(--color-gray-0) r g b / 50%);
+    /* LINKS AND HEADLINES */
+    --lk-general: rgb(from var(--color-gray-0) r g b / 80%);
+    --lk-content-box: var(--color-slate-100);
+    --lh-general: rgb(from var(--color-gray-0) r g b / 80%);
+    --lh-content-box: rgb(from var(--color-gray-0) r g b / 80%);
+    /* BORDERS */
     --border: 0;
-    --border-color: rgb(from var(--gray-0) r g b / 15%);
-    --border-strong: rgb(from var(--gray-0) r g b / 30%);
-    --border-controls: 1px solid var(--slate-800);
-    --placeholder: rgb(from var(--gray-0) r g b / 50%);
-    --shadow-color: var(--gray-1000);
-    --footer-topnav-bg: var(--ci-color1);
+    --border-color: rgb(from var(--color-gray-0) r g b / 15%);
+    --border-strong: rgb(from var(--color-gray-0) r g b / 30%);
+    --border-controls: 1px solid var(--color-slate-800);
+    /* BRAND AND STATUS */
+    --brand: var(--ci-color1-dark);
+    --brand-strong: var(--ci-color1);
+    --fg-danger: var(--color-danger-dark);
+    --highlight: var(--color-highlight);
+    --focus-ring: var(--color-focus-ring);
+    --ocr-block: var(--color-ocr-block-dark);
+    --ocr-line: var(--color-ocr-line-dark);
+    --ocr-word: var(--color-ocr-word-dark);
+    /* EFFECTS */
+    --shadow-color: var(--color-gray-1000);
 }
 
 /* LAYER 3 — FEATURE TOKENS, MODE-FREE (read layer 2 only) */
@@ -104,7 +116,7 @@
     --login-nav-icon-color: var(--fg-inverse);
     --login-nav-icon-color-hover: var(--fg-inverse);
     --login-nav-bookmarks-text-color: var(--fg-inverse);
-    --login-nav-bookmarks-text-color-hover: var(--highlight-color);
+    --login-nav-bookmarks-text-color-hover: var(--highlight);
     --login-nav-bookmarks-counter-background: var(--ci-color1);
 
     /* SEARCH TOOLBAR */
@@ -114,7 +126,7 @@
     --search-toolbar-text-color-hover: currentColor;
     --search-toolbar-button-radius: 0;
     --search-toolbar-shadow-active: none;
-    --search-toolbar-focus-outline-color: var(--focus-ring-color);
+    --search-toolbar-focus-outline-color: var(--focus-ring);
 
     /* TOC PAGE */
     --toc-page-link-color: var(--lk-content-box);
@@ -166,7 +178,7 @@
     --quick-filter-submit-bg: var(--ci-color1);
     --quick-filter-submit-icon-color: var(--fg-inverse);
     --quick-filter-checkbox-active: var(--ci-color1);
-    --quick-filter-status-color: var(--accent);
+    --quick-filter-status-color: var(--brand);
     --quick-filter-radius: 0;
     --quick-filter-radius-sm: 0;
 
@@ -179,7 +191,7 @@
     --immersive-canvas-bg: var(--bg-canvas);
     --immersive-chrome-bg: var(--bg-content-box);
     --immersive-chrome-fg: var(--fg-content-box);
-    --immersive-accent: var(--accent);
+    --immersive-accent: var(--brand);
     --immersive-ocr-block: var(--ocr-block);
     --immersive-ocr-line: var(--ocr-line);
     --immersive-ocr-word: var(--ocr-word);
@@ -231,6 +243,9 @@
     --facet-control-color: var(--fg-muted);
     --facet-control-radius: 3px;
 
+    /* FOOTER */
+    --footer-topnav-bg: var(--brand-strong);
+
     /* ARCHIVES */
     --archives-card-bg: var(--bg-content-box);
     --archives-title-color: var(--fg-content-box);
@@ -281,7 +296,7 @@
     --immersive-key-bg: var(--bg-subtle);
     --immersive-key-border-color: rgb(from var(--fg-general) r g b / 50%);
     --immersive-divider: rgb(from var(--fg-general) r g b / 9%);
-    --immersive-highlight-bg: rgb(from var(--highlight-color) r g b / 35%);
+    --immersive-highlight-bg: rgb(from var(--highlight) r g b / 35%);
     --immersive-metadata-hover-bg: rgb(from var(--fg-general) r g b / 5%);
     --immersive-ocr-word-fg: var(--fg-inverse);
     --immersive-chrome-shadow: 0 1px 2px rgb(from var(--shadow-color) r g b / 6%), 0 6px 16px rgb(from var(--shadow-color) r g b / 10%);
@@ -317,7 +332,7 @@
     /* SEARCH TOOLBAR */
     --search-toolbar-divider-color: rgb(from var(--fg-inverse) r g b / 20%);
     --search-toolbar-icon-color: rgb(from var(--fg-inverse) r g b / 92%);
-    --search-toolbar-icon-color-hover: var(--accent);
+    --search-toolbar-icon-color-hover: var(--brand);
 
     /* TOC PAGE */
     --toc-page-hover-bg: var(--bg-active);
@@ -350,7 +365,7 @@
     --immersive-key-bg: var(--bg-hover);
     --immersive-key-border-color: rgb(from var(--fg-inverse) r g b / 40%);
     --immersive-divider: rgb(from var(--fg-inverse) r g b / 12%);
-    --immersive-highlight-bg: rgb(from var(--highlight-color) r g b / 25%);
+    --immersive-highlight-bg: rgb(from var(--highlight) r g b / 25%);
     --immersive-metadata-hover-bg: rgb(from var(--fg-inverse) r g b / 5%);
     --immersive-ocr-word-fg: var(--fg-controls);
     --immersive-chrome-shadow: 0 5px 14px 2px rgb(from var(--shadow-color) r g b / 9%);

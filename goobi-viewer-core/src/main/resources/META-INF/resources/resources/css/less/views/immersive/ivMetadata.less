@@ -5,7 +5,7 @@
 
 .immersive {
     &__panel-metadata .metadata {
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
 
         .metadata__elements,
         .metadata__events,
@@ -31,12 +31,12 @@
         .metadata__element-wrapper-single {
             margin: 0 0 14px;
             padding: 14px;
-            border: 1px solid @immersive-divider;
-            border-radius: @immersive-radius-lg;
-            transition: background-color @immersive-transition;
+            border: 1px solid var(--immersive-divider);
+            border-radius: var(--immersive-radius-lg);
+            transition: background-color var(--immersive-transition);
 
             &:hover {
-                background-color: @immersive-metadata-hover-bg;
+                background-color: var(--immersive-metadata-hover-bg);
             }
         }
 
@@ -56,14 +56,14 @@
         .metadata__heading {
             margin: 30px 0 14px;
             padding: 18px 0 0;
-            border-top: 1px solid @immersive-divider;
+            border-top: 1px solid var(--immersive-divider);
             background: transparent;
             font-size: @fontSmall;
             font-weight: 700;
             line-height: 1.25;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            color: @immersive-accent;
+            color: var(--immersive-accent);
 
             &::before {
                 content: none;
@@ -96,7 +96,7 @@
                 text-transform: uppercase;
                 letter-spacing: 0.06em;
                 white-space: normal;
-                color: @immersive-chrome-fg;
+                color: var(--immersive-chrome-fg);
                 opacity: 0.75;
             }
 
@@ -112,7 +112,7 @@
             }
 
             dd a {
-                color: @immersive-accent;
+                color: var(--immersive-accent);
                 text-decoration: none;
 
                 &:hover {
@@ -134,11 +134,11 @@
                 width: 15px;
                 height: 15px;
                 vertical-align: -2px;
-                color: @immersive-chrome-fg;
+                color: var(--immersive-chrome-fg);
                 opacity: 0.45;
                 transition:
-                    opacity @immersive-transition,
-                    color @immersive-transition;
+                    opacity var(--immersive-transition),
+                    color var(--immersive-transition);
             }
 
             dd a:hover .icon,
@@ -146,7 +146,7 @@
             dd button:hover .icon,
             dd button:hover .icon-svg {
                 opacity: 1;
-                color: @immersive-accent;
+                color: var(--immersive-accent);
             }
         }
 
@@ -185,7 +185,7 @@
             border-left: 4px solid transparent;
             border-right: 4px solid transparent;
             border-top: 5px solid currentColor;
-            transition: transform @immersive-transition;
+            transition: transform var(--immersive-transition);
         }
 
         &[aria-expanded='true']::before {

@@ -51,7 +51,7 @@
 
         > * + * {
             padding-left: 4px;
-            border-left: 1px solid @search-toolbar-divider-color;
+            border-left: 1px solid var(--search-toolbar-divider-color);
         }
 
         form {
@@ -68,9 +68,9 @@
         width: var(--_search-option-button-size);
         height: var(--_search-option-button-size);
         min-width: var(--_search-option-button-size);
-        border-radius: @search-toolbar-button-radius;
+        border-radius: var(--search-toolbar-button-radius);
         line-height: 1;
-        color: @search-toolbar-icon-color;
+        color: var(--search-toolbar-icon-color);
         background-color: transparent;
         border: none;
         box-shadow: none;
@@ -81,20 +81,20 @@
 
         &:hover,
         &:focus {
-            color: @search-toolbar-text-color-hover;
+            color: var(--search-toolbar-text-color-hover);
             .icon-wrapper {
                 transform: scale(1.08) translateY(-1px);
                 filter: drop-shadow(0 3px 8px fade(@black, 18%));
                 svg {
-                    color: @search-toolbar-icon-color-hover;
-                    stroke: @search-toolbar-icon-color-hover;
-                    fill: @search-toolbar-icon-color-hover;
+                    color: var(--search-toolbar-icon-color-hover);
+                    stroke: var(--search-toolbar-icon-color-hover);
+                    fill: var(--search-toolbar-icon-color-hover);
                 }
             }
         }
 
         &:focus-visible {
-            outline: 2px solid @search-toolbar-focus-outline-color;
+            outline: 2px solid var(--search-toolbar-focus-outline-color);
             outline-offset: 2px;
         }
 
@@ -121,9 +121,9 @@
         &.active,
         &.-active,
         &.is-modal-trigger-open {
-            background-color: @search-toolbar-background-active;
-            color: @search-toolbar-text-color-active;
-            box-shadow: @search-toolbar-shadow-active;
+            background-color: var(--search-toolbar-background-active);
+            color: var(--search-toolbar-text-color-active);
+            box-shadow: var(--search-toolbar-shadow-active);
             transform: none;
 
             .icon-wrapper {
@@ -131,16 +131,16 @@
                 filter: none;
 
                 svg {
-                    color: @search-toolbar-icon-color-active;
-                    stroke: @search-toolbar-icon-color-active;
-                    fill: @search-toolbar-icon-color-active;
+                    color: var(--search-toolbar-icon-color-active);
+                    stroke: var(--search-toolbar-icon-color-active);
+                    fill: var(--search-toolbar-icon-color-active);
                 }
             }
 
             &:hover,
             &:focus {
-                background-color: @search-toolbar-background-active;
-                color: @search-toolbar-text-color-active;
+                background-color: var(--search-toolbar-background-active);
+                color: var(--search-toolbar-text-color-active);
             }
         }
     }
@@ -565,7 +565,7 @@
             //                display: flex;
             //            }
             // position: absolute;
-            //            color: @ci-color1;
+            //            color: var(--ci-color1);
             background-image: none;
             //            .bookmark-toggle {
             //                align-items: center;
@@ -622,7 +622,7 @@
             position: absolute;
             top: 8px;
             right: 5px;
-            color: @ci-color1;
+            color: var(--ci-color1);
             background-image: none;
             //            .bookmark-toggle {
             //                align-items: center;

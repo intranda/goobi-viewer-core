@@ -5,10 +5,10 @@
 /* ERROR CARD */
 /* BLOCK */
 .view-error-card {
-    border: 1px solid @border-color;
+    border: 1px solid var(--border-color);
     border-radius: 3px;
-    background: @bg-content-box;
-    color: @fg-content-box;
+    background: var(--bg-content-box);
+    color: var(--fg-content-box);
     padding: 2rem;
     /* MODIFICATION */
     &--warning {
@@ -21,39 +21,39 @@
     &__title {
         font-size: 2rem;
         font-weight: 700;
-        color: @fg-content-box;
+        color: var(--fg-content-box);
         margin: 0 0 1rem;
         line-height: 1.2;
     }
     &__message {
         font-size: @fontMedium;
-        color: @fg-muted;
+        color: var(--fg-muted);
         line-height: 1.7;
         margin: 0;
         a {
-            color: @lk-content-box;
+            color: var(--lk-content-box);
         }
     }
     &__divider {
         border: none;
-        border-top: 1px solid @border-color;
+        border-top: 1px solid var(--border-color);
         margin: 2rem 0;
     }
     &__details-label {
         font-size: @fontSmall;
         font-weight: 600;
-        color: @fg-muted;
+        color: var(--fg-muted);
         text-transform: uppercase;
         letter-spacing: 0.06em;
         margin-bottom: 0.8rem;
     }
     &__details-block {
-        background: @bg-general;
-        border: 1px solid @border-color;
+        background: var(--bg-general);
+        border: 1px solid var(--border-color);
         padding: 1rem 1.2rem;
         font-family: monospace;
         font-size: @fontSmall;
-        color: @fg-general;
+        color: var(--fg-general);
         line-height: 1.8;
         margin: 0;
         dt {

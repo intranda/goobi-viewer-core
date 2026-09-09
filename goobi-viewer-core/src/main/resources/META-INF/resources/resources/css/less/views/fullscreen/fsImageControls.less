@@ -25,16 +25,16 @@
         &__action {
             border: 0;
             background: transparent;
-            color: @image-controls-icon-color;
+            color: var(--image-controls-icon-color);
             /* ELEMENT */
             &:hover,
             &:focus {
-                background-color: @image-controls-action-background-hover;
-                color: @image-controls-icon-color-hover;
+                background-color: var(--image-controls-action-background-hover);
+                color: var(--image-controls-icon-color-hover);
             }
             &:active {
-                background-color: @image-controls-action-background-hover;
-                color: @image-controls-icon-color-active;
+                background-color: var(--image-controls-action-background-hover);
+                color: var(--image-controls-icon-color-active);
             }
             a,
             span,
@@ -89,15 +89,15 @@
                     select {
                         font-size: 0.9375rem;
                         background: inherit;
-                        color: @image-controls-icon-color;
+                        color: var(--image-controls-icon-color);
                     }
                 }
                 .custom-control--select {
                     background: inherit;
-                    color: @image-controls-icon-color;
+                    color: var(--image-controls-icon-color);
                     select {
                         background: inherit;
-                        color: @image-controls-icon-color;
+                        color: var(--image-controls-icon-color);
                     }
                     &:after {
                     }
@@ -178,15 +178,15 @@
                     height: 10px;
                     margin-top: 0;
                     background-color: transparent;
-                    border-color: @image-controls-slider-border-color;
+                    border-color: var(--image-controls-slider-border-color);
                 }
                 .zoom-slider-handle {
                     top: -12px;
                     width: 24px;
                     height: 24px;
-                    border: 2px solid @image-controls-slider-border-color;
+                    border: 2px solid var(--image-controls-slider-border-color);
                     border-radius: 100%;
-                    background-color: @image-controls-slider-thumb-background;
+                    background-color: var(--image-controls-slider-thumb-background);
                 }
             }
         }

@@ -14,20 +14,20 @@
         background-color: transparent;
         transform: translateY(-50%);
         transition:
-            opacity @immersive-transition,
-            transform @immersive-transition;
+            opacity var(--immersive-transition),
+            transform var(--immersive-transition);
 
         &:hover {
-            color: @immersive-canvas-fg;
+            color: var(--immersive-canvas-fg);
         }
         &[hidden] {
             display: none;
         }
         &-left {
-            left: calc(@immersive-rail-width + @immersive-edge-inset);
+            left: calc(var(--immersive-rail-width) + var(--immersive-edge-inset));
         }
         &-right {
-            right: @immersive-edge-inset;
+            right: var(--immersive-edge-inset);
         }
     }
 
@@ -38,14 +38,14 @@
 
     &__bottombar {
         position: absolute;
-        bottom: @immersive-edge-inset;
+        bottom: var(--immersive-edge-inset);
         left: 50%;
         z-index: 100;
         display: flex;
         align-items: center;
         gap: 2px;
         height: 40px;
-        max-width: calc(100% - (2 * @immersive-edge-inset));
+        max-width: calc(100% - (2 * var(--immersive-edge-inset)));
         overflow-x: auto;
         padding: 0 4px;
         .mx-immersive-floating();
@@ -59,7 +59,7 @@
 
         & + & {
             padding-left: 4px;
-            border-left: 1px solid @immersive-divider;
+            border-left: 1px solid var(--immersive-divider);
         }
     }
 
@@ -77,7 +77,7 @@
         padding: 0 4px;
         text-align: center;
         font-size: @fontMedium;
-        color: @immersive-chrome-fg;
+        color: var(--immersive-chrome-fg);
         white-space: nowrap;
     }
 }

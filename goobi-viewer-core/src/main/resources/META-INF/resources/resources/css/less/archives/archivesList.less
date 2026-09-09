@@ -6,13 +6,13 @@
 .archives-list {
     &__title {
         margin-bottom: 20px;
-        color: @archives-title-color;
+        color: var(--archives-title-color);
     }
 
     &__empty {
         text-align: center;
         padding: 48px 16px;
-        color: @archives-description-color;
+        color: var(--archives-description-color);
         font-size: @fontNormal;
     }
 
@@ -26,8 +26,8 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        background: @archives-card-bg;
-        border: @archives-card-border;
+        background: var(--archives-card-bg);
+        border: var(--archives-card-border);
         border-radius: 4px;
         overflow: hidden;
         transition: box-shadow 0.2s ease;
@@ -57,7 +57,7 @@
         grid-row: 1;
         grid-column: 1;
         overflow: hidden;
-        background: @archives-placeholder-bg;
+        background: var(--archives-placeholder-bg);
     }
 
     &__image {
@@ -72,7 +72,7 @@
         justify-content: center;
         height: 100%;
         padding-bottom: 30px;
-        background: @archives-placeholder-bg;
+        background: var(--archives-placeholder-bg);
 
         &::before {
             content: '';
@@ -80,7 +80,7 @@
             width: 55%;
             height: 55%;
             opacity: 0.35;
-            background-color: @archives-placeholder-icon-color;
+            background-color: var(--archives-placeholder-icon-color);
             mask: url('../../icons/outline/photo-off.svg') center/100% 100% no-repeat;
             -webkit-mask: url('../../icons/outline/photo-off.svg') center/100% 100% no-repeat;
         }
@@ -91,8 +91,8 @@
         grid-column: 1;
         align-self: end;
         z-index: 1;
-        background: @archives-overlay-bg;
-        color: @archives-overlay-text;
+        background: var(--archives-overlay-bg);
+        color: var(--archives-overlay-text);
         font-size: @fontNormal;
         font-weight: 700;
         padding: 6px 15px;
@@ -103,7 +103,7 @@
 
     &__description {
         padding: 10px 15px;
-        color: @archives-description-color;
+        color: var(--archives-description-color);
         font-size: @fontMedium;
         line-height: 1.5;
         word-break: break-word;

@@ -91,9 +91,7 @@ function resolveDirs() {
     const gulpCfgPath = process.env.GV_GULP_CFG || path.join(home, '.config', 'gulp_userconfig.json');
     const viewerCfgPath =
         process.env.GV_VIEWER_CFG ||
-        (isWin
-            ? path.join('C:', 'opt', 'digiverso', 'viewer', 'config', 'config_viewer.xml')
-            : path.join('/', 'opt', 'digiverso', 'viewer', 'config', 'config_viewer.xml'));
+        (isWin ? path.join('C:', 'opt', 'digiverso', 'viewer', 'config', 'config_viewer.xml') : path.join('/', 'opt', 'digiverso', 'viewer', 'config', 'config_viewer.xml'));
 
     // Read gulp user config (JSON)
     let cfg;
@@ -121,10 +119,7 @@ function resolveDirs() {
     let themeRepoDir = null;
     try {
         const entries = fs.readdirSync(gitViewerDir);
-        themeRepoDir =
-            entries.find((e) => e === `theme-${mainTheme}`) ||
-            entries.find((e) => e.startsWith('theme-') && e.includes(mainTheme)) ||
-            null;
+        themeRepoDir = entries.find((e) => e === `theme-${mainTheme}`) || entries.find((e) => e.startsWith('theme-') && e.includes(mainTheme)) || null;
     } catch {
         // gitViewerDir does not exist or is not readable — fall back to convention
     }
@@ -150,10 +145,8 @@ function resolveDirs() {
 
     if (special && special.length) {
         deployDir =
-            [
-                path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`),
-                path.join(cfg.tomcat_dir, `theme-${special}`),
-            ].find((c) => fs.existsSync(c)) || path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
+            [path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`), path.join(cfg.tomcat_dir, `theme-${special}`)].find((c) => fs.existsSync(c)) ||
+            path.join(cfg.tomcat_dir, `goobi-viewer-theme-${special}`);
     } else {
         const candidates = [
             // tomcat webapps: exact config name (legacy prefix)
@@ -165,19 +158,9 @@ function resolveDirs() {
             // tomcat webapps: git repo dir name
             ...(themeRepoDir ? [path.join(cfg.tomcat_dir, themeRepoDir)] : []),
             // dev target: conventional name
-            path.join(
-                home,
-                'git',
-                'goobi-viewer',
-                `goobi-viewer-theme-${mainTheme}`,
-                `goobi-viewer-theme-${mainTheme}`,
-                'target',
-                'viewer'
-            ),
+            path.join(home, 'git', 'goobi-viewer', `goobi-viewer-theme-${mainTheme}`, `goobi-viewer-theme-${mainTheme}`, 'target', 'viewer'),
             // dev target: actual repo dir name
-            ...(themeRepoDir
-                ? [path.join(gitViewerDir, themeRepoDir, themeRepoDir, 'target', 'viewer')]
-                : []),
+            ...(themeRepoDir ? [path.join(gitViewerDir, themeRepoDir, themeRepoDir, 'target', 'viewer')] : []),
         ];
 
         deployDir = candidates.find((c) => fs.existsSync(c)) || candidates[0];
@@ -190,17 +173,9 @@ function resolveDirs() {
     if (!themeDir) {
         if (themeRepoDir) {
             const innerDir = path.join(gitViewerDir, themeRepoDir, themeRepoDir);
-            themeDir = fs.existsSync(innerDir)
-                ? innerDir
-                : path.join(gitViewerDir, themeRepoDir);
+            themeDir = fs.existsSync(innerDir) ? innerDir : path.join(gitViewerDir, themeRepoDir);
         } else {
-            themeDir = path.join(
-                home,
-                'git',
-                'goobi-viewer',
-                `goobi-viewer-theme-${mainTheme}`,
-                `goobi-viewer-theme-${mainTheme}`
-            );
+            themeDir = path.join(home, 'git', 'goobi-viewer', `goobi-viewer-theme-${mainTheme}`, `goobi-viewer-theme-${mainTheme}`);
         }
     }
 
@@ -392,11 +367,7 @@ function buildIcons() {
 
 /** Unified footer line for task summaries. */
 function taskFooter(generated, copied, errors, started) {
-    return (
-        colors.green('✓ ') +
-        colors.white(`${generated} generated · ${copied} copied · ${errors} errors · `) +
-        colors.magenta(elapsedMs(started))
-    );
+    return colors.green('✓ ') + colors.white(`${generated} generated · ${copied} copied · ${errors} errors · `) + colors.magenta(elapsedMs(started));
 }
 
 const verovio = () => {
@@ -443,18 +414,7 @@ const verovio = () => {
  * @param {number=}  opts.errors     Number of errors (default: 0).
  * @param {string[]=} opts.extra     Extra lines to append to the log block.
  */
-function logTask({
-    name,
-    started,
-    changed,
-    src,
-    projOut = [],
-    deployOut = [],
-    genCount,
-    copyCount,
-    errors = 0,
-    extra = [],
-}) {
+function logTask({ name, started, changed, src, projOut = [], deployOut = [], genCount, copyCount, errors = 0, extra = [] }) {
     const changedPath = typeof changed === 'string' ? changed : undefined;
 
     const lines = [`time: ${colors.gray(new Date().toLocaleTimeString('de-DE', { hour12: false }))}`];
@@ -506,12 +466,7 @@ function buildStyles(changedFilePath = null) {
         .pipe(guard())
         .pipe(sourcemaps.init())
         .pipe(less({ compress: true }))
-        .pipe(
-            postcss([
-                ...(ENABLE_AUTOPREFIX ? [autoprefixer()] : []),
-                ...(SHOW_AP_WARNINGS ? [reporter({ clearReportedMessages: true, throwError: false })] : []),
-            ])
-        )
+        .pipe(postcss([...(ENABLE_AUTOPREFIX ? [autoprefixer()] : []), ...(SHOW_AP_WARNINGS ? [reporter({ clearReportedMessages: true, throwError: false })] : [])]))
         .pipe(header(banner))
         .pipe(rename('viewer.min.css'))
         .pipe(
@@ -708,11 +663,7 @@ function copyDependencies() {
         const srcOpts = { cwd: def.cwd, allowEmpty: true };
         const resolvedCwd = def.cwd ? path.resolve(def.cwd) : null;
         if (def.base) {
-            srcOpts.base = path.isAbsolute(def.base)
-                ? def.base
-                : resolvedCwd
-                  ? path.resolve(resolvedCwd, def.base)
-                  : path.resolve(def.base);
+            srcOpts.base = path.isAbsolute(def.base) ? def.base : resolvedCwd ? path.resolve(resolvedCwd, def.base) : path.resolve(def.base);
         } else if (resolvedCwd) {
             srcOpts.base = resolvedCwd;
         }
@@ -747,11 +698,7 @@ function copyDependencies() {
         const srcOpts = { cwd: def.cwd, allowEmpty: true };
         const resolvedCwd = def.cwd ? path.resolve(def.cwd) : null;
         if (def.base) {
-            srcOpts.base = path.isAbsolute(def.base)
-                ? def.base
-                : resolvedCwd
-                  ? path.resolve(resolvedCwd, def.base)
-                  : path.resolve(def.base);
+            srcOpts.base = path.isAbsolute(def.base) ? def.base : resolvedCwd ? path.resolve(resolvedCwd, def.base) : path.resolve(def.base);
         } else if (resolvedCwd) {
             srcOpts.base = resolvedCwd;
         }
@@ -848,9 +795,7 @@ function fullSync() {
                 copyCount: copied,
                 extra: [
                     `dst: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`,
-                    ...(copiedEntries
-                        ? copiedEntries.map(({ src, dst }) => `  • ${colors.green(src)} → ${colors.blue(dst)}`)
-                        : []),
+                    ...(copiedEntries ? copiedEntries.map(({ src, dst }) => `  • ${colors.green(src)} → ${colors.blue(dst)}`) : []),
                 ],
             });
         });
@@ -925,13 +870,7 @@ async function java() {
     const coreMs = await runMaven(CORE_DIR, ['install']);
     const themeMs = await runMaven(THEME_DIR, ['package']);
     const totalMs = Number(process.hrtime.bigint() - tAll) / 1e6;
-    log(
-        colors.bold(
-            `[java] core [install] ${colors.cyan(fmt(coreMs))} · theme [package] ${colors.cyan(
-                fmt(themeMs)
-            )} · total ${colors.magenta(fmt(totalMs))}`
-        )
-    );
+    log(colors.bold(`[java] core [install] ${colors.cyan(fmt(coreMs))} · theme [package] ${colors.cyan(fmt(themeMs))} · total ${colors.magenta(fmt(totalMs))}`));
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
@@ -944,27 +883,22 @@ async function java() {
  */
 function watchMode() {
     requireDeploymentDir();
-    logBlock('watch', [
-        `deploy: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`,
-        colors.gray('watching for changes — run "npm run sync" for a full initial sync'),
-    ]);
+    logBlock('watch', [`deploy: ${colors.blue(prettyPath(DEPLOYMENT_DIR))}`, colors.gray('watching for changes — run "npm run sync" for a full initial sync')]);
     // JS bundles
-    gulp.watch([
-        joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'),
-        joinPosix(paths.jsModulesRoot, '**', '*.mjs'),
-    ]).on('change', (p) => {
+    gulp.watch([joinPosix(paths.jsModulesRoot, '{viewer,cms,admin,crowdsourcing}', '**', '*.js'), joinPosix(paths.jsModulesRoot, '**', '*.mjs')]).on('change', (p) => {
         bundleModules();
         bundleViewerJS(p);
     });
 
     // #15809: indexCharts.js is bundled into viewer.min.js, so a change rebuilds the viewer bundle.
     gulp.watch(joinPosix(paths.jsModulesRoot, 'statistics', 'charts', '*.js')).on('change', (p) => bundleViewerJS(p));
-    gulp.watch(joinPosix(paths.jsModulesRoot, 'browsersupport', '**', '*.js')).on('change', (p) =>
-        bundleBrowserSupportJS(p)
-    );
+    gulp.watch(joinPosix(paths.jsModulesRoot, 'browsersupport', '**', '*.js')).on('change', (p) => bundleBrowserSupportJS(p));
 
     // Styles & tags
-    gulp.watch(joinPosix(paths.lessRoot, '**', '*.less')).on('change', (p) => buildStyles(p));
+    gulp.watch(joinPosix(paths.lessRoot, '**', '*.less')).on('change', (p) => {
+        reportTokens();
+        buildStyles(p);
+    });
     gulp.watch(joinPosix(paths.jsDevRoot, 'tags', '**', '*.tag')).on('change', (p) => compileRiotTags(p));
 
     // Static assets (no dist CSS/JS)
@@ -1020,11 +954,7 @@ function watchMode() {
         try {
             const { default: del } = await import('del');
             await del(targetPath, { force: true });
-            logBlock('static', [
-                `deleted: ${colors.green(filePath)}`,
-                `dst: ${colors.blue(targetPath)}`,
-                colors.yellow('• removed'),
-            ]);
+            logBlock('static', [`deleted: ${colors.green(filePath)}`, `dst: ${colors.blue(targetPath)}`, colors.yellow('• removed')]);
         } catch (err) {
             console.warn('[WARN] Could not delete file from deploy dir:', err.message);
         }
@@ -1068,11 +998,14 @@ function printTargets(cb) {
  *
  * @param {Function} cb Gulp callback.
  */
-function checkTokens(cb) {
+function reportTokens() {
     const result = tokenCheck.runTokenCheck();
-    const failed = result.errors.length > 0 || result.stale.length > 0;
     logBlock('check-tokens', tokenCheck.formatReport(result, { showWarnings: process.env.GV_TOKENWARN === '1' }).split('\n'));
-    cb(failed ? new Error('token check failed — see [check-tokens] above') : undefined);
+    return result.errors.length > 0 || result.stale.length > 0;
+}
+
+function checkTokens(cb) {
+    cb(reportTokens() ? new Error('token check failed — see [check-tokens] above') : undefined);
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗

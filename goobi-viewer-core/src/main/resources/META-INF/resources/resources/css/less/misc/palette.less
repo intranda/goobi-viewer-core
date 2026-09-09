@@ -1,52 +1,54 @@
 /* ==============================================================
-   Token layer 1: palette (mode-free)
-   Every color the token layer uses is defined here or derived
-   from here. A theme overrides these in its :root block to
-   retone light AND dark at once. Only the semantic roles read
-   this file (except the brand trio --ci-color1, --ci-hovercolor1,
-   --accent-color, which themes and components use directly).
+   Token layer 1: palette (mode-free primitives, prefix --color-)
+   Every color of the token layer is defined here or derived from
+   here. A theme overrides these in its :root block to retone light
+   AND dark at once. Only the semantic roles read this file; the
+   brand trio --ci-color1 / --ci-hovercolor1 / --accent-color keeps
+   its legacy names and stays readable everywhere.
+   Ramps are hue + lightness step. Brand, status and OCR colors are
+   fixed pairs, not ramps: base = light value, -dark = dark variant.
    ==============================================================*/
 
 .gv-palette() {
-    /* BRAND */
+    /* BRAND (legacy theme API) */
     --ci-color1: @blue;
     --ci-hovercolor1: lighten(@blue, 10%);
     --ci-color1-dark: #49a5ff;
-    --ci-link: #3365a9;
     --accent-color: #f59f00;
+    --color-link: #3365a9;
 
-    /* STATUS */
-    --danger: #c0392b;
-    --danger-dark: #e74c3c;
-    --highlight: #ffd500;
-    --focus-ring: @colorOutline;
+    /* FUNCTIONAL */
+    --color-danger: #c0392b;
+    --color-danger-dark: #e74c3c;
+    --color-highlight: #ffd500;
+    --color-focus-ring: @colorOutline;
 
     /* OCR OVERLAYS (colorblind-safe) */
-    --ocr-block-light: #aa4499;
-    --ocr-block-dark: #cc79a7;
-    --ocr-line-light: #0072b2;
-    --ocr-line-dark: #56b4e9;
-    --ocr-word-light: #b34700;
-    --ocr-word-dark: #e69f00;
+    --color-ocr-block: #aa4499;
+    --color-ocr-block-dark: #cc79a7;
+    --color-ocr-line: #0072b2;
+    --color-ocr-line-dark: #56b4e9;
+    --color-ocr-word: #b34700;
+    --color-ocr-word-dark: #e69f00;
 
     /* GRAY RAMP — neutral grays and text, 0 lightest … 1000 darkest */
-    --gray-0: @white;
-    --gray-50: #f5f8fd;
-    --gray-100: @neutralgray2;
-    --gray-200: #e9e9e9;
-    --gray-300: @middlegray;
-    --gray-500: @gray;
-    --gray-700: @labelGray;
-    --gray-900: #212529;
-    --gray-1000: #000;
+    --color-gray-0: @white;
+    --color-gray-50: #f5f8fd;
+    --color-gray-100: @neutralgray2;
+    --color-gray-200: #e9e9e9;
+    --color-gray-300: @middlegray;
+    --color-gray-500: @gray;
+    --color-gray-700: @labelGray;
+    --color-gray-900: #212529;
+    --color-gray-1000: #000;
 
     /* SLATE RAMP — blue-gray surfaces of the dark mode and the light text on them */
-    --slate-100: #e3e4e7;
-    --slate-200: #d8d9dd;
-    --slate-500: #5b6473;
-    --slate-600: #3b4557;
-    --slate-700: #253044;
-    --slate-800: #1c263d;
-    --slate-900: #0a1124;
-    --slate-950: #070b17;
+    --color-slate-100: #e3e4e7;
+    --color-slate-200: #d8d9dd;
+    --color-slate-500: #5b6473;
+    --color-slate-600: #3b4557;
+    --color-slate-700: #253044;
+    --color-slate-800: #1c263d;
+    --color-slate-900: #0a1124;
+    --color-slate-950: #070b17;
 }

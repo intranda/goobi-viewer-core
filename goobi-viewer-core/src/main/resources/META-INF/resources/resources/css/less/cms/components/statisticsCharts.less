@@ -7,8 +7,8 @@
 .content-component__statistics-chart,
 .content-component__statistics-list {
     padding: 10px;
-    border: @border;
-    background-color: @bg-content-box;
+    border: var(--border);
+    background-color: var(--bg-content-box);
 }
 
 .statistics-chart {
@@ -95,7 +95,7 @@
     // a count of saved contributions, not edits-over-time). Injected by renderMostActiveUsers.
     &__subtitle {
         font-size: 0.85rem;
-        color: @fg-muted;
+        color: var(--fg-muted);
         margin-bottom: 0.5rem;
     }
 
@@ -106,18 +106,18 @@
 
     li {
         padding: 0.5rem 0;
-        border-bottom: 1px solid @border-color;
+        border-bottom: 1px solid var(--border-color);
     }
 
     .progress {
-        background: @bg-subtle;
+        background: var(--bg-subtle);
         height: 0.5rem;
         border-radius: 0.25rem;
         overflow: hidden;
         margin-top: 0.25rem;
 
         .bar {
-            background: @ci-color1;
+            background: var(--ci-color1);
             height: 100%;
             color: #fff;
             font-size: 0.7rem;
