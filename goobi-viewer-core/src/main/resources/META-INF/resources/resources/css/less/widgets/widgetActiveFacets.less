@@ -37,10 +37,10 @@
         font-size: @fontMedium;
         font-weight: 500;
         line-height: normal;
-        color: var(--active-facets-badge-color);
-        background: var(--active-facets-badge-background);
-        border: 1px solid var(--active-facets-badge-border);
-        border-radius: var(--active-facets-badge-radius);
+        color: var(--_afb-color, var(--active-facets-badge-color));
+        background: var(--_afb-bg, var(--active-facets-badge-background));
+        border: 1px solid var(--_afb-border, var(--active-facets-badge-border));
+        border-radius: var(--_afb-radius, var(--active-facets-badge-radius));
         text-decoration: none;
         transition:
             border-color 0.1s ease-in,
@@ -48,15 +48,15 @@
 
         &:hover,
         &:focus {
-            --active-facets-badge-background: var(--active-facets-badge-background-hover);
-            color: var(--active-facets-badge-color);
-            border-color: var(--active-facets-badge-color);
+            --_afb-bg: var(--_afb-bg-hover, var(--active-facets-badge-background-hover));
+            color: var(--_afb-color, var(--active-facets-badge-color));
+            border-color: var(--_afb-color, var(--active-facets-badge-color));
             box-shadow: var(--active-facets-badge-shadow-hover);
             text-decoration: none;
 
             .active-facets-badges__badge-remove {
-                color: var(--active-facets-badge-contrast);
-                background: var(--active-facets-badge-color);
+                color: var(--_afb-contrast, var(--active-facets-badge-contrast));
+                background: var(--_afb-color, var(--active-facets-badge-color));
             }
         }
 
@@ -76,7 +76,7 @@
         flex: 0 0 auto;
         font-weight: 400;
         white-space: nowrap;
-        color: var(--active-facets-badge-muted);
+        color: var(--_afb-muted, var(--active-facets-badge-muted));
     }
 
     &__badge-remove {
@@ -86,7 +86,7 @@
         flex: 0 0 auto;
         width: 20px;
         height: 20px;
-        color: var(--active-facets-badge-muted);
+        color: var(--_afb-muted, var(--active-facets-badge-muted));
         border-radius: 50%;
         transition:
             background-color 0.1s ease-in,

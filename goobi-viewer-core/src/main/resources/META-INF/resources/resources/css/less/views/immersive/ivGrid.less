@@ -8,7 +8,7 @@
 .mx-immersive-grid-slider-track() {
     height: 4px;
     border-radius: 2px;
-    background: linear-gradient(to right, @immersive-accent 0 var(--immersive-slider-fill), @immersive-slider-track var(--immersive-slider-fill));
+    background: linear-gradient(to right, @immersive-accent 0 var(--_immersive-slider-fill), @immersive-slider-track var(--_immersive-slider-fill));
 }
 
 .mx-immersive-grid-slider-thumb() {
@@ -27,17 +27,17 @@
         inset: 0;
         z-index: 300;
         background-color: @immersive-canvas-bg;
-        --immersive-grid-col: 150px;
-        --immersive-grid-thumb-h: 220px;
+        --_immersive-grid-col: 150px;
+        --_immersive-grid-thumb-h: 220px;
 
         &[data-thumb-size='0'] {
-            --immersive-grid-col: 110px;
-            --immersive-grid-thumb-h: 150px;
+            --_immersive-grid-col: 110px;
+            --_immersive-grid-thumb-h: 150px;
         }
 
         &[data-thumb-size='2'] {
-            --immersive-grid-col: 230px;
-            --immersive-grid-thumb-h: 330px;
+            --_immersive-grid-col: 230px;
+            --_immersive-grid-thumb-h: 330px;
         }
 
         .thumbnails-image-wrapper {
@@ -50,7 +50,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: var(--immersive-grid-thumb-h);
+            height: var(--_immersive-grid-thumb-h);
             text-decoration: none;
             transition: height 0.2s ease;
         }
@@ -184,7 +184,7 @@
     }
 
     &__grid-size-slider {
-        --immersive-slider-fill: 50%;
+        --_immersive-slider-fill: 50%;
         appearance: none;
         width: 140px;
         height: 24px;
@@ -224,7 +224,7 @@
 
     &__grid-mount {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(var(--immersive-grid-col), 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(var(--_immersive-grid-col), 1fr));
         gap: 26px 20px;
         max-width: 100%;
         margin: 0 auto;

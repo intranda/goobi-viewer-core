@@ -33,7 +33,7 @@ export function setupOverviewGrid(viewer, pi, apiBase, keys) {
         if (gridOverlay) gridOverlay.setAttribute('data-thumb-size', String(step));
         if (gridSizeSlider) {
             gridSizeSlider.value = String(step);
-            gridSizeSlider.style.setProperty('--immersive-slider-fill', `${(step / THUMB_SIZE_MAX) * 100}%`);
+            gridSizeSlider.style.setProperty('--_immersive-slider-fill', `${(step / THUMB_SIZE_MAX) * 100}%`);
             if (gridSizeLabels[step]) {
                 gridSizeSlider.setAttribute('aria-valuetext', gridSizeLabels[step]);
             } else {

@@ -14,7 +14,7 @@
         top: 0;
         bottom: 0;
         z-index: @immersive-z-panel;
-        width: var(--immersive-panel-width, @immersive-panel-width-default);
+        width: var(--_immersive-panel-width, @immersive-panel-width-default);
         max-width: 80%;
         overflow-y: auto;
         scrollbar-gutter: stable;
@@ -58,7 +58,7 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        left: calc(@immersive-rail-width + var(--immersive-panel-width, @immersive-panel-width-default));
+        left: calc(@immersive-rail-width + var(--_immersive-panel-width, @immersive-panel-width-default));
         z-index: @immersive-z-resize-handle;
         width: 12px;
         margin-left: -6px;
@@ -95,11 +95,11 @@
     }
 
     &__viewer:fullscreen:not(.is-double-page) {
-        --immersive-panel-width: @immersive-panel-width-fullscreen;
+        --_immersive-panel-width: @immersive-panel-width-fullscreen;
     }
 
     &__viewer:-webkit-full-screen:not(.is-double-page) {
-        --immersive-panel-width: @immersive-panel-width-fullscreen;
+        --_immersive-panel-width: @immersive-panel-width-fullscreen;
     }
 }
 
@@ -123,7 +123,7 @@
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
     .immersive__viewer {
-        --immersive-panel-width: 300px;
+        --_immersive-panel-width: 300px;
     }
 }
 
@@ -134,7 +134,7 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
     .immersive__viewer {
-        --immersive-panel-width: calc(100% - @immersive-rail-width);
+        --_immersive-panel-width: calc(100% - @immersive-rail-width);
     }
 
     .immersive__panel {

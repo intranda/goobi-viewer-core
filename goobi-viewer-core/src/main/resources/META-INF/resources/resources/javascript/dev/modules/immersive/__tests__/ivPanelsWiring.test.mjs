@@ -130,7 +130,7 @@ describe('setupPanelResize', () => {
         localStorage.setItem(WIDTH_KEY, '555');
         const { root, viewer } = mountResizeMarkup();
         setupPanelResize(root);
-        expect(viewer.style.getPropertyValue('--immersive-panel-width')).toBe('300px');
+        expect(viewer.style.getPropertyValue('--_immersive-panel-width')).toBe('300px');
     });
 
     test('persists the dragged width to sessionStorage only', () => {

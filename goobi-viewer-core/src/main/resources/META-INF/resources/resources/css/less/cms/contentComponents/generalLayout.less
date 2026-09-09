@@ -5,11 +5,11 @@
 /* GENERAL LAYOUT FRONTEND WRAPPER */
 .content-components {
     &__all-items-container {
-        --content-component-h-gap: 2rem;
-        --content-component-v-gap: 3.5rem;
+        --_cc-h-gap: 2rem;
+        --_cc-v-gap: 3.5rem;
         display: flex;
         flex-wrap: wrap;
-        gap: var(--content-component-v-gap) var(--content-component-h-gap);
+        gap: var(--_cc-v-gap) var(--_cc-h-gap);
     }
 }
 
@@ -30,16 +30,16 @@
         max-width: calc(~'100%');
     }
     &.-width-75 {
-        flex: 0 0 calc(~'75% - var(--content-component-h-gap) / 3');
-        max-width: calc(~'75% - var(--content-component-h-gap) / 3');
+        flex: 0 0 calc(~'75% - var(--_cc-h-gap) / 3');
+        max-width: calc(~'75% - var(--_cc-h-gap) / 3');
     }
     &.-width-50 {
-        flex: 0 0 calc(~'50% - var(--content-component-h-gap) / 2');
-        max-width: calc(~'50% - var(--content-component-h-gap) / 2');
+        flex: 0 0 calc(~'50% - var(--_cc-h-gap) / 2');
+        max-width: calc(~'50% - var(--_cc-h-gap) / 2');
     }
     &.-width-25 {
-        flex: 0 0 calc(~'25% - var(--content-component-h-gap) / 4');
-        max-width: calc(~'25% - var(--content-component-h-gap) / 4');
+        flex: 0 0 calc(~'25% - var(--_cc-h-gap) / 4');
+        max-width: calc(~'25% - var(--_cc-h-gap) / 4');
     }
     // HIDDEN FOR DESKTOP OR MOBILE VIEW OPTIONS
     &.-hiddenOnDesktop {
