@@ -100,6 +100,22 @@ public class DynamicCollectionsBean implements Serializable {
     }
 
     /**
+     * Reloads the collection list from the database, reporting DAO errors instead of propagating them.
+     *
+     * <p>Invoked when the collections overview page is opened, because this bean is session scoped: collection labels are written directly to the
+     * database by the translations editor, and other editors may change collections concurrently.
+     *
+     * @should pick up collections added to the database after bean creation
+     */
+    public void reloadCollections() {
+        try {
+            updateCollections();
+        } catch (DAOException e) {
+            logger.error("Error reloading dynamic collections: {}", e.getMessage());
+        }
+    }
+
+    /**
      * Getter for the field <code>collections</code>.
      *
      * @return the list of all dynamic collections

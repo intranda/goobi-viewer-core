@@ -1155,6 +1155,7 @@
         <pattern value="/admin/cms/collections/" />
         <view-id value="/resources/cms/adminCmsCollections.xhtml" />
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
+        <action onPostback="false">#{dynamicCollectionsBean.reloadCollections}</action>
         <action onPostback="false">#{cmsCollectionsBean.currentTab.refresh(cmsCollectionsBean.solrField)}</action>
     </url-mapping>
 	<url-mapping id="adminClients">
