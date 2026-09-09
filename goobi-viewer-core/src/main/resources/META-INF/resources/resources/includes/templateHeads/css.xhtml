@@ -5,6 +5,23 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf">
+    <!--
+        The API documentation page renders nothing but the Scalar API reference, which
+        ships a complete stylesheet of its own. Scalar's reset is written with zero
+        specificity (`:where(.scalar-app) *`) so that host applications can override it,
+        which means every bare element rule of the viewer stylesheets - h2, label, input,
+        button - would bleed into the reference and into its API client. Serving none of
+        them lets the reference render as its own styles intend; the few components the
+        blank template still brings along are styled by misc/rest_api.css instead.
+
+        A CMS page can carry any navigation id, 'API' included, so the cms page flag is
+        part of the condition: restApi.xhtml is the only page that sets this name without
+        it.
+    -->
+    <c:set
+        var="skipViewerCSS"
+        value="#{navigationHelper.currentPage == 'API' and !navigationHelper.cmsPage}" />
+
     <!-- =======================
         BASE LIBRARIES
     ======================== -->
@@ -53,7 +70,7 @@
         items="#{cssPaths}">
         <!-- include file, if it is not explicitly excluded -->
         <!-- (either above, or in the excludeCSS variable, which can be set in template files) -->
-        <c:if test="#{!path[1].contains(templateName) and !excludeCSS.contains(path[0])}">
+        <c:if test="#{!skipViewerCSS and !path[1].contains(templateName) and !excludeCSS.contains(path[0])}">
             <link
                 type="text/css"
                 rel="stylesheet"
@@ -64,7 +81,7 @@
     <!-- ===================
       THEME CSS
     ==================== -->
-    <c:if test="#{!excludeCSS.contains('themeCSS')}">
+    <c:if test="#{!skipViewerCSS and !excludeCSS.contains('themeCSS')}">
         <link
             type="text/css"
             rel="stylesheet"
