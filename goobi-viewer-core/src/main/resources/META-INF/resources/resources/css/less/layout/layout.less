@@ -23,11 +23,11 @@
     left: 15px;
     margin-bottom: 20px;
     padding: 15px;
-    border: 1px solid #ebccd1;
+    border: 1px solid var(--border-danger);
     border-top: none;
     border-radius: 0 0 4px 4px;
-    background-color: #f2dede;
-    color: #a94442;
+    background-color: var(--bg-danger);
+    color: var(--fg-on-danger);
     z-index: 9999;
     button {
         position: absolute;
@@ -62,7 +62,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.75);
+    background-color: rgb(from var(--bg-content-box) r g b / 75%);
     z-index: 999;
 }
 
@@ -88,7 +88,7 @@
     bottom: 0;
     left: 0;
     z-index: 99999;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgb(from var(--shadow-color) r g b / 75%);
     &__box {
         position: absolute;
         width: 400px;
@@ -96,11 +96,11 @@
         top: 50%;
         left: 50%;
         margin: -300px 0 0 -200px;
-        border: 1px solid @middlegray;
-        background-color: @white;
-        color: @black;
+        border: 1px solid var(--border-strong);
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         a {
-            color: @black;
+            color: var(--fg-content-box);
         }
     }
     &__box-header,
@@ -112,7 +112,7 @@
         height: 50px;
         padding-top: 13px;
         padding-bottom: 0;
-        border-bottom: 1px solid @middlegray;
+        border-bottom: 1px solid var(--border-strong);
         h2 {
             margin: 0;
         }
@@ -125,7 +125,7 @@
         padding-top: 13px;
         padding-bottom: 0;
         text-align: right;
-        border-top: 1px solid @middlegray;
+        border-top: 1px solid var(--border-strong);
     }
 }
 html.is-IE {

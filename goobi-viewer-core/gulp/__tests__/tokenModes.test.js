@@ -137,6 +137,82 @@ it('exposes each subtheme brand to core consumers in both modes', () => {
     }
 });
 
+const foundationPairs = [
+    ['--fg-secondary', '--bg-subtle'],
+    ['--fg-secondary', '--bg-hover'],
+    ['--fg-secondary', '--bg-danger'],
+    ['--fg-inverse', '--ci-color1'],
+    ['--fg-inverse', '--ci-hovercolor1'],
+    ['--fg-inverse', '--bg-inverse'],
+    ['--fg-inverse', '--bg-inverse-hover'],
+    ['--fg-on-warning', '--bg-warning'],
+    ['--fg-on-warning-hover', '--bg-warning'],
+    ['--fg-selected', '--bg-selected'],
+    ['--fg-popover', '--bg-popover'],
+    ['--map-marker-primary-fg', '--map-marker-primary-bg'],
+    ['--map-marker-secondary-fg', '--map-marker-secondary-bg'],
+    ['--rss-badge-fg', '--rss-badge-bg'],
+    ['--image-controls-region-active-color', '--image-controls-background'],
+    ['--image-controls-region-active-color', '--image-controls-action-background'],
+    ...['success', 'danger'].flatMap((status) => [
+        [`--fg-on-${status}`, `--bg-${status}`],
+        [`--fg-on-${status}`, `--bg-${status}-hover`],
+    ]),
+    ...['success', 'warning', 'danger', 'info'].map((status) => [`--fg-on-${status}-strong`, `--bg-${status}-strong`]),
+    ...[
+        '--fg-content-box',
+        '--fg-secondary',
+        '--fg-muted',
+        '--placeholder',
+        '--fg-danger',
+        '--fg-success',
+        '--ner-person-color',
+        '--ner-location-color',
+        '--ner-institution-color',
+    ].flatMap((fg) => ['--bg-general', '--bg-content-box', '--bg-subtle', '--bg-popover', '--bg-canvas'].map((bg) => [fg, bg])),
+];
+
+function checkFoundationContrast(get, context) {
+    for (const [fg, bg] of foundationPairs) {
+        const ratio = contrast(color(get(fg)), over(color(get(bg)), color(get('--bg-content-box'))));
+        if (ratio < 4.5) throw new Error(`${context}: ${fg} on ${bg} = ${ratio}`);
+    }
+}
+
+it.each(['light', 'dark'])('keeps foundation text readable under OS %s and every explicit mode', (os) => {
+    for (const [name, css] of variants) for (const toggle of ['none', 'light', 'dark']) checkFoundationContrast(state(css, os, toggle), `${name}/${os}/${toggle}`);
+});
+
+it('detects a theme override that breaks a foundation foreground/background pair', () => {
+    const broken = postcss.parse(variants.get('core').toString() + ':root { --rss-badge-fg: var(--bg-rss); }');
+    expect(() => checkFoundationContrast(state(broken, 'light', 'none'), 'broken theme')).toThrow('--rss-badge-fg on --rss-badge-bg = 1');
+});
+
+it.each(['light', 'dark'])('keeps status text and surfaces paired in the compiled components in %s', (mode) => {
+    const css = variants.get('core'),
+        get = state(css, mode, 'none');
+    const declarations = (selector) => {
+        const result = new Map();
+        css.walkRules((rule) => {
+            if (rule.parent.type !== 'root' || !rule.selectors.includes(selector)) return;
+            rule.walkDecls((d) => result.set(d.prop, d.value));
+        });
+        return result;
+    };
+    const resolve = (value) => value.replace(/var\((--[\w-]+)\)/g, (_, name) => get(name));
+    for (const status of ['success', 'danger']) {
+        const base = declarations(`.btn--${status}`);
+        for (const suffix of ['', ':hover', ':focus', ':active']) {
+            const values = new Map([...base, ...declarations(`.btn--${status}${suffix}`)]);
+            expect(contrast(color(resolve(values.get('color'))), color(resolve(values.get('background-color'))))).toBeGreaterThanOrEqual(4.5);
+        }
+    }
+    for (const status of ['green', 'yellow', 'red']) {
+        const values = declarations(`.copyright-indicator__traffic-light-style-circle.-${status}`);
+        expect(contrast(color(resolve(values.get('color'))), color(resolve(values.get('background'))))).toBeGreaterThanOrEqual(4.5);
+    }
+});
+
 it('allows a later root override to reach the faceted-search widgets', () => {
     const css = variants.get('reference');
     if (!css) return;

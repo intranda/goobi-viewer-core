@@ -72,9 +72,9 @@
     &__counter {
         padding: 0 3px;
         font-size: @fontSmall;
-        color: @white;
+        color: var(--fg-inverse);
         border-radius: 2px;
-        background-color: @blue;
+        background-color: var(--ci-color1);
     }
     &__string {
         margin-right: 5px;
@@ -86,9 +86,10 @@
         top: 100%;
         right: 0;
         width: 275px;
-        border: 1px solid @middlegray;
+        border: 1px solid var(--border-strong);
         border-radius: 0.85rem;
-        background-color: @white;
+        background-color: var(--bg-popover);
+        color: var(--fg-popover);
         overflow: hidden;
         z-index: 999;
     }
@@ -98,7 +99,7 @@
         overflow-y: auto;
         li {
             padding: 2px 5px;
-            border-bottom: 1px solid @middlegray;
+            border-bottom: 1px solid var(--border-strong);
             &:last-child {
                 border-bottom: none;
             }
@@ -130,9 +131,9 @@
         float: right;
         padding: 0 3px;
         font-size: @fontSmall;
-        color: @white;
+        color: var(--fg-inverse);
         border-radius: 2px;
-        background-color: @blue;
+        background-color: var(--ci-color1);
     }
     &__dropdown-list-image {
         height: 75px;
@@ -152,7 +153,7 @@
         a {
             text-decoration: none;
         }
-        border-top: 1px solid @middlegray;
+        border-top: 1px solid var(--border-strong);
     }
     &__dropdown-list-single-entry {
     }
@@ -165,7 +166,7 @@
     &__dropdown-list-search,
     &__dropdown-list-mirador {
         font-size: @fontMedium;
-        border-bottom: 1px solid @middlegray;
+        border-bottom: 1px solid var(--border-strong);
         a,
         button {
             display: flex;
@@ -187,11 +188,11 @@
         a,
         span,
         h3 {
-            color: @blue;
+            color: var(--lk-content-box);
             &:hover,
             &:focus,
             &:active {
-                color: @blue;
+                color: var(--lk-content-box);
             }
         }
     }
@@ -225,9 +226,10 @@
     position: absolute;
     width: 280px;
     height: 350px;
-    border: 1px solid @middlegray;
-    background-color: @white;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-strong);
+    background-color: var(--bg-popover);
+    color: var(--fg-popover);
+    box-shadow: 0px 2px 5px rgb(from var(--shadow-color) r g b / 15%);
     z-index: 99999;
     &.top {
     }
@@ -245,7 +247,7 @@
             margin-left: -6px;
             border-width: 6px;
             border-style: solid;
-            border-color: transparent transparent @middlegray transparent;
+            border-color: transparent transparent var(--border-strong) transparent;
         }
     }
     &.left {
@@ -268,13 +270,13 @@
         top: 50px;
         height: 30px;
         padding: 0 10px;
-        border-bottom: 1px solid @middlegray;
+        border-bottom: 1px solid var(--border-strong);
     }
     &__radio-buttons {
         top: 0;
         height: 50px;
         padding: 0 10px;
-        border-bottom: 1px solid @middlegray;
+        border-bottom: 1px solid var(--border-strong);
     }
     &__body {
         top: 80px;
@@ -291,20 +293,20 @@
         background-repeat: no-repeat;
         background-position: center center;
         background-size: 25%;
-        background-color: @white;
+        background-color: var(--bg-popover);
         z-index: 100000;
     }
     &__body-list {
         li {
             padding: 2px 5px;
-            border-bottom: 1px solid @middlegray;
+            border-bottom: 1px solid var(--border-strong);
             .empty {
                 padding: 5px;
             }
         }
         button {
             text-align: left;
-            color: black;
+            color: var(--fg-popover);
             width: 100%;
             padding: 5px;
             text-overflow: ellipsis;
@@ -320,16 +322,16 @@
                 display: inline-block;
                 padding: 0 3px;
                 font-size: @fontSmall;
-                color: @white;
+                color: var(--fg-inverse);
                 border-radius: 2px;
-                background-color: @blue;
+                background-color: var(--ci-color1);
                 margin-left: auto;
             }
         }
         .bookmark-popup__check-icon {
             width: 1em;
             height: 1em;
-            color: green;
+            color: var(--fg-success);
             stroke: currentColor;
         }
         .bookmark-popup__action-icon {
@@ -354,7 +356,7 @@
         bottom: 0;
         height: 40px;
         padding: 0 10px;
-        border-top: 1px solid @middlegray;
+        border-top: 1px solid var(--border-strong);
         .row {
             width: 100%;
         }
@@ -363,8 +365,8 @@
             height: 38px;
             margin: 1px 0;
             border: none;
-            background: @white;
-            color: #222;
+            background: var(--bg-popover);
+            color: var(--fg-popover);
         }
         button {
             padding: 0;
@@ -381,7 +383,7 @@
                 margin-left: 5px;
                 width: 15px;
                 height: 15px;
-                stroke: #222;
+                stroke: var(--fg-popover);
             }
         }
     }

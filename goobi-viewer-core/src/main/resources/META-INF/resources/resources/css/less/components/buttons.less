@@ -19,7 +19,7 @@
 //
 // Styleguide Components.button
 .btn {
-    color: @btnDefault;
+    color: var(--fg-secondary);
     border-radius: 0;
     background-color: transparent;
     &:hover,
@@ -45,48 +45,48 @@
 
 /* MODIFICATIONS */
 .btn--default {
-    border-color: @btnDefaultBorder;
-    background-color: @btnDefaultBgc;
+    border-color: var(--border-strong);
+    background-color: var(--bg-subtle);
     &:hover,
     &:active,
     &:focus {
-        background-color: @btnDefaultHoverBgc;
+        background-color: var(--bg-hover);
     }
 }
 
 .btn--success {
-    color: @btnSuccess;
-    border-color: @btnSuccessBorder;
-    background-color: @btnSuccessBgc;
+    color: var(--fg-on-success);
+    border-color: var(--border-success);
+    background-color: var(--bg-success);
     &:hover,
     &:active,
     &:focus {
-        color: @btnSuccess;
-        background-color: @btnSuccessHoverBgc;
+        color: var(--fg-on-success);
+        background-color: var(--bg-success-hover);
     }
 }
 
 .btn--danger {
-    color: @btnDanger;
-    border-color: @btnDangerBorder;
-    background-color: @btnDangerBgc;
+    color: var(--fg-on-danger);
+    border-color: var(--border-danger);
+    background-color: var(--bg-danger);
     &:hover,
     &:active,
     &:focus {
-        color: @btnDanger;
-        background-color: @btnDangerHoverBgc;
+        color: var(--fg-on-danger);
+        background-color: var(--bg-danger-hover);
     }
 }
 
 .btn--full {
-    color: @white;
-    border-color: @blue;
-    background-color: @blue;
+    color: var(--fg-inverse);
+    border-color: var(--ci-color1);
+    background-color: var(--ci-color1);
     &:hover,
     &:active,
     &:focus {
-        color: @white;
-        background-color: @btnFullHoverBgc;
+        color: var(--fg-inverse);
+        background-color: var(--ci-hovercolor1);
     }
 }
 
@@ -99,13 +99,13 @@
 
 .btn--link {
     padding: 0;
-    color: @blue;
+    color: var(--lk-general);
     border: none;
     &:hover,
     &:active,
     &:focus {
         text-decoration: underline;
-        color: @btnDefault;
+        color: var(--fg-secondary);
     }
 }
 
@@ -121,12 +121,12 @@
 .btn--icon {
     padding: 2px;
     font-size: inherit; // !important removed - check themes for changes
-    color: @black;
+    color: var(--fg-content-box);
     border: none;
     &:hover,
     &:active,
     &:focus {
-        color: @black;
+        color: var(--fg-content-box);
     }
 }
 

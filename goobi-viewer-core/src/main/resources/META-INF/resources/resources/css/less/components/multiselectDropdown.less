@@ -3,9 +3,9 @@
     width: 100%;
     height: 34px;
     font-size: 1.4rem;
-    color: @black;
-    border: 1px solid @middlegray;
-    background-color: @white;
+    color: var(--fg-content-box);
+    border: 1px solid var(--border-strong);
+    background-color: var(--bg-content-box);
     &.in {
     }
     &-trigger {
@@ -25,7 +25,7 @@
             height: 0;
             margin-top: -0.15rem;
             pointer-events: none;
-            border-top: 0.35rem solid @black;
+            border-top: 0.35rem solid var(--fg-general);
             border-right: 0.35rem solid transparent;
             border-bottom: 0.35rem solid transparent;
             border-left: 0.35rem solid transparent;
@@ -40,9 +40,9 @@
         width: calc(~'100% + 2px');
         max-height: 200px;
         padding: 5px 12px;
-        border: 1px solid @middlegray;
-        border-top-color: @white;
-        background-color: @white;
+        border: 1px solid var(--border-strong);
+        border-top-color: var(--bg-content-box);
+        background-color: var(--bg-content-box);
         overflow-y: auto;
         z-index: 2000;
     }

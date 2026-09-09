@@ -43,7 +43,7 @@
         flex-direction: column;
         max-width: 100%;
         overflow: hidden;
-        color: #212529;
+        color: var(--fg-content-box);
         text-align: center;
         margin-bottom: 2px;
         &:hover {
@@ -57,7 +57,7 @@
             text-decoration: none;
         }
         &.-highlighted {
-            outline: 3px solid #a3f97c;
+            outline: 3px solid var(--sidebar-preview-highlight);
             outline-offset: -3px;
             pointer-events: none;
         }
@@ -110,20 +110,20 @@
     .sidebar-scroll-preview {
         padding-top: 80px;
         width: 200px;
-		height: calc(~'100vh - 50px');
-		position: absolute;
-		top:0;
-		left: 0;
-		background-color: rgba(0,0,0,0.7);
+        height: calc(~'100vh - 50px');
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgb(from var(--shadow-color) r g b / 70%);
         &__button {
-            color: white;
+            color: var(--fg-inverse);
         }
         .simplebar-scrollbar::before {
-            background: white;
+            background: var(--bg-content-box);
         }
-		&__inner {
-			height: calc(100% - 80px);
-		}
+        &__inner {
+            height: calc(100% - 80px);
+        }
     }
 }
 

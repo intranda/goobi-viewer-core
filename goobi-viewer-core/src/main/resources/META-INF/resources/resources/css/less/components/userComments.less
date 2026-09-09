@@ -10,8 +10,9 @@
     &__message-login {
         margin-bottom: 15px;
         padding: 15px;
-        border: 1px solid @middlegray;
-        background-color: @lightgray;
+        border: 1px solid var(--border-strong);
+        background-color: var(--bg-subtle);
+        color: var(--fg-content-box);
         text-align: center;
         h2 {
         }
@@ -23,10 +24,11 @@
         display: grid;
         grid-template-columns: minmax(10px, 1fr) minmax(10px, 3fr);
         margin-bottom: 21px;
-        border: 1px solid @middlegray;
+        border: 1px solid var(--border-strong);
     }
     &__comment-info {
-        background-color: @lightgray;
+        background-color: var(--bg-subtle);
+        color: var(--fg-content-box);
     }
     &__comment-image {
         padding: 10px;
@@ -34,7 +36,7 @@
         text-align: center;
         img {
             border-radius: 50%;
-            border: 5px solid @white;
+            border: 5px solid var(--bg-content-box);
             z-index: 999;
             width: 100px;
             height: 100px;
@@ -65,19 +67,19 @@
             display: flex;
             justify-content: flex-start;
             padding: 1rem 0.5rem 0 0.5rem;
-            border-bottom: 1px solid @middlegray;
-            background-color: @white;
+            border-bottom: 1px solid var(--border-strong);
+            background-color: var(--bg-content-box);
             span {
                 align-self: center;
                 margin-left: 10px;
             }
             a,
             button {
-                color: @black;
+                color: var(--fg-content-box);
                 &:hover,
                 &:active,
                 &:focus {
-                    color: @black;
+                    color: var(--fg-content-box);
                 }
             }
             &-last-change {
@@ -114,11 +116,11 @@
             &-text-edit {
                 textarea {
                     padding: 1rem;
-                    border: 1px solid @middlegray;
+                    border: 1px solid var(--border-strong);
                     height: 200px;
                     &:focus {
                         padding: 1rem;
-                        border: 1px solid @middlegray;
+                        border: 1px solid var(--border-strong);
                         opacity: 1;
                     }
                 }
@@ -145,7 +147,7 @@
         background-image: url('@{images}/ajax_preloader.gif');
         background-position: center center;
         background-repeat: no-repeat;
-        background-color: rgba(255, 255, 255, 0.75);
+        background-color: rgb(from var(--bg-content-box) r g b / 75%);
         z-index: 10;
     }
     &__add-comment {
@@ -161,10 +163,10 @@
                 bottom: -15px;
                 left: 0;
                 padding: 3px 10px;
-                color: @white;
+                color: var(--fg-inverse);
                 border-radius: 4px;
-                border: 1px solid @middlegray;
-                background-color: @blue;
+                border: 1px solid var(--border-strong);
+                background-color: var(--ci-color1);
                 cursor: pointer;
                 z-index: 999;
             }
@@ -174,18 +176,19 @@
             margin-left: 15px;
             padding: 15px;
             padding-top: 20px;
-            border: 1px solid @middlegray;
-            background-color: @lightgray;
+            border: 1px solid var(--border-strong);
+            background-color: var(--bg-subtle);
+            color: var(--fg-content-box);
             textarea {
                 width: 100%;
                 height: 45px;
                 padding: 10px;
-                border: 1px solid @middlegray;
+                border: 1px solid var(--border-strong);
                 resize: none;
-                background-color: @white;
+                background-color: var(--bg-content-box);
                 opacity: 0.4;
                 transition: all 0.3s ease-in;
-                color: #222;
+                color: var(--fg-content-box);
                 &:focus {
                     height: 100px;
                     opacity: 1;
@@ -214,20 +217,20 @@
         padding: 0;
     }
     &__edit-comment-button {
-        color: @blue;
+        color: var(--lk-general);
         background: none;
         &:hover {
             text-decoration: underline;
         }
     }
     &__delete-comment-button {
-        color: @red;
+        color: var(--fg-danger);
         margin-left: 2rem;
         background: none;
         border: none;
         padding: none;
         &:hover {
-            color: @red;
+            color: var(--fg-danger);
             background: none;
             border: none;
             text-decoration: underline;

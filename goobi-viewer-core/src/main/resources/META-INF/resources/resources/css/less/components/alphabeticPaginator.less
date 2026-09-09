@@ -15,12 +15,17 @@
         width: 32px;
         height: 32px;
         margin: 0 5px 5px 0;
-        border: 1px solid @lightgray;
+        border: 1px solid var(--border-color);
         &.active {
             font-weight: bold;
-            background-color: @blue;
+            background-color: var(--ci-color1);
             a {
-                color: @white;
+                color: var(--fg-inverse);
+                &:hover,
+                &:active,
+                &:focus {
+                    background-color: var(--ci-hovercolor1);
+                }
             }
         }
     }
@@ -33,7 +38,7 @@
         &:hover,
         &:active,
         &:focus {
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
         }
     }
 }

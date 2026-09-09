@@ -18,13 +18,13 @@ form {
 }
 
 a {
-    color: @blue;
+    color: var(--lk-general);
     &:hover {
-        color: @hoverblue;
+        color: var(--lk-general-hover);
         text-decoration: underline;
     }
     &:active {
-        color: @activeblue;
+        color: var(--lk-general-active);
     }
     &:focus {
     }
@@ -32,13 +32,13 @@ a {
 
 button,
 .btn {
-    color: @lowerblack;
+    color: var(--fg-secondary);
     &:hover {
-        color: @lowerblack;
+        color: var(--fg-secondary);
         text-decoration: none;
     }
     &:active {
-        color: @lowerblack;
+        color: var(--fg-secondary);
     }
     &:focus {
     }
@@ -123,7 +123,7 @@ button,
         left: 50%;
         top: 50%;
         display: block;
-        background-color: @black;
+        background-color: var(--fg-general);
         transition: all 150ms ease-in;
     }
     &:hover:before,
@@ -172,12 +172,12 @@ button:focus {
 }
 
 .badge-active {
-    background-color: @badge-active;
-    @badge-active: #008a00;
+    background-color: var(--bg-success-strong);
+    color: var(--fg-on-success-strong);
 }
 .badge-info {
-    background-color: @badge-info;
-    @badge-info: #008295;
+    background-color: var(--bg-info-strong);
+    color: var(--fg-on-info-strong);
 }
 
 .page-header {
@@ -187,15 +187,15 @@ button:focus {
 }
 .nav-tabs {
     & > li > a:hover {
-        border-color: @middlegray @middlegray @middlegray;
-        background-color: @white;
+        border-color: var(--border-strong) var(--border-strong) var(--border-strong);
+        background-color: var(--bg-content-box);
     }
     li {
         a {
             display: inline-block;
             padding: 1rem 1.5rem;
             //			border: 1px solid @middlegray;
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
             //			border-radius: 0;
             //			border-color: @middlegray;
             margin-right: 0.2rem;
@@ -213,9 +213,9 @@ button:focus {
         }
         &.active {
             a {
-                border-color: @middlegray;
-                border-bottom: 1px solid @white;
-                background-color: @white;
+                border-color: var(--border-strong);
+                border-bottom: 1px solid var(--bg-content-box);
+                background-color: var(--bg-content-box);
             }
         }
         &.nav-tabs__sidebar-button {
@@ -231,19 +231,20 @@ button:focus {
     }
 }
 .tab-content {
-    background-color: @white;
+    background-color: var(--bg-content-box);
+    color: var(--fg-content-box);
 }
 .tab-pane {
     padding: 10px;
-    border-right: 1px solid @middlegray;
-    border-bottom: 1px solid @middlegray;
-    border-left: 1px solid @middlegray;
+    border-right: 1px solid var(--border-strong);
+    border-bottom: 1px solid var(--border-strong);
+    border-left: 1px solid var(--border-strong);
 }
 .form-control {
     border-radius: 0;
     box-shadow: none;
     &:focus {
-        border-color: @blue;
+        border-color: var(--ci-color1);
         box-shadow: none;
         outline: none;
     }
@@ -262,14 +263,14 @@ button:focus {
 */
 
 .popover-content {
-    color: @black;
+    color: var(--fg-popover);
 }
 .table > tbody > tr > td {
     word-break: break-word;
 }
 /* LABELS */
 .label-default {
-    background-color: @labelGray;
+    background-color: var(--bg-inverse);
 }
 /* BS GRID RESETS */
 .row {
@@ -359,10 +360,10 @@ a {
     font-size: 14px;
     font-weight: 400;
     line-height: 1;
-    color: #555;
+    color: var(--fg-secondary);
     text-align: center;
-    background-color: #eee;
-    border: 1px solid #ccc;
+    background-color: var(--bg-subtle);
+    border: 1px solid var(--border-strong);
     border-radius: 4px;
     display: flex;
     &:last-child {
@@ -482,7 +483,7 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
         &:focus,
         &:hover,
         &:active {
-            border: 1px solid #875359;
+            border: 1px solid var(--border-danger);
         }
     }
 }
@@ -498,7 +499,7 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
 }
 
 .swal2-popup.swal2-toast {
-    border-left: 4px solid @adminBackend-bg;
+    border-left: 4px solid var(--bg-notification);
     border-radius: 5px;
 }
 
@@ -511,16 +512,16 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
 .swal2-popup.swal2-toast .swal2-title {
     font-size: 1.3rem;
     font-family: 'Inter', Arial, sans-serif;
-    color: white;
+    color: var(--fg-inverse);
 }
 
 // SHORT FLASH FOR NOTIFICATION
 @keyframes flashForSwal2Toast {
     from {
-        border-left: 4px solid yellow;
+        border-left: 4px solid var(--highlight);
     }
     to {
-        border-left: 4px solid @adminBackend-bg;
+        border-left: 4px solid var(--bg-notification);
     }
 }
 

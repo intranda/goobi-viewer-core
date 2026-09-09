@@ -28,12 +28,15 @@ popover {
     z-index: 2020;
     color: var(--fg-popover);
     background-color: var(--bg-popover);
+    .popover-body {
+        color: var(--fg-popover);
+    }
     .popover-title-custom {
         padding: 8px 14px;
         margin: 0;
         font-size: 14px;
         background-color: var(--bg-popover);
-        border-bottom: 1px solid #ebebeb;
+        border-bottom: 1px solid var(--border-color);
         border-radius: 5px 5px 0 0;
     }
     .popover-content {
@@ -56,9 +59,9 @@ imageFilters {
             padding: 10px 5px;
             button {
                 width: 100%;
-                color: #fff;
+                color: var(--fg-inverse);
                 &:hover {
-                    color: #fff;
+                    color: var(--fg-inverse);
                 }
             }
         }
@@ -80,7 +83,7 @@ imageFilters {
             flex-grow: 1;
             min-width: 0;
             &[disabled] {
-                color: lightgray;
+                color: var(--placeholder);
             }
         }
     }

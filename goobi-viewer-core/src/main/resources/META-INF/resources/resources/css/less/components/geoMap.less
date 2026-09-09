@@ -21,7 +21,8 @@
         left: 0;
         width: 200px;
         height: 100%;
-        background-color: white;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         opacity: 0.8;
         font-size: 12px;
         z-index: 500;
@@ -41,7 +42,8 @@
     &__options_wrapper {
         width: 100%;
         z-index: 500;
-        background-color: white;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         li {
             display: flex;
             gap: 20px;
@@ -53,12 +55,12 @@
     background-clip: padding-box;
     border-radius: 20px;
     &-blue {
-        background-color: #144a4d;
-        color: white;
+        background-color: var(--map-marker-primary-bg);
+        color: var(--map-marker-primary-fg);
     }
     &-red {
-        background-color: #ff8a1d;
-        color: black;
+        background-color: var(--map-marker-secondary-bg);
+        color: var(--map-marker-secondary-fg);
     }
     div {
         width: 30px;

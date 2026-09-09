@@ -128,7 +128,7 @@
         &.share-image-region {
             cursor: pointer;
             a.active {
-                color: #ff2523;
+                color: var(--image-controls-region-active-color);
             }
         }
     }
@@ -190,7 +190,7 @@
     &__option [data-bookmark-list-type='add']:hover .icon-wrapper,
     &__option [data-bookmark-list-type='add']:focus .icon-wrapper {
         transform: scale(1.08) translateY(-1px);
-        filter: drop-shadow(0 3px 8px fade(@black, 18%));
+        filter: drop-shadow(0 3px 8px rgb(from var(--shadow-color) r g b / 18%));
     }
     /* ACTIONS */
     &__actions {
@@ -409,10 +409,10 @@
     }
     .share-image-area {
         .btn.btn--full {
-            color: @white;
+            color: var(--fg-inverse);
         }
         a {
-            color: @blue;
+            color: var(--lk-general);
         }
         &__controls {
             margin-top: 10px;
@@ -475,8 +475,8 @@
     display: none;
     position: absolute;
     z-index: 10000;
-    background-color: rgb(68, 68, 68);
-    color: #f1f2f3;
+    background-color: var(--bg-inverse);
+    color: var(--fg-inverse);
     padding: 3px;
     vertical-align: middle;
     border-radius: 10px;

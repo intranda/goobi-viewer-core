@@ -8,8 +8,8 @@
     color: var(--datepicker-day-fg);
     font-family: inherit;
     box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.1),
-        0 1px 3px rgba(0, 0, 0, 0.06);
+        0 4px 16px rgb(from var(--shadow-color) r g b / 10%),
+        0 1px 3px rgb(from var(--shadow-color) r g b / 6%);
 }
 
 /* Header */
@@ -64,12 +64,12 @@
 }
 
 .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
-    color: white;
+    color: var(--datepicker-header-fg);
     background: var(--datepicker-header-bg);
 }
 
 .flatpickr-current-month select.flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
-    color: white;
+    color: var(--datepicker-header-fg);
     background: var(--datepicker-header-bg);
     &:hover,
     &:focus,
@@ -99,7 +99,7 @@
         transition: background-color 0.15s ease;
 
         &:hover {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgb(from var(--datepicker-header-fg) r g b / 15%);
 
             svg {
                 fill: var(--datepicker-header-fg);
@@ -254,7 +254,7 @@ span.flatpickr-weekday {
     pointer-events: none;
     display: flex;
     align-items: center;
-    color: @gray;
+    color: var(--fg-muted);
     .icon {
         width: 16px;
         height: 16px;

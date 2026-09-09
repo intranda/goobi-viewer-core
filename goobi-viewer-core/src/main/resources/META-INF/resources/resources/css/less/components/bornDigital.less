@@ -75,10 +75,10 @@
         display: block;
         margin-top: 3px;
         padding: 1px 3px;
-        color: @white;
+        color: var(--fg-inverse);
         font-size: @fontSmall;
         border-radius: 5px;
-        background-color: @blue;
+        background-color: var(--ci-color1);
     }
     &__item-download-dummy {
         visibility: 0;
@@ -109,7 +109,7 @@
     }
     &__error_wrapper {
         display: none;
-        color: red;
+        color: var(--fg-danger);
         &.-active {
             display: block;
         }

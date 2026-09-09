@@ -13,7 +13,7 @@
         min-height: 45px;
         padding: 10px 0;
         width: 100%;
-        background: #fed44c;
+        background: var(--bg-warning);
         position: relative;
     }
 
@@ -21,7 +21,7 @@
         display: flex;
         gap: 40px;
         align-items: center;
-        color: black;
+        color: var(--fg-on-warning);
         padding-right: 40px;
     }
 
@@ -32,7 +32,7 @@
     &__text {
         p,
         a {
-            color: black;
+            color: var(--fg-on-warning);
             font-size: 16px;
             line-height: 1.4;
 
@@ -47,7 +47,7 @@
             &:hover,
             &:focus,
             &:active {
-                color: #333;
+                color: var(--fg-on-warning-hover);
             }
         }
     }
@@ -61,12 +61,12 @@
         background: transparent;
         padding: 0;
         border: none;
-        color: black;
+        color: var(--fg-on-warning);
 
         &:hover,
         &:focus,
         &:active {
-            color: #333;
+            color: var(--fg-on-warning-hover);
         }
     }
 }

@@ -10,94 +10,258 @@
 /* LAYER 2 — SEMANTIC ROLES, LIGHT (legacy role names kept for theme compatibility) */
 .gv-semantic-light() {
     color-scheme: light;
-    /* SURFACES */
+
+    /* PAGE */
     --bg-general: var(--color-gray-50);
+    --fg-general: var(--color-gray-900);
+
+    /* CONTENT BOX */
     --bg-content-box: var(--color-gray-0);
+    --fg-content-box: var(--color-gray-900);
+
+    /* POPOVER */
+    --bg-popover: var(--color-gray-0);
+    --fg-popover: var(--color-gray-1000);
+
+    /* HEADER */
     --bg-header: var(--color-gray-0);
+    --fg-header: var(--color-slate-600);
+
+    /* NEUTRAL SURFACES */
     --bg-canvas: var(--color-gray-200);
     --bg-subtle: var(--color-gray-100);
-    --bg-popover: var(--color-gray-0);
-    --bg-hover: rgb(from var(--ci-color1) r g b / 8%);
-    --bg-active: var(--color-slate-600);
-    --bg-inverse: var(--color-gray-700);
-    --bg-inverse-hover: var(--color-slate-500);
-    /* TEXT */
-    --fg-general: var(--color-gray-900);
-    --fg-content-box: var(--color-gray-900);
-    --fg-header: var(--color-slate-600);
-    --fg-popover: var(--color-gray-1000);
-    --fg-hover: var(--color-gray-900);
-    --fg-muted: var(--color-gray-500);
-    --fg-inverse: var(--color-gray-0);
-    --fg-controls: var(--color-gray-0);
-    --placeholder: rgb(from var(--color-gray-1000) r g b / 25%);
-    /* LINKS AND HEADLINES */
+
+    /* TEXT EMPHASIS */
+    --fg-secondary: var(--color-gray-600);
+    --fg-muted: var(--color-gray-550);
+    --placeholder: var(--color-gray-550);
+
+    /* LINK STATES */
     --lk-general: var(--color-link);
+    --lk-general-hover: var(--color-link-hover);
+    --lk-general-active: var(--color-link-active);
     --lk-content-box: var(--color-link);
+
+    /* HEADINGS */
     --lh-general: var(--color-gray-700);
     --lh-content-box: var(--color-gray-700);
+
+    /* NEUTRAL SELECTION */
+    --bg-selected: var(--color-gray-300);
+    --fg-selected: var(--color-gray-900);
+
+    /* HOVER */
+    --bg-hover: rgb(from var(--ci-color1) r g b / 8%);
+    --fg-hover: var(--color-gray-900);
+
+    /* INVERSE SURFACES — fg-inverse stays light in both modes */
+    --bg-inverse: var(--color-gray-700);
+    --bg-inverse-hover: var(--color-slate-500);
+    --fg-inverse: var(--color-gray-0);
+
+    /* LEGACY CONTROL ROLES */
+    --bg-active: var(--color-slate-600);
+    --fg-controls: var(--color-gray-0);
+
     /* BORDERS */
     --border: 1px solid rgb(from var(--color-gray-300) r g b / 18%);
     --border-color: var(--color-gray-200);
     --border-strong: var(--color-gray-300);
     --border-controls: 1px solid var(--color-slate-200);
-    /* BRAND AND STATUS */
+    --border-emphasis: var(--color-gray-500);
+
+    /* BRAND */
     --brand: var(--ci-color1);
     --brand-strong: color-mix(in srgb, var(--ci-color1) 60%, var(--color-gray-1000));
+
+    /* SUCCESS */
+    --fg-success: var(--color-success);
+    --bg-success: var(--color-success-surface);
+    --fg-on-success: var(--color-success-text);
+    --bg-success-hover: var(--color-success-hover);
+    --border-success: var(--color-success-border);
+    --bg-success-strong: var(--color-success-strong);
+    --fg-on-success-strong: var(--color-gray-0);
+
+    /* DANGER */
     --fg-danger: var(--color-danger);
+    --bg-danger: var(--color-danger-surface);
+    --fg-on-danger: var(--color-danger-text);
+    --bg-danger-hover: var(--color-danger-hover);
+    --border-danger: var(--color-danger-border);
+    --bg-danger-strong: var(--color-danger-strong);
+    --fg-on-danger-strong: var(--color-gray-0);
+
+    /* WARNING */
+    --bg-warning: var(--color-warning-surface);
+    --fg-on-warning: var(--color-gray-1000);
+    --fg-on-warning-hover: var(--color-gray-800);
+    --bg-warning-strong: var(--color-warning-strong);
+    --fg-on-warning-strong: var(--color-gray-0);
+
+    /* INFO */
+    --bg-info-strong: var(--color-info-strong);
+    --fg-on-info-strong: var(--color-gray-0);
+
+    /* ENTITY TEXT */
+    --fg-entity-person: var(--color-entity-person);
+    --fg-entity-location: var(--color-entity-location);
+    --fg-entity-institution: var(--color-entity-institution);
+
+    /* MAP MARKERS */
+    --bg-map-marker-primary: var(--color-map-primary);
+    --bg-map-marker-secondary: var(--color-map-secondary);
+    --fg-on-bright: var(--color-gray-1000);
+
+    /* RSS */
+    --bg-rss: var(--color-rss);
+
+    /* SELECTION MARKERS */
+    --outline-selection: var(--color-selection-marker);
+    --fg-selection-region: var(--color-selection-region);
+
+    /* NOTIFICATIONS */
+    --bg-notification: var(--color-notification);
+
+    /* HIGHLIGHTS AND FOCUS */
     --highlight: var(--color-highlight);
     --focus-ring: var(--color-focus-ring);
+
+    /* OCR OVERLAYS */
     --ocr-block: var(--color-ocr-block);
     --ocr-line: var(--color-ocr-line);
     --ocr-word: var(--color-ocr-word);
-    /* EFFECTS */
+
+    /* SHADOWS */
     --shadow-color: var(--color-slate-900);
 }
 
 /* LAYER 2 — SEMANTIC ROLES, DARK */
 .gv-semantic-dark() {
     color-scheme: dark;
-    /* SURFACES */
+
+    /* PAGE */
     --bg-general: var(--color-slate-900);
+    --fg-general: rgb(from var(--color-gray-0) r g b / 80%);
+
+    /* CONTENT BOX */
     --bg-content-box: var(--color-slate-800);
+    --fg-content-box: var(--color-slate-100);
+
+    /* POPOVER */
+    --bg-popover: var(--color-slate-700);
+    --fg-popover: var(--color-gray-0);
+
+    /* HEADER */
     --bg-header: var(--color-slate-950);
+    --fg-header: rgb(from var(--color-gray-0) r g b / 80%);
+
+    /* NEUTRAL SURFACES */
     --bg-canvas: var(--color-slate-800);
     --bg-subtle: var(--color-slate-600);
-    --bg-popover: var(--color-slate-700);
-    --bg-hover: var(--color-slate-500);
-    --bg-active: var(--color-slate-600);
-    --bg-inverse: var(--color-slate-700);
-    --bg-inverse-hover: var(--color-slate-600);
-    /* TEXT */
-    --fg-general: rgb(from var(--color-gray-0) r g b / 80%);
-    --fg-content-box: var(--color-slate-100);
-    --fg-header: rgb(from var(--color-gray-0) r g b / 80%);
-    --fg-popover: var(--color-gray-0);
-    --fg-hover: var(--color-slate-200);
+
+    /* TEXT EMPHASIS */
+    --fg-secondary: var(--color-slate-100);
     --fg-muted: rgb(from var(--color-gray-0) r g b / 60%);
-    --fg-inverse: var(--color-gray-0);
-    --fg-controls: var(--color-slate-700);
-    --placeholder: rgb(from var(--color-gray-0) r g b / 50%);
-    /* LINKS AND HEADLINES */
+    --placeholder: rgb(from var(--color-gray-0) r g b / 60%);
+
+    /* LINK STATES */
     --lk-general: rgb(from var(--color-gray-0) r g b / 80%);
+    --lk-general-hover: var(--color-gray-0);
+    --lk-general-active: var(--color-slate-100);
     --lk-content-box: var(--color-slate-100);
+
+    /* HEADINGS */
     --lh-general: rgb(from var(--color-gray-0) r g b / 80%);
     --lh-content-box: rgb(from var(--color-gray-0) r g b / 80%);
+
+    /* NEUTRAL SELECTION */
+    --bg-selected: var(--color-slate-500);
+    --fg-selected: var(--color-slate-100);
+
+    /* HOVER */
+    --bg-hover: var(--color-slate-500);
+    --fg-hover: var(--color-slate-200);
+
+    /* INVERSE SURFACES — fg-inverse stays light in both modes */
+    --bg-inverse: var(--color-slate-700);
+    --bg-inverse-hover: var(--color-slate-600);
+    --fg-inverse: var(--color-gray-0);
+
+    /* LEGACY CONTROL ROLES */
+    --bg-active: var(--color-slate-600);
+    --fg-controls: var(--color-slate-700);
+
     /* BORDERS */
     --border: 0;
     --border-color: rgb(from var(--color-gray-0) r g b / 15%);
     --border-strong: rgb(from var(--color-gray-0) r g b / 30%);
     --border-controls: 1px solid var(--color-slate-800);
-    /* BRAND AND STATUS */
+    --border-emphasis: var(--color-gray-500);
+
+    /* BRAND */
     --brand: var(--ci-color1-dark);
     --brand-strong: var(--ci-color1);
+
+    /* SUCCESS */
+    --fg-success: var(--color-success-dark);
+    --bg-success: var(--color-success-surface-dark);
+    --fg-on-success: var(--color-success-text-dark);
+    --bg-success-hover: var(--color-success-hover-dark);
+    --border-success: var(--color-success-border-dark);
+    --bg-success-strong: var(--color-success-strong);
+    --fg-on-success-strong: var(--color-gray-0);
+
+    /* DANGER */
     --fg-danger: var(--color-danger-dark);
+    --bg-danger: var(--color-danger-surface-dark);
+    --fg-on-danger: var(--color-danger-text-dark);
+    --bg-danger-hover: var(--color-danger-hover-dark);
+    --border-danger: var(--color-danger-border-dark);
+    --bg-danger-strong: var(--color-danger-strong);
+    --fg-on-danger-strong: var(--color-gray-0);
+
+    /* WARNING */
+    --bg-warning: var(--color-warning-surface-dark);
+    --fg-on-warning: var(--color-gray-0);
+    --fg-on-warning-hover: var(--color-gray-0);
+    --bg-warning-strong: var(--color-warning-strong);
+    --fg-on-warning-strong: var(--color-gray-0);
+
+    /* INFO */
+    --bg-info-strong: var(--color-info-strong-dark);
+    --fg-on-info-strong: var(--color-gray-0);
+
+    /* ENTITY TEXT */
+    --fg-entity-person: var(--color-entity-person-dark);
+    --fg-entity-location: var(--color-entity-location-dark);
+    --fg-entity-institution: var(--color-entity-institution-dark);
+
+    /* MAP MARKERS */
+    --bg-map-marker-primary: var(--color-map-primary);
+    --bg-map-marker-secondary: var(--color-map-secondary);
+    --fg-on-bright: var(--color-gray-1000);
+
+    /* RSS */
+    --bg-rss: var(--color-rss);
+
+    /* SELECTION MARKERS */
+    --outline-selection: var(--color-selection-marker);
+    --fg-selection-region: var(--color-selection-region-dark);
+
+    /* NOTIFICATIONS */
+    --bg-notification: var(--color-notification);
+
+    /* HIGHLIGHTS AND FOCUS */
     --highlight: var(--color-highlight);
     --focus-ring: var(--color-focus-ring);
+
+    /* OCR OVERLAYS */
     --ocr-block: var(--color-ocr-block-dark);
     --ocr-line: var(--color-ocr-line-dark);
     --ocr-word: var(--color-ocr-word-dark);
-    /* EFFECTS */
+
+    /* SHADOWS */
     --shadow-color: var(--color-gray-1000);
 }
 
@@ -252,6 +416,19 @@
     --archives-description-color: var(--fg-general);
     --archives-placeholder-bg: var(--bg-content-box);
     --archives-placeholder-icon-color: var(--fg-general);
+
+    /* FRONTEND CATEGORY COLORS */
+    --ner-person-color: var(--fg-entity-person);
+    --ner-location-color: var(--fg-entity-location);
+    --ner-institution-color: var(--fg-entity-institution);
+    --map-marker-primary-bg: var(--bg-map-marker-primary);
+    --map-marker-primary-fg: var(--fg-inverse);
+    --map-marker-secondary-bg: var(--bg-map-marker-secondary);
+    --map-marker-secondary-fg: var(--fg-on-bright);
+    --rss-badge-bg: var(--bg-rss);
+    --rss-badge-fg: var(--fg-on-bright);
+    --sidebar-preview-highlight: var(--outline-selection);
+    --image-controls-region-active-color: var(--fg-selection-region);
 }
 
 /* LAYER 3 — FEATURE TOKENS WITH A MODE-SPECIFIC VALUE, LIGHT */

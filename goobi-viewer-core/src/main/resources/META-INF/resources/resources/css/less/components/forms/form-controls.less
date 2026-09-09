@@ -7,7 +7,7 @@
 // Styleguide Components.form-controls
 .custom-control {
     position: relative;
-    color: @black;
+    color: var(--fg-content-box);
     cursor: pointer;
     input[type='checkbox'],
     input[type='radio'] {
@@ -16,7 +16,7 @@
         z-index: -1;
     }
     &__icon {
-        color: @blue;
+        color: var(--brand);
     }
     .fa-check-circle-o,
     .fa-check-square-o {
@@ -95,10 +95,10 @@
     width: 100%;
     font-size: @fontMedium;
     line-height: 1.42857143;
-    color: @black;
-    background-color: @white;
+    color: var(--fg-content-box);
+    background-color: var(--bg-content-box);
     background-image: none;
-    border: 1px solid @middlegray;
+    border: 1px solid var(--border-strong);
     padding-left: 0;
     &:after {
         content: '';
@@ -112,7 +112,7 @@
         height: 0;
         margin-top: -0.15rem;
         pointer-events: none;
-        border-top: 0.35rem solid @black;
+        border-top: 0.35rem solid var(--fg-general);
         border-right: 0.35rem solid transparent;
         border-bottom: 0.35rem solid transparent;
         border-left: 0.35rem solid transparent;
@@ -139,10 +139,10 @@
         margin: 0;
         padding-right: 26px;
         line-height: 1.5;
-        color: @black;
+        color: var(--fg-content-box);
         border: 0;
         border-radius: 0.25rem;
-        background-color: @white;
+        background-color: var(--bg-content-box);
         cursor: pointer;
         outline: 0;
         -webkit-appearance: none;
