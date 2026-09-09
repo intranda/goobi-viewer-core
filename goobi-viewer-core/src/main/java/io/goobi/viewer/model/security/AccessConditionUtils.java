@@ -286,6 +286,20 @@ public final class AccessConditionUtils {
     }
 
     /**
+     * Builds the Solr query for the record-level {@link SolrConstants#THUMBNAIL THUMBNAIL} fallback used when a thumbnail access check finds no page
+     * hit. The file name is wrapped in quotes so that thumbnail values which are absolute http(s) URLs (e.g. external AV player links) do not break
+     * the Solr query parser on their colons.
+     *
+     * @param identifier Work identifier (PI).
+     * @param fileName Thumbnail file name or URL.
+     * @return Generated Solr query
+     * @should build valid query for url file name
+     */
+    static String generateThumbnailAccessCheckQuery(String identifier, String fileName) {
+        return "+%s:%s +%s:\"%s\"".formatted(SolrConstants.PI, ClientUtils.escapeQueryChars(identifier), SolrConstants.THUMBNAIL, fileName);
+    }
+
+    /**
      * Checks whether the client may access an image (by PI + file name).
      *
      * @param identifier Work identifier (PI).
@@ -318,7 +332,7 @@ public final class AccessConditionUtils {
                 if (results.isEmpty()) {
                     //if thumbnail request, get hits for record THUMBNAIL
                     if (IPrivilegeHolder.PRIV_VIEW_THUMBNAILS.equals(privilegeName)) {
-                        query = "+PI:%s +THUMBNAIL:%s".formatted(identifier, fileName);
+                        query = generateThumbnailAccessCheckQuery(identifier, fileName);
                         results = DataManager.getInstance()
                                 .getSearchIndex()
                                 .search(query, 1, null, Arrays.asList(SolrConstants.ACCESSCONDITION));

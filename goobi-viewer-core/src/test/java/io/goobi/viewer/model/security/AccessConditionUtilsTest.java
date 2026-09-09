@@ -615,6 +615,17 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see AccessConditionUtils#generateThumbnailAccessCheckQuery(String,String)
+     * @verifies build valid query for url file name
+     */
+    @Test
+    void generateThumbnailAccessCheckQuery_shouldBuildValidQueryForUrlFileName() throws Exception {
+        String result = AccessConditionUtils.generateThumbnailAccessCheckQuery("9315", "https://av.tib.eu/player/9315");
+        Assertions.assertEquals(
+                "+" + SolrConstants.PI + ":9315 +" + SolrConstants.THUMBNAIL + ":\"https://av.tib.eu/player/9315\"", result);
+    }
+
+    /**
      * @see AccessConditionUtils#getPdfDownloadQuotaForRecord(String)
      * @verifies throw RecordNotFoundException if record not found
      */
