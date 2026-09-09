@@ -1,0 +1,403 @@
+/* ==============================================================
+   Token layer 2 + 3: semantic roles (per mode) and feature tokens
+   The only core file that branches on the color mode. Themes
+   override tokens in their own :root / .color-theme-* blocks,
+   which load later at the same specificity (0,1,0).
+   Colors come from misc/palette.less only; alpha variants are
+   derived with rgb(from …).
+   ==============================================================*/
+
+/* LAYER 2 — SEMANTIC ROLES, LIGHT */
+.gv-semantic-light() {
+    color-scheme: light;
+    --bg-general: var(--gray-50);
+    --fg-general: var(--gray-900);
+    --lk-general: var(--ci-link);
+    --lh-general: var(--gray-700);
+    --bg-content-box: var(--gray-0);
+    --fg-content-box: var(--gray-900);
+    --lk-content-box: var(--ci-link);
+    --lh-content-box: var(--gray-700);
+    --bg-header: var(--gray-0);
+    --fg-header: var(--slate-600);
+    --bg-canvas: var(--gray-200);
+    --bg-subtle: var(--gray-100);
+    --bg-hover: rgb(from var(--ci-color1) r g b / 8%);
+    --fg-hover: var(--gray-900);
+    --bg-active: var(--slate-600);
+    --bg-inverse: var(--gray-700);
+    --bg-inverse-hover: var(--slate-500);
+    --fg-inverse: var(--gray-0);
+    --bg-popover: var(--gray-0);
+    --fg-popover: var(--gray-1000);
+    --fg-muted: var(--gray-500);
+    --fg-controls: var(--gray-0);
+    --fg-danger: var(--danger);
+    --accent: var(--ci-color1);
+    --highlight-color: var(--highlight);
+    --focus-ring-color: var(--focus-ring);
+    --ocr-block: var(--ocr-block-light);
+    --ocr-line: var(--ocr-line-light);
+    --ocr-word: var(--ocr-word-light);
+    --border: 1px solid rgb(from var(--gray-300) r g b / 18%);
+    --border-color: var(--gray-200);
+    --border-strong: var(--gray-300);
+    --border-controls: 1px solid var(--slate-200);
+    --placeholder: rgb(from var(--gray-1000) r g b / 25%);
+    --shadow-color: var(--slate-900);
+    --footer-topnav-bg: color-mix(in srgb, var(--ci-color1) 60%, var(--gray-1000));
+}
+
+/* LAYER 2 — SEMANTIC ROLES, DARK */
+.gv-semantic-dark() {
+    color-scheme: dark;
+    --bg-general: var(--slate-900);
+    --fg-general: rgb(from var(--gray-0) r g b / 80%);
+    --lk-general: rgb(from var(--gray-0) r g b / 80%);
+    --lh-general: rgb(from var(--gray-0) r g b / 80%);
+    --bg-content-box: var(--slate-800);
+    --fg-content-box: var(--slate-100);
+    --lk-content-box: var(--slate-100);
+    --lh-content-box: rgb(from var(--gray-0) r g b / 80%);
+    --bg-header: var(--slate-950);
+    --fg-header: rgb(from var(--gray-0) r g b / 80%);
+    --bg-canvas: var(--slate-800);
+    --bg-subtle: var(--slate-600);
+    --bg-hover: var(--slate-500);
+    --fg-hover: var(--slate-200);
+    --bg-active: var(--slate-600);
+    --bg-inverse: var(--slate-700);
+    --bg-inverse-hover: var(--slate-600);
+    --fg-inverse: var(--gray-0);
+    --bg-popover: var(--slate-700);
+    --fg-popover: var(--gray-0);
+    --fg-muted: rgb(from var(--gray-0) r g b / 60%);
+    --fg-controls: var(--slate-700);
+    --fg-danger: var(--danger-dark);
+    --accent: var(--ci-color1-dark);
+    --highlight-color: var(--highlight);
+    --focus-ring-color: var(--focus-ring);
+    --ocr-block: var(--ocr-block-dark);
+    --ocr-line: var(--ocr-line-dark);
+    --ocr-word: var(--ocr-word-dark);
+    --border: 0;
+    --border-color: rgb(from var(--gray-0) r g b / 15%);
+    --border-strong: rgb(from var(--gray-0) r g b / 30%);
+    --border-controls: 1px solid var(--slate-800);
+    --placeholder: rgb(from var(--gray-0) r g b / 50%);
+    --shadow-color: var(--gray-1000);
+    --footer-topnav-bg: var(--ci-color1);
+}
+
+/* LAYER 3 — FEATURE TOKENS, MODE-FREE (read layer 2 only) */
+.gv-features() {
+    /* WIDGET ICONS */
+    --widget-icon-color-body: var(--fg-general);
+    --widget-icon-color-topbar: var(--ci-color1);
+    --widget-icon-color-expand: var(--ci-color1);
+
+    /* LOGIN NAVIGATION */
+    --login-nav-background: var(--bg-inverse);
+    --login-nav-background-hover: var(--bg-inverse-hover);
+    --login-nav-text-color: var(--fg-inverse);
+    --login-nav-text-color-hover: var(--fg-inverse);
+    --login-nav-icon-color: var(--fg-inverse);
+    --login-nav-icon-color-hover: var(--fg-inverse);
+    --login-nav-bookmarks-text-color: var(--fg-inverse);
+    --login-nav-bookmarks-text-color-hover: var(--highlight-color);
+    --login-nav-bookmarks-counter-background: var(--ci-color1);
+
+    /* SEARCH TOOLBAR */
+    --search-toolbar-background-active: var(--ci-color1);
+    --search-toolbar-text-color-active: var(--fg-inverse);
+    --search-toolbar-icon-color-active: var(--fg-inverse);
+    --search-toolbar-text-color-hover: currentColor;
+    --search-toolbar-button-radius: 0;
+    --search-toolbar-shadow-active: none;
+    --search-toolbar-focus-outline-color: var(--focus-ring-color);
+
+    /* TOC PAGE */
+    --toc-page-link-color: var(--lk-content-box);
+
+    /* IMAGE CONTROLS */
+    --image-controls-background: var(--bg-content-box);
+    --image-controls-container-border-color: transparent;
+    --image-controls-icon-color: var(--fg-general);
+
+    /* DATEPICKER */
+    --datepicker-bg: var(--bg-popover);
+    --datepicker-border-color: var(--border-color);
+    --datepicker-header-bg: var(--ci-color1);
+    --datepicker-header-fg: var(--fg-inverse);
+    --datepicker-weekday-fg: var(--fg-inverse);
+    --datepicker-day-fg: var(--fg-popover);
+    --datepicker-day-hover-bg: var(--bg-hover);
+    --datepicker-day-selected-bg: var(--ci-color1);
+    --datepicker-day-selected-fg: var(--fg-inverse);
+    --datepicker-day-today-border-color: var(--ci-color1);
+    --datepicker-day-disabled-fg: var(--placeholder);
+    --datepicker-day-hasdata-bg: color-mix(in srgb, var(--ci-color1) 12%, transparent);
+    --datepicker-day-hasdata-fg: var(--ci-color1);
+    --datepicker-day-hasdata-hover-bg: color-mix(in srgb, var(--ci-color1) 24%, transparent);
+    --datepicker-day-hasdata-hover-fg: var(--ci-color1);
+    --datepicker-day-range-bg: color-mix(in srgb, var(--ci-color1) 20%, transparent);
+
+    /* NEWSPAPER SEARCH */
+    --ns-bg: var(--bg-content-box);
+    --ns-border-color: var(--border-color);
+    --ns-tab-bg: var(--bg-hover);
+    --ns-tab-border-color: var(--border-color);
+    --ns-tab-fg: var(--fg-muted);
+    --ns-tab-fg-hover: var(--fg-general);
+    --ns-tab-active-color: var(--ci-color1);
+    --ns-label-fg: var(--fg-muted);
+
+    /* QUICK FILTER */
+    --quick-filter-bg: var(--bg-content-box);
+    --quick-filter-text-color: var(--fg-content-box);
+    --quick-filter-dropdown-bg: var(--bg-content-box);
+    --quick-filter-fields-bg: var(--bg-subtle);
+    --quick-filter-dropdown-hover-bg: var(--bg-subtle);
+    --quick-filter-toggle-bg: var(--bg-subtle);
+    --quick-filter-dropdown-shadow: none;
+    --quick-filter-input-shadow: none;
+    --quick-filter-invalid-color: var(--fg-danger);
+    --quick-filter-accent-color: var(--ci-color1);
+    --quick-filter-submit-bg: var(--ci-color1);
+    --quick-filter-submit-icon-color: var(--fg-inverse);
+    --quick-filter-checkbox-active: var(--ci-color1);
+    --quick-filter-status-color: var(--accent);
+    --quick-filter-radius: 0;
+    --quick-filter-radius-sm: 0;
+
+    /* IMMERSIVE VIEW */
+    --immersive-rail-width: 40px;
+    --immersive-edge-inset: 12px;
+    --immersive-radius: 6px;
+    --immersive-radius-lg: 8px;
+    --immersive-transition: 0.15s ease;
+    --immersive-canvas-bg: var(--bg-canvas);
+    --immersive-chrome-bg: var(--bg-content-box);
+    --immersive-chrome-fg: var(--fg-content-box);
+    --immersive-accent: var(--accent);
+    --immersive-ocr-block: var(--ocr-block);
+    --immersive-ocr-line: var(--ocr-line);
+    --immersive-ocr-word: var(--ocr-word);
+    --immersive-thumb-shadow: 0 1px 2px rgb(from var(--shadow-color) r g b / 10%), 0 4px 10px rgb(from var(--shadow-color) r g b / 13%);
+    --immersive-thumb-shadow-hover: 0 2px 4px rgb(from var(--shadow-color) r g b / 10%), 0 14px 28px rgb(from var(--shadow-color) r g b / 22%);
+
+    /* WIDGET CALENDAR */
+    --wc-dot-size: 4px;
+    --wc-dot-color: var(--ci-color1);
+    --wc-dot-color-on-selected: var(--fg-inverse);
+    --wc-popover-bg: var(--bg-popover);
+    --wc-popover-border: var(--border-color);
+    --wc-popover-shadow: 0 2px 8px rgb(from var(--shadow-color) r g b / 15%);
+    --wc-popover-radius: 4px;
+    --wc-popover-min-width: 180px;
+    --wc-popover-item-padding: 6px 12px;
+    --wc-popover-item-color: var(--fg-popover);
+    --wc-popover-item-hover-bg: var(--bg-hover);
+    --wc-popover-item-hover-color: var(--ci-color1);
+    --wc-popover-font-size: @fontSmall;
+
+    /* COMBINED FACETS */
+    --combined-facets-color: var(--fg-general);
+    --combined-facets-accent: var(--ci-color1);
+    --combined-facets-accent-contrast: var(--fg-inverse);
+    --combined-facets-divider: var(--border-color);
+    --combined-facets-radius: 6px;
+    --combined-facets-muted: var(--fg-muted);
+    --combined-facets-box: var(--bg-general);
+    --combined-facets-badge-background: var(--active-facets-badge-background);
+    --combined-facets-badge-background-hover: var(--active-facets-badge-background-hover);
+    --combined-facets-badge-color: var(--active-facets-badge-color);
+    --combined-facets-badge-border: transparent;
+    --combined-facets-badge-muted: var(--active-facets-badge-muted);
+    --combined-facets-badge-contrast: var(--active-facets-badge-contrast);
+
+    /* ACTIVE FACETS BADGES */
+    --active-facets-badge-background: var(--ci-color1);
+    --active-facets-badge-background-hover: var(--ci-hovercolor1);
+    --active-facets-badge-color: var(--fg-inverse);
+    --active-facets-badge-border: transparent;
+    --active-facets-badge-muted: rgb(from var(--fg-inverse) r g b / 85%);
+    --active-facets-badge-radius: 0;
+    --active-facets-badge-contrast: var(--ci-color1);
+    --active-facets-badge-shadow-hover: 0 1px 3px rgb(from var(--shadow-color) r g b / 12%);
+
+    /* FACET INCLUDE/EXCLUDE CONTROL */
+    --facet-control-border: var(--border-strong);
+    --facet-control-color: var(--fg-muted);
+    --facet-control-radius: 3px;
+
+    /* ARCHIVES */
+    --archives-card-bg: var(--bg-content-box);
+    --archives-title-color: var(--fg-content-box);
+    --archives-description-color: var(--fg-general);
+    --archives-placeholder-bg: var(--bg-content-box);
+    --archives-placeholder-icon-color: var(--fg-general);
+}
+
+/* LAYER 3 — FEATURE TOKENS WITH A MODE-SPECIFIC VALUE, LIGHT */
+.gv-features-light() {
+    /* LOGIN NAVIGATION */
+    --login-nav-bookmarks-background: var(--bg-inverse);
+    --login-nav-dropdown-border-color: rgb(from var(--fg-inverse) r g b / 10%);
+
+    /* SEARCH TOOLBAR */
+    --search-toolbar-divider-color: rgb(from var(--fg-general) r g b / 28%);
+    --search-toolbar-icon-color: var(--fg-general);
+    --search-toolbar-icon-color-hover: var(--fg-general);
+
+    /* TOC PAGE */
+    --toc-page-hover-bg: var(--bg-general);
+    --toc-page-toggle-icon-color: var(--ci-color1);
+    --toc-page-toggle-icon-color-hover: var(--fg-hover);
+    --toc-page-link-color-hover: inherit;
+    --toc-page-border-color: var(--border-strong);
+
+    /* IMAGE CONTROLS */
+    --image-controls-border-color: var(--border-color);
+    --image-controls-icon-color-hover: var(--fg-inverse);
+    --image-controls-icon-color-active: var(--fg-inverse);
+    --image-controls-action-background: var(--bg-general);
+    --image-controls-action-background-hover: var(--ci-hovercolor1);
+    --image-controls-slider-thumb-background: var(--fg-general);
+    --image-controls-slider-border-color: var(--fg-general);
+
+    /* QUICK FILTER */
+    --quick-filter-label-color: var(--fg-muted);
+    --quick-filter-field-separator: var(--border-strong);
+    --quick-filter-border: var(--border-strong);
+    --quick-filter-control-hover-bg: var(--bg-subtle);
+
+    /* IMMERSIVE VIEW */
+    --immersive-canvas-fg: var(--fg-general);
+    --immersive-chrome-hover-bg: var(--bg-subtle);
+    --immersive-slider-track: rgb(from var(--fg-general) r g b / 25%);
+    --immersive-rail-bg: var(--bg-content-box);
+    --immersive-chrome-border-color: rgb(from var(--fg-general) r g b / 10%);
+    --immersive-key-bg: var(--bg-subtle);
+    --immersive-key-border-color: rgb(from var(--fg-general) r g b / 50%);
+    --immersive-divider: rgb(from var(--fg-general) r g b / 9%);
+    --immersive-highlight-bg: rgb(from var(--highlight-color) r g b / 35%);
+    --immersive-metadata-hover-bg: rgb(from var(--fg-general) r g b / 5%);
+    --immersive-ocr-word-fg: var(--fg-inverse);
+    --immersive-chrome-shadow: 0 1px 2px rgb(from var(--shadow-color) r g b / 6%), 0 6px 16px rgb(from var(--shadow-color) r g b / 10%);
+    --immersive-panel-shadow: 4px 0 24px rgb(from var(--shadow-color) r g b / 10%);
+    --immersive-overlay-shadow: drop-shadow(0 1px 2px rgb(from var(--fg-inverse) r g b / 90%));
+    --immersive-chevron-scrim: transparent;
+    --immersive-logo-invert: 0;
+
+    /* COMBINED FACETS */
+    --combined-facets-background: rgb(from var(--ci-color1) r g b / 8%);
+    --combined-facets-scrollbar: var(--border-strong);
+
+    /* FACET INCLUDE/EXCLUDE CONTROL */
+    --facet-control-active: var(--ci-color1);
+    --facet-control-active-fg: var(--fg-inverse);
+
+    /* ARCHIVES */
+    --archives-card-border: var(--border);
+    --archives-overlay-bg: rgb(from var(--shadow-color) r g b / 65%);
+    --archives-overlay-text: var(--fg-inverse);
+
+    /* COLOR THEME TOGGLE */
+    --color-theme-switch-dark-display: flex;
+    --color-theme-switch-light-display: none;
+}
+
+/* LAYER 3 — FEATURE TOKENS WITH A MODE-SPECIFIC VALUE, DARK */
+.gv-features-dark() {
+    /* LOGIN NAVIGATION */
+    --login-nav-bookmarks-background: var(--bg-content-box);
+    --login-nav-dropdown-border-color: rgb(from var(--fg-inverse) r g b / 5%);
+
+    /* SEARCH TOOLBAR */
+    --search-toolbar-divider-color: rgb(from var(--fg-inverse) r g b / 20%);
+    --search-toolbar-icon-color: rgb(from var(--fg-inverse) r g b / 92%);
+    --search-toolbar-icon-color-hover: var(--accent);
+
+    /* TOC PAGE */
+    --toc-page-hover-bg: var(--bg-active);
+    --toc-page-toggle-icon-color: var(--fg-content-box);
+    --toc-page-toggle-icon-color-hover: var(--fg-content-box);
+    --toc-page-link-color-hover: var(--fg-content-box);
+    --toc-page-border-color: rgb(from var(--fg-inverse) r g b / 17%);
+
+    /* IMAGE CONTROLS */
+    --image-controls-border-color: transparent;
+    --image-controls-icon-color-hover: var(--fg-general);
+    --image-controls-icon-color-active: var(--fg-general);
+    --image-controls-action-background: var(--bg-active);
+    --image-controls-action-background-hover: var(--bg-hover);
+    --image-controls-slider-thumb-background: var(--fg-muted);
+    --image-controls-slider-border-color: var(--fg-muted);
+
+    /* QUICK FILTER */
+    --quick-filter-label-color: var(--fg-controls);
+    --quick-filter-field-separator: rgb(from var(--fg-inverse) r g b / 12%);
+    --quick-filter-border: rgb(from var(--fg-inverse) r g b / 12%);
+    --quick-filter-control-hover-bg: var(--bg-hover);
+
+    /* IMMERSIVE VIEW */
+    --immersive-canvas-fg: var(--fg-inverse);
+    --immersive-chrome-hover-bg: var(--bg-hover);
+    --immersive-slider-track: var(--bg-hover);
+    --immersive-rail-bg: var(--bg-popover);
+    --immersive-chrome-border-color: rgb(from var(--fg-inverse) r g b / 14%);
+    --immersive-key-bg: var(--bg-hover);
+    --immersive-key-border-color: rgb(from var(--fg-inverse) r g b / 40%);
+    --immersive-divider: rgb(from var(--fg-inverse) r g b / 12%);
+    --immersive-highlight-bg: rgb(from var(--highlight-color) r g b / 25%);
+    --immersive-metadata-hover-bg: rgb(from var(--fg-inverse) r g b / 5%);
+    --immersive-ocr-word-fg: var(--fg-controls);
+    --immersive-chrome-shadow: 0 5px 14px 2px rgb(from var(--shadow-color) r g b / 9%);
+    --immersive-panel-shadow: 4px 0 16px rgb(from var(--shadow-color) r g b / 18%);
+    --immersive-overlay-shadow: drop-shadow(0 1px 4px rgb(from var(--shadow-color) r g b / 50%));
+    --immersive-chevron-scrim: rgb(from var(--shadow-color) r g b / 30%);
+    --immersive-logo-invert: 1;
+
+    /* COMBINED FACETS */
+    --combined-facets-background: rgb(from var(--ci-color1) r g b / 15%);
+    --combined-facets-scrollbar: var(--bg-active);
+
+    /* FACET INCLUDE/EXCLUDE CONTROL */
+    --facet-control-active: var(--fg-content-box);
+    --facet-control-active-fg: var(--fg-controls);
+
+    /* ARCHIVES */
+    --archives-card-border: 1px solid transparent;
+    --archives-overlay-bg: rgb(from var(--shadow-color) r g b / 75%);
+    --archives-overlay-text: var(--fg-content-box);
+
+    /* COLOR THEME TOGGLE */
+    --color-theme-switch-dark-display: none;
+    --color-theme-switch-light-display: flex;
+}
+
+/* WIRING — plain selectors only, all (0,1,0); order is binding */
+:root {
+    .gv-palette();
+    .gv-semantic-light();
+    .gv-features();
+    .gv-features-light();
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        .gv-semantic-dark();
+        .gv-features-dark();
+    }
+}
+
+.color-theme-dark {
+    .gv-semantic-dark();
+    .gv-features-dark();
+}
+
+.color-theme-light {
+    .gv-semantic-light();
+    .gv-features-light();
+}

@@ -90,14 +90,14 @@
     .widget__badge-container .badge,
     .widget__badge-container .badge-dark {
         color: @immersive-accent;
-        background-color: ~'rgba(var(--immersive-accent-rgb), 0.08)';
+        background-color: rgb(from @immersive-accent r g b / 0.08);
         border-radius: @immersive-radius;
 
         &:hover,
         &:active,
         &:focus {
             color: @immersive-accent;
-            background-color: ~'rgba(var(--immersive-accent-rgb), 0.1)';
+            background-color: rgb(from @immersive-accent r g b / 0.1);
             text-decoration: underline;
         }
     }

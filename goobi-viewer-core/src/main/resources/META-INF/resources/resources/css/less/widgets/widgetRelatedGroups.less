@@ -45,7 +45,7 @@
    ============================================================== */
 .related-groups-section {
     margin-top: 30px;
-    color: var(--fg-content-box);
+    color: @fg-content-box;
 
     &__heading {
         margin: 0 0 20px 0;
@@ -53,7 +53,7 @@
     &__heading-link {
         word-wrap: anywhere;
         text-decoration: underline;
-        color: var(--lk-content-box);
+        color: @lk-content-box;
     }
     &__grid {
         display: grid;
@@ -61,8 +61,8 @@
         gap: 20px;
         align-items: start;
         padding: 20px;
-        background: var(--bg-content-box);
-        border: var(--border);
+        background: @bg-content-box;
+        border: @border;
     }
     &__card {
         display: flex;
@@ -85,8 +85,8 @@
         width: 100%;
         aspect-ratio: 140 / 195;
         overflow: hidden;
-        background-color: var(--bg-general);
-        border: var(--border);
+        background-color: @bg-general;
+        border: @border;
 
         img {
             width: 100%;
@@ -103,7 +103,7 @@
         font-size: @fontMedium;
         font-weight: 600;
         line-height: 1.4;
-        color: var(--fg-content-box);
+        color: @fg-content-box;
         display: -webkit-box;
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
@@ -113,7 +113,7 @@
     &__card-creator {
         font-size: @fontSmall;
         line-height: 1.4;
-        color: var(--lh-content-box);
+        color: @lh-content-box;
     }
     &__view-all-wrapper {
         display: flex;
@@ -129,17 +129,17 @@
         text-align: center;
         gap: 8px;
         height: 195px;
-        border: 1px solid var(--toc-page-border-color);
+        border: 1px solid @toc-page-border-color;
         background: transparent;
-        color: var(--fg-content-box);
+        color: @fg-content-box;
         text-decoration: none;
         transition: background-color 0.15s ease;
 
         &:hover,
         &:focus {
-            background-color: var(--bg-hover);
+            background-color: @bg-hover;
             text-decoration: none;
-            color: var(--fg-content-box);
+            color: @fg-content-box;
         }
     }
     &__view-all-icon {

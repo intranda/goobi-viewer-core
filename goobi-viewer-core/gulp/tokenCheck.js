@@ -5,11 +5,16 @@ Rules
   R1  every var(--x) read in core has a default in the token layer or an inline fallback
   R2  tokens without the --_ prefix are declared only in the token layer, under
       :root / .color-theme-dark / .color-theme-light (specificity 0,1,0) or inside mixin definitions
-  R3  every @alias: var(--x) in misc/variables.less points at a token of the token layer
+  R3  misc/aliases.less and the token layer match 1:1 — every alias points at a token, every
+      non-palette token has an alias, no alias shadows a static @variable
   R4  --_ tokens never live in the token layer; prefers-color-scheme / .color-theme-* never outside it
   R5  (warning) token declared but read nowhere in core or theme
   R6  token in the theme mixins that core does not know and the theme never reads
-  W3  (warning) token without @alias
+  R7  every .x-light() mixin of the token layer declares the same tokens as .x-dark()
+  R8  palette tokens are read only by the semantic mixins and never get an @alias — features and
+      components read roles; only the brand trio --ci-color1, --ci-hovercolor1, --accent-color is exempt
+  R9  outside misc/palette.less the token layer holds no color literal; alphas derive via rgb(from …)
+  R10 components use var() only for internal --_ tokens; theme-visible tokens are read via @alias
 
 Known violations are tolerated via tokenCheck.baseline.json; entries that no longer
 occur are reported as stale so the baseline can only shrink.
@@ -20,17 +25,22 @@ const path = require('path');
 
 const MODULE_ROOT = path.resolve(__dirname, '..');
 const LESS_ROOT = 'src/main/resources/META-INF/resources/resources/css/less';
-const TOKEN_LAYER = ['misc/core-defaults.less'];
-const ALIAS_FILE = 'misc/variables.less';
+const TOKEN_LAYER = ['misc/palette.less', 'misc/tokens.less'];
+const ALIAS_FILE = 'misc/aliases.less';
 const THEME_LESS_ROOT = '../goobi-viewer-theme-reference/WebContent/resources/themes/reference/css/less';
 const THEME_MIXINS = 'misc/mixins.less';
 const BASELINE_FILE = path.join(__dirname, 'tokenCheck.baseline.json');
 
 const TOKEN_SELECTORS = new Set([':root', '.color-theme-dark', '.color-theme-light', '@media (prefers-color-scheme: dark)', '@media (prefers-color-scheme: light)']);
+const PALETTE_FILE = 'misc/palette.less';
+const BRAND_TRIO = /^--(ci-color1|ci-hovercolor1|accent-color)$/;
+const SEMANTIC_MIXIN = /^\.[\w-]*semantic[\w-]*\(\)$/;
+const COLOR_LITERAL = /#[0-9a-f]{3,8}\b|\b(rgba?|hsla?)\(\s*\d|(^|[\s,(])(black|white)(?=[\s,)]|$)/i;
 const MIXIN_DEFINITION = /^\.[\w-]+\([^)]*\)$/;
 const MIXIN_CALL = /^\.[\w-]+(\([^)]*\))?$/;
 const DECLARATION = /^(--[\w-]+)\s*:\s*([\s\S]*)$/;
 const ALIAS = /^@([\w-]+)\s*:\s*var\(\s*(--[\w-]+)/;
+const STATIC = /^@([\w-]+)\s*:/;
 const READ = /var\(\s*(--[\w-]+)\s*(,)?/g;
 const AT_USE = /@([\w-]+)/g;
 const INTERNAL = /^--_/;
@@ -100,7 +110,7 @@ function collectAtUses(text, into) {
  */
 function parseLess(source) {
     const text = stripComments(source);
-    const result = { declarations: [], reads: [], calls: [], aliases: [], blocks: [], atUses: new Set() };
+    const result = { declarations: [], reads: [], calls: [], aliases: [], statics: [], blocks: [], atUses: new Set() };
     const stack = [];
     let buf = '';
     let start = null;
@@ -128,6 +138,13 @@ function parseLess(source) {
         const alias = stmt.match(ALIAS);
         if (alias) {
             result.aliases.push({ alias: alias[1], token: alias[2], line: at });
+            return;
+        }
+        const stat = stmt.match(STATIC);
+        if (stat && context.length === 0) {
+            result.statics.push({ name: stat[1], line: at });
+            collectReads(stmt, at, context, result.reads);
+            collectAtUses(stmt, result.atUses);
             return;
         }
         if (MIXIN_CALL.test(stmt)) {
@@ -219,7 +236,7 @@ const allowedInTokenLayer = (stack) => stack.length > 0 && stack.every((h) => TO
  * @param {{tokenLayer: string[], aliasFile: string, themeMixins: string}} options
  * @returns {{violations: Array, warnings: Array, tokens: Set<string>}}
  */
-function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, aliasFile = ALIAS_FILE, themeMixins = THEME_MIXINS } = {}) {
+function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALETTE_FILE, aliasFile = ALIAS_FILE, themeMixins = THEME_MIXINS } = {}) {
     const parsed = new Map();
     for (const [file, source] of core) parsed.set(file, parseLess(source));
 
@@ -248,6 +265,21 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, aliasFile = ALIAS_F
                     violations.push(violation('R2', file, c.name, c.line, `mixin called under "${flattened(c.stack) || '(top level)'}" — only :root, .color-theme-dark, .color-theme-light`));
                 }
             }
+            const byMixin = new Map();
+            for (const d of p.declarations) {
+                const mixin = d.stack.find((h) => MIXIN_DEFINITION.test(h));
+                if (!mixin) continue;
+                if (!byMixin.has(mixin)) byMixin.set(mixin, new Map());
+                byMixin.get(mixin).set(d.name, d.line);
+            }
+            for (const [mixin, lightTokens] of byMixin) {
+                const m = mixin.match(/^(\.[\w-]+)-light\(\)$/);
+                if (!m) continue;
+                const darkName = `${m[1]}-dark()`;
+                const darkTokens = byMixin.get(darkName) || new Map();
+                for (const [name, line] of lightTokens) if (!darkTokens.has(name)) violations.push(violation('R7', file, name, line, `declared in ${mixin} but not in ${darkName}`));
+                for (const [name, line] of darkTokens) if (!lightTokens.has(name)) violations.push(violation('R7', file, name, line, `declared in ${darkName} but not in ${mixin}`));
+            }
         } else {
             for (const d of p.declarations) {
                 if (!INTERNAL.test(d.name)) {
@@ -263,21 +295,47 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, aliasFile = ALIAS_F
 
         const internalHere = new Set(p.declarations.filter((d) => INTERNAL.test(d.name)).map((d) => d.name));
         for (const r of p.reads) {
+            if (!isTokenLayer(file) && file !== aliasFile && !INTERNAL.test(r.name)) {
+                violations.push(violation('R10', file, r.name, r.line, `read via var() — components read theme-visible tokens through @${r.name.slice(2)}`));
+            }
             if (r.fallback) continue;
             if (INTERNAL.test(r.name) ? internalHere.has(r.name) : tokens.has(r.name)) continue;
             violations.push(violation('R1', file, r.name, r.line, INTERNAL.test(r.name) ? 'internal token read without declaration in this file' : 'read without core default and without fallback'));
         }
     }
 
+    const paletteTokens = new Set();
+    const paletteParsed = parsed.get(paletteFile);
+    if (paletteParsed) for (const d of paletteParsed.declarations) paletteTokens.add(d.name);
+    const restricted = new Set([...paletteTokens].filter((n) => !BRAND_TRIO.test(n)));
+    for (const [file, p] of parsed) {
+        for (const r of p.reads) {
+            if (!restricted.has(r.name)) continue;
+            if (isTokenLayer(file) && r.stack.some((h) => SEMANTIC_MIXIN.test(h))) continue;
+            violations.push(violation('R8', file, r.name, r.line, 'palette token read outside the semantic roles — read a semantic role instead'));
+        }
+        for (const a of p.aliases) {
+            if (restricted.has(a.token)) violations.push(violation('R8', file, a.token, a.line, `@${a.alias} exposes a palette token — only semantic roles get aliases`));
+        }
+        if (paletteParsed && isTokenLayer(file) && file !== paletteFile) {
+            for (const d of p.declarations) {
+                if (COLOR_LITERAL.test(d.value)) violations.push(violation('R9', file, d.name, d.line, `color literal "${d.value}" — every color comes from ${paletteFile}`));
+            }
+        }
+    }
+
     const aliases = parsed.get(aliasFile);
     const aliasByToken = new Map();
     if (aliases) {
+        const staticDefinedIn = new Map();
+        for (const [file, p] of parsed) if (file !== aliasFile) for (const s of p.statics) staticDefinedIn.set(s.name, file);
         for (const a of aliases.aliases) {
             aliasByToken.set(a.token, a.alias);
             if (!tokens.has(a.token)) violations.push(violation('R3', aliasFile, a.token, a.line, `@${a.alias} points at a token the token layer does not declare`));
+            if (staticDefinedIn.has(a.alias)) violations.push(violation('R3', aliasFile, a.token, a.line, `@${a.alias} shadows a static LESS variable defined in ${staticDefinedIn.get(a.alias)}`));
         }
         for (const t of tokens) {
-            if (!aliasByToken.has(t)) warnings.push({ rule: 'W3', token: t, message: 'token without @alias in ' + aliasFile });
+            if (!aliasByToken.has(t) && !paletteTokens.has(t)) violations.push(violation('R3', aliasFile, t, 0, `token without @${t.slice(2)} alias`));
         }
     }
 

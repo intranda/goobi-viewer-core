@@ -77,9 +77,9 @@
             text-decoration: none;
 
             .widget-search-facets__list-item-control.-include {
-                color: var(--facet-control-active-fg);
-                background: var(--facet-control-active);
-                border-color: var(--facet-control-active);
+                color: @facet-control-active-fg;
+                background: @facet-control-active;
+                border-color: @facet-control-active;
             }
         }
     }
@@ -104,9 +104,9 @@
         width: 0;
         height: 16px;
         overflow: hidden;
-        color: var(--facet-control-color);
-        border: 0 solid var(--facet-control-border);
-        border-radius: var(--facet-control-radius);
+        color: @facet-control-color;
+        border: 0 solid @facet-control-border;
+        border-radius: @facet-control-radius;
         opacity: 0;
         transition: none;
 
@@ -114,9 +114,9 @@
             width: 16px;
             border-width: 1px;
             opacity: 1;
-            color: var(--facet-control-active-fg);
-            background: var(--facet-control-active);
-            border-color: var(--facet-control-active);
+            color: @facet-control-active-fg;
+            background: @facet-control-active;
+            border-color: @facet-control-active;
 
             &.-include {
                 margin-inline-end: 5px;
@@ -127,9 +127,9 @@
         &:hover,
         &:focus {
             .widget-search-facets__list-item-control {
-                color: var(--facet-control-active-fg);
-                background: var(--facet-control-active);
-                border-color: var(--facet-control-active);
+                color: @facet-control-active-fg;
+                background: @facet-control-active;
+                border-color: @facet-control-active;
             }
         }
     }

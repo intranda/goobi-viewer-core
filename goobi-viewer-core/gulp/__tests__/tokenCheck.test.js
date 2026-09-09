@@ -5,7 +5,7 @@
 const { parseLess, checkFiles, applyBaseline, formatReport, runTokenCheck } = require('../tokenCheck');
 
 const TOKENS = 'misc/tokens.less';
-const ALIASES = 'misc/variables.less';
+const ALIASES = 'misc/aliases.less';
 const OPTS = { tokenLayer: [TOKENS], aliasFile: ALIASES, themeMixins: 'misc/mixins.less' };
 
 const files = (obj) => new Map(Object.entries(obj));
@@ -156,12 +156,21 @@ describe('R2 theme-visible tokens live only in the token layer, under (0,1,0) se
 });
 
 describe('R3 aliases point at existing tokens', () => {
-    it('flags an alias to an unknown token and warns about tokens without alias', () => {
+    it('flags an alias to an unknown token and a token without alias', () => {
         const result = checkFiles(files({ [TOKENS]: TOKEN_LAYER_OK, [ALIASES]: `@bg: var(--bg);\n@typo: var(--bgg);` }), null, OPTS);
 
-        expect(keys(result)).toContain('R3 misc/variables.less --bgg');
-        expect(warnings(result)).toContain('W3 --fg');
-        expect(warnings(result)).not.toContain('W3 --bg');
+        expect(keys(result)).toContain('R3 misc/aliases.less --bgg');
+        expect(keys(result)).toContain('R3 misc/aliases.less --fg');
+        expect(keys(result)).not.toContain('R3 misc/aliases.less --bg');
+    });
+});
+
+describe('R3 aliases never shadow static LESS variables', () => {
+    it('flags an alias whose name is also a static variable', () => {
+        const result = checkFiles(files({ [TOKENS]: TOKEN_LAYER_OK, 'misc/variables.less': `@bg: #fff;\n@fontSmall: 1.2rem;`, [ALIASES]: `@bg: var(--bg);\n@fg: var(--fg);\n@n-900: var(--n-900);` }), null, OPTS);
+
+        expect(keys(result).filter((k) => k.startsWith('R3'))).toEqual(['R3 misc/aliases.less --bg']);
+        expect(result.violations.find((v) => v.rule === 'R3').message).toContain('misc/variables.less');
     });
 });
 
@@ -240,14 +249,99 @@ describe('R6 theme mixin tokens must exist in core or be read by the theme', () 
             OPTS
         );
 
-        expect(result.violations.map((v) => [v.rule, v.token])).toEqual([['R6', '--theme-global']]);
-        expect(result.violations[0].message).toContain('token layer');
+        const r6 = result.violations.filter((v) => v.rule === 'R6');
+        expect(r6.map((v) => v.token)).toEqual(['--theme-global']);
+        expect(r6[0].message).toContain('token layer');
     });
 
     it('skips theme rules when no theme is given', () => {
         const result = checkFiles(files({ [TOKENS]: TOKEN_LAYER_OK }), null, OPTS);
 
         expect(result.violations).toEqual([]);
+    });
+});
+
+describe('R7 light and dark mixins declare the same tokens', () => {
+    it('flags tokens present in only one mode and a missing counterpart', () => {
+        const layer = `.gv-features-light() { --a: 1; --b: 1; }\n.gv-features-dark() { --a: 2; --c: 2; }\n.gv-only-light() { --d: 1; }\n:root { .gv-features-light(); .gv-only-light(); }\n.color-theme-dark { .gv-features-dark(); }`;
+        const result = checkFiles(files({ [TOKENS]: layer }), null, OPTS);
+
+        expect(keys(result).filter((k) => k.startsWith('R7'))).toEqual(['R7 misc/tokens.less --b', 'R7 misc/tokens.less --c', 'R7 misc/tokens.less --d']);
+    });
+
+    it('accepts matching pairs and mode-free mixins', () => {
+        const layer = `.gv-palette() { --p: 1; }\n.gv-semantic-light() { --a: 1; }\n.gv-semantic-dark() { --a: 2; }\n:root { .gv-palette(); .gv-semantic-light(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
+        const result = checkFiles(files({ [TOKENS]: layer }), null, OPTS);
+
+        expect(rules(result)).not.toContain('R7');
+    });
+});
+
+describe('R8 palette tokens are read only by semantic roles', () => {
+    const PALETTE = 'misc/palette.less';
+    const opts = { ...OPTS, tokenLayer: [PALETTE, TOKENS], paletteFile: PALETTE };
+    const palette = `.gv-palette() { --ci-color1: #015999; --gray-0: #fff; --danger: #c0392b; }`;
+
+    it('flags status colors read by features, accepts them through a role', () => {
+        const tokens = `.gv-semantic-light() { --fg-danger: var(--danger); }\n.gv-semantic-dark() { --fg-danger: var(--danger); }\n.gv-features() { --a: var(--danger); --b: var(--fg-danger); }\n:root { .gv-palette(); .gv-semantic-light(); .gv-features(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
+        const result = checkFiles(files({ [PALETTE]: palette, [TOKENS]: tokens }), null, opts);
+
+        expect(keys(result).filter((k) => k.startsWith('R8'))).toEqual(['R8 misc/tokens.less --danger']);
+    });
+
+    it('accepts palette reads in semantic mixins and brand reads anywhere', () => {
+        const tokens = `.gv-semantic-light() { --bg: var(--gray-0); }\n.gv-semantic-dark() { --bg: #000; }\n.gv-features() { --f: var(--bg); --g: var(--ci-color1); }\n:root { .gv-palette(); .gv-semantic-light(); .gv-features(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
+        const result = checkFiles(files({ [PALETTE]: palette, [TOKENS]: tokens, 'views/a.less': `.a { color: var(--ci-color1); }` }), null, opts);
+
+        expect(rules(result)).not.toContain('R8');
+    });
+
+    it('flags palette reads in features, components and aliases', () => {
+        const tokens = `.gv-semantic-light() { --bg: var(--gray-0); }\n.gv-semantic-dark() { --bg: #000; }\n.gv-features() { --f: var(--gray-0); }\n:root { .gv-palette(); .gv-semantic-light(); .gv-features(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
+        const result = checkFiles(
+            files({ [PALETTE]: palette, [TOKENS]: tokens, 'views/a.less': `.a { color: var(--gray-0); }`, [ALIASES]: `@neutral-0: var(--gray-0);\n@bg: var(--bg);` }),
+            null,
+            opts
+        );
+
+        expect(keys(result).filter((k) => k.startsWith('R8'))).toEqual(['R8 misc/tokens.less --gray-0', 'R8 views/a.less --gray-0', 'R8 misc/aliases.less --gray-0']);
+    });
+});
+
+describe('R9 colors live in the palette only', () => {
+    const PALETTE = 'misc/palette.less';
+    const opts = { ...OPTS, tokenLayer: [PALETTE, TOKENS], paletteFile: PALETTE };
+    const palette = `.gv-palette() { --ci-color1: #015999; --gray-0: #fff; --gray-1000: rgb(0, 0, 0); }`;
+
+    it('flags hex, numeric rgb and named colors outside the palette', () => {
+        const tokens = `.gv-semantic-light() { --a: #fff; --b: rgba(255, 255, 255, 0.8); --c: color-mix(in srgb, var(--ci-color1) 60%, black); }\n.gv-semantic-dark() { --a: 1; --b: 1; --c: 1; }\n:root { .gv-palette(); .gv-semantic-light(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
+        const result = checkFiles(files({ [PALETTE]: palette, [TOKENS]: tokens }), null, opts);
+
+        expect(keys(result).filter((k) => k.startsWith('R9'))).toEqual(['R9 misc/tokens.less --a', 'R9 misc/tokens.less --b', 'R9 misc/tokens.less --c']);
+    });
+
+    it('accepts palette references, derived alphas, keywords and sizes', () => {
+        const tokens = `.gv-semantic-light() { --a: var(--gray-0); --b: rgb(from var(--gray-0) r g b / 80%); --c: transparent; --d: 1px solid var(--gray-0); --e: 0.15s ease; --f: none; }\n.gv-semantic-dark() { --a: 1; --b: 1; --c: 1; --d: 1; --e: 1; --f: 1; }\n:root { .gv-palette(); .gv-semantic-light(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
+        const result = checkFiles(files({ [PALETTE]: palette, [TOKENS]: tokens }), null, opts);
+
+        expect(rules(result)).not.toContain('R9');
+    });
+});
+
+describe('R10 components read theme-visible tokens through aliases', () => {
+    it('flags var() reads of theme-visible tokens, accepts internal tokens and alias use', () => {
+        const result = checkFiles(
+            files({
+                [TOKENS]: TOKEN_LAYER_OK,
+                [ALIASES]: `@bg: var(--bg);\n@fg: var(--fg);\n@n-900: var(--n-900);`,
+                'views/a.less': `.a { color: var(--bg); border-color: var(--nope, red); }`,
+                'views/b.less': `.b { --_x: @bg; color: var(--_x, @fg); }`,
+            }),
+            null,
+            OPTS
+        );
+
+        expect(keys(result).filter((k) => k.startsWith('R10'))).toEqual(['R10 views/a.less --bg', 'R10 views/a.less --nope']);
     });
 });
 

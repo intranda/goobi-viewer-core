@@ -1,6 +1,6 @@
 /* ==============================================================
    colorThemeToggle
-   style declarations for 
+   style declarations for
    ==============================================================*/
 
 .color-theme-switch {
@@ -13,20 +13,8 @@
 }
 
 .color-theme-switch-light {
-    display: none;
+    display: @color-theme-switch-light-display;
 }
 .color-theme-switch-dark {
-    display: flex;
-}
-
-@media (prefers-color-scheme: dark) {
-    .color-theme-switch-dark {
-        display: none;
-    }
-    .color-theme-switch-light {
-        display: flex;
-    }
-    .color-theme-switch-dark.hide {
-        display: hide;
-    }
+    display: @color-theme-switch-dark-display;
 }

@@ -67,8 +67,8 @@
         }
 
         &.is-linked-active {
-            border-left-color: ~'rgb(var(--immersive-ocr-block-rgb))';
-            background-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.08)';
+            border-left-color: @immersive-ocr-block;
+            background-color: rgb(from @immersive-ocr-block r g b / 0.08);
         }
     }
 
@@ -78,7 +78,7 @@
         transition: background-color 0.1s ease;
 
         &.is-linked-active {
-            background-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.16)';
+            background-color: rgb(from @immersive-ocr-line r g b / 0.16);
         }
     }
 
@@ -89,8 +89,8 @@
         /* Near-opaque chip with its own ink: a translucent fill over the
            stacked line/block tints cannot hold AA contrast in the dark theme. */
         &.is-linked-active {
-            background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.9)';
-            color: var(--immersive-ocr-word-fg);
+            background-color: rgb(from @immersive-ocr-word r g b / 0.9);
+            color: @immersive-ocr-word-fg;
         }
     }
 
@@ -110,21 +110,21 @@
     &__text-region-block {
         border-width: 1px;
         border-style: dashed;
-        border-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.5)';
+        border-color: rgb(from @immersive-ocr-block r g b / 0.5);
 
         &.is-linked-active {
-            border-color: ~'rgb(var(--immersive-ocr-block-rgb))';
-            background-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.08)';
+            border-color: @immersive-ocr-block;
+            background-color: rgb(from @immersive-ocr-block r g b / 0.08);
         }
     }
 
     &__text-region-line {
         border-width: 1px;
-        border-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.25)';
+        border-color: rgb(from @immersive-ocr-line r g b / 0.25);
 
         &.is-linked-active {
-            border-color: ~'rgb(var(--immersive-ocr-line-rgb))';
-            background-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.16)';
+            border-color: @immersive-ocr-line;
+            background-color: rgb(from @immersive-ocr-line r g b / 0.16);
         }
     }
 
@@ -132,8 +132,8 @@
         border-width: 1px;
 
         &.is-linked-active {
-            border-color: ~'rgb(var(--immersive-ocr-word-rgb))';
-            background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.35)';
+            border-color: @immersive-ocr-word;
+            background-color: rgb(from @immersive-ocr-word r g b / 0.35);
         }
     }
 
@@ -162,18 +162,18 @@
     }
 
     &__fulltext-legend-item-block::before {
-        border: 1px dashed ~'rgb(var(--immersive-ocr-block-rgb))';
-        background-color: ~'rgba(var(--immersive-ocr-block-rgb), 0.08)';
+        border: 1px dashed @immersive-ocr-block;
+        background-color: rgb(from @immersive-ocr-block r g b / 0.08);
     }
 
     &__fulltext-legend-item-line::before {
-        border-color: ~'rgb(var(--immersive-ocr-line-rgb))';
-        background-color: ~'rgba(var(--immersive-ocr-line-rgb), 0.16)';
+        border-color: @immersive-ocr-line;
+        background-color: rgb(from @immersive-ocr-line r g b / 0.16);
     }
 
     &__fulltext-legend-item-word::before {
-        border-color: ~'rgb(var(--immersive-ocr-word-rgb))';
-        background-color: ~'rgba(var(--immersive-ocr-word-rgb), 0.9)';
+        border-color: @immersive-ocr-word;
+        background-color: rgb(from @immersive-ocr-word r g b / 0.9);
     }
 }
 

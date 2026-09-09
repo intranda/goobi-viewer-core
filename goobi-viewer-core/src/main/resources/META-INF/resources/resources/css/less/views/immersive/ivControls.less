@@ -70,13 +70,13 @@
 
     &__tool-btn.-active,
     &__tool-btn[aria-pressed='true'] {
-        background-color: ~'rgba(var(--immersive-accent-rgb), 0.16)';
+        background-color: rgb(from @immersive-accent r g b / 0.16);
         color: @immersive-accent;
         box-shadow: inset 0 0 0 2px @immersive-accent;
 
         &:hover {
             color: @immersive-accent;
-            background-color: ~'rgba(var(--immersive-accent-rgb), 0.24)';
+            background-color: rgb(from @immersive-accent r g b / 0.24);
         }
     }
 
