@@ -110,10 +110,25 @@ public class RecordSectionResource {
 
     }
 
+    /**
+     * Returns the RIS citation for a logical section as a downloadable file.
+     *
+     * <p>The response carries a Content-Disposition header naming the file "{@code <pi>_<logId>.ris}", which prompts a download in
+     * browsers, unlike the plain-text variant of this endpoint. Access requires the section's list permission; if it is not granted, the
+     * section is reported as not found rather than access being denied, so as not to reveal the existence of restricted sections.
+     *
+     * @return the RIS citation for the section as plain text
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no section is found for the given identifiers,
+     *             or if the section's list permission is not granted
+     * @should return non null result
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records" }, summary = "Download ris as file")
+    @Operation(tags = { "records" }, summary = "Download ris as file",
+            description = "The response carries a Content-Disposition header naming the file \"<pi>_<logId>.ris\", which prompts a download"
+                    + " in browsers, unlike the plain-text variant of this endpoint. Access requires the section's list permission; if it is"
+                    + " not granted, the section is reported as not found rather than access being denied.")
     @ApiResponse(responseCode = "200", description = "RIS citation for the section downloaded as plain text file", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
@@ -127,19 +142,24 @@ public class RecordSectionResource {
     }
 
     /**
-     * getRISAsText.
+     * Returns the RIS citation for a logical section as inline plain text.
+     *
+     * <p>Unlike the file variant of this endpoint, no Content-Disposition header is set, so the response is rendered inline rather than
+     * downloaded. Access requires the section's list permission; if it is not granted, the section is reported as not found rather than
+     * access being denied, so as not to reveal the existence of restricted sections.
      *
      * @return the RIS citation for the section as plain text
-     * @throws io.goobi.viewer.exceptions.PresentationException if any.
-     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
-     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no section is found for the given identifiers,
+     *             or if the section's list permission is not granted
      * @should return non null result
      */
     @GET
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records" }, summary = "Get ris as text")
+    @Operation(tags = { "records" }, summary = "Get ris as text",
+            description = "Unlike the file variant of this endpoint, no Content-Disposition header is set, so the response is rendered"
+                    + " inline rather than downloaded. Access requires the section's list permission; if it is not granted, the section is"
+                    + " reported as not found rather than access being denied.")
     @ApiResponse(responseCode = "200", description = "RIS citation for the section as plain text", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
@@ -150,10 +170,23 @@ public class RecordSectionResource {
         return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
 
+    /**
+     * Returns the IIIF 2.1.1 range for a single logical section of the record.
+     *
+     * <p>The range is generated from the same logical structure that also underlies the record's IIIF manifest, filtered down to the
+     * section identified by the given div ID. Access requires the list permission of the requested section; if it is not granted, the
+     * request is rejected with 403.
+     *
+     * @return the {@link Range2} for the requested section
+     * @should return non null result
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 range for section")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 range for section",
+            description = "The range is generated from the same logical structure that also underlies the record's IIIF manifest, filtered"
+                    + " down to the section identified by the given div ID. Access requires the list permission of the requested section; if"
+                    + " it is not granted, the request is rejected with 403.")
     @ApiResponse(responseCode = "200", description = "IIIF 2.1.1 range for the requested section",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Range2.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")

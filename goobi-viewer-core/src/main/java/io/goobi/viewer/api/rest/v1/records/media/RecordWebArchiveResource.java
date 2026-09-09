@@ -118,8 +118,8 @@ public class RecordWebArchiveResource {
     }
 
     /**
-     * Returns the replay JSON for this record's web archives, preferring locally indexed WACZ/WARC files and falling back to externally referenced
-     * archives via {@code MD_WEBARCHIVE_IDENTIFIER}.
+     * Returns the replay JSON for this record's web archives, preferring pages indexed with the mimetype {@code application/warc} and
+     * falling back to externally referenced archives via {@code MD_WEBARCHIVE_IDENTIFIER}.
      *
      * @return replay JSON, a redirect to a single external JSON manifest, or {@code 404} if no archive is found
      * @throws IndexUnreachableException if the Solr index cannot be reached
@@ -135,7 +135,12 @@ public class RecordWebArchiveResource {
     @GET
     @Path(ApiUrls.RECORDS_WEBARCHIVE)
     @Produces("application/json")
-    @Operation(tags = { "records" }, summary = "Get json containing all webarchive resources")
+    @Operation(tags = { "records" }, summary = "Get json containing all webarchive resources",
+            description = "Pages of the record indexed with the mimetype application/warc are preferred; if none exist, external archives"
+                    + " referenced via MD_WEBARCHIVE_IDENTIFIER are used instead. When exactly one external identifier resolves to a JSON"
+                    + " URL, the response"
+                    + " is a redirect to that URL rather than a JSON body; when no local or external archive is found at all, the response"
+                    + " is 404.")
     @ApiResponse(responseCode = "200", description = "ReplayWeb.page configuration for the record's web archives",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = ReplayJson.class)))
     @ApiResponse(responseCode = "302", description = "Redirect to the single external web archive of the record")

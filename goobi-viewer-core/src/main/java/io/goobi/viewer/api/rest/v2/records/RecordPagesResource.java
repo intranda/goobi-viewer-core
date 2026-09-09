@@ -102,10 +102,23 @@ public class RecordPagesResource {
 
     }
 
+    /**
+     * Returns the IIIF 3.0 canvas for a single page.
+     *
+     * <p>The canvas links to the page's comment and crowdsourcing annotation pages, adds the fulltext annotation page only if the page has
+     * fulltext, and, if enabled in the configuration, links to the record's page view in this viewer instance. Access requires the record's
+     * basic list permission.
+     *
+     * @return the {@link Canvas3} for the requested page
+     * @throws ContentNotFoundException if no page exists at the given order for the record
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_CANVAS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 canvas for page")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 canvas for page",
+            description = "The canvas links to the page's comment and crowdsourcing annotation pages, adds the fulltext annotation page"
+                    + " only if the page has fulltext, and, if enabled in the configuration, links to the record's page view in this viewer"
+                    + " instance. Access requires the record's basic list permission.")
     @ApiResponse(responseCode = "200", description = "IIIF 3.0 canvas for the given page",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Canvas3.class)))
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
@@ -117,10 +130,21 @@ public class RecordPagesResource {
         return new CanvasBuilder(urls, this.servletRequest).build(pi, pageNo);
     }
 
+    /**
+     * Returns the annotation page containing the page's media resources.
+     *
+     * <p>The media annotation page of the page's canvas is returned. The response is 404 if the IIIF content API is configured with a
+     * different base URL than this REST API. Access requires the record's basic list permission.
+     *
+     * @return the {@link AnnotationPage} containing the page's media resources
+     * @throws ContentNotFoundException if the page has no matching media annotation page (e.g. the page is not an image)
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_MEDIA)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get media resources for page")
+    @Operation(tags = { "records", "iiif" }, summary = "Get media resources for page",
+            description = "The media annotation page of the page's canvas is returned. The response is 404 if the IIIF content API is"
+                    + " configured with a different base URL than this REST API. Access requires the record's basic list permission.")
     @ApiResponse(responseCode = "200", description = "Annotation page containing media resources for the given page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
     @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
@@ -137,10 +161,22 @@ public class RecordPagesResource {
                 .orElseThrow(() -> new ContentNotFoundException(String.format("No media annotations found for page %d in %s", pageNo, pi)));
     }
 
+    /**
+     * Returns a single media annotation for a page by its identifier.
+     *
+     * <p>The page's canvas is built and searched, across all of its annotation pages, for a single annotation whose identifier matches
+     * this endpoint's own URL. Access requires the record's basic list permission.
+     *
+     * @param itemId identifier string of the annotation
+     * @return the {@link IAnnotation} matching the given identifier
+     * @throws ContentNotFoundException if no matching annotation exists
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_MEDIA + "/{itemid}")
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get a single media annotation for a page by its identifier")
+    @Operation(tags = { "records", "iiif" }, summary = "Get a single media annotation for a page by its identifier",
+            description = "The page's canvas is built and searched, across all of its annotation pages, for a single annotation whose"
+                    + " identifier matches this endpoint's own URL. Access requires the record's basic list permission.")
     @ApiResponse(responseCode = "200", description = "The media annotation for the given identifier",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = WebAnnotation.class)))
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
@@ -160,10 +196,22 @@ public class RecordPagesResource {
                 .orElseThrow(() -> new ContentNotFoundException(String.format("No media annotation found for page %d in %s", pageNo, pi)));
     }
 
+    /**
+     * Returns the fulltext of a page as IIIF 3.0 annotations.
+     *
+     * <p>If the page has an ALTO file, one annotation is created per text line; otherwise the page's plain fulltext, if any, is returned
+     * as a single annotation. If the page has neither, an empty annotation page is returned instead of an error. Access requires the
+     * page's fulltext view permission.
+     *
+     * @return the {@link AnnotationPage} of fulltext annotations for the page
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_TEXT)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get fulltext annotations for page")
+    @Operation(tags = { "records", "iiif" }, summary = "Get fulltext annotations for page",
+            description = "If the page has an ALTO file, one annotation is created per text line; otherwise the page's plain fulltext, if"
+                    + " any, is returned as a single annotation. If the page has neither, an empty annotation page is returned instead of"
+                    + " an error. Access requires the page's fulltext view permission.")
     @ApiResponse(responseCode = "200", description = "Annotation page containing fulltext annotations for the given page",
             useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
@@ -175,10 +223,22 @@ public class RecordPagesResource {
         return new CanvasBuilder(urls, this.servletRequest).buildFulltextAnnotations(pi, pageNo);
     }
 
+    /**
+     * Returns the crowdsourcing annotations created for a single page.
+     *
+     * <p>Annotations are read from the database, not the Solr index, and delivered as a W3C web annotation page. This includes every
+     * crowdsourcing motivation (e.g. describing, commenting, tagging), which distinguishes it from the dedicated comments endpoint. Access
+     * requires the page's view-user-generated-content permission.
+     *
+     * @return the {@link AnnotationPage} for the requested page
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page")
+    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a page",
+            description = "Annotations are read from the database, not the Solr index, and delivered as a W3C web annotation page. This"
+                    + " includes every crowdsourcing motivation (e.g. describing, commenting, tagging), which distinguishes it from the"
+                    + " dedicated comments endpoint. Access requires the page's view-user-generated-content permission.")
     @ApiResponse(responseCode = "200", description = "Annotation page containing annotations for the given page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
     @ApiResponse(responseCode = "403", description = "Access to user-generated content for this record is restricted")
@@ -195,11 +255,23 @@ public class RecordPagesResource {
         return new AnnotationPage(uri);
     }
 
+    /**
+     * Returns the comments left on a single page.
+     *
+     * <p>Comments are read from the database and delivered as a W3C web annotation page, one annotation per comment. Unlike the
+     * annotations endpoint, this only returns simple page comments, not other crowdsourcing motivations. Access requires the page's
+     * view-user-generated-content permission.
+     *
+     * @return the {@link AnnotationPage} of comments for the requested page
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
     @AccessRightsBinding({ IPrivilegeHolder.PRIV_VIEW_UGC })
-    @Operation(tags = { "records", "annotations" }, summary = "List comments for a page")
+    @Operation(tags = { "records", "annotations" }, summary = "List comments for a page",
+            description = "Comments are read from the database and delivered as a W3C web annotation page, one annotation per comment."
+                    + " Unlike the annotations endpoint, this only returns simple page comments, not other crowdsourcing motivations."
+                    + " Access requires the page's view-user-generated-content permission.")
     @ApiResponse(responseCode = "200", description = "Annotation page containing comments for the given page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")
     @ApiResponse(responseCode = "403", description = "Access to user-generated content for this record is restricted")
@@ -209,10 +281,27 @@ public class RecordPagesResource {
         return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForPageComments(pi, pageNo, uri);
     }
 
+    /**
+     * Returns the IIIF 3.0 manifest for the record, limited to a single page.
+     *
+     * <p>Only the requested page is added to the manifest as a canvas, instead of every page of the record, and the manifest's thumbnail
+     * is taken from that page; the manifest's own metadata still describes the whole record. Requesting a page for an anchor record,
+     * which has no pages of its own, is rejected instead of falling back to the anchor's collection. Access requires the record's basic
+     * list permission. The {@code mode} query parameter has no effect on this endpoint.
+     *
+     * @param mode accepted but not evaluated by this endpoint; the manifest is always built with its default resource set
+     * @return the {@link IPresentationModelElement} for the record
+     * @throws ContentLibException if the record is an anchor record without pages of its own
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PAGES_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 manifest for record starting at the given page")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 manifest for record starting at the given page",
+            description = "Only the requested page is added to the manifest as a canvas, instead of every page of the record, and the"
+                    + " manifest's thumbnail is taken from that page; the manifest's own metadata still describes the whole record."
+                    + " Requesting a page for an anchor record, which has no pages of its own, is rejected instead of falling back to the"
+                    + " anchor's collection. Access requires the record's basic list permission. The 'mode' query parameter has no effect"
+                    + " on this endpoint.")
     @ApiResponse(responseCode = "200", description = "IIIF 3.0 manifest for the given record",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Manifest3.class, Collection3.class })))
     @ApiResponse(responseCode = "400", description = "Invalid page number — must be a valid integer")

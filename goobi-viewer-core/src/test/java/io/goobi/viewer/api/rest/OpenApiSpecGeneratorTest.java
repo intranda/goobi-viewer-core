@@ -218,6 +218,61 @@ class OpenApiSpecGeneratorTest {
     }
 
     /**
+     * Minimum length of an operation description. Anything shorter is a stub that repeats the summary rather than
+     * telling an API consumer something new.
+     */
+    private static final int MIN_DESCRIPTION_LENGTH = 40;
+
+    /**
+     * Operations whose summary already says everything an API consumer needs, so that any description would only
+     * rephrase it. Each entry needs a comment naming the reason; the set is expected to stay empty.
+     */
+    private static final Set<String> SUMMARY_IS_SUFFICIENT = Set.of();
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies describe every operation for v1
+     */
+    @Test
+    void buildOpenApi_shouldDescribeEveryOperationForV1() throws Exception {
+        assertOperationsDescribed("v1");
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies describe every operation for v2
+     */
+    @Test
+    void buildOpenApi_shouldDescribeEveryOperationForV2() throws Exception {
+        assertOperationsDescribed("v2");
+    }
+
+    /**
+     * Fails with the offending operations when one has no description, when the description merely repeats the summary,
+     * or when it is too short to say anything beyond it — the condition Spectral reports as "operation-description",
+     * tightened so that a stub cannot satisfy it.
+     *
+     * @param version "v1" or "v2"
+     */
+    private static void assertOperationsDescribed(String version) throws Exception {
+        OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+        List<String> offenders = new ArrayList<>();
+        openApi.getPaths().forEach((path, pathItem) -> pathItem.readOperationsMap().forEach((method, operation) -> {
+            String key = version + " " + method.name() + " " + path;
+            if (SUMMARY_IS_SUFFICIENT.contains(key)) {
+                return;
+            }
+            String description = operation.getDescription();
+            if (StringUtils.isBlank(description) || description.trim().length() < MIN_DESCRIPTION_LENGTH) {
+                offenders.add(key + " (missing or too short)");
+            } else if (StringUtils.equalsIgnoreCase(description.trim(), StringUtils.trimToEmpty(operation.getSummary()))) {
+                offenders.add(key + " (description repeats the summary)");
+            }
+        }));
+        assertTrue(offenders.isEmpty(), version + " operations without a usable description: " + offenders);
+    }
+
+    /**
      * @see OpenApiSpecGenerator#requireNonEmptyPaths(OpenAPI, String)
      * @verifies throw when paths are empty
      */

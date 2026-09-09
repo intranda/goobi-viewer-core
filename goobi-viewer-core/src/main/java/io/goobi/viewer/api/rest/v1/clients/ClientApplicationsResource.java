@@ -95,10 +95,24 @@ public class ClientApplicationsResource {
         this.clientManager = clientManager;
     }
 
+    /**
+     * Registers the calling client application as a new, pending trusted client using the identifier sent in the request.
+     *
+     * <p>The client identifier is read from the 'X-goobi-content-protection' request header. A new {@link ClientApplication} is
+     * persisted with access status {@code REQUESTED} and the caller's IP address; the registration must be approved separately (see
+     * {@link #setClient(String, ClientApplication)}) before the client is granted access.
+     *
+     * @return the registration status as JSON
+     * @throws ContentLibException if a client is already registered with this identifier
+     * @throws DAOException if the new client cannot be persisted
+     */
     @POST
     @jakarta.ws.rs.Path(CLIENTS_REGISTER)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Request registration as a trusted client application", tags = { "clients" })
+    @Operation(summary = "Request registration as a trusted client application", tags = { "clients" },
+            description = "The client identifier is read from the 'X-goobi-content-protection' request header, not from the request"
+                    + " body. A newly registered client is stored with access status REQUESTED and must be approved through the client"
+                    + " management endpoint before it is granted access.")
     @ApiResponse(responseCode = "201", description = "Client registered successfully; registration is pending approval",
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(type = "object", example = "{\"status\":\"REQUESTED\"}")))
@@ -113,10 +127,25 @@ public class ClientApplicationsResource {
         return Response.status(Response.Status.CREATED).entity(createRegistrationResponse(client)).build();
     }
 
+    /**
+     * Requests access for a previously registered client application and reports its current access status.
+     *
+     * <p>The client identifier is read from the 'X-goobi-content-protection' request header and must belong to a client already
+     * registered via {@link #register()}. On success the client is stored in the current HTTP session for later access condition
+     * checks, and its last access date is updated in the database the first time this happens within the session.
+     *
+     * @return the access status as JSON
+     * @throws ContentLibException if no client is registered with the given identifier
+     * @throws DAOException if the client's access record cannot be read or updated
+     */
     @GET
     @jakarta.ws.rs.Path(CLIENTS_REQUEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Request access for a registered client application", tags = { "clients" })
+    @Operation(summary = "Request access for a registered client application", tags = { "clients" },
+            description = "The client identifier is read from the 'X-goobi-content-protection' request header and must belong to an"
+                    + " already registered client; a missing header is rejected before the client lookup. On the first successful"
+                    + " request in a session the client's last access date is updated in the database and the client is remembered in"
+                    + " the HTTP session for subsequent access condition checks.")
     @ApiResponse(responseCode = "200", description = "Access status for the requesting client",
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(type = "object", example = "{\"access\":true,\"status\":\"GRANTED\"}")))

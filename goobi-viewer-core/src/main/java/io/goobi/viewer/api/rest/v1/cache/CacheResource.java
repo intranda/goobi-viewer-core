@@ -74,9 +74,24 @@ public class CacheResource {
     private ContentServerCacheManager cacheManager;
     private ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Reports which of the content, PDF and thumbnail caches are enabled and their current status.
+     *
+     * <p>A cache is included only if its useCache attribute (on contentCache, thumbnailCache or pdfCache) is enabled in the content
+     * server configuration; a cache whose status cannot be serialized to JSON is skipped and logged instead of failing the whole
+     * request. Every included cache is returned as an entry under the same "content" JSON key, each entry carrying its own cache name
+     * to identify which cache it describes.
+     *
+     * @return JSON object describing the enabled caches
+     * @throws ContentServerCacheException if a cache cannot be queried
+     */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Return information about internal cache status", tags = { "cache" })
+    @Operation(summary = "Return information about internal cache status", tags = { "cache" },
+            description = "Which caches appear in the response depends on the content server configuration: only a cache whose"
+                    + " useCache attribute (on contentCache, thumbnailCache or pdfCache) is enabled is included. A cache that cannot be"
+                    + " serialized to JSON is skipped and logged rather than failing the whole request. All included caches are returned"
+                    + " under the same 'content' JSON key; each entry carries its own cache name.")
     @ApiResponse(responseCode = "200", description = "Cache status information including item counts",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     public String getCacheInfo() throws ContentServerCacheException {
@@ -113,6 +128,9 @@ public class CacheResource {
     }
 
     /**
+     * Empties the main image, thumbnail and PDF caches for all records.
+     *
+     * <p>Each cache is cleared independently according to its query parameter; a cache whose flag is {@code false} is left untouched.
      *
      * @param content if true, clears the main image content cache
      * @param thumbs if true, clears the thumbnail cache
@@ -125,7 +143,10 @@ public class CacheResource {
     @ApiResponse(responseCode = "200", description = "Cache cleared successfully", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid query parameters")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
-    @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" })
+    @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" },
+            description = "Authorization compares the 'token' request header against the configured webapi.authorization.token. The"
+                    + " content, thumbs and pdf flags are independent, so only the caches whose flag is set to true are emptied, in full,"
+                    + " for every record.")
     public IResponseMessage clearCache(
             @Parameter(description = "If true, main image content cache will be cleared for all records") @QueryParam("content") boolean content,
             @Parameter(description = "If true, thumbnail cache will be cleared for all records") @QueryParam("thumbs") boolean thumbs,
@@ -139,6 +160,7 @@ public class CacheResource {
     }
 
     /**
+     * Clears the cache entries for a single record, matched by key prefix, and reports how many entries were removed.
      *
      * @param pi persistent identifier of the record whose cache entries are deleted
      * @param content if true, clears the main image content cache for the record
@@ -156,7 +178,10 @@ public class CacheResource {
     // 404 is returned when the {pi} path parameter does not match any record in the cache
     @ApiResponse(responseCode = "404", description = "Cache entry not found or record identifier not matched")
     @AuthorizationBinding
-    @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" })
+    @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" },
+            description = "Authorization works as for the record-independent variant. Deletion matches cache keys equal to the record"
+                    + " identifier or prefixed with it followed by an underscore; enabling pdf additionally matches keys containing the"
+                    + " identifier as a middle segment in the PDF cache.")
     public IResponseMessage clearCacheForRecord(
             @Parameter(description = "Persistent identifier of the record",
                     schema = @Schema(pattern = "^[A-Za-z0-9][A-Za-z0-9_.-]*$")) @PathParam("pi") String pi,

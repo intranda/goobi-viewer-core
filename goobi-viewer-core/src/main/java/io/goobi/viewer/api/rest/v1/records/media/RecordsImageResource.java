@@ -95,13 +95,21 @@ public class RecordsImageResource {
         this.pi = pi;
     }
 
+    /**
+     * Redirects to the {@code info.json} of the representative image of the record.
+     *
+     * @return a 303 redirect response
+     * @throws URISyntaxException if the redirect URI cannot be constructed
+     */
     @GET
     @Path(RECORDS_IMAGE)
     @Produces({ MediaType.APPLICATION_JSON, ContentServerResource.MEDIA_TYPE_APPLICATION_JSONLD })
     @Operation(
             summary = "IIIF image identifier for the representative image of the process given by the identifier."
                     + " Returns a IIIF 2.1.1 image information object",
-            tags = { "iiif", "records" })
+            tags = { "iiif", "records" },
+            description = "Redirects (HTTP 303) to the info.json of this record's representative image; the representative image is the Solr"
+                    + " THUMBNAIL file of the record, or the first page image if no thumbnail is set.")
     @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "Either the record or the file for the representative image doesn't exist")

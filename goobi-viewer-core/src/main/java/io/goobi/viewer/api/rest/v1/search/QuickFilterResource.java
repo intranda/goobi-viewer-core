@@ -67,10 +67,26 @@ public class QuickFilterResource {
 
     private static final Logger logger = LogManager.getLogger(QuickFilterResource.class);
 
+    /**
+     * Returns the facet values for a Solr field, grouped by the first letter of their (optionally translated) label.
+     *
+     * <p>Facet values are computed only over top-level work and anchor records, combined with the caller's access-condition
+     * suffixes. Whether values are translated is configured per facet template and field in config_viewer.xml and defaults
+     * to enabled; a field with no facet values returns an empty map rather than an error.
+     *
+     * @param field Solr field name to retrieve facet values for (e.g. MD_CREATOR, DOCSTRCT_TOP)
+     * @param lang language tag for label translation (e.g. de, en). Defaults to current session locale
+     * @param template facet template name whose field config to use for translation (defaults to _DEFAULT)
+     * @return a {@link Response} with the facet values grouped by first-letter, or an error if 'field' is missing
+     */
     @GET
     @Path(ApiUrls.QUICKFILTERS_FACETS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "search" }, summary = "Get translated facet values for a quick filter dropdown")
+    @Operation(tags = { "search" }, summary = "Get translated facet values for a quick filter dropdown",
+            description = "Facet values are computed only over top-level work and anchor records, filtered by the caller's"
+                    + " access-condition suffixes, and grouped by the first letter of their label. Whether values are translated"
+                    + " is configured per facet template and field (config_viewer.xml) and defaults to enabled; a field for which"
+                    + " the index returns no facet values yields an empty map rather than an error.")
     @ApiResponse(responseCode = "200", description = "Map of first-letter groups to facet value entries with translated labels",
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(type = "object", description = "Facet values grouped by group label")))

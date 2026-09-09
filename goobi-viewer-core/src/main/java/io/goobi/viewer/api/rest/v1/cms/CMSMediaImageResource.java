@@ -120,12 +120,19 @@ public class CMSMediaImageResource extends ImageResource {
         //don't do anyhting. The resource url has already been set in constructor
     }
 
+    /**
+     * Redirects to the canonical {@code info.json} url of this CMS media image resource.
+     *
+     * @return a 303 redirect response
+     */
     @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
     @Operation(tags = { "iiif" },
-            summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object")
+            summary = "IIIF image identifier for the CMS image file of the given filename. Returns a IIIF 2.1.1 image information object",
+            description = "Redirects (HTTP 303) to the canonical IIIF image information document (info.json) for this CMS media image; the"
+                    + " target URL is the resource's own base URL with \"/info.json\" appended.")
     @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "400", description = "Invalid filename — non-image extension filenames are rejected by the fallback handler")
     @ApiResponse(responseCode = "404", description = "Image not found")

@@ -101,7 +101,10 @@ public class CalendarResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_CALENDAR_YEAR_REGEX)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records" }, summary = "Get calendar entries for a record and year")
+    @Operation(tags = { "records" }, summary = "Get calendar entries for a record and year",
+            description = "The persistent identifier is resolved to an anchor, a multi-volume group, or a regular record first, and the"
+                    + " underlying query matches issues by the PI field appropriate to that record type together with the requested year."
+                    + " Each entry links to page 1 with no logical section when no page number or structure ID is indexed for the issue.")
     @ApiResponse(responseCode = "200", description = "JSON array of calendar entries for the record and year",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, array = @ArraySchema(schema = @Schema(type = "object"))))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or year value")
@@ -178,7 +181,10 @@ public class CalendarResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_CALENDAR_MONTHS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records" }, summary = "Get all year-month combinations that have calendar entries")
+    @Operation(tags = { "records" }, summary = "Get all year-month combinations that have calendar entries",
+            description = "The persistent identifier is resolved to an anchor, a multi-volume group, or a regular record first, the same"
+                    + " way as the calendar entries endpoint, and only calendar-month facet counts are queried rather than loading any"
+                    + " documents. Months are returned in ascending YYYY-MM order.")
     @ApiResponse(responseCode = "200", description = "JSON array of YYYY-MM strings for months with calendar entries",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, array = @ArraySchema(schema = @Schema(type = "string"))))
     // 400 is returned by the constructor when the PI fails validation (BadRequestException)

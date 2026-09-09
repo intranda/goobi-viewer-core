@@ -144,7 +144,10 @@ public class CMSMediaResource {
     }
 
     /**
-     * getMediaByTag.
+     * Returns the CMS media items associated with the given category tags.
+     *
+     * <p>Requires at least one non-blank category tag: a blank or missing {@code tags} value returns an empty list rather than
+     * falling back to all media items, unlike {@link #getAllMedia}. Category names are matched case-insensitively.
      *
      * @param tags category name(s) separated by '...'
      * @param maxItems maximum number of items to return
@@ -157,7 +160,9 @@ public class CMSMediaResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "media" },
-            summary = "Get a list of CMS-Media Items of one or more categories")
+            summary = "Get a list of CMS-Media Items of one or more categories",
+            description = "Requires at least one non-blank tag: a blank or missing tags value returns an empty list instead of all media"
+                    + " items, unlike GET /cms/media. Category names are matched case-insensitively.")
     @ApiResponse(responseCode = "200", description = "List of CMS media items matching the given categories", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid parameter value (e.g. negative max or prioritySlots)")
     @ApiResponse(responseCode = "403", description = "Access to CMS media is restricted")
@@ -193,7 +198,11 @@ public class CMSMediaResource {
     }
 
     /**
-     * getMediaByTag.
+     * Returns all CMS media items, optionally filtered by the given category tags.
+     *
+     * <p>The comma-separated {@code tags} parameter is optional: a blank or missing value returns all media items instead of an
+     * empty list, unlike {@link #getMediaOfCategories}. Unlike that endpoint, this operation also requires a valid
+     * {@code webapi.authorization.token} sent in the {@code token} request header.
      *
      * @param tags comma-separated list of category tag names
      * @param maxItems maximum number of items to return
@@ -206,7 +215,10 @@ public class CMSMediaResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(
             tags = { "media" },
-            summary = "Get a list of CMS-Media Items")
+            summary = "Get a list of CMS-Media Items",
+            description = "Comma-separated tags are optional: a blank or missing value returns all media items instead of an empty list,"
+                    + " unlike GET /cms/media/category/{tags}. Unlike that endpoint, this operation also requires a valid"
+                    + " webapi.authorization.token sent in the token request header.")
     @ApiResponse(responseCode = "200", description = "List of CMS media items", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "401", description = "Not authorized")
     @ApiResponse(responseCode = "500", description = "Internal server error - e.g. database unavailable")

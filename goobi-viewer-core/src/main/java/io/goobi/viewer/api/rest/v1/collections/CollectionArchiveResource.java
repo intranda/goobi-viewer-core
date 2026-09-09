@@ -93,12 +93,25 @@ public class CollectionArchiveResource {
     }
 
     /**
-     * @return metadata about the collection's archive (whether one exists, its size, record count and download URL)
+     * Returns metadata about the collection's archive: whether one exists, its size, its record count and the newest indexing date among
+     * its records.
+     *
+     * <p>The recordCount, sizeBytes and generatedMillis fields are present only when an archive has already been generated for the
+     * collection; otherwise the response reports available as false with no further detail. generatedMillis is the newest indexing date
+     * among the archived records, not the time the archive file itself was written. A field that is not configured for archiving results
+     * in a bad-request error.
+     *
+     * @return a map with the collection's field name, collection name, availability flag and, when an archive already exists, its record
+     *         count, size in bytes and the newest indexing date among the archived records
      * @throws IOException on filesystem error
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "collections" }, summary = "Information about the downloadable BagIt archive for a collection")
+    @Operation(tags = { "collections" }, summary = "Information about the downloadable BagIt archive for a collection",
+            description = "The recordCount, sizeBytes and generatedMillis fields are present only when an archive has already been"
+                    + " generated for the collection; otherwise the response reports available as false with no further detail."
+                    + " generatedMillis is the newest indexing date among the archived records, not the time the archive file itself was"
+                    + " written. A field that is not configured for archiving results in a bad-request error.")
     @ApiResponse(responseCode = "200", description = "Archive availability and metadata", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "401", description = "User is not logged in")
     public Map<String, Object> getArchiveInfo() throws IOException {
@@ -119,13 +132,20 @@ public class CollectionArchiveResource {
     /**
      * Streams the collection's pre-generated BagIt archive as a ZIP download.
      *
+     * <p>The archive is served only if it was already generated for the collection and its resolved path lies within the configured
+     * storage base; either condition failing is reported the same way as no archive existing at all. A field that is not configured for
+     * archiving results in a bad-request error.
+     *
      * @return a streaming ZIP response
      * @throws IOException on filesystem error
      * @throws ContentNotFoundException if no archive exists for the collection
      */
     @GET
     @jakarta.ws.rs.Path(COLLECTIONS_ARCHIVE_DOWNLOAD)
-    @Operation(tags = { "collections" }, summary = "Download the BagIt archive for a collection")
+    @Operation(tags = { "collections" }, summary = "Download the BagIt archive for a collection",
+            description = "The archive is served only if it was already generated for the collection and its resolved path lies within"
+                    + " the configured storage base; either condition failing is reported the same way as no archive existing at all. A"
+                    + " field that is not configured for archiving results in a bad-request error.")
     @ApiResponse(responseCode = "200", description = "The zipped BagIt archive",
             content = @Content(mediaType = "application/zip", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "401", description = "User is not logged in")

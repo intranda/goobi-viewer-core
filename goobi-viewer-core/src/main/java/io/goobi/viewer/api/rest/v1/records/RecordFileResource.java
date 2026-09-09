@@ -142,10 +142,25 @@ public class RecordFileResource {
         servletRequest.setAttribute("pi", pi);
     }
 
+    /**
+     * Returns the ALTO document for a single page.
+     *
+     * <p>The file is looked up first in the crowdsourced ALTO folder and, if not found there, in the record's regular ALTO folder, so
+     * corrections made through crowdsourcing take precedence over the originally indexed file. Access requires the fulltext view
+     * permission for the requested page.
+     *
+     * @param filename filename of the alto document
+     * @return the ALTO document as an XML string
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the fulltext view permission is not granted
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no ALTO file exists for the given filename
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_ALTO)
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page")
+    @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page",
+            description = "The file is looked up first in the crowdsourced ALTO folder and, if not found there, in the record's regular ALTO"
+                    + " folder, so crowdsourcing corrections take precedence over the originally indexed file. Access requires the fulltext"
+                    + " view permission for the requested page.")
     @ApiResponse(responseCode = "200", description = "ALTO XML for the requested page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
@@ -162,10 +177,25 @@ public class RecordFileResource {
         return ret.getOne();
     }
 
+    /**
+     * Returns the plain text content of a single page.
+     *
+     * <p>The text is looked up first in the crowdsourced plaintext folder and then in the regular plaintext folder; if neither contains a
+     * matching file, the page's ALTO file is converted to plain text on the fly instead. Access requires the fulltext view permission for
+     * the requested page.
+     *
+     * @param filename filename containing the text
+     * @return the plain text content of the page
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the fulltext view permission is not granted
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no plaintext or ALTO file exists for the filename
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
+    @Operation(tags = { "records" }, summary = "Get plaintext for a single page",
+            description = "The text is looked up first in the crowdsourced plaintext folder and then in the regular plaintext folder; if"
+                    + " neither contains a matching file, the page's ALTO file is converted to plain text on the fly instead. Access"
+                    + " requires the fulltext view permission for the requested page.")
     @ApiResponse(responseCode = "200", description = "Plaintext content for the requested page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
@@ -183,10 +213,25 @@ public class RecordFileResource {
         return builder.getFulltext(pi, Path.of(filename).getFileName().toString());
     }
 
+    /**
+     * Returns the fulltext of a single page converted to TEI format.
+     *
+     * <p>The plain text of the page (falling back to a converted ALTO file, as for the plaintext endpoint) is wrapped in a generated TEI
+     * header built from the record's indexed metadata. Access requires the fulltext view permission for the requested page.
+     *
+     * @param filename filename containing the text
+     * @return the page fulltext as a TEI XML document
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the fulltext view permission is not granted
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no record is found for the given identifier,
+     *             or if no plaintext or ALTO file exists for the filename
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_TEI)
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
+    @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format",
+            description = "The plain text of the page (falling back to a converted ALTO file, as for the plaintext endpoint) is wrapped in a"
+                    + " generated TEI header built from the record's indexed metadata. Access requires the fulltext view permission for the"
+                    + " requested page.")
     @ApiResponse(responseCode = "200", description = "TEI XML for the requested page", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
@@ -203,10 +248,22 @@ public class RecordFileResource {
         return builder.getFulltextAsTEI(pi, Path.of(filename).getFileName().toString());
     }
 
+    /**
+     * Returns the MEI (Music Encoding Initiative) document for the record.
+     *
+     * <p>The file name is read from the record's indexed metadata; if the record has no MEI file associated, the response body is empty.
+     * Access requires the download-metadata privilege for the record.
+     *
+     * @return the MEI document as a string, or null if the record has no associated MEI file
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the download-metadata privilege is not granted
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no record is found for the given identifier
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_MEI)
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "records" }, summary = "Get MEI document for the record")
+    @Operation(tags = { "records" }, summary = "Get MEI document for the record",
+            description = "The file name is read from the record's indexed metadata; if the record has no MEI file associated, the response"
+                    + " body is empty. Access requires the download-metadata privilege for the record.")
     @ApiResponse(responseCode = "200", description = "MEI document for the record", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
@@ -221,9 +278,27 @@ public class RecordFileResource {
         }
     }
 
+    /**
+     * Returns a source metadata file (e.g. METS/LIDO) of the record.
+     *
+     * <p>The requested file is resolved beneath the record's configured source folder and rejected as invalid if the resolved path would
+     * escape that folder. The content type is probed from the file name, falling back to a generic binary stream. Access requires the
+     * download-original-content privilege for the record.
+     *
+     * @param filename source file name
+     * @return the source file content as a binary stream
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the filename is invalid or would resolve outside
+     *             the record's source folder
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no such file exists
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the download-original-content privilege is
+     *             not granted
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_SOURCE)
-    @Operation(tags = { "records" }, summary = "Get source files of record")
+    @Operation(tags = { "records" }, summary = "Get source files of record",
+            description = "The requested file is resolved beneath the record's configured source folder and rejected as invalid if the"
+                    + " resolved path would escape that folder. The content type is probed from the file name, falling back to a generic"
+                    + " binary stream. Access requires the download-original-content privilege for the record.")
     @ApiResponse(responseCode = "200", description = "Source file content",
             content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid filename")
@@ -272,9 +347,34 @@ public class RecordFileResource {
         return Response.ok(so, mimeType).build();
     }
 
+    /**
+     * Returns a media file (e.g. audio, video, 3D model or web archive) of the record.
+     *
+     * <p>The requested file is resolved beneath the record's configured media folder and rejected as invalid if the resolved path would
+     * escape that folder. Whether access is granted depends on the file's mime type: image files require the download-images privilege,
+     * every other file requires the download-born-digital-files privilege.
+     *
+     * <p>A 3D model file whose sibling model folder exists is delivered together with the other files found in that folder, packed into a
+     * zip archive generated on the fly. A ".wacz", ".warc" or ".warc.gz" file is streamed through the web archive delivery service instead
+     * of being returned directly. The request is recorded for the file-download usage statistics.
+     *
+     * @param filename media file name
+     * @return the media file content as a binary stream, or no entity if the file is a web archive delivered through the web archive
+     *             delivery service
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the filename is invalid or would resolve outside
+     *             the record's media folder
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no such file exists
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the required download privilege is not
+     *             granted
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_MEDIA)
-    @Operation(tags = { "records" }, summary = "Get media files of record")
+    @Operation(tags = { "records" }, summary = "Get media files of record",
+            description = "Whether access is granted depends on the file's mime type: image files require the download-images privilege,"
+                    + " every other file requires the download-born-digital-files privilege. A 3D model file whose sibling model folder"
+                    + " exists is delivered together with the other files found in that folder, packed into a zip archive generated on the"
+                    + " fly; a web archive file (.wacz/.warc/.warc.gz) is streamed through the web archive delivery service instead of being"
+                    + " returned directly.")
     @ApiResponse(responseCode = "200", description = "Media file content",
             content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid filename")
@@ -386,9 +486,25 @@ public class RecordFileResource {
                 IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES, NetTools.getIpAddress(servletRequest)).isGranted();
     }
 
+    /**
+     * Returns the CMDI metadata document for a record file.
+     *
+     * <p>The requested language defaults to the current user's locale if not given. The record's CMDI folder is searched for a file whose
+     * name matches "{@code _<isoCode>.xml}" for that language's ISO-3 code, falling back to the ISO-2 code if no ISO-3 match exists. Access
+     * requires the fulltext view permission for the given filename.
+     *
+     * @param filename image file name for cmdi
+     * @param lang language for CMDI
+     * @return the CMDI document as an XML string
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the fulltext view permission is not granted
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no matching CMDI file exists
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_CMDI)
-    @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @Operation(tags = { "records" }, summary = "Get cmdi for record file",
+            description = "The requested language defaults to the current user's locale if not given. The record's CMDI folder is searched"
+                    + " for a file whose name matches `_<isoCode>.xml` for that language's ISO-3 code, falling back to the ISO-2 code if no"
+                    + " ISO-3 match exists. Access requires the fulltext view permission for the given filename.")
     @ApiResponse(responseCode = "200", description = "CMDI metadata for the requested file", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
@@ -421,9 +537,27 @@ public class RecordFileResource {
         throw new ContentNotFoundException(StringConstants.EXCEPTION_RESOURCE_NOT_FOUND);
     }
 
+    /**
+     * Downloads a file from a previously completed external resource download task.
+     *
+     * <p>The path is resolved beneath the given task's own folder inside the record's configured download folder; a path that would
+     * escape that folder is rejected as invalid. Access requires the download-born-digital-files privilege for the record. The request
+     * is recorded for the file-download usage statistics.
+     *
+     * @param taskId download resource task id
+     * @param path file path relative to the download directory
+     * @return the downloaded resource file content as a binary stream
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the path would resolve outside the task's folder
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no such file exists
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if the download-born-digital-files privilege is
+     *             not granted
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_EXTERNAL_RESOURCE_DOWNLOAD)
-    @Operation(tags = { "records" }, summary = "Download an external resource previously downloaded to the viewer server")
+    @Operation(tags = { "records" }, summary = "Download an external resource previously downloaded to the viewer server",
+            description = "The path is resolved beneath the given task's own folder inside the record's configured download folder; a path"
+                    + " that would escape that folder is rejected as invalid. Access requires the download-born-digital-files privilege for"
+                    + " the record.")
     @ApiResponse(responseCode = "200", description = "Downloaded external resource file",
             content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid file path")

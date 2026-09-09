@@ -74,9 +74,21 @@ public class CollectionsResource {
         this.solrField = solrField.toUpperCase();
     }
 
+    /**
+     * Returns the top-level collections of a Solr field's collection hierarchy.
+     *
+     * <p>Only the top-level collections for the given field are listed as items of the returned collection; use the collection endpoint
+     * to descend into a single collection's own children and records. Unlike the version 1 endpoint, a field without any collections
+     * yields an empty collection instead of a not-found response.
+     *
+     * @return the {@link Collection3} listing the field's top-level collections
+     */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 3.0 collection")
+    @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 3.0 collection",
+            description = "Only the top-level collections for the given field are listed as items of the returned collection; use the"
+                    + " collection endpoint to descend into a single collection's own children and records. A field without any"
+                    + " collections yields an empty collection instead of a not-found response.")
     @ApiResponse(responseCode = "200", description = "IIIF Presentation 3.0 collection containing all collections for this field",
             useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid collection field parameter")
@@ -85,10 +97,26 @@ public class CollectionsResource {
         return new CollectionBuilder(urls, this.servletRequest).build(this.solrField);
     }
 
+    /**
+     * Returns a single collection of a Solr field's hierarchy, together with its immediate child collections and directly contained
+     * records.
+     *
+     * <p>Child collections are annotated with their own record and sub-collection counts. Records are returned as manifests, except
+     * anchor records for multi-volume works, which are returned as nested collections that resolve to the anchor's volumes. A Solr query
+     * the index rejects — for example an undefined collection field — results in a not-found response; a collection name with no
+     * matching records simply yields an empty collection.
+     *
+     * @param collectionName name of the collection. Must be a value of the SOLR field the collection is based on
+     * @return the {@link Collection3} for the given collection
+     */
     @GET
     @jakarta.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation 3.0 collection")
+    @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF presentation 3.0 collection",
+            description = "Child collections are annotated with their own record and sub-collection counts. Records are returned as"
+                    + " manifests, except anchor records for multi-volume works, which are returned as nested collections that resolve to"
+                    + " the anchor's volumes. A Solr query the index rejects — for example an undefined collection field — results in a"
+                    + " not-found response; a collection name with no matching records simply yields an empty collection.")
     @ApiResponse(responseCode = "200", description = "IIIF Presentation 3.0 collection for the given collection name",
             useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid collection field parameter")

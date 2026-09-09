@@ -133,12 +133,22 @@ public class ExternalImageResource extends ImageResource {
         }
     }
 
+    /**
+     * Fails with an internal error instead of rendering the externally hosted image as a single-page PDF.
+     *
+     * <p>Building the PDF filename reads the {@code pi} request attribute, which is never set on the path for external images, so the
+     * method throws a {@link NullPointerException} before the content server is reached.
+     *
+     * @return streaming output that writes the rendered pdf
+     * @throws ContentLibException if rendering fails
+     */
     @Override
     @GET
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF",
+            description = "This operation currently fails with an internal error for every request; no PDF document is returned.")
     @ApiResponse(responseCode = "200", description = "PDF rendition of the image",
             content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
     // Access-denied and error responses are returned as application/json even though the declared content type is application/pdf
@@ -166,11 +176,18 @@ public class ExternalImageResource extends ImageResource {
         return super.getPdf();
     }
 
+    /**
+     * Redirects to the canonical {@code info.json} url of this external image resource.
+     *
+     * @return a 303 redirect response
+     */
     @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 3.0 image information object")
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 3.0 image information object",
+            description = "Redirects (HTTP 303) to the canonical IIIF image information document (info.json) for the externally hosted"
+                    + " image; the target URL is the resource's own base URL with \"/info.json\" appended.")
     @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "404", description = "Image not found")
     public Response redirectToCanonicalImageInfo() throws ContentLibException {

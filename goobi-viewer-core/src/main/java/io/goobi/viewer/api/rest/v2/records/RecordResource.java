@@ -126,10 +126,25 @@ public class RecordResource {
         }
     }
 
+    /**
+     * Returns the IIIF Presentation 3.0 manifest (or collection, for anchor records) for the record.
+     *
+     * <p>When the record is configured to delegate to an external IIIF service, the response is instead an HTTP
+     * redirect to that service's manifest URL rather than a locally generated manifest. The manifest embeds the
+     * record's crowdsourcing annotations and user comments as annotation pages, hiding the annotation items behind
+     * an authorization service when the requester lacks the record's user-generated-content view privilege.
+     *
+     * @return the generated manifest or collection, or {@code null} when a redirect to an external manifest was issued instead
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 manifest for record")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 3.0 manifest for record",
+            description = "When the record is configured to delegate to an external IIIF service, the response is an HTTP redirect to"
+                    + " that service's manifest instead of a locally generated one. Anchor records (the parent of a multi-volume work)"
+                    + " return a IIIF collection with the volumes added as manifests; the manifest embeds the record's crowdsourcing"
+                    + " annotations and comments, hiding the annotation items behind an authorization service when the requester lacks"
+                    + " the record's user-generated-content view privilege.")
     @ApiResponse(responseCode = "200", description = "IIIF 3.0 manifest of the record, or a collection for anchor records",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Manifest3.class, Collection3.class })))
     @IIIFPresentationBinding
@@ -148,10 +163,21 @@ public class RecordResource {
         return new ManifestBuilder(urls, servletRequest).build(pi);
     }
 
+    /**
+     * Returns all W3C Web Annotations recorded for the record as a single annotation collection.
+     *
+     * <p>The collection contains every annotation for the record on one page (its item count equals the total number
+     * of annotations).
+     *
+     * @return the record's annotation collection
+     * @throws DAOException if the annotations cannot be read from the database
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as annotation collection")
+    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as annotation collection",
+            description = "All annotations recorded for the record are returned as a single collection page, whose item count equals the"
+                    + " total annotation count.")
     @ApiResponse(responseCode = "200", description = "Annotation collection of the record",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationCollection.class)))
     public IAnnotationCollection getAnnotationsForRecord() throws DAOException, IllegalRequestException {
@@ -162,10 +188,21 @@ public class RecordResource {
         return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecord(pi, uri);
     }
 
+    /**
+     * Returns all user comments recorded for the record as a single annotation collection.
+     *
+     * <p>The collection contains every comment for the record on one page (its item count equals the total number of
+     * comments).
+     *
+     * @return the record's comment collection
+     * @throws DAOException if the comments cannot be read from the database
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List comments for a record as an annotation collection")
+    @Operation(tags = { "records", "annotations" }, summary = "List comments for a record as an annotation collection",
+            description = "All comments recorded for the record are returned as a single collection page, whose item count equals the"
+                    + " total comment count.")
     @ApiResponse(responseCode = "200", description = "Comment collection of the record",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationCollection.class)))
     public IAnnotationCollection getCommentsForRecord() throws DAOException {
@@ -175,10 +212,22 @@ public class RecordResource {
         return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecordComments(pi, uri);
     }
 
+    /**
+     * Returns the single page of the record's annotation collection, containing all of its annotations.
+     *
+     * <p>Because the collection has exactly one page, this endpoint always returns page 1; there is no parameter for
+     * requesting further pages. A record without annotations yields an empty page instead of an error.
+     *
+     * @return the record's annotation page
+     * @throws DAOException if the annotations cannot be read from the database
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_ANNOTATIONS_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as an annotation collection page")
+    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record as an annotation collection page",
+            description = "Since the record's annotation collection contains all of its annotations on a single page, this endpoint"
+                    + " always returns that first page; there is no parameter for requesting further pages. A record without annotations"
+                    + " yields an empty page rather than an error.")
     @ApiResponse(responseCode = "200", description = "First page of the record's annotation collection", useReturnTypeSchema = true)
     public AnnotationPage getAnnotationsPageForRecord() throws DAOException, IllegalRequestException {
 
@@ -193,10 +242,22 @@ public class RecordResource {
         }
     }
 
+    /**
+     * Returns the single page of the record's comment collection, containing all of its comments.
+     *
+     * <p>Because the collection has exactly one page, this endpoint always returns page 1; there is no parameter for
+     * requesting further pages. A record without comments yields an empty page instead of an error.
+     *
+     * @return the record's comment page
+     * @throws DAOException if the comments cannot be read from the database
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_COMMENTS_PAGE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List comments for a record as an annotation collection page")
+    @Operation(tags = { "records", "annotations" }, summary = "List comments for a record as an annotation collection page",
+            description = "Since the record's comment collection contains all of its comments on a single page, this endpoint always"
+                    + " returns that first page; there is no parameter for requesting further pages. A record without comments yields an"
+                    + " empty page rather than an error.")
     @ApiResponse(responseCode = "200", description = "First page of the record's comment collection",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = AnnotationPage.class)))
     public IAnnotationCollection getCommentsForRecordPage()
@@ -214,20 +275,21 @@ public class RecordResource {
     }
 
     /**
-     * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting), user comments
-     * (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
+     * Serves the IIIF Search API of the record's manifest.
+     *
+     * <p>Depending on the given motivation parameter, fulltext (motivation=painting) and/or crowdsourcing annotations, indexed metadata and
+     * user comments together (motivation=non-painting or motivation=describing) may be searched; omitting the parameter searches everything.
+     * Fulltext is only searched if the fulltext view permission is granted for the record.
      *
      * @param query The search query; a list of space separated terms. The search is for all complete words which match any of the query terms. Terms
-     *            may contain the wildcard charachter '*' to represent an arbitrary number of characters within the word
+     *            may contain the wildcard character '*' to represent an arbitrary number of characters within the word
      * @param motivation a space separated list of motivations of annotations to search for. Search for the following motivations is implemented:
      *            <ul>
-     *            <li>painting: fulltext resources</li>
-     *            <li>non-painting: all supported resources except fulltext</li>
-     *            <li>commenting: user comments</li>
-     *            <li>describing: Crowdsourced or other general annotations</li>
+     *            <li>painting: fulltext resources, searched only if the fulltext view permission is granted</li>
+     *            <li>non-painting or describing: crowdsourcing annotations, indexed metadata and user comments</li>
      *            </ul>
-     * @param date not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
-     * @param user not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
+     * @param date not supported. If this parameter is given, its name is listed in the 'ignored' property of the 'within' property of the answer
+     * @param user not supported. If this parameter is given, its name is listed in the 'ignored' property of the 'within' property of the answer
      * @param page the page number for paged result sets. if this is empty, page=1 is assumed
      * @return a {@link de.intranda.api.iiif.search.SearchResult} containing all annotations matching the query in the 'resources' property
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -236,7 +298,12 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: search within the manifest of the given record")
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: search within the manifest of the given record",
+            description = "The motivation parameter selects which resource types are searched: 'painting' searches fulltext, but only if"
+                    + " the fulltext view permission is granted for the record, while 'non-painting' or 'describing' together search"
+                    + " crowdsourcing annotations, indexed metadata and user comments; omitting the parameter searches everything. The date"
+                    + " and user parameters are accepted for IIIF Search API compatibility but are not evaluated; only their names are listed"
+                    + " in the response's 'within' object under its 'ignored' property.")
     @ApiResponse(responseCode = "200", description = "IIIF Search result containing matching annotations", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "404", description = "Record not found")
     public SearchResult searchInManifest(
@@ -251,13 +318,13 @@ public class RecordResource {
     }
 
     /**
-     * autoCompleteInManifest.
+     * Returns auto-complete suggestions for search terms within a IIIF manifest.
      *
      * @param query partial query string for auto-completion
      * @param motivation space-separated list of annotation motivations to filter
      * @param date date filter (not supported; passed to 'ignored' property)
      * @param user user filter (not supported; passed to 'ignored' property)
-     * @param page result page number; defaults to 1 if absent
+     * @param page page number; not supported for auto-completion, the full term list is always returned
      * @return the IIIF AutoSuggest result containing auto-completion candidates for the given query
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -265,7 +332,10 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: autocomplete search within the manifest of the given record")
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF Search API: autocomplete search within the manifest of the given record",
+            description = "Unlike the manifest search endpoint, this operation ignores the page parameter and always returns the complete"
+                    + " list of matching terms in one response. The date and user parameters are accepted for compatibility but are not"
+                    + " evaluated; only their names are listed in the 'ignored' property instead.")
     @ApiResponse(responseCode = "200", description = "IIIF AutoSuggest result containing matching terms", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "404", description = "Record not found")
     public AutoSuggestResult autoCompleteInManifest(

@@ -83,10 +83,23 @@ public class RecordSectionsResource {
         request.setAttribute(FilterTools.ATTRIBUTE_LOGID, divId);
     }
 
+    /**
+     * Returns the IIIF 3.0 range for a single structural section (logical division) of the record.
+     *
+     * <p>The range is built from the same structure tree used for the record's manifest and represents the requested section; if the
+     * section itself has pages, it starts with a canvas for the section's first page. Access requires the section's basic list
+     * permission.
+     *
+     * @return the {@link Range3} for the requested section
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no section exists for the given div ID
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_SECTIONS_RANGE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "IIIF 3.0 range of the section")
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF 3.0 range of the section",
+            description = "The range is built from the same structure tree used for the record's manifest and represents the requested"
+                    + " section; if the section itself has pages, it starts with a canvas for the section's first page. Access requires the"
+                    + " section's basic list permission.")
     @ApiResponse(responseCode = "200", description = "IIIF 3.0 range for the given section", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "403", description = "Record found but access is restricted")
     @ApiResponse(responseCode = "404", description = "Record or section not found")

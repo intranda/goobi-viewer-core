@@ -157,13 +157,21 @@ public class RecordsFilesImageResource extends ImageResource {
         }
     }
 
+    /**
+     * Renders the record's image file as a single-page PDF via the content server and streams it to the response.
+     *
+     * @return streaming output that writes the rendered pdf
+     * @throws ContentLibException if rendering fails
+     */
     @GET
     @Path(RECORDS_FILES_IMAGE_PDF)
     @Produces("application/pdf")
     @AccessConditionBinding
     @ContentServerPdfBinding
     @RecordFileDownloadBinding
-    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF")
+    @Operation(tags = { "records" }, summary = "Returns the image for the given filename as PDF",
+            description = "Renders the source image as a single-page PDF document, not a paginated export of the entire record, and delivers it"
+                    + " as an attachment named \"{pi}_{basename}.pdf\", where {basename} is the source file name without its extension.")
     @ApiResponse(responseCode = "200", description = "PDF document",
             content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename")
@@ -207,11 +215,19 @@ public class RecordsFilesImageResource extends ImageResource {
         }
     }
 
+    /**
+     * Redirects to the canonical {@code info.json} url of this record image resource.
+     *
+     * @return a 303 redirect response
+     */
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @AccessConditionBinding
     @ContentServerImageInfoBinding
-    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object")
+    @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object",
+            description = "Redirects (HTTP 303) to the canonical IIIF image information document (info.json) for the image file of the"
+                    + " record; the target URL is the resource's own base URL with \"/info.json\" appended. Access is subject to the"
+                    + " access conditions of the record.")
     @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     @ApiResponse(responseCode = "403", description = "Access denied due to access conditions")
     @ApiResponse(responseCode = "404", description = "Record or image not found")

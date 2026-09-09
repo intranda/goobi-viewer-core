@@ -51,11 +51,23 @@ public class MovingWallStatisticsResource {
 
     private static final String VALUE_SEPARATOR = ";";
 
+    /**
+     * Returns the identifiers of records unlocked by the moving wall in the given year, as CSV.
+     *
+     * <p>A record is included when it is a work (ISWORK:true) whose DATE_PUBLICRELEASEDATE Solr field falls within the given calendar
+     * year; each line contains the release date and the record's persistent identifier, sorted by release date.
+     *
+     * @param year the year for which to retrieve moving wall statistics
+     * @return CSV listing of unlocked record identifiers with their release dates
+     */
     @GET
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_MOVING_WALL_YEAR)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, "text/csv" })
     @AuthorizationBinding
-    @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identifiers for the given year", tags = { "statistics" })
+    @Operation(summary = "Requires an authentication token. Get moving wall unlocked record identifiers for the given year", tags = { "statistics" },
+            description = "A record is included when it is a work whose release date (the DATE_PUBLICRELEASEDATE Solr field) falls"
+                    + " within the given calendar year; entries are sorted by that date. Although json and plain text are also declared"
+                    + " as possible response media types, the response body is always CSV.")
     @ApiResponse(responseCode = "200", description = "CSV list of record identifiers unlocked by the moving wall for the given year",
             content = { @Content(mediaType = "text/csv", schema = @Schema(type = "string")),
                     @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")),

@@ -169,10 +169,24 @@ public class RecordResource {
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
     }
 
+    /**
+     * Returns the RIS citation for the record as a downloadable file attachment.
+     *
+     * <p>The response carries a {@code Content-Disposition} header naming the file {@code <pi>_<logid>.ris}; the citation
+     * text itself is identical to that returned by {@link #getRISAsText()}. Records whose access conditions deny the list
+     * privilege are reported as not found rather than forbidden.
+     *
+     * @return the RIS citation for the record as plain text
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no record exists for the given identifier, or the
+     *             caller lacks the list privilege for it
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records" }, summary = "Download ris as file")
+    @Operation(tags = { "records" }, summary = "Download ris as file",
+            description = "The response sets a Content-Disposition header so the RIS citation downloads as an attachment named"
+                    + " <pi>_<logid>.ris; the citation text is otherwise identical to that returned by /ris.txt. Records whose access"
+                    + " conditions deny the list privilege are reported as not found rather than forbidden.")
     @ApiResponse(responseCode = "200", description = "RIS citation downloaded as plain text file", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -187,12 +201,17 @@ public class RecordResource {
     }
 
     /**
-     * getRISAsText.
+     * Returns the RIS citation for the record as plain text, without triggering a browser download.
+     *
+     * <p>The citation content is produced by the same builder as {@link #getRISAsFile()}; this endpoint merely omits the
+     * {@code Content-Disposition} attachment header set by the file variant. Records whose access conditions deny the
+     * list privilege are reported as not found rather than forbidden.
      *
      * @return the RIS citation for the record as plain text
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
-     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no record exists for the given identifier, or the
+     *             caller lacks the list privilege for it
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should return non null result
      * @should return 404 for given input
@@ -200,7 +219,10 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_RIS_TEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records" }, summary = "Get ris as text")
+    @Operation(tags = { "records" }, summary = "Get ris as text",
+            description = "The citation content is produced by the same builder as the file-download variant at /ris; this operation merely"
+                    + " omits the Content-Disposition header. Records whose access conditions deny the list privilege are reported as not"
+                    + " found rather than forbidden.")
     @ApiResponse(responseCode = "200", description = "RIS citation as plain text", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -213,10 +235,21 @@ public class RecordResource {
         return new RisResourceBuilder(servletRequest, servletResponse).getRIS(se);
     }
 
+    /**
+     * Returns the table of contents of the record as an indented plain-text tree.
+     *
+     * <p>Generating the table of contents requires the metadata-download privilege for the record; each hierarchy level
+     * in the returned text is indented by five characters.
+     *
+     * @return the table of contents as indented plain text
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if the record does not exist or access to it is denied
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_TOC)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records" }, summary = "Get table of contents of records")
+    @Operation(tags = { "records" }, summary = "Get table of contents of records",
+            description = "Access requires the metadata-download privilege for the record; each hierarchy level in the returned text is"
+                    + " indented by five characters.")
     @ApiResponse(responseCode = "200", description = "Table of contents as plain text", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -228,10 +261,24 @@ public class RecordResource {
         return new TocResourceBuilder(servletRequest, servletResponse).getToc(pi);
     }
 
+    /**
+     * Returns all crowdsourcing annotations attached to any page of the record, combined into a single collection.
+     *
+     * <p>Annotations are collected across every page of the record and returned as one flat, unpaginated list. The
+     * {@code format} parameter selects the serialization: Open Annotation when it is {@code oa}, W3C Web Annotation
+     * otherwise.
+     *
+     * @param format annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as
+     *            W3C-Webannotations
+     * @return the annotation collection or list for the record, in the requested format
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_ANNOTATIONS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record")
+    @Operation(tags = { "records", "annotations" }, summary = "List annotations for a record",
+            description = "Annotations are collected across every page of the record and returned as one combined, unpaginated list. The"
+                    + " format query parameter switches between the W3C Web Annotation and Open Annotation serializations of the same data.")
     @ApiResponse(responseCode = "200", description = "Annotation collection for the record",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { AnnotationList.class, AnnotationPage.class })))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
@@ -251,10 +298,26 @@ public class RecordResource {
         return new WebAnnotationBuilder(urls).getCrowdsourcingAnnotationCollection(uri, pi, false);
     }
 
+    /**
+     * Returns the user comments for the record as an annotation collection or list.
+     *
+     * <p>Comments are stored separately from crowdsourcing annotations. Both formats return every comment for the
+     * record: the default W3C Web Annotation format wraps them in an {@code AnnotationCollection} whose first (and only)
+     * {@code AnnotationPage} already contains all of them, while the Open Annotation format ({@code format=oa}) returns
+     * them directly as a flat {@code AnnotationList} with no paging envelope.
+     *
+     * @param format annotation format of the response. If it is 'oa' the comments will be delivered as OpenAnnotations, otherwise as
+     *            W3C-Webannotations
+     * @return the comment collection or list for the record, in the requested format
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_COMMENTS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "annotations" }, summary = "List comments for a record")
+    @Operation(tags = { "records", "annotations" }, summary = "List comments for a record",
+            description = "Comments are stored separately from crowdsourcing annotations. Both formats return every comment for the"
+                    + " record: the default W3C format wraps them in a collection whose first page already contains all of them, while the"
+                    + " Open Annotation format (format=oa) returns them directly as a flat list with no paging envelope.")
     @ApiResponse(responseCode = "200", description = "Annotation collection of comments for the record",
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                     schema = @Schema(oneOf = { AnnotationList.class, AnnotationCollection.class })))
@@ -276,10 +339,24 @@ public class RecordResource {
         return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationCollectionForRecordComments(pi, uri);
     }
 
+    /**
+     * Returns one page of the paginated Web Annotation collection of comments for the record.
+     *
+     * <p>Page numbers are 1-based. A record with no comments at all is reported as not found, since there is then no
+     * valid page to return.
+     *
+     * @param page Page number (1-based)
+     * @return the requested page of the comment collection
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException if the page number is less than 1
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if the record has no comments
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_COMMENTS + "/{page}")
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Get a page of comments for a record", tags = { "records", "annotations" })
+    @Operation(summary = "Get a page of comments for a record", tags = { "records", "annotations" },
+            description = "A record with no comments at all is reported as not found (404), since there is then no valid page to return;"
+                    + " requesting a page number below 1 is rejected with 400.")
     @ApiResponse(responseCode = "200", description = "Annotation page containing comments", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "If the page number is less than 1")
     @ApiResponse(responseCode = "404", description = "No record found or no comments for the given identifier")
@@ -293,10 +370,22 @@ public class RecordResource {
         return new AnnotationsResourceBuilder(urls, servletRequest).getWebAnnotationPageForRecordComments(pi, uri, page);
     }
 
+    /**
+     * Returns the record's metadata source file (e.g. METS or LIDO) as originally delivered to the indexer.
+     *
+     * <p>The source format is taken from the record's indexed metadata and defaults to METS if none is set; the file is
+     * read from the record's data repository on disk rather than regenerated from the index.
+     *
+     * @return the source file content as XML
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no record is indexed for the given identifier,
+     *             or if no source file exists on disk for the record
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_METADATA_SOURCE)
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "records" }, summary = "Get record metadata source file")
+    @Operation(tags = { "records" }, summary = "Get record metadata source file",
+            description = "The source format (e.g. METS or LIDO) is read from the record's indexed metadata and defaults to METS when"
+                    + " unset; the file is served from the record's data repository on disk rather than regenerated from the index.")
     @ApiResponse(responseCode = "200", description = "Metadata source file content",
             content = @Content(mediaType = MediaType.TEXT_XML, schema = @Schema(type = "string")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
@@ -329,6 +418,18 @@ public class RecordResource {
         throw new ContentNotFoundException("No source file found for " + pi);
     }
 
+    /**
+     * Returns the IIIF Presentation 2.1.1 manifest (or collection, for anchor records) for the record.
+     *
+     * <p>When the full manifest is requested and the record is configured to delegate to an external IIIF service, the
+     * response is instead an HTTP redirect to that service's manifest URL rather than a locally generated manifest.
+     *
+     * @param mode Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest
+     *            with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources
+     *            from files
+     * @return the generated manifest or collection, or {@code null} when a redirect to an external manifest was issued instead
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no document exists for the given identifier
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST)
     @Produces({ MediaType.APPLICATION_JSON })
@@ -338,7 +439,10 @@ public class RecordResource {
     // 403 is returned by AccessConditionRequestFilter when the record is not found in the Solr index
     @ApiResponse(responseCode = "403", description = "Access denied or record not accessible (e.g. record not found in index)")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
-    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record")
+    @Operation(tags = { "records", "iiif" }, summary = "Get IIIF 2.1.1 manifest for record",
+            description = "When the record is configured to delegate to an external IIIF service, requesting the default build mode"
+                    + " redirects to that service's manifest instead of returning one generated locally. Anchor records (the parent record"
+                    + " of a multi-volume work) return a IIIF collection with the volumes added as manifests, rather than a manifest.")
     @IIIFPresentationBinding
     public IPresentationModelElement getManifest(
             @Parameter(
@@ -363,10 +467,29 @@ public class RecordResource {
         return b.getManifest(pi, Collections.emptyList(), buildMode);
     }
 
+    /**
+     * Returns a single IIIF annotation layer of the record for the given annotation type.
+     *
+     * <p>For the layer names {@code tei} and {@code cmdi}, the layer is built directly from the record's TEI or CMDI
+     * files; every other name is resolved against the page sequence's annotation lists (e.g. fulltext, ALTO), built the
+     * same way as when generating the full manifest. An unrecognized layer name is not validated up front and results in
+     * an unmapped server error rather than a client error response.
+     *
+     * @param layerName Name of the manifest layer
+     * @param mode Build mode for manifest to select type of resources to include. Default is 'iiif' which returns the full IIIF manifest
+     *            with all resources. 'thumbs' Does not read width and height of canvas resources and 'iiif_simple' ignores all resources
+     *            from files
+     * @return the IIIF layer for the given record and layer name
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no document exists for the given identifier
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_LAYER)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF 2.1.1 manifest")
+    @Operation(tags = { "records", "iiif" }, summary = "Get a layer within a IIIF 2.1.1 manifest",
+            description = "The layer name selects the annotation type to return: 'tei' and 'cmdi' are built directly from the record's TEI"
+                    + " or CMDI files, while every other name is resolved against the same per-page annotation lists used when generating"
+                    + " the full manifest. An unrecognized layer name is not validated and results in an unmapped server error rather than a"
+                    + " client error response.")
     @ApiResponse(responseCode = "200", description = "IIIF layer for the given record and layer name",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Layer.class)))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
@@ -386,10 +509,26 @@ public class RecordResource {
         return b.getLayer(pi, layerName);
     }
 
+    /**
+     * Returns named-entity tags extracted from the record's ALTO files, grouped into page ranges.
+     *
+     * <p>Tags are extracted per page from ALTO and grouped into consecutive ranges of {@code stepSize} pages each; pages the
+     * requester has no fulltext access to are silently skipped rather than causing an error, but still count towards the
+     * page ranges.
+     *
+     * @param start First page to get tags for
+     * @param end Last page to get tags for
+     * @param stepSize Number of pages to combine into each group
+     * @param type Tag type to consider (person, corporation, event or location)
+     * @return the NER tags for the record, grouped by page range
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_NER_TAGS)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records" }, summary = "Get NER tags for a record")
+    @Operation(tags = { "records" }, summary = "Get NER tags for a record",
+            description = "Tags are extracted from each page's ALTO file and grouped into consecutive ranges of the given step size; pages"
+                    + " the requester has no fulltext access to are silently skipped rather than causing an error, but still count towards"
+                    + " the page ranges.")
     @ApiResponse(responseCode = "200", description = "NER tags for the given record", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
@@ -407,10 +546,23 @@ public class RecordResource {
         return b.getNERTags(pi, type, start, end, stepSize == null ? 1 : stepSize, servletRequest);
     }
 
+    /**
+     * Returns the plain-text transcription of every page of the record within a single text file.
+     *
+     * <p>Text is assembled from plaintext files where available, falling back to text extracted from ALTO for pages
+     * without one. The aggregate size is capped by a configured maximum; a request whose combined text would exceed it is
+     * rejected in favor of {@link #getPlaintextAsZip()}.
+     *
+     * @return the concatenated plaintext of the record
+     * @throws ContentLibException if the aggregate plaintext size exceeds the configured limit
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records" }, summary = "Get entire plaintext of record within a single text file")
+    @Operation(tags = { "records" }, summary = "Get entire plaintext of record within a single text file",
+            description = "Text is assembled from plaintext files where available, falling back to ALTO-derived text for pages without"
+                    + " one. The aggregate size is capped by a configured maximum, beyond which the request is rejected in favor of"
+                    + " /plaintext.zip.")
     @ApiResponse(responseCode = "200", description = "Full plaintext of the record", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400",
             description = "Invalid record identifier, or aggregate response would exceed the configured size limit"
@@ -429,10 +581,21 @@ public class RecordResource {
         return b.getFulltext(pi, servletRequest);
     }
 
+    /**
+     * Returns the plain-text transcription of the record as a ZIP archive containing one text file per page.
+     *
+     * <p>Unlike {@link #getPlaintext()}, there is no aggregate size limit here since each page is written to its own
+     * file inside the archive.
+     *
+     * @return a streaming ZIP archive of one text file per page
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if access to the record's fulltext is denied
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_PLAINTEXT_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = { "records" }, summary = "Get entire plaintext of record as a zip archive of text files per page")
+    @Operation(tags = { "records" }, summary = "Get entire plaintext of record as a zip archive of text files per page",
+            description = "Unlike /plaintext, this endpoint has no aggregate size limit because each page is written to its own file"
+                    + " inside the archive.")
     @ApiResponse(responseCode = "200", description = "ZIP archive containing one text file per page",
             content = @Content(mediaType = "application/zip", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
@@ -451,10 +614,24 @@ public class RecordResource {
         return builder.getFulltextAsZip(pi, servletRequest);
     }
 
+    /**
+     * Returns the concatenated ALTO XML of every page of the record as a single document.
+     *
+     * <p>The result is not well-formed XML because it repeats the XML declaration and root element once per page; use
+     * {@link #getAltoAsZip()} for parsable per-page files. The aggregate size is capped by a configured maximum, beyond
+     * which the request is rejected in favor of that endpoint.
+     *
+     * @return the concatenated ALTO document
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if access to the record's fulltext is denied
+     * @throws ContentLibException if the aggregate ALTO size exceeds the configured limit
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_ALTO)
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "records" }, summary = "Get entire alto document for record")
+    @Operation(tags = { "records" }, summary = "Get entire alto document for record",
+            description = "The response concatenates the ALTO XML of every page, which is not well-formed XML since the declaration and"
+                    + " root element repeat once per page; use /alto.zip for parsable per-page files. The aggregate size is capped by a"
+                    + " configured maximum, beyond which the request is rejected in favor of that endpoint.")
     @ApiResponse(responseCode = "200", description = "ALTO XML document for the full record", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400",
             description = "Invalid record identifier, or aggregate response would exceed the configured size limit"
@@ -469,10 +646,22 @@ public class RecordResource {
         return builder.getAltoDocument(pi, servletRequest);
     }
 
+    /**
+     * Returns the ALTO XML of the record as a ZIP archive containing one well-formed file per page.
+     *
+     * <p>Unlike {@link #getAlto()}, there is no aggregate size limit here since each page is written to its own file in
+     * the archive.
+     *
+     * @return a streaming ZIP archive of one ALTO file per page
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException if access to the record's fulltext is denied
+     * @throws de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException if no ALTO files exist for the record
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_ALTO_ZIP)
     @Produces({ "application/zip" })
-    @Operation(tags = { "records" }, summary = "Get a zip archive of alto documents per page")
+    @Operation(tags = { "records" }, summary = "Get a zip archive of alto documents per page",
+            description = "Unlike /alto, this endpoint has no aggregate size limit because each page is written to its own well-formed"
+                    + " ALTO file inside the archive.")
     @ApiResponse(responseCode = "200", description = "ZIP archive containing one ALTO file per page",
             content = @Content(mediaType = "application/zip", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
@@ -575,20 +764,21 @@ public class RecordResource {
     }
 
     /**
-     * Endpoint for IIIF Search API service in a manifest. Depending on the given motivation parameters, fulltext (motivation=painting), user comments
-     * (motivation=commenting) and general (crowdsourcing-) annotations (motivation=describing) may be searched.
+     * Serves the IIIF Search API of the record's manifest.
+     *
+     * <p>Depending on the given motivation parameter, fulltext (motivation=painting) and/or crowdsourcing annotations, indexed metadata and
+     * user comments together (motivation=non-painting or motivation=describing) may be searched; omitting the parameter searches
+     * everything. Fulltext is only searched if the fulltext view permission is granted for the record.
      *
      * @param query The search query; a list of space separated terms. The search is for all complete words which match any of the query terms. Terms
      *            may contain the wildcard character '*' to represent an arbitrary number of characters within the word
      * @param motivation a space separated list of motivations of annotations to search for. Search for the following motivations is implemented:
      *            <ul>
-     *            <li>painting: fulltext resources</li>
-     *            <li>non-painting: all supported resources except fulltext</li>
-     *            <li>commenting: user comments</li>
-     *            <li>describing: Crowdsourced or other general annotations</li>
+     *            <li>painting: fulltext resources, searched only if the fulltext view permission is granted</li>
+     *            <li>non-painting or describing: crowdsourcing annotations, indexed metadata and user comments</li>
      *            </ul>
-     * @param date not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
-     * @param user not supported. If this parameter is given, it will be included in the 'ignored' property of the 'within' property of the answer
+     * @param date not supported. If this parameter is given, its name is listed in the 'ignored' property of the 'within' property of the answer
+     * @param user not supported. If this parameter is given, its name is listed in the 'ignored' property of the 'within' property of the answer
      * @param page the page number for paged result sets. if this is empty, page=1 is assumed
      * @return a {@link de.intranda.api.iiif.search.SearchResult} containing all annotations matching the query in the 'resources' property
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
@@ -597,7 +787,13 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_SEARCH)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Search within a IIIF manifest", tags = { "records", "iiif" })
+    @Operation(summary = "Search within a IIIF manifest", tags = { "records", "iiif" },
+            description = "The motivation parameter selects which resource types are searched: 'painting' searches fulltext, but only"
+                    + " if the fulltext view permission is granted for the record, while 'non-painting' or 'describing' together search"
+                    + " crowdsourcing annotations, indexed metadata and user comments; omitting the parameter searches everything. The date"
+                    + " and user parameters are accepted for IIIF Search API"
+                    + " compatibility but are not evaluated; only their names are listed in the response's 'within' object under its 'ignored'"
+                    + " property instead.")
     @ApiResponse(responseCode = "200", description = "IIIF search result", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or query")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
@@ -613,13 +809,13 @@ public class RecordResource {
     }
 
     /**
-     * autoCompleteInManifest.
+     * Returns auto-complete suggestions for search terms within a IIIF manifest.
      *
      * @param query partial query string for auto-completion
      * @param motivation space-separated list of annotation motivations to filter
      * @param date date filter (not supported; passed to 'ignored' property)
      * @param user user filter (not supported; passed to 'ignored' property)
-     * @param page result page number; defaults to 1 if absent
+     * @param page page number; not supported for auto-completion, the full term list is always returned
      * @return the IIIF AutoSuggest result containing auto-completion candidates for the given query
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.PresentationException if any.
@@ -627,7 +823,10 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_MANIFEST_AUTOCOMPLETE)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(summary = "Auto-complete suggestions for searching within a IIIF manifest", tags = { "records", "iiif" })
+    @Operation(summary = "Auto-complete suggestions for searching within a IIIF manifest", tags = { "records", "iiif" },
+            description = "Unlike the manifest search endpoint, this operation ignores the page parameter and always returns the complete"
+                    + " list of matching terms in one response. The date and user parameters are accepted for compatibility but are not"
+                    + " evaluated; only their names are listed in the 'ignored' property instead.")
     @ApiResponse(responseCode = "200", description = "IIIF auto-suggest result", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or query")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable")
@@ -747,6 +946,14 @@ public class RecordResource {
     }
 
     /**
+     * Returns selected metadata of the record as a JSON object, mapped according to a named configuration template.
+     *
+     * <p>The template must match a {@code <template>} configured under {@code webapi.json.template} in the
+     * configuration, which defines the Solr-field-to-JSON-field mapping applied to this record; the template's own query
+     * restriction, if any, is not used here since only the record's own Solr document is queried. A syntactically valid
+     * template name for which no such configuration exists is reported as not found, the same as when the record itself
+     * does not exist.
+     *
      * @param template JSON configuration template name
      * @return {@link Response}
      * @throws IndexUnreachableException
@@ -755,7 +962,11 @@ public class RecordResource {
     @GET
     @jakarta.ws.rs.Path(RECORDS_JSON)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.")
+    @Operation(tags = { "records", "json" }, summary = "List record metadata as JSON. Solr query and field mapping are configured statically.",
+            description = "The template name must match a <template> configured under webapi.json.template in the configuration, which"
+                    + " defines the Solr-field-to-JSON-field mapping applied to this record; the template's own query restriction, if any,"
+                    + " is not used here. A template name for which no such configuration exists is reported as not found, the same as when"
+                    + " the record itself does not exist.")
     @ApiResponse(responseCode = "200", description = "Record metadata as JSON",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Missing record identifier")

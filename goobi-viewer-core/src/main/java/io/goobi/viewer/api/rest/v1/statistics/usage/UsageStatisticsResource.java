@@ -83,10 +83,26 @@ public class UsageStatisticsResource {
     @Context
     private ContainerResponseContext responseContext;
 
+    /**
+     * Returns usage statistics for a single day, aggregated across all indexed usage-statistics records for that day.
+     *
+     * <p>The output format is taken from the {@code format} query parameter (json, text or csv); if it is omitted, the request's
+     * Accept header is used instead, and any other value falls back to JSON. The {@code recordFilterQuery} parameter restricts the
+     * counted requests to records matching an additional Solr query.
+     *
+     * @param date the date to observe, in format yyyy-MM-dd
+     * @param recordFilterQuery additional Solr query used to restrict which records are counted
+     * @param inFormat the format in which to return the data (json, text or csv; defaults to json)
+     * @return the usage statistics for the day, as JSON, plain text or CSV depending on the resolved format
+     */
     @GET
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, StringConstants.MIMETYPE_TEXT_CSV })
-    @Operation(summary = "Get usage statistics for a single day", tags = { "statistics" })
+    @Operation(summary = "Get usage statistics for a single day", tags = { "statistics" },
+            description = "This endpoint requires the same authorization token as the other statistics endpoints. The response format"
+                    + " is taken from the 'format' query parameter (json, text or csv); if omitted, the Accept request header is used"
+                    + " instead, and any other value defaults to JSON. Supplying 'recordFilterQuery' restricts the counted requests to"
+                    + " records matching an additional Solr query.")
     @ApiResponse(responseCode = "200", description = "Usage statistics for the given day",
             content = { @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = StatisticsSummary.class)),
                     @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")),
@@ -125,10 +141,34 @@ public class UsageStatisticsResource {
         }
     }
 
+    /**
+     * Returns usage statistics for a time frame, both as one combined summary and broken down into equal-length periods.
+     *
+     * <p>The time frame is subdivided into periods of {@code step} times {@code stepUnit} (default: one day each); a period with no
+     * usage data is omitted from the list of individual summaries, while the combined summary aggregates data across the whole range
+     * (its reported start and end dates, however, reflect only where usage data actually exists, not necessarily the full requested
+     * range). If {@code endDate} lies in the future it is clamped to today; if it precedes {@code startDate}, the response status is
+     * 416 (Range Not Satisfiable) instead of a body. The output format is taken from the {@code format} query parameter (json, text or
+     * csv), falling back to the request's Accept header, then to JSON.
+     *
+     * @param start the first date to observe, in format yyyy-MM-dd
+     * @param end the last date to observe, in format yyyy-MM-dd
+     * @param recordFilterQuery additional Solr query used to restrict which records are counted
+     * @param inFormat the format in which to return the data (json, text or csv; defaults to json)
+     * @param step the number of time units (default: days) each statistics period should span
+     * @param stepUnit the time unit for step (years, months, weeks or days)
+     * @return the combined and per-period usage statistics for the time frame, as JSON, plain text or CSV depending on the resolved
+     *         format
+     */
     @GET
     @jakarta.ws.rs.Path(ApiUrls.STATISTICS_USAGE_DATE_RANGE)
     @Produces({ MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, StringConstants.MIMETYPE_TEXT_CSV })
-    @Operation(summary = "Get a list of usage statistics for a time frame", tags = { "statistics" })
+    @Operation(summary = "Get a list of usage statistics for a time frame", tags = { "statistics" },
+            description = "This endpoint requires the same authorization token as the other statistics endpoints. The time frame is"
+                    + " split into periods of 'step' times 'stepUnit' (default: one day each); periods without usage data are omitted"
+                    + " from the per-period list, while the combined summary aggregates data across the whole range (its reported start"
+                    + " and end dates reflect only where usage data actually exists). An end date in the future is clamped to today, and"
+                    + " an end date before the start date yields a 416 response instead of a body.")
     @ApiResponse(responseCode = "200", description = "Usage statistics for the given time frame",
             content = { @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = UsageStatisticsResponse.class)),
                     @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")),

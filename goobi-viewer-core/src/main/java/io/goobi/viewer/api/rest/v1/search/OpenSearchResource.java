@@ -68,13 +68,21 @@ public class OpenSearchResource {
     private HttpServletRequest servletRequest;
 
     /**
-     * getXml.
+     * Builds the OpenSearch description document for this viewer instance.
+     *
+     * <p>Placeholder tokens in the underlying {@code opensearch.xml} template are substituted with the configured
+     * application name, description, and the request's application URL; {@code {resourceUrl:...}} tokens are resolved via
+     * the session's navigation helper when available, otherwise against the configured theme path. If the template cannot
+     * be read or parsed, the error is logged and no content is returned.
      *
      * @return the OpenSearch description document as an XML string
      */
     @GET
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "search" }, summary = "OpenSearch description document")
+    @Operation(tags = { "search" }, summary = "OpenSearch description document",
+            description = "Placeholder tokens in the underlying opensearch.xml template are substituted with the configured"
+                    + " application name, description, and the request's application URL; resourceUrl tokens are resolved via"
+                    + " the session's navigation helper when available, otherwise against the configured theme path.")
     @ApiResponse(responseCode = "200", description = "OpenSearch description XML", useReturnTypeSchema = true)
     public String getXml() {
         String xml = null;

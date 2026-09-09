@@ -119,10 +119,35 @@ public class SearchResultResource {
         this.servletResponse = servletResponse;
     }
 
+    /**
+     * Executes the given search and prepares its hits as a RIS bibliographic export.
+     *
+     * <p>The query is built via {@link SearchHelper#prepareQuery} and the request-less {@code buildFinalQuery} overload
+     * (aggregated to the top-level document structure). Unlike the other search exports in this resource, this operation does
+     * not apply the download-metadata access restriction. {@code sortString} is currently unused: the export always runs in
+     * Solr's default hit order. When the search has results, {@link RisResourceBuilder#writeRIS} sets a
+     * {@code Content-Disposition} attachment header on the response and writes the RIS records to a server-side temporary
+     * file, but the returned streaming handle is never consumed here, so the response carries no RIS content and the
+     * temporary file is never removed either.
+     *
+     * @param query the search query string
+     * @param sortString the sort string for the search results
+     * @param activeFacetString the active facet filter string
+     * @param proximitySearchDistance the maximum word distance for proximity search
+     * @return an empty {@link Response} with status 200
+     * @throws PresentationException if the Solr search fails
+     * @throws IndexUnreachableException if the Solr index is unreachable
+     * @throws DAOException if license types cannot be loaded for access filtering
+     * @throws ContentLibException if the temporary RIS export file cannot be written
+     * @throws ViewerConfigurationException if the viewer configuration needed to build the search hits cannot be read
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_RIS_FILE)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "search" }, summary = "Download current search as RIS export file")
+    @Operation(tags = { "search" }, summary = "Download current search as RIS export file",
+            description = "The sortString parameter is currently ignored: the export always runs in Solr's default hit order."
+                    + " When the search has results a Content-Disposition attachment header is set on the response, but the"
+                    + " response body carries no RIS content.")
     @ApiResponse(responseCode = "200", description = "RIS export file for the current search results",
             content = @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")))
     @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
@@ -170,7 +195,10 @@ public class SearchResultResource {
     @GET
     @jakarta.ws.rs.Path(SEARCH_EXPORT_XML)
     @Produces({ MediaType.APPLICATION_XML })
-    @Operation(tags = { "search" }, summary = "Export search results as Solr XML")
+    @Operation(tags = { "search" }, summary = "Export search results as Solr XML",
+            description = "The query applies the same download-metadata access restriction as the configured-format export"
+                    + " endpoint, so only records the caller may download as metadata are included; a Solr serialisation error is"
+                    + " reported as an unstructured text body instead of the JSON error object used elsewhere in this API.")
     @ApiResponse(responseCode = "200", description = "Solr XML containing the matching documents",
             content = @Content(mediaType = MediaType.APPLICATION_XML, schema = @Schema(type = "string")))
     @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")
@@ -197,8 +225,9 @@ public class SearchResultResource {
      * attribute of {@code <format>} elements in {@code config_viewer.xml}. Both XSLT-based formats (ris/endnote/bibtex) and Java field-mapped
      * formats (excel/csv) are served here.
      *
-     * <p>Unknown formats return 404, disabled formats return 403. The export runs synchronously on the request thread, consistent with the
-     * other export endpoints in this resource (the request filter chain does not support asynchronous processing).
+     * <p>Unknown formats return 404, disabled formats return 403. Generation runs on a background thread bounded by the shared export
+     * timeout, and the request blocks until the result is ready or the timeout elapses; a plain executor (not servlet/JAX-RS async) is
+     * used, so this does not require the servlet filter chain to support asynchronous processing.
      *
      * @param format the export format name (e.g. "endnote", "bibtex", "ris", "excel", "csv")
      * @param query the Solr search query string
@@ -210,7 +239,10 @@ public class SearchResultResource {
      */
     @GET
     @jakarta.ws.rs.Path(SEARCH_EXPORT_FORMAT)
-    @Operation(tags = { "search" }, summary = "Export search results in a configured format (e.g. excel, csv, endnote, bibtex, ris)")
+    @Operation(tags = { "search" }, summary = "Export search results in a configured format (e.g. excel, csv, endnote, bibtex, ris)",
+            description = "The format name is looked up among the formats configured in config_viewer.xml; an unconfigured name"
+                    + " yields 404 and a configured but disabled one yields 403. Generation runs on a background thread bounded by"
+                    + " the shared export timeout, and results are restricted to records the caller may download as metadata.")
     @ApiResponse(responseCode = "200", description = "Export in the requested format",
             content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid search query or parameters")

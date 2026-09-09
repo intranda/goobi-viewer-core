@@ -198,11 +198,18 @@ public class UserAvatarResource extends ImageResource {
         //don't do anyhting. The resource url has already been set in constructor
     }
 
+    /**
+     * Redirects to the canonical {@code info.json} url of this user's avatar image.
+     *
+     * @return a 303 redirect response
+     */
     @Override
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MEDIA_TYPE_APPLICATION_JSONLD })
     @ContentServerImageInfoBinding
-    @Operation(tags = { "users" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object")
+    @Operation(tags = { "users" }, summary = "IIIF image identifier for an uploaded user avatar image. Returns a IIIF 2.1.1 image information object",
+            description = "Redirects (HTTP 303) to the canonical IIIF image information document (info.json) for this user's avatar image;"
+                    + " the target URL is the resource's own base URL with \"/info.json\" appended.")
     @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
     // 400 is returned when the path parameter {userId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid user ID")
@@ -213,6 +220,16 @@ public class UserAvatarResource extends ImageResource {
         return super.redirectToCanonicalImageInfo();
     }
 
+    /**
+     * Uploads a new avatar image for the currently authenticated user.
+     *
+     * @param enabled accepted for compatibility with the request schema, but not evaluated by this endpoint
+     * @param uploadFilename file name to store the avatar under; only its extension is used to derive the stored file name, so an upload with a
+     *            different extension than the current avatar is stored alongside it rather than replacing it
+     * @param uploadedInputStream avatar image file content
+     * @param fileDetail multipart content disposition metadata of the file part
+     * @return a response indicating success, or the reason the upload was rejected
+     */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
@@ -220,15 +237,18 @@ public class UserAvatarResource extends ImageResource {
     // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
     // available when webapi.csrf is enabled.
     @CSRFGuarded
-    @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" })
+    @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" },
+            description = "The uploaded file always becomes the avatar of the currently authenticated user, not of the {userId} in the path."
+                    + " It replaces an existing avatar file of the same extension; a different extension is stored alongside the old file"
+                    + " instead of replacing it. The upload is limited to 16 MiB.")
     // required=true signals schemathesis that an empty body is not a valid test case,
     // preventing false "schema-compliant request rejected" failures for empty POSTs.
     @RequestBody(required = true, content = @Content(mediaType = "multipart/form-data",
             schemaProperties = {
                     @SchemaProperty(name = "file", schema = @Schema(type = "string", format = "binary", description = "The avatar image file")),
                     @SchemaProperty(name = "filename", schema = @Schema(type = "string", description = "File name to store the avatar under")),
-                    @SchemaProperty(name = "enabled",
-                            schema = @Schema(type = "boolean", description = "Whether the avatar is enabled after upload (defaults to true)")) }))
+                    @SchemaProperty(name = "enabled", schema = @Schema(type = "boolean",
+                            description = "Accepted for compatibility with the request schema, but not evaluated by this endpoint")) }))
     @ApiResponse(responseCode = "200", description = "Avatar uploaded successfully")
     // 400 is returned when the {userId} path parameter is not a valid integer, or when
     // the framework rejects a missing/malformed multipart body before the method is invoked.

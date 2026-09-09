@@ -107,10 +107,25 @@ public class RecordFilesResource {
         this.pi = pi;
     }
 
+    /**
+     * Returns the ALTO document for a single page.
+     *
+     * <p>The file is looked up first in the crowdsourced ALTO folder and, if not found there, in the record's regular ALTO folder, so
+     * corrections made through crowdsourcing take precedence over the originally indexed file. Access requires the fulltext view
+     * permission for the requested page.
+     *
+     * @param filename filename of the alto document
+     * @return the ALTO document as an XML string
+     * @throws ServiceNotAllowedException if the fulltext view permission is not granted
+     * @throws ContentNotFoundException if no ALTO file exists for the given filename
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_ALTO)
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page")
+    @Operation(tags = { "records" }, summary = "Get Alto fulltext for a single page",
+            description = "The file is looked up first in the crowdsourced ALTO folder and, if not found there, in the record's regular ALTO"
+                    + " folder, so crowdsourcing corrections take precedence over the originally indexed file. Access requires the fulltext"
+                    + " view permission for the requested page.")
     @ApiResponse(responseCode = "200", description = "ALTO document of the page", useReturnTypeSchema = true)
     // Access-denied and not-found responses are returned as application/json even though the success content type is text/xml
     @ApiResponse(responseCode = "403", description = "Access to this fulltext file is restricted")
@@ -128,10 +143,25 @@ public class RecordFilesResource {
         return ret.getOne();
     }
 
+    /**
+     * Returns the plain text content of a single page.
+     *
+     * <p>The text is looked up first in the crowdsourced plaintext folder and then in the regular plaintext folder; if neither contains a
+     * matching file, the page's ALTO file is converted to plain text on the fly instead. Access requires the fulltext view permission for
+     * the requested page.
+     *
+     * @param filename filename containing the text
+     * @return the plain text content of the page
+     * @throws ServiceNotAllowedException if the fulltext view permission is not granted
+     * @throws ContentNotFoundException if no plaintext or ALTO file exists for the filename
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_PLAINTEXT)
     @Produces({ MediaType.TEXT_PLAIN })
-    @Operation(tags = { "records" }, summary = "Get plaintext for a single page")
+    @Operation(tags = { "records" }, summary = "Get plaintext for a single page",
+            description = "The text is looked up first in the crowdsourced plaintext folder and then in the regular plaintext folder; if"
+                    + " neither contains a matching file, the page's ALTO file is converted to plain text on the fly instead. Access"
+                    + " requires the fulltext view permission for the requested page.")
     @ApiResponse(responseCode = "200", description = "Plain text of the page", useReturnTypeSchema = true)
     // Access-denied and not-found responses are returned as application/json even though the success content type is text/plain
     @ApiResponse(responseCode = "403", description = "Access to this fulltext file is restricted")
@@ -147,10 +177,25 @@ public class RecordFilesResource {
         return builder.getFulltext(pi, cleanedFilename);
     }
 
+    /**
+     * Returns the fulltext of a single page converted to TEI format.
+     *
+     * <p>The plain text of the page (falling back to a converted ALTO file, as for the plaintext endpoint) is wrapped in a generated TEI
+     * header built from the record's indexed metadata. Access requires the fulltext view permission for the requested page.
+     *
+     * @param filename filename containing the text
+     * @return the page fulltext as a TEI XML document
+     * @throws ServiceNotAllowedException if the fulltext view permission is not granted
+     * @throws ContentNotFoundException if no record is found for the given identifier, or if no plaintext or ALTO file exists for the
+     *             filename
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_TEI)
     @Produces({ MediaType.TEXT_XML })
-    @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format")
+    @Operation(tags = { "records" }, summary = "Get fulltext for a single page in TEI format",
+            description = "The plain text of the page (falling back to a converted ALTO file, as for the plaintext endpoint) is wrapped in a"
+                    + " generated TEI header built from the record's indexed metadata. Access requires the fulltext view permission for the"
+                    + " requested page.")
     @ApiResponse(responseCode = "200", description = "TEI document of the page", useReturnTypeSchema = true)
     // Access-denied and not-found responses are returned as application/json even though the success content type is text/xml
     @ApiResponse(responseCode = "403", description = "Access to this fulltext file is restricted")
@@ -166,9 +211,28 @@ public class RecordFilesResource {
         return builder.getFulltextAsTEI(pi, cleanedFilename);
     }
 
+    /**
+     * Returns a source metadata file (e.g. METS/LIDO) of the record.
+     *
+     * <p>The requested filename is sanitized to strip any path components and restricted to letters, digits, spaces and the characters
+     * {@code . , - _ ! ( ) '} before being resolved beneath the record's configured source folder; any other name is rejected. Rejection
+     * happens as an {@code IllegalArgumentException} that is neither caught here nor mapped, so the caller sees an undeclared 500 rather
+     * than the 400 the v1 endpoint returns. The content type is determined from the file name; if it cannot be determined, the response
+     * falls back to the declared octet stream type. Access requires the download-original-content privilege for the record.
+     *
+     * @param filename source file name
+     * @return the source file content as a binary stream
+     * @throws ContentNotFoundException if no such file exists
+     * @throws ServiceNotAllowedException if the download-original-content privilege is not granted
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_SOURCE)
-    @Operation(tags = { "records" }, summary = "Get source files of record")
+    @Operation(tags = { "records" }, summary = "Get source files of record",
+            description = "The requested filename is sanitized to strip any path components and restricted to letters, digits, spaces and"
+                    + " the characters . , - _ ! ( ) ' before being resolved beneath the record's configured source folder; any other name is"
+                    + " rejected, though unlike the v1 endpoint an invalid name is not reported as a 400. The content type is determined from"
+                    + " the file name; if it cannot be determined, the response falls back to the declared octet stream type. Access requires"
+                    + " the download-original-content privilege for the record.")
     @ApiResponse(responseCode = "200", description = "Source file of the record",
             content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     // Error responses (404, 403) are returned as application/json even though success is application/octet-stream
@@ -204,9 +268,25 @@ public class RecordFilesResource {
         return Response.ok(so, mimeType).build();
     }
 
+    /**
+     * Returns the CMDI metadata document for a record file.
+     *
+     * <p>The requested language defaults to the current user's locale if not given. The record's CMDI folder is searched for a file whose
+     * name matches "{@code _<isoCode>.xml}" for that language's ISO-3 code, falling back to the ISO-2 code if no ISO-3 match exists.
+     * Access requires the fulltext view permission for the given filename.
+     *
+     * @param filename image file name for cmdi
+     * @param lang language for CMDI
+     * @return the CMDI document as an XML string
+     * @throws ServiceNotAllowedException if the fulltext view permission is not granted
+     * @throws ContentNotFoundException if no matching CMDI file exists
+     */
     @GET
     @jakarta.ws.rs.Path(RECORDS_FILES_CMDI)
-    @Operation(tags = { "records" }, summary = "Get cmdi for record file")
+    @Operation(tags = { "records" }, summary = "Get cmdi for record file",
+            description = "The requested language defaults to the current user's locale if not given. The record's CMDI folder is searched"
+                    + " for a file whose name matches `_<isoCode>.xml` for that language's ISO-3 code, falling back to the ISO-2 code if no"
+                    + " ISO-3 match exists. Access requires the fulltext view permission for the given filename.")
     @ApiResponse(responseCode = "200", description = "CMDI document of the record file",
             content = @Content(mediaType = MediaType.TEXT_XML, schema = @Schema(type = "string")))
     // Access-denied and not-found responses are returned as application/json

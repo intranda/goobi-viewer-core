@@ -88,9 +88,24 @@ public class CollectionsResource {
         this.request = request;
     }
 
+    /**
+     * Returns the top-level collections of a Solr field's collection hierarchy as a IIIF Presentation 2.1.1 collection.
+     *
+     * <p>Passing a grouping field attaches a tag list service to each returned collection, listing that field's facet values for the
+     * collection's records. Names listed in the ignore parameter are removed from the result before it is checked; a field that yields no
+     * collections at all results in a not-found response instead of an empty one.
+     *
+     * @param grouping add values of this field to response to allow grouping of results
+     * @param ignoreString comma separated list of collections to ignore in response
+     * @return the IIIF Presentation 2.1.1 collection listing the field's top-level collections
+     * @throws ContentNotFoundException if no collections exist for the given field
+     */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 2.1.1 collection")
+    @Operation(tags = { "iiif" }, summary = "Get all collections as IIIF Presentation 2.1.1 collection",
+            description = "Passing a grouping field attaches a tag list service to each returned collection, listing that field's facet"
+                    + " values for the collection's records; names listed in the ignore parameter are removed from the result before it is"
+                    + " checked. A field that yields no collections at all results in a not-found response instead of an empty one.")
     @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection containing all collections for this field",
             useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid or missing collection field parameter")
@@ -116,10 +131,30 @@ public class CollectionsResource {
         return collection;
     }
 
+    /**
+     * Returns a single collection of a Solr field's hierarchy, together with its immediate child collections and directly contained records,
+     * as a IIIF Presentation 2.1.1 collection.
+     *
+     * <p>A collection name that does not resolve to any element in the field's hierarchy falls back to the field's top-level collections,
+     * but with the first one in sort order removed; for a field with only one top-level collection this fallback is empty and results in
+     * the same not-found response as a field with no collections at all. Passing a grouping field attaches a tag list service to the
+     * returned collection and its children, listing that field's facet values.
+     *
+     * @param inCollectionName name of the collection. Must be a value of the Solr field the collection is based on
+     * @param grouping add values of this field to response to allow grouping of results
+     * @param ignoreString comma separated list of subcollections to ignore in response
+     * @return the IIIF Presentation 2.1.1 collection for the given collection name
+     * @throws ContentNotFoundException if the requested collection has no members
+     */
     @GET
     @jakarta.ws.rs.Path(COLLECTIONS_COLLECTION)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF Presentation 2.1.1 collection")
+    @Operation(tags = { "iiif" }, summary = "Get given collection as a IIIF Presentation 2.1.1 collection",
+            description = "A collection name that does not resolve to any element in the field's hierarchy falls back to the field's"
+                    + " top-level collections, but with the first one in sort order removed; for a field with only one top-level"
+                    + " collection this fallback is empty and results in the same not-found response as a field with no collections at"
+                    + " all. Passing a grouping field attaches a tag list service to the returned collection and its children, listing"
+                    + " that field's facet values.")
     @ApiResponse(responseCode = "200", description = "IIIF Presentation 2.1.1 collection for the given collection name",
             useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid or missing collection field or name parameter")
@@ -158,10 +193,27 @@ public class CollectionsResource {
         return collection;
     }
 
+    /**
+     * Returns collection names starting with the given input, expanded to every hierarchy level and excluding names already configured as
+     * CMS collections.
+     *
+     * <p>Passing "-" as the input returns all collection names for the field instead of filtering by prefix. Results are sorted by
+     * hierarchy depth first, then alphabetically. A Solr field name that is syntactically valid but does not exist in the index results in
+     * a not-found response.
+     *
+     * @param input user input for which content assist is requested
+     * @return list of matching collection names
+     * @throws IndexUnreachableException if the Solr index is unreachable or rejects the collection query
+     * @throws ContentNotFoundException if the Solr field does not exist in the index
+     */
     @GET
     @jakarta.ws.rs.Path(COLLECTIONS_CONTENTASSIST)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "iiif" }, summary = "Return a list of collection names starting with the given input for content assist")
+    @Operation(tags = { "iiif" }, summary = "Return a list of collection names starting with the given input for content assist",
+            description = "Passing \"-\" as the input returns all collection names for the field instead of filtering by prefix, and names"
+                    + " already configured as CMS collections are excluded. Results are sorted by hierarchy depth first, then"
+                    + " alphabetically; a Solr field name that is syntactically valid but does not exist in the index results in a"
+                    + " not-found response.")
     @ApiResponse(responseCode = "200", description = "List of matching collection names", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid collection field name")
     @ApiResponse(responseCode = "404", description = "Solr field not found in index")

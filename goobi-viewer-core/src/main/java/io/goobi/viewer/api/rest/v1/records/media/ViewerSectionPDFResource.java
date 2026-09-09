@@ -118,11 +118,21 @@ public class ViewerSectionPDFResource {
         request.setAttribute(FilterTools.ATTRIBUTE_LOGID, divId);
     }
 
+    /**
+     * Generates the PDF for the given structural division of the record and streams it to the response.
+     *
+     * @return streaming output that writes the generated pdf
+     */
     @GET
     @Path(ApiUrls.RECORDS_SECTIONS_PDF)
     @Produces("application/pdf")
     @ContentServerPdfBinding
-    @Operation(tags = { "records" }, summary = "Get PDF for section of record")
+    @Operation(tags = { "records" }, summary = "Get PDF for section of record",
+            description = "Pages of only the given structural division are merged into a single PDF on every call; there is no whole-document"
+                    + " cache or download queue, though individual page renderings may still come from the content server's page cache."
+                    + " Existing PDF files already present in the record's media folder are used automatically regardless of usePdfSource;"
+                    + " PDF files in the record's dedicated pdf folder are used only when usePdfSource is already true. Unlike the"
+                    + " whole-record PDF endpoint, this call is not recorded in file-download usage statistics.")
     @ApiResponse(responseCode = "200", description = "PDF file for the requested section",
             content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or section")
@@ -152,11 +162,19 @@ public class ViewerSectionPDFResource {
 
     }
 
+    /**
+     * Returns aggregated size information for the merged PDF of the given structural division.
+     *
+     * @return pdf info DTO whose title field holds the record identifier (not a descriptive title) and whose size is the total page file size
+     *         for this division
+     */
     @GET
     @Path(ApiUrls.RECORDS_SECTIONS_PDF_INFO)
     @Produces({ MediaType.APPLICATION_JSON })
     @ContentServerPdfInfoBinding
-    @Operation(tags = { "records" }, summary = "Get information about PDF for section of record")
+    @Operation(tags = { "records" }, summary = "Get information about PDF for section of record",
+            description = "The size is the sum of the MDNUM_FILESIZE field across the Solr page documents of this division; neither the"
+                    + " record nor the division is verified to exist, so an unknown identifier returns a zero size rather than an error.")
     @ApiResponse(responseCode = "200", description = "PDF information object for the requested section", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or section")
     @ApiResponse(responseCode = "404", description = "Record or section not found")
