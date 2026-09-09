@@ -43,11 +43,13 @@ import io.goobi.viewer.api.rest.model.MediaResourceHelper;
 import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.model.export.bagit.CollectionArchiveService;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.GET;
@@ -68,6 +70,7 @@ import jakarta.ws.rs.core.StreamingOutput;
 @jakarta.ws.rs.Path(COLLECTIONS_ARCHIVE)
 @ViewerRestServiceBinding
 @UserLoggedInBinding
+@SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
 public class CollectionArchiveResource {
 
     private static final Logger logger = LogManager.getLogger(CollectionArchiveResource.class);

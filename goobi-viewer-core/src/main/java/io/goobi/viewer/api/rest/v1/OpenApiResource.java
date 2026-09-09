@@ -40,6 +40,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager;
 import io.goobi.viewer.api.rest.AbstractApiUrlManager.Version;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.controller.DataManager;
 import io.swagger.v3.jaxrs2.integration.JaxrsOpenApiContextBuilder;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
@@ -99,6 +100,7 @@ public class OpenApiResource {
             oApi.setInfo(getInfo());
             oApi.setTags(getTags());
             applyTokenSecurityScheme(oApi);
+            applyBearerSecurityScheme(oApi);
 
             return oApi;
         } catch (OpenApiConfigurationException e) {
@@ -154,6 +156,39 @@ public class OpenApiResource {
     public static void applyTokenSecurityScheme(OpenAPI openApi) {
         Components components = openApi.getComponents() != null ? openApi.getComponents() : new Components();
         components.addSecuritySchemes(AuthorizationFilter.SECURITY_SCHEME_TOKEN, getTokenSecurityScheme());
+        openApi.setComponents(components);
+    }
+
+    /**
+     * Returns the security scheme describing the user bearer token.
+     *
+     * <p>Issued by {@code POST /auth/login}, which returns the plaintext token in its response body. The endpoints
+     * requiring it also accept a logged-in browser session; that alternative is deliberately left undescribed, because
+     * a client cannot obtain a session through the API and no tooling can supply one.
+     *
+     * @return the http bearer security scheme
+     * @should describe an http bearer scheme
+     */
+    public static SecurityScheme getBearerSecurityScheme() {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .description("User token obtained from `POST /auth/login`, sent as `Authorization: Bearer <token>`."
+                        + " Endpoints requiring it also accept a logged in browser session, which this scheme does not"
+                        + " describe. Tokens expire and are invalidated when the user is deactivated or suspended.");
+    }
+
+    /**
+     * Declares the bearer security scheme on the given spec.
+     *
+     * <p>Adds to the existing {@link Components} for the same reason as {@link #applyTokenSecurityScheme(OpenAPI)}.
+     *
+     * @param openApi spec to declare the scheme on
+     * @should add the scheme to existing components without replacing them
+     */
+    public static void applyBearerSecurityScheme(OpenAPI openApi) {
+        Components components = openApi.getComponents() != null ? openApi.getComponents() : new Components();
+        components.addSecuritySchemes(UserLoggedInFilter.SECURITY_SCHEME_BEARER, getBearerSecurityScheme());
         openApi.setComponents(components);
     }
 

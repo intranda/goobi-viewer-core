@@ -40,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.goobi.viewer.api.rest.v1.OpenApiResource;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.Components;
@@ -453,9 +454,9 @@ class OpenApiSpecGeneratorTest {
      */
     @Test
     void buildOpenApi_shouldRequireTheTokenSchemeForEveryTokenProtectedOperationForV1() throws Exception {
-        assertTrue(TOKEN_PROTECTED_V1_OPERATIONS.equals(collectTokenProtectedOperations("v1")),
+        assertTrue(TOKEN_PROTECTED_V1_OPERATIONS.equals(collectOperationsRequiring("v1", AuthorizationFilter.SECURITY_SCHEME_TOKEN)),
                 "operations requiring the token scheme differ from the expected set; found: "
-                        + new TreeSet<>(collectTokenProtectedOperations("v1")));
+                        + new TreeSet<>(collectOperationsRequiring("v1", AuthorizationFilter.SECURITY_SCHEME_TOKEN)));
     }
 
     /**
@@ -464,17 +465,16 @@ class OpenApiSpecGeneratorTest {
      */
     @Test
     void buildOpenApi_shouldNotRequireTheTokenSchemeForAnyOperationForV2() throws Exception {
-        assertTrue(collectTokenProtectedOperations("v2").isEmpty(),
+        assertTrue(collectOperationsRequiring("v2", AuthorizationFilter.SECURITY_SCHEME_TOKEN).isEmpty(),
                 "v2 publishes no token protected resource class, so no operation may require the scheme: "
-                        + new TreeSet<>(collectTokenProtectedOperations("v2")));
+                        + new TreeSet<>(collectOperationsRequiring("v2", AuthorizationFilter.SECURITY_SCHEME_TOKEN)));
     }
 
-    private static Set<String> collectTokenProtectedOperations(String version) throws Exception {
+    private static Set<String> collectOperationsRequiring(String version, String scheme) throws Exception {
         Set<String> found = new TreeSet<>();
         OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
         openApi.getPaths().forEach((path, pathItem) -> pathItem.readOperationsMap().forEach((method, operation) -> {
-            if (operation.getSecurity() != null
-                    && operation.getSecurity().stream().anyMatch(req -> req.containsKey(AuthorizationFilter.SECURITY_SCHEME_TOKEN))) {
+            if (operation.getSecurity() != null && operation.getSecurity().stream().anyMatch(req -> req.containsKey(scheme))) {
                 found.add(method.name() + " " + path);
             }
         }));
@@ -482,22 +482,27 @@ class OpenApiSpecGeneratorTest {
     }
 
     /**
+     * An operation demanding credentials has to document what happens without them. 403 counts as well as 401: some
+     * endpoints reject anonymous callers non-committally rather than inviting a retry with credentials, for instance
+     * {@code DELETE /annotations/annotation_{id}}, whose ServiceNotAllowedException maps to 403.
+     *
      * @see OpenApiSpecGenerator#buildOpenApi(String)
-     * @verifies declare unauthorized for every operation with a security requirement
+     * @verifies declare a rejection response for every operation with a security requirement
      */
     @Test
-    void buildOpenApi_shouldDeclareUnauthorizedForEveryOperationWithASecurityRequirement() throws Exception {
+    void buildOpenApi_shouldDeclareARejectionResponseForEveryOperationWithASecurityRequirement() throws Exception {
         List<String> offenders = new ArrayList<>();
         for (String version : List.of("v1", "v2")) {
             OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
             openApi.getPaths().forEach((path, pathItem) -> pathItem.readOperationsMap().forEach((method, operation) -> {
                 Map<String, ApiResponse> responses = operation.getResponses() == null ? Map.of() : operation.getResponses();
-                if (operation.getSecurity() != null && !operation.getSecurity().isEmpty() && !responses.containsKey("401")) {
+                if (operation.getSecurity() != null && !operation.getSecurity().isEmpty()
+                        && !responses.containsKey("401") && !responses.containsKey("403")) {
                     offenders.add(version + " " + method.name() + " " + path);
                 }
             }));
         }
-        assertTrue(offenders.isEmpty(), "operations that require authentication but declare no 401: " + offenders);
+        assertTrue(offenders.isEmpty(), "operations that require authentication but declare neither 401 nor 403: " + offenders);
     }
 
     /**
@@ -550,6 +555,68 @@ class OpenApiSpecGeneratorTest {
         Map<String, SecurityScheme> schemes =
                 openApi.getComponents() == null ? null : openApi.getComponents().getSecuritySchemes();
         assertTrue(schemes == null || schemes.isEmpty(), "v2 declares no token protected operation, so it must declare no scheme");
+    }
+
+    /**
+     * The five operations whose decisive prerequisite is a user or admin identity: four carrying a logged-in binding
+     * plus {@code DELETE /annotations/annotation_{id}}, which enforces it programmatically. The endpoints reading the
+     * bearer only to identify an optional user — bookmarks, annotations reads, {@code GET /users/current}, avatars —
+     * are absent on purpose: they answer anonymous callers with less content instead of rejecting them.
+     */
+    private static final Set<String> BEARER_PROTECTED_V1_OPERATIONS = Set.of(
+            "GET /collections/{field}/{collection}/archive",
+            "GET /collections/{field}/{collection}/archive/download",
+            "GET /logs/{logfile}",
+            "GET /temp/files/{folder}/{filename}",
+            "DELETE /annotations/annotation_{id}");
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies declare the bearer security scheme for v1
+     */
+    @Test
+    void buildOpenApi_shouldDeclareTheBearerSecuritySchemeForV1() throws Exception {
+        OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi("v1");
+        assertNotNull(openApi.getComponents(), "v1 components must not be null");
+        SecurityScheme scheme = openApi.getComponents().getSecuritySchemes().get(UserLoggedInFilter.SECURITY_SCHEME_BEARER);
+        assertNotNull(scheme, "v1 must declare the bearer security scheme");
+        assertTrue(SecurityScheme.Type.HTTP == scheme.getType(), "bearer scheme must be an http scheme");
+        assertTrue("bearer".equals(scheme.getScheme()), "bearer scheme must use the bearer http scheme");
+        assertFalse(StringUtils.isBlank(scheme.getDescription()), "bearer scheme must carry a description");
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies require the bearer scheme for every identity protected operation for v1
+     */
+    @Test
+    void buildOpenApi_shouldRequireTheBearerSchemeForEveryIdentityProtectedOperationForV1() throws Exception {
+        Set<String> found = collectOperationsRequiring("v1", UserLoggedInFilter.SECURITY_SCHEME_BEARER);
+        assertTrue(BEARER_PROTECTED_V1_OPERATIONS.equals(found),
+                "operations requiring the bearer scheme differ from the expected set; found: " + found);
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies not require the bearer scheme for any operation for v2
+     */
+    @Test
+    void buildOpenApi_shouldNotRequireTheBearerSchemeForAnyOperationForV2() throws Exception {
+        Set<String> found = collectOperationsRequiring("v2", UserLoggedInFilter.SECURITY_SCHEME_BEARER);
+        assertTrue(found.isEmpty(), "v2 declares no scheme, so no operation may require it: " + found);
+    }
+
+    /**
+     * @see OpenApiResource#applyBearerSecurityScheme(OpenAPI)
+     * @verifies add the scheme to existing components without replacing them
+     */
+    @Test
+    void applyBearerSecurityScheme_shouldAddTheSchemeToExistingComponentsWithoutReplacingThem() {
+        OpenAPI openApi = new OpenAPI().components(new Components().addSchemas("Existing", new Schema<>()));
+        OpenApiResource.applyBearerSecurityScheme(openApi);
+        assertNotNull(openApi.getComponents().getSchemas().get("Existing"), "pre-existing schemas must survive");
+        assertNotNull(openApi.getComponents().getSecuritySchemes().get(UserLoggedInFilter.SECURITY_SCHEME_BEARER),
+                "the bearer scheme must be added");
     }
 
     /**

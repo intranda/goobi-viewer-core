@@ -36,15 +36,17 @@ import jakarta.ws.rs.HttpMethod;
 
 import io.goobi.viewer.api.rest.bindings.AuthorizationBinding;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.swagger.v3.jaxrs2.integration.JaxrsAnnotationScanner;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 
 /**
- * Verifies that the token protection enforced by {@link AuthorizationBinding} and the token requirement published in the OpenAPI spec
- * via {@link SecurityRequirement} stay in sync. Both are maintained by hand at the same sites, so nothing but a test keeps them from
- * drifting apart: a new protected endpoint that forgets the requirement is undocumented, and a requirement without protection is a
- * false promise in the published spec.
+ * Verifies that the protection enforced by the binding annotations and the requirement published in the OpenAPI spec via
+ * {@link SecurityRequirement} stay in sync, along two axes: {@link AuthorizationBinding} against the API token scheme, and the
+ * logged-in bindings against the user bearer scheme. Both sides are maintained by hand at the same sites, so nothing but a test keeps
+ * them from drifting apart: a new protected endpoint that forgets the requirement is undocumented, and a requirement without
+ * protection is a false promise in the published spec.
  *
  * <p>Resource classes are collected with the Swagger scanner rather than by loading class files, because loading initializes them:
  * {@code CORSHeaderFilter} builds a production {@code Configuration} in its static initializer and leaves it in the
@@ -61,8 +63,19 @@ class SecurityRequirementConsistencyTest {
      * description carries the caveat. Its two sibling GETs are deliberately absent here: they filter their result or answer 404
      * instead of rejecting, so a requirement would be a false promise.
      */
-    private static final Set<String> REQUIREMENT_WITHOUT_BINDING =
+    private static final Set<String> TOKEN_REQUIREMENT_WITHOUT_BINDING =
             Set.of("io.goobi.viewer.api.rest.v1.tasks.TasksResource#addTask");
+
+    /**
+     * The same exception on the bearer axis: {@code AnnotationResource#deleteAnnotation} rejects anonymous callers
+     * (ServiceNotAllowedException, mapped to 403) without carrying a logged-in binding. The sibling endpoints that read the bearer
+     * only to identify an optional user are not listed, because they publish no requirement either.
+     */
+    private static final Set<String> BEARER_REQUIREMENT_WITHOUT_BINDING =
+            Set.of("io.goobi.viewer.api.rest.v1.annotations.AnnotationResource#deleteAnnotation");
+
+    /** Binding annotations that enforce the bearer scheme; either grants access, so they share one requirement. */
+    private static final Set<String> BEARER_BINDINGS = Set.of("UserLoggedInBinding", "AdminLoggedInBinding");
 
     private static Set<Class<?>> scanResourceClasses() {
         JaxrsAnnotationScanner<?> scanner = new JaxrsAnnotationScanner<>();
@@ -80,13 +93,49 @@ class SecurityRequirementConsistencyTest {
         return false;
     }
 
-    private static boolean requiresToken(SecurityRequirement[] requirements) {
+    private static boolean requires(SecurityRequirement[] requirements, String scheme) {
         for (SecurityRequirement requirement : requirements) {
-            if (AuthorizationFilter.SECURITY_SCHEME_TOKEN.equals(requirement.name())) {
+            if (scheme.equals(requirement.name())) {
                 return true;
             }
         }
         return false;
+    }
+
+    private static boolean carriesBinding(Class<?> clazz, Method method, Set<String> bindingNames) {
+        for (Annotation annotation : clazz.getAnnotations()) {
+            if (bindingNames.contains(annotation.annotationType().getSimpleName())) {
+                return true;
+            }
+        }
+        for (Annotation annotation : method.getAnnotations()) {
+            if (bindingNames.contains(annotation.annotationType().getSimpleName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static List<String> findDisagreements(Set<String> bindingNames, String scheme, Set<String> allowlist) {
+        List<String> offenders = new ArrayList<>();
+        for (Class<?> clazz : scanResourceClasses()) {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (!isResourceMethod(method)) {
+                    continue;
+                }
+                // Effective protection, not annotation placement: binding on the class and requirement on the method is equivalent
+                boolean binding = carriesBinding(clazz, method, bindingNames);
+                boolean requirement = requires(clazz.getAnnotationsByType(SecurityRequirement.class), scheme)
+                        || requires(method.getAnnotationsByType(SecurityRequirement.class), scheme);
+                String id = clazz.getName() + "#" + method.getName();
+                if (binding == requirement || (!binding && allowlist.contains(id))) {
+                    continue;
+                }
+                offenders.add(id + (binding ? " is protected but publishes no " + scheme + " requirement"
+                        : " publishes a " + scheme + " requirement but is not protected"));
+            }
+        }
+        return offenders;
     }
 
     /**
@@ -95,26 +144,20 @@ class SecurityRequirementConsistencyTest {
      */
     @Test
     void resourceMethods_shouldDeclareTheTokenRequirementExactlyWhereTheBindingApplies() {
-        List<String> offenders = new ArrayList<>();
-        for (Class<?> clazz : scanResourceClasses()) {
-            boolean classBinding = clazz.isAnnotationPresent(AuthorizationBinding.class);
-            boolean classRequirement = requiresToken(clazz.getAnnotationsByType(SecurityRequirement.class));
-            for (Method method : clazz.getDeclaredMethods()) {
-                if (!isResourceMethod(method)) {
-                    continue;
-                }
-                // Effective protection, not annotation placement: binding on the class and requirement on the method is equivalent
-                boolean binding = classBinding || method.isAnnotationPresent(AuthorizationBinding.class);
-                boolean requirement = classRequirement || requiresToken(method.getAnnotationsByType(SecurityRequirement.class));
-                String id = clazz.getName() + "#" + method.getName();
-                if (binding == requirement || (!binding && REQUIREMENT_WITHOUT_BINDING.contains(id))) {
-                    continue;
-                }
-                offenders.add(id + (binding ? " is protected but publishes no token requirement"
-                        : " publishes a token requirement but is not protected"));
-            }
-        }
+        List<String> offenders = findDisagreements(Set.of(AuthorizationBinding.class.getSimpleName()),
+                AuthorizationFilter.SECURITY_SCHEME_TOKEN, TOKEN_REQUIREMENT_WITHOUT_BINDING);
         assertTrue(offenders.isEmpty(), "Token protection and published requirement disagree: " + new TreeSet<>(offenders));
+    }
+
+    /**
+     * @see UserLoggedInFilter
+     * @verifies declare the bearer requirement exactly where a logged in binding applies
+     */
+    @Test
+    void resourceMethods_shouldDeclareTheBearerRequirementExactlyWhereALoggedInBindingApplies() {
+        List<String> offenders = findDisagreements(BEARER_BINDINGS, UserLoggedInFilter.SECURITY_SCHEME_BEARER,
+                BEARER_REQUIREMENT_WITHOUT_BINDING);
+        assertTrue(offenders.isEmpty(), "Identity protection and published requirement disagree: " + new TreeSet<>(offenders));
     }
 
     /**
@@ -123,18 +166,18 @@ class SecurityRequirementConsistencyTest {
      */
     @Test
     void requirementWithoutBindingAllowlist_shouldNotListObsoleteEntries() {
-        Set<String> found = new TreeSet<>();
+        Set<String> resourceMethods = new TreeSet<>();
         for (Class<?> clazz : scanResourceClasses()) {
             for (Method method : clazz.getDeclaredMethods()) {
-                String id = clazz.getName() + "#" + method.getName();
-                if (isResourceMethod(method) && REQUIREMENT_WITHOUT_BINDING.contains(id)
-                        && !clazz.isAnnotationPresent(AuthorizationBinding.class)
-                        && !method.isAnnotationPresent(AuthorizationBinding.class)) {
-                    found.add(id);
+                if (isResourceMethod(method)) {
+                    resourceMethods.add(clazz.getName() + "#" + method.getName());
                 }
             }
         }
-        assertTrue(found.containsAll(REQUIREMENT_WITHOUT_BINDING),
-                "Allowlist entries no longer match an unbound resource method: " + REQUIREMENT_WITHOUT_BINDING + " vs. found " + found);
+        Set<String> allowlisted = new TreeSet<>(TOKEN_REQUIREMENT_WITHOUT_BINDING);
+        allowlisted.addAll(BEARER_REQUIREMENT_WITHOUT_BINDING);
+        assertTrue(resourceMethods.containsAll(allowlisted),
+                "Allowlist entries no longer match a resource method: " + allowlisted + " not all in " + resourceMethods.size()
+                        + " scanned methods");
     }
 }

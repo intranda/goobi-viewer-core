@@ -67,11 +67,13 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.model.media.voyager.VoyagerSceneBuilder;
 import io.goobi.viewer.model.viewer.object.ObjectInfo;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Consumes;
@@ -223,6 +225,7 @@ public class ObjectResource {
     @jakarta.ws.rs.Path(RECORDS_FILES_3D_SCENE)
     @Consumes({ MediaType.APPLICATION_JSON })
     @AdminLoggedInBinding
+    @SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
     @Operation(summary = "Save a Voyager scene description for a 3D object", tags = { "records", "media" })
     @ApiResponse(responseCode = "200", description = "Scene saved successfully")
     @ApiResponse(responseCode = "401", description = "Admin login required")

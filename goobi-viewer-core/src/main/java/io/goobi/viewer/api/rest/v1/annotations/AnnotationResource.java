@@ -84,6 +84,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BadRequestException;
@@ -396,6 +397,9 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "200", description = "Return the deleted annotation",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = WebAnnotation.class)))
     @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
+    // Declared although this resource carries no logged-in binding: the identity is resolved programmatically, and an
+    // anonymous caller is rejected non-committally with 403 rather than 401.
+    @SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
     @ApiResponse(responseCode = "403", description = "Not authorized to delete this annotation (not logged in or not the creator)")
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation",

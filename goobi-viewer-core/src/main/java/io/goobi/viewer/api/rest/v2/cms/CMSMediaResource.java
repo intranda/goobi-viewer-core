@@ -108,6 +108,7 @@ import io.goobi.viewer.model.cms.media.CMSMediaLister;
 import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -426,6 +427,7 @@ public class CMSMediaResource {
     @jakarta.ws.rs.Path(CMS_MEDIA_FILES)
     @Produces(MediaType.APPLICATION_JSON)
     @UserLoggedInBinding
+    @SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
     @Operation(tags = { "media" }, summary = "List all uploaded CMS media files (requires login)",
             description = "Optional 'first' and 'count' query parameters paginate the response;"
                     + " omitting both returns the full list. File order is filesystem-dependent.")
@@ -544,6 +546,7 @@ public class CMSMediaResource {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @UserLoggedInBinding
+    @SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
     // CSRF protection: multipart/form-data is a CORS "simple request" and bypasses preflight,
     // so the Origin/Referer allowlist filter (CSRFRequestFilter) is the only browser-side guard
     // available when webapi.csrf is enabled. Existing 403 already covers the rejection code.

@@ -63,11 +63,13 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * @author Florian Alpers
@@ -75,6 +77,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES_FILE_IMAGE)
 @CORSBinding
 @AdminLoggedInBinding
+@SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
 public class TempMediaImageResource extends ImageResource {
 
     private static final Logger logger = LogManager.getLogger(TempMediaImageResource.class);

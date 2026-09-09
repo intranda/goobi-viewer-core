@@ -91,6 +91,7 @@ import io.goobi.viewer.model.cms.media.MediaItem;
 import io.goobi.viewer.model.cms.media.MediaList;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.api.rest.filters.AuthorizationFilter;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -490,6 +491,7 @@ public class CMSMediaResource {
     @ApiResponse(responseCode = "401", description = "Not authorized")
     @ApiResponse(responseCode = "500", description = "Error reading the media folder")
     @UserLoggedInBinding
+    @SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
     public List<String> getAllFiles(
             @Parameter(description = "Zero-based index of the first entry to return.",
                     schema = @Schema(minimum = "0", defaultValue = "0")) @QueryParam("first") @DefaultValue("0") int first,
@@ -615,6 +617,7 @@ public class CMSMediaResource {
             description = "User does not have permission to upload media files, or CSRF protection violated (when webapi.csrf is enabled)")
     @ApiResponse(responseCode = "500", description = "Error saving the uploaded file")
     @UserLoggedInBinding
+    @SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
     public Response
             uploadMediaFiles(@DefaultValue("true") @FormDataParam("enabled") boolean enabled, @FormDataParam("filename") String filename,
                     @FormDataParam("file") InputStream uploadedInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail)

@@ -70,10 +70,12 @@ import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.managedbeans.CreateRecordBean;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.messages.Messages;
+import io.goobi.viewer.api.rest.filters.UserLoggedInFilter;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * Upload of resouces for DC record creation. Files uploaded here are directly written to a subfolder of the viewer hotfolder
@@ -84,6 +86,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 @jakarta.ws.rs.Path(TEMP_MEDIA_FILES)
 @ViewerRestServiceBinding
 @AdminLoggedInBinding
+@SecurityRequirement(name = UserLoggedInFilter.SECURITY_SCHEME_BEARER)
 public class TempMediaFileResource {
 
     private static final Logger logger = LogManager.getLogger(TempMediaFileResource.class);
