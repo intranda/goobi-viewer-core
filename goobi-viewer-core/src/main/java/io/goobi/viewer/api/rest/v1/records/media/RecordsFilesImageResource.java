@@ -226,14 +226,16 @@ public class RecordsFilesImageResource extends ImageResource {
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 2.1.1 image information object",
             description = "Redirects (HTTP 303) to the canonical IIIF image information document (info.json) for the image file of the"
-                    + " record; the target URL is the resource's own base URL with \"/info.json\" appended. Access is subject to the"
-                    + " access conditions of the record.")
+                    + " record; the target URL is the resource's own base URL with \"/info.json\" appended. A filename segment that is a"
+                    + " page order number instead of a file name is redirected (HTTP 302) to the same operation with the file name resolved"
+                    + " from the index. The redirect itself is not access-checked; the record's access conditions are enforced on the"
+                    + " information document the caller is redirected to.")
+    @ApiResponse(responseCode = "302", description = "Redirect to the same operation with the page order number replaced by the file name")
     @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
-    @ApiResponse(responseCode = "403", description = "Access denied due to access conditions")
-    @ApiResponse(responseCode = "404", description = "Record or image not found")
     // Requests with special characters in the PI may be rejected by the reverse proxy before
     // reaching the application, resulting in an HTML error page rather than JSON.
     @ApiResponse(responseCode = "400", description = "Invalid record identifier or filename (may be returned as text/html by the reverse proxy)")
+    @ApiResponse(responseCode = "500", description = "The data repository of the record could not be resolved from the index")
     @Override
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();

@@ -123,6 +123,7 @@ public class TasksResource {
                     + " also determines the authorization level required to create it (token, admin or session, depending on the type).")
     @ApiResponse(responseCode = "200", description = "Task has been accepted and started",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(oneOf = { Task.class, ViewerMessage.class })))
+    @ApiResponse(responseCode = "204", description = "The task type is accepted but no task is created for it")
     @ApiResponse(responseCode = "400", description = "No task type provided or task type is invalid")
     @ApiResponse(responseCode = "401", description = "Not authorized to create this type of task")
     @ApiResponse(responseCode = "500", description = "Message queue unavailable or internal error")

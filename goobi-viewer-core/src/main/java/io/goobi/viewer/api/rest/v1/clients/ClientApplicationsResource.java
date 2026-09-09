@@ -195,9 +195,6 @@ public class ClientApplicationsResource {
             description = "No authorization for access to this resource. See documentation about accessing protected resources")
     @ApiResponse(responseCode = "404", description = "No client with given clientIdentifier was found in database")
     @ApiResponse(responseCode = "500", description = "An internal error occurred")
-    // 405 can occur when special characters (e.g. semicolons) in the path parameter cause JAX-RS
-    // path matching to fail before the method is dispatched.
-    @ApiResponse(responseCode = "405", description = "Method not allowed for the given path parameters")
     public ClientApplication setClient(
             // Pattern requires an alphanumeric first character to prevent values like '.' or '..'
             // which Tomcat treats as relative path references and may normalise before dispatch.

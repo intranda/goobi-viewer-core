@@ -265,9 +265,11 @@ public class RecordFileResource {
             description = "The file name is read from the record's indexed metadata; if the record has no MEI file associated, the response"
                     + " body is empty. Access requires the download-metadata privilege for the record.")
     @ApiResponse(responseCode = "200", description = "MEI document for the record", useReturnTypeSchema = true)
+    @ApiResponse(responseCode = "204", description = "The record has no MEI file associated with it")
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
-    @ApiResponse(responseCode = "404", description = "MEI file not found")
+    @ApiResponse(responseCode = "404", description = "No record found for the given identifier")
+    @ApiResponse(responseCode = "500", description = "The associated MEI file is missing on disk, or Solr or the database is unavailable")
     public String getMEI() throws ContentLibException, DAOException, IOException, IndexUnreachableException, PresentationException {
         try {
             return DataFileTools.loadMei(pi, servletRequest);
@@ -561,8 +563,10 @@ public class RecordFileResource {
     @ApiResponse(responseCode = "200", description = "Downloaded external resource file",
             content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = "string", format = "binary")))
     @ApiResponse(responseCode = "400", description = "Invalid file path")
+    @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "Resource not found on server")
-    @ApiResponse(responseCode = "500", description = "IO error reading resource")
+    @ApiResponse(responseCode = "500", description = "The record's download folder could not be resolved because Solr or the database is"
+            + " unavailable")
     @RecordFileDownloadBinding
     public Response getDownloadedResource(
             @Parameter(description = "download resource task id") @PathParam("taskId") String taskId,

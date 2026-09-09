@@ -174,6 +174,7 @@ public class RecordsFilesImageResource extends ImageResource {
                     + " as an attachment named \"{pi}_{basename}.pdf\", where {basename} is the source file name without its extension.")
     @ApiResponse(responseCode = "200", description = "PDF rendition of the image",
             content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     // Access-denied and error responses are returned as application/json even though the declared content type is application/pdf
     @ApiResponse(responseCode = "403", description = "Access denied or record not found in index")
     @ApiResponse(responseCode = "404", description = "Image or record not found")
@@ -211,10 +212,14 @@ public class RecordsFilesImageResource extends ImageResource {
     @ContentServerImageInfoBinding
     @Operation(tags = { "records", "iiif" }, summary = "IIIF image identifier for the given filename. Returns a IIIF 3.0 image information object",
             description = "Redirects (HTTP 303) to the canonical IIIF image information document (info.json) for the image file of the"
-                    + " record; the target URL is the resource's own base URL with \"/info.json\" appended. Access is subject to the"
-                    + " access conditions of the record.")
+                    + " record; the target URL is the resource's own base URL with \"/info.json\" appended. A filename segment that is a"
+                    + " page order number instead of a file name is redirected (HTTP 302) to the same operation with the file name resolved"
+                    + " from the index. The redirect itself is not access-checked; the record's access conditions are enforced on the"
+                    + " information document the caller is redirected to.")
+    @ApiResponse(responseCode = "302", description = "Redirect to the same operation with the page order number replaced by the file name")
     @ApiResponse(responseCode = "303", description = "Redirect to the canonical IIIF image information (info.json)")
-    @ApiResponse(responseCode = "404", description = "Image not found")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "500", description = "The data repository of the record could not be resolved from the index")
     @Override
     public Response redirectToCanonicalImageInfo() throws ContentLibException {
         return super.redirectToCanonicalImageInfo();

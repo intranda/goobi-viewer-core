@@ -338,7 +338,8 @@ class OpenApiSpecGeneratorTest {
 
     /**
      * Fails with the offending operations when one has no 2xx/3xx response at all, or when one of its
-     * 2xx responses has no content schema. 3xx responses are redirects and carry no body.
+     * 2xx responses has no content schema. 3xx responses are redirects and 204 is No Content, so neither
+     * carries a body.
      *
      * @param version "v1" or "v2"
      */
@@ -354,13 +355,53 @@ class OpenApiSpecGeneratorTest {
             boolean hasSuccess = responses.keySet().stream().anyMatch(code -> code.startsWith("2") || code.startsWith("3"));
             boolean bodiesHaveSchema = responses.entrySet()
                     .stream()
-                    .filter(e -> e.getKey().startsWith("2"))
+                    .filter(e -> e.getKey().startsWith("2") && !"204".equals(e.getKey()))
                     .allMatch(e -> hasSchema(e.getValue()));
             if (!hasSuccess || !bodiesHaveSchema) {
                 offenders.add(key);
             }
         }));
         assertTrue(offenders.isEmpty(), version + " success responses without a body schema: " + offenders);
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies declare a success or redirect response for every operation
+     */
+    @Test
+    void buildOpenApi_shouldDeclareASuccessOrRedirectResponseForEveryOperation() throws Exception {
+        List<String> offenders = new ArrayList<>();
+        for (String version : List.of("v1", "v2")) {
+            OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+            openApi.getPaths().forEach((path, pathItem) -> pathItem.readOperationsMap().forEach((method, operation) -> {
+                Map<String, ApiResponse> responses = operation.getResponses() == null ? Map.of() : operation.getResponses();
+                if (responses.keySet().stream().noneMatch(code -> code.startsWith("2") || code.startsWith("3"))) {
+                    offenders.add(version + " " + method.name() + " " + path);
+                }
+            }));
+        }
+        assertTrue(offenders.isEmpty(), "operations that declare no 2xx or 3xx response: " + offenders);
+    }
+
+    /**
+     * @see OpenApiSpecGenerator#buildOpenApi(String)
+     * @verifies set a description for every declared response
+     */
+    @Test
+    void buildOpenApi_shouldSetADescriptionForEveryDeclaredResponse() throws Exception {
+        List<String> offenders = new ArrayList<>();
+        for (String version : List.of("v1", "v2")) {
+            OpenAPI openApi = OpenApiSpecGenerator.buildOpenApi(version);
+            openApi.getPaths().forEach((path, pathItem) -> pathItem.readOperationsMap().forEach((method, operation) -> {
+                Map<String, ApiResponse> responses = operation.getResponses() == null ? Map.of() : operation.getResponses();
+                responses.forEach((code, response) -> {
+                    if (StringUtils.isBlank(response.getDescription())) {
+                        offenders.add(version + " " + method.name() + " " + path + " -> " + code);
+                    }
+                });
+            }));
+        }
+        assertTrue(offenders.isEmpty(), "declared responses without a description: " + offenders);
     }
 
     private static boolean hasSchema(ApiResponse response) {

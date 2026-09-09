@@ -883,14 +883,12 @@ public class RecordResource {
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
-    @ApiResponse(responseCode = "403", description = "Deletion not allowed because child volumes are still present")
-    // 404 is returned when the PI is valid but the record does not exist in the index
-    @ApiResponse(responseCode = "404", description = "Record not found for the given identifier")
-    @ApiResponse(responseCode = "500", description = "Internal server error during deletion")
-    @ApiResponse(responseCode = "503", description = "A deletion operation is already in progress")
     @Operation(tags = { "records" }, summary = "Delete the record from the Solr database",
             description = "Requires an authentication token. This operation may take a while, depending on the indexer queue. If the request"
-                    + " aborts before deletion is complete, further deletion requests will be disallowed until the operation completes")
+                    + " aborts before deletion is complete, further deletion requests will be disallowed until the operation completes."
+                    + " The outcome of the deletion is reported as a status field inside the JSON response body, not as the HTTP status:"
+                    + " child volumes still present and a deletion already in progress are both reported as 403 in that field, a failed"
+                    + " deletion as 500, while the HTTP status stays 200")
     public String deleteRecord(
             @Parameter(description = "set true to create a trace document of the delete action") @QueryParam("trace") Boolean createTraceDocument) {
 

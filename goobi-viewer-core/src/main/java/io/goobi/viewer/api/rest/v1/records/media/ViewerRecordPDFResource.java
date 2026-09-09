@@ -125,7 +125,6 @@ public class ViewerRecordPDFResource {
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "Record not found")
     @ApiResponse(responseCode = "500", description = "PDF generation error")
-    @ApiResponse(responseCode = "503", description = "PDF is still being created by another request, retry later")
     public StreamingOutput getPdf() {
         ViewerMessage message = new ViewerMessage(PdfDownloadJob.TYPE);
         message.getProperties().put("pi", this.pi);
@@ -162,8 +161,6 @@ public class ViewerRecordPDFResource {
                     + " existence is not verified, so an unknown identifier returns a zero size rather than an error.")
     @ApiResponse(responseCode = "200", description = "PDF information object", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid record identifier")
-    @ApiResponse(responseCode = "404", description = "Record not found")
-    @ApiResponse(responseCode = "500", description = "Error reading PDF information")
     public PdfInformation getInfoAsJson() throws ContentLibException {
         // ContentLib's MetsPdfResource.extractBaseURIs() appends File.separator ("\") to the METS
         // folder path before calling URI.create(), which fails on Windows with "Illegal character

@@ -135,7 +135,7 @@ public class ViewerSectionPDFResource {
                     + " whole-record PDF endpoint, this call is not recorded in file-download usage statistics.")
     @ApiResponse(responseCode = "200", description = "PDF file for the requested section",
             content = @Content(mediaType = "application/pdf", schema = @Schema(type = "string", format = "binary")))
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier or section")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier; the section identifier is not validated")
     @ApiResponse(responseCode = "403", description = "Access to this record is restricted")
     @ApiResponse(responseCode = "404", description = "Record or section not found")
     @ApiResponse(responseCode = "500", description = "PDF generation error")
@@ -176,9 +176,7 @@ public class ViewerSectionPDFResource {
             description = "The size is the sum of the MDNUM_FILESIZE field across the Solr page documents of this division; neither the"
                     + " record nor the division is verified to exist, so an unknown identifier returns a zero size rather than an error.")
     @ApiResponse(responseCode = "200", description = "PDF information object for the requested section", useReturnTypeSchema = true)
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier or section")
-    @ApiResponse(responseCode = "404", description = "Record or section not found")
-    @ApiResponse(responseCode = "500", description = "Error reading PDF information")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier; the section identifier is not validated")
     public PdfInformation getInfoAsJson() throws ContentLibException {
         PdfInformation info = new PdfInformation();
         info.setTitle(pi);

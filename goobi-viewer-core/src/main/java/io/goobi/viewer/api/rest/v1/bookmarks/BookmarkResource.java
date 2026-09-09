@@ -241,6 +241,7 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "200", description = "Bookmark list", useReturnTypeSchema = true)
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
+    @ApiResponse(responseCode = "403", description = "The bookmark list is private and owned by another user")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public BookmarkList getBookmarkList(
@@ -278,6 +279,7 @@ public class BookmarkResource {
                     + " cannot be updated.")
     @ApiResponse(responseCode = "200", description = "Updated bookmark list", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
+    @ApiResponse(responseCode = "403", description = "The bookmark list is private and owned by another user")
     @ApiResponse(responseCode = "404", description = "No bookmark list found for the given id")
     @ApiResponse(responseCode = "409", description = "Session bookmark lists cannot be updated")
     @ApiResponse(responseCode = "500", description = "Error querying database")
@@ -332,9 +334,8 @@ public class BookmarkResource {
                     + " list is owned by the user. For an anonymous request the id is ignored and the session's bookmark list is"
                     + " always cleared and immediately replaced with a new empty one.")
     @ApiResponse(responseCode = "200", description = "Bookmark list deleted successfully", useReturnTypeSchema = true)
-    @ApiResponse(responseCode = "400", description = "Not logged in, session bookmark list may not be deleted")
-    // 404 is returned when JAX-RS cannot parse {listId} as a valid Long (non-integer path parameter value)
-    @ApiResponse(responseCode = "404", description = "Bookmark list not found or list ID could not be parsed")
+    @ApiResponse(responseCode = "400", description = "The bookmark list ID is less than 1 or not a number")
+    @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage deleteBookmarkList(
             @Parameter(description = "The id of the bookmark list",
@@ -418,6 +419,7 @@ public class BookmarkResource {
                     + " is then looked up among the list's items by id; if none matches, the request fails with 404.")
     @ApiResponse(responseCode = "200", description = "The bookmark", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID or bookmark ID")
+    @ApiResponse(responseCode = "403", description = "The bookmark list is private and owned by another user")
     @ApiResponse(responseCode = "404", description = "Bookmark not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Bookmark getBookmarkItem(
@@ -458,6 +460,7 @@ public class BookmarkResource {
                     + " element and page rather than by its own id.")
     @ApiResponse(responseCode = "200", description = "Bookmark deleted", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID or bookmark ID")
+    @ApiResponse(responseCode = "403", description = "The bookmark list is private and owned by another user")
     @ApiResponse(responseCode = "404", description = "Bookmark not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public SuccessMessage deleteBookmarkItem(
@@ -573,6 +576,7 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "200", description = "RSS feed for the bookmark list", useReturnTypeSchema = true)
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
+    @ApiResponse(responseCode = "403", description = "The bookmark list is private and owned by another user")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public String getBookmarkListAsRSS(
@@ -616,6 +620,7 @@ public class BookmarkResource {
     @ApiResponse(responseCode = "200", description = "RSS feed for the bookmark list as JSON", useReturnTypeSchema = true)
     // 400 is returned when the path parameter {listId} cannot be parsed as a valid integer
     @ApiResponse(responseCode = "400", description = "Invalid bookmark list ID")
+    @ApiResponse(responseCode = "403", description = "The bookmark list is private and owned by another user")
     @ApiResponse(responseCode = "404", description = "Bookmark list not found")
     @ApiResponse(responseCode = "500", description = "Error querying database")
     public Channel getBookmarkListAsRSSJson(

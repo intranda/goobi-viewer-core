@@ -68,6 +68,8 @@ public final class OpenApiSpecGenerator {
      * @should reference every component schema for v2
      * @should describe every operation for v1
      * @should describe every operation for v2
+     * @should declare a success or redirect response for every operation
+     * @should set a description for every declared response
      */
     public static OpenAPI buildOpenApi(String version) throws OpenApiConfigurationException {
         switch (version) {

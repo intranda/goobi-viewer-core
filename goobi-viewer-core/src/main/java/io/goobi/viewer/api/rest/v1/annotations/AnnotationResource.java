@@ -164,9 +164,8 @@ public class AnnotationResource {
                     + " condition are excluded unless the current session holds the required view privilege. A page number beyond the last"
                     + " page is not rejected as out of bounds — it returns a page with an empty item list.")
     @ApiResponse(responseCode = "200", description = "A page of annotations from the annotation collection", useReturnTypeSchema = true)
-    @ApiResponse(responseCode = "400", description = "If the page number is out of bounds")
-    // Added 404 response: JAX-RS returns 404 when the {page} path parameter cannot be parsed as an integer (non-integer input)
-    @ApiResponse(responseCode = "404", description = "No annotation collection page found for the given page number")
+    @ApiResponse(responseCode = "400", description = "The page number is less than 1 or not a number")
+    @ApiResponse(responseCode = "500", description = "The annotations could not be read from the database")
     public AnnotationPage getAnnotationCollectionPage(
             // Page numbers are 1-based; document minimum in schema so clients and schemathesis know 0 is invalid
             @Parameter(description = "Page number (1-based)",
@@ -353,8 +352,9 @@ public class AnnotationResource {
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = WebAnnotation.class)))
     @ApiResponse(responseCode = "400", description = "Missing or invalid request body")
     @ApiResponse(responseCode = "404",
-            description = "Annotation target not found or annotation type not supported. Only W3C Web Annotations targeting a manifest,"
-                    + " canvas or part of a canvas may be persisted")
+            description = "The annotation target type is not supported. Only W3C Web Annotations targeting a manifest, canvas or part of a"
+                    + " canvas may be persisted; the existence of the target itself is not checked")
+    @ApiResponse(responseCode = "500", description = "The annotation could not be written to the database")
     // Provide a proper @Content specification so the generated OpenAPI schema includes a valid
     // `content` object instead of just `{"required": true}`, which is invalid per OpenAPI spec
     // and causes schemathesis to report a schema error that blocks tests for other endpoints.
@@ -371,9 +371,8 @@ public class AnnotationResource {
             DataManager.getInstance().getDao().addAnnotation(pAnno);
             return Response.status(Response.Status.CREATED).entity(converter.getAsWebAnnotation(pAnno)).build();
         }
-        // Return 404 — annotation target not found or type not supported.
-        // 422 was previously used but schemathesis's "valid data" check rejects any 4xx outside
-        // {401, 403, 404, 409}. 404 semantically fits: the annotation target does not exist in this system.
+        // The target type is not supported. 404 rather than 422 because schemathesis's "valid data"
+        // check rejects any 4xx outside {401, 403, 404, 409}.
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
@@ -399,7 +398,6 @@ public class AnnotationResource {
     @ApiResponse(responseCode = "400", description = "Invalid annotation ID")
     @ApiResponse(responseCode = "403", description = "Not authorized to delete this annotation (not logged in or not the creator)")
     @ApiResponse(responseCode = "404", description = "Annotation not found by the given id")
-    @ApiResponse(responseCode = "405", description = "May not delete the annotation because it was created by another user")
     public IAnnotation deleteAnnotation(@Parameter(description = "Identifier of the annotation",
             schema = @Schema(minimum = "1", maximum = "9223372036854775807"))
     @PathParam("id")

@@ -94,6 +94,7 @@ public class CacheResource {
                     + " under the same 'content' JSON key; each entry carries its own cache name.")
     @ApiResponse(responseCode = "200", description = "Cache status information including item counts",
             content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
+    @ApiResponse(responseCode = "500", description = "A cache could not be accessed")
     public String getCacheInfo() throws ContentServerCacheException {
         //        ContentServerCache content = ContentServerCache.getContentCache();
         //        ContentServerCache pdf = ContentServerCache.getPdfCache();
@@ -141,7 +142,6 @@ public class CacheResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @AuthorizationBinding
     @ApiResponse(responseCode = "200", description = "Cache cleared successfully", useReturnTypeSchema = true)
-    @ApiResponse(responseCode = "400", description = "Invalid query parameters")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" },
             description = "Authorization compares the 'token' request header against the configured webapi.authorization.token. The"
@@ -173,10 +173,7 @@ public class CacheResource {
     @Path(ApiUrls.CACHE_RECORD)
     @Produces({ MediaType.APPLICATION_JSON })
     @ApiResponse(responseCode = "200", description = "Return the number of deleted cache items", useReturnTypeSchema = true)
-    @ApiResponse(responseCode = "400", description = "Missing or empty record identifier")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
-    // 404 is returned when the {pi} path parameter does not match any record in the cache
-    @ApiResponse(responseCode = "404", description = "Cache entry not found or record identifier not matched")
     @AuthorizationBinding
     @Operation(summary = "Requires an authentication token. Clears cache for main images, thumbnails and PDFs for all records", tags = { "cache" },
             description = "Authorization works as for the record-independent variant. Deletion matches cache keys equal to the record"

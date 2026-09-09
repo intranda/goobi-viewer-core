@@ -73,8 +73,6 @@ public class MovingWallStatisticsResource {
                     @Content(mediaType = MediaType.TEXT_PLAIN, schema = @Schema(type = "string")),
                     @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "string")) })
     @ApiResponse(responseCode = "400", description = "Invalid year value (not an integer)")
-    // Added 404 response: JAX-RS returns 404 when the {year} path parameter cannot be parsed as an integer (non-integer input)
-    @ApiResponse(responseCode = "404", description = "Year parameter could not be parsed as an integer")
     @ApiResponse(responseCode = "401", description = "No authorization token provided or token is invalid")
     @ApiResponse(responseCode = "500", description = "Solr index unreachable or internal error")
     public Response getStatisticsForYear(

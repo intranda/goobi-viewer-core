@@ -130,8 +130,9 @@ public class RecordSectionResource {
                     + " in browsers, unlike the plain-text variant of this endpoint. Access requires the section's list permission; if it is"
                     + " not granted, the section is reported as not found rather than access being denied.")
     @ApiResponse(responseCode = "200", description = "RIS citation for the section downloaded as plain text file", useReturnTypeSchema = true)
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
-    @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or section identifier")
+    @ApiResponse(responseCode = "404", description = "No section found for the given identifiers, or its list permission is not granted")
+    @ApiResponse(responseCode = "500", description = "Solr or the database could not be queried")
     public String getRISAsFile()
             throws PresentationException, IndexUnreachableException, DAOException, ContentLibException {
 
@@ -161,8 +162,9 @@ public class RecordSectionResource {
                     + " inline rather than downloaded. Access requires the section's list permission; if it is not granted, the section is"
                     + " reported as not found rather than access being denied.")
     @ApiResponse(responseCode = "200", description = "RIS citation for the section as plain text", useReturnTypeSchema = true)
-    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
-    @ApiResponse(responseCode = "404", description = "Section not found for the given identifiers")
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier or section identifier")
+    @ApiResponse(responseCode = "404", description = "No section found for the given identifiers, or its list permission is not granted")
+    @ApiResponse(responseCode = "500", description = "Solr or the database could not be queried")
     public String getRISAsText()
             throws PresentationException, IndexUnreachableException, ContentNotFoundException, DAOException {
 

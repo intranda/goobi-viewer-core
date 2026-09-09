@@ -159,8 +159,6 @@ public class UserAvatarResource extends ImageResource {
     public static URI getMediaFileUrl(Long userId) throws WebApplicationException {
         try {
             // Use NotFoundException (HTTP 404) directly so missing avatars return the correct status code.
-            // Previously ContentNotFoundException was caught and wrapped in WebApplicationException(Throwable),
-            // which defaults to HTTP 500.
             return getUserAvatarFile(userId).map(PathConverter::toURI)
                     .orElseThrow(() -> new NotFoundException("No avatar file found for user " + userId));
         } catch (IOException e) {
@@ -240,7 +238,8 @@ public class UserAvatarResource extends ImageResource {
     @Operation(summary = "Upload a new avatar image for the current user", tags = { "users" },
             description = "The uploaded file always becomes the avatar of the currently authenticated user, not of the {userId} in the path."
                     + " It replaces an existing avatar file of the same extension; a different extension is stored alongside the old file"
-                    + " instead of replacing it. The upload is limited to 16 MiB.")
+                    + " instead of replacing it. The upload is limited to 16 MiB. The existing avatar file of the {userId} in the path is"
+                    + " resolved before the upload is handled, so the operation answers with 404 for a user that has no avatar yet.")
     // required=true signals schemathesis that an empty body is not a valid test case,
     // preventing false "schema-compliant request rejected" failures for empty POSTs.
     @RequestBody(required = true, content = @Content(mediaType = "multipart/form-data",
@@ -255,9 +254,8 @@ public class UserAvatarResource extends ImageResource {
     @ApiResponse(responseCode = "400", description = "Invalid user ID or missing/malformed multipart body")
     @ApiResponse(responseCode = "403",
             description = "CSRF protection: Origin not in allowlist (only sent when webapi.csrf is enabled)")
-    @ApiResponse(responseCode = "404", description = "User not found")
+    @ApiResponse(responseCode = "404", description = "The user in the path has no existing avatar file, which is resolved before the upload")
     @ApiResponse(responseCode = "406", description = "Invalid upload — missing file stream or no active user session")
-    @ApiResponse(responseCode = "409", description = "A file with this name already exists")
     @ApiResponse(responseCode = "413",
             description = "Upload exceeds the maximum avatar size (mirrors the JSF maxsize attribute)")
     @ApiResponse(responseCode = "500", description = "Internal server error during file upload")
