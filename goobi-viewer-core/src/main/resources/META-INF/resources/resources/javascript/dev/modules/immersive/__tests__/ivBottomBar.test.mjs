@@ -21,6 +21,7 @@ function fakeViewer(total = 5) {
         rotateRight: jest.fn(),
         resetView: jest.fn(),
         toggleDoublePage: jest.fn(() => (double = !double)),
+        onceResized: jest.fn(() => () => {}),
         onPageChange: new Emitter(),
     };
 }
@@ -33,7 +34,17 @@ function mountMarkup(viewer) {
                 <div data-immersive-image><div class="openseadragon-canvas"></div></div>
                 <button class="immersive__btn-double-page" data-immersive-action="double-page" aria-pressed="false"></button>
                 <button data-immersive-action="overview"></button>
-                <a class="immersive__tool-btn immersive__btn-fullscreen"></a>
+                <button
+                    class="immersive__tool-btn immersive__btn-fullscreen"
+                    data-immersive-action="fullscreen"
+                    data-label-enter="Enter fullscreen"
+                    data-label-exit="Exit fullscreen"
+                    data-icon-enter="maximize"
+                    data-icon-exit="minimize"
+                    aria-label="Enter fullscreen"
+                    aria-pressed="false">
+                    <svg><use href="icons/maximize.svg"></use></svg>
+                </button>
                 <div class="immersive__bottombar">
                     <button class="immersive__bar-btn" data-immersive-page="prev"></button>
                     <span id="immersivePageIndicator"></span>
@@ -90,16 +101,69 @@ test('double page toggles the viewer state class, the pressed state and the full
     expect(hooks.updateFulltextAvail).toHaveBeenCalledTimes(1);
 });
 
-/** Fullscreen is a page of its own, reached by a link; the bar neither calls the Fullscreen API nor watches it. */
-test('the bar leaves the fullscreen link alone and keeps no fullscreen bookkeeping', () => {
+/** The fullscreen button toggles native browser fullscreen on the immersive hero element. */
+test('the fullscreen button requests native fullscreen on the hero', () => {
+    const viewer = fakeViewer();
+    const { click } = mountMarkup(viewer);
+    const hero = document.querySelector('.immersive__viewer');
+    hero.requestFullscreen = jest.fn();
+    click('[data-immersive-action="fullscreen"]');
+    expect(hero.requestFullscreen).toHaveBeenCalledTimes(1);
+});
+
+/** Entering fullscreen exits via the Fullscreen API instead of requesting it again. */
+test('the fullscreen button exits native fullscreen when already fullscreen', () => {
+    const viewer = fakeViewer();
+    const { click } = mountMarkup(viewer);
+    const hero = document.querySelector('.immersive__viewer');
+    document.exitFullscreen = jest.fn();
+    Object.defineProperty(document, 'fullscreenElement', { value: hero, configurable: true });
+    click('[data-immersive-action="fullscreen"]');
+    expect(document.exitFullscreen).toHaveBeenCalledTimes(1);
+    Object.defineProperty(document, 'fullscreenElement', { value: null, configurable: true });
+});
+
+/** On fullscreenchange the bar updates the button bookkeeping and resets the view once the viewer reports a resize. */
+test('fullscreenchange updates the button state and resets the view once the viewer resizes', () => {
     const viewer = fakeViewer();
     mountMarkup(viewer);
     const hero = document.querySelector('.immersive__viewer');
-    hero.requestFullscreen = jest.fn();
-    document.querySelector('.immersive__btn-fullscreen').click();
+    const btn = document.querySelector('[data-immersive-action="fullscreen"]');
+    Object.defineProperty(document, 'fullscreenElement', { value: hero, configurable: true });
     document.dispatchEvent(new Event('fullscreenchange'));
-    expect(hero.requestFullscreen).not.toHaveBeenCalled();
+
+    expect(btn.getAttribute('aria-pressed')).toBe('true');
+    expect(btn.getAttribute('aria-label')).toBe('Exit fullscreen');
+    expect(btn.querySelector('svg use').getAttribute('href')).toBe('icons/minimize.svg');
+    expect(viewer.onceResized).toHaveBeenCalledTimes(1);
+
+    const raf = jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation((cb) => {
+        cb();
+        return 1;
+    });
+    const onResize = viewer.onceResized.mock.calls[0][0];
+    onResize();
+    expect(viewer.resetView).toHaveBeenCalledTimes(1);
+    raf.mockRestore();
+
+    Object.defineProperty(document, 'fullscreenElement', { value: null, configurable: true });
+});
+
+/** If the viewer never reports a resize (e.g. it was already at the right size), a timeout still resets the view. */
+test('fullscreenchange resets the view after a timeout even without a resize', () => {
+    jest.useFakeTimers();
+    const viewer = fakeViewer();
+    mountMarkup(viewer);
+    const raf = jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation((cb) => {
+        cb();
+        return 1;
+    });
+    document.dispatchEvent(new Event('fullscreenchange'));
     expect(viewer.resetView).not.toHaveBeenCalled();
+    jest.advanceTimersByTime(300);
+    expect(viewer.resetView).toHaveBeenCalledTimes(1);
+    raf.mockRestore();
+    jest.useRealTimers();
 });
 
 test('destroy detaches the buttons and the page-change subscription', () => {
