@@ -96,9 +96,9 @@
 // backgrounds, the outer brand-colored ring (box-shadow, doesn't affect layout) covers
 // light backgrounds - together they guarantee >=3:1 against any background.
 .mx-focus-visible {
-    outline: 2px solid @colorOutlineInner;
+    outline: 2px solid var(--focus-ring-inner);
     outline-offset: -2px;
-    box-shadow: 0 0 0 4px @colorOutline;
+    box-shadow: 0 0 0 4px var(--focus-ring);
     z-index: 9999;
 }
 

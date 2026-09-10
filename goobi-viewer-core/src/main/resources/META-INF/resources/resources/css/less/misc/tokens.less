@@ -93,6 +93,8 @@
     --fg-on-danger-strong: var(--color-gray-0);
 
     /* WARNING */
+    --border-warning: var(--color-warning-text);
+    --fg-warning: var(--color-warning-text);
     --bg-warning: var(--color-warning-surface);
     --fg-on-warning: var(--color-gray-1000);
     --fg-on-warning-hover: var(--color-gray-800);
@@ -134,6 +136,38 @@
 
     /* SHADOWS */
     --shadow-color: var(--color-slate-900);
+
+    /* DOCUMENT CANVAS */
+    --bg-document: var(--color-gray-0);
+    --fg-document: var(--color-gray-1000);
+    --bg-viewer-canvas: var(--color-gray-900);
+    --bg-viewer-canvas-stripe: var(--color-gray-800);
+
+    /* DOCUMENT MARKINGS */
+    --bg-document-highlight: var(--color-document-highlight);
+    --bg-document-highlight-selected: var(--color-document-highlight-selected);
+    --bg-document-selection: var(--color-document-selection);
+    --outline-document-focus: var(--color-annotation-focus);
+    --outline-document-drawing: var(--color-document-selection);
+    --fg-notation-active: var(--color-notation-active);
+
+    /* CHARTS AND ENTITY NAVIGATION */
+    --chart-chronology: var(--color-chronology);
+    --bg-entity-scale-handle: var(--color-ner-scale);
+
+    /* HERO SURFACES */
+    --bg-hero: var(--color-hero);
+    --bg-hero-gradient: var(--color-hero-gradient);
+
+    /* SCRIMS, MASKS AND FOCUS */
+    --bg-scrim: var(--color-gray-1000);
+    --mask-opaque: var(--color-gray-1000);
+    --focus-ring-inner: var(--color-gray-0);
+
+    /* PRINT — fixed ink colors in both screen modes */
+    --print-fg: var(--color-gray-1000);
+    --print-link: var(--color-gray-700);
+    --print-border: var(--color-gray-400);
 }
 
 /* LAYER 2 — SEMANTIC ROLES, DARK */
@@ -222,6 +256,8 @@
     --fg-on-danger-strong: var(--color-gray-0);
 
     /* WARNING */
+    --border-warning: var(--color-warning-border-dark);
+    --fg-warning: var(--color-warning-text-dark);
     --bg-warning: var(--color-warning-surface-dark);
     --fg-on-warning: var(--color-gray-0);
     --fg-on-warning-hover: var(--color-gray-0);
@@ -263,6 +299,38 @@
 
     /* SHADOWS */
     --shadow-color: var(--color-gray-1000);
+
+    /* DOCUMENT CANVAS */
+    --bg-document: var(--color-gray-0);
+    --fg-document: var(--color-gray-1000);
+    --bg-viewer-canvas: var(--color-gray-900);
+    --bg-viewer-canvas-stripe: var(--color-gray-800);
+
+    /* DOCUMENT MARKINGS */
+    --bg-document-highlight: var(--color-document-highlight);
+    --bg-document-highlight-selected: var(--color-document-highlight-selected);
+    --bg-document-selection: var(--color-document-selection);
+    --outline-document-focus: var(--color-annotation-focus);
+    --outline-document-drawing: var(--color-document-selection);
+    --fg-notation-active: var(--color-notation-active);
+
+    /* CHARTS AND ENTITY NAVIGATION */
+    --chart-chronology: var(--color-chronology-dark);
+    --bg-entity-scale-handle: var(--color-ner-scale-dark);
+
+    /* HERO SURFACES */
+    --bg-hero: var(--color-hero);
+    --bg-hero-gradient: var(--color-hero-gradient);
+
+    /* SCRIMS, MASKS AND FOCUS */
+    --bg-scrim: var(--color-gray-1000);
+    --mask-opaque: var(--color-gray-1000);
+    --focus-ring-inner: var(--color-gray-0);
+
+    /* PRINT — fixed ink colors in both screen modes */
+    --print-fg: var(--color-gray-1000);
+    --print-link: var(--color-gray-700);
+    --print-border: var(--color-gray-400);
 }
 
 /* LAYER 3 — FEATURE TOKENS, MODE-FREE (read layer 2 only) */
@@ -429,6 +497,18 @@
     --rss-badge-fg: var(--fg-on-bright);
     --sidebar-preview-highlight: var(--outline-selection);
     --image-controls-region-active-color: var(--fg-selection-region);
+
+    /* DOCUMENTS, CHARTS AND ARCHIVE HERO */
+    --pdf-highlight-bg: var(--bg-document-highlight);
+    --pdf-selected-highlight-bg: var(--bg-document-highlight-selected);
+    --pdf-selection-bg: var(--bg-document-selection);
+    --image-region-focus-color: var(--outline-document-focus);
+    --image-region-drawing-color: var(--outline-document-drawing);
+    --ner-scale-handle-bg: var(--bg-entity-scale-handle);
+    --chronology-chart-color: var(--chart-chronology);
+    --archives-hero-bg: var(--bg-hero);
+    --archives-hero-gradient-bg: var(--bg-hero-gradient);
+    --mei-note-active-color: var(--fg-notation-active);
 }
 
 /* LAYER 3 — FEATURE TOKENS WITH A MODE-SPECIFIC VALUE, LIGHT */

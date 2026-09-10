@@ -33,7 +33,7 @@
         transition: box-shadow 0.2s ease;
 
         &:hover {
-            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 3px rgb(from var(--shadow-color) r g b / 30%);
         }
     }
 
@@ -117,8 +117,8 @@
         align-items: center;
         gap: 6px;
         padding: 6px 10px;
-        background: rgba(0, 0, 0, 0.7);
-        color: @white;
+        background: rgb(from var(--bg-scrim) r g b / 70%);
+        color: var(--fg-inverse);
         text-decoration: none;
         border-radius: 4px;
         opacity: 0;
@@ -126,14 +126,14 @@
         z-index: 2;
 
         &:hover {
-            background: rgba(0, 0, 0, 0.85);
-            color: @white;
+            background: rgb(from var(--bg-scrim) r g b / 85%);
+            color: var(--fg-inverse);
             text-decoration: none;
         }
 
         &:active,
         &:visited {
-            color: @white;
+            color: var(--fg-inverse);
         }
 
         &:focus-visible {

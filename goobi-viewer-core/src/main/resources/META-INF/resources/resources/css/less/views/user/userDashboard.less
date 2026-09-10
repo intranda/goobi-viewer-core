@@ -15,10 +15,11 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        background: white;
+        background: var(--bg-content-box);
+        color: var(--fg-content-box);
         padding: 2rem;
         margin-bottom: 2rem;
-        border: 1px solid #d5d5d5;
+        border: 1px solid var(--border-strong);
         &.-w50 {
             flex: 0 0 calc(~'50% - 1rem');
             max-width: calc(~'50% - 1rem');
@@ -29,7 +30,7 @@
         }
     }
     &__show-all-link {
-        color: @blue;
+        color: var(--lk-general);
         font-size: 1.4rem;
         position: relative;
     }
@@ -64,14 +65,14 @@
             width: 11px;
             content: '';
             top: 6px;
-            background: #f0f0f0;
+            background: var(--border-color);
         }
         &::before {
             content: '';
             display: block;
             position: absolute;
             width: 3px;
-            background: #f0f0f0;
+            background: var(--border-color);
             left: -4px;
             top: 6px;
             height: 100%;
@@ -84,7 +85,7 @@
             &:after {
                 position: absolute;
                 display: inline-block;
-                color: #f0f0f0;
+                color: var(--border-color);
                 box-sizing: border-box;
                 width: 0;
                 height: 0;
@@ -155,7 +156,7 @@
     &__comments-item {
         display: flex;
         flex-wrap: wrap;
-        border-left: 2px solid #f0f0f0;
+        border-left: 2px solid var(--border-color);
         padding-left: 1rem;
         margin-bottom: 1.5rem;
     }

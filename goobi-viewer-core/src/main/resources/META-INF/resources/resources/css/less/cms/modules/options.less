@@ -6,8 +6,9 @@
     &__option {
         margin-bottom: 15px;
         padding: 15px;
-        border: 1px solid @middlegray;
-        background-color: @white;
+        border: 1px solid var(--border-strong);
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         h3 {
         }
     }
@@ -63,25 +64,25 @@
         }
         & + .form-control {
             &.success {
-                border-color: @validSuccess;
+                border-color: var(--border-success);
             }
             &.warning {
-                border-color: @validWarning;
+                border-color: var(--border-warning);
             }
             &.danger {
-                border-color: @validDanger;
+                border-color: var(--border-danger);
             }
         }
     }
     &__option-message-status {
         &.success {
-            color: @validSuccess;
+            color: var(--fg-success);
         }
         &.warning {
-            color: @validWarning;
+            color: var(--fg-warning);
         }
         &.danger {
-            color: @validDanger;
+            color: var(--fg-danger);
         }
     }
     &__option-message-mark {
@@ -94,21 +95,24 @@
         font-size: @fontSmall;
         text-align: center;
         border-radius: 50%;
-        color: @white;
+        color: var(--fg-inverse);
         &.success {
-            background-color: @validSuccess;
+            background-color: var(--bg-success-strong);
+            color: var(--fg-on-success-strong);
             .fa-check {
                 display: inline-block;
             }
         }
         &.warning {
-            background-color: @validWarning;
+            background-color: var(--bg-warning-strong);
+            color: var(--fg-on-warning-strong);
             .fa-check {
                 display: inline-block;
             }
         }
         &.danger {
-            background-color: @validDanger;
+            background-color: var(--bg-danger-strong);
+            color: var(--fg-on-danger-strong);
             .fa-exclamation {
                 display: inline-block;
             }
@@ -127,9 +131,9 @@
         width: 100%;
         height: 34px;
         font-size: 1.4rem;
-        color: @black;
-        border: 1px solid @middlegray;
-        background-color: @white;
+        color: var(--fg-popover);
+        border: 1px solid var(--border-strong);
+        background-color: var(--bg-popover);
         &.in {
         }
         &-trigger {
@@ -149,7 +153,7 @@
                 height: 0;
                 margin-top: -0.15rem;
                 pointer-events: none;
-                border-top: 0.35rem solid @black;
+                border-top: 0.35rem solid var(--border-emphasis);
                 border-right: 0.35rem solid transparent;
                 border-bottom: 0.35rem solid transparent;
                 border-left: 0.35rem solid transparent;
@@ -164,9 +168,10 @@
             width: calc(~'100% + 2px');
             max-height: 200px;
             padding: 5px 12px;
-            border: 1px solid @middlegray;
-            border-top-color: @white;
-            background-color: @white;
+            border: 1px solid var(--border-strong);
+            border-top-color: var(--bg-popover);
+            background-color: var(--bg-popover);
+            color: var(--fg-popover);
             overflow-y: auto;
             z-index: 2000;
         }
@@ -189,7 +194,7 @@
         padding-top: 5px;
         font-size: @fontSmall;
         font-style: italic;
-        color: @inlineStatic;
+        color: var(--fg-muted);
         &.in,
         &.static {
             display: inline-block;

@@ -44,7 +44,7 @@
         background-image: url('@{images}/ajax_preloader.gif');
         background-position: center center;
         background-repeat: no-repeat;
-        background-color: rgba(255, 255, 255, 0.75);
+        background-color: rgb(from var(--bg-content-box) r g b / 75%);
         z-index: 10;
     }
 
@@ -61,22 +61,23 @@
         input[type='text'] {
             height: auto;
             &:focus {
-                border-right-color: @blue;
+                border-right-color: var(--ci-color1);
             }
         }
         .input-group-append {
             padding: 0;
             border-radius: 0;
-            background-color: @white;
-            border: 1px solid @middlegray;
+            background-color: var(--bg-content-box);
+            color: var(--fg-content-box);
+            border: 1px solid var(--border-strong);
             border-left: none;
             a {
-                color: @black;
+                color: var(--fg-content-box);
                 &:hover,
                 &:focus,
                 &:active {
                     text-decoration: none;
-                    color: @black;
+                    color: var(--fg-content-box);
                 }
             }
         }
@@ -226,7 +227,8 @@
             max-width: 100%;
         }
         .badge-light {
-            background: @lightgray;
+            background: var(--bg-subtle);
+            color: var(--fg-content-box);
         }
     }
 
@@ -277,7 +279,8 @@
         position: absolute;
         left: 0;
         top: calc(~'100% + 1px');
-        background: white;
+        background: var(--bg-popover);
+        color: var(--fg-popover);
         padding: 5px 20px 15px 20px;
         flex-direction: column;
         list-style: none;
@@ -299,7 +302,8 @@
         background: transparent;
         padding: 10px @gap-sizer;
         border: none;
-        background: white;
+        background: var(--bg-popover);
+        color: var(--fg-popover);
     }
     &__entity-tabs-dropdown-link {
         padding: 5px 0px;
@@ -314,7 +318,7 @@
         .form-control__select,
         input[type='text'] {
             border-left: none;
-            border-right: 1px solid @middlegray;
+            border-right: 1px solid var(--border-strong);
         }
     }
 }

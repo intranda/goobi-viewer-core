@@ -5,7 +5,8 @@
 /* FULLSCREEN */
 #fullscreen {
     padding: 0;
-    background-color: @white;
+    background-color: var(--bg-content-box);
+    color: var(--fg-content-box);
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -26,8 +27,9 @@
         display: flex;
         align-items: center;
         height: 70px;
-        border-bottom: 1px solid @fsMiddlegray;
-        background-color: @white;
+        border-bottom: 1px solid var(--border-strong);
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         transition: all 0.3s linear;
         opacity: 1;
         z-index: 1050;
@@ -47,20 +49,20 @@
         button,
         span,
         select {
-            color: @fsDarkgray;
-            fill: @fsDarkgray;
-            stroke: @fsDarkgray;
+            color: var(--fg-secondary);
+            fill: var(--fg-secondary);
+            stroke: var(--fg-secondary);
 
             &:hover,
             &:active,
             &:focus {
-                color: @fsDarkgray;
+                color: var(--fg-secondary);
                 text-decoration: none;
             }
         }
 
         .custom-control--select::after {
-            border-top-color: @fsDarkgray;
+            border-top-color: var(--fg-secondary);
         }
     }
 
@@ -105,7 +107,7 @@
 
                 &[data-show='thumbs'] {
                     svg {
-                        stroke: #666;
+                        stroke: var(--fg-muted);
                     }
 
                     //		    		background-image: url("@{images}/icons/icon_fs-thumbs.svg");
@@ -145,16 +147,16 @@
     &__header-docstruct-navigation-next {
         padding: 0.4rem 0.7rem;
         border-radius: 4px;
-        background: @labelGray;
-        color: @white;
+        background: var(--bg-inverse);
+        color: var(--fg-inverse);
         font-size: 1.4rem;
 
         &:hover,
         &:focus,
         &:active {
             text-decoration: none;
-            color: @white;
-            background: @labelHoverGray;
+            color: var(--fg-inverse);
+            background: var(--bg-inverse-hover);
         }
     }
 
@@ -179,7 +181,7 @@
             place-items: center;
             width: 30px;
             height: 30px;
-            color: @fsDarkgray;
+            color: var(--fg-secondary);
 
             svg {
                 display: none;
@@ -217,7 +219,7 @@
         [data-open='all-tabs'] {
             width: 30px;
             height: 30px;
-            color: @fsDarkgray;
+            color: var(--fg-secondary);
             background: none;
             padding: 0;
             margin: 0;
@@ -275,26 +277,33 @@
                 margin: 0 auto;
             }
         }
-		&__image {			
-			&.-thumbnailPreviewGallery {
-				display: block;
-			}
-		}
+        &__image {
+            &.-thumbnailPreviewGallery {
+                display: block;
+            }
+        }
     }
 
     &__view-image {
         flex-grow: 1;
 
         .view-object__object-3d-world-before-load-text {
-            background: rgb(255, 255, 255);
-            border: 1px solid #ccc;
+            background: var(--bg-content-box);
+            color: var(--fg-content-box);
+            border: 1px solid var(--border-strong);
         }
     }
 
     &__view-image-inner {
         height: 100%;
         position: relative;
-        background: repeating-linear-gradient(-55deg, #222, #222 10px, #333 10px, #333 20px);
+        background: repeating-linear-gradient(
+            -55deg,
+            var(--bg-viewer-canvas),
+            var(--bg-viewer-canvas) 10px,
+            var(--bg-viewer-canvas-stripe) 10px,
+            var(--bg-viewer-canvas-stripe) 20px
+        );
 
         .view-object {
             &__object-3d,
@@ -377,7 +386,7 @@
     &__view-image-thumb-image-order {
         padding: 5px;
         text-align: center;
-        color: @white;
+        color: var(--fg-inverse);
         opacity: 0;
         transition: all 0.3s ease-in;
 
@@ -393,7 +402,8 @@
         right: -130px;
         padding: 10px;
         padding-top: 5px;
-        background-color: @white;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         opacity: 0;
         transition: all 0.3s linear;
         z-index: 1010;
@@ -404,14 +414,14 @@
         }
 
         .btn {
-            color: @fsDarkgray;
+            color: var(--fg-secondary);
             overflow: visible;
             display: inline-flex;
             align-items: center;
 
             &::before {
                 content: '';
-                color: @fsDarkgray;
+                color: var(--fg-secondary);
                 display: inline-block;
                 width: 30px;
                 height: 30px;
@@ -431,7 +441,7 @@
             &.active:focus,
             &.focus,
             &:active.focus {
-                color: @fsDarkgray;
+                color: var(--fg-secondary);
                 text-decoration: none;
             }
         }
@@ -444,13 +454,13 @@
         bottom: 0;
         width: 500px;
         padding-top: 70px;
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: rgb(from var(--bg-content-box) r g b / 90%);
         overflow-y: auto;
         z-index: 100;
 
         .ui-resizable-handle {
             left: 0;
-            border-right: 1px solid @fsMiddlegray;
+            border-right: 1px solid var(--border-strong);
             z-index: 998 !important;
 
             &:before,
@@ -462,7 +472,7 @@
                 width: 1px;
                 height: 40px;
                 margin-top: -20px;
-                background-color: @fsMiddlegray;
+                background-color: var(--border-strong);
             }
 
             &:before {
@@ -489,7 +499,8 @@
         display: flex;
         align-items: center;
         padding: 15px;
-        background-color: @white;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
 
         .btn {
             width: 30px;
@@ -505,7 +516,7 @@
 
         [data-close='fs-sidebar']::before {
             content: '';
-            color: @fsDarkgray;
+            color: var(--fg-secondary);
             display: inline-block;
             width: 30px;
             height: 30px;
@@ -522,7 +533,8 @@
     /* SIDEBAR WORK TITLE */
     &__view-sidebar-work-title {
         padding: 15px;
-        background-color: @white;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         word-break: break-word;
 
         h1,
@@ -554,12 +566,13 @@
 
     /* SIDEBAR ACCORDEON */
     &__view-sidebar-accordeon {
-        border-bottom: 1px solid @fsMiddlegray;
+        border-bottom: 1px solid var(--border-strong);
     }
 
     &__view-sidebar-accordeon-panel {
         position: relative;
-        background-color: @white;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
 
         &.fs-metadata {
         }
@@ -640,20 +653,22 @@
         margin: 0;
         padding: 10px 15px;
         font-size: @fontNormal;
-        border-top: 1px solid @fsMiddlegray;
-        background-color: @white;
+        border-top: 1px solid var(--border-strong);
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         cursor: pointer;
         z-index: 20;
 
         &:hover {
-            background-color: @fsLightgray;
+            background-color: var(--bg-subtle);
         }
 
         span {
         }
 
         &.in {
-            background-color: @fsLightgray;
+            background-color: var(--bg-subtle);
+            color: var(--fg-content-box);
         }
 
         .ajax_loader {
@@ -718,7 +733,7 @@
     }
 
     .widget__topbar-icon-svg {
-        color: @black;
+        color: var(--fg-content-box);
     }
 }
 
@@ -762,7 +777,7 @@
         &__view-sidebar {
             width: 50%;
             padding-left: 0;
-            border-left: 1px solid @fsMiddlegray;
+            border-left: 1px solid var(--border-strong);
         }
 
         &__view-sidebar-accordeon-panel {

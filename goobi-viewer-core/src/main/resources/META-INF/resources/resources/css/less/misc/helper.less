@@ -23,7 +23,7 @@ mark,
     position: fixed;
     width: 100%;
     height: 100%;
-    background-color: #000;
+    background-color: var(--bg-scrim);
     opacity: 0.8;
     left: 0;
     top: 0;
@@ -40,13 +40,13 @@ mark,
     &__icon {
         display: none;
         position: absolute;
-        border: 2px solid #e0e0e0;
+        border: 2px solid var(--border-strong);
         width: 16px;
         height: 16px;
         position: absolute;
         top: 45%;
         border-radius: 50%;
-        border-right: 2px solid @blue;
+        border-right: 2px solid var(--ci-color1);
         text-align: center;
         animation-name: smallButtonLoaderSpin;
         animation-duration: 900ms;
@@ -131,13 +131,13 @@ mark,
 /* validation messages */
 .-validation-message {
     &.-success {
-        color: @validSuccess;
+        color: var(--fg-success);
     }
     &.-warning {
-        color: @validWarning;
+        color: var(--fg-warning);
     }
     &.-danger {
-        color: @validDanger;
+        color: var(--fg-danger);
     }
 }
 .-validation-mark {
@@ -149,23 +149,26 @@ mark,
     font-size: @fontSmall;
     text-align: center;
     border-radius: 50%;
-    color: @white;
+    color: var(--fg-inverse);
     top: 14px;
     z-index: 50;
     &.-success {
-        background-color: @validSuccess;
+        background-color: var(--bg-success-strong);
+        color: var(--fg-on-success-strong);
         .fa-check {
             display: inline-block;
         }
     }
     &.-warning {
-        background-color: @validWarning;
+        background-color: var(--bg-warning-strong);
+        color: var(--fg-on-warning-strong);
         .fa-check {
             display: inline-block;
         }
     }
     &.-danger {
-        background-color: @validDanger;
+        background-color: var(--bg-danger-strong);
+        color: var(--fg-on-danger-strong);
         .fa-exclamation {
             display: inline-block;
         }
@@ -177,13 +180,13 @@ mark,
 
 .-validation-input {
     &.-success {
-        border-color: @validSuccess;
+        border-color: var(--border-success);
     }
     &.-warning {
-        border-color: @validWarning;
+        border-color: var(--border-warning);
     }
     &.-danger {
-        border-color: @validDanger;
+        border-color: var(--border-danger);
     }
 }
 
@@ -274,12 +277,12 @@ mark,
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.25);
+        background-color: rgb(from var(--bg-scrim) r g b / 25%);
     }
 }
 /* COORDS HIGHLIGHTING */
 .coords-highlighting {
-    background-color: yellow;
+    background-color: var(--highlight);
     opacity: 0.5;
     &.focus {
     }

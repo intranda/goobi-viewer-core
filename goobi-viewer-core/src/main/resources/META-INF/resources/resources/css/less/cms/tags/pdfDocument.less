@@ -1,7 +1,7 @@
 .pdf-container {
     pdfpage {
         .page {
-            border-top: 1px solid black;
+            border-top: 1px solid var(--fg-document);
             position: relative;
         }
     }
@@ -35,7 +35,7 @@
         margin: -1px;
         padding: 1px;
 
-        background-color: rgb(180, 0, 170);
+        background-color: var(--pdf-highlight-bg);
         border-radius: 4px;
     }
 
@@ -52,11 +52,11 @@
     }
 
     .text-layer .highlight.selected {
-        background-color: rgb(0, 100, 0);
+        background-color: var(--pdf-selected-highlight-bg);
     }
 
     .text-layer ::selection {
-        background: rgb(0, 0, 255);
+        background: var(--pdf-selection-bg);
     }
 
     .text-layer .endOfContent {

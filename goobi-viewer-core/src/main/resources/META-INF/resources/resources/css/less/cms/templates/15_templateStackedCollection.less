@@ -23,9 +23,10 @@
         margin: 0 auto 1.5rem auto;
     }
     .card {
-        border: 1px solid @middlegray;
+        border: 1px solid var(--border-strong);
         border-radius: 0;
-        background-color: @lightgray;
+        background-color: var(--bg-subtle);
+        color: var(--fg-content-box);
         box-shadow: none;
     }
     .card-header {
@@ -65,11 +66,11 @@
             &:hover,
             &:active,
             &:focus {
-                color: @black;
+                color: var(--fg-content-box);
                 text-decoration: none;
             }
             i {
-                color: #555;
+                color: var(--fg-secondary);
                 padding-left: 10px;
                 &.fa-angle-flip {
                     &::before {
@@ -107,16 +108,17 @@
             line-height: 16px;
             font-size: @fontMedium;
             text-align: center;
-            color: @white;
-            background-color: @orange;
+            color: var(--rss-badge-fg);
+            background-color: var(--rss-badge-bg);
         }
     }
     .card-collapse {
     }
     .card-body {
         padding-left: 59px;
-        border-top-color: @middlegray !important;
-        background-color: @white;
+        border-top-color: var(--border-strong) !important;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         &__links {
             display: flex;
             justify-content: space-between;
@@ -142,8 +144,8 @@
                 line-height: 16px;
                 font-size: @fontMedium;
                 text-align: center;
-                color: @white;
-                background-color: @orange;
+                color: var(--rss-badge-fg);
+                background-color: var(--rss-badge-bg);
             }
         }
     }

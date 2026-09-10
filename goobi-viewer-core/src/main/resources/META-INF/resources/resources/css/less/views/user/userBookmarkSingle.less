@@ -26,13 +26,13 @@
     &__item {
         height: 300px;
         margin-bottom: 30px;
-        border: 1px solid @middlegray;
+        border: 1px solid var(--border-strong);
         transition: all 0.3s ease-in;
         &-action {
             display: none;
         }
         &:hover {
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
             .view-bookmark__item-action {
                 display: block;
             }
@@ -93,10 +93,11 @@
         }
     }
     &__single-entry {
-        background: @white;
+        background: var(--bg-content-box);
+        color: var(--fg-content-box);
         margin-bottom: 2rem;
         padding: 2rem;
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-strong);
     }
 }
 
@@ -140,11 +141,11 @@
 }
 
 .btn.delete {
-    color: @btnCleanDelete;
+    color: var(--fg-danger);
     &:hover,
     &:active,
     &:focus {
-        color: @btnDanger;
+        color: var(--fg-danger);
     }
 }
 

@@ -10,7 +10,7 @@
     &__tile {
         height: 250px;
         margin-bottom: 15px;
-        border: 1px solid @lightgray;
+        border: 1px solid var(--border-color);
         overflow: hidden;
     }
     &__header,
@@ -19,7 +19,7 @@
     &__header {
         height: 57px;
         padding: 15px;
-        border-bottom: 1px solid @lightgray;
+        border-bottom: 1px solid var(--border-color);
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -71,13 +71,15 @@
         justify-content: center;
         max-width: 100%;
         padding: 30px 25px;
-        background-color: @lightgray;
+        background-color: var(--bg-subtle);
+        color: var(--fg-content-box);
         text-align: center;
         text-decoration: none;
         &:hover,
         &:focus-visible {
             text-decoration: none;
-            background-color: @middlegray;
+            background-color: var(--bg-selected);
+            color: var(--fg-selected);
         }
     }
     &__image {
@@ -92,7 +94,7 @@
         font-size: @fontNormal;
         font-weight: 600;
         line-height: 26px;
-        color: @black;
+        color: var(--fg-content-box);
         word-wrap: anywhere;
     }
 }

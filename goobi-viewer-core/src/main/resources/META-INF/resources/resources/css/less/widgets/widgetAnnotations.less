@@ -27,7 +27,8 @@
         }
     }
     #user_generated_content_nav .ugc-highlight {
-        background: @lightgray;
+        background: var(--bg-subtle);
+        color: var(--fg-content-box);
     }
 }
 
@@ -54,7 +55,7 @@
         }
         &.-onpage {
             border: none;
-            border-left: 4px solid @blue;
+            border-left: 4px solid var(--ci-color1);
             padding-left: 0.5rem;
         }
     }
@@ -77,7 +78,7 @@
         border: none;
         background: none;
         &:hover {
-            color: @blue;
+            color: var(--lk-general);
         }
         &.disabled {
             cursor: not-allowed;
@@ -89,8 +90,8 @@
         padding-left: 0.6rem;
         align-self: start;
         span {
-            background: @blue;
-            color: @white;
+            background: var(--ci-color1);
+            color: var(--fg-inverse);
             padding: 0 0.3rem;
             display: block;
             white-space: nowrap;
@@ -105,7 +106,7 @@
     }
     &__entry {
         &.-onpage {
-            border-right: 4px solid @blue;
+            border-right: 4px solid var(--ci-color1);
             border-left: none;
             padding-right: 0.5rem;
             padding-left: 0;

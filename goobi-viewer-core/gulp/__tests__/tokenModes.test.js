@@ -138,6 +138,12 @@ it('exposes each subtheme brand to core consumers in both modes', () => {
 });
 
 const foundationPairs = [
+    ['--print-fg', '--bg-document'],
+    ['--print-link', '--bg-document'],
+    ['--fg-document', '--bg-document'],
+    ['--mei-note-active-color', '--bg-document'],
+    ['--fg-inverse', '--archives-hero-bg'],
+    ['--fg-inverse', '--archives-hero-gradient-bg'],
     ['--fg-secondary', '--bg-subtle'],
     ['--fg-secondary', '--bg-hover'],
     ['--fg-secondary', '--bg-danger'],
@@ -166,6 +172,7 @@ const foundationPairs = [
         '--placeholder',
         '--fg-danger',
         '--fg-success',
+        '--fg-warning',
         '--ner-person-color',
         '--ner-location-color',
         '--ner-institution-color',
@@ -222,4 +229,22 @@ it('allows a later root override to reach the faceted-search widgets', () => {
     const overridden = postcss.parse(css.toString() + ':root { --facet-control-radius: 7px; --active-facets-badge-shadow-hover: 0 0 1px; }');
     expect(state(overridden, 'dark', 'none')('--facet-control-radius')).toBe('7px');
     expect(state(overridden, 'dark', 'none')('--active-facets-badge-shadow-hover')).toBe('0 0 1px');
+});
+
+it.each(['light', 'dark'])('keeps chart and entity navigation marks distinguishable in %s', (mode) => {
+    for (const [name, css] of variants) {
+        const get = state(css, mode, 'none');
+        for (const fg of ['--chronology-chart-color', '--ner-scale-handle-bg'])
+            for (const bg of ['--bg-content-box', '--bg-subtle']) {
+                const ratio = contrast(color(get(fg)), color(get(bg)));
+                if (ratio < 3) throw new Error(`${name}/${mode}: ${fg} on ${bg} = ${ratio}`);
+            }
+    }
+});
+
+it('restores the saved mode in the crowdsourcing editor template', () => {
+    const template = path.resolve(themeRoot, '../../templateCrowdsourcing.html');
+    if (!fs.existsSync(template)) return;
+    const html = fs.readFileSync(template, 'utf8').match(/<html\b[^>]*>/)[0];
+    expect(html).toContain(`class="#{sessionBean.get('colorTheme')}"`);
 });

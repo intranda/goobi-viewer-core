@@ -51,7 +51,7 @@
         align-items: center;
         padding-left: 3px;
         &:hover {
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
         }
         a {
             display: flex;
@@ -147,7 +147,7 @@
         right: 0;
         bottom: 0;
         left: 0;
-        background-color: rgba(255, 255, 255, 0.85);
+        background-color: rgb(from var(--bg-content-box) r g b / 85%);
         z-index: 10;
     }
 }

@@ -14,7 +14,8 @@
         top: 0;
         width: 100vw;
         height: 100vh;
-        background-color: @neutralgray;
+        background-color: var(--bg-subtle);
+        color: var(--fg-content-box);
         overflow-y: auto;
         z-index: 9999;
     }
@@ -23,7 +24,8 @@
         width: 98%;
         max-width: 400px;
         padding: 10px;
-        background-color: @neutralgray;
+        background-color: var(--bg-subtle);
+        color: var(--fg-content-box);
     }
     /* HEADER / BODY */
     &__header,
@@ -36,14 +38,14 @@
             &:active,
             &:focus,
             &:active:focus {
-                color: @black;
+                color: var(--fg-content-box);
             }
         }
         .btn--full {
             &:active,
             &:focus,
             &:active:focus {
-                color: @white;
+                color: var(--fg-inverse);
             }
         }
     }
@@ -162,26 +164,26 @@
                 padding: 6px 12px;
                 font-weight: 700;
                 text-align: center;
-                color: @black;
-                background: @white;
+                color: var(--fg-content-box);
+                background: var(--bg-content-box);
                 &:hover,
                 &:active,
                 &focus {
                     text-decoration: none;
-                    color: @black;
+                    color: var(--fg-content-box);
                 }
             }
         }
     }
     &__terms-text {
-        border: 1px solid @middlegray;
+        border: 1px solid var(--border-strong);
         padding: 0.5rem 1rem;
         height: 150px;
         overflow-y: auto;
     }
     &__new-account-submit {
         width: 100%;
-        color: @black;
+        color: var(--fg-content-box);
         background-color: transparent;
         border: none;
         &:hover {
@@ -203,7 +205,7 @@
         padding: 5px 0;
         font-size: @fontSmall;
         text-align: center;
-        color: @gray;
+        color: var(--fg-muted);
         .btn {
             font-size: inherit;
             vertical-align: inherit;
@@ -229,7 +231,8 @@
         position: relative;
         flex: 0 0 30%;
         max-width: 30%;
-        background: @adminBackend-bg;
+        background: var(--bg-inverse);
+        color: var(--fg-inverse);
         display: flex;
         align-items: center;
         justify-content: space-evenly;
@@ -241,7 +244,7 @@
         background: transparent;
         &::before,
         &::after {
-            background-color: #fff;
+            background-color: var(--fg-inverse);
         }
     }
     &__form-row {
@@ -255,13 +258,14 @@
                 font-size: 1.2rem;
                 top: -10px;
                 left: 10px;
-                background-color: white;
+                background-color: var(--bg-content-box);
+                color: var(--fg-content-box);
                 padding: 0 0.25em 0 0.25em;
             }
         }
     }
     .effect-label {
-        color: #666;
+        color: var(--fg-muted);
         font-size: 1.4rem;
         position: absolute;
         pointer-events: none;
@@ -272,7 +276,7 @@
     input:focus + .effect-label {
         top: -10px;
         left: 10px;
-        background-color: white;
+        background-color: var(--bg-content-box);
         padding: 0 0.25em 0 0.25em;
         font-size: 1.2rem;
     }
@@ -282,7 +286,7 @@
     }
     // KEYBOARD ANIMATION
     &__keyboard {
-        border: 5px solid rgb(255, 255, 255);
+        border: 5px solid var(--fg-inverse);
         border-radius: 10px;
         width: 87px;
         height: 48px;
@@ -296,7 +300,8 @@
     &__keyboard-space-button {
         width: 47px;
         height: 6px;
-        background: rgb(255, 255, 255);
+        background: var(--bg-content-box);
+        color: var(--fg-content-box);
         position: absolute;
         left: 15px;
         bottom: 5px;
@@ -305,7 +310,8 @@
     &__keyboard-single-key {
         width: 7px;
         height: 7px;
-        background: rgb(255, 255, 255);
+        background: var(--bg-content-box);
+        color: var(--fg-content-box);
         position: absolute;
         border-radius: 1px;
         &-1 {
@@ -417,9 +423,9 @@
     }
     // REMOVES YELLOW AUTOCOMPLETE BACKGROUND
     :-webkit-autofill {
-        -webkit-text-fill-color: #212529;
+        -webkit-text-fill-color: var(--fg-content-box);
         filter: none; /* needed for firefox! */
-        box-shadow: 0 0 0 100px #ffffff inset !important;
+        box-shadow: 0 0 0 100px var(--bg-content-box) inset !important;
     }
     // OVERRIDING BOOTSTRAP PADDING
     .no-gutters input {
@@ -435,7 +441,8 @@
         display: block;
         align-items: center;
         justify-content: center;
-        background-color: @neutralgray;
+        background-color: var(--bg-subtle);
+        color: var(--fg-content-box);
     }
     .user-login-modal {
         display: block;
@@ -499,7 +506,7 @@
         .fancy-close {
             &::before,
             &::after {
-                background-color: @black;
+                background-color: var(--fg-inverse);
             }
         }
     }

@@ -10,7 +10,7 @@
             &:after {
                 content: '|';
                 margin-left: 7px;
-                color: @middlegray;
+                color: var(--fg-muted);
             }
             &:last-child {
                 &:after {
@@ -21,27 +21,27 @@
                 margin-left: 0;
             }
             &.btn--clean {
-                color: @blue;
+                color: var(--lk-general);
                 &:hover,
                 &:active,
                 &:focus {
-                    color: @hoverblue;
+                    color: var(--lk-general-hover);
                 }
             }
             &.delete {
-                color: @btnCleanDelete;
+                color: var(--fg-danger);
                 &:hover,
                 &:active,
                 &:focus {
-                    color: @btnDanger;
+                    color: var(--fg-danger);
                 }
             }
             &.abort {
-                color: @btnDefault;
+                color: var(--fg-secondary);
                 &:hover,
                 &:active,
                 &:focus {
-                    color: @black;
+                    color: var(--fg-content-box);
                 }
             }
         }

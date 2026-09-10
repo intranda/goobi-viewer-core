@@ -14,8 +14,8 @@
         padding: 15px;
         font-size: @fontLarge;
         text-align: center;
-        color: @white;
-        background-color: @blue;
+        color: var(--fg-inverse);
+        background-color: var(--ci-color1);
         &:hover,
         &:focus,
         &:active {
@@ -24,18 +24,18 @@
     }
     &__heading {
         padding-left: 15px;
-        border-top: 1px solid @middlegray;
-        border-right: 3px solid @middlegray;
-        border-bottom: 1px solid @middlegray;
-        border-left: 3px solid @middlegray;
+        border-top: 1px solid var(--border-strong);
+        border-right: 3px solid var(--border-strong);
+        border-bottom: 1px solid var(--border-strong);
+        border-left: 3px solid var(--border-strong);
     }
     &__spacerheading {
         padding-left: 10px;
-        border-bottom: 1px solid @middlegray;
+        border-bottom: 1px solid var(--border-strong);
     }
     &__subheading {
         padding-left: 10px;
-        border-left: 3px solid @middlegray;
+        border-left: 3px solid var(--border-strong);
     }
     /* ELEMENT */
     &__logos,
@@ -65,11 +65,11 @@
     }
     &__color {
         margin-bottom: 10px;
-        border: 1px solid @middlegray;
+        border: 1px solid var(--border-strong);
     }
     &__color-header {
         height: 50px;
-        border-bottom: 1px solid @middlegray;
+        border-bottom: 1px solid var(--border-strong);
     }
     &__color-body {
         padding: 5px;
@@ -92,7 +92,7 @@
     }
     &__helper-item {
         padding: 15px;
-        border-bottom: 1px solid @middlegray;
+        border-bottom: 1px solid var(--border-strong);
     }
     &__mixins {
     }
@@ -100,8 +100,8 @@
 
 /* MODIFICATION */
 .styles__logo--bw {
-    color: @white;
-    background-color: @black;
+    color: var(--fg-inverse);
+    background-color: var(--bg-inverse);
 }
 
 /* GEOMAP MARKER */

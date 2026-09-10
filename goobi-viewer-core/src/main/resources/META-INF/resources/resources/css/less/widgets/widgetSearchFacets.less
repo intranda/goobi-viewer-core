@@ -156,24 +156,24 @@
             width: 0;
             height: 100%;
             font-size: @fontMedium;
-            color: @white;
+            color: var(--fg-inverse);
             border: none;
-            background-color: @blue;
+            background-color: var(--ci-color1);
             display: none;
             &::-webkit-input-placeholder {
-                color: @white;
+                color: var(--fg-inverse);
                 opacity: 0.5;
             }
             &:-moz-placeholder {
-                color: @white;
+                color: var(--fg-inverse);
                 opacity: 0.5;
             }
             &::-moz-placeholder {
-                color: @white;
+                color: var(--fg-inverse);
                 opacity: 0.5;
             }
             &:-ms-input-placeholder {
-                color: @white;
+                color: var(--fg-inverse);
                 opacity: 0.5;
             }
             &.in {
@@ -253,14 +253,15 @@
     }
     &__boolean-button {
         padding: 0.2rem 0.7rem;
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-strong);
         word-wrap: anywhere;
-        color: #212529;
+        color: var(--fg-content-box);
         &:hover {
-            background: #f3f3f3;
+            background: var(--bg-subtle);
         }
         &.-active {
-            background: #f3f3f3;
+            background: var(--bg-subtle);
+            color: var(--fg-content-box);
             font-weight: 700;
         }
     }

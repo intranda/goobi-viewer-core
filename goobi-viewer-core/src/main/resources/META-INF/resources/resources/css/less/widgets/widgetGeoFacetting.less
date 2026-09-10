@@ -26,7 +26,7 @@
         height: 45px;
         bottom: 0;
         left: 0;
-        background: rgba(0, 0, 0, 0);
+        background: transparent;
         transition: background 0.2s ease;
         z-index: 1001;
         cursor: pointer;
@@ -35,9 +35,9 @@
             // (this element has a type="button" attribute,
             // which makes webkit style it as a button, if not unset)
             -webkit-appearance: unset;
-            color: @white;
+            color: var(--fg-inverse);
             &:hover {
-                color: @white;
+                color: var(--fg-inverse);
             }
         }
     }
@@ -73,12 +73,12 @@
         padding: 0;
         border: none;
         background: none;
-        color: @white;
+        color: var(--fg-inverse);
         &:hover,
         &:focus,
         &:active,
         &:active:focus {
-            color: @white;
+            color: var(--fg-inverse);
         }
     }
 
@@ -89,7 +89,7 @@
         font-size: 1.7rem;
         border: none;
         background: none;
-        color: @white;
+        color: var(--fg-inverse);
         &.active {
             display: block;
         }
@@ -99,7 +99,7 @@
             text-decoration: none;
             color: inherit;
             background: none;
-            color: @white;
+            color: var(--fg-inverse);
         }
     }
 
@@ -111,7 +111,7 @@
                 opacity: 1;
             }
             .widget-geofacetting__action-overlay {
-                background: rgba(0, 0, 0, 0.75);
+                background: rgb(from var(--bg-scrim) r g b / 75%);
             }
         }
     }
@@ -179,7 +179,7 @@
         bottom: 35px;
         z-index: 401;
         padding: 2rem;
-        background: rgba(0, 0, 0, 0.75);
+        background: rgb(from var(--bg-scrim) r g b / 75%);
     }
 
     &__overlay-reset-search {
@@ -216,7 +216,7 @@
         margin: 10px 0;
         width: 100%;
         height: 1px;
-        background-color: @middlegray;
+        background-color: var(--bg-selected);
     }
 
     &__action {
@@ -226,7 +226,7 @@
             margin: -32px 0 0 -6px;
             padding: 0 0 21px 0;
             text-align: right;
-            border-bottom: 1px solid @middlegray;
+            border-bottom: 1px solid var(--border-strong);
         }
         a {
             &:hover,
@@ -254,13 +254,13 @@
     align-items: center;
     border-radius: 4px;
     padding: 0;
-    border: 2px solid rgba(0, 0, 0, 0.2);
+    border: 2px solid rgb(from var(--border-emphasis) r g b / 20%);
     .fa-map-marker {
-        color: #464646;
+        color: var(--fg-secondary);
         width: 30px;
         height: 30px;
         line-height: 30px;
-        background-color: #fff;
+        background-color: var(--bg-content-box);
         font-size: 1.8rem;
     }
     &:hover,
@@ -268,14 +268,14 @@
     &:active,
     &:active:focus {
         .fa-map-marker {
-            background-color: #f4f4f4;
-            color: #464646;
+            background-color: var(--bg-subtle);
+            color: var(--fg-secondary);
         }
     }
     &:focus {
         .fa-map-marker {
-            background-color: #fff;
-            color: #464646;
+            background-color: var(--bg-content-box);
+            color: var(--fg-secondary);
         }
     }
 }
@@ -345,7 +345,7 @@
             opacity: 1;
         }
         &__action-overlay {
-            background: rgba(0, 0, 0, 0.75);
+            background: rgb(from var(--bg-scrim) r g b / 75%);
         }
     }
     .overlay__geomap {

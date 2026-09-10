@@ -4,7 +4,8 @@
    ==============================================================*/
 .view-mei {
     &__wrapper {
-        background: #fff;
+        background: var(--bg-content-box);
+        color: var(--fg-content-box);
         padding: 15px;
     }
 }
@@ -13,8 +14,9 @@
     svg {
         max-width: 100%;
         height: auto;
-        color: black;
-        fill: black;
+        color: var(--fg-document);
+        fill: var(--fg-document);
+        background: var(--bg-document);
         svg {
             max-width: 100%;
             height: 100%;
@@ -32,7 +34,7 @@
         flex-direction: row;
         flex-wrap: wrap;
         flex-shrink: 0;
-        border: 1px solid #1b1b1b;
+        border: 1px solid var(--border-emphasis);
         margin: 0 19px;
     }
     &__toolbar-zoom-controls,
@@ -45,7 +47,8 @@
     &__toolbar-track {
         height: 14px;
         width: 200px;
-        background: rgb(192, 192, 192);
+        background: var(--bg-selected);
+        color: var(--fg-selected);
         cursor: pointer;
         display: inline-block;
         position: relative;
@@ -54,13 +57,13 @@
     }
     &__toolbar-track-progress {
         margin: 0;
-        background: rgb(95, 95, 95);
+        background: var(--bg-inverse);
         width: 0%;
         position: absolute;
         top: 0;
         left: 0;
         height: 100%;
-        background-color: #015999;
+        background-color: var(--ci-color1);
         transition: width 0.1s ease;
     }
     &__toolbar-time-wrapper {
@@ -77,7 +80,7 @@
     &__toolbar-track-current-time,
     &__toolbar-track-total-time {
         font-size: 12px;
-        color: #666;
+        color: var(--fg-muted);
         min-width: 2.5rem;
         line-height: 1;
     }
@@ -90,12 +93,12 @@
         display: flex;
         align-items: center;
         gap: 0.25rem;
-        border: 1px solid #1b1b1b;
+        border: 1px solid var(--border-emphasis);
         border-top: none;
         border-bottom: none;
     }
     &__toolbar-page-info {
-        color: #333;
+        color: var(--fg-secondary);
         width: 50px;
         display: flex;
         justify-content: center;
@@ -103,14 +106,14 @@
     }
     &__toolbar-status-controls {
         display: flex;
-        border-right: 1px solid #1b1b1b;
+        border-right: 1px solid var(--border-emphasis);
     }
 
     // Color effect for the note played at the moment
     .-highlighted-note {
-        stroke: #d2042d;
-        fill: #d2042d;
-        color: #d2042d;
+        stroke: var(--mei-note-active-color);
+        fill: var(--mei-note-active-color);
+        color: var(--mei-note-active-color);
     }
 }
 
@@ -154,7 +157,7 @@
             justify-content: center;
             border-right: none;
             flex-wrap: wrap;
-            border-top: 1px solid #1b1b1b;
+            border-top: 1px solid var(--border-emphasis);
             padding-bottom: 10px;
             order: 3;
         }

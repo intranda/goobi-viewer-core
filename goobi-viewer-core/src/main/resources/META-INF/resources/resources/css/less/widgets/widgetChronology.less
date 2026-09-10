@@ -6,7 +6,7 @@
 /* BLOCK */
 .widget-chronology-slider {
     overflow: hidden;
-    color: @black;
+    color: var(--fg-content-box);
     &__topbar {
         flex: 0 0 100%;
         display: flex;
@@ -94,7 +94,7 @@
         text-align: inherit;
         padding: 0.3rem;
         &:focus {
-            background-color: rgba(0, 0, 0, 0.06);
+            background-color: rgb(from var(--bg-scrim) r g b / 6%);
         }
     }
     &__action-reset-button {
@@ -110,9 +110,9 @@
         height: 1rem;
         border: none;
         border-radius: 5px;
-        border-color: @lightgray;
+        border-color: var(--border-color);
         background-image: none;
-        background-color: @lightgray;
+        background-color: var(--bg-subtle);
         .ui-slider-range,
         .ui-slider-handle {
             border-radius: 4px;
@@ -122,16 +122,16 @@
             }
         }
         .ui-slider-range {
-            border-color: @blue;
-            background-color: @blue;
+            border-color: var(--ci-color1);
+            background-color: var(--ci-color1);
         }
         .ui-slider-handle {
             width: 1rem;
             height: 1rem;
             top: 0;
             margin: 0;
-            border-color: @gray;
-            background-color: @middlegray;
+            border-color: var(--border-emphasis);
+            background-color: var(--bg-selected);
             cursor: pointer;
         }
     }
@@ -171,14 +171,14 @@
     &__graph {
         height: 150px;
         &-line {
-            color: rgba(200, 89, 153, 1);
+            color: var(--chronology-chart-color);
         }
         &-area {
-            color: rgba(200, 89, 153, 0.3);
+            color: rgb(from var(--chronology-chart-color) r g b / 30%);
         }
         &-range {
-            color: @blue;
-            background-color: @blue;
+            color: var(--ci-color1);
+            background-color: var(--ci-color1);
             opacity: 0.1;
         }
     }

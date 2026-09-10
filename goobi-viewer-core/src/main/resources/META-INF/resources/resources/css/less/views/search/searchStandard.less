@@ -43,11 +43,12 @@
             min-width: 0;
 
             .ui-autocomplete-input {
-                background: white;
+                background: var(--bg-popover);
+                color: var(--fg-popover);
                 width: 100%;
                 height: 100%;
                 font-size: 1.4rem;
-                border: 1px solid @middlegray;
+                border: 1px solid var(--border-strong);
                 background-image: none;
                 border-radius: 0;
                 padding: 0.5rem 1rem;
@@ -71,7 +72,8 @@
         max-width: 130px;
         .custom-control--select {
             border: none;
-            background: #f7f7f7;
+            background: var(--bg-subtle);
+            color: var(--fg-content-box);
             height: 100%;
             & select {
                 border-radius: 0;
@@ -80,10 +82,10 @@
     }
     &__filter-select select {
         width: 100%;
-        background: #f7f7f7;
-        color: black;
+        background: var(--bg-subtle);
+        color: var(--fg-content-box);
         padding: 0.5rem 1rem;
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-strong);
         border-right: none;
         height: 100%;
     }
@@ -111,11 +113,13 @@
 }
 
 .ui-autocomplete.ui-menu {
-    border: 1px solid #eee;
-    background-color: @white;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-popover);
+    color: var(--fg-popover);
     .ui-menu-item {
         .ui-state-active {
-            background-color: lightgray;
+            background-color: var(--bg-selected);
+            color: var(--fg-selected);
         }
     }
 }
@@ -144,7 +148,7 @@
 .search-tile {
     margin-bottom: 21px;
     padding: 10px;
-    border: 1px solid @middlegray;
+    border: 1px solid var(--border-strong);
     /* ELEMENT */
     &__description {
         min-height: 125px;
@@ -205,7 +209,7 @@
             }
         }
         &__filter-select select {
-            border-right: 1px solid #ccc;
+            border-right: 1px solid var(--border-strong);
         }
     }
 }

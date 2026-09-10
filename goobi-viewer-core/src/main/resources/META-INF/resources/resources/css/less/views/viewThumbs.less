@@ -21,10 +21,10 @@
     }
     &__thumbnail {
         padding: 5px;
-        border: 1px solid @lightgray;
+        border: 1px solid var(--border-color);
         transition: background-color 0.15s ease;
         &:hover {
-            background-color: rgba(0, 0, 0, 0.045);
+            background-color: rgb(from var(--bg-scrim) r g b / 4.5%);
         }
     }
     &__thumbnail-image {

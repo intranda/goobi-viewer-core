@@ -25,20 +25,20 @@
             left: 0;
             margin: 0;
             padding: 1.5rem;
-            background-color: rgba(255, 255, 255, 0.75);
+            background-color: rgb(from var(--bg-content-box) r g b / 75%);
         }
     }
     &__description {
         margin-bottom: 2rem;
         padding: 1.5rem;
-        color: @white;
-        background-color: @gray;
+        color: var(--fg-inverse);
+        background-color: var(--bg-inverse);
         a {
-            color: @blue;
+            color: var(--fg-inverse);
             &:hover,
             &:active,
             &:focus {
-                color: @blue;
+                color: var(--fg-inverse);
             }
         }
     }

@@ -42,7 +42,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: @white;
+    background-color: var(--bg-content-box);
     background-image: url('@{images}/ajax_preloader.gif');
     background-position: center center;
     background-repeat: no-repeat;
@@ -53,7 +53,7 @@
 #overview,
 #section {
     position: relative;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-strong);
     border-top: none;
     .tag-filter-description {
         float: left;
@@ -71,19 +71,19 @@
             margin-right: 3px;
             a {
                 text-decoration: none;
-                color: @middlegray;
+                color: var(--fg-muted);
                 &:hover {
                     text-decoration: none;
-                    color: @middlegray;
+                    color: var(--fg-muted);
                 }
                 &.active[data-type='person'] {
-                    color: @personColor;
+                    color: var(--ner-person-color);
                 }
                 &.active[data-type='location'] {
-                    color: @locationColor;
+                    color: var(--ner-location-color);
                 }
                 &.active[data-type='corporation'] {
-                    color: @corporateColor;
+                    color: var(--ner-institution-color);
                 }
             }
             &.reset-filter {
@@ -101,11 +101,11 @@
         left: 100%;
         padding: 2px 4px;
         font-size: @fontSmall;
-        color: @black;
-        border: 1px solid @gray;
+        color: var(--fg-popover);
+        border: 1px solid var(--border-emphasis);
         border-radius: 4px;
-        background-color: @white;
-        box-shadow: 0px 5px 7px rgba(0, 0, 0, 0.4);
+        background-color: var(--bg-popover);
+        box-shadow: 0px 5px 7px rgb(from var(--shadow-color) r g b / 40%);
         z-index: 999;
         &:before {
             content: '';
@@ -118,7 +118,7 @@
             margin-top: -5px;
             border-width: 5px;
             border-style: solid;
-            border-color: transparent @gray transparent transparent;
+            border-color: transparent var(--border-emphasis) transparent transparent;
         }
         &.right {
             &:before {
@@ -133,29 +133,29 @@
                 margin-top: -5px;
                 border-width: 5px;
                 border-style: solid;
-                border-color: transparent transparent transparent @gray;
+                border-color: transparent transparent transparent var(--border-emphasis);
             }
         }
         .page-tag {
             margin-right: 3px;
             white-space: nowrap;
             &:hover {
-                background-color: @tagHoverColor;
+                background-color: var(--bg-subtle);
             }
             &.empty {
                 display: none;
             }
             &.PERSON {
-                color: @personColor;
+                color: var(--ner-person-color);
             }
             &.LOCATION {
-                color: @locationColor;
+                color: var(--ner-location-color);
             }
             &.CORPORATION {
-                color: @corporateColor;
+                color: var(--ner-institution-color);
             }
             &.INSTITUTION {
-                color: @corporateColor;
+                color: var(--ner-institution-color);
             }
         }
     }
@@ -180,12 +180,12 @@
                     font-size: @fontSmall;
                     font-weight: bold;
                     a {
-                        color: @black;
+                        color: var(--fg-content-box);
                         &:hover,
                         &:active,
                         &:focus {
                             text-decoration: none;
-                            color: @black;
+                            color: var(--fg-content-box);
                         }
                     }
                 }
@@ -196,7 +196,7 @@
                         margin-right: 3px;
                         white-space: nowrap;
                         &:hover {
-                            background-color: @tagHoverColor;
+                            background-color: var(--bg-subtle);
                         }
                         &:hover {
                         }
@@ -204,16 +204,16 @@
                             display: none;
                         }
                         &.PERSON {
-                            color: @personColor;
+                            color: var(--ner-person-color);
                         }
                         &.LOCATION {
-                            color: @locationColor;
+                            color: var(--ner-location-color);
                         }
                         &.CORPORATION {
-                            color: @corporateColor;
+                            color: var(--ner-institution-color);
                         }
                         &.INSTITUTION {
-                            color: @corporateColor;
+                            color: var(--ner-institution-color);
                         }
                     }
                 }
@@ -230,13 +230,13 @@
     position: relative;
     float: left;
     width: 10%;
-    border-top: 1px solid @middlegray;
-    border-bottom: 1px solid @middlegray;
+    border-top: 1px solid var(--border-strong);
+    border-bottom: 1px solid var(--border-strong);
     .scale-page {
         position: absolute;
         left: -8px;
         font-size: @fontNormal;
-        color: @middlegray;
+        color: var(--fg-muted);
         &.start {
             top: 0;
         }
@@ -252,7 +252,7 @@
         margin-top: -10px;
         font-size: @fontSmall;
         text-align: center;
-        color: @middlegray;
+        color: var(--fg-muted);
         -ms-transform: rotate(-90deg);
         -webkit-transform: rotate(-90deg);
         transform: rotate(-90deg);
@@ -269,7 +269,7 @@
             float: right;
             width: 50%;
             height: 60px;
-            border-bottom: 1px solid @middlegray;
+            border-bottom: 1px solid var(--border-strong);
             &.middle {
                 width: 75%;
             }
@@ -285,7 +285,7 @@
         right: 3px;
         width: 2px;
         height: 100px;
-        background-color: @scaleHandleColor;
+        background-color: var(--ner-scale-handle-bg);
         z-index: 11;
     }
 }
@@ -296,7 +296,7 @@
     height: 600px;
     margin-right: 3px;
     border: none;
-    background: @middlegray;
+    background: var(--bg-selected);
     z-index: 10;
     .ui-slider-handle {
         left: -25px;
@@ -304,7 +304,7 @@
         height: 16px;
         margin-bottom: -8px;
         border: none;
-        background: @scaleHandleColor;
+        background: var(--ner-scale-handle-bg);
         &:after {
             content: '';
             position: absolute;
@@ -315,7 +315,7 @@
             height: 0;
             border-width: 15px;
             border-style: solid;
-            border-color: transparent transparent transparent @scaleHandleColor;
+            border-color: transparent transparent transparent var(--ner-scale-handle-bg);
         }
         &:focus {
             outline: none;
@@ -326,9 +326,9 @@
             left: 2.6em;
             padding: 2px 4px;
             font-size: @fontSmall;
-            color: @white;
+            color: var(--fg-inverse);
             border-radius: 4px;
-            background-color: @black;
+            background-color: var(--bg-inverse);
             white-space: nowrap;
             z-index: 999;
             &:before {
@@ -342,7 +342,7 @@
                 margin-top: -5px;
                 border-width: 5px;
                 border-style: solid;
-                border-color: transparent @black transparent transparent;
+                border-color: transparent var(--bg-inverse) transparent transparent;
             }
         }
     }
@@ -359,22 +359,22 @@
         display: inline-block;
         margin-right: 3px;
         &:hover {
-            background-color: @tagHoverColor;
+            background-color: var(--bg-subtle);
         }
         &.empty {
             display: none;
         }
         &.PERSON {
-            color: @personColor;
+            color: var(--ner-person-color);
         }
         &.LOCATION {
-            color: @locationColor;
+            color: var(--ner-location-color);
         }
         &.CORPORATION {
-            color: @corporateColor;
+            color: var(--ner-institution-color);
         }
         &.INSTITUTION {
-            color: @corporateColor;
+            color: var(--ner-institution-color);
         }
     }
 }

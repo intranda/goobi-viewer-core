@@ -11,9 +11,10 @@
     &__box {
         pre {
             padding: 10px;
-            border: 1px solid @middlegray;
+            border: 1px solid var(--border-strong);
             border-radius: 0;
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
+            color: var(--fg-content-box);
             white-space: pre-wrap;
             & > br:first-child {
                 display: none;
@@ -22,9 +23,10 @@
     }
     &__content {
         padding: 10px;
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-strong);
         border-radius: 0;
-        background-color: #eee;
+        background-color: var(--bg-subtle);
+        color: var(--fg-content-box);
         & > :first-child {
             margin-top: 0;
         }
@@ -36,13 +38,13 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        color: #222;
+        color: var(--fg-popover);
         vertical-align: baseline;
         background: transparent;
         padding: 0;
         border: none;
         &:hover {
-            color: #222;
+            color: var(--fg-popover);
             text-decoration: none;
         }
     }
@@ -70,30 +72,30 @@
 
 // ENTITY COLORING
 [data-entity-type='person'] {
-    color: #0174df;
+    color: var(--ner-person-color);
     &:hover,
     &:focus,
     &:active {
-        color: #0174df;
+        color: var(--ner-person-color);
     }
 }
 
 [data-entity-type='location'] {
-    color: #ff8000;
+    color: var(--ner-location-color);
     &:hover,
     &:focus,
     &:active {
-        color: #ff8000;
+        color: var(--ner-location-color);
     }
 }
 
 [data-entity-type='corporation'],
 [data-entity-type='institution'] {
-    color: #298a08;
+    color: var(--ner-institution-color);
     &:hover,
     &:focus,
     &:active {
-        color: #298a08;
+        color: var(--ner-institution-color);
     }
 }
 

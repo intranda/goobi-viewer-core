@@ -10,9 +10,10 @@
         display: flex;
         gap: 24px;
         margin-bottom: 16px;
-        background-color: @white;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         padding: 1.5rem;
-        border: 1px solid @middlegray;
+        border: 1px solid var(--border-strong);
     }
     &__metadata-thumbnail {
         flex-shrink: 0;
@@ -29,8 +30,8 @@
         justify-content: center;
         width: 200px;
         height: 260px;
-        background-color: @lightgray2;
-        color: @middlegray;
+        background-color: var(--bg-subtle);
+        color: var(--fg-muted);
     }
     &__metadata-content {
         flex: 1;
@@ -59,7 +60,7 @@
             line-height: 14px;
             margin-right: 10px;
             text-align: center;
-            border: 1px solid @lightgray;
+            border: 1px solid var(--border-color);
             span:before {
                 content: '\2013';
             }
@@ -70,18 +71,19 @@
             }
         }
         &.inactive {
-            border-bottom: 2px solid @lightgray;
+            border-bottom: 2px solid var(--border-color);
         }
     }
     &__mv-element {
         padding: 15px 0;
         border-bottom: 0;
-        background-color: @white;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         &:hover {
-            background-color: @lightgray;
+            background-color: var(--bg-subtle);
         }
         &:last-child {
-            border-bottom: 1px solid @middlegray;
+            border-bottom: 1px solid var(--border-strong);
         }
         &.level-0 {
             border: 0;
@@ -116,7 +118,7 @@
     &__list-expandable,
     &__list-full {
         padding: 10px 15px;
-        border-top: 1px solid @middlegray;
+        border-top: 1px solid var(--border-strong);
         li {
             &:first-child {
                 //				padding-left: 5px !important;
@@ -292,7 +294,8 @@
         display: grid;
         gap: 20px 30px;
         grid-template-columns: 1fr 1fr 1fr;
-        background: #fff;
+        background: var(--bg-content-box);
+        color: var(--fg-content-box);
         padding: 1.5rem;
     }
     &__mv-tile {

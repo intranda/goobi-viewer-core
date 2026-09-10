@@ -131,12 +131,12 @@
             height: 25px;
         }
         .badge-dark {
-            color: white;
+            color: var(--fg-inverse);
             &:hover,
             &:active,
             &:focus {
-                background: #5e5e5e;
-                color: white;
+                background: var(--bg-inverse-hover);
+                color: var(--fg-inverse);
             }
         }
     }
@@ -168,8 +168,8 @@
 }
 
 .widget-admin {
-    background-color: @adminBackend-bg;
-    color: @white;
+    background-color: var(--bg-inverse);
+    color: var(--fg-inverse);
 
     &__topbar {
     }

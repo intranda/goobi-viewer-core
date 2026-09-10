@@ -6,7 +6,8 @@
 
 /* FORCE LIGHT BACKGROUND ON ERROR PAGES */
 body:has(.view-error-page) {
-    background-color: @white;
+    background-color: var(--bg-content-box);
+    color: var(--fg-content-box);
 }
 
 /* PAGE WRAPPER */
@@ -19,7 +20,8 @@ body:has(.view-error-page) {
 
 /* BLOCK */
 .view-error {
-    background: @white;
+    background: var(--bg-content-box);
+    color: var(--fg-content-box);
     max-width: 620px;
     margin: 0 auto;
     padding: 0 2rem 6rem;
@@ -42,7 +44,7 @@ body:has(.view-error-page) {
 
     &__headline {
         font-size: 2.6rem;
-        color: @black;
+        color: var(--fg-content-box);
         margin-top: -1.6rem;
         margin-bottom: 1.2rem;
         position: relative;
@@ -53,19 +55,19 @@ body:has(.view-error-page) {
 
     &__code {
         font-weight: 800;
-        color: @blue;
+        color: var(--lk-general);
         letter-spacing: -0.05em;
     }
 
     &__title {
         font-weight: 300;
-        color: @darkgray;
+        color: var(--fg-secondary);
         letter-spacing: -0.02em;
     }
 
     &__message {
         font-size: 1.5rem;
-        color: @gray;
+        color: var(--fg-muted);
         line-height: 1.7;
         margin: 0 auto 2.4rem;
         max-width: 400px;
@@ -95,56 +97,56 @@ body:has(.view-error-page) {
         }
 
         .btn--full {
-            background-color: @blue;
-            border-color: @blue;
-            box-shadow: 0 2px 8px fade(@blue, 25%);
+            background-color: var(--ci-color1);
+            border-color: var(--ci-color1);
+            box-shadow: 0 2px 8px rgb(from var(--ci-color1) r g b / 25%);
 
             &:hover {
-                background-color: @hoverblue;
-                border-color: @hoverblue;
-                box-shadow: 0 4px 12px fade(@blue, 30%);
+                background-color: var(--ci-hovercolor1);
+                border-color: var(--ci-hovercolor1);
+                box-shadow: 0 4px 12px rgb(from var(--ci-color1) r g b / 30%);
                 transform: translateY(-1px);
             }
 
             &:active {
-                background-color: @activeblue;
-                border-color: @activeblue;
-                box-shadow: 0 1px 4px fade(@blue, 30%);
+                background-color: var(--brand-strong);
+                border-color: var(--brand-strong);
+                box-shadow: 0 1px 4px rgb(from var(--ci-color1) r g b / 30%);
                 transform: translateY(0);
             }
 
             &:focus {
-                background-color: @blue;
-                border-color: @blue;
+                background-color: var(--ci-color1);
+                border-color: var(--ci-color1);
             }
         }
 
         .btn--default {
-            color: @darkgray;
-            background-color: @white;
-            border-color: #d4d4d4;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            color: var(--fg-secondary);
+            background-color: var(--bg-content-box);
+            border-color: var(--border-strong);
+            box-shadow: 0 1px 3px rgb(from var(--shadow-color) r g b / 5%);
 
             &:hover {
-                color: @black;
-                border-color: #bbb;
-                background-color: @white;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+                color: var(--fg-content-box);
+                border-color: var(--border-strong);
+                background-color: var(--bg-content-box);
+                box-shadow: 0 2px 6px rgb(from var(--shadow-color) r g b / 8%);
                 transform: translateY(-1px);
             }
 
             &:active {
-                color: @black;
-                border-color: @gray;
-                background-color: @lightgray2;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+                color: var(--fg-content-box);
+                border-color: var(--border-emphasis);
+                background-color: var(--bg-subtle);
+                box-shadow: 0 1px 2px rgb(from var(--shadow-color) r g b / 6%);
                 transform: translateY(0);
             }
 
             &:focus {
-                color: @darkgray;
-                background-color: @white;
-                border-color: #d4d4d4;
+                color: var(--fg-secondary);
+                background-color: var(--bg-content-box);
+                border-color: var(--border-strong);
             }
         }
     }

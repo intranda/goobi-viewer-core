@@ -49,8 +49,8 @@
             left: 0;
             width: 100%;
             padding: 5px;
-            color: @white;
-            background-color: rgba(0, 0, 0, 0.65);
+            color: var(--fg-inverse);
+            background-color: rgb(from var(--bg-scrim) r g b / 65%);
             transition: all 0.3s ease-in;
             z-index: 10;
         }
@@ -70,7 +70,7 @@
                 padding: 0 10px;
                 font-size: @fontXLarge;
                 text-align: right;
-                color: @white;
+                color: var(--fg-inverse);
             }
             .fa {
                 margin-left: 10px;

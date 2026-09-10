@@ -14,8 +14,9 @@
     }
     &__list {
         padding: 2rem;
-        border: 1px solid @middlegray;
-        background-color: @white;
+        border: 1px solid var(--border-strong);
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         margin-bottom: 15px;
         .card {
             border-radius: 0;
@@ -44,12 +45,12 @@
             font-weight: 400;
             margin-bottom: 0;
             a {
-                color: @black;
+                color: var(--fg-content-box);
                 &:hover,
                 &:active,
                 &:focus {
                     text-decoration: none;
-                    color: @black;
+                    color: var(--fg-content-box);
                 }
                 .fa {
                     margin-right: 5px;

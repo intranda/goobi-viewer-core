@@ -4,13 +4,14 @@
    ==============================================================*/
 /* WIDGET USER INTERACTIONS */
 #widgetUserInteractions {
-    background: @adminBackend-bg;
+    background: var(--bg-inverse);
+    color: var(--fg-inverse);
     .modal-title {
-        color: @black;
+        color: var(--fg-content-box);
     }
     h2,
     h3 {
-        color: @white;
+        color: var(--fg-inverse);
         font-weight: 700;
         margin-bottom: 1rem;
         font-family: @fontBackend;
@@ -25,7 +26,8 @@
     h3 {
     }
     ul {
-        background: @adminBackend-bg;
+        background: var(--bg-inverse);
+        color: var(--fg-inverse);
         border: none;
         margin-bottom: 2rem;
         list-style: none;
@@ -33,11 +35,11 @@
         li {
             a {
                 padding: 0.3rem 0;
-                color: @white;
+                color: var(--fg-inverse);
                 &:hover,
                 &:focus,
                 &:active {
-                    color: @white;
+                    color: var(--fg-inverse);
                 }
             }
             &:first-of-type {
@@ -57,12 +59,13 @@
 .widget-user-interactions {
     font-family: @fontBackend;
     padding: 2rem;
-    background-color: @adminBackend-bg;
+    background-color: var(--bg-inverse);
+    color: var(--fg-inverse);
     &__info-text {
         font-size: 1.2rem;
         font-style: italic;
         margin-bottom: 1rem;
-        color: @white;
+        color: var(--fg-inverse);
     }
     &__delete-record {
     }
@@ -75,9 +78,9 @@
             padding: 10px;
             font-size: @fontMedium;
             line-height: 1.4rem;
-            color: @black;
-            border: 1px solid @validWarning;
-            background-color: @btnWarningBgc;
+            color: var(--fg-on-warning);
+            border: 1px solid var(--border-warning);
+            background-color: var(--bg-warning);
         }
     }
     &__delete-record-action,
@@ -85,7 +88,7 @@
         .btn {
             display: block;
             padding: 8px 12px;
-            color: #555;
+            color: var(--fg-secondary);
         }
         padding: 5px 0 10px 0;
         &.has-no-urn {

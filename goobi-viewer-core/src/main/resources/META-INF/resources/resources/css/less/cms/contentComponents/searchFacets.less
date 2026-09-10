@@ -14,12 +14,12 @@
     &-link {
         width: 32px;
         height: 32px;
-        border: 1px solid #eee;
+        border: 1px solid var(--border-color);
         display: flex;
         align-items: center;
         justify-content: center;
         &:hover {
-            background-color: #eee;
+            background-color: var(--bg-subtle);
         }
         &:hover,
         &:focus,
@@ -27,7 +27,7 @@
             text-decoration: none;
         }
         &.-active {
-            color: black;
+            color: var(--fg-content-box);
             font-weight: 700;
         }
     }

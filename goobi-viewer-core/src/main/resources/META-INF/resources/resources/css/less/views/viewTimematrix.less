@@ -43,8 +43,9 @@
     }
     &__selection {
         padding: 2rem 2rem 1rem 2rem;
-        border: 1px solid #d5d5d5;
-        background-color: #fff;
+        border: 1px solid var(--border-strong);
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         margin-bottom: 2rem;
         display: flex;
         flex-wrap: wrap;
@@ -54,7 +55,7 @@
         }
         #slider-range {
             height: 1.2rem;
-            border: 1px solid @middlegray;
+            border: 1px solid var(--border-strong);
             margin-bottom: 1rem;
             .ui-slider-range {
             }
@@ -63,8 +64,8 @@
                 width: 2rem;
                 height: 3rem;
                 top: -1rem;
-                border: 1px solid #3365a9;
-                background-color: #3365a9;
+                border: 1px solid var(--ci-color1);
+                background-color: var(--ci-color1);
                 cursor: pointer;
                 z-index: 998;
                 display: flex;
@@ -85,14 +86,14 @@
                     margin-left: -1.7rem;
                     font-size: @fontMedium;
                     text-align: center;
-                    color: @black;
+                    color: var(--fg-content-box);
                     height: 100%;
                     top: -2rem;
                 }
             }
             .ui-slider-handle {
                 margin-left: -0.1rem;
-                color: @white;
+                color: var(--fg-inverse);
                 &::before {
                     content: '';
                     position: relative;
@@ -100,7 +101,7 @@
                     width: 2.2rem;
                     height: 2.2rem;
                     margin: 0 auto;
-                    background-color: white;
+                    background-color: var(--fg-inverse);
                     mask: url('../../icons/outline/chevron-right.svg') center/contain no-repeat;
                     -webkit-mask: url('../../icons/outline/chevron-right.svg') center/contain no-repeat;
                 }
@@ -169,7 +170,7 @@
         }
         input {
             width: 5ch;
-            border-bottom: 1px solid @lowerblack;
+            border-bottom: 1px solid var(--border-emphasis);
         }
     }
     &__objects {
@@ -179,9 +180,10 @@
     }
 
     &__content {
-        border: 1px solid #ccc;
+        border: 1px solid var(--border-strong);
         margin: 0.5rem;
-        background-color: #fff;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
         position: relative;
         text-align: center;
         flex: 0 0 calc(16.6666% - 1rem);
@@ -206,8 +208,8 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: rgba(0, 0, 0, 0.65);
-        color: #fff;
+        background-color: rgb(from var(--bg-scrim) r g b / 65%);
+        color: var(--fg-inverse);
         width: 100%;
         height: 100%;
         transition: all 0.3s ease-in;
@@ -230,7 +232,7 @@
             margin-top: auto;
         }
         a {
-            color: @white;
+            color: var(--fg-inverse);
             position: absolute;
             bottom: 0;
             margin-left: auto;
@@ -242,7 +244,7 @@
             &:hover,
             &:focus,
             &:active {
-                color: @white;
+                color: var(--fg-inverse);
             }
         }
     }
@@ -252,13 +254,13 @@
     }
     &__footer {
         padding: 0.5rem 0;
-        background-color: @blue;
+        background-color: var(--ci-color1);
         a {
-            color: @white;
+            color: var(--fg-inverse);
             &:hover,
             &:active,
             &:focus {
-                color: @white;
+                color: var(--fg-inverse);
                 text-decoration: none;
             }
         }

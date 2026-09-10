@@ -27,7 +27,7 @@
         padding: 10px;
         line-height: normal;
         font-size: 0.8125rem;
-        color: @middlegray;
+        color: var(--fg-muted);
         h3,
         p {
             max-width: calc(~'100% - 135px');
@@ -35,7 +35,7 @@
         h3 {
             margin: 0;
             font-size: 0.9375rem;
-            color: @middlegray;
+            color: var(--fg-muted);
         }
         p {
             margin: 0;
@@ -63,13 +63,13 @@
         button {
             width: 12px;
             height: 12px;
-            border: 1px solid @middlegray;
+            border: 1px solid var(--border-strong);
             border-radius: 50%;
-            background-color: @middlegray;
+            background-color: var(--bg-selected);
             cursor: pointer;
             &.active {
-                border-color: @blue;
-                background-color: @blue;
+                border-color: var(--ci-color1);
+                background-color: var(--ci-color1);
             }
         }
     }

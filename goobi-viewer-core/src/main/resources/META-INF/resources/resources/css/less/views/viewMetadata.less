@@ -26,7 +26,7 @@
             display: flex;
             align-items: start;
             justify-content: end;
-            color: @blue;
+            color: var(--lk-general);
             background-image: none;
             .bookmark-toggle {
                 align-items: center;
@@ -47,7 +47,8 @@
     &__wrapper {
         margin-bottom: 1rem;
         &.-isBoxed {
-            background: @white;
+            background: var(--bg-content-box);
+            color: var(--fg-content-box);
             padding: 1.5rem;
             .metadata__ungrouped-wrapper {
                 background: transparent;
@@ -143,7 +144,8 @@
         }
     }
     &__element-wrapper-single {
-        background: white;
+        background: var(--bg-content-box);
+        color: var(--fg-content-box);
         padding: 1rem 1.5rem;
         margin-bottom: 1rem;
         dt {
@@ -182,20 +184,23 @@
         margin-bottom: unset;
     }
     &__grouped-wrapper {
-        background: white;
+        background: var(--bg-content-box);
+        color: var(--fg-content-box);
         margin-top: 1rem;
         padding: 1.5rem;
         dt,
         dd {
         }
         .metadata__element-wrapper {
-            background: #f6f6f6;
+            background: var(--bg-subtle);
+            color: var(--fg-content-box);
             padding: 0 1rem;
             margin-bottom: unset;
         }
     }
     &__ungrouped-wrapper {
-        background: white;
+        background: var(--bg-content-box);
+        color: var(--fg-content-box);
         padding: 1rem 1.5rem;
         // margin-bottom: 1rem;
         &:last-child {
@@ -212,7 +217,8 @@
     }
     &__heading {
         font-weight: 700;
-        background: white;
+        background: var(--bg-content-box);
+        color: var(--fg-content-box);
         padding-bottom: 1.5rem;
         margin-bottom: 0;
         position: relative;
