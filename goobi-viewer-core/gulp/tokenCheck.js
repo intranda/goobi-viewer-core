@@ -397,6 +397,45 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
         const readByTheme = usedTokens(themeParsed);
         for (const t of readByTheme) readAnywhere.add(t);
 
+        const themeTokens = new Set(tokens);
+        const themePalette = new Set(restricted);
+        const themeStaticColors = new Set();
+        for (const p of themeParsed.values()) {
+            for (const d of p.declarations) if (!INTERNAL.test(d.name)) themeTokens.add(d.name);
+            for (const d of p.declarations) if (d.name.startsWith('--color-') && d.stack.includes('.mx-theme-palette()')) themePalette.add(d.name);
+            for (const name of staticColorNames(p)) themeStaticColors.add(name);
+        }
+        for (const [file, p] of themeParsed) {
+            const inLayer = file === themeMixins || file === VARIABLES_FILE || /^subthemes\/[^/]+\/subThemeConstructor\.less$/.test(file);
+            const report = (rule, token, line, message) => violations.push(violation(rule, `theme/${file}`, token, line, message));
+            for (const r of p.reads) {
+                if (!INTERNAL.test(r.name) && !themeTokens.has(r.name)) report('R1', r.name, r.line, 'unknown core or theme token');
+                if (themePalette.has(r.name) && !(file === themeMixins && r.stack.some((h) => /^\.mx-theme-(light|dark)\(\)$/.test(h))))
+                    report('R8', r.name, r.line, 'theme components and features read roles, not palette primitives');
+            }
+            for (const d of p.declarations) {
+                if (!inLayer && !INTERNAL.test(d.name)) report('R2', d.name, d.line, 'public theme tokens belong in the root token wiring');
+                const paletteDeclaration = file === themeMixins && d.stack.includes('.mx-theme-palette()');
+                const subthemeBrand = /^subthemes\/[^/]+\/subThemeConstructor\.less$/.test(file) && /^--ci-(color1|hovercolor1|color1-dark)$/.test(d.name);
+                if (!paletteDeclaration && !subthemeBrand && COLOR_LITERAL.test(withoutStrings(d.value)))
+                    report('R9', d.name, d.line, 'theme color literals belong in .mx-theme-palette()');
+                const mode = d.stack.find((h) => /^\.mx-theme-(light|dark)\(\)$/.test(h));
+                if (mode) {
+                    const other = mode.includes('-light') ? '.mx-theme-dark()' : '.mx-theme-light()';
+                    if (!p.declarations.some((x) => x.name === d.name && x.stack.includes(other))) report('R7', d.name, d.line, `missing counterpart in ${other}`);
+                }
+            }
+            if (!inLayer) {
+                for (const b of p.blocks)
+                    if (MODE_BRANCH.test(b.header) || /@colorModes/.test(b.header)) report('R4', b.header, b.line, 'theme mode branching belongs in the token wiring');
+                for (const d of p.properties) {
+                    const value = colorValue(d.value);
+                    if (COLOR_LITERAL.test(value) || [...value.matchAll(AT_USE)].some((m) => themeStaticColors.has(m[1])))
+                        report('R10', d.name, d.line, 'theme component colors must read tokens');
+                }
+            }
+        }
+
         const mixins = themeParsed.get(themeMixins);
         if (mixins) {
             const seen = new Set();
@@ -422,7 +461,7 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
  * Validate emitted CSS as well as source text. LESS expansion is authoritative
  * for interpolation, guarded/detached mixins and reference imports. Source maps
  * retain the declaring file so a root declaration in a component is still R2.
- * Theme-only properties may remain local; public core overrides must inherit.
+ * Only private --_* properties remain local; public core and theme tokens inherit.
  */
 async function checkCompiledTree(root, { entry = 'constructor.less', tokens = new Set(), theme = false } = {}) {
     const filename = path.join(root, entry);
@@ -466,7 +505,7 @@ async function checkCompiledTree(root, { entry = 'constructor.less', tokens = ne
             if (!internalFiles.has(file)) internalFiles.set(file, new Set());
             internalFiles.get(file).add(d.prop);
             if (!theme && TOKEN_LAYER.includes(file)) add('R4', d, d.prop, 'internal token emitted by the token layer');
-        } else if ((!theme || tokens.has(d.prop)) && (!allowedOutput(d) || (!theme && !TOKEN_LAYER.includes(file)))) {
+        } else if (!allowedOutput(d) || (!theme && !TOKEN_LAYER.includes(file))) {
             add('R2', d, d.prop, `public token emitted on "${d.parent.selector}" — use the root token wiring`);
         } else {
             emitted.add(d.prop);
@@ -475,7 +514,6 @@ async function checkCompiledTree(root, { entry = 'constructor.less', tokens = ne
             add('R9', d, d.prop, `emitted color literal "${d.value}" — every color comes from ${PALETTE_FILE}`);
         }
     });
-    if (theme) return violations;
     css.walkDecls((d) => {
         const { file } = location(d);
         const reads = [];
@@ -483,15 +521,18 @@ async function checkCompiledTree(root, { entry = 'constructor.less', tokens = ne
         for (const read of reads) {
             if (INTERNAL.test(read.name)) {
                 if (!read.fallback && !internalFiles.get(file)?.has(read.name)) add('R1', d, read.name, 'emitted internal read without a declaration in this file or fallback');
-            } else if (!emitted.has(read.name)) {
+            } else if (!emitted.has(read.name) && !(theme && tokens.has(read.name))) {
                 add('R1', d, read.name, 'read of a token not emitted by the root token wiring');
             }
         }
+        if (theme && !d.prop.startsWith('--') && COLOR_LITERAL.test(colorValue(d.value))) add('R10', d, d.prop, 'emitted theme component color must read a token');
     });
     css.walk((node) => {
         if (node.type !== 'rule' && node.type !== 'atrule') return;
         const selector = node.type === 'rule' ? node.selector : `@${node.name} ${node.params}`;
-        if (MODE_BRANCH.test(selector) && !TOKEN_LAYER.includes(location(node).file)) {
+        const file = location(node).file;
+        const inLayer = theme ? file === VARIABLES_FILE || file === THEME_MIXINS : TOKEN_LAYER.includes(file);
+        if (MODE_BRANCH.test(selector) && !inLayer) {
             add('R4', node, selector, 'emitted mode branching outside the token layer');
         }
     });
@@ -582,7 +623,10 @@ async function runTokenCheck({ moduleRoot = MODULE_ROOT, lessRoot = LESS_ROOT, t
     const theme = fs.existsSync(themeDir) ? readLessTree(themeDir) : null;
     const { violations, warnings, tokens } = checkFiles(core, theme);
     violations.push(...(await checkCompiledTree(path.resolve(moduleRoot, lessRoot), { tokens })));
-    if (theme) violations.push(...(await checkCompiledTree(themeDir, { theme: true, tokens })));
+    if (theme) {
+        const entries = [...theme.keys()].filter((file) => /(?:^constructor\.less$|^crowdsourcing\/csConstructor\.less$|^subthemes\/[^/]+\/subThemeConstructor\.less$)/.test(file));
+        for (const entry of entries) violations.push(...(await checkCompiledTree(themeDir, { entry, theme: true, tokens })));
+    }
     return { ...applyBaseline(violations, baseline), warnings, violations, themeChecked: theme !== null };
 }
 

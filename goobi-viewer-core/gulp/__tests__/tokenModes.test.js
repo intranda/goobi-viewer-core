@@ -25,7 +25,7 @@ beforeAll(async () => {
     if (!fs.existsSync(themeRoot)) return;
     for (const [name, entry, suffix] of [
         ['reference', 'constructor.less', ''],
-        ['noModes', 'constructor.less', '\n@colorModes: false;'],
+        ['legacyFlag', 'constructor.less', '\n@colorModes: false;'],
         ['subtheme1', 'subthemes/subtheme1/subThemeConstructor.less', ''],
         ['subtheme2', 'subthemes/subtheme2/subThemeConstructor.less', ''],
     ])
@@ -107,8 +107,8 @@ it.each(['light', 'dark'])('keeps all six mode states consistent under OS %s', (
                 effective = toggle === 'none' ? os : toggle;
             expect({ name, toggle, scheme: get('color-scheme') }).toEqual({ name, toggle, scheme: effective });
             if (name !== 'core') {
-                expect(get('--accent-color')).toBe(name !== 'noModes' && effective === 'dark' ? '#feae1a' : '#f59f00');
-                expect(get('--facet-control-radius')).toBe('0');
+                expect(get('--accent-color')).toBe(effective === 'dark' ? '#feae1a' : '#f59f00');
+                expect(get('--facet-control-radius')).toBe(get('--container-small-border-radius'));
                 expect(get('--active-facets-badge-shadow-hover')).toBe('none');
             }
             for (const [fg, bg, base] of [
@@ -247,4 +247,176 @@ it('restores the saved mode in the crowdsourcing editor template', () => {
     if (!fs.existsSync(template)) return;
     const html = fs.readFileSync(template, 'utf8').match(/<html\b[^>]*>/)[0];
     expect(html).toContain(`class="#{sessionBean.get('colorTheme')}"`);
+});
+
+/* COMPOSED CORE AND THEME CASCADE */
+const { JSDOM } = require('jsdom');
+const cssTree = require('css-tree');
+const specificityCache = new Map();
+const selectorMatchCache = new Map();
+const modeStateCache = new WeakMap();
+function specificity(selector) {
+    if (specificityCache.has(selector)) return specificityCache.get(selector);
+    const score = (node) => {
+        if (node.type === 'IdSelector') return 1000000;
+        if (node.type === 'ClassSelector' || node.type === 'AttributeSelector') return 1000;
+        if (node.type === 'TypeSelector') return node.name === '*' ? 0 : 1;
+        if (node.type === 'PseudoElementSelector') return 1;
+        if (node.type === 'PseudoClassSelector') {
+            if (node.name === 'where') return 0;
+            if (['is', 'not', 'has'].includes(node.name)) {
+                const args = [];
+                node.children.forEach((child) => args.push(cssTree.generate(child)));
+                return Math.max(...postcss.list.comma(args.join(',')).map(specificity));
+            }
+            return 1000;
+        }
+        return node.children ? node.children.reduce((sum, child) => sum + score(child), 0) : 0;
+    };
+    const result = score(cssTree.parse(selector, { context: 'selector' }));
+    specificityCache.set(selector, result);
+    return result;
+}
+
+function componentCascade(css, html, os, toggle, pseudo = '') {
+    const dom = new JSDOM(`<html class="${toggle === 'none' ? '' : `color-theme-${toggle}`}"><body>${html}</body></html>`);
+    const element = dom.window.document.querySelector('[data-test]');
+    element.setAttribute('data-pseudo', pseudo);
+    if (!modeStateCache.has(css)) modeStateCache.set(css, new Map());
+    const states = modeStateCache.get(css);
+    const stateKey = `${os}/${toggle}`;
+    if (!states.has(stateKey)) states.set(stateKey, state(css, os, toggle));
+    const get = states.get(stateKey);
+    const fixtureKey = `${html}/${toggle}/${pseudo}`;
+    if (!selectorMatchCache.has(fixtureKey)) selectorMatchCache.set(fixtureKey, new Map());
+    const matchesCache = selectorMatchCache.get(fixtureKey);
+    const winners = new Map();
+    css.walkRules((rule) => {
+        const declarations = rule.nodes.filter((node) => node.type === 'decl' && ['color', 'background', 'background-color', 'display'].includes(node.prop));
+        if (!declarations.length) return;
+        for (let p = rule.parent; p.type !== 'root'; p = p.parent) {
+            if (p.type !== 'atrule' || p.name !== 'media') return;
+            const condition = p.params.replace(/\s/g, '');
+            if (condition !== 'screen' && condition !== `(prefers-color-scheme:${os})`) return;
+        }
+        for (const selector of rule.selectors) {
+            if (selector.includes('::')) continue;
+            const matchSelector = selector.replace(/:(focus-visible|focus-within|hover|focus|active)\b/g, '[data-pseudo~="$1"]');
+            if (!matchesCache.has(selector)) {
+                try {
+                    matchesCache.set(selector, element.matches(matchSelector));
+                } catch {
+                    matchesCache.set(selector, false);
+                }
+            }
+            if (!matchesCache.get(selector)) continue;
+            const weight = specificity(selector);
+            for (const d of declarations) {
+                const prop = d.prop === 'background' ? 'background-color' : d.prop;
+                const rank = weight + (d.important ? 1000000000 : 0);
+                if ((winners.get(prop)?.rank ?? -1) <= rank) winners.set(prop, { value: d.value, rank, selector });
+            }
+        }
+    });
+    dom.window.close();
+    const resolve = (value) => value.replace(/var\((--[\w-]+)\)/g, (_, name) => get(name));
+    return (prop) => {
+        const value = winners.get(prop)?.value;
+        return value === undefined ? undefined : resolve(value);
+    };
+}
+
+const componentFixtures = [
+    ['success', '<button data-test class="btn btn--success">Save</button>', '--bg-content-box'],
+    ['danger', '<button data-test class="btn btn--danger">Delete</button>', '--bg-content-box'],
+    ['default', '<button data-test class="btn btn--default">Cancel</button>', '--bg-content-box'],
+    ['fulltext', '<div class="view-fulltext__wrapper"><div data-test class="view-fulltext__content">Text</div></div>', '--bg-content-box'],
+    ['fulltext link', '<div class="view-fulltext__content"><a data-test href="#">Link</a></div>', '--bg-content-box'],
+    ['login input', '<input data-test class="form-control user-login-modal__form-control">', '--bg-content-box'],
+    ['disabled input', '<input data-test disabled class="form-control">', '--bg-content-box'],
+    ['bookmark counter', '<span data-test class="bookmark-navigation__counter">3</span>', '--bg-content-box'],
+    ['bookmark action', '<button data-test class="search-list__hit-options-button search-list__hit-options-button-bookmark">Bookmark</button>', '--bg-content-box'],
+    ['calendar day', '<div class="widget-calendar"><span data-test class="flatpickr-day -has-data-">12</span></div>', '--bg-content-box'],
+    ['calendar current', '<div class="widget-calendar"><span data-test class="flatpickr-day -has-data- -current-issue-">12</span></div>', '--bg-content-box'],
+    ['TOC header link', '<div class="widget-toc__title-expand"><a data-test href="#">Expand</a></div>', '--bg-content-box'],
+    ['geo action', '<div class="widget-geofacetting__actions"><button data-test class="btn btn--clean">Reset</button></div>', '--bg-content-box'],
+    ...['person', 'location', 'institution'].map((entity) => [`NER ${entity}`, `<span data-test class="ner-${entity}">Name</span>`, '--bg-content-box']),
+    ...['work', 'person', 'agent', 'award', 'event'].map((entity) => [
+        `entity dropdown ${entity}`,
+        `<button data-test class="btn search-advanced__entity-tabs-dropdown-toggle-button -result-group-docstructtype__${entity}">Group</button>`,
+        '--bg-content-box',
+    ]),
+    ...['work', 'person', 'agent', 'award', 'event'].map((entity) => [
+        `entity ${entity}`,
+        `<button data-test class="btn btn--full search-advanced__action-search-button -result-group-docstructtype__${entity}">Search</button>`,
+        '--bg-content-box',
+    ]),
+];
+
+it.each(['light', 'dark'])(
+    'checks final component colors including theme overrides under OS %s',
+    (os) => {
+        for (const [name, css] of variants) {
+            if (name === 'core') continue;
+            for (const toggle of ['none', 'light', 'dark']) {
+                const get = state(css, os, toggle);
+                for (const [label, html, base] of componentFixtures) {
+                    for (const pseudo of ['', 'hover', 'focus', 'active']) {
+                        const computed = componentCascade(css, html, os, toggle, pseudo);
+                        const fg = computed('color');
+                        const bg = computed('background-color');
+                        if (!fg) throw new Error(`${name}/${os}/${toggle}/${label}: missing foreground`);
+                        const background = !bg || bg === 'none' ? color(get(base)) : over(color(bg), color(get(base)));
+                        const ratio = contrast(color(fg), background);
+                        if (ratio < 4.5) throw new Error(`${name}/${os}/${toggle}/${label}/${pseudo}: ${fg} on ${bg || get(base)} = ${ratio}`);
+                    }
+                }
+            }
+        }
+    },
+    120000
+);
+
+it('detects a later component override even when all root token pairs remain valid', () => {
+    const css = variants.get('reference');
+    if (!css) return;
+    const broken = postcss.parse(css.toString() + '.btn--success { color: var(--bg-success); }');
+    checkFoundationContrast(state(broken, 'dark', 'none'), 'valid tokens');
+    const get = componentCascade(broken, componentFixtures[0][1], 'dark', 'none');
+    expect(contrast(color(get('color')), color(get('background-color')))).toBe(1);
+});
+
+it.each(['light', 'dark'])('uses central toggle visibility under OS %s', (os) => {
+    const css = variants.get('reference');
+    if (!css) return;
+    for (const toggle of ['none', 'light', 'dark']) {
+        const effective = toggle === 'none' ? os : toggle;
+        for (const target of ['light', 'dark']) {
+            const get = componentCascade(css, `<button data-test class="color-theme-switch color-theme-switch-${target}"></button>`, os, toggle);
+            expect(get('display')).toBe(target === effective ? 'none' : 'flex');
+        }
+    }
+});
+
+it('evaluates selector specificity including zero-weight and alternative selectors', () => {
+    expect(specificity(':where(#ignored) .item')).toBe(1000);
+    expect(specificity('button:is(.item, #selected)')).toBe(1000001);
+    expect(specificity('button:not(:disabled)')).toBe(1001);
+});
+
+/* NER TEXT AND ENTITY GROUP COLORS */
+it.each(['light', 'dark'])('keeps reference entity group colors independent of core NER text under OS %s', (os) => {
+    for (const [name, css] of variants) {
+        if (name === 'core') continue;
+        for (const toggle of ['none', 'light', 'dark']) {
+            const core = state(variants.get('core'), os, toggle);
+            const theme = state(css, os, toggle);
+            for (const entity of ['person', 'location', 'institution']) {
+                expect(theme(`--fg-entity-${entity}`)).toBe(core(`--fg-entity-${entity}`));
+            }
+            for (const [group, expected] of Object.entries({ work: '#dc7e2e', person: '#b13b29', agent: '#568fb2', award: '#2e8d38', event: '#8966ca' })) {
+                expect(theme(`--entity-${group}-color`)).toBe(expected);
+            }
+        }
+    }
 });

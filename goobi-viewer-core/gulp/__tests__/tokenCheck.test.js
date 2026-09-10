@@ -200,7 +200,7 @@ describe('R6 theme mixin tokens must exist in core or be read by the theme', () 
         const result = checkFiles(
             files({ [TOKENS]: TOKEN_LAYER_OK }),
             files({
-                'misc/mixins.less': `.mx-theme-light { --bg: #fff; --orphan: 1; --theme-own: 1; }`,
+                'misc/mixins.less': `.mx-theme-light { --bg: var(--n-900); --orphan: 1; --theme-own: 1; }`,
                 'layout/x.less': `.x { color: var(--theme-own); }`,
             }),
             OPTS
@@ -485,4 +485,33 @@ describe('real LESS tree', () => {
         expect(result.errors.map((v) => `${v.rule} ${v.file}:${v.line} ${v.token}`)).toEqual([]);
         expect(result.stale).toEqual([]);
     }, 30000);
+});
+
+describe('reference theme token contract', () => {
+    const core = files({
+        'misc/palette.less': '.gv-palette() { --color-ink: #111; }',
+        [TOKENS]: '.gv-semantic-light() { --fg: var(--color-ink); } .gv-semantic-dark() { --fg: var(--color-ink); }',
+    });
+    it.each([
+        ['.item { color: var(--missing); }', 'R1'],
+        ['.item { --public: 1; }', 'R2'],
+        ['.item { & when (@colorModes = true) { color: var(--fg); } }', 'R4'],
+        ['.item { color: var(--color-ink); }', 'R8'],
+        ['@old: #fff; .item { color: @old; }', 'R10'],
+        ['.item { color: rebeccapurple; }', 'R10'],
+    ])('rejects %s with %s', (source, rule) => {
+        expect(rules(checkFiles(core, files({ 'item.less': source })))).toContain(rule);
+    });
+    it('requires paired theme roles and palette-only literals', () => {
+        const theme = files({ 'misc/mixins.less': '.mx-theme-light() { --example: #fff; }', 'item.less': '.item { color: var(--example); }' });
+        expect(rules(checkFiles(core, theme))).toEqual(expect.arrayContaining(['R7', 'R9']));
+    });
+    it('accepts theme palette, paired roles and component reads', () => {
+        const theme = files({
+            'misc/mixins.less':
+                '.mx-theme-palette() { --color-example: #abc; } .mx-theme-light() { --example: var(--color-example); } .mx-theme-dark() { --example: var(--color-example); }',
+            'item.less': '.item { color: var(--example); }',
+        });
+        expect(checkFiles(core, theme).violations).toEqual([]);
+    });
 });

@@ -63,8 +63,8 @@ it('distinguishes quoted content from LESS escaped CSS syntax', async () => {
     expect(await compile(':root { --known: 1; }', '.component { content: "var(--missing)"; }')).toEqual([]);
 });
 
-it('rejects local core token overrides in themes but accepts theme-owned properties', async () => {
-    expect(await compile(':root { --known: 1; }', '.component { --known: 2; --theme-local: 3; }', { theme: true, tokens: new Set(['--known']) })).toEqual([
+it('rejects local public token overrides in themes but accepts private properties', async () => {
+    expect(await compile(':root { --known: 1; }', '.component { --known: 2; --_theme-local: 3; }', { theme: true, tokens: new Set(['--known']) })).toEqual([
         expect.objectContaining({ rule: 'R2', token: '--known', file: 'component.less' }),
     ]);
 });
@@ -105,4 +105,16 @@ it('compares guarded light/dark mixins by their names', () => {
 
 it('reports LESS compilation failures as check errors', async () => {
     expect(await compile(':root { --known: @undefined; }')).toEqual([expect.objectContaining({ rule: 'LESS', file: 'misc/tokens.less' })]);
+});
+
+it.each(['red', '#fff', '@literal', '~"rgb(0 0 0)"'])('rejects emitted theme colors hidden behind aliases or escapes: %s', async (value) => {
+    const result = await compile(':root { --known: 1; }', `@literal: #fff; .component { color: ${value}; }`, { theme: true });
+    expect(result).toEqual(expect.arrayContaining([expect.objectContaining({ rule: 'R10', file: 'component.less' })]));
+});
+
+it('detects a mode branch hidden in a detached theme mixin', async () => {
+    const result = await compile(':root { --known: 1; }', '.mode(@rules) { @media (prefers-color-scheme: dark) { @rules(); } } .component { .mode({ color: var(--known); }); }', {
+        theme: true,
+    });
+    expect(result.map((v) => v.rule)).toContain('R4');
 });
