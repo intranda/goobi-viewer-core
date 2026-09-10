@@ -33,15 +33,20 @@ beforeAll(async () => {
 }, 30000);
 
 // Evaluate only the documented root/mode wiring, in stylesheet order.
-function state(css, os, toggle) {
+// scope 'admin' adds the admin binding, which outranks every root and mode selector.
+const ADMIN_SELECTOR = ':root:has(#admin)';
+function state(css, os, toggle, scope = 'page') {
     const tokens = new Map();
+    const admin = new Map();
     css.walkRules((rule) => {
-        if (rule.selector !== ':root' && rule.selector !== `.color-theme-${toggle}`) return;
+        const isAdmin = scope === 'admin' && rule.selector === ADMIN_SELECTOR;
+        if (rule.selector !== ':root' && rule.selector !== `.color-theme-${toggle}` && !isAdmin) return;
         for (let parent = rule.parent; parent.type !== 'root'; parent = parent.parent) {
             if (parent.type !== 'atrule' || parent.name !== 'media' || parent.params.replace(/\s/g, '') !== `(prefers-color-scheme:${os})`) return;
         }
-        rule.nodes.filter((node) => node.type === 'decl').forEach((d) => tokens.set(d.prop, d.value));
+        rule.nodes.filter((node) => node.type === 'decl').forEach((d) => (isAdmin ? admin : tokens).set(d.prop, d.value));
     });
+    for (const [prop, value] of admin) tokens.set(prop, value);
     function resolve(name, seen = new Set()) {
         if (seen.has(name)) throw new Error(`Token cycle: ${name}`);
         if (!tokens.has(name)) throw new Error(`Missing token: ${name}`);
@@ -123,6 +128,54 @@ it.each(['light', 'dark'])('keeps all six mode states consistent under OS %s', (
                 if (ratio < 4.5) throw new Error(`${name}/${os}/${toggle}: ${fg} on ${bg} = ${ratio}`);
             }
         }
+});
+
+it.each(['light', 'dark'])('keeps base defaults and Reference differences independent of OS %s', (os) => {
+    for (const [name, css] of variants) {
+        for (const toggle of ['none', 'light', 'dark']) {
+            const get = state(css, os, toggle);
+            const core = name === 'core';
+            expect(get('--font-size-small')).toBe(core ? '1.2rem' : '1.3rem');
+            expect(get('--font-size-medium')).toBe('1.4rem');
+            expect(get('--font-size-normal')).toBe('1.6rem');
+            expect(get('--font-size-body')).toBe(core ? '1.6rem' : '1.4rem');
+            expect(get('--button-border-radius')).toBe(core ? '0' : '6px');
+            expect(get('--container-border-radius')).toBe(core ? '0' : '8px');
+            expect(get('--container-small-border-radius')).toBe(core ? '0.25rem' : '4px');
+            expect(get('--search-toolbar-button-radius')).toBe(get('--button-border-radius'));
+            expect(get('--active-facets-badge-radius')).toBe(get('--button-border-radius'));
+            expect(get('--font-family').startsWith("'Inter'")).toBe(!core);
+        }
+    }
+});
+
+it('keeps legacy LESS font overrides as inputs to the core token defaults', async () => {
+    const css = postcss.parse(await compile(coreRoot, 'constructor.less', '\n@fontFamily: serif; @fontSmall: 1.7rem; @fontNormal: 1.9rem;'));
+    const get = state(css, 'light', 'none');
+    expect(get('--font-family')).toBe('serif');
+    expect(get('--font-size-small')).toBe('1.7rem');
+    expect(get('--font-size-body')).toBe('1.9rem');
+});
+
+it('applies runtime base overrides to inner controls and inherited frontend typography', () => {
+    for (const name of ['core', 'reference']) {
+        if (!variants.has(name)) continue;
+        const css = postcss.parse(
+            variants.get(name).toString() + ':root { --button-border-radius: 17px; --container-small-border-radius: 13px; --font-size-small: 2rem; --font-size-medium: 2.4rem; }'
+        );
+        for (const os of ['light', 'dark']) {
+            for (const toggle of ['none', 'light', 'dark']) {
+                for (const [html, property, expected] of [
+                    ['<button data-test class="btn search-list__option-button">View</button>', 'border-radius', '17px'],
+                    ['<div class="custom-control custom-control--select"><form><select data-test><option>Sort</option></select></form></div>', 'border-radius', '13px'],
+                    ['<div class="search-list__excel-export"><span data-test class="excel-export-loader">Loading</span></div>', 'font-size', '2rem'],
+                    ['<div data-test class="search-list__options">View options</div>', 'font-size', '2.4rem'],
+                ]) {
+                    expect(componentCascade(css, html, os, toggle)(property)).toBe(expected);
+                }
+            }
+        }
+    }
 });
 
 it('exposes each subtheme brand to core consumers in both modes', () => {
@@ -224,7 +277,7 @@ it('allows a later root override to reach the faceted-search widgets', () => {
     const css = variants.get('reference');
     if (!css) return;
     css.walkDecls(/^(--facet-control-radius|--active-facets-badge-shadow-hover)$/, (d) => {
-        expect([':root', '.color-theme-dark', '.color-theme-light']).toContain(d.parent.selector);
+        expect([':root', '.color-theme-dark', '.color-theme-light', ADMIN_SELECTOR]).toContain(d.parent.selector);
     });
     const overridden = postcss.parse(css.toString() + ':root { --facet-control-radius: 7px; --active-facets-badge-shadow-hover: 0 0 1px; }');
     expect(state(overridden, 'dark', 'none')('--facet-control-radius')).toBe('7px');
@@ -278,21 +331,23 @@ function specificity(selector) {
     return result;
 }
 
-function componentCascade(css, html, os, toggle, pseudo = '') {
-    const dom = new JSDOM(`<html class="${toggle === 'none' ? '' : `color-theme-${toggle}`}"><body>${html}</body></html>`);
+function componentCascade(css, html, os, toggle, pseudo = '', scope = 'page') {
+    const dom = new JSDOM(`<html class="${toggle === 'none' ? '' : `color-theme-${toggle}`}"><body${scope === 'admin' ? ' id="admin"' : ''}>${html}</body></html>`);
     const element = dom.window.document.querySelector('[data-test]');
     element.setAttribute('data-pseudo', pseudo);
     if (!modeStateCache.has(css)) modeStateCache.set(css, new Map());
     const states = modeStateCache.get(css);
-    const stateKey = `${os}/${toggle}`;
-    if (!states.has(stateKey)) states.set(stateKey, state(css, os, toggle));
+    const stateKey = `${os}/${toggle}/${scope}`;
+    if (!states.has(stateKey)) states.set(stateKey, state(css, os, toggle, scope));
     const get = states.get(stateKey);
-    const fixtureKey = `${html}/${toggle}/${pseudo}`;
+    const fixtureKey = `${html}/${toggle}/${pseudo}/${scope}`;
     if (!selectorMatchCache.has(fixtureKey)) selectorMatchCache.set(fixtureKey, new Map());
     const matchesCache = selectorMatchCache.get(fixtureKey);
     const winners = new Map();
     css.walkRules((rule) => {
-        const declarations = rule.nodes.filter((node) => node.type === 'decl' && ['color', 'background', 'background-color', 'display'].includes(node.prop));
+        const declarations = rule.nodes.filter(
+            (node) => node.type === 'decl' && ['color', 'background', 'background-color', 'display', 'font-family', 'font-size', 'border-radius', 'box-shadow'].includes(node.prop)
+        );
         if (!declarations.length) return;
         for (let p = rule.parent; p.type !== 'root'; p = p.parent) {
             if (p.type !== 'atrule' || p.name !== 'media') return;
@@ -418,5 +473,71 @@ it.each(['light', 'dark'])('keeps reference entity group colors independent of c
                 expect(theme(`--entity-${group}-color`)).toBe(expected);
             }
         }
+    }
+});
+
+/* ADMIN SCOPE — fixed light binding, sealed against OS mode and theme */
+function adminTokens(css) {
+    const names = [];
+    css.walkRules((rule) => {
+        if (rule.selector === ADMIN_SELECTOR) rule.walkDecls(/^--/, (d) => names.push(d.prop));
+    });
+    return names;
+}
+
+it('binds the admin scope once at the top level of the core token layer', () => {
+    const rules = [];
+    variants.get('core').walkRules((rule) => {
+        if (rule.selector === ADMIN_SELECTOR) rules.push(rule);
+    });
+    expect(rules.map((rule) => rule.parent.type)).toEqual(['root']);
+    expect(adminTokens(variants.get('core')).length).toBeGreaterThan(300);
+});
+
+it.each(['light', 'dark'])('keeps the admin scope identical for every variant and toggle under OS %s', (os) => {
+    const core = variants.get('core');
+    const reference = state(core, 'light', 'none', 'admin');
+    const names = adminTokens(core);
+    for (const [name, css] of variants)
+        for (const toggle of ['none', 'light', 'dark']) {
+            const get = state(css, os, toggle, 'admin');
+            expect({ name, toggle, scheme: get('color-scheme') }).toEqual({ name, toggle, scheme: 'light' });
+            for (const token of names) expect({ name, toggle, token, value: get(token) }).toEqual({ name, toggle, token, value: reference(token) });
+        }
+});
+
+it('pins the admin scope to the legacy backend values', () => {
+    const get = state(variants.get('core'), 'dark', 'none', 'admin');
+    expect(get('--lk-general')).toBe('#015999');
+    expect(get('--lk-general-hover')).toBe('#134ea0');
+    expect(get('--ci-hovercolor1')).toBe('#3365a9');
+    expect(get('--bg-subtle')).toBe('#f7f7f7');
+    expect(get('--bg-hover')).toBe('#f2f3f4');
+    expect(get('--fg-content-box')).toBe('#1a1a1a');
+    expect(get('--bg-inverse')).toBe('#1b2330');
+    expect(get('--widget-icon-color-topbar')).toBe('#fff');
+    expect(get('--placeholder')).toBe('rgb(from #000 r g b / 25%)');
+    expect(get('--button-border-radius')).toBe('0');
+    expect(get('--font-size-body')).toBe('1.6rem');
+});
+
+it('keeps a later root override out of the admin scope', () => {
+    const overridden = postcss.parse(variants.get('core').toString() + ':root { --bg-subtle: red; --button-border-radius: 9px; } .color-theme-dark { --lk-general: red; }');
+    const get = state(overridden, 'dark', 'dark', 'admin');
+    expect(get('--bg-subtle')).toBe('#f7f7f7');
+    expect(get('--button-border-radius')).toBe('0');
+    expect(get('--lk-general')).toBe('#015999');
+});
+
+it.each(['light', 'dark'])('renders admin controls with the legacy colors under OS %s', (os) => {
+    const css = variants.get('core');
+    for (const toggle of ['none', 'light', 'dark']) {
+        const cascade = (html, pseudo = '') => componentCascade(css, html, os, toggle, pseudo, 'admin');
+        const button = cascade('<button data-test class="btn btn--default">Cancel</button>');
+        expect([toggle, button('background-color'), button('color')]).toEqual([toggle, '#f7f7f7', '#555']);
+        expect(cascade('<button data-test class="btn btn--default">Cancel</button>', 'hover')('background-color')).toBe('#f2f3f4');
+        expect(cascade('<button data-test class="btn btn--full">Save</button>', 'hover')('background-color')).toBe('#3365a9');
+        expect(cascade('<a data-test href="#">Link</a>')('color')).toBe('#015999');
+        expect(cascade('<div data-test class="widget widget-admin">Admin</div>')('background-color')).toBe('#1b2330');
     }
 });

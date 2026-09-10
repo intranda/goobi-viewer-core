@@ -7,6 +7,8 @@
    its legacy names and stays readable everywhere.
    Ramps are hue + lightness step. Brand, status and OCR colors are
    fixed pairs, not ramps: base = light value, -dark = dark variant.
+   .gv-palette-admin() holds the fixed legacy backend colors; only
+   .gv-semantic-admin() reads them.
    ==============================================================*/
 
 .gv-palette() {
@@ -115,4 +117,14 @@
     --color-hero: #2c3e50;
     --color-hero-gradient: #34495e;
     --color-notation-active: #d2042d;
+}
+
+/* ADMIN — legacy backend primitives, mode-free */
+.gv-palette-admin() {
+    --color-admin-ink: #1a1a1a;
+    --color-admin-gray-100: #f7f7f7;
+    --color-admin-gray-200: #eee;
+    --color-admin-slate: #1b2330;
+    --color-admin-warning: #ff7e51;
+    --color-admin-danger: #ed0800;
 }

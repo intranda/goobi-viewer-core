@@ -34,6 +34,10 @@ it.each([
     expect((await compile(layer, component)).map((v) => v.rule)).toContain('R2');
 });
 
+it('accepts public tokens emitted on the admin scope of the token layer', async () => {
+    expect((await compile(':root { --known: 1; }\n:root:has(#admin) { --known: 2; }')).map((v) => v.rule)).not.toContain('R2');
+});
+
 it('finds an unknown read behind a LESS alias and reports the component source', async () => {
     const result = await compile(':root { --known: 1; }', '@alias: var(--missing); .component { color: @alias; }');
     expect(result).toEqual(expect.arrayContaining([expect.objectContaining({ rule: 'R1', file: 'component.less', token: '--missing', line: 1 })]));

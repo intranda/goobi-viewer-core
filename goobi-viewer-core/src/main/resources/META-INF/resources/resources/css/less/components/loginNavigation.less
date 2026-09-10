@@ -21,7 +21,7 @@
     /* LOGGED IN */
     [data-login='true'] {
         button[data-toggle='user-dropdown'] {
-            font-size: @fontMedium;
+            font-size: var(--font-size-medium);
             span {
             }
             display: flex;
@@ -54,7 +54,7 @@
                 right: 0;
                 width: 260px;
                 padding: 0.35rem 0;
-                font-size: @fontMedium;
+                font-size: var(--font-size-medium);
                 background: var(--login-nav-background);
                 border: 1px solid var(--login-nav-dropdown-border-color);
                 box-shadow: 0 18px 36px rgb(from var(--shadow-color) r g b / 18%);
@@ -67,7 +67,7 @@
                 }
             }
             &__user-dropdown-item {
-                font-size: @fontMedium;
+                font-size: var(--font-size-medium);
                 &:hover {
                     background-color: var(--login-nav-background-hover);
                 }

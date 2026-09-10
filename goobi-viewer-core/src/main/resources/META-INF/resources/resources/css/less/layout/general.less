@@ -11,8 +11,8 @@ html {
 }
 
 body {
-    font-family: @fontFamily;
-    font-size: @fontNormal;
+    font-family: var(--font-family);
+    font-size: var(--font-size-body);
 
     // Styling for fucussed elements
     &.using-keyboard :focus-visible {
@@ -61,7 +61,7 @@ h4,
 h5,
 .h4,
 .h5 {
-    font-size: @fontNormal;
+    font-size: var(--font-size-normal);
 }
 
 p {

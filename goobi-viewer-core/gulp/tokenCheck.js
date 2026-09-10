@@ -5,7 +5,8 @@ Rules
   R1  every var(--x) read in core names a token of the token layer; internal --_ tokens are
       declared in the same file or carry a fallback
   R2  tokens without the --_ prefix are declared only in the token layer, under
-      :root / .color-theme-dark / .color-theme-light (specificity 0,1,0) or inside mixin definitions;
+      :root / .color-theme-dark / .color-theme-light (specificity 0,1,0), the fixed admin scope
+      :root:has(#admin) or inside mixin definitions;
       emitted CSS and public core overrides in the reference theme must follow the same contract
   R4  --_ tokens never live in the token layer; prefers-color-scheme / .color-theme-* never outside it
   R5  (warning) token declared but read nowhere in core or theme
@@ -34,7 +35,9 @@ const BASELINE_FILE = path.join(__dirname, 'tokenCheck.baseline.json');
 const VARIABLES_FILE = 'misc/variables.less';
 const COMPONENT_COLOR = /#[\da-f]{3}(?:[\da-f](?:[\da-f]{2}(?:[\da-f]{2})?)?)?\b|\b(?:rgba?|hsla?)\(\s*[+-]?(?:\d|\.\d)|(?<![\w@#.-])(?:black|white)(?![\w-])/i;
 
-const TOKEN_SELECTORS = new Set([':root', '.color-theme-dark', '.color-theme-light', '@media (prefers-color-scheme: dark)', '@media (prefers-color-scheme: light)']);
+const ADMIN_SCOPE = ':root:has(#admin)';
+const ROOT_SELECTORS = [':root', '.color-theme-dark', '.color-theme-light', ADMIN_SCOPE];
+const TOKEN_SELECTORS = new Set([...ROOT_SELECTORS, '@media (prefers-color-scheme: dark)', '@media (prefers-color-scheme: light)']);
 const PALETTE_FILE = 'misc/palette.less';
 const BRAND_TRIO = /^--(ci-color1|ci-hovercolor1|accent-color)$/;
 const SEMANTIC_MIXIN = /^\.[\w-]*semantic[\w-]*\(\)$/;
@@ -315,14 +318,14 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
                     violations.push(violation('R4', file, d.name, d.line, 'internal token declared in the token layer'));
                 } else if (!allowedInTokenLayer(d.stack)) {
                     violations.push(
-                        violation('R2', file, d.name, d.line, `declared under "${flattened(d.stack) || '(top level)'}" — only :root, .color-theme-dark, .color-theme-light`)
+                        violation('R2', file, d.name, d.line, `declared under "${flattened(d.stack) || '(top level)'}" — only ${ROOT_SELECTORS.join(', ')}`)
                     );
                 }
             }
             for (const c of p.calls) {
                 if (!allowedInTokenLayer(c.stack)) {
                     violations.push(
-                        violation('R2', file, c.name, c.line, `mixin called under "${flattened(c.stack) || '(top level)'}" — only :root, .color-theme-dark, .color-theme-light`)
+                        violation('R2', file, c.name, c.line, `mixin called under "${flattened(c.stack) || '(top level)'}" — only ${ROOT_SELECTORS.join(', ')}`)
                     );
                 }
             }
@@ -492,7 +495,7 @@ async function checkCompiledTree(root, { entry = 'constructor.less', tokens = ne
         }
     };
     const allowedOutput = (node) => {
-        if (node.parent.type !== 'rule' || ![':root', '.color-theme-dark', '.color-theme-light'].includes(node.parent.selector)) return false;
+        if (node.parent.type !== 'rule' || !ROOT_SELECTORS.includes(node.parent.selector)) return false;
         for (let parent = node.parent.parent; parent && parent.type !== 'root'; parent = parent.parent) {
             if (parent.type !== 'atrule' || !TOKEN_SELECTORS.has(`@${parent.name} ${parent.params}`)) return false;
         }

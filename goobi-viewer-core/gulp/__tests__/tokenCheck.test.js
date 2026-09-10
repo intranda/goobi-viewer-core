@@ -141,6 +141,13 @@ describe('R2 theme-visible tokens live only in the token layer, under (0,1,0) se
         expect(result.violations).toEqual([]);
     });
 
+    it('accepts the admin scope wiring beside the mode selectors', () => {
+        const layer = `${TOKEN_LAYER_OK}\n.gv-palette() { --n-0: #fff; }\n:root { .gv-palette(); }\n:root:has(#admin) { --bg: #fff; .gv-palette(); }`;
+        const result = checkFiles(files({ [TOKENS]: layer }), null, OPTS);
+
+        expect(result.violations).toEqual([]);
+    });
+
     it('flags stronger or foreign selectors in the token layer', () => {
         const layer = `:root:not(.color-theme-light) { --a: 1; }\n.foo { --b: 1; }\nhtml { --c: 1; }\n.foo { .gv-x(); }\n.gv-x() { --d: 1; }`;
         const result = checkFiles(files({ [TOKENS]: layer }), null, OPTS);

@@ -3,9 +3,27 @@
    The only core file that branches on the color mode. Themes
    override tokens in their own :root / .color-theme-* blocks,
    which load later at the same specificity (0,1,0).
+   The admin scope :root:has(#admin) rebinds every token to fixed
+   light values; it outranks the mode wiring and theme overrides.
    Colors come from misc/palette.less only; alpha variants are
    derived with rgb(from …).
    ==============================================================*/
+
+/* MODE-INDEPENDENT DEFAULTS */
+.gv-base() {
+    --font-family: @fontFamily;
+    --font-size-small: @fontSmall;
+    --font-size-medium: @fontMedium;
+    --font-size-normal: @fontNormal;
+    --font-size-large: @fontLarge;
+    --font-size-xlarge: @fontXLarge;
+    --font-size-body: var(--font-size-normal);
+
+    --container-border-radius: 0;
+    --container-small-border-radius: 0.25rem;
+    --button-border-radius: 0;
+    --container-box-shadow: none;
+}
 
 /* LAYER 2 — SEMANTIC ROLES, LIGHT (legacy role names kept for theme compatibility) */
 .gv-semantic-light() {
@@ -333,6 +351,36 @@
     --print-border: var(--color-gray-400);
 }
 
+/* LAYER 2 — SEMANTIC ROLES, ADMIN (legacy backend values, applied after light) */
+.gv-semantic-admin() {
+    /* TEXT */
+    --fg-general: var(--color-admin-ink);
+    --fg-content-box: var(--color-admin-ink);
+    --fg-popover: var(--color-admin-ink);
+
+    /* LINKS AND BRAND */
+    --lk-general: var(--ci-color1);
+    --ci-hovercolor1: var(--color-link);
+
+    /* NEUTRAL SURFACES */
+    --bg-subtle: var(--color-admin-gray-100);
+    --bg-canvas: var(--color-admin-gray-200);
+    --bg-hover: var(--color-gray-100);
+    --bg-inverse: var(--color-admin-slate);
+    --placeholder: rgb(from var(--color-gray-1000) r g b / 25%);
+    --shadow-color: var(--color-gray-1000);
+
+    /* STATUS */
+    --fg-success: var(--color-success-strong);
+    --border-success: var(--color-success-hover);
+    --fg-warning: var(--color-admin-warning);
+    --border-warning: var(--color-admin-warning);
+    --bg-warning-strong: var(--color-admin-warning);
+    --fg-danger: var(--color-admin-danger);
+    --border-danger: var(--color-danger-hover);
+    --bg-danger-strong: var(--color-admin-danger);
+}
+
 /* LAYER 3 — FEATURE TOKENS, MODE-FREE (read layer 2 only) */
 .gv-features() {
     /* WIDGET ICONS */
@@ -356,7 +404,7 @@
     --search-toolbar-text-color-active: var(--fg-inverse);
     --search-toolbar-icon-color-active: var(--fg-inverse);
     --search-toolbar-text-color-hover: currentColor;
-    --search-toolbar-button-radius: 0;
+    --search-toolbar-button-radius: var(--button-border-radius);
     --search-toolbar-shadow-active: none;
     --search-toolbar-focus-outline-color: var(--focus-ring);
 
@@ -466,7 +514,7 @@
     --active-facets-badge-color: var(--fg-inverse);
     --active-facets-badge-border: transparent;
     --active-facets-badge-muted: rgb(from var(--fg-inverse) r g b / 85%);
-    --active-facets-badge-radius: 0;
+    --active-facets-badge-radius: var(--button-border-radius);
     --active-facets-badge-contrast: var(--ci-color1);
     --active-facets-badge-shadow-hover: 0 1px 3px rgb(from var(--shadow-color) r g b / 12%);
 
@@ -649,9 +697,24 @@
     --color-theme-switch-light-display: flex;
 }
 
+/* LAYER 3 — FEATURE TOKENS, ADMIN (read layer 2 only) */
+.gv-features-admin() {
+    /* WIDGET ICONS */
+    --widget-icon-color-topbar: var(--fg-inverse);
+    --widget-icon-color-body: var(--fg-content-box);
+
+    /* DATEPICKER */
+    --datepicker-day-hover-bg: var(--bg-canvas);
+    --datepicker-day-disabled-fg: var(--border-strong);
+
+    /* RSS */
+    --rss-badge-fg: var(--fg-inverse);
+}
+
 /* WIRING — plain selectors only, all (0,1,0); order is binding */
 :root {
     .gv-palette();
+    .gv-base();
     .gv-semantic-light();
     .gv-features();
     .gv-features-light();
@@ -672,4 +735,16 @@
 .color-theme-light {
     .gv-semantic-light();
     .gv-features-light();
+}
+
+/* ADMIN SCOPE — fixed light binding; (1,1,0) beats mode wiring and theme :root */
+:root:has(#admin) {
+    .gv-palette();
+    .gv-palette-admin();
+    .gv-base();
+    .gv-semantic-light();
+    .gv-semantic-admin();
+    .gv-features();
+    .gv-features-light();
+    .gv-features-admin();
 }
