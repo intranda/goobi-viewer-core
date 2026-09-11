@@ -85,8 +85,11 @@ it('checks reads in alias definitions without treating ordinary strings as reads
 it('accepts whitespace before the origin of relative colors', () => {
     const result = checkFiles(
         new Map([
-            ['misc/palette.less', ':root { --ci-color1: #fff; }'],
-            ['misc/tokens.less', ':root { --known: rgb( from var(--ci-color1) r g b / 20%); }'],
+            ['misc/palette.less', ':root { --color-brand: #fff; }'],
+            [
+                'misc/tokens.less',
+                '.gv-semantic-light() { --known: rgb( from var(--color-brand) r g b / 20%); }\n.gv-semantic-dark() { --known: rgb( from var(--color-brand) r g b / 20%); }\n:root { .gv-semantic-light(); }\n.color-theme-dark { .gv-semantic-dark(); }',
+            ],
         ])
     );
     expect(result.violations).toEqual([]);

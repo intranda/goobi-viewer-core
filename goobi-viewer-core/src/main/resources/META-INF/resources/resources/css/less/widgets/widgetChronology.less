@@ -110,7 +110,7 @@
         height: 1rem;
         border: none;
         border-radius: 5px;
-        border-color: var(--border-color);
+        border-color: var(--border-default);
         background-image: none;
         background-color: var(--bg-subtle);
         .ui-slider-range,
@@ -122,8 +122,8 @@
             }
         }
         .ui-slider-range {
-            border-color: var(--ci-color1);
-            background-color: var(--ci-color1);
+            border-color: var(--brand);
+            background-color: var(--brand);
         }
         .ui-slider-handle {
             width: 1rem;
@@ -171,14 +171,14 @@
     &__graph {
         height: 150px;
         &-line {
-            color: var(--chronology-chart-color);
+            color: var(--chronology-chart-fg);
         }
         &-area {
-            color: rgb(from var(--chronology-chart-color) r g b / 30%);
+            color: rgb(from var(--chronology-chart-fg) r g b / 30%);
         }
         &-range {
-            color: var(--ci-color1);
-            background-color: var(--ci-color1);
+            color: var(--brand);
+            background-color: var(--brand);
             opacity: 0.1;
         }
     }

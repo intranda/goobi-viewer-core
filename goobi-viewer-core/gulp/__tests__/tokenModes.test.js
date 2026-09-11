@@ -112,17 +112,17 @@ it.each(['light', 'dark'])('keeps all six mode states consistent under OS %s', (
                 effective = toggle === 'none' ? os : toggle;
             expect({ name, toggle, scheme: get('color-scheme') }).toEqual({ name, toggle, scheme: effective });
             if (name !== 'core') {
-                expect(get('--accent-color')).toBe(effective === 'dark' ? '#feae1a' : '#f59f00');
-                expect(get('--facet-control-radius')).toBe(get('--container-small-border-radius'));
+                expect(get('--accent')).toBe(effective === 'dark' ? '#feae1a' : '#f59f00');
+                expect(get('--facet-control-radius')).toBe(get('--radius-container-small'));
                 expect(get('--active-facets-badge-shadow-hover')).toBe('none');
             }
             for (const [fg, bg, base] of [
-                ['--quick-filter-label-color', '--quick-filter-fields-bg', '--bg-content-box'],
-                ['--quick-filter-label-color', '--quick-filter-bg', '--bg-content-box'],
-                ['--datepicker-day-hasdata-fg', '--datepicker-day-hasdata-bg', '--datepicker-bg'],
-                ['--datepicker-day-hasdata-hover-fg', '--datepicker-day-hasdata-hover-bg', '--datepicker-bg'],
-                ['--wc-popover-item-hover-color', '--wc-popover-item-hover-bg', '--wc-popover-bg'],
-                ['--active-facets-badge-color', '--active-facets-badge-background-hover', '--bg-content-box'],
+                ['--quick-filter-label-fg', '--quick-filter-fields-bg', '--bg-content-box'],
+                ['--quick-filter-label-fg', '--quick-filter-bg', '--bg-content-box'],
+                ['--datepicker-day-fg-has-data', '--datepicker-day-bg-has-data', '--datepicker-bg'],
+                ['--datepicker-day-fg-has-data-hover', '--datepicker-day-bg-has-data-hover', '--datepicker-bg'],
+                ['--widget-calendar-popover-item-fg-hover', '--widget-calendar-popover-item-bg-hover', '--widget-calendar-popover-bg'],
+                ['--active-facets-badge-fg', '--active-facets-badge-bg-hover', '--bg-content-box'],
             ]) {
                 const ratio = contrast(color(get(fg)), over(color(get(bg)), color(get(base))));
                 if (ratio < 4.5) throw new Error(`${name}/${os}/${toggle}: ${fg} on ${bg} = ${ratio}`);
@@ -139,11 +139,11 @@ it.each(['light', 'dark'])('keeps base defaults and Reference differences indepe
             expect(get('--font-size-medium')).toBe('1.4rem');
             expect(get('--font-size-normal')).toBe('1.6rem');
             expect(get('--font-size-body')).toBe(core ? '1.6rem' : '1.4rem');
-            expect(get('--button-border-radius')).toBe(core ? '0' : '6px');
-            expect(get('--container-border-radius')).toBe(core ? '0' : '8px');
-            expect(get('--container-small-border-radius')).toBe(core ? '0.25rem' : '4px');
-            expect(get('--search-toolbar-button-radius')).toBe(get('--button-border-radius'));
-            expect(get('--active-facets-badge-radius')).toBe(get('--button-border-radius'));
+            expect(get('--radius-button')).toBe(core ? '0' : '6px');
+            expect(get('--radius-container')).toBe(core ? '0' : '8px');
+            expect(get('--radius-container-small')).toBe(core ? '0.25rem' : '4px');
+            expect(get('--search-toolbar-button-radius')).toBe(get('--radius-button'));
+            expect(get('--active-facets-badge-radius')).toBe(get('--radius-button'));
             expect(get('--font-family').startsWith("'Inter'")).toBe(!core);
         }
     }
@@ -161,7 +161,7 @@ it('applies runtime base overrides to inner controls and inherited frontend typo
     for (const name of ['core', 'reference']) {
         if (!variants.has(name)) continue;
         const css = postcss.parse(
-            variants.get(name).toString() + ':root { --button-border-radius: 17px; --container-small-border-radius: 13px; --font-size-small: 2rem; --font-size-medium: 2.4rem; }'
+            variants.get(name).toString() + ':root { --radius-button: 17px; --radius-container-small: 13px; --font-size-small: 2rem; --font-size-medium: 2.4rem; }'
         );
         for (const os of ['light', 'dark']) {
             for (const toggle of ['none', 'light', 'dark']) {
@@ -191,17 +191,19 @@ it('exposes each subtheme brand to core consumers in both modes', () => {
 });
 
 const foundationPairs = [
-    ['--print-fg', '--bg-document'],
-    ['--print-link', '--bg-document'],
+    ['--fg-print', '--bg-document'],
+    ['--fg-print-link', '--bg-document'],
     ['--fg-document', '--bg-document'],
-    ['--mei-note-active-color', '--bg-document'],
+    ['--mei-note-fg-active', '--bg-document'],
     ['--fg-inverse', '--archives-hero-bg'],
     ['--fg-inverse', '--archives-hero-gradient-bg'],
     ['--fg-secondary', '--bg-subtle'],
     ['--fg-secondary', '--bg-hover'],
     ['--fg-secondary', '--bg-danger'],
-    ['--fg-inverse', '--ci-color1'],
-    ['--fg-inverse', '--ci-hovercolor1'],
+    ['--fg-on-brand', '--bg-brand'],
+    ['--fg-on-brand', '--bg-brand-hover'],
+    ['--brand', '--bg-general'],
+    ['--brand', '--bg-content-box'],
     ['--fg-inverse', '--bg-inverse'],
     ['--fg-inverse', '--bg-inverse-hover'],
     ['--fg-on-warning', '--bg-warning'],
@@ -211,8 +213,8 @@ const foundationPairs = [
     ['--map-marker-primary-fg', '--map-marker-primary-bg'],
     ['--map-marker-secondary-fg', '--map-marker-secondary-bg'],
     ['--rss-badge-fg', '--rss-badge-bg'],
-    ['--image-controls-region-active-color', '--image-controls-background'],
-    ['--image-controls-region-active-color', '--image-controls-action-background'],
+    ['--image-controls-region-fg-active', '--image-controls-bg'],
+    ['--image-controls-region-fg-active', '--image-controls-action-bg'],
     ...['success', 'danger'].flatMap((status) => [
         [`--fg-on-${status}`, `--bg-${status}`],
         [`--fg-on-${status}`, `--bg-${status}-hover`],
@@ -222,13 +224,13 @@ const foundationPairs = [
         '--fg-content-box',
         '--fg-secondary',
         '--fg-muted',
-        '--placeholder',
+        '--fg-placeholder',
         '--fg-danger',
         '--fg-success',
         '--fg-warning',
-        '--ner-person-color',
-        '--ner-location-color',
-        '--ner-institution-color',
+        '--ner-person-fg',
+        '--ner-location-fg',
+        '--ner-institution-fg',
     ].flatMap((fg) => ['--bg-general', '--bg-content-box', '--bg-subtle', '--bg-popover', '--bg-canvas'].map((bg) => [fg, bg])),
 ];
 
@@ -287,7 +289,7 @@ it('allows a later root override to reach the faceted-search widgets', () => {
 it.each(['light', 'dark'])('keeps chart and entity navigation marks distinguishable in %s', (mode) => {
     for (const [name, css] of variants) {
         const get = state(css, mode, 'none');
-        for (const fg of ['--chronology-chart-color', '--ner-scale-handle-bg'])
+        for (const fg of ['--chronology-chart-fg', '--ner-scale-handle-bg'])
             for (const bg of ['--bg-content-box', '--bg-subtle']) {
                 const ratio = contrast(color(get(fg)), color(get(bg)));
                 if (ratio < 3) throw new Error(`${name}/${mode}: ${fg} on ${bg} = ${ratio}`);
@@ -470,7 +472,7 @@ it.each(['light', 'dark'])('keeps reference entity group colors independent of c
                 expect(theme(`--fg-entity-${entity}`)).toBe(core(`--fg-entity-${entity}`));
             }
             for (const [group, expected] of Object.entries({ work: '#dc7e2e', person: '#b13b29', agent: '#568fb2', award: '#2e8d38', event: '#8966ca' })) {
-                expect(theme(`--entity-${group}-color`)).toBe(expected);
+                expect(theme(`--entity-${group}-bg`)).toBe(expected);
             }
         }
     }
@@ -508,25 +510,25 @@ it.each(['light', 'dark'])('keeps the admin scope identical for every variant an
 
 it('pins the admin scope to the legacy backend values', () => {
     const get = state(variants.get('core'), 'dark', 'none', 'admin');
-    expect(get('--lk-general')).toBe('#015999');
-    expect(get('--lk-general-hover')).toBe('#134ea0');
-    expect(get('--ci-hovercolor1')).toBe('#3365a9');
+    expect(get('--fg-link')).toBe('#015999');
+    expect(get('--fg-link-hover')).toBe('#134ea0');
+    expect(get('--color-brand-hover')).toBe('#3365a9');
     expect(get('--bg-subtle')).toBe('#f7f7f7');
     expect(get('--bg-hover')).toBe('#f2f3f4');
     expect(get('--fg-content-box')).toBe('#1a1a1a');
     expect(get('--bg-inverse')).toBe('#1b2330');
-    expect(get('--widget-icon-color-topbar')).toBe('#fff');
-    expect(get('--placeholder')).toBe('rgb(from #000 r g b / 25%)');
-    expect(get('--button-border-radius')).toBe('0');
+    expect(get('--widget-topbar-icon')).toBe('#fff');
+    expect(get('--fg-placeholder')).toBe('rgb(from #000 r g b / 25%)');
+    expect(get('--radius-button')).toBe('0');
     expect(get('--font-size-body')).toBe('1.6rem');
 });
 
 it('keeps a later root override out of the admin scope', () => {
-    const overridden = postcss.parse(variants.get('core').toString() + ':root { --bg-subtle: red; --button-border-radius: 9px; } .color-theme-dark { --lk-general: red; }');
+    const overridden = postcss.parse(variants.get('core').toString() + ':root { --bg-subtle: red; --radius-button: 9px; } .color-theme-dark { --fg-link: red; }');
     const get = state(overridden, 'dark', 'dark', 'admin');
     expect(get('--bg-subtle')).toBe('#f7f7f7');
-    expect(get('--button-border-radius')).toBe('0');
-    expect(get('--lk-general')).toBe('#015999');
+    expect(get('--radius-button')).toBe('0');
+    expect(get('--fg-link')).toBe('#015999');
 });
 
 it.each(['light', 'dark'])('renders admin controls with the legacy colors under OS %s', (os) => {
@@ -540,4 +542,57 @@ it.each(['light', 'dark'])('renders admin controls with the legacy colors under 
         expect(cascade('<a data-test href="#">Link</a>')('color')).toBe('#015999');
         expect(cascade('<div data-test class="widget widget-admin">Admin</div>')('background-color')).toBe('#1b2330');
     }
+});
+
+/* BRAND ROLES — components and features read roles, never the brand primitive */
+const WIRING_SELECTORS = new Set([':root', '.color-theme-dark', '.color-theme-light', ADMIN_SELECTOR]);
+it('reads the brand only through roles outside the token wiring', () => {
+    for (const [name, css] of variants) {
+        const offenders = [];
+        css.walkDecls((d) => {
+            if (WIRING_SELECTORS.has(d.parent.selector)) return;
+            if (/var\(--(ci-color1|ci-hovercolor1|ci-color1-dark)\)/.test(d.value)) offenders.push(`${name}: ${d.parent.selector} { ${d.prop}: ${d.value} }`);
+        });
+        expect(offenders).toEqual([]);
+    }
+});
+
+it.each(['light', 'dark'])('keeps filled brand surfaces strong and brand accents readable under OS %s', (os) => {
+    for (const [name, css] of variants)
+        for (const toggle of ['none', 'light', 'dark']) {
+            const get = state(css, os, toggle);
+            expect({ name, toggle, fill: get('--bg-brand') }).toEqual({ name, toggle, fill: get('--color-brand') });
+            expect({ name, toggle, hover: get('--bg-brand-hover') }).toEqual({ name, toggle, hover: get('--color-brand-hover') });
+            const effective = toggle === 'none' ? os : toggle;
+            expect({ name, toggle, accent: get('--brand') }).toEqual({ name, toggle, accent: get(effective === 'dark' ? '--color-brand-dark' : '--color-brand') });
+        }
+});
+
+/* BORDER ROLES — one value type per family */
+it.each(['light', 'dark'])('keeps every border role a plain color under OS %s', (os) => {
+    const names = [];
+    variants.get('core').walkRules((rule) => {
+        if (rule.selector === ':root' && rule.parent.type === 'root') rule.walkDecls(/^--border/, (d) => names.push(d.prop));
+    });
+    expect(names).toEqual(expect.arrayContaining(['--border-faint', '--border-input', '--border-default', '--border-strong']));
+    expect(names).not.toEqual(expect.arrayContaining(['--border']));
+    expect(names).not.toEqual(expect.arrayContaining(['--border-controls']));
+    for (const [name, css] of variants)
+        for (const toggle of ['none', 'light', 'dark'])
+            for (const scope of ['page', 'admin']) {
+                const get = state(css, os, toggle, scope);
+                for (const token of new Set(names)) expect(() => color(get(token))).not.toThrow();
+            }
+});
+
+/* PUBLIC TOKEN NAMES — a rename or removal is a deliberate decision with a changelog entry */
+it('keeps the public token names of the core stable', () => {
+    const expected = JSON.parse(fs.readFileSync(path.resolve(moduleRoot, 'gulp/tokenCheck.baseline.json'), 'utf8')).publicTokens;
+    const emitted = new Set();
+    variants.get('core').walkRules((rule) => {
+        if (rule.selector === ':root' && rule.parent.type === 'root') rule.walkDecls(/^--/, (d) => emitted.add(d.prop));
+    });
+    const added = [...emitted].filter((n) => !expected.includes(n)).sort();
+    const removed = expected.filter((n) => !emitted.has(n));
+    expect({ added, removed, note: 'update publicTokens in gulp/tokenCheck.baseline.json, RENAMED_TOKENS in gulp/tokenCheck.js and the theme changelog' }).toEqual({ added: [], removed: [], note: expect.any(String) });
 });

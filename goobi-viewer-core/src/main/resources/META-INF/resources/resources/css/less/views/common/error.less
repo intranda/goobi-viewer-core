@@ -55,7 +55,7 @@ body:has(.view-error-page) {
 
     &__code {
         font-weight: 800;
-        color: var(--lk-general);
+        color: var(--fg-link);
         letter-spacing: -0.05em;
     }
 
@@ -97,27 +97,27 @@ body:has(.view-error-page) {
         }
 
         .btn--full {
-            background-color: var(--ci-color1);
-            border-color: var(--ci-color1);
-            box-shadow: 0 2px 8px rgb(from var(--ci-color1) r g b / 25%);
+            background-color: var(--bg-brand);
+            border-color: var(--bg-brand);
+            box-shadow: 0 2px 8px rgb(from var(--brand) r g b / 25%);
 
             &:hover {
-                background-color: var(--ci-hovercolor1);
-                border-color: var(--ci-hovercolor1);
-                box-shadow: 0 4px 12px rgb(from var(--ci-color1) r g b / 30%);
+                background-color: var(--bg-brand-hover);
+                border-color: var(--bg-brand-hover);
+                box-shadow: 0 4px 12px rgb(from var(--brand) r g b / 30%);
                 transform: translateY(-1px);
             }
 
             &:active {
                 background-color: var(--brand-strong);
                 border-color: var(--brand-strong);
-                box-shadow: 0 1px 4px rgb(from var(--ci-color1) r g b / 30%);
+                box-shadow: 0 1px 4px rgb(from var(--brand) r g b / 30%);
                 transform: translateY(0);
             }
 
             &:focus {
-                background-color: var(--ci-color1);
-                border-color: var(--ci-color1);
+                background-color: var(--bg-brand);
+                border-color: var(--bg-brand);
             }
         }
 

@@ -9,8 +9,8 @@
     position: relative;
     padding: 24px;
     overflow-anchor: none;
-    color: var(--combined-facets-color);
-    background: var(--combined-facets-background);
+    color: var(--combined-facets-fg);
+    background: var(--combined-facets-bg);
     border-radius: var(--combined-facets-radius);
 
     /* ELEMENTS */
@@ -27,7 +27,7 @@
         padding: 0;
         font-size: var(--font-size-xlarge);
         font-weight: 400;
-        color: var(--combined-facets-color);
+        color: var(--combined-facets-fg);
     }
 
     &__reset {
@@ -84,13 +84,13 @@
     }
 
     .active-facets-badges__badge {
-        --_afb-bg: var(--combined-facets-badge-background);
-        --_afb-bg-hover: var(--combined-facets-badge-background-hover);
-        --_afb-color: var(--combined-facets-badge-color);
+        --_afb-bg: var(--combined-facets-badge-bg);
+        --_afb-bg-hover: var(--combined-facets-badge-bg-hover);
+        --_afb-color: var(--combined-facets-badge-fg);
         --_afb-border: var(--combined-facets-badge-border);
-        --_afb-muted: var(--combined-facets-badge-muted);
+        --_afb-muted: var(--combined-facets-badge-fg-muted);
         --_afb-radius: var(--combined-facets-radius);
-        --_afb-contrast: var(--combined-facets-badge-contrast);
+        --_afb-contrast: var(--combined-facets-badge-fg-contrast);
         height: 24px;
         padding-block: 0;
         padding-inline: 7px 4px;
@@ -102,8 +102,8 @@
     .active-facets-badges__badge-remove {
         width: 16px;
         height: 16px;
-        color: var(--_afb-contrast, var(--active-facets-badge-contrast));
-        background: var(--_afb-color, var(--active-facets-badge-color));
+        color: var(--_afb-contrast, var(--active-facets-badge-fg-contrast));
+        background: var(--_afb-color, var(--active-facets-badge-fg));
     }
 
     .active-facets-badges__badge-remove-icon-svg {
@@ -177,7 +177,7 @@
         padding: 0;
         font-size: var(--font-size-normal);
         font-weight: 600;
-        color: var(--combined-facets-color);
+        color: var(--combined-facets-fg);
     }
 
     .widget__body {
@@ -188,7 +188,7 @@
 
     .widget__description-text {
         font-size: var(--font-size-small);
-        color: var(--combined-facets-muted);
+        color: var(--combined-facets-fg-muted);
     }
 
     /* VALUE LISTS (the 400px height cap comes from the widgets-mode base rule) */
@@ -203,11 +203,11 @@
     }
 
     .widget-search-facets__list-item .widget-search-facets__list-item-link {
-        color: var(--combined-facets-color);
+        color: var(--combined-facets-fg);
 
         &:hover,
         &:focus {
-            color: var(--combined-facets-color);
+            color: var(--combined-facets-fg);
         }
     }
 
@@ -228,15 +228,15 @@
         padding: 0 12px;
         padding-inline-start: 34px;
         font-size: var(--font-size-medium);
-        color: var(--combined-facets-color);
-        background: var(--combined-facets-box);
+        color: var(--combined-facets-fg);
+        background: var(--combined-facets-box-bg);
         border: 0;
         border-radius: var(--combined-facets-radius);
         cursor: text;
         user-select: text;
 
         &::placeholder {
-            color: var(--combined-facets-muted);
+            color: var(--combined-facets-fg-muted);
             opacity: 1;
         }
 
@@ -257,7 +257,7 @@
         justify-self: start;
         margin-top: 8px;
         margin-inline-start: 10px;
-        color: var(--combined-facets-muted);
+        color: var(--combined-facets-fg-muted);
         pointer-events: none;
         z-index: 1;
     }
@@ -283,7 +283,7 @@
     /* focus-visible only (no sticky click state); the radius sits in the base state
        so the closing background fade keeps round corners */
     .widget-search-facets__filter .widget-search-facets__filter-button {
-        color: var(--combined-facets-muted);
+        color: var(--combined-facets-fg-muted);
         border-radius: 4px;
 
         &:hover,
@@ -295,8 +295,8 @@
     .widget-search-facets__filter input.in ~ .widget-search-facets__filter-button,
     .widget-search-facets__filter input.in ~ .widget-search-facets__filter-button:hover,
     .widget-search-facets__filter input.in ~ .widget-search-facets__filter-button:focus {
-        color: var(--combined-facets-accent-contrast);
-        background: var(--combined-facets-accent);
+        color: var(--combined-facets-fg-on-accent);
+        background: var(--combined-facets-accent-bg);
     }
 
     /* currentColor defeats the theme's generic topbar icon color */
@@ -308,21 +308,21 @@
 
     /* BOOLEAN FACETS */
     .widget-search-facets__boolean .widget-search-facets__boolean-button {
-        color: var(--combined-facets-color);
-        background: var(--combined-facets-box);
+        color: var(--combined-facets-fg);
+        background: var(--combined-facets-box-bg);
         border: 0;
         border-radius: var(--combined-facets-radius);
 
         &:hover,
         &:focus {
-            color: var(--combined-facets-color);
-            background: var(--combined-facets-box);
-            box-shadow: inset 0 0 0 1px var(--combined-facets-muted);
+            color: var(--combined-facets-fg);
+            background: var(--combined-facets-box-bg);
+            box-shadow: inset 0 0 0 1px var(--combined-facets-fg-muted);
         }
 
         &.-active {
-            color: var(--combined-facets-accent-contrast);
-            background: var(--combined-facets-accent);
+            color: var(--combined-facets-fg-on-accent);
+            background: var(--combined-facets-accent-bg);
         }
     }
 
@@ -368,7 +368,7 @@
     /* currentColor defeats the theme's generic topbar icon color */
     .widget-chronology-slider__action-reset-button,
     .widget-geofacetting__actions button {
-        color: var(--combined-facets-muted);
+        color: var(--combined-facets-fg-muted);
 
         &:hover,
         &:focus-visible {
@@ -379,7 +379,7 @@
     /* the theme forces the chronology actions white via [data-reset] — outgun its specificity */
     .widget-chronology-slider__item.chronology-slider-actions,
     .widget-chronology-slider__item.chronology-slider-actions [data-reset='chrono-slider'] {
-        color: var(--combined-facets-muted);
+        color: var(--combined-facets-fg-muted);
     }
 
     .widget-chronology-slider__item.chronology-slider-actions [data-reset='chrono-slider']:hover,
@@ -402,7 +402,7 @@
     .widget-chronology-slider__item-input {
         padding: 0.3rem 0;
         font-size: var(--font-size-small);
-        color: var(--combined-facets-muted);
+        color: var(--combined-facets-fg-muted);
     }
 
     .widget-chronology-slider {
@@ -414,12 +414,12 @@
         /* keep the overhanging right handle clear of the container edge */
         margin-inline-end: 5px;
         border-radius: 4px;
-        background-color: color-mix(in srgb, var(--combined-facets-color) 15%, transparent);
+        background-color: color-mix(in srgb, var(--combined-facets-fg) 15%, transparent);
 
         .ui-slider-range {
             height: 4px;
-            border-color: var(--combined-facets-accent);
-            background-color: var(--combined-facets-accent);
+            border-color: var(--combined-facets-accent-bg);
+            background-color: var(--combined-facets-accent-bg);
         }
 
         .ui-slider-handle {
@@ -429,7 +429,7 @@
             transform: translateY(-50%);
             border: 0;
             border-radius: 50%;
-            background-color: var(--combined-facets-accent);
+            background-color: var(--combined-facets-accent-bg);
 
             &::before {
                 content: '';

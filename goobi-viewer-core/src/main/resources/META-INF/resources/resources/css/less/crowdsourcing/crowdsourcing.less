@@ -277,7 +277,7 @@
                             img {
                             }
                             &.selected {
-                                border: 5px solid var(--ci-color1);
+                                border: 5px solid var(--brand);
                                 img {
                                 }
                             }
@@ -442,7 +442,7 @@
                         max-width: 100%;
                     }
                     &.selected {
-                        border: 5px solid var(--ci-color1);
+                        border: 5px solid var(--brand);
                         img {
                         }
                     }
@@ -624,7 +624,7 @@
     }
     &__single-instruction {
         margin: 1rem 0;
-        border: 2px solid var(--border-color);
+        border: 2px solid var(--border-default);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -845,10 +845,10 @@
         }
         &__active {
             span {
-                background-color: var(--ci-color1);
-                color: var(--fg-inverse);
+                background-color: var(--bg-brand);
+                color: var(--fg-on-brand);
                 &:hover {
-                    background-color: var(--ci-color1);
+                    background-color: var(--bg-brand);
                     curso: none;
                 }
             }
@@ -873,9 +873,9 @@
     }
     &__log-title {
         font-size: 1.6rem;
-        background: var(--ci-color1);
+        background: var(--bg-brand);
         padding: 1rem 2rem;
-        color: var(--fg-inverse);
+        color: var(--fg-on-brand);
         display: flex;
     }
     &__log-inner-wrapper {
@@ -984,7 +984,7 @@
         transition: border-color 0.2s ease;
         height: 35px;
         &:focus {
-            border-color: var(--ci-color1);
+            border-color: var(--brand);
         }
     }
     &__log-speech-bubble {
@@ -1001,7 +1001,7 @@
         max-width: calc(100% - 160px);
         &:after {
             border: 8px solid transparent;
-            border-right: 8px solid var(--border-color);
+            border-right: 8px solid var(--border-default);
             border-left: none;
             content: '';
             display: block;

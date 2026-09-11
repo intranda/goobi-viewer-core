@@ -96,9 +96,9 @@
 // backgrounds, the outer brand-colored ring (box-shadow, doesn't affect layout) covers
 // light backgrounds - together they guarantee >=3:1 against any background.
 .mx-focus-visible {
-    outline: 2px solid var(--focus-ring-inner);
+    outline: 2px solid var(--outline-focus-inner);
     outline-offset: -2px;
-    box-shadow: 0 0 0 4px var(--focus-ring);
+    box-shadow: 0 0 0 4px var(--outline-focus);
     z-index: 9999;
 }
 
@@ -131,7 +131,7 @@
 /* IMMERSIVE VIEW: floating chrome surface (toolbar, bottombar, back link) */
 .mx-immersive-floating() {
     background-color: var(--immersive-chrome-bg);
-    border: 1px solid var(--immersive-chrome-border-color);
+    border: 1px solid var(--immersive-chrome-border);
     border-radius: var(--immersive-radius);
     box-shadow: var(--immersive-chrome-shadow);
 }
@@ -152,7 +152,7 @@
     transition: background-color var(--immersive-transition);
 
     &:hover {
-        background-color: var(--immersive-chrome-hover-bg);
+        background-color: var(--immersive-chrome-bg-hover);
         /* Repeated colour guards against theme a:hover/button:hover rules. */
         color: var(--immersive-chrome-fg);
     }

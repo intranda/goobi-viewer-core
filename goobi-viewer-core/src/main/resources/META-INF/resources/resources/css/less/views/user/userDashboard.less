@@ -30,7 +30,7 @@
         }
     }
     &__show-all-link {
-        color: var(--lk-general);
+        color: var(--fg-link);
         font-size: 1.4rem;
         position: relative;
     }
@@ -65,14 +65,14 @@
             width: 11px;
             content: '';
             top: 6px;
-            background: var(--border-color);
+            background: var(--border-default);
         }
         &::before {
             content: '';
             display: block;
             position: absolute;
             width: 3px;
-            background: var(--border-color);
+            background: var(--border-default);
             left: -4px;
             top: 6px;
             height: 100%;
@@ -85,7 +85,7 @@
             &:after {
                 position: absolute;
                 display: inline-block;
-                color: var(--border-color);
+                color: var(--border-default);
                 box-sizing: border-box;
                 width: 0;
                 height: 0;
@@ -156,7 +156,7 @@
     &__comments-item {
         display: flex;
         flex-wrap: wrap;
-        border-left: 2px solid var(--border-color);
+        border-left: 2px solid var(--border-default);
         padding-left: 1rem;
         margin-bottom: 1.5rem;
     }

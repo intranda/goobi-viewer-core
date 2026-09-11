@@ -3,8 +3,9 @@
    Every color of the token layer is defined here or derived from
    here. A theme overrides these in its :root block to retone light
    AND dark at once. Only the semantic roles read this file; the
-   brand trio --ci-color1 / --ci-hovercolor1 / --accent-color keeps
-   its legacy names and stays readable everywhere.
+   brand primitives --color-brand / --color-brand-hover keep their legacy
+   names as the theme input and are read through --brand, --bg-brand
+   and --bg-brand-hover only.
    Ramps are hue + lightness step. Brand, status and OCR colors are
    fixed pairs, not ramps: base = light value, -dark = dark variant.
    .gv-palette-admin() holds the fixed legacy backend colors; only
@@ -13,10 +14,10 @@
 
 .gv-palette() {
     /* BRAND (legacy theme API) */
-    --ci-color1: @blue;
-    --ci-hovercolor1: lighten(@blue, 10%);
-    --ci-color1-dark: #49a5ff;
-    --accent-color: #f59f00;
+    --color-brand: @blue;
+    --color-brand-hover: lighten(@blue, 10%);
+    --color-brand-dark: #49a5ff;
+    --color-accent: #f59f00;
     --color-link: #3365a9;
     --color-link-hover: #134ea0;
     --color-link-active: #0d3a79;

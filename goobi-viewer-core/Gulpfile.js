@@ -994,18 +994,29 @@ function printTargets(cb) {
 
 /**
  * Reports token-layer violations and returns whether the check failed.
- * Set GV_TOKENWARN=1 to list warnings as well.
+ * Set GV_TOKENWARN=1 to list warnings as well; GV_THEME_LESS_ROOT points the theme
+ * contract at another theme's css/less directory (customer theme updates).
  *
  * @returns {Promise<boolean>} Whether errors or stale baseline entries exist.
  */
 async function reportTokens() {
-    const result = await tokenCheck.runTokenCheck();
+    const result = await tokenCheck.runTokenCheck(process.env.GV_THEME_LESS_ROOT ? { themeLessRoot: process.env.GV_THEME_LESS_ROOT } : {});
     logBlock('check-tokens', tokenCheck.formatReport(result, { showWarnings: process.env.GV_TOKENWARN === '1' }).split('\n'));
     return result.errors.length > 0 || result.stale.length > 0;
 }
 
 async function checkTokens() {
     if (await reportTokens()) throw new Error('token check failed — see [check-tokens] above');
+}
+
+/**
+ * Lists which token overrides of a theme still differ from the core defaults.
+ * GV_THEME_LESS_ROOT points at the theme's css/less directory.
+ */
+async function themeTokens() {
+    if (!process.env.GV_THEME_LESS_ROOT) throw new Error('GV_THEME_LESS_ROOT=<theme>/css/less is required');
+    const rows = await tokenCheck.themeTokenReport(process.env.GV_THEME_LESS_ROOT);
+    logBlock('theme-tokens', tokenCheck.formatThemeTokenReport(rows).split('\n'));
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
@@ -1017,6 +1028,7 @@ const buildAll = gulp.series(gulp.parallel(buildStyles, buildJS, compileRiotTags
 
 exports.build = gulp.series(checkTokens, buildAll);
 exports['check-tokens'] = checkTokens;
+exports['theme-tokens'] = themeTokens;
 exports.dev = watchMode;
 // The order matters: patchReplayWebPage overwrites ui.js and must run AFTER
 // copyDependencies, so the patch survives even if a merge reintroduces the

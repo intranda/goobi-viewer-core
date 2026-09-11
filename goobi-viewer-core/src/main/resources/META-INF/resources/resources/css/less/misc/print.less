@@ -5,14 +5,14 @@
 @media print {
     * {
         background: transparent !important;
-        color: var(--print-fg) !important;
+        color: var(--fg-print) !important;
         text-shadow: none !important;
         filter: none !important;
         -ms-filter: none !important;
     }
     a,
     a:visited {
-        color: var(--print-link) !important;
+        color: var(--fg-print-link) !important;
         text-decoration: underline;
     }
     a:link:after {
@@ -23,7 +23,7 @@
     }
     pre,
     blockquote {
-        border: 1px solid var(--print-border);
+        border: 1px solid var(--border-print);
         page-break-inside: avoid;
     }
     thead {

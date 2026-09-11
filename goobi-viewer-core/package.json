@@ -13,6 +13,7 @@
     "dev": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp dev",
     "build": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp build",
     "check:tokens": "cross-env NODE_NO_WARNINGS=1 gulp check-tokens",
+    "theme:tokens": "cross-env NODE_NO_WARNINGS=1 gulp theme-tokens",
     "icons": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp icons",
     "copyDeps": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp copy-deps",
     "sync": "cross-env GV_AUTOPREFIX=0 NODE_NO_WARNINGS=1 gulp sync-all",

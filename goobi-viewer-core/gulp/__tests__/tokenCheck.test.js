@@ -2,7 +2,7 @@
  * Unit tests for the token check (gulp/tokenCheck.js) against inline LESS
  * fixtures, plus one run against the real LESS tree.
  */
-const { parseLess, checkFiles, applyBaseline, formatReport, runTokenCheck, keyOf } = require('../tokenCheck');
+const { parseLess, checkFiles, applyBaseline, formatReport, runTokenCheck, keyOf, classifyThemeTokens, formatThemeTokenReport } = require('../tokenCheck');
 
 const TOKENS = 'misc/tokens.less';
 const ALIASES = 'misc/some-aliases.less';
@@ -268,7 +268,7 @@ describe('R7 light and dark mixins declare the same tokens', () => {
 describe('R8 palette tokens are read only by semantic roles', () => {
     const PALETTE = 'misc/palette.less';
     const opts = { ...OPTS, tokenLayer: [PALETTE, TOKENS], paletteFile: PALETTE };
-    const palette = `.gv-palette() { --ci-color1: #015999; --color-gray-0: #fff; --color-danger: #c0392b; }`;
+    const palette = `.gv-palette() { --color-brand: #015999; --color-gray-0: #fff; --color-danger: #c0392b; }`;
 
     it('flags status colors read by features, accepts them through a role', () => {
         const tokens = `.gv-semantic-light() { --fg-danger: var(--color-danger); }\n.gv-semantic-dark() { --fg-danger: var(--color-danger); }\n.gv-features() { --a: var(--color-danger); --b: var(--fg-danger); }\n:root { .gv-palette(); .gv-semantic-light(); .gv-features(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
@@ -277,11 +277,11 @@ describe('R8 palette tokens are read only by semantic roles', () => {
         expect(keys(result).filter((k) => k.startsWith('R8'))).toEqual(['R8 misc/tokens.less --color-danger']);
     });
 
-    it('accepts palette reads in semantic mixins and brand reads anywhere', () => {
-        const tokens = `.gv-semantic-light() { --bg: var(--color-gray-0); }\n.gv-semantic-dark() { --bg: #000; }\n.gv-features() { --f: var(--bg); --g: var(--ci-color1); }\n:root { .gv-palette(); .gv-semantic-light(); .gv-features(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
-        const result = checkFiles(files({ [PALETTE]: palette, [TOKENS]: tokens, 'views/a.less': `.a { color: var(--ci-color1); }` }), null, opts);
+    it('accepts palette reads in semantic mixins, flags the brand primitive in features and components', () => {
+        const tokens = `.gv-semantic-light() { --bg: var(--color-gray-0); --brand: var(--color-brand); }\n.gv-semantic-dark() { --bg: #000; --brand: var(--color-brand); }\n.gv-features() { --f: var(--bg); --g: var(--color-brand); --h: var(--brand); }\n:root { .gv-palette(); .gv-semantic-light(); .gv-features(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
+        const result = checkFiles(files({ [PALETTE]: palette, [TOKENS]: tokens, 'views/a.less': `.a { color: var(--color-brand); background: var(--brand); }` }), null, opts);
 
-        expect(rules(result)).not.toContain('R8');
+        expect(keys(result).filter((k) => k.startsWith('R8'))).toEqual(['R8 misc/tokens.less --color-brand', 'R8 views/a.less --color-brand']);
     });
 
     it('flags palette reads in features, components and aliases', () => {
@@ -303,10 +303,10 @@ describe('R8 palette tokens are read only by semantic roles', () => {
 describe('R9 colors live in the palette only', () => {
     const PALETTE = 'misc/palette.less';
     const opts = { ...OPTS, tokenLayer: [PALETTE, TOKENS], paletteFile: PALETTE };
-    const palette = `.gv-palette() { --ci-color1: #015999; --color-gray-0: #fff; --color-gray-1000: rgb(0, 0, 0); }`;
+    const palette = `.gv-palette() { --color-brand: #015999; --color-gray-0: #fff; --color-gray-1000: rgb(0, 0, 0); }`;
 
     it('flags hex, numeric rgb and named colors outside the palette', () => {
-        const tokens = `.gv-semantic-light() { --a: #fff; --b: rgba(255, 255, 255, 0.8); --c: color-mix(in srgb, var(--ci-color1) 60%, black); }\n.gv-semantic-dark() { --a: 1; --b: 1; --c: 1; }\n:root { .gv-palette(); .gv-semantic-light(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
+        const tokens = `.gv-semantic-light() { --a: #fff; --b: rgba(255, 255, 255, 0.8); --c: color-mix(in srgb, var(--color-brand) 60%, black); }\n.gv-semantic-dark() { --a: 1; --b: 1; --c: 1; }\n:root { .gv-palette(); .gv-semantic-light(); }\n.color-theme-dark { .gv-semantic-dark(); }`;
         const result = checkFiles(files({ [PALETTE]: palette, [TOKENS]: tokens }), null, opts);
 
         expect(keys(result).filter((k) => k.startsWith('R9'))).toEqual(['R9 misc/tokens.less --a', 'R9 misc/tokens.less --b', 'R9 misc/tokens.less --c']);
@@ -400,7 +400,7 @@ describe('R10 component colors', () => {
         'color: var(--fg)',
         'color: var(--white)',
         'color: var(--black-text)',
-        'color: var(--ci-color1)',
+        'color: var(--color-brand)',
         'background: transparent',
         'border-color: currentColor',
         'color: inherit',
@@ -496,14 +496,15 @@ describe('real LESS tree', () => {
 
 describe('reference theme token contract', () => {
     const core = files({
-        'misc/palette.less': '.gv-palette() { --color-ink: #111; }',
-        [TOKENS]: '.gv-semantic-light() { --fg: var(--color-ink); } .gv-semantic-dark() { --fg: var(--color-ink); }',
+        'misc/palette.less': '.gv-palette() { --color-ink: #111; --color-brand: #015999; }',
+        [TOKENS]: '.gv-semantic-light() { --fg: var(--color-ink); --brand: var(--color-brand); } .gv-semantic-dark() { --fg: var(--color-ink); --brand: var(--color-brand); }',
     });
     it.each([
         ['.item { color: var(--missing); }', 'R1'],
         ['.item { --public: 1; }', 'R2'],
         ['.item { & when (@colorModes = true) { color: var(--fg); } }', 'R4'],
         ['.item { color: var(--color-ink); }', 'R8'],
+        ['.item { background: var(--color-brand); }', 'R8'],
         ['@old: #fff; .item { color: @old; }', 'R10'],
         ['.item { color: rebeccapurple; }', 'R10'],
     ])('rejects %s with %s', (source, rule) => {
@@ -513,12 +514,84 @@ describe('reference theme token contract', () => {
         const theme = files({ 'misc/mixins.less': '.mx-theme-light() { --example: #fff; }', 'item.less': '.item { color: var(--example); }' });
         expect(rules(checkFiles(core, theme))).toEqual(expect.arrayContaining(['R7', 'R9']));
     });
-    it('accepts theme palette, paired roles and component reads', () => {
+    it('accepts theme palette, paired roles, brand reads in the theme roles and component reads', () => {
         const theme = files({
             'misc/mixins.less':
-                '.mx-theme-palette() { --color-example: #abc; } .mx-theme-light() { --example: var(--color-example); } .mx-theme-dark() { --example: var(--color-example); }',
-            'item.less': '.item { color: var(--example); }',
+                '.mx-theme-palette() { --color-example: #abc; } .mx-theme-light() { --example: var(--color-example); --tint: var(--color-brand); } .mx-theme-dark() { --example: var(--color-example); --tint: var(--color-brand); }',
+            'item.less': '.item { color: var(--example); background: var(--tint); }',
         });
         expect(checkFiles(core, theme).violations).toEqual([]);
+    });
+});
+
+describe('theme token report', () => {
+    const core = {
+        light: new Map([
+            ['--color-brand', '#015999'],
+            ['--brand', 'var(--color-brand)'],
+            ['--bg-general', '#f2f3f4'],
+            ['--fg-general', '#212529'],
+            ['--radius-button', '0'],
+        ]),
+        dark: new Map([
+            ['--color-brand', '#015999'],
+            ['--brand', 'var(--color-brand-dark)'],
+            ['--color-brand-dark', '#49a5ff'],
+            ['--bg-general', '#0a1124'],
+            ['--fg-general', 'rgb(from #fff r g b / 80%)'],
+            ['--radius-button', '0'],
+        ]),
+    };
+    const theme = `
+.mx-theme-light {
+    color-scheme: light;
+    --color-brand: #1565c0;
+    --bg-general: #F2F3F4;
+    --fg-general: #000;
+    --border: 1px solid #ccc;
+    --search-docstruct-bg: var(--color-brand);
+}
+.mx-theme-dark {
+    --color-brand: #1565c0;
+    --bg-general: #000;
+}
+.mx-theme-base() {
+    --radius-button: 0;
+}`;
+    const rows = classifyThemeTokens([theme], core);
+    const find = (token, mode) => rows.find((r) => r.token === token && r.mode === mode);
+
+    it('marks overrides equal to the core default as redundant, case and shorthand insensitive', () => {
+        expect(find('--bg-general', 'light').verdict).toBe('redundant');
+        expect(find('--radius-button', 'base').verdict).toBe('redundant');
+    });
+
+    it('keeps differing values and flags literals for the theme palette', () => {
+        expect(find('--bg-general', 'dark')).toMatchObject({ verdict: 'keep', literal: true, core: '#0a1124' });
+        expect(find('--color-brand', 'light')).toMatchObject({ verdict: 'keep', literal: true });
+    });
+
+    it('reports renamed tokens with their new name and unknown ones without', () => {
+        expect(find('--border', 'light')).toMatchObject({ verdict: 'renamed', hint: expect.stringContaining('--border-faint') });
+        const renamedCore = { light: new Map([['--fg-link', '#015999']]), dark: new Map([['--fg-link', '#49a5ff']]) };
+        const renamedRows = classifyThemeTokens(['.mx-theme-light() { --lk-general: #015999; }\n.mx-theme-dark() { --lk-general: #000; }'], renamedCore);
+        expect(renamedRows.find((r) => r.mode === 'light')).toMatchObject({ verdict: 'redundant', hint: expect.stringContaining('--fg-link') });
+        expect(renamedRows.find((r) => r.mode === 'dark')).toMatchObject({ verdict: 'renamed', hint: 'now --fg-link' });
+    });
+
+    it('reports light overrides without a dark counterpart', () => {
+        expect(rows.filter((r) => r.verdict === 'pair').map((r) => r.token)).toEqual(['--fg-general']);
+    });
+
+    it('ignores non-token declarations and theme-only feature tokens keep their verdict', () => {
+        expect(rows.some((r) => r.token === 'color-scheme')).toBe(false);
+        expect(find('--search-docstruct-bg', 'light').verdict).toBe('unknown');
+    });
+
+    it('formats a grouped report with counts', () => {
+        const text = formatThemeTokenReport(rows);
+        expect(text).toContain('redundant');
+        expect(text).toContain('renamed');
+        expect(text).toMatch(/--bg-general\s+light/);
     });
 });

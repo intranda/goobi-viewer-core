@@ -10,7 +10,7 @@
     &__object-3d,
     &__image {
         position: relative;
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--border-default);
         overflow: hidden;
         padding: 10px;
         padding-top: 0;
@@ -58,16 +58,16 @@
 
         .ugcBox {
             &.focus {
-                border: 2px solid var(--image-region-focus-color);
+                border: 2px solid var(--image-region-outline-focus);
             }
 
             &.drawing {
-                border: 2px solid var(--image-region-drawing-color);
+                border: 2px solid var(--image-region-outline-drawing);
             }
         }
 
         .openseadragon-canvas:focus-visible {
-            background: rgb(from var(--image-region-focus-color) r g b / 40%) !important;
+            background: rgb(from var(--image-region-outline-focus) r g b / 40%) !important;
             z-index: 1 !important;
         }
         #objectSize {
@@ -91,16 +91,16 @@
 
         .ugcBox {
             &.focus {
-                border: 2px solid var(--image-region-focus-color);
+                border: 2px solid var(--image-region-outline-focus);
             }
 
             &.drawing {
-                border: 2px solid var(--image-region-drawing-color);
+                border: 2px solid var(--image-region-outline-drawing);
             }
         }
 
         .openseadragon-canvas:focus-visible {
-            background: rgb(from var(--image-region-focus-color) r g b / 40%) !important;
+            background: rgb(from var(--image-region-outline-focus) r g b / 40%) !important;
             z-index: 1 !important;
         }
     }
@@ -329,7 +329,7 @@
 
 .image-fragment {
     background-color: rgb(from var(--bg-document) r g b / 30%);
-    border-color: var(--image-controls-region-active-color);
+    border-color: var(--image-controls-region-fg-active);
     border-style: solid;
     border-width: 2px;
 
@@ -340,7 +340,7 @@
 
 .page-area {
     display: none;
-    border-color: rgb(from var(--ci-color1) r g b / 50%);
+    border-color: rgb(from var(--brand) r g b / 50%);
     border-style: solid;
     border-width: 2px;
     cursor: pointer;
@@ -351,7 +351,7 @@
     }
 
     &:hover {
-        border-color: var(--ci-color1);
+        border-color: var(--brand);
     }
 
     &-label {
@@ -363,8 +363,8 @@
         white-space: nowrap;
 
         &-text {
-            background: var(--ci-color1);
-            color: var(--fg-inverse);
+            background: var(--bg-brand);
+            color: var(--fg-on-brand);
             width: 100%;
             padding: 2px 5px;
             vertical-align: top;
@@ -387,7 +387,7 @@
             transform: translateX(-50%);
             border-width: 6px;
             border-style: solid;
-            border-color: var(--ci-color1) transparent transparent transparent;
+            border-color: var(--bg-brand) transparent transparent transparent;
         }
 
         &.show {

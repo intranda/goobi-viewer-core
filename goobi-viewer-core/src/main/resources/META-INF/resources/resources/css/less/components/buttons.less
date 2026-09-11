@@ -20,7 +20,7 @@
 // Styleguide Components.button
 .btn {
     color: var(--fg-secondary);
-    border-radius: var(--button-border-radius);
+    border-radius: var(--radius-button);
     background-color: transparent;
     &:hover,
     &:active,
@@ -79,14 +79,14 @@
 }
 
 .btn--full {
-    color: var(--fg-inverse);
-    border-color: var(--ci-color1);
-    background-color: var(--ci-color1);
+    color: var(--fg-on-brand);
+    border-color: var(--bg-brand);
+    background-color: var(--bg-brand);
     &:hover,
     &:active,
     &:focus {
-        color: var(--fg-inverse);
-        background-color: var(--ci-hovercolor1);
+        color: var(--fg-on-brand);
+        background-color: var(--bg-brand-hover);
     }
 }
 
@@ -99,7 +99,7 @@
 
 .btn--link {
     padding: 0;
-    color: var(--lk-general);
+    color: var(--fg-link);
     border: none;
     &:hover,
     &:active,

@@ -11,7 +11,7 @@
     max-width: 320px;
     color: var(--immersive-chrome-fg);
     background-color: var(--immersive-chrome-bg);
-    border: 1px solid var(--immersive-chrome-border-color);
+    border: 1px solid var(--immersive-chrome-border);
     border-radius: var(--immersive-radius);
     box-shadow: var(--immersive-chrome-shadow);
 
@@ -104,8 +104,8 @@
 
     .custom-control--select {
         color: var(--immersive-chrome-fg);
-        background-color: var(--immersive-chrome-hover-bg);
-        border: 1px solid var(--immersive-chrome-border-color);
+        background-color: var(--immersive-chrome-bg-hover);
+        border: 1px solid var(--immersive-chrome-border);
         border-radius: var(--immersive-radius);
 
         &::after {
@@ -145,7 +145,7 @@
         transition: background-color var(--immersive-transition);
 
         &:hover {
-            background-color: var(--immersive-chrome-hover-bg);
+            background-color: var(--immersive-chrome-bg-hover);
         }
 
         &:hover,
@@ -181,7 +181,7 @@
         .btn--full {
             color: var(--immersive-chrome-fg);
             background-color: transparent;
-            border: 1px solid var(--immersive-chrome-border-color);
+            border: 1px solid var(--immersive-chrome-border);
             border-radius: var(--immersive-radius);
             transition:
                 border-color var(--immersive-transition),
@@ -193,7 +193,7 @@
             &:focus {
                 color: var(--immersive-chrome-fg);
                 border-color: var(--immersive-accent);
-                background-color: var(--immersive-chrome-hover-bg);
+                background-color: var(--immersive-chrome-bg-hover);
             }
         }
     }

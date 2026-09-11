@@ -77,9 +77,9 @@
             text-decoration: none;
 
             .widget-search-facets__list-item-control.-include {
-                color: var(--facet-control-active-fg);
-                background: var(--facet-control-active);
-                border-color: var(--facet-control-active);
+                color: var(--facet-control-fg-active);
+                background: var(--facet-control-bg-active);
+                border-color: var(--facet-control-bg-active);
             }
         }
     }
@@ -104,7 +104,7 @@
         width: 0;
         height: 16px;
         overflow: hidden;
-        color: var(--facet-control-color);
+        color: var(--facet-control-fg);
         border: 0 solid var(--facet-control-border);
         border-radius: var(--facet-control-radius);
         opacity: 0;
@@ -114,9 +114,9 @@
             width: 16px;
             border-width: 1px;
             opacity: 1;
-            color: var(--facet-control-active-fg);
-            background: var(--facet-control-active);
-            border-color: var(--facet-control-active);
+            color: var(--facet-control-fg-active);
+            background: var(--facet-control-bg-active);
+            border-color: var(--facet-control-bg-active);
 
             &.-include {
                 margin-inline-end: 5px;
@@ -127,9 +127,9 @@
         &:hover,
         &:focus {
             .widget-search-facets__list-item-control {
-                color: var(--facet-control-active-fg);
-                background: var(--facet-control-active);
-                border-color: var(--facet-control-active);
+                color: var(--facet-control-fg-active);
+                background: var(--facet-control-bg-active);
+                border-color: var(--facet-control-bg-active);
             }
         }
     }
@@ -156,24 +156,24 @@
             width: 0;
             height: 100%;
             font-size: var(--font-size-medium);
-            color: var(--fg-inverse);
+            color: var(--fg-on-brand);
             border: none;
-            background-color: var(--ci-color1);
+            background-color: var(--bg-brand);
             display: none;
             &::-webkit-input-placeholder {
-                color: var(--fg-inverse);
+                color: var(--fg-on-brand);
                 opacity: 0.5;
             }
             &:-moz-placeholder {
-                color: var(--fg-inverse);
+                color: var(--fg-on-brand);
                 opacity: 0.5;
             }
             &::-moz-placeholder {
-                color: var(--fg-inverse);
+                color: var(--fg-on-brand);
                 opacity: 0.5;
             }
             &:-ms-input-placeholder {
-                color: var(--fg-inverse);
+                color: var(--fg-on-brand);
                 opacity: 0.5;
             }
             &.in {
@@ -230,7 +230,7 @@
         }
     }
     &__collapse-chevron-svg {
-        color: var(--widget-icon-color-expand);
+        color: var(--widget-expand-icon);
     }
     /* combined-mode-only parts, hidden in widgets mode */
     &__collapse-alt-icon,

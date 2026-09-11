@@ -135,15 +135,15 @@
     &__month-day-link,
     &__month-day-button {
         width: 100%;
-        color: var(--lk-general);
+        color: var(--fg-link);
         text-decoration: none;
         background-color: var(--bg-subtle);
         &:hover,
         &:focus,
         &:active {
             text-decoration: none;
-            color: var(--fg-inverse);
-            background-color: var(--ci-color1);
+            color: var(--fg-on-brand);
+            background-color: var(--bg-brand);
         }
     }
     &__month-day-empty {
@@ -274,13 +274,13 @@
 
         &:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgb(from var(--ci-color1) r g b / 10%);
+            box-shadow: 0 0 0 3px rgb(from var(--brand) r g b / 10%);
         }
 
         &.-active {
-            background-color: var(--ci-color1);
-            border-color: var(--ci-color1);
-            color: var(--fg-inverse);
+            background-color: var(--bg-brand);
+            border-color: var(--bg-brand);
+            color: var(--fg-on-brand);
             font-weight: 700;
         }
     }

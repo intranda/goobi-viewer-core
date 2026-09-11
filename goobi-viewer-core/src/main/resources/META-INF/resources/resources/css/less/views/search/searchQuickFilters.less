@@ -17,7 +17,7 @@
         border: none;
         border-radius: 0 var(--quick-filter-radius) var(--quick-filter-radius) 0;
         background-color: var(--quick-filter-submit-bg);
-        color: var(--quick-filter-submit-icon-color);
+        color: var(--quick-filter-submit-icon);
         cursor: pointer;
 
         .icon-svg {
@@ -72,7 +72,7 @@
     border-radius: var(--quick-filter-radius-sm);
     cursor: pointer;
     text-decoration: none;
-    color: var(--quick-filter-text-color);
+    color: var(--quick-filter-fg);
     z-index: 1;
 
     > span {
@@ -95,8 +95,8 @@
     }
 
     &:hover {
-        background: var(--quick-filter-control-hover-bg);
-        color: var(--quick-filter-text-color);
+        background: var(--quick-filter-control-bg-hover);
+        color: var(--quick-filter-fg);
         text-decoration: none;
     }
 }
@@ -114,7 +114,7 @@
     left: 0;
     right: 0;
     z-index: 100;
-    color: var(--quick-filter-text-color);
+    color: var(--quick-filter-fg);
     box-shadow: var(--quick-filter-dropdown-shadow);
 
     &.-open {
@@ -171,7 +171,7 @@
 
     &__field-label {
         font-size: var(--font-size-small);
-        color: var(--quick-filter-label-color);
+        color: var(--quick-filter-label-fg);
         margin-bottom: 6px;
         line-height: 1.4;
     }
@@ -201,12 +201,12 @@
         padding: 4px 0;
         background: transparent;
         border: none;
-        color: var(--quick-filter-text-color);
+        color: var(--quick-filter-fg);
         text-align: left;
         font: inherit;
 
         &:hover {
-            color: var(--quick-filter-text-color);
+            color: var(--quick-filter-fg);
         }
 
         &:focus {
@@ -214,7 +214,7 @@
         }
 
         &:focus-visible {
-            outline: 2px solid var(--quick-filter-accent-color);
+            outline: 2px solid var(--quick-filter-accent);
             outline-offset: 2px;
             border-radius: var(--quick-filter-radius-sm);
         }
@@ -225,7 +225,7 @@
             justify-content: center;
             width: 22px;
             height: 22px;
-            color: var(--quick-filter-label-color);
+            color: var(--quick-filter-label-fg);
             border-radius: var(--quick-filter-radius-sm);
             transition:
                 transform 0.2s ease,
@@ -239,8 +239,8 @@
         }
 
         &:hover > .icon-wrapper {
-            background: var(--quick-filter-control-hover-bg);
-            color: var(--quick-filter-text-color);
+            background: var(--quick-filter-control-bg-hover);
+            color: var(--quick-filter-fg);
         }
 
         &[aria-expanded='true'] > .icon-wrapper {
@@ -250,7 +250,7 @@
         &[aria-expanded='true']:hover > .icon-wrapper,
         &[aria-expanded='true'] > .icon-wrapper {
             background: transparent;
-            color: var(--quick-filter-label-color);
+            color: var(--quick-filter-label-fg);
         }
     }
 
@@ -263,7 +263,7 @@
         padding: 0;
         border: none;
         background: transparent;
-        color: var(--quick-filter-label-color);
+        color: var(--quick-filter-label-fg);
         cursor: pointer;
         border-radius: var(--quick-filter-radius-sm);
         flex-shrink: 0;
@@ -279,8 +279,8 @@
 
         &:hover,
         &:focus-visible {
-            background: var(--quick-filter-control-hover-bg);
-            color: var(--quick-filter-text-color);
+            background: var(--quick-filter-control-bg-hover);
+            color: var(--quick-filter-fg);
             outline: none;
         }
     }
@@ -291,7 +291,7 @@
         gap: 8px;
 
         .icon-wrapper {
-            color: var(--quick-filter-label-color);
+            color: var(--quick-filter-label-fg);
 
             svg {
                 width: 20px;
@@ -310,13 +310,13 @@
         border: none;
         border-bottom: 1px solid transparent;
         background: transparent;
-        color: var(--quick-filter-text-color);
+        color: var(--quick-filter-fg);
         padding-bottom: 6px;
         flex: 1;
         width: 100%;
 
         &::placeholder {
-            color: var(--quick-filter-label-color);
+            color: var(--quick-filter-label-fg);
         }
 
         &:focus {
@@ -324,8 +324,8 @@
         }
 
         &.-invalid {
-            border-bottom-color: var(--quick-filter-invalid-color);
-            color: var(--quick-filter-invalid-color);
+            border-bottom-color: var(--quick-filter-fg-invalid);
+            color: var(--quick-filter-fg-invalid);
         }
     }
 
@@ -368,7 +368,7 @@
         padding: 0;
         border: none;
         background: transparent;
-        color: var(--quick-filter-label-color);
+        color: var(--quick-filter-label-fg);
         cursor: pointer;
         border-radius: var(--quick-filter-radius-sm);
         transition:
@@ -381,8 +381,8 @@
         }
 
         &:hover {
-            background: var(--quick-filter-dropdown-hover-bg);
-            color: var(--quick-filter-text-color);
+            background: var(--quick-filter-dropdown-bg-hover);
+            color: var(--quick-filter-fg);
         }
     }
 
@@ -391,12 +391,12 @@
         align-items: center;
         gap: 8px;
         padding: 10px 13px;
-        background: var(--quick-filter-dropdown-hover-bg);
+        background: var(--quick-filter-dropdown-bg-hover);
         border-top: 1px solid var(--quick-filter-field-separator);
         border-bottom: 1px solid var(--quick-filter-field-separator);
 
         .icon-wrapper {
-            color: var(--quick-filter-label-color);
+            color: var(--quick-filter-label-fg);
 
             svg {
                 width: 16px;
@@ -417,7 +417,7 @@
             }
 
             &::placeholder {
-                color: var(--quick-filter-label-color);
+                color: var(--quick-filter-label-fg);
             }
         }
     }
@@ -438,7 +438,7 @@
         }
 
         &::-webkit-scrollbar-thumb {
-            background: var(--quick-filter-dropdown-hover-bg);
+            background: var(--quick-filter-dropdown-bg-hover);
             border: 3px solid var(--quick-filter-dropdown-bg);
             border-radius: 5px;
             min-height: 30px;
@@ -449,14 +449,14 @@
         }
 
         scrollbar-width: thin;
-        scrollbar-color: var(--quick-filter-dropdown-hover-bg) transparent;
+        scrollbar-color: var(--quick-filter-dropdown-bg-hover) transparent;
 
         &:empty::after {
             content: '\2014';
             display: block;
             padding: 12px 15px;
             font-size: var(--font-size-medium);
-            color: var(--quick-filter-label-color);
+            color: var(--quick-filter-label-fg);
             text-align: center;
         }
     }
@@ -468,7 +468,7 @@
             gap: 2px;
             font-weight: 600;
             font-size: var(--font-size-small);
-            color: var(--quick-filter-text-color);
+            color: var(--quick-filter-fg);
             padding: 10px 13px 4px;
 
             .icon-wrapper svg {
@@ -490,7 +490,7 @@
 
         &:hover,
         &:focus-visible {
-            background: var(--quick-filter-dropdown-hover-bg);
+            background: var(--quick-filter-dropdown-bg-hover);
             outline: none;
         }
 
@@ -527,7 +527,7 @@
             -webkit-appearance: none;
             width: 16px;
             height: 16px;
-            border: 1px solid var(--quick-filter-checkbox-active);
+            border: 1px solid var(--quick-filter-checkbox-bg-active);
             border-radius: 2px;
             cursor: pointer;
             position: relative;
@@ -535,8 +535,8 @@
             background: var(--quick-filter-bg);
 
             &:checked {
-                background: var(--quick-filter-checkbox-active);
-                border-color: var(--quick-filter-checkbox-active);
+                background: var(--quick-filter-checkbox-bg-active);
+                border-color: var(--quick-filter-checkbox-bg-active);
                 box-shadow: inset 0 0 0 2px var(--quick-filter-bg);
             }
 
@@ -577,7 +577,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        color: var(--quick-filter-status-color);
+        color: var(--quick-filter-status-fg);
         font-weight: 600;
         cursor: help;
 
@@ -599,7 +599,7 @@
         align-items: center;
         gap: 5px;
         font-size: var(--font-size-medium);
-        color: var(--quick-filter-label-color);
+        color: var(--quick-filter-label-fg);
         text-decoration: none;
         cursor: pointer;
 
@@ -609,7 +609,7 @@
         }
 
         &:hover {
-            color: var(--quick-filter-text-color);
+            color: var(--quick-filter-fg);
             text-decoration: none;
         }
     }
@@ -630,7 +630,7 @@
         align-items: center;
         gap: 5px;
         font-size: var(--font-size-medium);
-        color: var(--quick-filter-accent-color);
+        color: var(--quick-filter-accent);
         text-decoration: none;
         cursor: pointer;
 
@@ -641,22 +641,22 @@
 
         &:hover {
             opacity: 0.8;
-            color: var(--quick-filter-accent-color);
+            color: var(--quick-filter-accent);
             text-decoration: none;
         }
 
         &.-reset {
-            color: var(--quick-filter-label-color);
+            color: var(--quick-filter-label-fg);
 
             .icon-wrapper {
-                color: var(--quick-filter-label-color);
+                color: var(--quick-filter-label-fg);
             }
 
             &:hover {
-                color: var(--quick-filter-text-color);
+                color: var(--quick-filter-fg);
 
                 .icon-wrapper {
-                    color: var(--quick-filter-text-color);
+                    color: var(--quick-filter-fg);
                 }
             }
         }

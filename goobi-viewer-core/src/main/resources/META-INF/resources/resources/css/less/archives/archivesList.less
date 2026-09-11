@@ -6,13 +6,13 @@
 .archives-list {
     &__title {
         margin-bottom: 20px;
-        color: var(--archives-title-color);
+        color: var(--archives-title-fg);
     }
 
     &__empty {
         text-align: center;
         padding: 48px 16px;
-        color: var(--archives-description-color);
+        color: var(--archives-description-fg);
         font-size: var(--font-size-normal);
     }
 
@@ -27,7 +27,7 @@
         display: flex;
         flex-direction: column;
         background: var(--archives-card-bg);
-        border: var(--archives-card-border);
+        border: 1px solid var(--archives-card-border-color);
         border-radius: 4px;
         overflow: hidden;
         transition: box-shadow 0.2s ease;
@@ -80,7 +80,7 @@
             width: 55%;
             height: 55%;
             opacity: 0.35;
-            background-color: var(--archives-placeholder-icon-color);
+            background-color: var(--archives-placeholder-icon);
             mask: url('../../icons/outline/photo-off.svg') center/100% 100% no-repeat;
             -webkit-mask: url('../../icons/outline/photo-off.svg') center/100% 100% no-repeat;
         }
@@ -92,7 +92,7 @@
         align-self: end;
         z-index: 1;
         background: var(--archives-overlay-bg);
-        color: var(--archives-overlay-text);
+        color: var(--archives-overlay-fg);
         font-size: var(--font-size-normal);
         font-weight: 700;
         padding: 6px 15px;
@@ -103,7 +103,7 @@
 
     &__description {
         padding: 10px 15px;
-        color: var(--archives-description-color);
+        color: var(--archives-description-fg);
         font-size: var(--font-size-medium);
         line-height: 1.5;
         word-break: break-word;

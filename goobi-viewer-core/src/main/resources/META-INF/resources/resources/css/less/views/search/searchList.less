@@ -50,7 +50,7 @@
 
         > * + * {
             padding-left: 4px;
-            border-left: 1px solid var(--search-toolbar-divider-color);
+            border-left: 1px solid var(--search-toolbar-divider);
         }
 
         form {
@@ -69,7 +69,7 @@
         min-width: var(--_search-option-button-size);
         border-radius: var(--search-toolbar-button-radius);
         line-height: 1;
-        color: var(--search-toolbar-icon-color);
+        color: var(--search-toolbar-icon);
         background-color: transparent;
         border: none;
         box-shadow: none;
@@ -80,20 +80,20 @@
 
         &:hover,
         &:focus {
-            color: var(--search-toolbar-text-color-hover);
+            color: var(--search-toolbar-fg-hover);
             .icon-wrapper {
                 transform: scale(1.08) translateY(-1px);
                 filter: drop-shadow(0 3px 8px rgb(from var(--shadow-color) r g b / 18%));
                 svg {
-                    color: var(--search-toolbar-icon-color-hover);
-                    stroke: var(--search-toolbar-icon-color-hover);
-                    fill: var(--search-toolbar-icon-color-hover);
+                    color: var(--search-toolbar-icon-hover);
+                    stroke: var(--search-toolbar-icon-hover);
+                    fill: var(--search-toolbar-icon-hover);
                 }
             }
         }
 
         &:focus-visible {
-            outline: 2px solid var(--search-toolbar-focus-outline-color);
+            outline: 2px solid var(--search-toolbar-outline-focus);
             outline-offset: 2px;
         }
 
@@ -120,8 +120,8 @@
         &.active,
         &.-active,
         &.is-modal-trigger-open {
-            background-color: var(--search-toolbar-background-active);
-            color: var(--search-toolbar-text-color-active);
+            background-color: var(--search-toolbar-bg-active);
+            color: var(--search-toolbar-fg-active);
             box-shadow: var(--search-toolbar-shadow-active);
             transform: none;
 
@@ -130,16 +130,16 @@
                 filter: none;
 
                 svg {
-                    color: var(--search-toolbar-icon-color-active);
-                    stroke: var(--search-toolbar-icon-color-active);
-                    fill: var(--search-toolbar-icon-color-active);
+                    color: var(--search-toolbar-icon-active);
+                    stroke: var(--search-toolbar-icon-active);
+                    fill: var(--search-toolbar-icon-active);
                 }
             }
 
             &:hover,
             &:focus {
-                background-color: var(--search-toolbar-background-active);
-                color: var(--search-toolbar-text-color-active);
+                background-color: var(--search-toolbar-bg-active);
+                color: var(--search-toolbar-fg-active);
             }
         }
     }
@@ -456,7 +456,7 @@
     }
     &__hit-number-wrapper {
         border-radius: 50%;
-        color: var(--fg-inverse);
+        color: var(--fg-on-brand);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -465,7 +465,7 @@
         text-align: center;
         width: 40px;
         height: 40px;
-        background: var(--ci-color1);
+        background: var(--bg-brand);
         max-width: 40px;
         flex: 0 0 40px;
         align-self: flex-start;
@@ -565,7 +565,7 @@
             //                display: flex;
             //            }
             // position: absolute;
-            //            color: var(--ci-color1);
+            //            color: var(--brand);
             background-image: none;
             //            .bookmark-toggle {
             //                align-items: center;
@@ -622,7 +622,7 @@
             position: absolute;
             top: 8px;
             right: 5px;
-            color: var(--ci-color1);
+            color: var(--brand);
             background-image: none;
             //            .bookmark-toggle {
             //                align-items: center;
@@ -729,17 +729,17 @@
                     justify-content: center;
                     border: 1px solid var(--border-strong);
                     &.focus {
-                        border-color: var(--ci-color1);
+                        border-color: var(--brand);
                     }
                 }
                 &.search {
                     flex: 0 0 4rem;
-                    background-color: var(--ci-color1);
-                    border-color: var(--ci-color1);
+                    background-color: var(--bg-brand);
+                    border-color: var(--bg-brand);
                     display: inherit;
                     a {
                         display: block;
-                        color: var(--fg-inverse);
+                        color: var(--fg-on-brand);
                     }
                 }
             }
