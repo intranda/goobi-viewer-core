@@ -135,10 +135,14 @@ it.each(['light', 'dark'])('keeps base defaults and Reference differences indepe
         for (const toggle of ['none', 'light', 'dark']) {
             const get = state(css, os, toggle);
             const core = name === 'core';
-            expect(get('--font-size-small')).toBe(core ? '1.2rem' : '1.3rem');
-            expect(get('--font-size-medium')).toBe('1.4rem');
-            expect(get('--font-size-normal')).toBe('1.6rem');
-            expect(get('--font-size-body')).toBe(core ? '1.6rem' : '1.4rem');
+            const scale = state(css, 'light', 'none')('--font-scale');
+            if (core) expect(scale).toBe('1');
+            expect(Number(scale)).toBeGreaterThan(0);
+            expect(get('--font-scale')).toBe(scale);
+            expect(get('--font-size-small')).toBe(`calc(1.2rem * ${scale})`);
+            expect(get('--font-size-medium')).toBe(`calc(1.4rem * ${scale})`);
+            expect(get('--font-size-normal')).toBe(`calc(1.6rem * ${scale})`);
+            expect(get('--font-size-body')).toBe(`calc(1.6rem * ${scale})`);
             expect(get('--radius-button')).toBe(core ? '0' : '6px');
             expect(get('--radius-container')).toBe(core ? '0' : '8px');
             expect(get('--radius-container-small')).toBe(core ? '0.25rem' : '4px');
@@ -153,8 +157,8 @@ it('keeps legacy LESS font overrides as inputs to the core token defaults', asyn
     const css = postcss.parse(await compile(coreRoot, 'constructor.less', '\n@fontFamily: serif; @fontSmall: 1.7rem; @fontNormal: 1.9rem;'));
     const get = state(css, 'light', 'none');
     expect(get('--font-family')).toBe('serif');
-    expect(get('--font-size-small')).toBe('1.7rem');
-    expect(get('--font-size-body')).toBe('1.9rem');
+    expect(get('--font-size-small')).toBe('calc(1.7rem * 1)');
+    expect(get('--font-size-body')).toBe('calc(1.9rem * 1)');
 });
 
 it('applies runtime base overrides to inner controls and inherited frontend typography', () => {
@@ -187,6 +191,61 @@ it('exposes each subtheme brand to core consumers in both modes', () => {
         expect(state(variants.get(name), 'light', 'none')('--brand')).toBe(light);
         expect(state(variants.get(name), 'dark', 'none')('--brand')).toBe(dark);
         expect(state(variants.get(name), 'dark', 'none')('--datepicker-header-bg')).toBe(light);
+    }
+});
+
+it('scales every text role once across themes and color modes while leaving layout units alone', () => {
+    const sizes = {
+        body: '1.6rem',
+        'body-small': '1.4rem',
+        'body-large': '1.8rem',
+        caption: '1.2rem',
+        prose: '1.8rem',
+        'heading-small': '2.1rem',
+        'heading-medium': '2.4rem',
+        'heading-large': '3.2rem',
+    };
+    for (const css of variants.values()) {
+        const scaled = postcss.parse(css.toString() + ':root { --font-scale: 1.25; }');
+        for (const os of ['light', 'dark'])
+            for (const toggle of ['none', 'light', 'dark']) {
+                const get = state(scaled, os, toggle);
+                for (const [role, size] of Object.entries(sizes)) expect(get(`--font-size-${role}`)).toBe(`calc(${size} * 1.25)`);
+                expect(get('--line-height-body')).toBe('1.5');
+                expect(get('--line-height-prose')).toBe('1.65');
+                const admin = state(scaled, os, toggle, 'admin');
+                expect(admin('--font-scale')).toBe('1');
+                for (const [role, size] of Object.entries(sizes)) expect(admin(`--font-size-${role}`)).toBe(`calc(${size} * 1)`);
+            }
+        const rootFontSizes = [];
+        scaled.walkDecls('font-size', (d) => {
+            if (d.parent.selector === 'html') rootFontSizes.push(d.value);
+        });
+        expect(rootFontSizes.length).toBeGreaterThan(0);
+        expect(rootFontSizes.every((value) => value === '62.5%')).toBe(true);
+    }
+});
+
+it('lets themes override one text role without rescaling it or changing the other roles', () => {
+    const css = postcss.parse(variants.get('core').toString() + ':root { --font-scale: 2; --font-size-prose: 2rem; }');
+    expect(state(css, 'dark', 'light')('--font-size-prose')).toBe('2rem');
+    expect(state(css, 'dark', 'light')('--font-size-body')).toBe('calc(1.6rem * 2)');
+    expect(state(css, 'dark', 'light', 'admin')('--font-size-prose')).toBe('calc(1.8rem * 1)');
+});
+
+it('connects component text to the shared scale instead of theme repair selectors', () => {
+    for (const name of ['core', 'reference']) {
+        const original = variants.get(name);
+        if (!original) continue;
+        const css = postcss.parse(original.toString() + ':root { --font-scale: 2; }');
+        for (const [html, value] of [
+            ['<h1 data-test>Page title</h1>', '3.2rem'],
+            ['<div class="widget"><h2 data-test class="widget__title">Widget</h2></div>', '2.1rem'],
+            ['<div data-test class="content-component__htmltext">Reading text</div>', '1.8rem'],
+            ['<div class="search-list__excel-export"><span data-test class="excel-export-loader">Loading</span></div>', '1.2rem'],
+            ['<div data-test class="archives-tree">Archive tree</div>', '1.6rem'],
+        ])
+            expect(componentCascade(css, html, 'light', 'none')('font-size')).toBe(`calc(${value} * 2)`);
     }
 });
 
@@ -261,7 +320,7 @@ it.each(['light', 'dark'])('keeps status text and surfaces paired in the compile
         });
         return result;
     };
-    const resolve = (value) => value.replace(/var\((--[\w-]+)\)/g, (_, name) => get(name));
+    const resolve = (value) => value.replace(/var\((--[\w-]+)\)/g, (_, name) => (name.startsWith('--_') && winners.has(name) ? resolve(winners.get(name).value) : get(name)));
     for (const status of ['success', 'danger']) {
         const base = declarations(`.btn--${status}`);
         for (const suffix of ['', ':hover', ':focus', ':active']) {
@@ -348,7 +407,24 @@ function componentCascade(css, html, os, toggle, pseudo = '', scope = 'page') {
     const winners = new Map();
     css.walkRules((rule) => {
         const declarations = rule.nodes.filter(
-            (node) => node.type === 'decl' && ['color', 'background', 'background-color', 'display', 'font-family', 'font-size', 'border-radius', 'box-shadow'].includes(node.prop)
+            (node) =>
+                node.type === 'decl' &&
+                (node.prop.startsWith('--_') ||
+                    [
+                        'color',
+                        'background',
+                        'background-color',
+                        'display',
+                        'font-family',
+                        'font-size',
+                        'border-radius',
+                        'box-shadow',
+                        'height',
+                        'min-height',
+                        'line-height',
+                        'width',
+                        'min-width',
+                    ].includes(node.prop))
         );
         if (!declarations.length) return;
         for (let p = rule.parent; p.type !== 'root'; p = p.parent) {
@@ -358,7 +434,12 @@ function componentCascade(css, html, os, toggle, pseudo = '', scope = 'page') {
         }
         for (const selector of rule.selectors) {
             if (selector.includes('::')) continue;
-            const matchSelector = selector.replace(/:(focus-visible|focus-within|hover|focus|active)\b/g, '[data-pseudo~="$1"]');
+            // jsdom's selector engine cannot match nested :has() in :where().
+            // Evaluate this known frontend guard against the fixture scope;
+            // retain the original selector for specificity calculation.
+            const matchSelector = selector
+                .replace(':where(html:not(:has(#admin)))', scope === 'admin' ? ':not(*)' : ':where(html)')
+                .replace(/:(focus-visible|focus-within|hover|focus|active)\b/g, '[data-pseudo~="$1"]');
             if (!matchesCache.has(selector)) {
                 try {
                     matchesCache.set(selector, element.matches(matchSelector));
@@ -376,7 +457,7 @@ function componentCascade(css, html, os, toggle, pseudo = '', scope = 'page') {
         }
     });
     dom.window.close();
-    const resolve = (value) => value.replace(/var\((--[\w-]+)\)/g, (_, name) => get(name));
+    const resolve = (value) => value.replace(/var\((--[\w-]+)\)/g, (_, name) => (name.startsWith('--_') && winners.has(name) ? resolve(winners.get(name).value) : get(name)));
     return (prop) => {
         const value = winners.get(prop)?.value;
         return value === undefined ? undefined : resolve(value);
@@ -520,7 +601,7 @@ it('pins the admin scope to the legacy backend values', () => {
     expect(get('--widget-topbar-icon')).toBe('#fff');
     expect(get('--fg-placeholder')).toBe('rgb(from #000 r g b / 25%)');
     expect(get('--radius-button')).toBe('0');
-    expect(get('--font-size-body')).toBe('1.6rem');
+    expect(get('--font-size-body')).toBe('calc(1.6rem * 1)');
 });
 
 it('keeps a later root override out of the admin scope', () => {
@@ -594,5 +675,60 @@ it('keeps the public token names of the core stable', () => {
     });
     const added = [...emitted].filter((n) => !expected.includes(n)).sort();
     const removed = expected.filter((n) => !emitted.has(n));
-    expect({ added, removed, note: 'update publicTokens in gulp/tokenCheck.baseline.json, RENAMED_TOKENS in gulp/tokenCheck.js and the theme changelog' }).toEqual({ added: [], removed: [], note: expect.any(String) });
+    expect({ added, removed, note: 'update publicTokens in gulp/tokenCheck.baseline.json, RENAMED_TOKENS in gulp/tokenCheck.js and the theme changelog' }).toEqual({
+        added: [],
+        removed: [],
+        note: expect.any(String),
+    });
+});
+
+it('overrides Bootstrap sizes for standalone and grouped controls without leaking into admin', () => {
+    const bootstrap = fs.readFileSync(path.resolve(coreRoot, '../libs/bs/bootstrap.custom.css'), 'utf8');
+    const fixtures = [
+        ['<button data-test class="btn">Search</button>', '1.6rem'],
+        ['<input data-test class="form-control">', '1.6rem'],
+        ['<select data-test class="custom-select"><option>Option</option></select>', '1.6rem'],
+        ['<button data-test class="btn btn-sm">Search</button>', '1.4rem'],
+        ['<button data-test class="btn btn-lg">Search</button>', '1.8rem'],
+    ];
+    for (const [variant, size] of [
+        ['sm', '1.4rem'],
+        ['lg', '1.8rem'],
+    ]) {
+        fixtures.push([`<div class="input-group input-group-${variant}"><select data-test class="custom-select"><option>Option</option></select></div>`, size]);
+        for (const side of ['prepend', 'append'])
+            fixtures.push([`<div class="input-group input-group-${variant}"><div class="input-group-${side}"><button data-test class="btn">Search</button></div></div>`, size]);
+    }
+    for (const name of ['core', 'reference']) {
+        if (!variants.has(name)) continue;
+        const css = postcss.parse(bootstrap + variants.get(name).toString() + ':root { --font-scale: 2; }');
+        for (const [html, size] of fixtures) expect(componentCascade(css, html, 'light', 'none')('font-size')).toBe(`calc(${size} * 2)`);
+        // The frontend adapter must not replace the admin Bootstrap form size.
+        const adminBaseline = postcss.parse(bootstrap + variants.get(name).toString() + ':root { --font-scale: 1; }');
+        const adminSize = (tree) => componentCascade(tree, '<input data-test class="form-control">', 'dark', 'dark', '', 'admin')('font-size');
+        expect(adminSize(css)).toBe(adminSize(adminBaseline));
+        expect(adminSize(css)).toBe('1.4rem');
+    }
+});
+
+it('keeps the scaled select inside its image-control box and releases fixed paginator heights', () => {
+    for (const name of ['core', 'reference']) {
+        if (!variants.has(name)) continue;
+        const css = postcss.parse(variants.get(name).toString() + ':root { --font-scale: 2; }');
+        for (const outer of ['', 'fullscreen']) {
+            const action = componentCascade(css, `<div class="${outer}"><div data-test class="image-controls__action select"></div></div>`, 'light', 'none');
+            expect(action('height')).toBe('max(36px, calc(calc(1.4rem * 2) * 1.5 + 0.6rem + 2px))');
+            const wrapper = componentCascade(
+                css,
+                `<div class="${outer}"><div class="image-controls__action select"><div data-test class="custom-control--select"></div></div></div>`,
+                'light',
+                'none'
+            );
+            expect(wrapper('height')).toBe('100%');
+            expect(wrapper('min-height')).toBe('0');
+        }
+        const paginator = componentCascade(css, '<div data-test class="inputfield-paginator__navigate-text inputfield-paginator__navigate">Long page label</div>', 'light', 'none');
+        expect(paginator('height')).toBe('auto');
+        expect(paginator('min-height')).toBe('35px');
+    }
 });

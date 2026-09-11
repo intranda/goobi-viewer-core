@@ -94,7 +94,7 @@
     // Subtitle right above the list explains what the bare numbers mean (e.g. that the score is
     // a count of saved contributions, not edits-over-time). Injected by renderMostActiveUsers.
     &__subtitle {
-        font-size: 0.85rem;
+        font-size: var(--font-size-caption);
         color: var(--fg-muted);
         margin-bottom: 0.5rem;
     }
@@ -111,7 +111,8 @@
 
     .progress {
         background: var(--bg-subtle);
-        height: 0.5rem;
+        height: auto;
+        min-height: 0.5rem;
         border-radius: 0.25rem;
         overflow: hidden;
         margin-top: 0.25rem;
@@ -120,8 +121,8 @@
             background: var(--bg-brand);
             height: 100%;
             color: var(--fg-on-brand);
-            font-size: 0.7rem;
-            line-height: 0.5rem;
+            font-size: var(--font-size-caption);
+            line-height: var(--line-height-body);
             padding-left: 0.25rem;
         }
     }

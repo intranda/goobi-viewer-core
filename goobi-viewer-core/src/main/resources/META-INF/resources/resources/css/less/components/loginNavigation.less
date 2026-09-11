@@ -21,7 +21,7 @@
     /* LOGGED IN */
     [data-login='true'] {
         button[data-toggle='user-dropdown'] {
-            font-size: var(--font-size-medium);
+            font-size: var(--font-size-body-small);
             span {
             }
             display: flex;
@@ -54,7 +54,7 @@
                 right: 0;
                 width: 260px;
                 padding: 0.35rem 0;
-                font-size: var(--font-size-medium);
+                font-size: var(--font-size-body-small);
                 background: var(--login-nav-bg);
                 border: 1px solid var(--login-nav-dropdown-border);
                 box-shadow: 0 18px 36px rgb(from var(--shadow-color) r g b / 18%);
@@ -67,7 +67,7 @@
                 }
             }
             &__user-dropdown-item {
-                font-size: var(--font-size-medium);
+                font-size: var(--font-size-body-small);
                 &:hover {
                     background-color: var(--login-nav-bg-hover);
                 }
@@ -123,7 +123,7 @@
                 display: flex;
                 justify-content: space-between;
                 padding: 0.3rem 0;
-                font-size: 1.4rem;
+                font-size: var(--font-size-body-small);
             }
             &__bookmarks-name {
                 flex-grow: 1;
@@ -171,7 +171,7 @@
             }
             &__bookmarks-counter {
                 padding: 0 0.3rem;
-                font-size: 1.2rem;
+                font-size: var(--font-size-caption);
                 color: var(--fg-inverse);
                 border-radius: 2px;
                 background-color: var(--login-nav-bookmarks-counter-bg);

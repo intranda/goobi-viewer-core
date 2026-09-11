@@ -10,7 +10,7 @@
 
     &__dot {
         color: var(--fg-inverse);
-        font-size: 30px;
+        font-size: 30px; // Fixed icon/marker geometry; independent of text scale.
         display: flex;
     }
 
@@ -81,13 +81,13 @@
         margin-bottom: 15px;
         h3 {
             margin-bottom: 0;
-            font-size: 1.4rem;
+            font-size: var(--font-size-body-small);
         }
     }
     &__copyright {
         h3 {
             margin-bottom: 0;
-            font-size: 1.4rem;
+            font-size: var(--font-size-body-small);
         }
     }
     &__hidden-information {

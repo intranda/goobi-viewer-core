@@ -34,7 +34,7 @@
             cursor: pointer;
             pointer-events: all;
             .widget__topbar-icon-collapsible {
-                font-size: var(--font-size-normal);
+                font-size: var(--font-size-body);
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
@@ -54,6 +54,8 @@
         color: var(--widget-topbar-icon);
     }
     &__title {
+        font-size: var(--font-size-heading-small);
+        line-height: var(--line-height-heading);
         margin-top: 0;
         margin-bottom: 0;
         display: flex;
@@ -163,7 +165,7 @@
         margin-bottom: 0px;
         flex: 0 0 100%;
         max-width: 100%;
-        font-size: 1.8rem;
+        font-size: var(--font-size-heading-small);
     }
 }
 

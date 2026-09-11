@@ -91,7 +91,7 @@
         margin-right: auto;
 
         a {
-            font-size: 1.6rem;
+            font-size: var(--font-size-body);
             color: rgb(from var(--fg-inverse) r g b / 90%);
 
             &:hover {
@@ -101,7 +101,7 @@
         }
 
         h1 {
-            font-size: 1.6rem;
+            font-size: var(--font-size-body);
             font-weight: 400;
             display: inline;
             color: var(--fg-inverse);
@@ -292,7 +292,7 @@
     &__object-title {
         font-weight: 700;
         margin-bottom: 1.5rem;
-        font-size: 2rem;
+        font-size: var(--font-size-heading-small);
         line-height: 1.2;
     }
 
@@ -542,7 +542,7 @@
         position: absolute;
         right: 5px;
         top: 0;
-        font-size: 1.6rem;
+        font-size: 1.6rem; // Fixed icon/marker geometry; independent of text scale.
         line-height: 1.1rem;
         border: none;
         background: none;
@@ -593,7 +593,7 @@
         padding: 1rem 2rem;
         background: var(--bg-selected);
         color: var(--fg-selected);
-        font-size: 1.6rem;
+        font-size: var(--font-size-body);
     }
 
     &__tree-heading {
@@ -603,19 +603,19 @@
         padding: 1rem 2rem;
         background: var(--bg-selected);
         color: var(--fg-selected);
-        font-size: 1.6rem;
+        font-size: var(--font-size-body);
         padding-right: 4rem;
         h2 {
             margin-bottom: 0;
             font-weight: 400;
-            font-size: 16px;
+            font-size: var(--font-size-body);
         }
 
         #archivesSearchTrigger {
             position: absolute;
             cursor: pointer;
             right: 1rem;
-            font-size: 1.6rem;
+            font-size: 1.6rem; // Fixed icon/marker geometry; independent of text scale.
             color: inherit;
 
             &:focus,
@@ -666,7 +666,7 @@
 
     &__select-database-dropdown-label {
         font-weight: 700;
-        font-size: 1.6rem;
+        font-size: var(--font-size-body);
         white-space: nowrap;
         padding-right: 1.5rem;
     }
@@ -674,7 +674,7 @@
     &__select-database-dropdown {
         border: none;
         background: transparent;
-        font-size: 1.6rem;
+        font-size: var(--font-size-body);
         flex: 1;
         background: var(--bg-popover);
         color: var(--fg-popover);
@@ -699,7 +699,7 @@
 
     &__modal-select-database-dropdown-label {
         font-weight: 700;
-        font-size: 1.6rem;
+        font-size: var(--font-size-body);
         white-space: nowrap;
     }
 
@@ -707,7 +707,7 @@
         color: var(--fg-popover);
         border: none;
         background: transparent;
-        font-size: 1.6rem;
+        font-size: var(--font-size-body);
         flex: 1;
         background: var(--bg-popover);
         border: 1px solid var(--border-strong);
@@ -786,7 +786,7 @@
     }
 
     &__hero-title {
-        font-size: 2.8rem;
+        font-size: var(--font-size-heading-large);
         font-weight: 700;
         line-height: 1.2;
         margin: 0 0 0.5rem 0;
@@ -801,7 +801,7 @@
     }
 
     &__hero-description {
-        font-size: var(--font-size-normal);
+        font-size: var(--font-size-body);
         line-height: 1.5;
         margin: 0;
         color: rgb(from var(--fg-inverse) r g b / 90%);
@@ -869,7 +869,7 @@
     }
 
     .archives__hero-title {
-        font-size: 2.2rem;
+        font-size: var(--font-size-heading-small);
     }
 
     .archives__hero-description {
@@ -892,7 +892,7 @@
     }
 
     .archives__hero-title {
-        font-size: var(--font-size-large);
+        font-size: var(--font-size-body-large);
         -webkit-line-clamp: 1;
         text-shadow:
             0 1px 2px rgb(from var(--shadow-color) r g b / 80%),
@@ -900,7 +900,7 @@
     }
 
     .archives__hero-description {
-        font-size: var(--font-size-medium);
+        font-size: var(--font-size-body-small);
         -webkit-line-clamp: 2;
         text-shadow:
             0 1px 2px rgb(from var(--shadow-color) r g b / 70%),
@@ -927,7 +927,7 @@
     }
 
     .archives__hero-title {
-        font-size: var(--font-size-normal);
+        font-size: var(--font-size-body);
         text-shadow:
             0 1px 1px rgb(from var(--shadow-color) r g b / 80%),
             0 1px 3px rgb(from var(--shadow-color) r g b / 40%);

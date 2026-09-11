@@ -3,6 +3,58 @@
    style declarations for forms
    ==============================================================*/
 /* INPUT PLACEHOLDER */
+// Bootstrap's fixed rem sizes bypass the viewer typography. Keep the backend's
+// Bootstrap defaults, and let public controls grow with their text.
+:where(html:not(:has(#admin))) {
+    input,
+    select,
+    textarea,
+    button {
+        font-family: inherit;
+    }
+
+    .form-control,
+    .custom-select,
+    .input-group-text,
+    .input-group-addon {
+        font-size: var(--font-size-body);
+        line-height: var(--line-height-body);
+    }
+
+    .form-control,
+    .custom-select {
+        height: auto;
+        min-height: calc(1em * var(--line-height-body) + 0.75rem + 2px);
+    }
+
+    .form-control-sm,
+    .custom-select-sm,
+    .input-group-sm > .form-control,
+    .input-group-sm > .custom-select,
+    .input-group-sm > .input-group-prepend > .input-group-text,
+    .input-group-sm > .input-group-append > .input-group-text {
+        font-size: var(--font-size-body-small);
+        height: auto;
+    }
+
+    .form-control-lg,
+    .custom-select-lg,
+    .input-group-lg > .form-control,
+    .input-group-lg > .custom-select,
+    .input-group-lg > .input-group-prepend > .input-group-text,
+    .input-group-lg > .input-group-append > .input-group-text {
+        font-size: var(--font-size-body-large);
+        height: auto;
+    }
+
+    .form-text,
+    .invalid-feedback,
+    .valid-feedback {
+        font-size: var(--font-size-body-small);
+        line-height: var(--line-height-body);
+    }
+}
+
 ::-webkit-input-placeholder {
     color: var(--fg-placeholder);
 }
@@ -44,6 +96,6 @@
     input[type='time'],
     input[type='url'],
     input[type='week'] {
-        font-size: var(--font-size-normal) !important;
+        font-size: var(--font-size-body) !important;
     }
 }

@@ -17,6 +17,7 @@ Rules
       declared by themes but read only through --brand, --bg-brand and --bg-brand-hover
   R9  outside misc/palette.less the token layer holds no color literal; alphas derive via rgb(from …)
   R10 component property values use tokens, not color literals or static color variables; backend exceptions are explicit
+  R11 frontend font sizes use text roles or relative inheritance; fixed icon/marker geometry is explicitly annotated
 
 Known violations are tolerated via tokenCheck.baseline.json; entries that no longer
 occur are reported as stale so the baseline can only shrink.
@@ -54,6 +55,9 @@ const STATIC = /^@([\w-]+)\s*:/;
 const READ = /var\(\s*(--[\w-]+)\s*(,)?/g;
 const AT_USE = /@([\w-]+)/g;
 const INTERNAL = /^--_/;
+const FIXED_TYPE_SIZE = /(?:\d*\.)?\d+(?:px|rem|pt|pc|in|cm|mm|q|vw|vh|vmin|vmax)\b/i;
+const FIXED_GEOMETRY_NOTE = '// Fixed icon/marker geometry; independent of text scale.';
+const isTypographyProperty = (name) => name === 'font-size' || name === 'font';
 const MODE_BRANCH = /prefers-color-scheme|\.color-theme-(dark|light)/;
 const AT_KEYWORDS = new Set(['media', 'import', 'supports', 'keyframes', 'font-face', 'layer', 'page', 'charset', 'plugin']);
 
@@ -296,6 +300,29 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
     const tokens = new Set();
     const isTokenLayer = (file) => tokenLayer.includes(file);
     const staticColors = staticColorNames(parsed.get(VARIABLES_FILE));
+    // Follow named LESS constants as well as direct literals. Compilation below
+    // additionally catches interpolation, mixin parameters and imported aliases.
+    const staticTypeSizes = new Set();
+    const typeDefinitions = [...core.values(), ...(theme?.values() || [])].flatMap((source) => parseLess(source).statics);
+    let previousTypeSizeCount;
+    do {
+        previousTypeSizeCount = staticTypeSizes.size;
+        for (const definition of typeDefinitions) {
+            const value = withoutStrings(definition.value);
+            if (FIXED_TYPE_SIZE.test(value) || [...value.matchAll(AT_USE)].some((m) => staticTypeSizes.has(m[1]))) staticTypeSizes.add(definition.name);
+        }
+    } while (staticTypeSizes.size !== previousTypeSizeCount);
+    const checkTypography = (file, parsedSource, source) => {
+        const lines = source.split('\n');
+        for (const d of parsedSource.properties) {
+            if (!isTypographyProperty(d.name)) continue;
+            const value = withoutStrings(d.value);
+            if (!FIXED_TYPE_SIZE.test(value) && ![...value.matchAll(AT_USE)].some((m) => staticTypeSizes.has(m[1]) || /^font(?:Small|Medium|Normal|Large|XLarge)$/.test(m[1])))
+                continue;
+            if (lines[d.line - 1].includes(FIXED_GEOMETRY_NOTE)) continue;
+            violations.push(violation('R11', file, JSON.stringify([d.stack, d.name, d.value]), d.line, 'fixed text size — use a typography role'));
+        }
+    };
 
     for (const file of tokenLayer) {
         const p = parsed.get(file);
@@ -305,6 +332,7 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
 
     for (const [file, p] of parsed) {
         if (!isTokenLayer(file) && file !== VARIABLES_FILE && !colorExemption(file, colorExemptions)) {
+            checkTypography(file, p, core.get(file));
             for (const d of p.properties) {
                 const value = colorValue(d.value);
                 if (!COMPONENT_COLOR.test(value) && ![...value.matchAll(AT_USE)].some((m) => staticColors.has(m[1]))) continue;
@@ -317,16 +345,12 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
                 if (INTERNAL.test(d.name)) {
                     violations.push(violation('R4', file, d.name, d.line, 'internal token declared in the token layer'));
                 } else if (!allowedInTokenLayer(d.stack)) {
-                    violations.push(
-                        violation('R2', file, d.name, d.line, `declared under "${flattened(d.stack) || '(top level)'}" — only ${ROOT_SELECTORS.join(', ')}`)
-                    );
+                    violations.push(violation('R2', file, d.name, d.line, `declared under "${flattened(d.stack) || '(top level)'}" — only ${ROOT_SELECTORS.join(', ')}`));
                 }
             }
             for (const c of p.calls) {
                 if (!allowedInTokenLayer(c.stack)) {
-                    violations.push(
-                        violation('R2', file, c.name, c.line, `mixin called under "${flattened(c.stack) || '(top level)'}" — only ${ROOT_SELECTORS.join(', ')}`)
-                    );
+                    violations.push(violation('R2', file, c.name, c.line, `mixin called under "${flattened(c.stack) || '(top level)'}" — only ${ROOT_SELECTORS.join(', ')}`));
                 }
             }
             const byMixin = new Map();
@@ -429,6 +453,7 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
                 }
             }
             if (!inLayer) {
+                checkTypography(`theme/${file}`, p, theme.get(file));
                 for (const b of p.blocks)
                     if (MODE_BRANCH.test(b.header) || /@colorModes/.test(b.header)) report('R4', b.header, b.line, 'theme mode branching belongs in the token wiring');
                 for (const d of p.properties) {
@@ -486,6 +511,12 @@ async function checkCompiledTree(root, { entry = 'constructor.less', tokens = ne
         return { file: origin ? path.relative(root, origin.file).split(path.sep).join('/') : entry, line: origin ? origin.line : start.line };
     };
     const emitted = new Set();
+    const backendExemptions = loadColorExemptions();
+    const sourceLines = new Map();
+    const hasGeometryNote = (file, line) => {
+        if (!sourceLines.has(file)) sourceLines.set(file, fs.readFileSync(path.resolve(root, file), 'utf8').split('\n'));
+        return sourceLines.get(file)[line - 1]?.includes(FIXED_GEOMETRY_NOTE);
+    };
     const internalFiles = new Map();
     const add = (rule, node, token, message) => {
         const { file, line } = location(node);
@@ -518,7 +549,17 @@ async function checkCompiledTree(root, { entry = 'constructor.less', tokens = ne
         }
     });
     css.walkDecls((d) => {
-        const { file } = location(d);
+        const { file, line } = location(d);
+        if (
+            isTypographyProperty(d.prop) &&
+            FIXED_TYPE_SIZE.test(withoutStrings(d.value)) &&
+            !TOKEN_LAYER.includes(file) &&
+            !(theme && file === THEME_MIXINS) &&
+            (theme || !colorExemption(file, backendExemptions)) &&
+            !hasGeometryNote(file, line)
+        ) {
+            add('R11', d, d.prop, 'emitted fixed text size — use a typography role');
+        }
         const reads = [];
         collectReads(d.value, 0, [], reads);
         for (const read of reads) {
@@ -861,10 +902,23 @@ function classifyThemeTokens(sources, core) {
             if (!coreHas(name)) {
                 const renamed = RENAMED_TOKENS.get(name);
                 const target = renamed && /^--[\w-]+$/.test(renamed) && coreHas(renamed) ? renamed : null;
-                if (target && modes.every((mode) => normalizeValue(resolveTokens(value, lookupFor(mode))) === normalizeValue(resolveTokens(core[mode].get(target) ?? '', coreLookup(mode))))) {
-                    rows.push({ ...row, verdict: 'redundant', core: modes.map((mode) => core[mode].get(target)).join(' | '), hint: `old name of ${target}; equals its core default` });
+                if (
+                    target &&
+                    modes.every((mode) => normalizeValue(resolveTokens(value, lookupFor(mode))) === normalizeValue(resolveTokens(core[mode].get(target) ?? '', coreLookup(mode))))
+                ) {
+                    rows.push({
+                        ...row,
+                        verdict: 'redundant',
+                        core: modes.map((mode) => core[mode].get(target)).join(' | '),
+                        hint: `old name of ${target}; equals its core default`,
+                    });
                 } else if (renamed) rows.push({ ...row, verdict: 'renamed', hint: `now ${renamed}` });
-                else rows.push({ ...row, verdict: 'unknown', hint: RENAMED_TOKENS.has(name) ? 'removed — delete the line' : 'no core token of this name — theme-only feature or removed' });
+                else
+                    rows.push({
+                        ...row,
+                        verdict: 'unknown',
+                        hint: RENAMED_TOKENS.has(name) ? 'removed — delete the line' : 'no core token of this name — theme-only feature or removed',
+                    });
                 continue;
             }
             row.core = modes.map((mode) => core[mode].get(name)).join(' | ');
@@ -882,7 +936,8 @@ function classifyThemeTokens(sources, core) {
     ]) {
         for (const [name, { line }] of declared[mode]) {
             if (declared[other].has(name) || !coreHas(name)) continue;
-            if (rows.some((r) => r.token === name && r.mode === mode && r.verdict === 'keep')) rows.push({ token: name, mode, line, verdict: 'pair', hint: `add a value to .mx-theme-${other}() as well` });
+            if (rows.some((r) => r.token === name && r.mode === mode && r.verdict === 'keep'))
+                rows.push({ token: name, mode, line, verdict: 'pair', hint: `add a value to .mx-theme-${other}() as well` });
         }
     }
     return rows.sort((a, b) => VERDICT_ORDER.indexOf(a.verdict) - VERDICT_ORDER.indexOf(b.verdict) || a.token.localeCompare(b.token) || a.mode.localeCompare(b.mode));
@@ -907,7 +962,9 @@ async function themeTokenReport(themeLessRoot, { moduleRoot = MODULE_ROOT, lessR
         else if (rule.selector === '.color-theme-dark') rule.walkDecls(/^--/, (d) => dark.set(d.prop, d.value));
     });
     const themeRoot = path.resolve(moduleRoot, themeLessRoot);
-    const sources = ['misc/mixins.less', 'misc/variables.less'].filter((file) => fs.existsSync(path.join(themeRoot, file))).map((file) => fs.readFileSync(path.join(themeRoot, file), 'utf8'));
+    const sources = ['misc/mixins.less', 'misc/variables.less']
+        .filter((file) => fs.existsSync(path.join(themeRoot, file)))
+        .map((file) => fs.readFileSync(path.join(themeRoot, file), 'utf8'));
     return classifyThemeTokens(sources, { light, dark });
 }
 

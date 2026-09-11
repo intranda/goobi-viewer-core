@@ -13,6 +13,7 @@ html {
 body {
     font-family: var(--font-family);
     font-size: var(--font-size-body);
+    line-height: var(--line-height-body);
 
     // Styling for fucussed elements
     &.using-keyboard :focus-visible {
@@ -25,43 +26,72 @@ body {
     text-decoration-skip-ink: auto;
 }
 
+// HTML hierarchy and visual roles are independent. Components can choose a
+// smaller heading role without changing the document outline.
 h1,
 h2,
 h3,
 h4,
 h5,
+h6,
 .h1,
 .h2,
 .h3,
 .h4,
-.h5 {
+.h5,
+.h6 {
+    line-height: var(--line-height-heading);
 }
 
 h1,
 .h1 {
-    font-size: 2.8rem;
+    font-size: var(--font-size-heading-large);
 }
-
-h1,
-.h1 {
-    font-size: 2.1rem;
-}
-
 h2,
 .h2 {
-    font-size: 1.8rem;
+    font-size: var(--font-size-heading-medium);
 }
-
 h3,
 .h3 {
-    font-size: 1.8rem;
+    font-size: var(--font-size-heading-small);
+}
+h4,
+.h4 {
+    font-size: var(--font-size-body-large);
+}
+h5,
+.h5 {
+    font-size: var(--font-size-body);
+}
+h6,
+.h6 {
+    font-size: var(--font-size-body-small);
 }
 
-h4,
-h5,
-.h4,
-.h5 {
-    font-size: var(--font-size-normal);
+// Editorial copy has its own reading size. Only prose receives a line-length
+// limit; media, search results and grids retain their available width.
+.content-component__text,
+.content-component__htmltext,
+.content-component__split-text-content,
+.tpl-generic__text {
+    font-size: var(--font-size-prose);
+    line-height: var(--line-height-prose);
+    overflow-wrap: break-word;
+
+    p,
+    ul,
+    ol {
+        max-width: var(--text-measure);
+    }
+}
+.content-component__text {
+    max-width: var(--text-measure);
+}
+
+small,
+.small {
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-body);
 }
 
 p {

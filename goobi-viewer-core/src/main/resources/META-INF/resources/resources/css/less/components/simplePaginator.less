@@ -19,7 +19,7 @@
     }
     li {
         min-width: 32px;
-        height: 32px;
+        min-height: 32px;
         border: 1px solid var(--border-strong);
         display: flex;
         align-items: center;
@@ -29,8 +29,8 @@
     a,
     span {
         display: block;
-        line-height: 30px;
-        padding: 0 2px;
+        line-height: var(--line-height-body);
+        padding: 0.3rem 2px;
         text-align: center;
         width: 100%;
     }
@@ -94,6 +94,7 @@
             span {
                 display: inline;
                 background: transparent;
+                padding-block: 0;
             }
         }
         &-input {

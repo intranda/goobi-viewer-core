@@ -19,14 +19,14 @@
     }
     /* ELEMENT */
     &__title {
-        font-size: 2rem;
+        font-size: var(--font-size-heading-small);
         font-weight: 700;
         color: var(--fg-content-box);
         margin: 0 0 1rem;
         line-height: 1.2;
     }
     &__message {
-        font-size: var(--font-size-medium);
+        font-size: var(--font-size-body-small);
         color: var(--fg-muted);
         line-height: 1.7;
         margin: 0;
@@ -40,7 +40,7 @@
         margin: 2rem 0;
     }
     &__details-label {
-        font-size: var(--font-size-small);
+        font-size: var(--font-size-caption);
         font-weight: 600;
         color: var(--fg-muted);
         text-transform: uppercase;
@@ -52,7 +52,7 @@
         border: 1px solid var(--border-default);
         padding: 1rem 1.2rem;
         font-family: monospace;
-        font-size: var(--font-size-small);
+        font-size: var(--font-size-caption);
         color: var(--fg-general);
         line-height: 1.8;
         margin: 0;
@@ -86,7 +86,7 @@
     .view-error-card {
         padding: 1.5rem;
         &__title {
-            font-size: var(--font-size-large);
+            font-size: var(--font-size-body-large);
         }
     }
 }
@@ -96,7 +96,7 @@
     .view-error-card {
         padding: 1.2rem;
         &__title {
-            font-size: var(--font-size-normal);
+            font-size: var(--font-size-body);
         }
     }
 }

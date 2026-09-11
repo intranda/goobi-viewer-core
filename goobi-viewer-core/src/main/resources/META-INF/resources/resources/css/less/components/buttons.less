@@ -18,6 +18,26 @@
 // .btn--inactive - Modifier class for an inactive button.
 //
 // Styleguide Components.button
+:where(html:not(:has(#admin))) {
+    .btn {
+        font-size: var(--font-size-body);
+        line-height: var(--line-height-body);
+        white-space: normal;
+    }
+    .btn-sm,
+    .btn-group-sm > .btn,
+    .input-group-sm > .input-group-prepend > .btn,
+    .input-group-sm > .input-group-append > .btn {
+        font-size: var(--font-size-body-small);
+    }
+    .btn-lg,
+    .btn-group-lg > .btn,
+    .input-group-lg > .input-group-prepend > .btn,
+    .input-group-lg > .input-group-append > .btn {
+        font-size: var(--font-size-body-large);
+    }
+}
+
 .btn {
     color: var(--fg-secondary);
     border-radius: var(--radius-button);

@@ -33,7 +33,7 @@
         p,
         a {
             color: var(--fg-on-warning);
-            font-size: 16px;
+            font-size: var(--font-size-body);
             line-height: 1.4;
 
             &:last-child {
@@ -57,7 +57,7 @@
         position: absolute;
         right: 28px;
         top: 30px;
-        font-size: 22px;
+        font-size: 22px; // Fixed icon/marker geometry; independent of text scale.
         background: transparent;
         padding: 0;
         border: none;

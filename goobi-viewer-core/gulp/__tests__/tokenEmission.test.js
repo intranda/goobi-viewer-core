@@ -125,3 +125,21 @@ it('detects a mode branch hidden in a detached theme mixin', async () => {
     });
     expect(result.map((v) => v.rule)).toContain('R4');
 });
+
+it.each([
+    '.label { font: 14px/1.5 sans-serif; }',
+    '@textSize: 14px; @alias: @textSize; .label { font-size: @alias; }',
+    '.size(@value) { font-size: @value; } .label { .size(14px); }',
+    '@prop: font-size; .label { @{prop}: 14px; }',
+    '.label { font-size: 10pt; }',
+])('rejects fixed typography after LESS expansion: %s', async (component) => {
+    expect((await compile(':root { --known: 1; }', component)).map((v) => v.rule)).toContain('R11');
+});
+
+it('allows inherited shorthand and aliased typography roles after compilation', async () => {
+    expect(await compile(':root { --font-size-body: 1.6rem; }', '@size: var(--font-size-body); .label { font-size: @size; } .label select { font: inherit; }')).toEqual([]);
+});
+
+it('preserves the fixed icon exception through source maps', async () => {
+    expect(await compile(':root { --known: 1; }', '.icon {\nfont-size: 14px; // Fixed icon/marker geometry; independent of text scale.\n}')).toEqual([]);
+});

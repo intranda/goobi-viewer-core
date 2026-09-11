@@ -32,7 +32,7 @@
             background: transparent;
             box-shadow: none;
             color: var(--immersive-chrome-fg);
-            font-size: var(--font-size-normal);
+            font-size: var(--font-size-body);
 
             &::placeholder {
                 color: var(--immersive-chrome-fg);
@@ -59,7 +59,7 @@
             border: 0;
             background: transparent;
             color: var(--immersive-chrome-fg);
-            font-size: 2rem;
+            font-size: 2rem; // Fixed icon/marker geometry; independent of text scale.
             line-height: 1;
             opacity: 0.75;
             cursor: pointer;
@@ -127,7 +127,7 @@
     }
 
     &__results-count {
-        font-size: var(--font-size-small);
+        font-size: var(--font-size-caption);
         font-weight: 600;
         letter-spacing: 0.04em;
         font-variant-numeric: tabular-nums;

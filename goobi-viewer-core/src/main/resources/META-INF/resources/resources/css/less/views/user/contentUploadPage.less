@@ -16,7 +16,7 @@
         padding: 1rem 2rem;
         border-bottom: 1px solid var(--border-emphasis);
         font-weight: 600;
-        font-size: 1.6rem;
+        font-size: var(--font-size-body);
     }
     &__table-title-status,
     &__table-title-title,
@@ -42,7 +42,7 @@
             background: var(--bg-subtle);
         }
         &-status {
-            font-size: 25px;
+            font-size: 25px; // Fixed icon/marker geometry; independent of text scale.
             text-align: center;
         }
         &-label {

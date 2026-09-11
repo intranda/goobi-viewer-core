@@ -12,7 +12,7 @@
         display: block;
         margin: 10px 0;
         padding: 15px;
-        font-size: var(--font-size-large);
+        font-size: var(--font-size-body-large);
         text-align: center;
         color: var(--fg-on-brand);
         background-color: var(--bg-brand);
@@ -58,7 +58,7 @@
         figcaption {
             padding-top: 10px;
             font-style: italic;
-            font-size: var(--font-size-small);
+            font-size: var(--font-size-caption);
         }
     }
     &__colors {
@@ -73,7 +73,7 @@
     }
     &__color-body {
         padding: 5px;
-        font-size: var(--font-size-small);
+        font-size: var(--font-size-caption);
         ul {
             margin: 0;
             padding: 0;
@@ -110,7 +110,7 @@
     text-align: center;
     vertical-align: middle;
     border-radius: 50%;
-    font-size: 16px;
+    font-size: 16px; // Fixed icon/marker geometry; independent of text scale.
     font-weight: bold;
     padding: 5px;
 }

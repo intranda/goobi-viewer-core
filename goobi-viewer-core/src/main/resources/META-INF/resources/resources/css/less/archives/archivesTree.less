@@ -5,7 +5,7 @@
 
 /* EAD TREE */
 .archives-tree {
-    font-size: 1.5rem;
+    font-size: var(--font-size-body);
     line-height: 1.25;
     margin: 0;
     border: 1px solid var(--border-strong);
@@ -235,7 +235,7 @@
         margin-top: 3px;
         flex: 0 0 15px;
         margin-right: 1rem;
-        font-size: 1.5rem;
+        font-size: 1.5rem; // Fixed icon/marker geometry; independent of text scale.
     }
     &__list-entry-title-icon {
         display: flex;
@@ -244,7 +244,7 @@
     }
     &__entry-date {
         font-style: italic;
-        font-size: 1.2rem;
+        font-size: var(--font-size-caption);
     }
 }
 

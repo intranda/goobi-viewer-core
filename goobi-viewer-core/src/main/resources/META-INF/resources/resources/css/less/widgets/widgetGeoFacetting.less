@@ -65,7 +65,7 @@
     }
 
     &__action-expand-hint {
-        font-size: 1.5rem;
+        font-size: var(--font-size-body);
     }
 
     &__action-toggle-markers {
@@ -86,7 +86,7 @@
         display: none;
         color: inherit;
         margin-left: 0.8rem;
-        font-size: 1.7rem;
+        font-size: 1.7rem; // Fixed icon/marker geometry; independent of text scale.
         border: none;
         background: none;
         color: var(--fg-inverse);
@@ -261,7 +261,7 @@
         height: 30px;
         line-height: 30px;
         background-color: var(--bg-content-box);
-        font-size: 1.8rem;
+        font-size: 1.8rem; // Fixed icon/marker geometry; independent of text scale.
     }
     &:hover,
     &:focus,
@@ -357,7 +357,7 @@
             }
         }
         .mapboxgl-ctrl-geocoder--input {
-            font-size: 1.2rem;
+            font-size: var(--font-size-caption);
         }
     }
 }

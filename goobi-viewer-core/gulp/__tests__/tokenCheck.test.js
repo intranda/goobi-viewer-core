@@ -358,6 +358,34 @@ describe('formatReport', () => {
     });
 });
 
+describe('R11 typography', () => {
+    const scan = (source, file = 'components/example.less', theme = false) => {
+        const tree = files({ [file]: source });
+        return checkFiles(theme ? new Map() : tree, theme ? tree : null).violations.filter((v) => v.rule === 'R11');
+    };
+
+    it.each(['14px', '1.4rem', '@fontSmall', '~"calc(1.4rem * 2)"'])('rejects fixed text size %s in core and theme', (size) => {
+        for (const theme of [false, true]) expect(scan(`.label { font-size: ${size}; }`, 'components/example.less', theme)).toHaveLength(1);
+    });
+
+    it.each(['.label { font: 14px/1.5 sans-serif; }', '@textSize: 14px; @alias: @textSize; .label { font-size: @alias; }', '.label { font-size: 10pt; }'])(
+        'rejects shorthand and named size constants: %s',
+        (source) => {
+            for (const theme of [false, true]) expect(scan(source, 'components/example.less', theme)).toHaveLength(1);
+        }
+    );
+
+    it.each(['var(--font-size-body)', 'calc(var(--font-size-heading-large) * 2)', 'inherit', '1em', '85%', '0'])('allows scalable or inherited size %s', (size) => {
+        expect(scan(`.label { font-size: ${size}; }`)).toEqual([]);
+    });
+
+    it('keeps backend styles exempt and requires an explicit annotation for icon geometry', () => {
+        expect(scan('.control { font-size: 14px; }', 'admin/layout/basics.less')).toEqual([]);
+        expect(scan('.icon {\n font-size: 14px; // Fixed icon/marker geometry; independent of text scale.\n}')).toEqual([]);
+        expect(scan('.icon { font-size: 14px; }')).toHaveLength(1);
+    });
+});
+
 describe('R10 component colors', () => {
     const scan = (source, file = 'components/example.less', options = {}) =>
         checkFiles(

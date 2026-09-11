@@ -1,8 +1,8 @@
 .multiselect-dropdown {
     position: relative;
     width: 100%;
-    height: 34px;
-    font-size: 1.4rem;
+    min-height: 34px;
+    font-size: var(--font-size-body-small);
     color: var(--fg-content-box);
     border: 1px solid var(--border-strong);
     background-color: var(--bg-content-box);
@@ -10,7 +10,7 @@
     }
     &-trigger {
         position: relative;
-        height: 32px;
+        min-height: 32px;
         padding: 5px 12px;
         padding-right: 30px;
         overflow: hidden;
@@ -35,7 +35,7 @@
         display: none;
         .mx-list-reset;
         position: absolute;
-        top: 32px;
+        top: 100%;
         left: -1px;
         width: calc(~'100% + 2px');
         max-height: 200px;

@@ -56,7 +56,7 @@
         justify-content: space-between;
         h2 {
             margin: 0;
-            font-size: var(--font-size-large);
+            font-size: var(--font-size-body-large);
         }
     }
     &__header-logo {
@@ -69,7 +69,7 @@
         background-size: contain;
     }
     &__header-title {
-        font-size: 2.4rem;
+        font-size: var(--font-size-heading-medium);
     }
     &__header-title-create-account {
         display: none;
@@ -78,7 +78,7 @@
     &__body {
         border-top: 0;
         h3 {
-            font-size: var(--font-size-normal);
+            font-size: var(--font-size-body);
         }
     }
     .modal-body {
@@ -109,14 +109,14 @@
     }
     &__lost-password {
         button {
-            font-size: 1.3rem;
+            font-size: var(--font-size-caption);
         }
     }
     &__body-action {
         padding-top: 0.5rem;
         padding-bottom: 1.6rem;
         .btn--link {
-            font-size: var(--font-size-small);
+            font-size: var(--font-size-caption);
         }
         .btn--full {
             width: 100%;
@@ -203,7 +203,7 @@
     /* FOOTER */
     &__footer {
         padding: 5px 0;
-        font-size: var(--font-size-small);
+        font-size: var(--font-size-caption);
         text-align: center;
         color: var(--fg-muted);
         .btn {
@@ -252,11 +252,12 @@
         margin-bottom: 1.8rem;
     }
     &__form-control {
-        height: 40px;
+        height: auto;
+        min-height: ~'max(40px, calc(1em * var(--line-height-body) + 1.2rem))';
         &.-valueEntered {
             & + .effect-label {
-                font-size: 1.2rem;
-                top: -10px;
+                font-size: var(--font-size-caption);
+                top: -0.75em;
                 left: 10px;
                 background-color: var(--bg-content-box);
                 color: var(--fg-content-box);
@@ -266,19 +267,19 @@
     }
     .effect-label {
         color: var(--fg-muted);
-        font-size: 1.4rem;
+        font-size: var(--font-size-body-small);
         position: absolute;
         pointer-events: none;
         left: 1rem;
-        top: 9px;
+        top: 0.6rem;
         transition: 0.2s ease all;
     }
     input:focus + .effect-label {
-        top: -10px;
+        top: -0.75em;
         left: 10px;
         background-color: var(--bg-content-box);
         padding: 0 0.25em 0 0.25em;
-        font-size: 1.2rem;
+        font-size: var(--font-size-caption);
     }
     .modal-header {
         border-bottom: none;

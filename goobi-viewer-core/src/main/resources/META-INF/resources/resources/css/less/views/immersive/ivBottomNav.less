@@ -44,7 +44,7 @@
         display: flex;
         align-items: center;
         gap: 2px;
-        height: 40px;
+        min-height: 40px;
         max-width: calc(100% - (2 * var(--immersive-edge-inset)));
         overflow-x: auto;
         padding: 0 4px;
@@ -76,7 +76,7 @@
         min-width: 4em;
         padding: 0 4px;
         text-align: center;
-        font-size: var(--font-size-medium);
+        font-size: var(--font-size-body-small);
         color: var(--immersive-chrome-fg);
         white-space: nowrap;
     }
@@ -94,7 +94,7 @@
 @media screen and (max-width: @xSmallBreakpoint) {
     .immersive {
         &__bottombar {
-            height: 36px;
+            min-height: 36px;
             padding: 0 2px;
         }
 
@@ -110,7 +110,7 @@
         &__page-indicator {
             min-width: 3.2em;
             padding: 0 2px;
-            font-size: var(--font-size-small);
+            font-size: var(--font-size-caption);
         }
     }
 }

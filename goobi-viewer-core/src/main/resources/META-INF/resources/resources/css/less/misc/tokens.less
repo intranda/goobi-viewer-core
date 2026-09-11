@@ -12,12 +12,29 @@
 /* MODE-INDEPENDENT DEFAULTS */
 .gv-base() {
     --font-family: @fontFamily;
-    --font-size-small: @fontSmall;
-    --font-size-medium: @fontMedium;
-    --font-size-normal: @fontNormal;
-    --font-size-large: @fontLarge;
-    --font-size-xlarge: @fontXLarge;
+    // Scale typography only. The root rem size also controls layout and stays fixed.
+    --font-scale: 1;
+
+    // Legacy theme/LESS inputs remain supported. New components consume roles below.
+    --font-size-small: calc(@fontSmall * var(--font-scale));
+    --font-size-medium: calc(@fontMedium * var(--font-scale));
+    --font-size-normal: calc(@fontNormal * var(--font-scale));
+    --font-size-large: calc(@fontLarge * var(--font-scale));
+    --font-size-xlarge: calc(@fontXLarge * var(--font-scale));
+
+    // Public text roles. An explicit theme override replaces the scaled default.
     --font-size-body: var(--font-size-normal);
+    --font-size-body-small: var(--font-size-medium);
+    --font-size-body-large: var(--font-size-large);
+    --font-size-caption: var(--font-size-small);
+    --font-size-prose: var(--font-size-body-large);
+    --font-size-heading-small: var(--font-size-xlarge);
+    --font-size-heading-medium: calc(2.4rem * var(--font-scale));
+    --font-size-heading-large: calc(3.2rem * var(--font-scale));
+    --line-height-body: 1.5;
+    --line-height-prose: 1.65;
+    --line-height-heading: 1.2;
+    --text-measure: 75ch;
 
     --radius-container: 0;
     --radius-container-small: 0.25rem;
@@ -500,7 +517,7 @@
     --widget-calendar-popover-item-fg: var(--fg-popover);
     --widget-calendar-popover-item-bg-hover: var(--bg-hover);
     --widget-calendar-popover-item-fg-hover: var(--fg-popover);
-    --widget-calendar-popover-font-size: var(--font-size-small);
+    --widget-calendar-popover-font-size: var(--font-size-caption);
 
     /* COMBINED FACETS */
     --combined-facets-fg: var(--fg-general);
