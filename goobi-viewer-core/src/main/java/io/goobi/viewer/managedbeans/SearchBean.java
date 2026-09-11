@@ -242,6 +242,13 @@ public class SearchBean implements SearchInterface, Serializable {
     private Random random = new SecureRandom();
 
     /**
+     * Random sort field generated for the currently active search, cached and reused (instead of re-rolled on every request) so that
+     * reloading, paging through or returning to a randomly sorted hit list keeps the same order. Cleared in
+     * {@link #resetSearchParameters(boolean, boolean)}, i.e. whenever a genuinely new search is started.
+     */
+    private String randomSortSeed;
+
+    /**
      * The current {@link ViewerPath} at the time {@link #executeSearch()} was last called. Used when returning to search list from record via the
      * widget_searchResultNavigation widget
      */
@@ -723,6 +730,8 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.trace("resetSearchParameters; resetAllSearchTypes: {}", resetAllSearchTypes);
         this.advancedSearchOrigin = null;
         this.quickFiltersOrigin = false;
+        // A genuinely new search should get a fresh random order rather than reusing the previous one
+        this.randomSortSeed = null;
         CalendarBean calendarBean = BeanUtils.getCalendarBean();
         if (resetAllSearchTypes) {
             resetSimpleSearchParameters();
@@ -1666,7 +1675,7 @@ public class SearchBean implements SearchInterface, Serializable {
 
         if (!"-".equals(tempSortString)) {
             if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(tempSortString)) {
-                tempSortString = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
+                tempSortString = getOrCreateRandomSortSeed();
             }
             SearchSortingOption option = new SearchSortingOption(tempSortString);
             option.setDefaultOption(StringUtils.isEmpty(sortString) || "-".equals(sortString)); // if the given sort string was empty, remember this
@@ -1674,6 +1683,20 @@ public class SearchBean implements SearchInterface, Serializable {
         } else {
             setSearchSortingOption(null);
         }
+    }
+
+    /**
+     * Returns the random seed for the currently active search, generating and caching one on first use so that subsequent calls (page reloads,
+     * pagination, returning from a record) keep the same order instead of reshuffling. The cache is cleared in
+     * {@link #resetSearchParameters(boolean, boolean)}.
+     *
+     * @return concrete random sort field, e.g. "random_482913"
+     */
+    private String getOrCreateRandomSortSeed() {
+        if (this.randomSortSeed == null) {
+            this.randomSortSeed = new StringBuilder().append("random_").append(random.nextInt(Integer.MAX_VALUE)).toString();
+        }
+        return this.randomSortSeed;
     }
 
     /** {@inheritDoc} */

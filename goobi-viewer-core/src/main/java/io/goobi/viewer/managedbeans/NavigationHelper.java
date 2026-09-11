@@ -60,7 +60,6 @@ import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.controller.FileResourceManager;
 import io.goobi.viewer.controller.FileTools;
 import io.goobi.viewer.controller.NetTools;
-import io.goobi.viewer.controller.PrettyUrlTools;
 import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.DAOException;
@@ -77,7 +76,6 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
-import io.goobi.viewer.model.urlresolution.ViewerPathBuilder;
 import io.goobi.viewer.model.viewer.CollectionLabeledLink;
 import io.goobi.viewer.model.viewer.LabeledLink;
 import io.goobi.viewer.model.viewer.PageType;
@@ -86,7 +84,6 @@ import io.goobi.viewer.model.viewer.ViewManager;
 import io.goobi.viewer.model.viewer.collections.CollectionView;
 import io.goobi.viewer.modules.IModule;
 import io.goobi.viewer.servlets.utils.ServletUtils;
-import io.goobi.viewer.solr.SolrConstants;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.context.ExternalContext;
@@ -2018,56 +2015,6 @@ public class NavigationHelper implements Serializable {
 
     public boolean isSolrIndexOnline() {
         return DataManager.getInstance().getSearchIndex().isSolrIndexOnline();
-    }
-
-    /**
-     * If the current page url is a search page url without or with empty search parameters replace
-     * {@link ViewHistory#getCurrentView(jakarta.servlet.ServletRequest)} with a search url containing the default sort string. This is done so the
-     * view history contains the current random seed for random search list sorting and returning to the page yields the same ordering as the original
-     * call. Must be called in the pretty mappings for all search urls which deliver randomly sorted hitlists
-     */
-    public void addSearchUrlWithCurrentSortStringToHistory() {
-        ViewHistory.getCurrentView(BeanUtils.getRequest())
-                .ifPresent(path -> {
-                    ViewerPath sortStringPath = setupRandomSearchSeed(path, getLocaleString());
-                    if (sortStringPath != path) {
-                        ViewHistory.setCurrentView(sortStringPath, BeanUtils.getSession());
-                    }
-                });
-    }
-
-    /**
-     * 
-     * @param path current viewer path representing the search URL
-     * @param language language code used to look up the configured default sort field
-     * @return {@link ViewerPath}
-     */
-    // Converted from static to instance method to use injected searchBean
-    // instead of per-call BeanUtils CDI lookup (Weld StackWalker overhead)
-    private ViewerPath setupRandomSearchSeed(ViewerPath path, String language) {
-        String defaultSortField = DataManager.getInstance().getConfiguration().getDefaultSortField(language);
-        if (SolrConstants.SORT_RANDOM.equalsIgnoreCase(defaultSortField)) {
-            String parameterPath = path.getParameterPath().toString();
-            if (StringUtils.isBlank(parameterPath) || parameterPath.matches("\\/?-\\/-\\/\\d+\\/-\\/-\\/?")) {
-                // Use injected field instead of per-call BeanUtils CDI lookup
-                SearchBean sb = searchBean;
-                if (sb != null) {
-                    String pageUrl = PrettyUrlTools.getRelativePageUrl("newSearch5",
-                            sb.getActiveContext(),
-                            sb.getExactSearchString(),
-                            sb.getCurrentPage(),
-                            sb.getSortString(),
-                            sb.getFacets().getActiveFacetString());
-                    try {
-                        return ViewerPathBuilder.createPath(path.getApplicationUrl(), path.getApplicationName(), pageUrl, path.getQueryString())
-                                .orElse(path);
-                    } catch (DAOException e) {
-                        logger.error("Error creating search url with current random sort string", e);
-                    }
-                }
-            }
-        }
-        return path;
     }
 
     /**

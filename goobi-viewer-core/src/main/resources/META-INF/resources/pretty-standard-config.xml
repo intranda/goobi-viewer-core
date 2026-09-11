@@ -195,7 +195,6 @@
 		<action onPostback="false">#{searchBean.mirrorAdvancedSearchCurrentHierarchicalFacets}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.setActiveContext('-')}</action>
-		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 	</url-mapping>
 	<url-mapping id="searchadvanced">
 		<pattern value="/searchadvanced/" />
@@ -212,7 +211,6 @@
         <view-id value="/searchList.xhtml" />
         <action onPostback="false">#{searchBean.searchToday}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
-        <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
         <action onPostback="false">#{navigationHelper.resetTheme}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacets}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(0}</action>
@@ -308,7 +306,6 @@
         <query-param name="subtheme" onPostback="false" >#{subtheme}</query-param>
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
         <action onPostback="false">#{searchBean.setActiveSearchType(4)}</action>
-        <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
         <action onPostback="false">#{searchBean.search}</action>
     </url-mapping>
 
@@ -321,7 +318,6 @@
         <action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
         <action onPostback="false">#{searchBean.search}</action>
         <action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
-        <action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
     </url-mapping>
 	<url-mapping id="newSearch3">
 		<pattern value="/search/#{activeContext:searchBean.activeContext}/#{searchString:searchBean.searchString}/#{page:searchBean.currentPage}/" />
@@ -330,7 +326,6 @@
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
-		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="newSearch4">
@@ -340,7 +335,6 @@
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
 		<action onPostback="false">#{searchBean.facets.resetActiveFacetString}</action>
-		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="newSearch5">
@@ -349,7 +343,6 @@
 		<query-param name="subtheme" onPostback="false" >#{subtheme}</query-param>
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 	<url-mapping id="search6">
@@ -358,7 +351,6 @@
 		<query-param name="subtheme" onPostback="false" >#{subtheme}</query-param>
         <action onPostback="false">#{navigationHelper.applySubThemeFromUrl(subtheme)}</action>
 		<action onPostback="false">#{searchBean.setActiveSearchType(0)}</action>
-		<action onPostback="false">#{navigationHelper.addSearchUrlWithCurrentSortStringToHistory()}</action>
 		<action onPostback="false">#{searchBean.search}</action>
 	</url-mapping>
 
