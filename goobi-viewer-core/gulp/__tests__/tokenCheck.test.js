@@ -352,9 +352,52 @@ describe('formatReport', () => {
             warnings: [{ rule: 'R5', token: '--dead', message: 'never read' }],
         });
 
-        expect(text).toContain('R1 a.less:7 --x');
+        expect(text).toContain('a.less:7 [R1]');
+        expect(text).toContain('--x');
         expect(text).toContain('R2 b.less --y');
         expect(text).toContain('--dead');
+    });
+
+    it('shows one actionable issue for the same source and emitted font size without exposing baseline fingerprints', () => {
+        const common = { rule: 'R11', file: 'components/buttons.less', line: 37 };
+        const errors = [
+            { ...common, token: JSON.stringify([['.btn-lg'], 'font-size', '18px']), message: 'fixed text size' },
+            { ...common, token: 'font-size', declaration: { property: 'font-size', value: '18px' }, message: 'emitted fixed text size' },
+        ];
+        const text = formatReport({ errors, stale: [], tolerated: [], warnings: [] });
+        expect(text).toContain('Fix 1 token issue:');
+        expect(text.match(/components\/buttons.less:37/g)).toHaveLength(1);
+        expect(text).toContain('font-size: 18px;');
+        expect(text).toContain('var(--font-size-body-large)');
+        expect(text).not.toContain('[["');
+        // Presentation must not change error/baseline semantics.
+        expect(errors).toHaveLength(2);
+    });
+
+    it('keeps different emitted values and core/theme locations visible', () => {
+        const errors = [
+            ['buttons.less', '14px'],
+            ['buttons.less', '18px'],
+            ['theme/buttons.less', '18px'],
+        ].map(([file, value]) => ({ rule: 'R11', file, line: 3, token: 'font-size', declaration: { property: 'font-size', value }, message: 'emitted fixed text size' }));
+        const text = formatReport({ errors, stale: [], tolerated: [], warnings: [] });
+        expect(text).toContain('Fix 3 token issues:');
+        expect(text).toContain('theme/buttons.less:3');
+    });
+
+    it('renders color fingerprints as CSS declarations as well', () => {
+        const errors = [{ rule: 'R10', file: 'buttons.less', line: 3, token: JSON.stringify([['.btn'], 'color', '#fff']), message: 'use a color token' }];
+        const text = formatReport({ errors, stale: [], tolerated: [], warnings: [] });
+        expect(text).toContain('color: #fff;');
+        expect(text).not.toContain('[["');
+    });
+
+    it('separates warnings from blocking errors and reports success clearly', () => {
+        const text = formatReport({ errors: [], stale: [], tolerated: [], warnings: [{ rule: 'R5', token: '--unused', message: 'never read' }] }, { showWarnings: false });
+        expect(text).toContain('Token check passed.');
+        expect(text).toContain('non-blocking warnings');
+        expect(text).toContain('GV_TOKENWARN=1');
+        expect(text).not.toContain('--unused');
     });
 });
 

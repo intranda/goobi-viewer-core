@@ -1,7 +1,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { checkFiles, checkCompiledTree } = require('../tokenCheck');
+const { checkFiles, checkCompiledTree, runTokenCheck, formatReport } = require('../tokenCheck');
 
 let root;
 beforeEach(() => {
@@ -142,4 +142,20 @@ it('allows inherited shorthand and aliased typography roles after compilation', 
 
 it('preserves the fixed icon exception through source maps', async () => {
     expect(await compile(':root { --known: 1; }', '.icon {\nfont-size: 14px; // Fixed icon/marker geometry; independent of text scale.\n}')).toEqual([]);
+});
+
+it('reports one font-size issue per location across real source and compiled theme checks', async () => {
+    await compile(':root { --known: 1; }', '.button { font-size: 18px; }');
+    const result = await runTokenCheck({ moduleRoot: root, lessRoot: '.', themeLessRoot: '.', baseline: [] });
+    const errors = result.errors.filter((v) => v.rule === 'R11');
+    const text = formatReport({ ...result, errors, warnings: [] });
+    expect(errors).toHaveLength(4);
+    expect(text).toContain('Fix 2 token issues:');
+    expect(text).toContain('component.less:1 [R11]');
+    expect(text).toContain('theme/component.less:1 [R11]');
+});
+
+it('keeps different sizes emitted from the same mixin declaration', async () => {
+    const errors = await compile(':root { --known: 1; }', '.size(@n) { font-size: @n; } .a { .size(14px); } .b { .size(18px); }');
+    expect(errors.filter((v) => v.rule === 'R11').map((v) => v.declaration.value)).toEqual(['14px', '18px']);
 });

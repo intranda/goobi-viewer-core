@@ -1006,7 +1006,13 @@ async function reportTokens() {
 }
 
 async function checkTokens() {
-    if (await reportTokens()) throw new Error('token check failed — see [check-tokens] above');
+    if (await reportTokens()) {
+        const error = new Error('Build stopped. Fix the token issues listed above, then save again or rerun the command.');
+        // Expected validation failures need the diagnostics, not a Gulp stack trace.
+        // Unexpected exceptions still retain their stack for debugging.
+        error.showStack = false;
+        throw error;
+    }
 }
 
 /**

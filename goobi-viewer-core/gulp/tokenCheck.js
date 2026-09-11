@@ -520,9 +520,10 @@ async function checkCompiledTree(root, { entry = 'constructor.less', tokens = ne
     const internalFiles = new Map();
     const add = (rule, node, token, message) => {
         const { file, line } = location(node);
+        const declaration = node.type === 'decl' ? { property: node.prop, value: node.value } : undefined;
         // Repeated mode expansions should not flood the report.
-        if (!violations.some((v) => v.rule === rule && v.file === file && v.line === line && v.token === token && v.message === message)) {
-            violations.push(violation(rule, file, token, line, message));
+        if (!violations.some((v) => v.rule === rule && v.file === file && v.line === line && v.token === token && v.message === message && v.declaration?.value === declaration?.value)) {
+            violations.push({ ...violation(rule, file, token, line, message), ...(declaration && { declaration }) });
         }
     };
     const allowedOutput = (node) => {
@@ -617,17 +618,53 @@ function applyBaseline(violations, baseline) {
     return { errors, tolerated: kept, stale };
 }
 
+// Baseline fingerprints remain machine-readable and stable. Decode them only
+// for presentation; never use display deduplication to tolerate a violation.
+function reportDeclaration(v) {
+    if (v.declaration) return v.declaration;
+    try {
+        const fingerprint = JSON.parse(v.token);
+        if (Array.isArray(fingerprint) && fingerprint.length === 3 && Array.isArray(fingerprint[0]) && typeof fingerprint[1] === 'string' && typeof fingerprint[2] === 'string') {
+            return { property: fingerprint[1], value: fingerprint[2] };
+        }
+    } catch {
+        // Most diagnostics contain a plain token name, not a fingerprint.
+    }
+    return null;
+}
+
 function formatReport({ errors, stale, tolerated, warnings }, { showWarnings = true } = {}) {
     const lines = [];
-    if (errors.length) {
-        lines.push(`${errors.length} token violation(s):`);
-        for (const v of errors) lines.push(`  ${v.rule} ${v.file}:${v.line} ${v.token} — ${v.message}`);
+    const issues = new Map();
+    for (const v of errors) {
+        const declaration = reportDeclaration(v);
+        // Source and compiled CSS can detect the same fixed size. Keep distinct
+        // emitted values from mixin calls, even when their source location matches.
+        const identity = JSON.stringify([v.rule, v.file, v.line, v.rule === 'R11' && declaration ? declaration : [v.token, v.message]]);
+        if (!issues.has(identity)) issues.set(identity, { ...v, declaration });
+    }
+    if (issues.size) {
+        lines.push(`Fix ${issues.size} token ${issues.size === 1 ? 'issue' : 'issues'}:`);
+        for (const v of issues.values()) {
+            lines.push('', `  ${v.file}:${v.line} [${v.rule}]`);
+            if (v.declaration) lines.push(`    ${v.declaration.property}: ${v.declaration.value};`);
+            else if (v.token) lines.push(`    ${v.token}`);
+            if (v.rule === 'R11') {
+                lines.push('    Fixed font sizes bypass theme scaling.', '    Use a --font-size-* token, e.g. var(--font-size-body-large).');
+            } else {
+                lines.push(`    ${v.message}`);
+            }
+        }
+        lines.push('');
+    } else if (!stale.length) {
+        lines.push('Token check passed.');
     }
     if (stale.length) {
         lines.push(`${stale.length} stale baseline entr${stale.length === 1 ? 'y' : 'ies'} (remove from tokenCheck.baseline.json):`);
         for (const k of stale) lines.push(`  ${k}`);
     }
-    lines.push(`${tolerated.length} tolerated by baseline, ${warnings.length} warning(s)${showWarnings || !warnings.length ? '' : ' (GV_TOKENWARN=1 lists them)'}`);
+    if (tolerated.length) lines.push(`${tolerated.length} known violations allowed by the baseline.`);
+    if (warnings.length) lines.push(`${warnings.length} non-blocking warnings.${showWarnings ? '' : ' Set GV_TOKENWARN=1 to show details.'}`);
     if (showWarnings) for (const w of warnings) lines.push(`  ${w.rule} ${w.token} — ${w.message}`);
     return lines.join('\n');
 }
@@ -669,7 +706,10 @@ async function runTokenCheck({ moduleRoot = MODULE_ROOT, lessRoot = LESS_ROOT, t
     violations.push(...(await checkCompiledTree(path.resolve(moduleRoot, lessRoot), { tokens })));
     if (theme) {
         const entries = [...theme.keys()].filter((file) => /(?:^constructor\.less$|^crowdsourcing\/csConstructor\.less$|^subthemes\/[^/]+\/subThemeConstructor\.less$)/.test(file));
-        for (const entry of entries) violations.push(...(await checkCompiledTree(themeDir, { entry, theme: true, tokens })));
+        for (const entry of entries) {
+            const compiled = await checkCompiledTree(themeDir, { entry, theme: true, tokens });
+            violations.push(...compiled.map((v) => ({ ...v, file: `theme/${v.file}` })));
+        }
     }
     return { ...applyBaseline(violations, baseline), warnings, violations, themeChecked: theme !== null };
 }
