@@ -841,6 +841,8 @@
     "--shadow-container",
     "--sidebar-preview-outline",
     "--text-measure",
+    "--theme-logo-dark-display",
+    "--theme-logo-light-display",
     "--theme-switch-dark-display",
     "--theme-switch-light-display",
     "--toc-page-bg-hover",

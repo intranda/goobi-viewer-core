@@ -131,6 +131,65 @@
                             </h:panelGroup>
                             <!-- End LOGO UPLOAD -->
 
+                            <!-- DARK MODE LOGO UPLOAD -->
+                            <h:panelGroup
+                                id="logoDarkPanel"
+                                styleClass="form-group form-row position-relative"
+                                layout="block">
+                                <ui:fragment rendered="#{false}">
+                                    <div class="admin__non-clickable-area-overlay" />
+                                </ui:fragment>
+                                <div class="col-2 control-label admin__form-label">
+                                    <label for="">#{msg.admin__themes__general_logo_dark__label}:</label>
+                                </div>
+
+                                <div class="col-9 admin__form-input">
+                                    <div class="admin__campaign-media-file-box">
+                                        <!-- ACTIONS -->
+                                        <div class="cms-module__actions">
+                                            <button
+                                                jsf:action="#{cmsBean.setSelectedMediaHolder(theme.darkLogo)}"
+                                                class="btn #{theme.darkLogo.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
+                                                role="button">
+                                                <f:ajax
+                                                    execute="@this"
+                                                    render="mediaSelectPanel" />
+                                                #{theme.darkLogo.hasMediaItem() ? msg.cms_media_editFile :
+                                                msg.cms_selectMedia}
+                                            </button>
+                                            <button
+                                                jsf:rendered="#{theme.darkLogo.hasMediaItem()}"
+                                                jsf:action="#{theme.darkLogo.setMediaItem(null)}"
+                                                class="btn btn--clean delete"
+                                                role="button">
+                                                <f:ajax render="logoDarkPanel" />
+                                                #{msg.cms_selectMediaItem_deselect}
+                                            </button>
+                                            <ui:fragment rendered="#{theme.darkLogo.hasMediaItem()}">
+                                                <img
+                                                    src="#{theme.darkLogo.mediaItem.iconURI}"
+                                                    alt="" />
+                                            </ui:fragment>
+                                        </div>
+                                        <!-- HELP -->
+                                        <span class="admin__form-help-text">#{msg.admin__themes__general_logo_dark__help}</span>
+                                    </div>
+                                    <!-- End admin__campaign-media-file-box -->
+                                </div>
+                                <!-- End col-9 admin__form-input -->
+
+                                <div class="col-1 admin__form-help-icon">
+                                    <button
+                                        type="button"
+                                        class="btn btn--clean"
+                                        data-toggle="helptext"
+                                        aria-label="inline help icon">
+                                        <util:icon icon="help" />
+                                    </button>
+                                </div>
+                            </h:panelGroup>
+                            <!-- End DARK MODE LOGO UPLOAD -->
+
                             <!-- FULLSCREEN LOGO UPLOAD -->
                             <h:panelGroup
                                 id="fullscreenLogoPanel"
@@ -189,6 +248,65 @@
                                 </div>
                             </h:panelGroup>
                             <!-- End FULLSCREEN LOGO UPLOAD -->
+
+                            <!-- DARK MODE FULLSCREEN LOGO UPLOAD -->
+                            <h:panelGroup
+                                id="fullscreenLogoDarkPanel"
+                                styleClass="form-group form-row position-relative"
+                                layout="block">
+                                <ui:fragment rendered="#{false}">
+                                    <div class="admin__non-clickable-area-overlay" />
+                                </ui:fragment>
+                                <div class="col-2 control-label admin__form-label">
+                                    <label for="">#{msg.admin__themes__fullscreen_logo_dark__label}:</label>
+                                </div>
+
+                                <div class="col-9 admin__form-input">
+                                    <div class="admin__campaign-media-file-box">
+                                        <!-- ACTIONS -->
+                                        <div class="cms-module__actions">
+                                            <button
+                                                jsf:action="#{cmsBean.setSelectedMediaHolder(theme.darkFullscreenLogo)}"
+                                                class="btn #{theme.darkFullscreenLogo.hasMediaItem() ? 'btn--clean' : 'btn--default edit'}"
+                                                role="button">
+                                                <f:ajax
+                                                    execute="@this"
+                                                    render="mediaSelectPanel" />
+                                                #{theme.darkFullscreenLogo.hasMediaItem() ? msg.cms_media_editFile :
+                                                msg.cms_selectMedia}
+                                            </button>
+                                            <button
+                                                jsf:rendered="#{theme.darkFullscreenLogo.hasMediaItem()}"
+                                                jsf:action="#{theme.darkFullscreenLogo.setMediaItem(null)}"
+                                                class="btn btn--clean delete"
+                                                role="button">
+                                                <f:ajax render="fullscreenLogoDarkPanel" />
+                                                #{msg.cms_selectMediaItem_deselect}
+                                            </button>
+                                            <ui:fragment rendered="#{theme.darkFullscreenLogo.hasMediaItem()}">
+                                                <img
+                                                    src="#{theme.darkFullscreenLogo.mediaItem.iconURI}"
+                                                    alt="" />
+                                            </ui:fragment>
+                                        </div>
+                                        <!-- HELP -->
+                                        <span class="admin__form-help-text">#{msg.admin__themes__fullscreen_logo_dark__help}</span>
+                                    </div>
+                                    <!-- End admin__campaign-media-file-box -->
+                                </div>
+                                <!-- End col-9 admin__form-input -->
+
+                                <div class="col-1 admin__form-help-icon">
+                                    <button
+                                        type="button"
+                                        class="btn btn--clean"
+                                        data-toggle="helptext"
+                                        aria-label="inline help icon">
+                                        <util:icon icon="help" />
+                                    </button>
+                                </div>
+                            </h:panelGroup>
+                            <!-- End DARK MODE FULLSCREEN LOGO UPLOAD -->
 
                             <!-- ICON UPLOAD -->
                             <h:panelGroup
@@ -479,7 +597,7 @@
                             <ui:include src="/resources/cms/includes/mediaSelect.xhtml">
                                 <ui:param
                                     name="mediaDisplayPanel"
-                                    value="logoPanel iconPanel fullscreenLogoPanel" />
+                                    value="logoPanel logoDarkPanel iconPanel fullscreenLogoPanel fullscreenLogoDarkPanel" />
                                 <ui:param
                                     name="fileTypes"
                                     value="#{cmsMediaBean.getImageTypes()}" />

@@ -19,8 +19,12 @@
             <a
                 href="#{request.contextPath}/"
                 title="#{msg.fullscreen__logo_home_link}">
-                <img
-                    src='#{adminThemesBean.getFullscreenLogo("images/template/fullscreen_logo.png", 300, 40)}'
+                <viewerComponent:themeLogo
+                    variant="fullscreen"
+                    defaultUrl="images/template/fullscreen_logo.png"
+                    darkDefaultUrl="images/template/fullscreen_logo_dark.png"
+                    width="300"
+                    height="40"
                     alt="#{adminThemesBean.getThemeLabel(configurationBean.name)} Logo" />
                 <!--                 <span>#{msg.fullscreen_brandName}</span> -->
             </a>
