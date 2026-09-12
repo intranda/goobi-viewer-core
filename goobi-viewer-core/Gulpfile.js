@@ -895,10 +895,13 @@ function watchMode() {
     gulp.watch(joinPosix(paths.jsModulesRoot, 'browsersupport', '**', '*.js')).on('change', (p) => bundleBrowserSupportJS(p));
 
     // Styles & tags
+    const themePaths = tokenCheck.themePaths();
     gulp.watch(
-        [joinPosix(paths.lessRoot, '**', '*.less'), joinPosix(tokenCheck.THEME_LESS_ROOT, '**', '*.less')],
+        [joinPosix(paths.lessRoot, '**', '*.less'), ...(themePaths.enabled ? [joinPosix(themePaths.lessRoot, '**', '*.less')] : [])],
         gulp.series(checkTokens, () => buildStyles())
     );
+    // Theme templates carry no styles, so they only need the check, not a CSS rebuild.
+    if (themePaths.enabled) gulp.watch(joinPosix(themePaths.root, '**', '*.{xhtml,html,tag,js}'), checkTokens);
     gulp.watch(joinPosix(paths.jsDevRoot, 'tags', '**', '*.tag')).on('change', (p) => compileRiotTags(p));
 
     // Static assets (no dist CSS/JS)
@@ -995,12 +998,13 @@ function printTargets(cb) {
 /**
  * Reports token-layer violations and returns whether the check failed.
  * Set GV_TOKENWARN=1 to list warnings as well; GV_THEME_LESS_ROOT points the theme
- * contract at another theme's css/less directory (customer theme updates).
+ * contract at another theme's css/less directory (customer theme updates);
+ * GV_THEMECHECK=0 runs the core rules only.
  *
  * @returns {Promise<boolean>} Whether errors or stale baseline entries exist.
  */
 async function reportTokens() {
-    const result = await tokenCheck.runTokenCheck(process.env.GV_THEME_LESS_ROOT ? { themeLessRoot: process.env.GV_THEME_LESS_ROOT } : {});
+    const result = await tokenCheck.runTokenCheck();
     logBlock('check-tokens', tokenCheck.formatReport(result, { showWarnings: process.env.GV_TOKENWARN === '1' }).split('\n'));
     return result.errors.length > 0 || result.stale.length > 0;
 }
@@ -1048,6 +1052,7 @@ exports.icons = buildIcons;
 /* ── Task exports ────────────────────────────────────────────────────────────────────────────
    - npm run build      → token check, then styles, JS bundles, riot tags
    - npm run check:tokens → token-layer rules only (gulp/tokenCheck.js, baseline in gulp/tokenCheck.baseline.json)
+     GV_THEME_LESS_ROOT=<theme>/css/less picks the theme; GV_THEMECHECK=0 runs the core rules only
    - npm run dev        → starts watchers (no initial full sync; run npm run sync separately if needed)
    - npm run copyDeps   → copies declared 3rd-party assets, then regenerates
                           the patched replaywebpage bundle (see gulp/replaywebpagePatch.js)

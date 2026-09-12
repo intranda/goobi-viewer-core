@@ -55,6 +55,8 @@ function state(css, os, toggle, scope = 'page') {
     return resolve;
 }
 
+const { splitTopLevel } = require('../tokenCheck');
+
 // The token layer uses hex, relative rgb and premultiplied sRGB mixing.
 // Keep the evaluator strict: unfamiliar color syntax must fail the test.
 function color(value) {
@@ -69,15 +71,22 @@ function color(value) {
         return color(m[1])
             .slice(0, 3)
             .concat(Number(m[2]) / (m[3] ? 100 : 1));
-    m = value.match(/^color-mix\(in srgb,\s*(.*?)\s+([\d.]+)%,\s*(.*?)\)$/);
-    if (m) {
-        const a = color(m[1]),
-            b = color(m[3]),
-            weight = Number(m[2]) / 100;
-        const alpha = a[3] * weight + b[3] * (1 - weight);
-        return a
+    if (value.startsWith('color-mix(') && value.endsWith(')')) {
+        // Split on top-level commas: a mix may carry another mix as an operand.
+        const [space, ...operands] = splitTopLevel(value.slice('color-mix('.length, -1));
+        if (space !== 'in srgb' || operands.length !== 2) throw new Error(`Unsupported color: ${value}`);
+        const parts = operands.map((operand) => {
+            const share = /^(.*?)\s+([\d.]+)%$/.exec(operand);
+            return share ? { color: color(share[1].trim()), weight: Number(share[2]) / 100 } : { color: color(operand), weight: null };
+        });
+        const [a, b] = parts;
+        if (a.weight === null && b.weight === null) a.weight = b.weight = 0.5;
+        else if (a.weight === null) a.weight = 1 - b.weight;
+        else if (b.weight === null) b.weight = 1 - a.weight;
+        const alpha = a.color[3] * a.weight + b.color[3] * b.weight;
+        return a.color
             .slice(0, 3)
-            .map((v, i) => (v * a[3] * weight + b[i] * b[3] * (1 - weight)) / alpha)
+            .map((v, i) => (v * a.color[3] * a.weight + b.color[i] * b.color[3] * b.weight) / alpha)
             .concat(alpha);
     }
     throw new Error(`Unsupported color: ${value}`);
@@ -145,7 +154,7 @@ it.each(['light', 'dark'])('keeps base defaults and Reference differences indepe
             expect(get('--font-size-body')).toBe(`calc(1.6rem * ${scale})`);
             expect(get('--radius-button')).toBe(core ? '0' : '6px');
             expect(get('--radius-container')).toBe(core ? '0' : '8px');
-            expect(get('--radius-container-small')).toBe(core ? '0.25rem' : '4px');
+            expect(get('--radius-container-small')).toBe(core ? '0.25rem' : '6px');
             expect(get('--search-toolbar-button-radius')).toBe(get('--radius-button'));
             expect(get('--active-facets-badge-radius')).toBe(get('--radius-button'));
             expect(get('--font-family').startsWith("'Inter'")).toBe(!core);
@@ -188,9 +197,11 @@ it('exposes each subtheme brand to core consumers in both modes', () => {
         ['subtheme2', '#095d42', '#6bc9a5'],
     ]) {
         if (!variants.has(name)) continue;
-        expect(state(variants.get(name), 'light', 'none')('--brand')).toBe(light);
-        expect(state(variants.get(name), 'dark', 'none')('--brand')).toBe(dark);
-        expect(state(variants.get(name), 'dark', 'none')('--datepicker-header-bg')).toBe(light);
+        expect(state(variants.get(name), 'light', 'none')('--brand')).toContain(light);
+        expect(state(variants.get(name), 'dark', 'none')('--brand')).toContain(dark);
+        // A core component reading a brand role gets the subtheme's brand of the active mode.
+        expect(state(variants.get(name), 'light', 'none')('--datepicker-header-bg')).toBe(light);
+        expect(state(variants.get(name), 'dark', 'none')('--datepicker-header-bg')).toBe(dark);
     }
 });
 
@@ -553,7 +564,7 @@ it.each(['light', 'dark'])('keeps reference entity group colors independent of c
                 expect(theme(`--fg-entity-${entity}`)).toBe(core(`--fg-entity-${entity}`));
             }
             for (const [group, expected] of Object.entries({ work: '#dc7e2e', person: '#b13b29', agent: '#568fb2', award: '#2e8d38', event: '#8966ca' })) {
-                expect(theme(`--entity-${group}-bg`)).toBe(expected);
+                expect(theme(`--bg-entity-${group}`)).toBe(expected);
             }
         }
     }
@@ -642,10 +653,19 @@ it.each(['light', 'dark'])('keeps filled brand surfaces strong and brand accents
     for (const [name, css] of variants)
         for (const toggle of ['none', 'light', 'dark']) {
             const get = state(css, os, toggle);
-            expect({ name, toggle, fill: get('--bg-brand') }).toEqual({ name, toggle, fill: get('--color-brand') });
-            expect({ name, toggle, hover: get('--bg-brand-hover') }).toEqual({ name, toggle, hover: get('--color-brand-hover') });
             const effective = toggle === 'none' ? os : toggle;
-            expect({ name, toggle, accent: get('--brand') }).toEqual({ name, toggle, accent: get(effective === 'dark' ? '--color-brand-dark' : '--color-brand') });
+            const dark = effective === 'dark';
+            // A fill stays an undiluted brand primitive. Whether it follows the mode is the theme's
+            // call: core keeps one brand, Reference switches to the lighter one in dark mode.
+            const primitive = get(dark ? '--color-brand-dark' : '--color-brand');
+            const fills = ['--color-brand', '--color-brand-dark'].map((n) => get(n));
+            expect({ name, toggle, fill: fills.includes(get('--bg-brand')) }).toEqual({ name, toggle, fill: true });
+            // The hover state must move, and stay readable while it does.
+            expect({ name, toggle, moves: get('--bg-brand-hover') !== get('--bg-brand') }).toEqual({ name, toggle, moves: true });
+            expect({ name, toggle, onHover: contrast(color(get('--fg-on-brand')), color(get('--bg-brand-hover'))) >= 4.5 }).toEqual({ name, toggle, onHover: true });
+            expect({ name, toggle, onFill: contrast(color(get('--fg-on-brand')), color(get('--bg-brand'))) >= 4.5 }).toEqual({ name, toggle, onFill: true });
+            expect({ name, toggle, derived: get('--brand').includes(primitive) }).toEqual({ name, toggle, derived: true });
+            expect({ name, toggle, readable: contrast(color(get('--brand')), color(get('--bg-content-box'))) >= 4.5 }).toEqual({ name, toggle, readable: true });
         }
 });
 

@@ -2,7 +2,7 @@
  * Unit tests for the token check (gulp/tokenCheck.js) against inline LESS
  * fixtures, plus one run against the real LESS tree.
  */
-const { parseLess, checkFiles, applyBaseline, formatReport, runTokenCheck, keyOf, classifyThemeTokens, formatThemeTokenReport } = require('../tokenCheck');
+const { parseLess, checkFiles, applyBaseline, formatReport, runTokenCheck, keyOf, classifyThemeTokens, formatThemeTokenReport, themePaths } = require('../tokenCheck');
 
 const TOKENS = 'misc/tokens.less';
 const ALIASES = 'misc/some-aliases.less';
@@ -213,7 +213,7 @@ describe('R6 theme mixin tokens must exist in core or be read by the theme', () 
             OPTS
         );
 
-        expect(keys(result)).toEqual(['R6 misc/mixins.less --orphan']);
+        expect(keys(result)).toEqual(['R6 theme/misc/mixins.less --orphan']);
     });
 
     it('counts theme reads through a used @alias', () => {
@@ -227,7 +227,7 @@ describe('R6 theme mixin tokens must exist in core or be read by the theme', () 
             OPTS
         );
 
-        expect(keys(result)).toEqual(['R6 misc/mixins.less --alias-unused']);
+        expect(keys(result)).toEqual(['R6 theme/misc/mixins.less --alias-unused']);
     });
 
     it('says when core reads the theme token via fallback', () => {
@@ -352,7 +352,8 @@ describe('formatReport', () => {
             warnings: [{ rule: 'R5', token: '--dead', message: 'never read' }],
         });
 
-        expect(text).toContain('a.less:7 [R1]');
+        expect(text).toContain('a.less:7');
+        expect(text).toContain('R1');
         expect(text).toContain('--x');
         expect(text).toContain('R2 b.less --y');
         expect(text).toContain('--dead');
@@ -365,7 +366,7 @@ describe('formatReport', () => {
             { ...common, token: 'font-size', declaration: { property: 'font-size', value: '18px' }, message: 'emitted fixed text size' },
         ];
         const text = formatReport({ errors, stale: [], tolerated: [], warnings: [] });
-        expect(text).toContain('Fix 1 token issue:');
+        expect(text).toContain('1 issue in 1 file');
         expect(text.match(/components\/buttons.less:37/g)).toHaveLength(1);
         expect(text).toContain('font-size: 18px;');
         expect(text).toContain('var(--font-size-body-large)');
@@ -381,7 +382,7 @@ describe('formatReport', () => {
             ['theme/buttons.less', '18px'],
         ].map(([file, value]) => ({ rule: 'R11', file, line: 3, token: 'font-size', declaration: { property: 'font-size', value }, message: 'emitted fixed text size' }));
         const text = formatReport({ errors, stale: [], tolerated: [], warnings: [] });
-        expect(text).toContain('Fix 3 token issues:');
+        expect(text).toContain('3 issues in 2 files');
         expect(text).toContain('theme/buttons.less:3');
     });
 
@@ -398,6 +399,35 @@ describe('formatReport', () => {
         expect(text).toContain('non-blocking warnings');
         expect(text).toContain('GV_TOKENWARN=1');
         expect(text).not.toContain('--unused');
+    });
+});
+
+describe('theme selection', () => {
+    const env = { ...process.env };
+    afterEach(() => {
+        process.env = { ...env };
+    });
+
+    it('follows GV_THEME_LESS_ROOT and derives the template root from it', () => {
+        process.env.GV_THEME_LESS_ROOT = '../theme-x/WebContent/resources/themes/x/css/less';
+        expect(themePaths()).toEqual({
+            lessRoot: '../theme-x/WebContent/resources/themes/x/css/less',
+            root: '../theme-x/WebContent/resources/themes/x',
+            enabled: true,
+        });
+    });
+
+    it('switches off the theme rules without touching the core rules', () => {
+        process.env.GV_THEMECHECK = '0';
+        expect(themePaths().enabled).toBe(false);
+    });
+
+    // A green report that hides a skipped check is worse than no report.
+    it('never reports success without saying which theme was checked', () => {
+        const empty = { errors: [], stale: [], tolerated: [], warnings: [] };
+        expect(formatReport({ ...empty, theme: { status: 'checked', name: 'reference', path: 'x' } })).toContain('Theme: reference');
+        expect(formatReport({ ...empty, theme: { status: 'missing', name: 'x', path: '../gone/css/less' } })).toContain('the theme rules did not run');
+        expect(formatReport({ ...empty, theme: { status: 'off', name: 'x', path: 'x' } })).toContain('GV_THEMECHECK=0');
     });
 });
 

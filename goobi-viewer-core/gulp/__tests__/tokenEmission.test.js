@@ -150,9 +150,9 @@ it('reports one font-size issue per location across real source and compiled the
     const errors = result.errors.filter((v) => v.rule === 'R11');
     const text = formatReport({ ...result, errors, warnings: [] });
     expect(errors).toHaveLength(4);
-    expect(text).toContain('Fix 2 token issues:');
-    expect(text).toContain('component.less:1 [R11]');
-    expect(text).toContain('theme/component.less:1 [R11]');
+    expect(text).toContain('2 issues in 2 files');
+    expect(text).toContain('component.less:1');
+    expect(text).toContain('theme/component.less:1');
 });
 
 it('keeps different sizes emitted from the same mixin declaration', async () => {

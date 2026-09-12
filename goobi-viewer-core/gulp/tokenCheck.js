@@ -18,6 +18,11 @@ Rules
   R9  outside misc/palette.less the token layer holds no color literal; alphas derive via rgb(from …)
   R10 component property values use tokens, not color literals or static color variables; backend exceptions are explicit
   R11 frontend font sizes use text roles or relative inheritance; fixed icon/marker geometry is explicitly annotated
+  R12 (theme) no !important outside the focus helper and the print styles
+  R13 (theme) every LESS file is reachable from an entry point
+  R14 (theme) every visible color pair reaches its WCAG 2.2 AA threshold in both modes
+  R15 (theme) light and dark declare the same token names
+  R16 (theme) templates carry no color values and no inline color styles
 
 Known violations are tolerated via tokenCheck.baseline.json; entries that no longer
 occur are reported as stale so the baseline can only shrink.
@@ -31,8 +36,28 @@ const postcss = require('postcss');
 const MODULE_ROOT = path.resolve(__dirname, '..');
 const LESS_ROOT = 'src/main/resources/META-INF/resources/resources/css/less';
 const TOKEN_LAYER = ['misc/palette.less', 'misc/tokens.less'];
-const THEME_LESS_ROOT = '../goobi-viewer-theme-reference/WebContent/resources/themes/reference/css/less';
+const THEME_ROOT = '../goobi-viewer-theme-reference/WebContent/resources/themes/reference';
+const THEME_LESS_ROOT = `${THEME_ROOT}/css/less`;
+
+/**
+ * Which theme the check and the watcher look at, and whether the theme rules run at all.
+ * The core rules are not switchable: they keep a build from going past the token system.
+ * The theme rules judge a separate contract, and a customer theme may predate it.
+ *
+ * GV_THEME_LESS_ROOT  the theme's css/less directory (default: the reference submodule)
+ * GV_THEMECHECK=0     run the core rules only
+ *
+ * @returns {{lessRoot: string, root: string, enabled: boolean}}
+ */
+function themePaths() {
+    const lessRoot = process.env.GV_THEME_LESS_ROOT || THEME_LESS_ROOT;
+    return { lessRoot, root: lessRoot.replace(/[\\/]css[\\/]less[\\/]?$/, ''), enabled: process.env.GV_THEMECHECK !== '0' };
+}
 const THEME_MIXINS = 'misc/mixins.less';
+// A theme keeps its token layer either in the legacy mixins file or split like the core.
+const THEME_TOKEN_LAYER = [THEME_MIXINS, ...TOKEN_LAYER];
+const THEME_MODE_MIXIN = /^\.mx-theme-(?:semantic-)?(?:light|dark)\(\)$/;
+const THEME_PALETTE_MIXIN = /^\.mx-theme-[\w-]*palette\(\)$/;
 const BASELINE_FILE = path.join(__dirname, 'tokenCheck.baseline.json');
 const VARIABLES_FILE = 'misc/variables.less';
 const COMPONENT_COLOR = /#[\da-f]{3}(?:[\da-f](?:[\da-f]{2}(?:[\da-f]{2})?)?)?\b|\b(?:rgba?|hsla?)\(\s*[+-]?(?:\d|\.\d)|(?<![\w@#.-])(?:black|white)(?![\w-])/i;
@@ -46,6 +71,9 @@ const COLOR_LITERAL = new RegExp(
     `#[0-9a-f]{3,8}\\b|\\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\\((?!\\s*from\\b)|(?:^|[\\s,(])(?:${Object.keys(less.data.colors).join('|')})(?=[\\s,)]|$)`,
     'i'
 );
+const OCCURRENCE_LIMIT = 12;
+const IMPORTANT_ALLOWED = ['misc/mixins.less', 'misc/print.less'];
+const ENTRY_POINTS = /^(?:constructor\.less|crowdsourcing\/csConstructor\.less|subthemes\/[^/]+\/subThemeConstructor\.less)$/;
 const MIXIN_DEFINITION = /^\.[\w-]+\([^)]*\)(?: when .+)?$/;
 const DETACHED_DEFINITION = /^@[\w-]+:$/;
 const MIXIN_CALL = /^\.[\w-]+(\([^)]*\))?$/;
@@ -429,31 +457,39 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
         const themeStaticColors = new Set();
         for (const p of themeParsed.values()) {
             for (const d of p.declarations) if (!INTERNAL.test(d.name)) themeTokens.add(d.name);
-            for (const d of p.declarations) if (d.name.startsWith('--color-') && d.stack.includes('.mx-theme-palette()')) themePalette.add(d.name);
+            for (const d of p.declarations) if (d.name.startsWith('--color-') && d.stack.some((h) => THEME_PALETTE_MIXIN.test(h))) themePalette.add(d.name);
             for (const name of staticColorNames(p)) themeStaticColors.add(name);
         }
+        const isThemeLayer = (file) =>
+            THEME_TOKEN_LAYER.includes(file) || file === VARIABLES_FILE || /^subthemes\/[^/]+\/subThemeConstructor\.less$/.test(file);
         for (const [file, p] of themeParsed) {
-            const inLayer = file === themeMixins || file === VARIABLES_FILE || /^subthemes\/[^/]+\/subThemeConstructor\.less$/.test(file);
+            const inLayer = isThemeLayer(file);
             const report = (rule, token, line, message) => violations.push(violation(rule, `theme/${file}`, token, line, message));
             for (const r of p.reads) {
                 if (!INTERNAL.test(r.name) && !themeTokens.has(r.name)) report('R1', r.name, r.line, renameHint(r.name) || 'unknown core or theme token');
-                if ((themePalette.has(r.name) || paletteTokens.has(r.name)) && !(file === themeMixins && r.stack.some((h) => /^\.mx-theme-(light|dark)\(\)$/.test(h))))
+                const paletteReadAllowed =
+                    tokenLayer.includes(file) || (file === themeMixins && r.stack.some((h) => THEME_MODE_MIXIN.test(h)));
+                if ((themePalette.has(r.name) || paletteTokens.has(r.name)) && !paletteReadAllowed)
                     report('R8', r.name, r.line, 'theme components and features read roles, not palette primitives');
             }
             for (const d of p.declarations) {
                 if (!inLayer && !INTERNAL.test(d.name)) report('R2', d.name, d.line, 'public theme tokens belong in the root token wiring');
-                const paletteDeclaration = file === themeMixins && d.stack.includes('.mx-theme-palette()');
+                const paletteDeclaration = (file === themeMixins || file === paletteFile) && d.stack.some((h) => THEME_PALETTE_MIXIN.test(h));
                 const subthemeBrand = /^subthemes\/[^/]+\/subThemeConstructor\.less$/.test(file) && /^--color-brand(-hover|-dark)?$/.test(d.name);
                 if (!paletteDeclaration && !subthemeBrand && COLOR_LITERAL.test(withoutStrings(d.value)))
                     report('R9', d.name, d.line, 'theme color literals belong in .mx-theme-palette()');
-                const mode = d.stack.find((h) => /^\.mx-theme-(light|dark)\(\)$/.test(h));
+                const mode = d.stack.find((h) => THEME_MODE_MIXIN.test(h));
                 if (mode) {
-                    const other = mode.includes('-light') ? '.mx-theme-dark()' : '.mx-theme-light()';
+                    const other = mode.includes('light') ? mode.replace('light', 'dark') : mode.replace('dark', 'light');
                     if (!p.declarations.some((x) => x.name === d.name && x.stack.includes(other))) report('R7', d.name, d.line, `missing counterpart in ${other}`);
                 }
             }
             if (!inLayer) {
                 checkTypography(`theme/${file}`, p, theme.get(file));
+                if (!IMPORTANT_ALLOWED.includes(file))
+                    (theme.get(file) || '').split('\n').forEach((text, index) => {
+                        if (/!important/.test(text) && !/^\s*(\/\/|\*|\/\*)/.test(text)) report('R12', text.trim().slice(0, 60), index + 1, 'declaration marked !important');
+                    });
                 for (const b of p.blocks)
                     if (MODE_BRANCH.test(b.header) || /@colorModes/.test(b.header)) report('R4', b.header, b.line, 'theme mode branching belongs in the token wiring');
                 for (const d of p.properties) {
@@ -464,16 +500,20 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
             }
         }
 
-        const mixins = themeParsed.get(themeMixins);
-        if (mixins) {
-            const seen = new Set();
-            for (const d of mixins.declarations) {
+        for (const file of unreachableFiles(theme))
+            violations.push(violation('R13', `theme/${file}`, file, 1, 'not imported by any entry point'));
+
+        const seen = new Set();
+        for (const layerFile of THEME_TOKEN_LAYER) {
+            const parsed = themeParsed.get(layerFile);
+            if (!parsed) continue;
+            for (const d of parsed.declarations) {
                 if (INTERNAL.test(d.name) || tokens.has(d.name) || readByTheme.has(d.name) || seen.has(d.name)) continue;
                 seen.add(d.name);
                 const message = readByCore.has(d.name)
                     ? 'theme token that core reads via fallback only — belongs in the token layer'
                     : 'theme token unknown to core and never read by the theme';
-                violations.push(violation('R6', themeMixins, d.name, d.line, message));
+                violations.push(violation('R6', `theme/${layerFile}`, d.name, d.line, message));
             }
         }
     }
@@ -491,7 +531,7 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
  * retain the declaring file so a root declaration in a component is still R2.
  * Only private --_* properties remain local; public core and theme tokens inherit.
  */
-async function checkCompiledTree(root, { entry = 'constructor.less', tokens = new Set(), theme = false } = {}) {
+async function checkCompiledTree(root, { entry = 'constructor.less', tokens = new Set(), theme = false, onCss } = {}) {
     const filename = path.join(root, entry);
     const violations = [];
     let output;
@@ -504,6 +544,7 @@ async function checkCompiledTree(root, { entry = 'constructor.less', tokens = ne
     } catch (error) {
         return [violation('LESS', error.filename ? path.relative(root, error.filename) : entry, '', error.line || 1, error.message)];
     }
+    onCss?.(output.css);
     const css = postcss.parse(output.css, { from: path.join(root, 'token-check.css'), map: { prev: output.map } });
     const location = (node) => {
         const { input, start } = node.source;
@@ -555,7 +596,7 @@ async function checkCompiledTree(root, { entry = 'constructor.less', tokens = ne
             isTypographyProperty(d.prop) &&
             FIXED_TYPE_SIZE.test(withoutStrings(d.value)) &&
             !TOKEN_LAYER.includes(file) &&
-            !(theme && file === THEME_MIXINS) &&
+            !(theme && THEME_TOKEN_LAYER.includes(file)) &&
             (theme || !colorExemption(file, backendExemptions)) &&
             !hasGeometryNote(file, line)
         ) {
@@ -576,7 +617,7 @@ async function checkCompiledTree(root, { entry = 'constructor.less', tokens = ne
         if (node.type !== 'rule' && node.type !== 'atrule') return;
         const selector = node.type === 'rule' ? node.selector : `@${node.name} ${node.params}`;
         const file = location(node).file;
-        const inLayer = theme ? file === VARIABLES_FILE || file === THEME_MIXINS : TOKEN_LAYER.includes(file);
+        const inLayer = theme ? file === VARIABLES_FILE || THEME_TOKEN_LAYER.includes(file) : TOKEN_LAYER.includes(file);
         if (MODE_BRANCH.test(selector) && !inLayer) {
             add('R4', node, selector, 'emitted mode branching outside the token layer');
         }
@@ -633,40 +674,421 @@ function reportDeclaration(v) {
     return null;
 }
 
-function formatReport({ errors, stale, tolerated, warnings }, { showWarnings = true } = {}) {
+/**
+ * One short explanation and one concrete fix per rule. The watcher prints these,
+ * so a developer never has to look a rule code up somewhere else.
+ * `hint(violation)` may return a fix tailored to the offending token.
+ */
+const RULE_HELP = {
+    R14: {
+        title: 'a color pair is too low in contrast',
+        why: 'text or a boundary below the WCAG 2.2 AA threshold is unreadable for part of the users',
+        fix: 'darken or lighten one of the two roles in misc/tokens.less, or pick another palette step in misc/palette.less',
+        hint: (v) => (/\(dark\)$/.test(v.token) ? 'the dark mode fails here: check the -dark branch of the palette' : null),
+    },
+    R16: {
+        title: 'a color sits in a template instead of a stylesheet',
+        why: 'a value in the markup ignores the light/dark switch and cannot be overridden by a customer theme',
+        fix: 'move the rule into the matching LESS file and read a role there, for example color: var(--fg-content-box)',
+    },
+    R15: {
+        title: 'a token is declared for one mode only',
+        why: 'switching with .color-theme-light / .color-theme-dark leaves the other mode on the previous value',
+        fix: 'declare the token in both mode blocks of misc/tokens.less, or move it to the mode-free block if the value never changes',
+    },
+
+    R1: {
+        title: 'a token is read that nobody declares',
+        why: 'the value falls back to nothing, so the property silently keeps its inherited value',
+        fix: 'check the spelling, or declare the token in misc/tokens.less under :root',
+        hint: (v) => (renameHint(v.token) ? `${v.token} was renamed: ${renameHint(v.token)}` : null),
+    },
+    R2: {
+        title: 'a public token is declared outside the root wiring',
+        why: 'tokens declared on a component only apply inside it, which splits the token layer in two',
+        fix: 'declare it in misc/tokens.less under :root / .color-theme-light / .color-theme-dark; for a value that is truly local use a --_name',
+    },
+    R4: {
+        title: 'light and dark are branched outside the token layer',
+        why: 'every component would need its own mode handling, and the mode toggle stops working',
+        fix: 'put the two values into the light and dark mixins of misc/tokens.less and read one token here',
+    },
+    R5: { title: 'a token is declared but never read', why: 'dead weight in the token layer', fix: 'remove it, or read it where it belongs' },
+    R6: {
+        title: 'a theme token is unknown to core and unused in the theme',
+        why: 'nothing consumes it, so it only looks like a contract',
+        fix: 'remove it, or read it from a component',
+    },
+    R7: {
+        title: 'a token exists in only one colour mode',
+        why: 'switching the mode keeps the old value, because nothing overrides it',
+        fix: 'declare the same token in the other mode mixin as well',
+    },
+    R8: {
+        title: 'a palette colour is read outside the token layer',
+        why: 'palette colours are fixed values with no light/dark meaning; reading them skips the mode switch',
+        fix: 'read the semantic role instead, for example var(--bg-content-box), var(--fg-content-box), var(--border-default)',
+        hint: (v) => `${v.token} is a palette primitive; only the semantic mixins of misc/tokens.less may read it`,
+    },
+    R9: {
+        title: 'a colour value stands outside the palette',
+        why: 'a customer palette replaces misc/palette.less; values elsewhere survive the swap and break the theme',
+        fix: 'move the value into .mx-theme-palette() in misc/palette.less and read it as a --color-* token',
+    },
+    R10: {
+        title: 'a colour is written into a component',
+        why: 'it follows neither the palette nor the dark mode',
+        fix: 'read a role, for example color: var(--fg-content-box), background: var(--bg-content-box), border-color: var(--border-default)',
+    },
+    R11: {
+        title: 'a fixed text size bypasses the type scale',
+        why: 'the theme scales typography through tokens; fixed sizes stay put',
+        fix: 'use a text role such as var(--font-size-body) or var(--font-size-body-large)',
+    },
+    R12: {
+        title: '!important in a component',
+        why: 'it removes the only lever a later rule has, so the next override needs !important as well',
+        fix: 'raise specificity instead, for example by prefixing the block selector',
+    },
+    R13: {
+        title: 'a LESS file is not reachable from any entry point',
+        why: 'it is never compiled, so its rules silently do nothing',
+        fix: 'import it in constructor.less, or delete the file',
+    },
+    LESS: { title: 'the LESS compiler could not read a file', why: 'the check needs the compiled output', fix: 'fix the syntax error shown below' },
+};
+
+function formatReport({ errors, stale, tolerated, warnings, theme }, { showWarnings = true } = {}) {
     const lines = [];
     const issues = new Map();
     for (const v of errors) {
         const declaration = reportDeclaration(v);
-        // Source and compiled CSS can detect the same fixed size. Keep distinct
-        // emitted values from mixin calls, even when their source location matches.
-        const identity = JSON.stringify([v.rule, v.file, v.line, v.rule === 'R11' && declaration ? declaration : [v.token, v.message]]);
-        if (!issues.has(identity)) issues.set(identity, { ...v, declaration });
+        // Source and compiled CSS find the same problem twice. Report it once, with the
+        // declaration when we have it. R11 keeps distinct emitted values of one source line.
+        const identity = JSON.stringify([v.rule, v.file, v.line, v.rule === 'R11' && declaration ? declaration : v.token]);
+        const known = issues.get(identity);
+        if (!known || (!known.declaration && declaration)) issues.set(identity, { ...v, declaration });
     }
     if (issues.size) {
-        lines.push(`Fix ${issues.size} token ${issues.size === 1 ? 'issue' : 'issues'}:`);
+        const files = new Set([...issues.values()].map((v) => v.file));
+        lines.push(`Token check failed: ${issues.size} ${issues.size === 1 ? 'issue' : 'issues'} in ${files.size} ${files.size === 1 ? 'file' : 'files'}.`);
+        const byRule = new Map();
         for (const v of issues.values()) {
-            lines.push('', `  ${v.file}:${v.line} [${v.rule}]`);
-            if (v.declaration) lines.push(`    ${v.declaration.property}: ${v.declaration.value};`);
-            else if (v.token) lines.push(`    ${v.token}`);
-            if (v.rule === 'R11') {
-                lines.push('    Fixed font sizes bypass theme scaling.', '    Use a --font-size-* token, e.g. var(--font-size-body-large).');
-            } else {
-                lines.push(`    ${v.message}`);
-            }
+            if (!byRule.has(v.rule)) byRule.set(v.rule, []);
+            byRule.get(v.rule).push(v);
         }
-        lines.push('');
+        for (const [rule, found] of [...byRule].sort((a, b) => b[1].length - a[1].length)) {
+            const help = RULE_HELP[rule];
+            lines.push('', `${rule}  ${help ? help.title : found[0].message}  (${found.length}x)`);
+            if (help) {
+                lines.push(`    why  ${help.why}`);
+                lines.push(`    fix  ${help.fix}`);
+                const hints = [...new Set(found.map((v) => help.hint?.(v)).filter(Boolean))];
+                for (const hint of hints.slice(0, 3)) lines.push(`         ${hint}`);
+            }
+            const width = Math.max(...found.slice(0, OCCURRENCE_LIMIT).map((v) => `${v.file}:${v.line}`.length));
+            for (const v of found.slice(0, OCCURRENCE_LIMIT)) {
+                const where = `${v.file}:${v.line}`.padEnd(width);
+                const what = v.declaration ? `${v.declaration.property}: ${v.declaration.value};` : v.token || v.message;
+                lines.push(`    ${where}  ${what}`);
+            }
+            if (found.length > OCCURRENCE_LIMIT) lines.push(`    … and ${found.length - OCCURRENCE_LIMIT} more of the same kind`);
+        }
+        lines.push('', 'Fix the lines above and save again; the watcher re-runs the check.');
     } else if (!stale.length) {
-        lines.push('Token check passed.');
+        lines.push(`Token check passed.${theme?.status === 'checked' ? ` Theme: ${theme.name}.` : ''}`);
     }
+    // A green report must never hide a check that never ran.
+    if (theme?.status === 'missing') lines.push(`No theme at ${theme.path} — the theme rules did not run. Set GV_THEME_LESS_ROOT to your theme's css/less directory.`);
+    if (theme?.status === 'off') lines.push('Theme rules off via GV_THEMECHECK=0. The core rules still apply.');
     if (stale.length) {
-        lines.push(`${stale.length} stale baseline entr${stale.length === 1 ? 'y' : 'ies'} (remove from tokenCheck.baseline.json):`);
-        for (const k of stale) lines.push(`  ${k}`);
+        lines.push('', `${stale.length} stale baseline entr${stale.length === 1 ? 'y' : 'ies'}: the violation is gone, so remove the line from gulp/tokenCheck.baseline.json.`);
+        for (const k of stale) lines.push(`    ${k}`);
     }
-    if (tolerated.length) lines.push(`${tolerated.length} known violations allowed by the baseline.`);
-    if (warnings.length) lines.push(`${warnings.length} non-blocking warnings.${showWarnings ? '' : ' Set GV_TOKENWARN=1 to show details.'}`);
-    if (showWarnings) for (const w of warnings) lines.push(`  ${w.rule} ${w.token} — ${w.message}`);
+    if (tolerated.length) lines.push('', `${tolerated.length} known violations allowed by the baseline.`);
+    if (warnings.length) lines.push('', `${warnings.length} non-blocking warnings.${showWarnings ? '' : ' Set GV_TOKENWARN=1 to show details.'}`);
+    if (showWarnings) for (const w of warnings) lines.push(`    ${w.rule} ${w.token} — ${w.message}`);
     return lines.join('\n');
+}
+
+const TEMPLATE_FILES = /\.(?:xhtml|html|js|tag)$/;
+const TEMPLATE_SKIP = new Set(['node_modules', 'dist', 'target', 'css']);
+
+/**
+ * R16: a theme template carries a color value or an inline color style.
+ * JSF expressions, HTML entities and anchors are stripped first, so `#{...}`,
+ * `&#8211;` and `href="#top"` are not mistaken for hex colors.
+ *
+ * @param {string} themeDir the theme's css/less directory; templates live two levels above
+ * @returns {object[]} violations
+ */
+function checkThemeTemplates(themeDir) {
+    // Only a real theme has templates next to its stylesheets; a bare LESS directory has none.
+    if (path.basename(themeDir) !== 'less' || path.basename(path.dirname(themeDir)) !== 'css') return [];
+    const templateRoot = path.resolve(themeDir, '..', '..');
+    const violations = [];
+    const walk = (dir) => {
+        for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            if (entry.isDirectory()) {
+                if (!TEMPLATE_SKIP.has(entry.name)) walk(path.join(dir, entry.name));
+                continue;
+            }
+            if (!TEMPLATE_FILES.test(entry.name)) continue;
+            const file = path.join(dir, entry.name);
+            fs.readFileSync(file, 'utf8')
+                .split('\n')
+                .forEach((line, index) => {
+                    if (/^\s*(\/\/|\*|<!--)/.test(line)) return;
+                    const cleaned = line.replace(/#\{[^}]*\}/g, '').replace(/&#\d+;/g, '').replace(/href="#[^"]*"/g, '').replace(/id="[^"]*"/g, '');
+                    const hasColor = /#[\da-f]{6}\b|#[\da-f]{3}\b(?![\w-])/i.test(cleaned);
+                    if (hasColor || /style="[^"]*(?:color|background)/.test(line))
+                        violations.push(violation('R16', `theme/${path.relative(templateRoot, file).split(path.sep).join('/')}`, line.trim().slice(0, 70), index + 1, 'color value in a template'));
+                });
+        }
+    };
+    if (fs.existsSync(templateRoot)) walk(templateRoot);
+    return violations;
+}
+
+/**
+ * Where a token is declared, per mode, so a palette finding points at an editable line
+ * instead of at the compiled bundle.
+ *
+ * @param {Map<string,string>} theme file path to source text
+ * @returns {(token: string, mode: string) => {file: string, line: number}}
+ */
+function declarationSite(theme) {
+    const sites = new Map();
+    for (const file of THEME_TOKEN_LAYER) {
+        if (!theme.has(file)) continue;
+        for (const d of parseLess(theme.get(file)).declarations) {
+            const stack = d.stack.join(' ');
+            const mode = /dark/.test(stack) ? 'dark' : /light/.test(stack) ? 'light' : 'any';
+            if (!sites.has(d.name)) sites.set(d.name, []);
+            sites.get(d.name).push({ file, line: d.line, mode });
+        }
+    }
+    return (token, mode) => {
+        const found = sites.get(token) || [];
+        const hit = found.find((s) => s.mode === mode) || found.find((s) => s.mode === 'any') || found[0];
+        return hit ? { file: hit.file, line: hit.line } : { file: 'misc/tokens.less', line: 1 };
+    };
+}
+
+/**
+ * Files that no entry point imports, directly or indirectly. Such a file is never
+ * compiled, so its rules never apply.
+ *
+ * @param {Map<string,string>} tree file path to source text
+ * @returns {string[]} unreachable paths, sorted
+ */
+function unreachableFiles(tree) {
+    const entries = [...tree.keys()].filter((file) => ENTRY_POINTS.test(file));
+    // A partial tree without an entry point says nothing about reachability.
+    if (!entries.length) return [];
+    const reached = new Set();
+    const visit = (file) => {
+        if (reached.has(file) || !tree.has(file)) return;
+        reached.add(file);
+        const dir = path.posix.dirname(file);
+        for (const match of tree.get(file).matchAll(/@import\s+(?:\([^)]*\)\s*)?['"]([^'"]+)['"]/g))
+            visit(path.posix.normalize(path.posix.join(dir, match[1])));
+    };
+    entries.forEach(visit);
+    return [...tree.keys()].filter((file) => !reached.has(file)).sort();
+}
+
+
+/**
+ * The contrast contract: every pair a user actually sees, with its WCAG 2.2 AA
+ * threshold (4.5 for text, 3 for boundaries and focus rings). The theme's palette
+ * stress test reads the same list, so both run one contract.
+ */
+const CONTRAST_PAIRS = [
+    ['page text', '--fg-general', '--bg-general', 4.5],
+    ['widget text', '--fg-content-box', '--bg-content-box', 4.5],
+    ['subtle surface text', '--fg-content-box', '--bg-subtle', 4.5],
+    ['popover text', '--fg-popover', '--bg-popover', 4.5],
+    ['header text', '--fg-header', '--bg-header', 4.5],
+    ['inverse text', '--fg-inverse', '--bg-inverse', 4.5],
+    ['field text', '--fg-content-box', '--bg-input', 4.5],
+    ['placeholder', '--fg-placeholder', '--bg-input', 4.5],
+    ['secondary text', '--fg-secondary', '--bg-content-box', 4.5],
+    ['muted text', '--fg-muted', '--bg-content-box', 4.5],
+    ['content link', '--fg-link', '--bg-content-box', 4.5],
+    ['link hover', '--fg-link-hover', '--bg-content-box', 4.5],
+    ['brand as text', '--brand', '--bg-content-box', 4.5],
+    ['hover text', '--fg-hover', '--bg-hover', 4.5],
+    ['pressed text', '--fg-content-box', '--bg-pressed', 4.5],
+    ['brand fill text', '--fg-on-brand', '--bg-brand', 4.5],
+    ['brand hover text', '--fg-on-brand', '--bg-brand-hover', 4.5],
+    ['brand pressed text', '--fg-on-brand', '--bg-brand-pressed', 4.5],
+    ['selected text', '--fg-selected', '--bg-selected', 4.5],
+    ['selected hover text', '--fg-selected', '--bg-selected-hover', 4.5],
+    ['selected pressed text', '--fg-selected', '--bg-selected-pressed', 4.5],
+    ['disabled text', '--fg-disabled', '--bg-disabled', 4.5],
+    ['input boundary', '--border-input', '--bg-input', 3],
+    ['input focus', '--outline-focus', '--bg-input', 3],
+    ['widget focus', '--outline-focus', '--bg-content-box', 3],
+    ['selected indicator', '--brand', '--bg-selected', 3],
+    ['selected hover indicator', '--brand', '--bg-selected-hover', 3],
+    ['slider range against track', '--brand', '--border-default', 3],
+    ['selected hover focus', '--outline-focus', '--bg-selected-hover', 3],
+    ['selected pressed focus', '--outline-focus', '--bg-selected-pressed', 3],
+    ['secondary on subtle', '--fg-secondary', '--bg-subtle', 4.5],
+    ['muted on subtle', '--fg-muted', '--bg-subtle', 4.5],
+    ['danger on subtle', '--fg-danger', '--bg-subtle', 4.5],
+    ['warning on subtle', '--fg-warning', '--bg-subtle', 4.5],
+    ['success on subtle', '--fg-success', '--bg-subtle', 4.5],
+    ['canvas text', '--fg-general', '--bg-canvas', 4.5],
+    ['accent text', '--fg-accent', '--bg-content-box', 4.5],
+    ['text on accent', '--fg-on-bright', '--accent', 4.5],
+    ['success text on surface', '--fg-on-success', '--bg-success', 4.5],
+    ['success icon', '--fg-success', '--bg-content-box', 4.5],
+    ['text on success strong', '--fg-on-success-strong', '--bg-success-strong', 4.5],
+    ['danger text on surface', '--fg-on-danger', '--bg-danger', 4.5],
+    ['danger icon', '--fg-danger', '--bg-content-box', 4.5],
+    ['text on danger strong', '--fg-on-danger-strong', '--bg-danger-strong', 4.5],
+    ['warning text on surface', '--fg-on-warning', '--bg-warning', 4.5],
+    ['warning icon', '--fg-warning', '--bg-content-box', 4.5],
+    ['text on warning strong', '--fg-on-warning-strong', '--bg-warning-strong', 4.5],
+    ['text on info strong', '--fg-on-info-strong', '--bg-info-strong', 4.5],
+    ['inverse hover text', '--fg-inverse', '--bg-inverse-hover', 4.5],
+    ['popover link', '--fg-link', '--bg-popover', 4.5],
+    ['header link', '--fg-link', '--bg-header', 4.5],
+    ['page link', '--fg-link', '--bg-general', 4.5],
+    ['subtle link', '--fg-link', '--bg-subtle', 4.5],
+    ['footer text', '--fg-inverse', '--footer-topnav-bg', 4.5],
+    ['card link', '--fg-link-content-box', '--bg-content-box', 4.5],
+    ['card border on page', '--border-container', '--bg-general', 1.1],
+];
+const CONTRAST_ENTRIES = /^(?:constructor\.less|subthemes\/[^/]+\/subThemeConstructor\.less)$/;
+
+/* ---------- color evaluation ---------- */
+
+/** Splits `a, b(c, d)` on top-level commas only. */
+function splitTopLevel(text) {
+    const parts = [];
+    let depth = 0;
+    let current = '';
+    for (const char of text) {
+        if (char === '(') depth++;
+        if (char === ')') depth--;
+        if (char === ',' && depth === 0) {
+            parts.push(current.trim());
+            current = '';
+        } else current += char;
+    }
+    if (current.trim()) parts.push(current.trim());
+    return parts;
+}
+
+/**
+ * sRGB channels of a hex color or a (nested) opaque `color-mix(in srgb, …)`.
+ *
+ * @returns {number[]|null} three channels in 0..1, or null for an expression we do not evaluate
+ */
+function channels(value) {
+    const text = String(value).trim();
+    const short = /^#([\da-f])([\da-f])([\da-f])$/i.exec(text);
+    if (short) return channels(`#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`);
+    const hex = /^#([\da-f]{6})$/i.exec(text);
+    if (hex) return [0, 2, 4].map((offset) => parseInt(hex[1].slice(offset, offset + 2), 16) / 255);
+    if (text.startsWith('color-mix(') && text.endsWith(')')) {
+        const [space, first, second] = splitTopLevel(text.slice('color-mix('.length, -1));
+        if (space !== 'in srgb' || !second) return null;
+        const part = (entry) => {
+            const m = /^(.*?)\s+([\d.]+)%$/.exec(entry);
+            return m ? { color: m[1].trim(), weight: Number(m[2]) / 100 } : { color: entry, weight: null };
+        };
+        const a = part(first);
+        const b = part(second);
+        if (a.weight === null && b.weight === null) a.weight = b.weight = 0.5;
+        else if (a.weight === null) a.weight = 1 - b.weight;
+        else if (b.weight === null) b.weight = 1 - a.weight;
+        const ca = channels(a.color);
+        const cb = channels(b.color);
+        return ca && cb ? ca.map((channel, i) => channel * a.weight + cb[i] * b.weight) : null;
+    }
+    return null;
+}
+
+function relativeLuminance(rgb) {
+    return rgb
+        .map((channel) => (channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4))
+        .reduce((sum, channel, i) => sum + channel * [0.2126, 0.7152, 0.0722][i], 0);
+}
+
+/** Replaces var() reads by their declared values until a literal remains. */
+function resolveVars(value, tokens, seen = []) {
+    return String(value).replace(/var\(\s*(--[\w-]+)\s*\)/g, (whole, name) => {
+        if (!(name in tokens) || seen.includes(name)) return whole;
+        return resolveVars(tokens[name], tokens, [...seen, name]);
+    });
+}
+
+/** Declarations that apply in one mode, core defaults first, theme on top. */
+function modeTokens(css, mode, into = {}) {
+    postcss.parse(css).walkRules((rule) => {
+        if (![':root', `.color-theme-${mode}`].includes(rule.selector)) return;
+        for (let parent = rule.parent; parent; parent = parent.parent)
+            if (parent.type === 'atrule' && parent.name === 'media' && !(mode === 'dark' && parent.params === '(prefers-color-scheme: dark)')) return;
+        rule.nodes.filter((node) => node.type === 'decl' && node.prop.startsWith('--')).forEach((node) => {
+            into[node.prop] = node.value;
+        });
+    });
+    return into;
+}
+
+/**
+ * R14: every visible foreground/background pair reaches its WCAG threshold, in both modes.
+ *
+ * @param {string} coreCss compiled core CSS (supplies the defaults a theme does not override)
+ * @param {string} themeCss compiled CSS of one theme entry point
+ * @param {(token: string, mode: string) => {file: string, line: number}} site where to point the developer
+ * @returns {{violations: object[], warnings: object[]}}
+ */
+function checkContrast(coreCss, themeCss, site) {
+    const violations = [];
+    const warnings = [];
+    for (const mode of ['light', 'dark']) {
+        const tokens = modeTokens(themeCss, mode, modeTokens(coreCss, mode, {}));
+        for (const [label, fg, bg, threshold] of CONTRAST_PAIRS) {
+            const front = channels(resolveVars(`var(${fg})`, tokens));
+            const back = channels(resolveVars(`var(${bg})`, tokens));
+            if (!front || !back) {
+                warnings.push(violation('R14', 'misc/tokens.less', `${fg} on ${bg}`, 1, `${mode}: color expression not evaluated, contrast unchecked`));
+                continue;
+            }
+            const a = relativeLuminance(front);
+            const b = relativeLuminance(back);
+            const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+            if (ratio >= threshold) continue;
+            const where = site(fg, mode);
+            violations.push(violation('R14', where.file, `${label}: ${fg} on ${bg} — ${ratio.toFixed(2)}:1, needs ${threshold}:1 (${mode})`, where.line, 'contrast below the WCAG threshold'));
+        }
+    }
+    return { violations, warnings };
+}
+
+/**
+ * R15: a token set for one mode only sticks when the mode class overrides the system
+ * preference, so light and dark must declare the same names.
+ */
+function checkModeSymmetry(css, site) {
+    const names = { '.color-theme-light': new Set(), '.color-theme-dark': new Set() };
+    postcss.parse(css).walkRules((rule) => {
+        if (!(rule.selector in names)) return;
+        rule.nodes.filter((n) => n.type === 'decl' && n.prop.startsWith('--')).forEach((n) => names[rule.selector].add(n.prop));
+    });
+    const missing = (from, other, mode) =>
+        [...names[from]]
+            .filter((name) => !names[other].has(name))
+            .map((name) => {
+                const where = site(name, mode);
+                return violation('R15', where.file, `${name} — declared for ${mode} only`, where.line, 'token declared in one mode only');
+            });
+    return [...missing('.color-theme-light', '.color-theme-dark', 'light'), ...missing('.color-theme-dark', '.color-theme-light', 'dark')];
 }
 
 /* ---------- filesystem ---------- */
@@ -698,20 +1120,47 @@ function loadColorExemptions() {
  * @param {{moduleRoot?: string, lessRoot?: string, themeLessRoot?: string, baseline?: string[]}} [options]
  * @returns {Promise<{errors: Array, stale: string[], tolerated: Array, warnings: Array, violations: Array, themeChecked: boolean}>}
  */
-async function runTokenCheck({ moduleRoot = MODULE_ROOT, lessRoot = LESS_ROOT, themeLessRoot = THEME_LESS_ROOT, baseline = loadBaseline() } = {}) {
+async function runTokenCheck({ moduleRoot = MODULE_ROOT, lessRoot = LESS_ROOT, themeLessRoot = themePaths().lessRoot, baseline = loadBaseline() } = {}) {
     const core = readLessTree(path.resolve(moduleRoot, lessRoot));
     const themeDir = path.resolve(moduleRoot, themeLessRoot);
-    const theme = fs.existsSync(themeDir) ? readLessTree(themeDir) : null;
+    const enabled = themePaths().enabled;
+    const found = fs.existsSync(themeDir);
+    const theme = enabled && found ? readLessTree(themeDir) : null;
+    const themeState = { status: !enabled ? 'off' : found ? 'checked' : 'missing', name: path.basename(path.resolve(themeDir, '..', '..')), path: themeLessRoot };
     const { violations, warnings, tokens } = checkFiles(core, theme);
-    violations.push(...(await checkCompiledTree(path.resolve(moduleRoot, lessRoot), { tokens })));
+    let coreCss = '';
+    violations.push(...(await checkCompiledTree(path.resolve(moduleRoot, lessRoot), { tokens, onCss: (css) => (coreCss = css) })));
     if (theme) {
         const entries = [...theme.keys()].filter((file) => /(?:^constructor\.less$|^crowdsourcing\/csConstructor\.less$|^subthemes\/[^/]+\/subThemeConstructor\.less$)/.test(file));
+        const site = declarationSite(theme);
+        violations.push(...checkThemeTemplates(themeDir));
+        // The same component compiles into several theme bundles; report each finding once.
+        const seenCompiled = new Set();
+        const seenPalette = new Set();
         for (const entry of entries) {
-            const compiled = await checkCompiledTree(themeDir, { entry, theme: true, tokens });
-            violations.push(...compiled.map((v) => ({ ...v, file: `theme/${v.file}` })));
+            let themeCss = '';
+            const compiled = await checkCompiledTree(themeDir, { entry, theme: true, tokens, onCss: (css) => (themeCss = css) });
+            for (const v of compiled) {
+                const key = `${v.rule}|${v.file}|${v.line}|${v.token}|${v.declaration?.property}|${v.declaration?.value}`;
+                if (seenCompiled.has(key)) continue;
+                seenCompiled.add(key);
+                violations.push({ ...v, file: `theme/${v.file}` });
+            }
+            if (!themeCss || !CONTRAST_ENTRIES.test(entry)) continue;
+            const contrast = checkContrast(coreCss, themeCss, site);
+            // Subthemes inherit most roles; report a shared pair once, under the entry that hits it first.
+            const knownAsymmetric = new Set(violations.filter((v) => v.rule === 'R7').map((v) => v.token));
+            const symmetry = checkModeSymmetry(themeCss, site).filter((v) => !knownAsymmetric.has(v.token.split(' ')[0]));
+            for (const v of [...contrast.violations, ...symmetry]) {
+                const key = `${v.rule}|${v.token}`;
+                if (seenPalette.has(key)) continue;
+                seenPalette.add(key);
+                violations.push({ ...v, file: `theme/${v.file}`, entry });
+            }
+            warnings.push(...contrast.warnings.filter((w) => !seenPalette.has(`W|${w.token}`) && seenPalette.add(`W|${w.token}`)));
         }
     }
-    return { ...applyBaseline(violations, baseline), warnings, violations, themeChecked: theme !== null };
+    return { ...applyBaseline(violations, baseline), warnings, violations, theme: themeState, themeChecked: theme !== null };
 }
 
 /* ---------- theme token report (customer theme updates) ---------- */
@@ -1033,8 +1482,14 @@ function formatThemeTokenReport(rows) {
 
 module.exports = {
     LESS_ROOT,
+    CONTRAST_PAIRS,
+    splitTopLevel,
+    checkContrast,
+    checkModeSymmetry,
     TOKEN_LAYER,
+    THEME_ROOT,
     THEME_LESS_ROOT,
+    themePaths,
     BASELINE_FILE,
     parseLess,
     checkFiles,
