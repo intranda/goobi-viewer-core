@@ -373,7 +373,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         userGroup.setDescription("added user group desc");
         userGroup.setActive(false);
 
-        assertTrue(DataManager.getInstance().getDao().addUserGroup(userGroup));
+        assertNotNull(DataManager.getInstance().getDao().addUserGroup(userGroup));
         assertNotNull(userGroup.getId());
 
         UserGroup userGroup2 = DataManager.getInstance().getDao().getUserGroup(userGroup.getId());
@@ -549,7 +549,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         assertEquals(0, DataManager.getInstance().getDao().getUserRoles(userGroup, null, null).size());
 
         UserRole userRole = new UserRole(userGroup, user, role);
-        assertTrue(DataManager.getInstance().getDao().addUserRole(userRole));
+        assertNotNull(DataManager.getInstance().getDao().addUserRole(userRole));
         assertNotNull(userRole.getId());
 
         assertEquals(4, DataManager.getInstance().getDao().getAllUserRoles().size());
@@ -859,7 +859,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         comment.setTargetPageOrder(1);
         comment.setText("new comment text");
         comment.setCreator(DataManager.getInstance().getDao().getUser(1));
-        assertTrue(DataManager.getInstance().getDao().addComment(comment));
+        assertNotNull(DataManager.getInstance().getDao().addComment(comment));
         assertNotNull(comment.getId());
         assertEquals(5, DataManager.getInstance().getDao().getAllComments().size());
 
@@ -1041,7 +1041,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         o.setNewHitsNotification(true);
         LocalDateTime now = DateTools.now();
         o.setDateUpdated(now);
-        assertTrue(DataManager.getInstance().getDao().addSearch(o));
+        assertNotNull(DataManager.getInstance().getDao().addSearch(o));
         assertNotNull(o.getId());
         assertEquals(4, DataManager.getInstance().getDao().getAllSearches().size());
 
@@ -1315,7 +1315,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         role.setName("role to add name");
         role.setDescription("role to add desc");
         role.getPrivileges().add("role to add priv 1");
-        assertTrue(DataManager.getInstance().getDao().addRole(role));
+        assertNotNull(DataManager.getInstance().getDao().addRole(role));
         assertNotNull(role.getId());
 
         Role role2 = DataManager.getInstance().getDao().getRole(role.getId());
@@ -1535,7 +1535,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         Bookmark item = new Bookmark("PPNTEST", "add bookmark 1 main title", "add bookmark 1 name");
         item.setDescription("add bookmark 1 desc");
         bl.addItem(item);
-        assertTrue(DataManager.getInstance().getDao().addBookmarkList(bl));
+        assertNotNull(DataManager.getInstance().getDao().addBookmarkList(bl));
 
         BookmarkList bl2 = DataManager.getInstance().getDao().getBookmarkList("add bookmark list test", user);
         assertNotNull(bl2);
@@ -1965,7 +1965,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         md.setName("Ongi etorriak");
         md.setDescription("bla");
         item.getMetadata().add(md);
-        assertTrue(DataManager.getInstance().getDao().addCMSMediaItem(item));
+        assertNotNull(DataManager.getInstance().getDao().addCMSMediaItem(item));
 
         assertEquals(5, DataManager.getInstance().getDao().getAllCMSMediaItems().size());
         assertNotNull(item.getId());
@@ -2186,7 +2186,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         childItem.setParentItem(item); // this also adds the child item to the parent
         childItem.setOrder(1);
 
-        assertTrue(DataManager.getInstance().getDao().addCMSNavigationItem(item));
+        assertNotNull(DataManager.getInstance().getDao().addCMSNavigationItem(item));
         assertEquals(3, DataManager.getInstance().getDao().getAllTopCMSNavigationItems().size());
         assertNotNull(item.getId());
         assertNotNull(childItem.getId());
@@ -3293,7 +3293,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         note.setRecordPi(pi);
         note.getRecordTitle().setText(title);
 
-        assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
+        assertNotNull(DataManager.getInstance().getDao().addRecordNote(note));
         assertNotNull(note.getId());
         CMSSingleRecordNote pNote = (CMSSingleRecordNote) DataManager.getInstance().getDao().getRecordNote(note.getId());
         assertNotNull(pNote);
@@ -3312,7 +3312,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         CMSMultiRecordNote note = new CMSMultiRecordNote();
         note.setQuery("DC:dc3d");
 
-        assertTrue(DataManager.getInstance().getDao().addRecordNote(note));
+        assertNotNull(DataManager.getInstance().getDao().addRecordNote(note));
         assertNotNull(note.getId());
         CMSMultiRecordNote pNote = (CMSMultiRecordNote) DataManager.getInstance().getDao().getRecordNote(note.getId());
         assertNotNull(pNote);
@@ -3404,7 +3404,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         String name = "Test Slider";
         CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
         slider.setName(name);
-        assertTrue(DataManager.getInstance().getDao().addSlider(slider));
+        assertNotNull(DataManager.getInstance().getDao().addSlider(slider));
 
         assertNotNull(slider.getId());
         CMSSlider loadedSlider = DataManager.getInstance().getDao().getSlider(slider.getId());
@@ -3440,7 +3440,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         String name = "Test Slider";
         CMSSlider slider = new CMSSlider(SourceType.COLLECTIONS);
         slider.setName(name);
-        assertTrue(DataManager.getInstance().getDao().addSlider(slider));
+        assertNotNull(DataManager.getInstance().getDao().addSlider(slider));
         assertNotNull(DataManager.getInstance().getDao().getSlider(slider.getId()));
 
         assertTrue(DataManager.getInstance().getDao().deleteSlider(slider));
@@ -3802,13 +3802,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         token1.setUser(user);
         token1.setTokenHash("deleteall-hash-1-" + System.nanoTime());
         token1.setExpirationDate(DateTools.now().plusDays(1));
-        assertTrue(DataManager.getInstance().getDao().addUserToken(token1));
+        assertNotNull(DataManager.getInstance().getDao().addUserToken(token1));
 
         io.goobi.viewer.model.security.user.UserToken token2 = new io.goobi.viewer.model.security.user.UserToken();
         token2.setUser(user);
         token2.setTokenHash("deleteall-hash-2-" + System.nanoTime());
         token2.setExpirationDate(DateTools.now().plusDays(1));
-        assertTrue(DataManager.getInstance().getDao().addUserToken(token2));
+        assertNotNull(DataManager.getInstance().getDao().addUserToken(token2));
 
         DataManager.getInstance().getDao().deleteAllUserTokensForUser(user);
 
@@ -3835,14 +3835,14 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         older.setTokenHash("older-hash-" + System.nanoTime());
         older.setDateCreated(DateTools.now().minusHours(2));
         older.setExpirationDate(DateTools.now().plusDays(1));
-        assertTrue(DataManager.getInstance().getDao().addUserToken(older));
+        assertNotNull(DataManager.getInstance().getDao().addUserToken(older));
 
         io.goobi.viewer.model.security.user.UserToken newer = new io.goobi.viewer.model.security.user.UserToken();
         newer.setUser(user);
         newer.setTokenHash("newer-hash-" + System.nanoTime());
         newer.setDateCreated(DateTools.now().minusHours(1));
         newer.setExpirationDate(DateTools.now().plusDays(1));
-        assertTrue(DataManager.getInstance().getDao().addUserToken(newer));
+        assertNotNull(DataManager.getInstance().getDao().addUserToken(newer));
 
         // Expired token should NOT be returned
         io.goobi.viewer.model.security.user.UserToken expired = new io.goobi.viewer.model.security.user.UserToken();
@@ -3850,7 +3850,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         expired.setTokenHash("expired-hash-" + System.nanoTime());
         expired.setDateCreated(DateTools.now().minusDays(10));
         expired.setExpirationDate(DateTools.now().minusDays(1));
-        assertTrue(DataManager.getInstance().getDao().addUserToken(expired));
+        assertNotNull(DataManager.getInstance().getDao().addUserToken(expired));
 
         List<io.goobi.viewer.model.security.user.UserToken> active =
                 DataManager.getInstance().getDao().getActiveUserTokensForUser(user);
@@ -3875,13 +3875,13 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         active.setUser(user);
         active.setTokenHash("active-purge-" + System.nanoTime());
         active.setExpirationDate(DateTools.now().plusDays(1));
-        assertTrue(DataManager.getInstance().getDao().addUserToken(active));
+        assertNotNull(DataManager.getInstance().getDao().addUserToken(active));
 
         io.goobi.viewer.model.security.user.UserToken expired = new io.goobi.viewer.model.security.user.UserToken();
         expired.setUser(user);
         expired.setTokenHash("expired-purge-" + System.nanoTime());
         expired.setExpirationDate(DateTools.now().minusDays(1));
-        assertTrue(DataManager.getInstance().getDao().addUserToken(expired));
+        assertNotNull(DataManager.getInstance().getDao().addUserToken(expired));
 
         int deleted = DataManager.getInstance().getDao().deleteAllExpiredUserTokens();
         assertEquals(1, deleted);
@@ -3905,7 +3905,7 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
         collection.addLabel(new io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation("en", "Test collection"));
         collection.addDescription(new io.goobi.viewer.model.cms.collections.DynamicCollectionTranslation("en", "A description"));
 
-        assertTrue(DataManager.getInstance().getDao().addDynamicCollection(collection));
+        assertNotNull(DataManager.getInstance().getDao().addDynamicCollection(collection));
         assertNotNull(collection.getId());
 
         io.goobi.viewer.model.cms.collections.DynamicCollection byName =

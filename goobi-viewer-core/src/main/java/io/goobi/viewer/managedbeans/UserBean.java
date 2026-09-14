@@ -237,7 +237,7 @@ public class UserBean implements Serializable {
             resetPasswordFields();
             if (sendActivationEmail(newUser)) {
                 // Only attempt to persist the new user if the activation email could be sent
-                if (DataManager.getInstance().getDao().addUser(newUser)) {
+                if (DataManager.getInstance().getDao().addUser(newUser) != null) {
                     String msg = ViewerResourceBundle.getTranslation("user_accountCreated", null);
                     Messages.info(msg.replace("{0}", email));
                     logger.debug("User account created for '{}'.", email);

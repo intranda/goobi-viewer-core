@@ -156,7 +156,7 @@ public class CmsSliderEditBean implements Serializable {
                 if (this.selectedSlider.getId() != null) {
                     saved = DataManager.getInstance().getDao().updateSlider(selectedSlider) != null;
                 } else {
-                    saved = DataManager.getInstance().getDao().addSlider(selectedSlider);
+                    saved = DataManager.getInstance().getDao().addSlider(selectedSlider) != null;
                 }
                 if (saved) {
                     Messages.info(null, "button__save__success", "\"" + selectedSlider.getName() + "\"");

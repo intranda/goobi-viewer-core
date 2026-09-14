@@ -21,6 +21,11 @@
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -29,8 +34,10 @@ import org.junit.jupiter.api.Test;
 
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.dao.IDAO;
+import io.goobi.viewer.model.security.tickets.AccessTicket;
+import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
 
 class TaskManagerTest extends AbstractDatabaseEnabledTest {
 

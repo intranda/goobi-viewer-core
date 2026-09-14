@@ -85,7 +85,7 @@ public class DatabaseUpdater {
             // Add a "member" role, if not yet in the database
             if (DataManager.getInstance().getDao().getRole("member") == null) {
                 logger.info("Role 'member' does not exist yet, adding...");
-                if (!DataManager.getInstance().getDao().addRole(new Role("member"))) {
+                if (DataManager.getInstance().getDao().addRole(new Role("member")) == null) {
                     logger.error("Could not add static role 'member'.");
                 }
             }

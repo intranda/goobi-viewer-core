@@ -62,7 +62,7 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         object.setMediaItem(mediaItem);
         object.setImageMode(ImageMode.UPLOADED_IMAGE);
         
-        assertTrue(this.dao.addHighlight(object));
+        assertNotNull(this.dao.addHighlight(object));
         assertNotNull(object.getId());
         
         HighlightData loaded = this.dao.getHighlight(object.getId());
@@ -143,7 +143,7 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         HighlightData object = new HighlightData();
         object.setDateEnd(LocalDate.of(2022, 5, 1));
         object.setDateStart(null);
-        assertTrue(dao.addHighlight(object));
+        assertNotNull(dao.addHighlight(object));
         assertEquals(object, dao.getHighlightsForDate(LocalDate.of(2022,4,1).atStartOfDay()).get(0));
         assertEquals(0, dao.getHighlightsForDate(LocalDate.of(2022, 6, 1).atStartOfDay()).size());
     }
@@ -157,7 +157,7 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         HighlightData object = new HighlightData();
         object.setDateStart(LocalDate.of(2022, 5, 1));
         object.setDateEnd(null);
-        assertTrue(dao.addHighlight(object));
+        assertNotNull(dao.addHighlight(object));
         assertEquals(object, dao.getHighlightsForDate(LocalDate.of(2022,6,1).atStartOfDay()).get(0));
         assertEquals(0, dao.getHighlightsForDate(LocalDate.of(2022, 4, 1).atStartOfDay()).size());
     }
@@ -171,7 +171,7 @@ class HighlightDataTest extends AbstractDatabaseEnabledTest {
         HighlightData object = new HighlightData();
         object.setDateStart(null);
         object.setDateEnd(null);
-        assertTrue(dao.addHighlight(object));
+        assertNotNull(dao.addHighlight(object));
         assertEquals(object, dao.getHighlightsForDate(LocalDate.of(1900,1,1).atStartOfDay()).get(0));
         assertEquals(object, dao.getHighlightsForDate(LocalDate.of(3000,1,1).atStartOfDay()).get(0));
     }
