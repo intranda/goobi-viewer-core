@@ -67,7 +67,7 @@ public class FuzzySearchTerm {
     private final int maxDistance;
 
     public FuzzySearchTerm(String term) {
-        this.fullTerm = term;
+        this.fullTerm = term == null ? "" : term;
         if (isFuzzyTerm(term)) {
             this.term =
                     this.fullTerm.replaceAll("[*]{0,1}([^\\p{L}=-_\\d⸗¬*]*)[*]{0,1}~\\d", "$1") //NOSONAR no catastrophic backtracking detected
@@ -76,7 +76,7 @@ public class FuzzySearchTerm {
                     .replaceAll("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~(\\d)", "$1")); //NOSONAR no catastrophic backtracking detected
             wildcardBack = this.fullTerm.endsWith("*~" + this.maxDistance);
         } else {
-            this.term = term;
+            this.term = this.fullTerm;
             this.maxDistance = 0;
             wildcardBack = this.fullTerm.endsWith("*");
         }
@@ -143,7 +143,7 @@ public class FuzzySearchTerm {
      * @return Cleaned-up text
      */
     private static String cleanup(final String text) {
-        String ret = text;
+        String ret = text == null ? "" : text;
         if (StringUtils.isNotBlank(ret)) {
             ret = cleanHyphenations(ret);
             ret = StringTools.removeDiacriticalMarks(ret);
@@ -162,11 +162,11 @@ public class FuzzySearchTerm {
      * @return Cleaned-up text
      */
     private static String cleanHyphenations(String text) {
-        return text.replaceAll("[⸗¬-]", "");
+        return text == null ? "" : text.replaceAll("[⸗¬-]", "");
     }
 
     public static int calculateOptimalDistance(String term) {
-        if (StringUtils.isBlank(term)) {
+        if (term == null || StringUtils.isBlank(term)) {
             return 0;
         } else if (term.matches(IGNORE_FUZZY_PATTERN)) {
             return 0;
