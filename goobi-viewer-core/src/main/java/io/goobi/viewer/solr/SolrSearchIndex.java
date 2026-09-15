@@ -1393,6 +1393,29 @@ public class SolrSearchIndex implements java.io.Closeable {
     }
 
     /**
+     * Checks whether the index answers an actual search query, rather than just the ping handler.
+     *
+     * <p>The query matches every indexed record and is therefore valid for any index; an empty index returns zero hits and still counts as
+     * a successful check, because only the ability to answer a query is being verified.
+     *
+     * @return true if the query was answered by the index; false otherwise
+     * @should return true if index online
+     */
+    public boolean checkSolrQueryResponse() {
+        if (client == null) {
+            return false;
+        }
+
+        try {
+            QueryResponse resp = search(SolrConstants.PI + ":*", 0, 1, null, null, Collections.singletonList(SolrConstants.PI), null, null);
+            return resp != null && resp.getResults() != null;
+        } catch (PresentationException | IndexUnreachableException e) {
+            logger.warn("Solr monitoring query failed: {}", SolrTools.extractExceptionMessageHtmlTitle(e.getMessage()));
+            return false;
+        }
+    }
+
+    /**
      *
      * @param solrField Solr field name containing the geospatial coordinates
      * @param wktRegion WKT string defining the spatial region to compute the heatmap for

@@ -79,6 +79,15 @@ class SolrSearchIndexTest extends AbstractSolrEnabledTest {
     }
 
     /**
+     * @see SolrSearchIndex#checkSolrQueryResponse()
+     * @verifies return true if index online
+     */
+    @Test
+    void checkSolrQueryResponse_shouldReturnTrueIfIndexOnline() {
+        assertTrue(DataManager.getInstance().getSearchIndex().checkSolrQueryResponse());
+    }
+
+    /**
      * @see SolrSearchIndex#search(String,int,int,List,boolean,List,String,List)
      * @verifies return correct results
      */
