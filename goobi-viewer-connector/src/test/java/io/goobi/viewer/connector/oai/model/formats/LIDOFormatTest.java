@@ -23,12 +23,15 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import io.goobi.viewer.connector.AbstractTest;
 import io.goobi.viewer.connector.oai.RequestHandler;
+import io.goobi.viewer.connector.utils.SolrSearchIndex;
 import io.goobi.viewer.controller.XmlTools;
 import io.goobi.viewer.solr.SolrConstants;
 
-class LIDOFormatTest {
+class LIDOFormatTest extends AbstractTest {
 
     /**
      * @see LIDOFormat#generateLidoRecord(String,SolrDocument,RequestHandler,List,String)
@@ -64,5 +67,30 @@ class LIDOFormatTest {
         doc.setField(SolrConstants.PI_TOPSTRUCT, "LIDO123");
         Assertions.assertNull(METSFormat.generateMetsRecord(XmlTools.getStringFromElement("", StandardCharsets.UTF_8.name()), doc, new RequestHandler(),
                 null, null));
+    }
+
+    /**
+     * @see LIDOFormat#createGetRecord(RequestHandler,String)
+     * @verifies return cannotDisseminateFormat if record not lido
+     */
+    @Test
+    void createGetRecord_shouldReturnCannotDisseminateFormatIfRecordNotLido() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.PI_TOPSTRUCT, "PPN517154005");
+        doc.setField(SolrConstants.SOURCEDOCFORMAT, "METS");
+
+        SolrSearchIndex mockSolr = Mockito.mock(SolrSearchIndex.class);
+        Mockito.when(mockSolr.getListRecord(Mockito.eq("PPN517154005"), Mockito.anyList(), Mockito.any())).thenReturn(doc);
+
+        LIDOFormat format = new LIDOFormat();
+        format.solr = mockSolr;
+
+        RequestHandler handler = new RequestHandler();
+        handler.setIdentifier("PPN517154005");
+
+        Element result = format.createGetRecord(handler, null);
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals("error", result.getName());
+        Assertions.assertEquals("cannotDisseminateFormat", result.getAttributeValue("code"));
     }
 }

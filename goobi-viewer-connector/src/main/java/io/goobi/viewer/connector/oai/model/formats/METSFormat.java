@@ -132,7 +132,11 @@ public class METSFormat extends Format {
                 filterQuerySuffix);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @should return cannotDisseminateFormat if record not mets
+     */
     @Override
     public Element createGetRecord(RequestHandler handler, String filterQuerySuffix) {
         logger.trace("createGetRecord");
@@ -141,12 +145,18 @@ public class METSFormat extends Format {
         }
         List<String> fieldList = new ArrayList<>(Arrays.asList(IDENTIFIER_FIELDS));
         fieldList.addAll(Arrays.asList(DATE_FIELDS));
+        fieldList.add(SolrConstants.SOURCEDOCFORMAT);
         fieldList.addAll(setSpecFields);
         try {
             SolrDocument doc = solr.getListRecord(handler.getIdentifier(), fieldList, filterQuerySuffix);
             if (doc == null) {
                 logger.debug("Record not found in index: {}", handler.getIdentifier());
                 return new ErrorCode().getIdDoesNotExist();
+            }
+            // The lookup above matches by identifier only, so a record in a different source format (e.g. LIDO) could be returned. Refuse to
+            // disseminate it as METS instead of wrapping foreign content in a <mets> root element.
+            if (!"METS".equals(doc.getFieldValue(SolrConstants.SOURCEDOCFORMAT))) {
+                return new ErrorCode().getCannotDisseminateFormat();
             }
             return generateMetsRecords(Collections.singletonList(doc), 1L, 0, 1, handler, "GetRecord", setSpecFields, filterQuerySuffix);
         } catch (IOException | SolrServerException e) {
