@@ -21,15 +21,15 @@ class SocketBeanTest {
         PushContext push = Mockito.spy(PushContext.class);
         SocketBean bean = new SocketBean(0, push);
         bean.send(TEST_MESSAGE);
-        Thread.sleep(2);//sleep to avoid race condition, because message is sent asynchronously
+        Thread.sleep(4);//sleep to avoid race condition, because message is sent asynchronously
         Mockito.verify(push, Mockito.times(1)).send(UPDATE);
 
     }
 
     /**
-     * Verifies that close() terminates the executor promptly even when a long idle period is configured.
-     * With shutdownNow() the sleeping scheduled thread is interrupted immediately. With the old
-     * service.close() / shutdown() approach the call would block until the next scheduled run.
+     * Verifies that close() terminates the executor promptly even when a long idle period is configured. With shutdownNow() the sleeping scheduled
+     * thread is interrupted immediately. With the old service.close() / shutdown() approach the call would block until the next scheduled run.
+     * 
      * @verifies terminate executor promptly
      */
     @Test
