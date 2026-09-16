@@ -1,0 +1,82 @@
+/* ==============================================================
+   Admin palette — layer 1 of the backend's own binding
+   Read by the admin roles in tokensAdmin.less only. Legacy backend
+   values, frozen: a change to palette.less never reaches the admin.
+   ==============================================================*/
+
+.gv-palette-admin() {
+    /* BRAND */
+    --color-brand: #015999;
+    --color-brand-fill: oklch(from var(--color-brand) min(l, 0.55) c h);
+    --color-brand-hover: var(--color-link);
+    --color-brand-pressed: oklch(from var(--color-brand-fill) calc(l - 0.12) c h);
+    --color-brand-text: oklch(from var(--color-brand) 0.45 min(c, 0.2) h);
+    --color-on-brand: #fff;
+
+    /* LINK */
+    --color-link: #3365a9;
+    --color-link-hover: #134ea0;
+    --color-link-active: #0d3a79;
+
+    /* ACCENT, HIGHLIGHT, FOCUS */
+    --color-highlight: #ffd500;
+    --color-focus-ring: #cb002d;
+
+    /* GRAY RAMP — legacy backend grays */
+    --color-gray-0: #fff;
+    --color-gray-50: #f5f8fd;
+    --color-gray-100: #f2f3f4;
+    --color-gray-200: #e9e9e9;
+    --color-gray-300: #ccc;
+    --color-gray-400: #999;
+    --color-gray-500: #6f6f6f;
+    --color-gray-550: #636363;
+    --color-gray-600: #555;
+    --color-gray-700: #444;
+    --color-gray-800: #333;
+    --color-gray-900: #212529;
+    --color-gray-1000: #000;
+
+    /* SLATE RAMP — legacy backend slates */
+    --color-slate-500: #5b6473;
+
+    /* SUCCESS */
+    --color-success-text: #155724;
+    --color-success-surface: #d4edda;
+    --color-success-hover: #abd9b5;
+    --color-success-strong: #087f0d;
+
+    /* DANGER */
+    --color-danger-text: #721c24;
+    --color-danger-surface: #f8d7da;
+    --color-danger-hover: #e3abb2;
+
+    /* WARNING */
+    --color-warning-surface: #fed44c;
+
+    /* INFO */
+    --color-info-strong: #008295;
+
+    /* ENTITIES */
+    --color-entity-person: #0064c2;
+    --color-entity-location: #964800;
+    --color-entity-institution: #226f07;
+
+    /* MAP, RSS, NOTIFICATION */
+    --color-map-primary: #144a4d;
+    --color-map-secondary: #ff8a1d;
+    --color-rss: #f08422;
+    --color-notification: #1b2330;
+
+    /* SELECTION MARKERS */
+    --color-selection-marker: #a3f97c;
+    --color-selection-region: #c92b29;
+
+    /* BACKEND */
+    --color-admin-ink: #1a1a1a;
+    --color-admin-gray-100: #f7f7f7;
+    --color-admin-gray-200: #eee;
+    --color-admin-slate: #1b2330;
+    --color-admin-warning: #ff7e51;
+    --color-admin-danger: #ed0800;
+}

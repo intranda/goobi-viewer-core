@@ -27,6 +27,7 @@ const reporter = require('postcss-reporter');
 const { depsPathsJS, depsPathsCSS, tablerIconSources } = require('./gulp/depsPaths');
 const replaywebpagePatch = require('./gulp/replaywebpagePatch');
 const tokenCheck = require('./gulp/tokenCheck');
+const themeTokenReport = require('./gulp/themeTokens');
 
 const isWin = process.platform === 'win32';
 const toPosix = (p) => (p ? p.replace(/\\/g, '/') : p);
@@ -896,12 +897,9 @@ function watchMode() {
 
     // Styles & tags
     const themePaths = tokenCheck.themePaths();
-    gulp.watch(
-        [joinPosix(paths.lessRoot, '**', '*.less'), ...(themePaths.enabled ? [joinPosix(themePaths.lessRoot, '**', '*.less')] : [])],
-        gulp.series(checkTokens, () => buildStyles())
-    );
-    // Theme templates carry no styles, so they only need the check, not a CSS rebuild.
-    if (themePaths.enabled) gulp.watch(joinPosix(themePaths.root, '**', '*.{xhtml,html,tag,js}'), checkTokens);
+    gulp.watch(joinPosix(paths.lessRoot, '**', '*.less'), gulp.series(checkTokens, () => buildStyles()));
+    // Theme findings are information only: no core rebuild, and the watcher never stops on them.
+    if (themePaths.enabled) gulp.watch([joinPosix(themePaths.lessRoot, '**', '*.less'), joinPosix(themePaths.root, '**', '*.{xhtml,html,tag,js}')], reportThemeTokens);
     gulp.watch(joinPosix(paths.jsDevRoot, 'tags', '**', '*.tag')).on('change', (p) => compileRiotTags(p));
 
     // Static assets (no dist CSS/JS)
@@ -1005,8 +1003,13 @@ function printTargets(cb) {
  */
 async function reportTokens() {
     const result = await tokenCheck.runTokenCheck();
-    logBlock('check-tokens', tokenCheck.formatReport(result, { showWarnings: process.env.GV_TOKENWARN === '1' }).split('\n'));
-    return result.errors.length > 0 || result.stale.length > 0;
+    logBlock('check-tokens', tokenCheck.formatReport(result).split('\n'));
+    return result.core.length > 0;
+}
+
+// Theme findings never fail anything; this task only prints the report.
+async function reportThemeTokens() {
+    await reportTokens();
 }
 
 async function checkTokens() {
@@ -1025,8 +1028,8 @@ async function checkTokens() {
  */
 async function themeTokens() {
     if (!process.env.GV_THEME_LESS_ROOT) throw new Error('GV_THEME_LESS_ROOT=<theme>/css/less is required');
-    const rows = await tokenCheck.themeTokenReport(process.env.GV_THEME_LESS_ROOT);
-    logBlock('theme-tokens', tokenCheck.formatThemeTokenReport(rows).split('\n'));
+    const rows = await themeTokenReport.themeTokenReport(process.env.GV_THEME_LESS_ROOT);
+    logBlock('theme-tokens', themeTokenReport.formatThemeTokenReport(rows).split('\n'));
 }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
@@ -1051,8 +1054,10 @@ exports.icons = buildIcons;
 
 /* ── Task exports ────────────────────────────────────────────────────────────────────────────
    - npm run build      → token check, then styles, JS bundles, riot tags
-   - npm run check:tokens → token-layer rules only (gulp/tokenCheck.js, baseline in gulp/tokenCheck.baseline.json)
-     GV_THEME_LESS_ROOT=<theme>/css/less picks the theme; GV_THEMECHECK=0 runs the core rules only
+   - npm run check:tokens → the six token sentences (gulp/tokenCheck.js): core findings fail the task,
+     theme findings are printed as information only
+     GV_THEME_LESS_ROOT=<theme>/css/less picks the theme; GV_THEMECHECK=0 skips the theme
+   - npm run theme:tokens → theme update report (gulp/themeTokens.js), needs GV_THEME_LESS_ROOT
    - npm run dev        → starts watchers (no initial full sync; run npm run sync separately if needed)
    - npm run copyDeps   → copies declared 3rd-party assets, then regenerates
                           the patched replaywebpage bundle (see gulp/replaywebpagePatch.js)

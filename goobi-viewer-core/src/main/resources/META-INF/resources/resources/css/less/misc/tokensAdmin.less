@@ -1,0 +1,176 @@
+/* ==============================================================
+   Admin tokens — layer 2 of the backend's own binding, fixed light
+   Reads paletteAdmin.less only. No mixin of palette.less or
+   tokens.less is bound here, so frontend design work never reaches
+   the admin. Bound is exactly what admin pages read (check R17).
+   ==============================================================*/
+
+.gv-base-admin() {
+    /* TYPE SCALE */
+    --font-family: @fontFamily;
+    --font-scale: 1;
+    --font-size-small: calc(@fontSmall * var(--font-scale));
+    --font-size-medium: calc(@fontMedium * var(--font-scale));
+    --font-size-normal: calc(@fontNormal * var(--font-scale));
+    --font-size-large: calc(@fontLarge * var(--font-scale));
+    --font-size-xlarge: calc(@fontXLarge * var(--font-scale));
+
+    /* TEXT ROLES */
+    --font-size-body: var(--font-size-normal);
+    --font-size-body-small: var(--font-size-medium);
+    --font-size-body-large: var(--font-size-large);
+    --font-size-caption: var(--font-size-small);
+    --font-size-prose: var(--font-size-body-large);
+    --font-size-heading-small: var(--font-size-xlarge);
+    --font-size-heading-medium: calc(2.4rem * var(--font-scale));
+    --font-size-heading-large: calc(3.2rem * var(--font-scale));
+    --line-height-body: 1.5;
+    --line-height-prose: 1.65;
+    --line-height-heading: 1.2;
+    --text-measure: 75ch;
+
+    /* SHAPE */
+    --radius-container-small: 0.25rem;
+    --radius-button: 0;
+}
+
+.gv-semantic-admin() {
+    color-scheme: light;
+
+    color-scheme: light;
+
+    /* PAGE */
+    --bg-general: var(--color-gray-50);
+    --fg-general: var(--color-admin-ink);
+
+    /* CONTENT BOX */
+    --bg-content-box: var(--color-gray-0);
+    --fg-content-box: var(--color-admin-ink);
+
+    /* POPOVER */
+    --bg-popover: var(--color-gray-0);
+    --fg-popover: var(--color-admin-ink);
+
+    /* NEUTRAL SURFACES */
+    --bg-canvas: var(--color-admin-gray-200);
+    --bg-subtle: var(--color-admin-gray-100);
+    --bg-control: var(--color-admin-gray-100);
+
+    /* TEXT EMPHASIS */
+    --fg-secondary: var(--color-gray-600);
+    --fg-muted: var(--color-gray-550);
+    --fg-placeholder: rgb(from var(--color-gray-1000) r g b / 25%);
+
+    /* LINKS */
+    --fg-link: var(--color-brand);
+    --fg-link-hover: var(--color-link-hover);
+    --fg-link-active: var(--color-link-active);
+    --fg-link-content-box: var(--color-link);
+
+    /* SELECTION */
+    --bg-selected: var(--color-gray-300);
+    --fg-selected: var(--color-gray-900);
+
+    /* HOVER */
+    --bg-hover: var(--color-gray-100);
+
+    /* INVERSE */
+    --bg-inverse: var(--color-admin-slate);
+    --bg-inverse-hover: var(--color-slate-500);
+    --fg-inverse: var(--color-gray-0);
+
+    /* CONTROLS */
+    --bg-control-hover: var(--bg-brand-hover);
+    --fg-on-control-hover: var(--fg-on-brand);
+
+    /* BORDERS */
+    --border-faint: rgb(from var(--color-gray-300) r g b / 18%);
+    --border-default: var(--color-gray-200);
+    --border-strong: var(--color-gray-300);
+    --border-emphasis: var(--color-gray-500);
+
+    /* BRAND */
+    --brand: var(--color-brand-text);
+    --bg-brand: var(--color-brand-fill);
+    --bg-brand-hover: var(--color-brand-hover);
+    --bg-brand-pressed: var(--color-brand-pressed);
+    --fg-on-brand: var(--color-on-brand);
+
+    /* SUCCESS */
+    --fg-success: var(--color-success-strong);
+    --bg-success: var(--color-success-surface);
+    --fg-on-success: var(--color-success-text);
+    --bg-success-hover: var(--color-success-hover);
+    --border-success: var(--color-success-hover);
+    --bg-success-strong: var(--color-success-strong);
+    --fg-on-success-strong: var(--color-gray-0);
+
+    /* DANGER */
+    --fg-danger: var(--color-admin-danger);
+    --bg-danger: var(--color-danger-surface);
+    --fg-on-danger: var(--color-danger-text);
+    --bg-danger-hover: var(--color-danger-hover);
+    --border-danger: var(--color-danger-hover);
+    --bg-danger-strong: var(--color-admin-danger);
+    --fg-on-danger-strong: var(--color-gray-0);
+
+    /* WARNING */
+    --border-warning: var(--color-admin-warning);
+    --fg-warning: var(--color-admin-warning);
+    --bg-warning: var(--color-warning-surface);
+    --fg-on-warning: var(--color-gray-1000);
+    --fg-on-warning-hover: var(--color-gray-800);
+    --bg-warning-strong: var(--color-admin-warning);
+    --fg-on-warning-strong: var(--color-gray-0);
+
+    /* INFO */
+    --bg-info-strong: var(--color-info-strong);
+    --fg-on-info-strong: var(--color-gray-0);
+
+    /* ENTITIES */
+    --fg-entity-person: var(--color-entity-person);
+    --fg-entity-location: var(--color-entity-location);
+    --fg-entity-institution: var(--color-entity-institution);
+
+    /* MAP */
+    --bg-map-marker-primary: var(--color-map-primary);
+    --bg-map-marker-secondary: var(--color-map-secondary);
+    --fg-on-bright: var(--color-gray-1000);
+
+    /* RSS */
+    --bg-rss: var(--color-rss);
+
+    /* SELECTION MARKERS */
+    --outline-selection: var(--color-selection-marker);
+    --fg-selection-region: var(--color-selection-region);
+
+    /* NOTIFICATION */
+    --bg-notification: var(--color-notification);
+
+    /* HIGHLIGHT AND FOCUS */
+    --highlight: var(--color-highlight);
+    --outline-focus: var(--color-focus-ring);
+    --outline-focus-inner: var(--color-gray-0);
+
+    /* SHADOWS */
+    --shadow-color: var(--color-gray-1000);
+    --shadow-floating: 0 1px 2px rgb(from var(--shadow-color) r g b / 6%), 0 6px 16px rgb(from var(--shadow-color) r g b / 10%);
+
+    /* SCRIM AND MASK */
+    --bg-scrim: var(--color-gray-1000);
+
+    /* MODE-BOUND */
+    --display-light-only: flex;
+    --display-dark-only: none;
+
+    /* PRINT */
+    --fg-print: var(--color-gray-1000);
+    --fg-print-link: var(--color-gray-700);
+    --border-print: var(--color-gray-400);
+}
+
+:root:has(#admin) {
+    .gv-palette-admin();
+    .gv-base-admin();
+    .gv-semantic-admin();
+}

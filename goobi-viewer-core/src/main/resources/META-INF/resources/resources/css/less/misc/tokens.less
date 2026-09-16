@@ -1,7 +1,8 @@
 /* ==============================================================
    Tokens — layer 2: semantic roles, one set per color mode
    The only core file that branches on the mode. Components read
-   roles; the palette is read here only; the admin scope pins light.
+   roles; the palette is read here only. The admin binds its own
+   set in tokensAdmin.less.
    ==============================================================*/
 
 .gv-base() {
@@ -391,74 +392,11 @@
     --border-print: var(--color-gray-400);
 }
 
-.gv-semantic-admin() {
-    /* TEXT */
-    --fg-general: var(--color-admin-ink);
-    --fg-content-box: var(--color-admin-ink);
-    --fg-popover: var(--color-admin-ink);
-    --fg-placeholder: rgb(from var(--color-gray-1000) r g b / 25%);
-
-    /* LINKS AND BRAND */
-    --fg-link: var(--color-brand);
-    --color-brand-hover: var(--color-link);
-
-    /* SURFACES */
-    --bg-general: var(--color-gray-50);
-    --bg-subtle: var(--color-admin-gray-100);
-    --bg-control: var(--color-admin-gray-100);
-    --bg-canvas: var(--color-admin-gray-200);
-    --bg-hover: var(--color-gray-100);
-    --bg-inverse: var(--color-admin-slate);
-    --shadow-color: var(--color-gray-1000);
-
-    /* BORDERS */
-    --border-input: var(--color-slate-200);
-    --border-emphasis: var(--color-gray-500);
-
-    /* STATUS */
-    --fg-success: var(--color-success-strong);
-    --border-success: var(--color-success-hover);
-    --fg-warning: var(--color-admin-warning);
-    --border-warning: var(--color-admin-warning);
-    --bg-warning-strong: var(--color-admin-warning);
-    --fg-danger: var(--color-admin-danger);
-    --border-danger: var(--color-danger-hover);
-    --bg-danger-strong: var(--color-admin-danger);
-}
-
-/* FEATURE TOKENS — only what the admin scope rebinds */
-.gv-features() {
-    /* WIDGET ICONS */
-    --widget-body-icon: var(--fg-general);
-    --widget-topbar-icon: var(--brand);
-
-    /* DATEPICKER */
-    --datepicker-day-bg-hover: var(--bg-hover);
-    --datepicker-day-fg-disabled: var(--fg-placeholder);
-
-    /* RSS */
-    --rss-badge-fg: var(--fg-on-bright);
-}
-
-.gv-features-admin() {
-    /* WIDGET ICONS */
-    --widget-body-icon: var(--fg-content-box);
-    --widget-topbar-icon: var(--fg-inverse);
-
-    /* DATEPICKER */
-    --datepicker-day-bg-hover: var(--bg-canvas);
-    --datepicker-day-fg-disabled: var(--border-strong);
-
-    /* RSS */
-    --rss-badge-fg: var(--fg-inverse);
-}
-
 /* WIRING — order is binding */
 :root {
     .gv-palette();
     .gv-base();
     .gv-semantic-light();
-    .gv-features();
 }
 
 @media (prefers-color-scheme: dark) {
@@ -473,15 +411,4 @@
 
 .color-theme-light {
     .gv-semantic-light();
-}
-
-/* ADMIN SCOPE — fixed light binding */
-:root:has(#admin) {
-    .gv-palette();
-    .gv-palette-admin();
-    .gv-base();
-    .gv-semantic-light();
-    .gv-semantic-admin();
-    .gv-features();
-    .gv-features-admin();
 }
