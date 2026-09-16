@@ -233,6 +233,8 @@ public class ViewManager implements Serializable {
     private AccessPermission recordViewImagesAccess = null;
     private boolean recordViewImagesAccessResolved = false;
     private List<StructElementStub> docHierarchy = null;
+    /** Live volume count for anchor records, queried from Solr once per ViewManager instance (i.e. once per opened record). */
+    private volatile Long numVolumes = null;
     private String mimeType = null;
     private String webArchiveSeedUrl = null;
     private Boolean filesOnly = null;
@@ -1263,16 +1265,32 @@ public class ViewManager implements Serializable {
     }
 
     /**
+     * Returns the number of volumes belonging to this anchor record. The value is queried live from Solr (the current
+     * count of ISWORK records referencing this anchor via PI_PARENT) rather than read from the anchor's stored
+     * NUMVOLUMES field, so it is correct even if the anchor has not been re-indexed since a volume was added or removed.
+     * The result is cached for the lifetime of this ViewManager instance (one query per opened record). Non-anchor
+     * records always return 0.
+     *
+     * @return the current number of volumes; 0 for non-anchor records
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     */
+    public long getNumVolumes() throws PresentationException, IndexUnreachableException {
+        if (numVolumes == null) {
+            numVolumes = topStructElement.isAnchor() ? SearchHelper.getVolumeCount(topStructElement.getPi()) : 0L;
+        }
+        return numVolumes;
+    }
+
+    /**
      * isHasVolumes.
      *
      * @return true if this is an anchor record and has indexed volumes; false otherwise
+     * @throws io.goobi.viewer.exceptions.PresentationException if any.
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      */
-    public boolean isHasVolumes() {
-        if (!topStructElement.isAnchor()) {
-            return false;
-        }
-
-        return topStructElement.getNumVolumes() > 0;
+    public boolean isHasVolumes() throws PresentationException, IndexUnreachableException {
+        return getNumVolumes() > 0;
     }
 
     /**

@@ -249,12 +249,6 @@ public class StructElement extends StructElementStub implements Comparable<Struc
                 pi = pi.intern();
             }
             logid = getMetadataValue(SolrConstants.LOGID);
-            if (anchor) {
-                String numVolumeString = getMetadataValue(SolrConstants.NUMVOLUMES);
-                if (numVolumeString != null) {
-                    numVolumes = Long.valueOf(numVolumeString);
-                }
-            }
             docStructType = getMetadataValue(SolrConstants.DOCSTRCT);
             if (docStructType != null) {
                 docStructType.intern();
