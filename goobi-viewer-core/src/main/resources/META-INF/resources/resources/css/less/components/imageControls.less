@@ -3,17 +3,18 @@
    Style declarations for imageControls.xhtml
    ==============================================================*/
 
-@image-controls-touch-size: 26px;
-@image-controls-icon-size: 17px;
-@image-controls-gap: 0.1rem;
+@image-controls-touch-size: 32px;
+@image-controls-icon-size: 18px;
+@image-controls-gap: 4px;
+@image-controls-group-gap: 20px;
 /* CONTROLS */
 /* BLOCK */
 .image-controls {
-    padding: 10px;
+    padding: 12px;
     position: relative;
-    background: var(--image-controls-bg);
-    color: var(--image-controls-icon);
-    border: 1px solid var(--image-controls-container-border);
+    background: var(--bg-content-box);
+    color: var(--fg-general);
+    border: 1px solid transparent;
     &.-ltr,
     .-ltr {
         direction: ltr;
@@ -24,8 +25,9 @@
     }
     &__inner {
         display: flex;
+        align-items: center;
         flex-wrap: wrap;
-        gap: 4px;
+        gap: 8px @image-controls-group-gap;
     }
     // GRID/GAP SIZING FOR THE IMAGE ACTIONS/CONTROLS + (DOC) OPTIONS
     &__actions,
@@ -33,17 +35,18 @@
     &__actions-additional,
     &__options {
         display: flex;
-        gap: 3px;
+        align-items: center;
+        gap: @image-controls-gap;
         flex-wrap: wrap;
+    }
+    // GROUPS: paging | view | document, set apart by space and one rule
+    &__actions-additional {
+        border-inline-start: 1px solid var(--border-faint);
+        padding-inline-start: @image-controls-group-gap;
     }
     /* DOCUMENT OPTIONS */
     &__options {
         margin-left: auto;
-        display: flex;
-        align-items: center;
-        align-content: center;
-        flex-wrap: wrap;
-        gap: @image-controls-gap;
         padding: 0;
         list-style: none;
     }
@@ -52,7 +55,7 @@
         align-items: center;
         flex: 0 0 auto;
         margin: 0;
-        color: var(--image-controls-icon);
+        color: var(--fg-general);
         font-size: inherit;
         line-height: 1;
 
@@ -83,10 +86,10 @@
 
         &:hover,
         &:focus-within {
-            color: var(--image-controls-icon-hover);
+            color: var(--fg-on-control-hover);
         }
         &:active {
-            color: var(--image-controls-icon-active);
+            color: var(--fg-on-control-hover);
         }
 
         &.fulltext {
@@ -128,7 +131,7 @@
         &.share-image-region {
             cursor: pointer;
             a.active {
-                color: var(--image-controls-region-fg-active);
+                color: var(--fg-selection-region);
             }
         }
     }
@@ -136,8 +139,8 @@
     &__option > .image-controls__share-image-link,
     &__option > button,
     &__option [data-bookmark-list-type='add'] {
-        min-width: @image-controls-touch-size;
-        min-height: @image-controls-touch-size;
+        width: @image-controls-touch-size;
+        height: @image-controls-touch-size;
         padding: 0;
         border: none;
         background: transparent;
@@ -181,21 +184,11 @@
             stroke-width 0.18s ease,
             fill 0.18s ease;
     }
-    &__option > .btn.btn--icon:hover .icon-wrapper,
-    &__option > .btn.btn--icon:focus .icon-wrapper,
-    &__option > .image-controls__share-image-link:hover .icon-wrapper,
-    &__option > .image-controls__share-image-link:focus .icon-wrapper,
-    &__option > button:hover .icon-wrapper,
-    &__option > button:focus .icon-wrapper,
-    &__option [data-bookmark-list-type='add']:hover .icon-wrapper,
-    &__option [data-bookmark-list-type='add']:focus .icon-wrapper {
-        transform: scale(1.08) translateY(-1px);
-        filter: drop-shadow(0 3px 8px rgb(from var(--shadow-color) r g b / 18%));
-    }
     /* ACTIONS */
     &__actions {
         // margin-right: auto;
         flex-grow: 1;
+        gap: @image-controls-group-gap;
         ul {
         }
         li {
@@ -216,25 +209,25 @@
     &__action {
         // Text and page selectors determine the minimum; icon artwork stays at
         // its original size. This also gives percentage-height children a box.
-        --_action-size: ~'max(36px, calc(var(--font-size-body-small) * var(--line-height-body) + 0.6rem + 2px))';
+        --_action-size: ~'max(32px, calc(var(--font-size-body-small) * var(--line-height-body) + 0.6rem + 2px))';
         width: var(--_action-size);
         height: var(--_action-size);
         flex-shrink: 0;
-        border: 1px solid var(--image-controls-border);
-        background: var(--image-controls-action-bg);
+        border: 0;
+        background: transparent;
         display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        color: var(--image-controls-icon);
+        color: var(--fg-general);
         &:hover,
         &:focus {
-            background-color: var(--image-controls-action-bg-hover);
-            color: var(--image-controls-icon-hover);
+            background-color: var(--bg-control-hover);
+            color: var(--fg-on-control-hover);
         }
         &:active {
-            background-color: var(--image-controls-action-bg-hover);
-            color: var(--image-controls-icon-active);
+            background-color: var(--bg-control-hover);
+            color: var(--fg-on-control-hover);
         }
         /* ELEMENT */
         a,
@@ -270,7 +263,7 @@
             }
         }
         .custom-control--select::after {
-            border-top-color: var(--image-controls-icon);
+            border-top-color: var(--fg-general);
         }
         button {
             white-space: nowrap;
@@ -322,16 +315,18 @@
         }
         &.select {
             width: 110px;
+            border: 1px solid var(--border-faint);
             .custom-control--select {
                 height: 100%;
                 min-height: 0;
                 border: none;
                 background: inherit;
-                color: var(--image-controls-icon);
+                color: var(--fg-general);
                 select {
                     height: 100%;
+                    min-height: 0;
                     background: inherit;
-                    color: var(--image-controls-icon);
+                    color: var(--fg-general);
                 }
                 &:after {
                 }
@@ -369,7 +364,7 @@
         &.enter-fullscreen {
         }
         &.zoom-slider-wrapper {
-            width: 100px;
+            width: 104px;
             border: none;
             background: transparent;
             cursor: default;
@@ -380,16 +375,21 @@
                 color: inherit;
             }
             .zoom-slider {
-                height: 10px;
-                border: 1px solid var(--image-controls-slider-border);
+                height: 20px;
+                border: 0;
                 max-width: 100%;
                 //Firefox
+                &::-moz-range-track {
+                    height: 3px;
+                    border-radius: 2px;
+                    background-color: var(--fg-general);
+                }
                 &::-moz-range-thumb {
-                    width: 8px;
-                    height: 26px;
+                    width: 12px;
+                    height: 12px;
                     border: none;
-                    background-color: var(--image-controls-slider-thumb-bg);
-                    border-radius: 0;
+                    background-color: var(--fg-general);
+                    border-radius: 50%;
                 }
                 //Chrome
                 -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
@@ -399,13 +399,17 @@
                 }
                 &::-webkit-slider-thumb {
                     -webkit-appearance: none;
-                    width: 8px;
-                    height: 26px;
+                    width: 12px;
+                    height: 12px;
                     border: none;
-                    background-color: var(--image-controls-slider-thumb-bg);
-                    border-radius: 0;
+                    background-color: var(--fg-general);
+                    border-radius: 50%;
+                    margin-top: -4.5px;
                 }
                 &::-webkit-slider-runnable-track {
+                    height: 3px;
+                    border-radius: 2px;
+                    background-color: var(--fg-general);
                 }
             }
         }
@@ -440,7 +444,7 @@
 
 .image-controls__actions-nav .image-controls__icon,
 .image-controls__actions-additional .image-controls__icon {
-    color: var(--image-controls-icon);
+    color: var(--fg-general);
 }
 
 .image-controls__icon {
@@ -452,8 +456,8 @@
 }
 
 .image-controls__icon-svg {
-    width: 28px;
-    height: 28px;
+    width: @image-controls-icon-size;
+    height: @image-controls-icon-size;
     display: inline-block;
     line-height: 0;
     color: inherit;
@@ -462,8 +466,8 @@
 }
 
 .image-controls__action .image-controls__icon-svg {
-    width: 28px;
-    height: 28px;
+    width: @image-controls-icon-size;
+    height: @image-controls-icon-size;
     flex-shrink: 0;
 }
 

@@ -1,67 +1,67 @@
 /* ==============================================================
-   Token layer 1: palette (mode-free primitives, prefix --color-)
-   Every color of the token layer is defined here or derived from
-   here. A theme overrides these in its :root block to retone light
-   AND dark at once. Only the semantic roles read this file; the
-   brand primitives --color-brand / --color-brand-hover keep their legacy
-   names as the theme input and are read through --brand, --bg-brand
-   and --bg-brand-hover only.
-   Ramps are hue + lightness step. Brand, status and OCR colors are
-   fixed pairs, not ramps: base = light value, -dark = dark variant.
-   .gv-palette-admin() holds the fixed legacy backend colors; only
-   .gv-semantic-admin() reads them.
+   Palette — layer 1: mode-free color primitives (--color-*)
+   Read by the semantic roles in tokens.less only. Brand tones
+   derive in OKLCH; the ramps are CIE L* steps (gulp/tonalRamp.js).
    ==============================================================*/
 
 .gv-palette() {
-    /* BRAND (legacy theme API) */
+    /* BRAND */
     --color-brand: @blue;
-    --color-brand-hover: lighten(@blue, 10%);
-    --color-brand-dark: #49a5ff;
-    --color-accent: #f59f00;
-    --color-link: #3365a9;
-    --color-link-hover: #134ea0;
-    --color-link-active: #0d3a79;
+    --color-brand-fill: oklch(from var(--color-brand) min(l, 0.55) c h);
+    --color-brand-hover: oklch(from var(--color-brand-fill) calc(l - 0.06) c h);
+    --color-brand-pressed: oklch(from var(--color-brand-fill) calc(l - 0.12) c h);
+    --color-brand-dark: oklch(from var(--color-brand) 0.72 min(c, 0.12) h);
+    --color-brand-dark-hover: oklch(from var(--color-brand-dark) calc(l + 0.07) calc(c * 0.85) h);
+    --color-brand-dark-pressed: oklch(from var(--color-brand-dark) calc(l - 0.06) c h);
+    --color-brand-text: oklch(from var(--color-brand) 0.45 min(c, 0.2) h);
+    --color-brand-text-dark: oklch(from var(--color-brand-dark) calc(l + 0.08) calc(c * 0.8) h);
+    --color-on-brand: @white;
+    --color-on-brand-dark: oklch(from var(--color-brand-dark) 0.15 c h);
 
-    /* FUNCTIONAL */
-    --color-danger: #b33226;
-    --color-danger-dark: #ffaaa9;
+    /* LINK */
+    --color-link: oklch(from var(--color-brand) 0.5 min(c, 0.2) h);
+    --color-link-hover: oklch(from var(--color-brand) 0.42 min(c, 0.2) h);
+    --color-link-active: oklch(from var(--color-brand) 0.35 min(c, 0.2) h);
+    --color-link-dark: var(--color-brand-text-dark);
+    --color-link-dark-hover: oklch(from var(--color-brand-dark) calc(l + 0.15) calc(c * 0.5) h);
+    --color-link-dark-active: oklch(from var(--color-brand-dark) calc(l - 0.02) c h);
+
+    /* ACCENT, HIGHLIGHT, FOCUS */
+    --color-accent: #f59f00;
     --color-highlight: #ffd500;
     --color-focus-ring: @colorOutline;
+    --color-focus-ring-dark: oklch(from var(--color-focus-ring) 0.72 min(c, 0.12) h);
 
-    /* OCR OVERLAYS (colorblind-safe) */
-    --color-ocr-block: #aa4499;
-    --color-ocr-block-dark: #cc79a7;
-    --color-ocr-line: #0072b2;
-    --color-ocr-line-dark: #56b4e9;
-    --color-ocr-word: #b34700;
-    --color-ocr-word-dark: #e69f00;
-
-    /* GRAY RAMP — neutral grays and text, 0 lightest … 1000 darkest */
+    /* GRAY RAMP — CIE L* 100 98 96 94 91 84 66 50 44 34 28 22 12 0 */
     --color-gray-0: @white;
-    --color-gray-50: #f5f8fd;
-    --color-gray-100: @neutralgray2;
-    --color-gray-200: #e9e9e9;
-    --color-gray-300: @middlegray;
-    --color-gray-400: #999;
-    --color-gray-500: @gray;
-    --color-gray-550: #636363;
-    --color-gray-600: #555;
-    --color-gray-700: @labelGray;
-    --color-gray-800: #333;
-    --color-gray-900: #212529;
+    --color-gray-50: #f6fafd;
+    --color-gray-100: #f1f4f7;
+    --color-gray-150: #ebeef1;
+    --color-gray-200: #e2e6e9;
+    --color-gray-300: #cfd2d5;
+    --color-gray-400: #9ea1a4;
+    --color-gray-500: #74777a;
+    --color-gray-550: #66686b;
+    --color-gray-600: #4e5053;
+    --color-gray-700: #404245;
+    --color-gray-800: #323537;
+    --color-gray-900: #1d2022;
     --color-gray-1000: #000;
 
-    /* SLATE RAMP — blue-gray surfaces of the dark mode and the light text on them */
-    --color-slate-100: #e3e4e7;
-    --color-slate-200: #d8d9dd;
-    --color-slate-500: #5b6473;
-    --color-slate-600: #3b4557;
-    --color-slate-700: #253044;
-    --color-slate-800: #1c263d;
-    --color-slate-900: #0a1124;
-    --color-slate-950: #070b17;
+    /* SLATE RAMP — CIE L* 92 86 78 64 46 30 22 17 12 6 3.5 */
+    --color-slate-100: #dceaf7;
+    --color-slate-200: #cbd9e5;
+    --color-slate-300: #b5c3cf;
+    --color-slate-400: #909da9;
+    --color-slate-500: #626f7a;
+    --color-slate-600: #3c4852;
+    --color-slate-700: #2a3640;
+    --color-slate-750: #202b35;
+    --color-slate-800: #15212a;
+    --color-slate-900: #07151e;
+    --color-slate-950: #000e18;
 
-    /* STATUS SURFACES AND FOREGROUNDS */
+    /* SUCCESS */
     --color-success: #007600;
     --color-success-dark: #80d68a;
     --color-success-text: #155724;
@@ -72,6 +72,11 @@
     --color-success-border-dark: #6fac7c;
     --color-success-hover: #abd9b5;
     --color-success-hover-dark: #245238;
+    --color-success-strong: #087f0d;
+
+    /* DANGER */
+    --color-danger: #b33226;
+    --color-danger-dark: #ffaaa9;
     --color-danger-text: #721c24;
     --color-danger-text-dark: #f5b6be;
     --color-danger-surface: #f8d7da;
@@ -80,48 +85,96 @@
     --color-danger-border-dark: #cb7c8d;
     --color-danger-hover: #e3abb2;
     --color-danger-hover-dark: #57303a;
+    --color-danger-strong: #b8271c;
+
+    /* WARNING */
+    --color-warning-text: #875100;
+    --color-warning-text-dark: #ffd073;
     --color-warning-surface: #fed44c;
     --color-warning-surface-dark: #493c17;
-    --color-success-strong: #087f0d;
+    --color-warning-border-dark: #c6a45a;
     --color-warning-strong: #9b5d00;
-    --color-danger-strong: #b8271c;
+
+    /* INFO */
     --color-info-strong: #008295;
     --color-info-strong-dark: #006e80;
 
-    /* CATEGORY COLORS */
+    /* OCR OVERLAYS — colorblind-safe */
+    --color-ocr-block: #aa4499;
+    --color-ocr-block-dark: #cc79a7;
+    --color-ocr-line: #0072b2;
+    --color-ocr-line-dark: #56b4e9;
+    --color-ocr-word: #b34700;
+    --color-ocr-word-dark: #e69f00;
+
+    /* ENTITIES */
     --color-entity-person: #0064c2;
     --color-entity-person-dark: #70bbff;
     --color-entity-location: #964800;
     --color-entity-location-dark: #ffb366;
     --color-entity-institution: #226f07;
     --color-entity-institution-dark: #8bd46a;
+
+    /* MAP, RSS, NOTIFICATION */
     --color-map-primary: #144a4d;
     --color-map-secondary: #ff8a1d;
     --color-rss: #f08422;
+    --color-notification: #1b2330;
+
+    /* SELECTION MARKERS */
     --color-selection-marker: #a3f97c;
     --color-selection-region: #c92b29;
     --color-selection-region-dark: #ffaaa9;
-    --color-notification: #1b2330;
 
-    /* DOCUMENTS, CHARTS AND ARCHIVE HERO */
-    --color-warning-text: #875100;
-    --color-warning-text-dark: #ffd073;
-    --color-warning-border-dark: #c6a45a;
+    /* DOCUMENT MARKINGS */
     --color-document-highlight: #b400aa;
     --color-document-highlight-selected: #006400;
     --color-document-selection: #0000ff;
     --color-annotation-focus: #ff0000;
+    --color-notation-active: #d2042d;
+
+    /* CHARTS */
     --color-ner-scale: #8a0808;
     --color-ner-scale-dark: #f48d8d;
     --color-chronology: #c85999;
     --color-chronology-dark: #eb9aca;
+
+    /* HERO */
     --color-hero: #2c3e50;
     --color-hero-gradient: #34495e;
-    --color-notation-active: #d2042d;
 }
 
-/* ADMIN — legacy backend primitives, mode-free */
+/* ADMIN — legacy backend values */
 .gv-palette-admin() {
+    /* BRAND AND LINK */
+    --color-brand-hover: #0176c8;
+    --color-link: #3365a9;
+    --color-link-hover: #134ea0;
+    --color-link-active: #0d3a79;
+
+    /* LEGACY RAMPS */
+    --color-gray-50: #f5f8fd;
+    --color-gray-100: @neutralgray2;
+    --color-gray-150: @neutralgray2;
+    --color-gray-200: #e9e9e9;
+    --color-gray-300: @middlegray;
+    --color-gray-400: #999;
+    --color-gray-500: @gray;
+    --color-gray-550: #636363;
+    --color-gray-600: #555;
+    --color-gray-700: @labelGray;
+    --color-gray-800: #333;
+    --color-gray-900: #212529;
+    --color-slate-100: #e3e4e7;
+    --color-slate-200: #d8d9dd;
+    --color-slate-500: #5b6473;
+    --color-slate-600: #3b4557;
+    --color-slate-700: #253044;
+    --color-slate-800: #1c263d;
+    --color-slate-900: #0a1124;
+    --color-slate-950: #070b17;
+
+    /* BACKEND */
     --color-admin-ink: #1a1a1a;
     --color-admin-gray-100: #f7f7f7;
     --color-admin-gray-200: #eee;

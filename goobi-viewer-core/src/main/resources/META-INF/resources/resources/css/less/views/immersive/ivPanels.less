@@ -19,13 +19,13 @@
         overflow-y: auto;
         scrollbar-gutter: stable;
         padding: 16px 12px 12px;
-        background-color: var(--immersive-chrome-bg);
-        box-shadow: var(--immersive-panel-shadow);
+        background-color: var(--bg-content-box);
+        box-shadow: var(--shadow-floating);
         transition: transform 0.25s ease;
 
         &-left {
-            left: var(--immersive-rail-width);
-            transform: translateX(calc(-100% - var(--immersive-rail-width)));
+            left: @immersive-rail-width;
+            transform: translateX(calc(-100% - @immersive-rail-width));
 
             &.is-open {
                 transform: translateX(0);
@@ -40,13 +40,13 @@
         gap: 8px;
         margin-bottom: 8px;
         padding-bottom: 14px;
-        border-bottom: 1px solid var(--immersive-chrome-border);
+        border-bottom: 1px solid var(--border-default);
     }
 
     &__panel-title {
         flex: 1;
         min-width: 0;
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
         font-size: var(--font-size-body-small);
         font-weight: 700;
         line-height: 1.3;
@@ -58,7 +58,7 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        left: calc(var(--immersive-rail-width) + var(--_immersive-panel-width, @immersive-panel-width-default));
+        left: calc(@immersive-rail-width + var(--_immersive-panel-width, @immersive-panel-width-default));
         z-index: @immersive-z-resize-handle;
         width: 12px;
         margin-left: -6px;
@@ -74,11 +74,11 @@
             width: 2px;
             transform: translateX(-50%);
             background-color: transparent;
-            transition: background-color var(--immersive-transition);
+            transition: background-color @immersive-transition;
         }
 
         &:hover::after {
-            background-color: var(--immersive-accent);
+            background-color: var(--brand);
         }
     }
 
@@ -90,7 +90,7 @@
         user-select: none;
 
         .immersive__panel-resize-handle::after {
-            background-color: var(--immersive-accent);
+            background-color: var(--brand);
         }
     }
 
@@ -134,7 +134,7 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
     .immersive__viewer {
-        --_immersive-panel-width: calc(100% - var(--immersive-rail-width));
+        --_immersive-panel-width: calc(100% - @immersive-rail-width);
     }
 
     .immersive__panel {

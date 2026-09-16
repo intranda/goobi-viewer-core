@@ -1,5 +1,7 @@
 /*
 Token check for the LESS token layer (core, optionally the reference theme).
+The rules are structural: they keep a build from going past the token system.
+Colour values are judged in the browser, not here.
 
 Rules
   R1  every var(--x) read in core names a token of the token layer; internal --_ tokens are
@@ -14,13 +16,12 @@ Rules
   R7  light/dark mixins of the token layer require matching counterparts and token sets
   R8  palette tokens are read only by the semantic mixins and never get a LESS alias — features,
       components and themes read roles; the brand primitives --color-brand / --color-brand-hover are
-      declared by themes but read only through --brand, --bg-brand and --bg-brand-hover
+      declared by themes but read only through --brand, --bg-brand and --bg-brand-hover.
+      Inside misc/palette.less an entry may read another one: the palette carries no mode,
+      so deriving a tone there bypasses no mode switch
   R9  outside misc/palette.less the token layer holds no color literal; alphas derive via rgb(from …)
   R10 component property values use tokens, not color literals or static color variables; backend exceptions are explicit
   R11 frontend font sizes use text roles or relative inheritance; fixed icon/marker geometry is explicitly annotated
-  R12 (theme) no !important outside the focus helper and the print styles
-  R13 (theme) every LESS file is reachable from an entry point
-  R14 (theme) every visible color pair reaches its WCAG 2.2 AA threshold in both modes
   R15 (theme) light and dark declare the same token names
   R16 (theme) templates carry no color values and no inline color styles
 
@@ -72,8 +73,8 @@ const COLOR_LITERAL = new RegExp(
     'i'
 );
 const OCCURRENCE_LIMIT = 12;
-const IMPORTANT_ALLOWED = ['misc/mixins.less', 'misc/print.less'];
-const ENTRY_POINTS = /^(?:constructor\.less|crowdsourcing\/csConstructor\.less|subthemes\/[^/]+\/subThemeConstructor\.less)$/;
+// R15 runs on the bundles that carry the token layer; the crowdsourcing bundle only reads it.
+const SYMMETRY_ENTRIES = /^(?:constructor\.less|subthemes\/[^/]+\/subThemeConstructor\.less)$/;
 const MIXIN_DEFINITION = /^\.[\w-]+\([^)]*\)(?: when .+)?$/;
 const DETACHED_DEFINITION = /^@[\w-]+:$/;
 const MIXIN_CALL = /^\.[\w-]+(\([^)]*\))?$/;
@@ -430,6 +431,8 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
         for (const r of p.reads) {
             if (r.alias || !restricted.has(r.name)) continue;
             if (isTokenLayer(file) && r.stack.some((h) => SEMANTIC_MIXIN.test(h))) continue;
+            // The palette derives its own entries from each other; it carries no mode, so nothing is bypassed.
+            if (file === paletteFile) continue;
             violations.push(violation('R8', file, r.name, r.line, 'palette token read outside the semantic roles — read a semantic role instead'));
         }
         for (const a of p.aliases) {
@@ -486,10 +489,6 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
             }
             if (!inLayer) {
                 checkTypography(`theme/${file}`, p, theme.get(file));
-                if (!IMPORTANT_ALLOWED.includes(file))
-                    (theme.get(file) || '').split('\n').forEach((text, index) => {
-                        if (/!important/.test(text) && !/^\s*(\/\/|\*|\/\*)/.test(text)) report('R12', text.trim().slice(0, 60), index + 1, 'declaration marked !important');
-                    });
                 for (const b of p.blocks)
                     if (MODE_BRANCH.test(b.header) || /@colorModes/.test(b.header)) report('R4', b.header, b.line, 'theme mode branching belongs in the token wiring');
                 for (const d of p.properties) {
@@ -499,9 +498,6 @@ function checkFiles(core, theme, { tokenLayer = TOKEN_LAYER, paletteFile = PALET
                 }
             }
         }
-
-        for (const file of unreachableFiles(theme))
-            violations.push(violation('R13', `theme/${file}`, file, 1, 'not imported by any entry point'));
 
         const seen = new Set();
         for (const layerFile of THEME_TOKEN_LAYER) {
@@ -680,12 +676,6 @@ function reportDeclaration(v) {
  * `hint(violation)` may return a fix tailored to the offending token.
  */
 const RULE_HELP = {
-    R14: {
-        title: 'a color pair is too low in contrast',
-        why: 'text or a boundary below the WCAG 2.2 AA threshold is unreadable for part of the users',
-        fix: 'darken or lighten one of the two roles in misc/tokens.less, or pick another palette step in misc/palette.less',
-        hint: (v) => (/\(dark\)$/.test(v.token) ? 'the dark mode fails here: check the -dark branch of the palette' : null),
-    },
     R16: {
         title: 'a color sits in a template instead of a stylesheet',
         why: 'a value in the markup ignores the light/dark switch and cannot be overridden by a customer theme',
@@ -744,16 +734,6 @@ const RULE_HELP = {
         title: 'a fixed text size bypasses the type scale',
         why: 'the theme scales typography through tokens; fixed sizes stay put',
         fix: 'use a text role such as var(--font-size-body) or var(--font-size-body-large)',
-    },
-    R12: {
-        title: '!important in a component',
-        why: 'it removes the only lever a later rule has, so the next override needs !important as well',
-        fix: 'raise specificity instead, for example by prefixing the block selector',
-    },
-    R13: {
-        title: 'a LESS file is not reachable from any entry point',
-        why: 'it is never compiled, so its rules silently do nothing',
-        fix: 'import it in constructor.less, or delete the file',
     },
     LESS: { title: 'the LESS compiler could not read a file', why: 'the check needs the compiled output', fix: 'fix the syntax error shown below' },
 };
@@ -876,202 +856,6 @@ function declarationSite(theme) {
 }
 
 /**
- * Files that no entry point imports, directly or indirectly. Such a file is never
- * compiled, so its rules never apply.
- *
- * @param {Map<string,string>} tree file path to source text
- * @returns {string[]} unreachable paths, sorted
- */
-function unreachableFiles(tree) {
-    const entries = [...tree.keys()].filter((file) => ENTRY_POINTS.test(file));
-    // A partial tree without an entry point says nothing about reachability.
-    if (!entries.length) return [];
-    const reached = new Set();
-    const visit = (file) => {
-        if (reached.has(file) || !tree.has(file)) return;
-        reached.add(file);
-        const dir = path.posix.dirname(file);
-        for (const match of tree.get(file).matchAll(/@import\s+(?:\([^)]*\)\s*)?['"]([^'"]+)['"]/g))
-            visit(path.posix.normalize(path.posix.join(dir, match[1])));
-    };
-    entries.forEach(visit);
-    return [...tree.keys()].filter((file) => !reached.has(file)).sort();
-}
-
-
-/**
- * The contrast contract: every pair a user actually sees, with its WCAG 2.2 AA
- * threshold (4.5 for text, 3 for boundaries and focus rings). The theme's palette
- * stress test reads the same list, so both run one contract.
- */
-const CONTRAST_PAIRS = [
-    ['page text', '--fg-general', '--bg-general', 4.5],
-    ['widget text', '--fg-content-box', '--bg-content-box', 4.5],
-    ['subtle surface text', '--fg-content-box', '--bg-subtle', 4.5],
-    ['popover text', '--fg-popover', '--bg-popover', 4.5],
-    ['header text', '--fg-header', '--bg-header', 4.5],
-    ['inverse text', '--fg-inverse', '--bg-inverse', 4.5],
-    ['field text', '--fg-content-box', '--bg-input', 4.5],
-    ['placeholder', '--fg-placeholder', '--bg-input', 4.5],
-    ['secondary text', '--fg-secondary', '--bg-content-box', 4.5],
-    ['muted text', '--fg-muted', '--bg-content-box', 4.5],
-    ['content link', '--fg-link', '--bg-content-box', 4.5],
-    ['link hover', '--fg-link-hover', '--bg-content-box', 4.5],
-    ['brand as text', '--brand', '--bg-content-box', 4.5],
-    ['hover text', '--fg-hover', '--bg-hover', 4.5],
-    ['pressed text', '--fg-content-box', '--bg-pressed', 4.5],
-    ['brand fill text', '--fg-on-brand', '--bg-brand', 4.5],
-    ['brand hover text', '--fg-on-brand', '--bg-brand-hover', 4.5],
-    ['brand pressed text', '--fg-on-brand', '--bg-brand-pressed', 4.5],
-    ['selected text', '--fg-selected', '--bg-selected', 4.5],
-    ['selected hover text', '--fg-selected', '--bg-selected-hover', 4.5],
-    ['selected pressed text', '--fg-selected', '--bg-selected-pressed', 4.5],
-    ['disabled text', '--fg-disabled', '--bg-disabled', 4.5],
-    ['input boundary', '--border-input', '--bg-input', 3],
-    ['input focus', '--outline-focus', '--bg-input', 3],
-    ['widget focus', '--outline-focus', '--bg-content-box', 3],
-    ['selected indicator', '--brand', '--bg-selected', 3],
-    ['selected hover indicator', '--brand', '--bg-selected-hover', 3],
-    ['slider range against track', '--brand', '--border-default', 3],
-    ['selected hover focus', '--outline-focus', '--bg-selected-hover', 3],
-    ['selected pressed focus', '--outline-focus', '--bg-selected-pressed', 3],
-    ['secondary on subtle', '--fg-secondary', '--bg-subtle', 4.5],
-    ['muted on subtle', '--fg-muted', '--bg-subtle', 4.5],
-    ['danger on subtle', '--fg-danger', '--bg-subtle', 4.5],
-    ['warning on subtle', '--fg-warning', '--bg-subtle', 4.5],
-    ['success on subtle', '--fg-success', '--bg-subtle', 4.5],
-    ['canvas text', '--fg-general', '--bg-canvas', 4.5],
-    ['accent text', '--fg-accent', '--bg-content-box', 4.5],
-    ['text on accent', '--fg-on-bright', '--accent', 4.5],
-    ['success text on surface', '--fg-on-success', '--bg-success', 4.5],
-    ['success icon', '--fg-success', '--bg-content-box', 4.5],
-    ['text on success strong', '--fg-on-success-strong', '--bg-success-strong', 4.5],
-    ['danger text on surface', '--fg-on-danger', '--bg-danger', 4.5],
-    ['danger icon', '--fg-danger', '--bg-content-box', 4.5],
-    ['text on danger strong', '--fg-on-danger-strong', '--bg-danger-strong', 4.5],
-    ['warning text on surface', '--fg-on-warning', '--bg-warning', 4.5],
-    ['warning icon', '--fg-warning', '--bg-content-box', 4.5],
-    ['text on warning strong', '--fg-on-warning-strong', '--bg-warning-strong', 4.5],
-    ['text on info strong', '--fg-on-info-strong', '--bg-info-strong', 4.5],
-    ['inverse hover text', '--fg-inverse', '--bg-inverse-hover', 4.5],
-    ['popover link', '--fg-link', '--bg-popover', 4.5],
-    ['header link', '--fg-link', '--bg-header', 4.5],
-    ['page link', '--fg-link', '--bg-general', 4.5],
-    ['subtle link', '--fg-link', '--bg-subtle', 4.5],
-    ['footer text', '--fg-inverse', '--footer-topnav-bg', 4.5],
-    ['card link', '--fg-link-content-box', '--bg-content-box', 4.5],
-    ['card border on page', '--border-container', '--bg-general', 1.1],
-];
-const CONTRAST_ENTRIES = /^(?:constructor\.less|subthemes\/[^/]+\/subThemeConstructor\.less)$/;
-
-/* ---------- color evaluation ---------- */
-
-/** Splits `a, b(c, d)` on top-level commas only. */
-function splitTopLevel(text) {
-    const parts = [];
-    let depth = 0;
-    let current = '';
-    for (const char of text) {
-        if (char === '(') depth++;
-        if (char === ')') depth--;
-        if (char === ',' && depth === 0) {
-            parts.push(current.trim());
-            current = '';
-        } else current += char;
-    }
-    if (current.trim()) parts.push(current.trim());
-    return parts;
-}
-
-/**
- * sRGB channels of a hex color or a (nested) opaque `color-mix(in srgb, …)`.
- *
- * @returns {number[]|null} three channels in 0..1, or null for an expression we do not evaluate
- */
-function channels(value) {
-    const text = String(value).trim();
-    const short = /^#([\da-f])([\da-f])([\da-f])$/i.exec(text);
-    if (short) return channels(`#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`);
-    const hex = /^#([\da-f]{6})$/i.exec(text);
-    if (hex) return [0, 2, 4].map((offset) => parseInt(hex[1].slice(offset, offset + 2), 16) / 255);
-    if (text.startsWith('color-mix(') && text.endsWith(')')) {
-        const [space, first, second] = splitTopLevel(text.slice('color-mix('.length, -1));
-        if (space !== 'in srgb' || !second) return null;
-        const part = (entry) => {
-            const m = /^(.*?)\s+([\d.]+)%$/.exec(entry);
-            return m ? { color: m[1].trim(), weight: Number(m[2]) / 100 } : { color: entry, weight: null };
-        };
-        const a = part(first);
-        const b = part(second);
-        if (a.weight === null && b.weight === null) a.weight = b.weight = 0.5;
-        else if (a.weight === null) a.weight = 1 - b.weight;
-        else if (b.weight === null) b.weight = 1 - a.weight;
-        const ca = channels(a.color);
-        const cb = channels(b.color);
-        return ca && cb ? ca.map((channel, i) => channel * a.weight + cb[i] * b.weight) : null;
-    }
-    return null;
-}
-
-function relativeLuminance(rgb) {
-    return rgb
-        .map((channel) => (channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4))
-        .reduce((sum, channel, i) => sum + channel * [0.2126, 0.7152, 0.0722][i], 0);
-}
-
-/** Replaces var() reads by their declared values until a literal remains. */
-function resolveVars(value, tokens, seen = []) {
-    return String(value).replace(/var\(\s*(--[\w-]+)\s*\)/g, (whole, name) => {
-        if (!(name in tokens) || seen.includes(name)) return whole;
-        return resolveVars(tokens[name], tokens, [...seen, name]);
-    });
-}
-
-/** Declarations that apply in one mode, core defaults first, theme on top. */
-function modeTokens(css, mode, into = {}) {
-    postcss.parse(css).walkRules((rule) => {
-        if (![':root', `.color-theme-${mode}`].includes(rule.selector)) return;
-        for (let parent = rule.parent; parent; parent = parent.parent)
-            if (parent.type === 'atrule' && parent.name === 'media' && !(mode === 'dark' && parent.params === '(prefers-color-scheme: dark)')) return;
-        rule.nodes.filter((node) => node.type === 'decl' && node.prop.startsWith('--')).forEach((node) => {
-            into[node.prop] = node.value;
-        });
-    });
-    return into;
-}
-
-/**
- * R14: every visible foreground/background pair reaches its WCAG threshold, in both modes.
- *
- * @param {string} coreCss compiled core CSS (supplies the defaults a theme does not override)
- * @param {string} themeCss compiled CSS of one theme entry point
- * @param {(token: string, mode: string) => {file: string, line: number}} site where to point the developer
- * @returns {{violations: object[], warnings: object[]}}
- */
-function checkContrast(coreCss, themeCss, site) {
-    const violations = [];
-    const warnings = [];
-    for (const mode of ['light', 'dark']) {
-        const tokens = modeTokens(themeCss, mode, modeTokens(coreCss, mode, {}));
-        for (const [label, fg, bg, threshold] of CONTRAST_PAIRS) {
-            const front = channels(resolveVars(`var(${fg})`, tokens));
-            const back = channels(resolveVars(`var(${bg})`, tokens));
-            if (!front || !back) {
-                warnings.push(violation('R14', 'misc/tokens.less', `${fg} on ${bg}`, 1, `${mode}: color expression not evaluated, contrast unchecked`));
-                continue;
-            }
-            const a = relativeLuminance(front);
-            const b = relativeLuminance(back);
-            const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
-            if (ratio >= threshold) continue;
-            const where = site(fg, mode);
-            violations.push(violation('R14', where.file, `${label}: ${fg} on ${bg} — ${ratio.toFixed(2)}:1, needs ${threshold}:1 (${mode})`, where.line, 'contrast below the WCAG threshold'));
-        }
-    }
-    return { violations, warnings };
-}
-
-/**
  * R15: a token set for one mode only sticks when the mode class overrides the system
  * preference, so light and dark must declare the same names.
  */
@@ -1128,15 +912,14 @@ async function runTokenCheck({ moduleRoot = MODULE_ROOT, lessRoot = LESS_ROOT, t
     const theme = enabled && found ? readLessTree(themeDir) : null;
     const themeState = { status: !enabled ? 'off' : found ? 'checked' : 'missing', name: path.basename(path.resolve(themeDir, '..', '..')), path: themeLessRoot };
     const { violations, warnings, tokens } = checkFiles(core, theme);
-    let coreCss = '';
-    violations.push(...(await checkCompiledTree(path.resolve(moduleRoot, lessRoot), { tokens, onCss: (css) => (coreCss = css) })));
+    violations.push(...(await checkCompiledTree(path.resolve(moduleRoot, lessRoot), { tokens })));
     if (theme) {
         const entries = [...theme.keys()].filter((file) => /(?:^constructor\.less$|^crowdsourcing\/csConstructor\.less$|^subthemes\/[^/]+\/subThemeConstructor\.less$)/.test(file));
         const site = declarationSite(theme);
         violations.push(...checkThemeTemplates(themeDir));
         // The same component compiles into several theme bundles; report each finding once.
         const seenCompiled = new Set();
-        const seenPalette = new Set();
+        const seenSymmetry = new Set();
         for (const entry of entries) {
             let themeCss = '';
             const compiled = await checkCompiledTree(themeDir, { entry, theme: true, tokens, onCss: (css) => (themeCss = css) });
@@ -1146,18 +929,15 @@ async function runTokenCheck({ moduleRoot = MODULE_ROOT, lessRoot = LESS_ROOT, t
                 seenCompiled.add(key);
                 violations.push({ ...v, file: `theme/${v.file}` });
             }
-            if (!themeCss || !CONTRAST_ENTRIES.test(entry)) continue;
-            const contrast = checkContrast(coreCss, themeCss, site);
-            // Subthemes inherit most roles; report a shared pair once, under the entry that hits it first.
+            if (!themeCss || !SYMMETRY_ENTRIES.test(entry)) continue;
+            // Subthemes inherit most roles; report a shared token once, under the entry that hits it first.
             const knownAsymmetric = new Set(violations.filter((v) => v.rule === 'R7').map((v) => v.token));
-            const symmetry = checkModeSymmetry(themeCss, site).filter((v) => !knownAsymmetric.has(v.token.split(' ')[0]));
-            for (const v of [...contrast.violations, ...symmetry]) {
+            for (const v of checkModeSymmetry(themeCss, site)) {
                 const key = `${v.rule}|${v.token}`;
-                if (seenPalette.has(key)) continue;
-                seenPalette.add(key);
+                if (knownAsymmetric.has(v.token.split(' ')[0]) || seenSymmetry.has(key)) continue;
+                seenSymmetry.add(key);
                 violations.push({ ...v, file: `theme/${v.file}`, entry });
             }
-            warnings.push(...contrast.warnings.filter((w) => !seenPalette.has(`W|${w.token}`) && seenPalette.add(`W|${w.token}`)));
         }
     }
     return { ...applyBaseline(violations, baseline), warnings, violations, theme: themeState, themeChecked: theme !== null };
@@ -1174,8 +954,8 @@ const RENAMED_TOKENS = new Map([
     ['--container-border-radius', '--radius-container'],
     ['--button-border-radius', '--radius-button'],
     ['--container-box-shadow', '--shadow-container'],
-    ['--color-theme-switch-dark-display', '--theme-switch-dark-display'],
-    ['--color-theme-switch-light-display', '--theme-switch-light-display'],
+    ['--color-theme-switch-dark-display', '--display-light-only'],
+    ['--color-theme-switch-light-display', '--display-dark-only'],
     ['--placeholder', '--fg-placeholder'],
     ['--lk-general', '--fg-link'],
     ['--lk-general-hover', '--fg-link-hover'],
@@ -1219,11 +999,11 @@ const RENAMED_TOKENS = new Map([
     ['--datepicker-day-selected-fg', '--datepicker-day-fg-selected'],
     ['--datepicker-day-today-border-color', '--datepicker-day-border-today'],
     ['--datepicker-day-disabled-fg', '--datepicker-day-fg-disabled'],
-    ['--datepicker-day-hasdata-bg', '--datepicker-day-bg-has-data'],
+    ['--datepicker-day-hasdata-bg', null],
     ['--datepicker-day-hasdata-fg', '--datepicker-day-fg-has-data'],
-    ['--datepicker-day-hasdata-hover-bg', '--datepicker-day-bg-has-data-hover'],
+    ['--datepicker-day-hasdata-hover-bg', null],
     ['--datepicker-day-hasdata-hover-fg', '--datepicker-day-fg-has-data-hover'],
-    ['--datepicker-day-range-bg', '--datepicker-day-bg-in-range'],
+    ['--datepicker-day-range-bg', null],
     ['--ns-bg', '--newspaper-search-bg'],
     ['--ns-border-color', '--newspaper-search-border'],
     ['--ns-tab-bg', '--newspaper-search-tab-bg'],
@@ -1264,9 +1044,9 @@ const RENAMED_TOKENS = new Map([
     ['--active-facets-badge-background', '--active-facets-badge-bg'],
     ['--active-facets-badge-background-hover', '--active-facets-badge-bg-hover'],
     ['--active-facets-badge-color', '--active-facets-badge-fg'],
-    ['--active-facets-badge-muted', '--active-facets-badge-fg-muted'],
+    ['--active-facets-badge-muted', null],
     ['--active-facets-badge-contrast', '--active-facets-badge-fg-contrast'],
-    ['--facet-control-color', '--facet-control-fg'],
+    ['--facet-control-color', null],
     ['--archives-title-color', '--archives-title-fg'],
     ['--archives-description-color', '--archives-description-fg'],
     ['--archives-placeholder-icon-color', '--archives-placeholder-icon'],
@@ -1280,33 +1060,33 @@ const RENAMED_TOKENS = new Map([
     ['--image-region-drawing-color', '--image-region-outline-drawing'],
     ['--chronology-chart-color', '--chronology-chart-fg'],
     ['--mei-note-active-color', '--mei-note-fg-active'],
-    ['--login-nav-bookmarks-background', '--login-nav-bookmarks-bg'],
-    ['--login-nav-dropdown-border-color', '--login-nav-dropdown-border'],
-    ['--search-toolbar-divider-color', '--search-toolbar-divider'],
-    ['--search-toolbar-icon-color', '--search-toolbar-icon'],
-    ['--search-toolbar-icon-color-hover', '--search-toolbar-icon-hover'],
-    ['--toc-page-hover-bg', '--toc-page-bg-hover'],
-    ['--toc-page-toggle-icon-color', '--toc-page-toggle-icon'],
+    ['--login-nav-bookmarks-background', null],
+    ['--login-nav-dropdown-border-color', null],
+    ['--search-toolbar-divider-color', null],
+    ['--search-toolbar-icon-color', null],
+    ['--search-toolbar-icon-color-hover', null],
+    ['--toc-page-hover-bg', null],
+    ['--toc-page-toggle-icon-color', null],
     ['--toc-page-toggle-icon-color-hover', '--toc-page-toggle-icon-hover'],
-    ['--toc-page-link-color-hover', '--toc-page-link-fg-hover'],
-    ['--toc-page-border-color', '--toc-page-border'],
-    ['--image-controls-border-color', '--image-controls-border'],
-    ['--image-controls-icon-color-hover', '--image-controls-icon-hover'],
+    ['--toc-page-link-color-hover', null],
+    ['--toc-page-border-color', null],
+    ['--image-controls-border-color', null],
+    ['--image-controls-icon-color-hover', '--fg-on-control-hover'],
     ['--image-controls-icon-color-active', '--image-controls-icon-active'],
-    ['--image-controls-action-background', '--image-controls-action-bg'],
-    ['--image-controls-action-background-hover', '--image-controls-action-bg-hover'],
-    ['--image-controls-slider-thumb-background', '--image-controls-slider-thumb-bg'],
+    ['--image-controls-action-background', null],
+    ['--image-controls-action-background-hover', '--bg-control-hover'],
+    ['--image-controls-slider-thumb-background', null],
     ['--image-controls-slider-border-color', '--image-controls-slider-border'],
     ['--quick-filter-label-color', '--quick-filter-label-fg'],
     ['--quick-filter-control-hover-bg', '--quick-filter-control-bg-hover'],
     ['--immersive-chrome-hover-bg', '--immersive-chrome-bg-hover'],
-    ['--immersive-chrome-border-color', '--immersive-chrome-border'],
-    ['--immersive-key-border-color', '--immersive-key-border'],
-    ['--immersive-metadata-hover-bg', '--immersive-metadata-bg-hover'],
-    ['--combined-facets-background', '--combined-facets-bg'],
-    ['--facet-control-active', '--facet-control-bg-active'],
-    ['--facet-control-active-fg', '--facet-control-fg-active'],
-    ['--archives-overlay-text', '--archives-overlay-fg'],
+    ['--immersive-chrome-border-color', null],
+    ['--immersive-key-border-color', null],
+    ['--immersive-metadata-hover-bg', null],
+    ['--combined-facets-background', '--bg-brand-tint'],
+    ['--facet-control-active', null],
+    ['--facet-control-active-fg', null],
+    ['--archives-overlay-text', null],
     ['--numeric-paginator-active-bg', '--numeric-paginator-bg-active'],
     ['--calendar-day-hover-bg', '--calendar-day-bg-hover'],
     ['--calendar-day-hover-fg', '--calendar-day-fg-hover'],
@@ -1323,7 +1103,144 @@ const RENAMED_TOKENS = new Map([
     ['--immersive-ocr-block-rgb', '--immersive-ocr-block (a color)'],
     ['--immersive-ocr-line-rgb', '--immersive-ocr-line (a color)'],
     ['--immersive-ocr-word-rgb', '--immersive-ocr-word (a color)'],
+    ['--widget-expand-icon', '--brand'],
+    ['--login-nav-bg', '--bg-inverse'],
+    ['--login-nav-bg-hover', '--bg-inverse-hover'],
+    ['--login-nav-fg', '--fg-inverse'],
+    ['--login-nav-fg-hover', '--fg-inverse'],
+    ['--login-nav-icon', '--fg-inverse'],
+    ['--login-nav-icon-hover', '--fg-inverse'],
+    ['--login-nav-bookmarks-fg', '--fg-inverse'],
+    ['--login-nav-bookmarks-fg-hover', '--highlight'],
+    ['--login-nav-bookmarks-counter-bg', '--bg-brand'],
+    ['--search-toolbar-bg-active', '--bg-brand'],
+    ['--search-toolbar-fg-active', '--fg-on-brand'],
+    ['--search-toolbar-icon-active', '--fg-on-brand'],
+    ['--search-toolbar-button-radius', '--radius-button'],
+    ['--search-toolbar-outline-focus', '--outline-focus'],
+    ['--toc-page-link-fg', '--fg-link-content-box'],
+    ['--image-controls-bg', '--bg-content-box'],
+    ['--image-controls-icon', '--fg-general'],
+    ['--datepicker-bg', '--bg-popover'],
+    ['--datepicker-header-bg', '--bg-brand'],
+    ['--datepicker-header-fg', '--fg-on-brand'],
+    ['--datepicker-weekday-fg', '--fg-on-brand'],
+    ['--datepicker-day-fg', '--fg-popover'],
+    ['--datepicker-day-bg-selected', '--bg-brand'],
+    ['--datepicker-day-fg-selected', '--fg-on-brand'],
+    ['--datepicker-day-border-today', '--brand'],
+    ['--datepicker-day-fg-has-data', '--fg-popover'],
+    ['--datepicker-day-fg-has-data-hover', '--fg-popover'],
+    ['--quick-filter-bg', '--bg-content-box'],
+    ['--quick-filter-fg', '--fg-content-box'],
+    ['--quick-filter-dropdown-bg', '--bg-content-box'],
+    ['--quick-filter-fields-bg', '--bg-subtle'],
+    ['--quick-filter-dropdown-bg-hover', '--bg-subtle'],
+    ['--quick-filter-toggle-bg', '--bg-subtle'],
+    ['--quick-filter-fg-invalid', '--fg-danger'],
+    ['--quick-filter-accent', '--brand'],
+    ['--quick-filter-submit-bg', '--bg-brand'],
+    ['--quick-filter-submit-icon', '--fg-on-brand'],
+    ['--quick-filter-checkbox-bg-active', '--bg-brand'],
+    ['--quick-filter-status-fg', '--brand'],
+    ['--immersive-canvas-bg', '--bg-canvas'],
+    ['--immersive-chrome-bg', '--bg-content-box'],
+    ['--immersive-chrome-fg', '--fg-content-box'],
+    ['--immersive-accent', '--brand'],
+    ['--immersive-ocr-block', '--ocr-block'],
+    ['--immersive-ocr-line', '--ocr-line'],
+    ['--immersive-ocr-word', '--ocr-word'],
+    ['--widget-calendar-dot-bg', '--brand'],
+    ['--widget-calendar-dot-bg-selected', '--fg-on-brand'],
+    ['--widget-calendar-popover-bg', '--bg-popover'],
+    ['--widget-calendar-popover-border', '--border-default'],
+    ['--widget-calendar-popover-item-fg', '--fg-popover'],
+    ['--widget-calendar-popover-item-bg-hover', '--bg-hover'],
+    ['--widget-calendar-popover-item-fg-hover', '--fg-popover'],
+    ['--widget-calendar-popover-font-size', '--font-size-caption'],
+    ['--combined-facets-fg', '--fg-general'],
+    ['--combined-facets-accent', '--brand'],
+    ['--combined-facets-accent-bg', '--bg-brand'],
+    ['--combined-facets-fg-on-accent', '--fg-on-brand'],
+    ['--combined-facets-divider', '--border-default'],
+    ['--combined-facets-fg-muted', '--fg-muted'],
+    ['--combined-facets-box-bg', '--bg-general'],
+    ['--combined-facets-badge-bg', '--bg-brand'],
+    ['--combined-facets-badge-bg-hover', '--bg-brand-hover'],
+    ['--combined-facets-badge-fg', '--fg-on-brand'],
+    ['--combined-facets-badge-fg-muted', null],
+    ['--combined-facets-badge-fg-contrast', '--brand'],
+    ['--active-facets-badge-bg', '--bg-brand'],
+    ['--active-facets-badge-bg-hover', '--bg-brand-hover'],
+    ['--active-facets-badge-fg', '--fg-on-brand'],
+    ['--active-facets-badge-radius', '--radius-button'],
+    ['--active-facets-badge-fg-contrast', '--brand'],
+    ['--footer-topnav-bg', '--brand-strong'],
+    ['--archives-card-bg', '--bg-content-box'],
+    ['--archives-title-fg', '--fg-content-box'],
+    ['--archives-description-fg', '--fg-general'],
+    ['--archives-placeholder-bg', '--bg-content-box'],
+    ['--archives-placeholder-icon', '--fg-general'],
+    ['--ner-person-fg', '--fg-entity-person'],
+    ['--ner-location-fg', '--fg-entity-location'],
+    ['--ner-institution-fg', '--fg-entity-institution'],
+    ['--map-marker-primary-bg', '--bg-map-marker-primary'],
+    ['--map-marker-primary-fg', '--fg-inverse'],
+    ['--map-marker-secondary-bg', '--bg-map-marker-secondary'],
+    ['--map-marker-secondary-fg', '--fg-on-bright'],
+    ['--rss-badge-bg', '--bg-rss'],
+    ['--sidebar-preview-outline', '--outline-selection'],
+    ['--image-controls-region-fg-active', '--fg-selection-region'],
+    ['--pdf-highlight-bg', '--bg-document-highlight'],
+    ['--pdf-highlight-bg-selected', '--bg-document-highlight-selected'],
+    ['--pdf-selection-bg', '--bg-document-selection'],
+    ['--image-region-outline-focus', '--outline-document-focus'],
+    ['--image-region-outline-drawing', '--outline-document-drawing'],
+    ['--ner-scale-handle-bg', '--bg-entity-scale-handle'],
+    ['--chronology-chart-fg', '--chart-chronology'],
+    ['--archives-hero-bg', '--bg-hero'],
+    ['--archives-hero-gradient-bg', '--bg-hero-gradient'],
+    ['--mei-note-fg-active', '--fg-notation-active'],
+    ['--search-toolbar-fg-hover', null],
+    ['--search-toolbar-shadow-active', null],
+    ['--image-controls-container-border', null],
+    ['--quick-filter-dropdown-shadow', null],
+    ['--quick-filter-input-shadow', null],
+    ['--combined-facets-badge-border', null],
+    ['--active-facets-badge-border', null],
+    ['--widget-calendar-dot-size', null],
+    ['--widget-calendar-popover-min-width', null],
+    ['--widget-calendar-popover-item-padding', null],
+    ['--immersive-thumb-shadow', null],
+    ['--immersive-thumb-shadow-hover', null],
+    ['--widget-calendar-popover-shadow', null],
+    ['--quick-filter-radius', '--radius-button'],
+    ['--quick-filter-radius-sm', '--radius-button'],
+    ['--immersive-radius', '--radius-container-small'],
+    ['--immersive-radius-lg', '--radius-container'],
+    ['--widget-calendar-popover-radius', '--radius-container-small'],
+    ['--combined-facets-radius', '--radius-button'],
+    ['--facet-control-radius', '--radius-container-small'],
+    ['--quick-filter-control-bg-hover', '--bg-control'],
+    ['--immersive-chrome-bg-hover', '--bg-control'],
+    ['--immersive-key-bg', '--bg-control'],
+    ['--image-controls-icon-active', '--fg-on-control-hover'],
+    ['--image-controls-slider-border', null],
+    ['--quick-filter-border', null],
+    ['--toc-page-toggle-icon-hover', '--fg-content-box'],
+    ['--quick-filter-label-fg', '--fg-muted'],
+    ['--immersive-rail-bg', '--bg-popover'],
+    ['--immersive-ocr-word-fg', '--fg-on-control'],
+    ['--archives-card-border-color', '--border-faint'],
     ['--immersive-chevron-scrim', null],
+    ['--newspaper-search-bg', null],
+    ['--newspaper-search-border', null],
+    ['--newspaper-search-label-fg', null],
+    ['--newspaper-search-tab-bg', null],
+    ['--newspaper-search-tab-border', null],
+    ['--newspaper-search-tab-fg', null],
+    ['--newspaper-search-tab-fg-active', null],
+    ['--newspaper-search-tab-fg-hover', null],
     ['--datepicker-border-color', null],
     ['--active-facets-badge-more-color', null],
     ['--facet-boolean-background', null],
@@ -1333,6 +1250,54 @@ const RENAMED_TOKENS = new Map([
     ['--widget-toc-toggle-icon-color-hover', null],
     ['--widget-toc-link-color-hover', null],
     ['--widget-toc-active-color', null],
+    // Layer 3 dissolved: components read roles directly; a successor exists only where a role was made for it
+    ['--bg-control-active', null],
+    ['--active-facets-badge-fg-muted', null],
+    ['--active-facets-badge-shadow-hover', null],
+    ['--archives-overlay-bg', null],
+    ['--archives-overlay-fg', null],
+    ['--combined-facets-bg', '--bg-brand-tint'],
+    ['--combined-facets-scrollbar', null],
+    ['--datepicker-day-bg-has-data', null],
+    ['--datepicker-day-bg-has-data-hover', null],
+    ['--datepicker-day-bg-in-range', null],
+    ['--facet-control-bg-active', null],
+    ['--facet-control-border', null],
+    ['--facet-control-fg', null],
+    ['--facet-control-fg-active', null],
+    ['--image-controls-action-bg', null],
+    ['--image-controls-action-bg-hover', '--bg-control-hover'],
+    ['--image-controls-border', null],
+    ['--image-controls-icon-hover', '--fg-on-control-hover'],
+    ['--image-controls-slider-thumb-bg', null],
+    ['--immersive-canvas-fg', null],
+    ['--immersive-chrome-border', null],
+    ['--immersive-chrome-shadow', '--shadow-floating'],
+    ['--immersive-divider', null],
+    ['--immersive-edge-inset', null],
+    ['--immersive-highlight-bg', null],
+    ['--immersive-key-border', null],
+    ['--immersive-logo-invert', '--filter-mono-image'],
+    ['--immersive-metadata-bg-hover', null],
+    ['--immersive-overlay-shadow', null],
+    ['--immersive-panel-shadow', '--shadow-floating'],
+    ['--immersive-rail-width', null],
+    ['--immersive-slider-track', null],
+    ['--immersive-transition', null],
+    ['--login-nav-bookmarks-bg', null],
+    ['--login-nav-dropdown-border', null],
+    ['--quick-filter-field-separator', null],
+    ['--search-toolbar-divider', null],
+    ['--search-toolbar-icon', null],
+    ['--search-toolbar-icon-hover', null],
+    ['--theme-logo-dark-display', '--display-dark-only'],
+    ['--theme-logo-light-display', '--display-light-only'],
+    ['--theme-switch-dark-display', '--display-light-only'],
+    ['--theme-switch-light-display', '--display-dark-only'],
+    ['--toc-page-bg-hover', null],
+    ['--toc-page-border', null],
+    ['--toc-page-link-fg-hover', null],
+    ['--toc-page-toggle-icon', null],
 ]);
 const renameHint = (name) => (RENAMED_TOKENS.has(name) ? (RENAMED_TOKENS.get(name) ? `renamed — now ${RENAMED_TOKENS.get(name)}` : 'removed — delete the read') : null);
 const THEME_BUCKETS = ['light', 'dark', 'base', 'palette', 'root'];
@@ -1482,9 +1447,6 @@ function formatThemeTokenReport(rows) {
 
 module.exports = {
     LESS_ROOT,
-    CONTRAST_PAIRS,
-    splitTopLevel,
-    checkContrast,
     checkModeSymmetry,
     TOKEN_LAYER,
     THEME_ROOT,

@@ -5,7 +5,7 @@
 
 .immersive {
     &__panel-metadata .metadata {
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
 
         .metadata__elements,
         .metadata__events,
@@ -31,12 +31,12 @@
         .metadata__element-wrapper-single {
             margin: 0 0 14px;
             padding: 14px;
-            border: 1px solid var(--immersive-divider);
-            border-radius: var(--immersive-radius-lg);
-            transition: background-color var(--immersive-transition);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-container);
+            transition: background-color @immersive-transition;
 
             &:hover {
-                background-color: var(--immersive-metadata-bg-hover);
+                background-color: var(--bg-hover);
             }
         }
 
@@ -56,14 +56,14 @@
         .metadata__heading {
             margin: 30px 0 14px;
             padding: 18px 0 0;
-            border-top: 1px solid var(--immersive-divider);
+            border-top: 1px solid var(--border-default);
             background: transparent;
             font-size: var(--font-size-caption);
             font-weight: 700;
             line-height: 1.25;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            color: var(--immersive-accent);
+            color: var(--brand);
 
             &::before {
                 content: none;
@@ -96,7 +96,7 @@
                 text-transform: uppercase;
                 letter-spacing: 0.06em;
                 white-space: normal;
-                color: var(--immersive-chrome-fg);
+                color: var(--fg-content-box);
                 opacity: 0.75;
             }
 
@@ -112,7 +112,7 @@
             }
 
             dd a {
-                color: var(--immersive-accent);
+                color: var(--brand);
                 text-decoration: none;
 
                 &:hover {
@@ -134,11 +134,11 @@
                 width: 15px;
                 height: 15px;
                 vertical-align: -2px;
-                color: var(--immersive-chrome-fg);
+                color: var(--fg-content-box);
                 opacity: 0.45;
                 transition:
-                    opacity var(--immersive-transition),
-                    color var(--immersive-transition);
+                    opacity @immersive-transition,
+                    color @immersive-transition;
             }
 
             dd a:hover .icon,
@@ -146,7 +146,7 @@
             dd button:hover .icon,
             dd button:hover .icon-svg {
                 opacity: 1;
-                color: var(--immersive-accent);
+                color: var(--brand);
             }
         }
 
@@ -185,7 +185,7 @@
             border-left: 4px solid transparent;
             border-right: 4px solid transparent;
             border-top: 5px solid currentColor;
-            transition: transform var(--immersive-transition);
+            transition: transform @immersive-transition;
         }
 
         &[aria-expanded='true']::before {

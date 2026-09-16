@@ -55,13 +55,13 @@
                 width: 260px;
                 padding: 0.35rem 0;
                 font-size: var(--font-size-body-small);
-                background: var(--login-nav-bg);
-                border: 1px solid var(--login-nav-dropdown-border);
+                background: var(--bg-inverse);
+                border: 1px solid rgb(from var(--fg-inverse) r g b / 10%);
                 box-shadow: 0 18px 36px rgb(from var(--shadow-color) r g b / 18%);
                 border-radius: 0.85rem;
                 overflow: hidden;
                 z-index: 2020;
-                color: var(--login-nav-fg);
+                color: var(--fg-inverse);
                 li {
                     margin: 0;
                 }
@@ -69,7 +69,7 @@
             &__user-dropdown-item {
                 font-size: var(--font-size-body-small);
                 &:hover {
-                    background-color: var(--login-nav-bg-hover);
+                    background-color: var(--bg-inverse-hover);
                 }
             }
             &__user-dropdown-item-link {
@@ -80,34 +80,34 @@
                 padding: 0.7rem 1.2rem 0.7rem 1.5rem;
                 line-height: 1;
                 text-decoration: none;
-                color: var(--login-nav-fg);
+                color: var(--fg-inverse);
                 transition:
                     color 0.2s ease,
                     padding-left 0.18s ease,
                     background-color 0.2s ease;
             }
             &__user-dropdown-item-link:hover {
-                color: var(--login-nav-fg-hover);
+                color: var(--fg-inverse);
                 padding-left: 1.8rem;
-                background-color: var(--login-nav-bg-hover);
+                background-color: var(--bg-inverse-hover);
             }
             &__user-dropdown-item-text {
                 white-space: nowrap;
-                color: var(--login-nav-fg);
+                color: var(--fg-inverse);
                 transition: color 0.2s ease;
             }
             &__user-dropdown-item-icon-text {
                 svg {
-                    color: var(--login-nav-icon);
+                    color: var(--fg-inverse);
                     transition: color 0.2s ease;
                 }
             }
             &__user-dropdown-item-link:hover &__user-dropdown-item-icon-text svg {
-                color: var(--login-nav-icon-hover);
+                color: var(--fg-inverse);
             }
             &__user-dropdown-item-caret {
                 margin-left: auto;
-                color: var(--login-nav-icon);
+                color: var(--fg-inverse);
             }
             /* BOOKMARK DROPDOWN */
             &__bookmarks-dropdown {
@@ -117,7 +117,7 @@
             &__bookmarks-small-list {
                 display: none;
                 padding: 0.5rem 1rem 0.5rem 1.5rem;
-                background-color: var(--login-nav-bookmarks-bg);
+                background-color: var(--bg-inverse);
             }
             &__bookmarks-entry {
                 display: flex;
@@ -139,13 +139,13 @@
             &__bookmarks-icon-list .fa,
             &__bookmarks-icon-list svg,
             &__bookmarks-icon-list {
-                color: var(--login-nav-bookmarks-fg);
+                color: var(--fg-inverse);
                 a {
                     margin-right: 0;
-                    color: var(--login-nav-bookmarks-fg);
+                    color: var(--fg-inverse);
                 }
                 &:hover {
-                    color: var(--login-nav-bookmarks-fg-hover);
+                    color: var(--highlight);
                 }
             }
             &__bookmarks-icon-list,
@@ -174,14 +174,14 @@
                 font-size: var(--font-size-caption);
                 color: var(--fg-inverse);
                 border-radius: 2px;
-                background-color: var(--login-nav-bookmarks-counter-bg);
+                background-color: var(--bg-brand);
                 align-self: center;
             }
             &__bookmarks-overview-link {
                 margin-left: auto;
-                color: var(--login-nav-bookmarks-fg);
+                color: var(--fg-inverse);
                 &:hover {
-                    color: var(--login-nav-bookmarks-fg-hover);
+                    color: var(--highlight);
                 }
             }
             &__bookmarks-trigger {

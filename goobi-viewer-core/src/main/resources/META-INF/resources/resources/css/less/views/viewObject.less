@@ -2,6 +2,10 @@
    View Object
    style declarations for viewObject.xhtml
    ==============================================================*/
+@view-object-scan-max-width: 1200px;
+@view-object-panel-gutter: 16px;
+@view-object-rail-width: 168px;
+
 /* VIEW OBJECT */
 /* BLOCK */
 .view-object {
@@ -12,13 +16,14 @@
         position: relative;
         border: 1px solid var(--border-default);
         overflow: hidden;
-        padding: 10px;
-        padding-top: 0;
+        padding: 0;
+        .view-object__image-map {
+            max-width: @view-object-scan-max-width;
+            margin: @view-object-panel-gutter auto;
+        }
         &.-thumbnailPreviewGallery {
             display: grid;
-            grid-template-columns: 20% 1fr;
-            gap: 10px;
-            padding-inline-start: 0;
+            grid-template-columns: @view-object-rail-width minmax(0, 1fr);
             .view-object__image-map {
                 order: 2;
             }
@@ -28,7 +33,7 @@
         }
     }
     &__object-3d {
-        padding-top: 10px;
+        padding: @view-object-panel-gutter;
     }
     &__object-3d-voyager-editor-button-wrapper {
         margin-bottom: 5px;
@@ -58,16 +63,16 @@
 
         .ugcBox {
             &.focus {
-                border: 2px solid var(--image-region-outline-focus);
+                border: 2px solid var(--outline-document-focus);
             }
 
             &.drawing {
-                border: 2px solid var(--image-region-outline-drawing);
+                border: 2px solid var(--outline-document-drawing);
             }
         }
 
         .openseadragon-canvas:focus-visible {
-            background: rgb(from var(--image-region-outline-focus) r g b / 40%) !important;
+            background: rgb(from var(--outline-document-focus) r g b / 40%) !important;
             z-index: 1 !important;
         }
         #objectSize {
@@ -91,16 +96,16 @@
 
         .ugcBox {
             &.focus {
-                border: 2px solid var(--image-region-outline-focus);
+                border: 2px solid var(--outline-document-focus);
             }
 
             &.drawing {
-                border: 2px solid var(--image-region-outline-drawing);
+                border: 2px solid var(--outline-document-drawing);
             }
         }
 
         .openseadragon-canvas:focus-visible {
-            background: rgb(from var(--image-region-outline-focus) r g b / 40%) !important;
+            background: rgb(from var(--outline-document-focus) r g b / 40%) !important;
             z-index: 1 !important;
         }
     }
@@ -329,7 +334,7 @@
 
 .image-fragment {
     background-color: rgb(from var(--bg-document) r g b / 30%);
-    border-color: var(--image-controls-region-fg-active);
+    border-color: var(--fg-selection-region);
     border-style: solid;
     border-width: 2px;
 

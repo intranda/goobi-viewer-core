@@ -77,13 +77,13 @@
                     color: var(--fg-muted);
                 }
                 &.active[data-type='person'] {
-                    color: var(--ner-person-fg);
+                    color: var(--fg-entity-person);
                 }
                 &.active[data-type='location'] {
-                    color: var(--ner-location-fg);
+                    color: var(--fg-entity-location);
                 }
                 &.active[data-type='corporation'] {
-                    color: var(--ner-institution-fg);
+                    color: var(--fg-entity-institution);
                 }
             }
             &.reset-filter {
@@ -146,16 +146,16 @@
                 display: none;
             }
             &.PERSON {
-                color: var(--ner-person-fg);
+                color: var(--fg-entity-person);
             }
             &.LOCATION {
-                color: var(--ner-location-fg);
+                color: var(--fg-entity-location);
             }
             &.CORPORATION {
-                color: var(--ner-institution-fg);
+                color: var(--fg-entity-institution);
             }
             &.INSTITUTION {
-                color: var(--ner-institution-fg);
+                color: var(--fg-entity-institution);
             }
         }
     }
@@ -204,16 +204,16 @@
                             display: none;
                         }
                         &.PERSON {
-                            color: var(--ner-person-fg);
+                            color: var(--fg-entity-person);
                         }
                         &.LOCATION {
-                            color: var(--ner-location-fg);
+                            color: var(--fg-entity-location);
                         }
                         &.CORPORATION {
-                            color: var(--ner-institution-fg);
+                            color: var(--fg-entity-institution);
                         }
                         &.INSTITUTION {
-                            color: var(--ner-institution-fg);
+                            color: var(--fg-entity-institution);
                         }
                     }
                 }
@@ -285,7 +285,7 @@
         right: 3px;
         width: 2px;
         height: 100px;
-        background-color: var(--ner-scale-handle-bg);
+        background-color: var(--bg-entity-scale-handle);
         z-index: 11;
     }
 }
@@ -304,7 +304,7 @@
         height: 16px;
         margin-bottom: -8px;
         border: none;
-        background: var(--ner-scale-handle-bg);
+        background: var(--bg-entity-scale-handle);
         &:after {
             content: '';
             position: absolute;
@@ -315,7 +315,7 @@
             height: 0;
             border-width: 15px;
             border-style: solid;
-            border-color: transparent transparent transparent var(--ner-scale-handle-bg);
+            border-color: transparent transparent transparent var(--bg-entity-scale-handle);
         }
         &:focus {
             outline: none;
@@ -365,16 +365,16 @@
             display: none;
         }
         &.PERSON {
-            color: var(--ner-person-fg);
+            color: var(--fg-entity-person);
         }
         &.LOCATION {
-            color: var(--ner-location-fg);
+            color: var(--fg-entity-location);
         }
         &.CORPORATION {
-            color: var(--ner-institution-fg);
+            color: var(--fg-entity-institution);
         }
         &.INSTITUTION {
-            color: var(--ner-institution-fg);
+            color: var(--fg-entity-institution);
         }
     }
 }

@@ -13,13 +13,13 @@
             display: flex;
             align-items: stretch;
             overflow: hidden;
-            border: 1px solid var(--immersive-divider);
-            border-radius: var(--immersive-radius-lg);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-container);
             background: transparent;
-            transition: border-color var(--immersive-transition);
+            transition: border-color @immersive-transition;
 
             &:focus-within {
-                border-color: var(--immersive-accent);
+                border-color: var(--brand);
             }
         }
 
@@ -31,18 +31,18 @@
             border: 0;
             background: transparent;
             box-shadow: none;
-            color: var(--immersive-chrome-fg);
+            color: var(--fg-content-box);
             font-size: var(--font-size-body);
 
             &::placeholder {
-                color: var(--immersive-chrome-fg);
+                color: var(--fg-content-box);
                 opacity: 0.75;
             }
 
             &:focus {
                 box-shadow: none;
                 background: transparent;
-                color: var(--immersive-chrome-fg);
+                color: var(--fg-content-box);
             }
 
             &:focus-visible {
@@ -58,14 +58,14 @@
             padding: 0 0 2px;
             border: 0;
             background: transparent;
-            color: var(--immersive-chrome-fg);
+            color: var(--fg-content-box);
             font-size: 2rem; // Fixed icon/marker geometry; independent of text scale.
             line-height: 1;
             opacity: 0.75;
             cursor: pointer;
             transition:
-                opacity var(--immersive-transition),
-                color var(--immersive-transition);
+                opacity @immersive-transition,
+                color @immersive-transition;
 
             &[hidden] {
                 display: none;
@@ -73,7 +73,7 @@
 
             &:hover {
                 opacity: 1;
-                color: var(--immersive-accent);
+                color: var(--brand);
             }
         }
 
@@ -93,13 +93,13 @@
             border: 0;
             border-radius: 0;
             background: transparent;
-            color: var(--immersive-chrome-fg);
+            color: var(--fg-content-box);
             cursor: pointer;
-            transition: color var(--immersive-transition);
+            transition: color @immersive-transition;
 
             &:hover,
             &:focus {
-                color: var(--immersive-accent);
+                color: var(--brand);
                 background-color: transparent;
             }
 
@@ -115,8 +115,8 @@
     &__results {
         margin-top: 14px;
         padding-top: 14px;
-        border-top: 1px solid var(--immersive-divider);
-        color: var(--immersive-chrome-fg);
+        border-top: 1px solid var(--border-default);
+        color: var(--fg-content-box);
     }
 
     &__results-head {
@@ -142,11 +142,11 @@
     &__results-nav-btn {
         .mx-immersive-icon-button(30px);
         transition:
-            color var(--immersive-transition),
-            background-color var(--immersive-transition);
+            color @immersive-transition,
+            background-color @immersive-transition;
 
         &:hover {
-            color: var(--immersive-accent);
+            color: var(--brand);
         }
     }
 
@@ -172,32 +172,32 @@
         padding: 9px 10px;
         border: 0;
         border-left: 2px solid transparent;
-        border-radius: var(--immersive-radius-lg);
+        border-radius: var(--radius-container);
         background: transparent;
         color: inherit;
         font: inherit;
         text-align: left;
         cursor: pointer;
         transition:
-            background-color var(--immersive-transition),
-            border-color var(--immersive-transition);
+            background-color @immersive-transition,
+            border-color @immersive-transition;
 
         &:hover,
         &:active {
-            background-color: var(--immersive-chrome-bg-hover);
+            background-color: var(--bg-control);
             color: inherit;
         }
 
         &.-active {
-            background-color: var(--immersive-chrome-bg-hover);
-            border-left-color: var(--immersive-accent);
+            background-color: var(--bg-control);
+            border-left-color: var(--brand);
         }
     }
 
     &__results-page {
         flex-shrink: 0;
         min-width: 1.7em;
-        color: var(--immersive-accent);
+        color: var(--brand);
         font-weight: 700;
         font-variant-numeric: tabular-nums;
         line-height: 1.45;
@@ -210,13 +210,13 @@
 
     &__results-match {
         background: transparent;
-        color: var(--immersive-accent);
+        color: var(--brand);
         font-weight: 600;
     }
 
     &__results-empty {
         padding: 12px 10px;
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
         opacity: 0.75;
     }
 }

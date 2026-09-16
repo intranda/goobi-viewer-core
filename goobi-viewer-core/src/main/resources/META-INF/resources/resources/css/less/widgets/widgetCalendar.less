@@ -46,7 +46,7 @@
         background: transparent;
 
         &:hover {
-            background: rgb(from var(--datepicker-header-fg) r g b / 15%);
+            background: rgb(from var(--fg-on-brand) r g b / 15%);
         }
 
         &.-disabled- {
@@ -65,7 +65,7 @@
     }
 
     .numInputWrapper span.arrowDown::after {
-        border-top: 4px solid var(--datepicker-header-fg);
+        border-top: 4px solid var(--fg-on-brand);
     }
     .flatpickr-day {
         border: none;
@@ -78,7 +78,7 @@
         //			}
     }
     .flactpickr .flatpickr-day.-has-data- {
-        color: var(--datepicker-day-fg-has-data);
+        color: var(--fg-popover);
         font-weight: 400;
     }
 
@@ -88,10 +88,10 @@
         bottom: 2px;
         left: 50%;
         transform: translateX(-50%);
-        width: var(--widget-calendar-dot-size);
-        height: var(--widget-calendar-dot-size);
+        width: 4px;
+        height: 4px;
         border-radius: 50%;
-        background-color: var(--widget-calendar-dot-bg);
+        background-color: var(--brand);
     }
 
     .flatpickr-day {
@@ -107,7 +107,7 @@
     }
 
     .flatpickr-day.-has-data- {
-        color: var(--datepicker-day-fg-has-data);
+        color: var(--fg-popover);
         font-weight: 400;
     }
 
@@ -117,37 +117,37 @@
         bottom: 2px;
         left: 50%;
         transform: translateX(-50%);
-        width: var(--widget-calendar-dot-size);
-        height: var(--widget-calendar-dot-size);
+        width: 4px;
+        height: 4px;
         border-radius: 50%;
-        background-color: var(--widget-calendar-dot-bg);
+        background-color: var(--brand);
     }
 
     .flatpickr-day.-has-multiple-.-current-issue-::after {
-        background-color: var(--widget-calendar-dot-bg-selected);
+        background-color: var(--fg-on-brand);
     }
 
     .flatpickr-day.-has-multiple-.-current-issue-:hover::after {
-        background-color: var(--widget-calendar-dot-bg);
+        background-color: var(--brand);
     }
 
     &__popover {
         position: fixed;
         z-index: 1050;
-        min-width: var(--widget-calendar-popover-min-width);
+        min-width: 180px;
         max-width: calc(100vw - 8px);
         padding: 4px 0;
-        background: var(--widget-calendar-popover-bg);
-        border: 1px solid var(--widget-calendar-popover-border);
-        border-radius: var(--widget-calendar-popover-radius);
-        box-shadow: var(--widget-calendar-popover-shadow);
+        background: var(--bg-popover);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-container-small);
+        box-shadow: 0 2px 8px rgb(from var(--shadow-color) r g b / 15%);
     }
 
     &__popover-item {
         display: block;
-        padding: var(--widget-calendar-popover-item-padding);
-        font-size: var(--widget-calendar-popover-font-size);
-        color: var(--widget-calendar-popover-item-fg);
+        padding: 6px 12px;
+        font-size: var(--font-size-caption);
+        color: var(--fg-popover);
         text-decoration: none;
         white-space: nowrap;
         overflow: hidden;
@@ -156,14 +156,14 @@
         &:hover,
         &:focus,
         &:active {
-            background-color: var(--widget-calendar-popover-item-bg-hover);
-            color: var(--widget-calendar-popover-item-fg-hover);
+            background-color: var(--bg-hover);
+            color: var(--fg-popover);
             text-decoration: none;
         }
 
         &.-active- {
             font-weight: 700;
-            color: var(--widget-calendar-popover-item-fg-hover);
+            color: var(--fg-popover);
         }
     }
 }

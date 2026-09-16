@@ -2,10 +2,10 @@
 
 /* Calendar container */
 .flatpickr-calendar {
-    background: var(--datepicker-bg);
+    background: var(--bg-popover);
     border: none;
     border-radius: 6px;
-    color: var(--datepicker-day-fg);
+    color: var(--fg-popover);
     font-family: inherit;
     box-shadow:
         0 4px 16px rgb(from var(--shadow-color) r g b / 10%),
@@ -14,7 +14,7 @@
 
 /* Header */
 .flatpickr-months {
-    background-color: var(--datepicker-header-bg);
+    background-color: var(--bg-brand);
     padding: 4px 0;
     position: relative;
 
@@ -29,8 +29,8 @@
 .flatpickr-current-month,
 .flatpickr-current-month .cur-month,
 .flatpickr-current-month input.cur-year {
-    color: var(--datepicker-header-fg);
-    fill: var(--datepicker-header-fg);
+    color: var(--fg-on-brand);
+    fill: var(--fg-on-brand);
     font-weight: 600;
 }
 
@@ -51,12 +51,12 @@
 }
 
 .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
-    background: var(--datepicker-header-bg);
+    background: var(--bg-brand);
 }
 
 /* Hide month dropdown arrow + year spinner arrows */
 .flatpickr-current-month select.flatpickr-monthDropdown-months {
-    background: var(--datepicker-header-bg);
+    background: var(--bg-brand);
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -64,17 +64,17 @@
 }
 
 .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
-    color: var(--datepicker-header-fg);
-    background: var(--datepicker-header-bg);
+    color: var(--fg-on-brand);
+    background: var(--bg-brand);
 }
 
 .flatpickr-current-month select.flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
-    color: var(--datepicker-header-fg);
-    background: var(--datepicker-header-bg);
+    color: var(--fg-on-brand);
+    background: var(--bg-brand);
     &:hover,
     &:focus,
     &:active {
-        background: var(--datepicker-header-bg) !important;
+        background: var(--bg-brand) !important;
     }
 }
 
@@ -99,10 +99,10 @@
         transition: background-color 0.15s ease;
 
         &:hover {
-            background: rgb(from var(--datepicker-header-fg) r g b / 15%);
+            background: rgb(from var(--fg-on-brand) r g b / 15%);
 
             svg {
-                fill: var(--datepicker-header-fg);
+                fill: var(--fg-on-brand);
             }
         }
 
@@ -115,8 +115,8 @@
             display: block;
             width: 10px;
             height: 10px;
-            border-right: 2.5px solid var(--datepicker-header-fg);
-            border-bottom: 2.5px solid var(--datepicker-header-fg);
+            border-right: 2.5px solid var(--fg-on-brand);
+            border-bottom: 2.5px solid var(--fg-on-brand);
         }
     }
 
@@ -141,12 +141,12 @@
 
 /* Weekday names */
 .flatpickr-weekdays {
-    background-color: var(--datepicker-header-bg);
+    background-color: var(--bg-brand);
     padding-bottom: 4px;
 }
 
 span.flatpickr-weekday {
-    color: var(--datepicker-weekday-fg);
+    color: var(--fg-on-brand);
     background: transparent;
     font-weight: 600;
     font-size: 0.85em;
@@ -154,7 +154,7 @@ span.flatpickr-weekday {
 
 /* Day cells — uniform spacing via margin + calc */
 .flatpickr-day {
-    color: var(--datepicker-day-fg);
+    color: var(--fg-popover);
     border-radius: 2px;
     margin: 1px;
     max-width: calc(~'100% / 7 - 2px');
@@ -171,36 +171,38 @@ span.flatpickr-weekday {
     }
 
     &.today {
-        border-color: var(--datepicker-day-border-today);
+        border-color: var(--brand);
         font-weight: 600;
 
         &:hover {
             background: var(--datepicker-day-bg-hover);
             border-color: var(--datepicker-day-bg-hover);
-            color: var(--datepicker-day-fg);
+            color: var(--fg-popover);
         }
     }
 
     &.selected,
     &.startRange,
     &.endRange {
-        background: var(--datepicker-day-bg-selected);
-        border-color: var(--datepicker-day-bg-selected);
-        color: var(--datepicker-day-fg-selected);
+        background: var(--bg-brand);
+        border-color: var(--bg-brand);
+        color: var(--fg-on-brand);
         font-weight: 600;
 
         &:hover {
-            background: var(--datepicker-day-bg-selected);
-            border-color: var(--datepicker-day-bg-selected);
+            background: var(--bg-brand);
+            border-color: var(--bg-brand);
         }
     }
 
     &.inRange {
-        background: var(--datepicker-day-bg-in-range);
-        border-color: var(--datepicker-day-bg-in-range);
+        --_in-range: color-mix(in srgb, var(--brand) 20%, transparent);
+        background: var(--_in-range);
+        border-color: var(--_in-range);
+        // the shadow closes the gap between adjacent days so the range reads as one band
         box-shadow:
-            -5px 0 0 var(--datepicker-day-bg-in-range),
-            5px 0 0 var(--datepicker-day-bg-in-range);
+            -5px 0 0 var(--_in-range),
+            5px 0 0 var(--_in-range);
     }
 
     &.flatpickr-disabled,
@@ -212,23 +214,23 @@ span.flatpickr-weekday {
 
     /* Custom: newspaper day has data */
     &.-has-data- {
-        background-color: var(--datepicker-day-bg-has-data);
-        border-color: var(--datepicker-day-bg-has-data);
-        color: var(--datepicker-day-fg-has-data);
+        --_has-data: color-mix(in srgb, var(--brand) 12%, transparent);
+        background-color: var(--_has-data);
+        border-color: var(--_has-data);
+        color: var(--fg-popover);
         font-weight: 700;
 
         &:hover {
-            background-color: var(--datepicker-day-bg-has-data-hover);
-            border-color: var(--datepicker-day-bg-has-data-hover);
-            color: var(--datepicker-day-fg-has-data-hover);
+            --_has-data: color-mix(in srgb, var(--brand) 24%, transparent);
+            color: var(--fg-popover);
         }
     }
 
     /* Custom: currently viewed issue */
     &.-current-issue- {
-        background-color: var(--datepicker-day-bg-selected);
-        border-color: var(--datepicker-day-bg-selected);
-        color: var(--datepicker-day-fg-selected);
+        background-color: var(--bg-brand);
+        border-color: var(--bg-brand);
+        color: var(--fg-on-brand);
         font-weight: 600;
     }
 }

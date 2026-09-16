@@ -14,20 +14,20 @@
         background-color: transparent;
         transform: translateY(-50%);
         transition:
-            opacity var(--immersive-transition),
-            transform var(--immersive-transition);
+            opacity @immersive-transition,
+            transform @immersive-transition;
 
         &:hover {
-            color: var(--immersive-canvas-fg);
+            color: var(--fg-general);
         }
         &[hidden] {
             display: none;
         }
         &-left {
-            left: calc(var(--immersive-rail-width) + var(--immersive-edge-inset));
+            left: calc(@immersive-rail-width + @immersive-edge-inset);
         }
         &-right {
-            right: var(--immersive-edge-inset);
+            right: @immersive-edge-inset;
         }
     }
 
@@ -38,14 +38,14 @@
 
     &__bottombar {
         position: absolute;
-        bottom: var(--immersive-edge-inset);
+        bottom: @immersive-edge-inset;
         left: 50%;
         z-index: 100;
         display: flex;
         align-items: center;
         gap: 2px;
         min-height: 40px;
-        max-width: calc(100% - (2 * var(--immersive-edge-inset)));
+        max-width: calc(100% - (2 * @immersive-edge-inset));
         overflow-x: auto;
         padding: 0 4px;
         .mx-immersive-floating();
@@ -59,7 +59,7 @@
 
         & + & {
             padding-left: 4px;
-            border-left: 1px solid var(--immersive-divider);
+            border-left: 1px solid var(--border-default);
         }
     }
 
@@ -77,7 +77,7 @@
         padding: 0 4px;
         text-align: center;
         font-size: var(--font-size-body-small);
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
         white-space: nowrap;
     }
 }

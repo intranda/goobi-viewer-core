@@ -50,7 +50,7 @@
 
         > * + * {
             padding-left: 4px;
-            border-left: 1px solid var(--search-toolbar-divider);
+            border-left: 1px solid var(--border-strong);
         }
 
         form {
@@ -67,9 +67,9 @@
         width: var(--_search-option-button-size);
         height: var(--_search-option-button-size);
         min-width: var(--_search-option-button-size);
-        border-radius: var(--search-toolbar-button-radius);
+        border-radius: var(--radius-button);
         line-height: 1;
-        color: var(--search-toolbar-icon);
+        color: var(--fg-general);
         background-color: transparent;
         border: none;
         box-shadow: none;
@@ -80,20 +80,20 @@
 
         &:hover,
         &:focus {
-            color: var(--search-toolbar-fg-hover);
+            color: currentColor;
             .icon-wrapper {
                 transform: scale(1.08) translateY(-1px);
                 filter: drop-shadow(0 3px 8px rgb(from var(--shadow-color) r g b / 18%));
                 svg {
-                    color: var(--search-toolbar-icon-hover);
-                    stroke: var(--search-toolbar-icon-hover);
-                    fill: var(--search-toolbar-icon-hover);
+                    color: var(--fg-hover);
+                    stroke: var(--fg-hover);
+                    fill: var(--fg-hover);
                 }
             }
         }
 
         &:focus-visible {
-            outline: 2px solid var(--search-toolbar-outline-focus);
+            outline: 2px solid var(--outline-focus);
             outline-offset: 2px;
         }
 
@@ -120,9 +120,9 @@
         &.active,
         &.-active,
         &.is-modal-trigger-open {
-            background-color: var(--search-toolbar-bg-active);
-            color: var(--search-toolbar-fg-active);
-            box-shadow: var(--search-toolbar-shadow-active);
+            background-color: var(--bg-brand);
+            color: var(--fg-on-brand);
+            box-shadow: none;
             transform: none;
 
             .icon-wrapper {
@@ -130,16 +130,16 @@
                 filter: none;
 
                 svg {
-                    color: var(--search-toolbar-icon-active);
-                    stroke: var(--search-toolbar-icon-active);
-                    fill: var(--search-toolbar-icon-active);
+                    color: var(--fg-on-brand);
+                    stroke: var(--fg-on-brand);
+                    fill: var(--fg-on-brand);
                 }
             }
 
             &:hover,
             &:focus {
-                background-color: var(--search-toolbar-bg-active);
-                color: var(--search-toolbar-fg-active);
+                background-color: var(--bg-brand);
+                color: var(--fg-on-brand);
             }
         }
     }

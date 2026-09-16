@@ -1,28 +1,20 @@
 /* ==============================================================
-   Token layer 2 + 3: semantic roles (per mode) and feature tokens
-   The only core file that branches on the color mode. Themes
-   override tokens in their own :root / .color-theme-* blocks,
-   which load later at the same specificity (0,1,0).
-   The admin scope :root:has(#admin) rebinds every token to fixed
-   light values; it outranks the mode wiring and theme overrides.
-   Colors come from misc/palette.less only; alpha variants are
-   derived with rgb(from …).
+   Tokens — layer 2: semantic roles, one set per color mode
+   The only core file that branches on the mode. Components read
+   roles; the palette is read here only; the admin scope pins light.
    ==============================================================*/
 
-/* MODE-INDEPENDENT DEFAULTS */
 .gv-base() {
+    /* TYPE SCALE */
     --font-family: @fontFamily;
-    // Scale typography only. The root rem size also controls layout and stays fixed.
     --font-scale: 1;
-
-    // Legacy theme/LESS inputs remain supported. New components consume roles below.
     --font-size-small: calc(@fontSmall * var(--font-scale));
     --font-size-medium: calc(@fontMedium * var(--font-scale));
     --font-size-normal: calc(@fontNormal * var(--font-scale));
     --font-size-large: calc(@fontLarge * var(--font-scale));
     --font-size-xlarge: calc(@fontXLarge * var(--font-scale));
 
-    // Public text roles. An explicit theme override replaces the scaled default.
+    /* TEXT ROLES */
     --font-size-body: var(--font-size-normal);
     --font-size-body-small: var(--font-size-medium);
     --font-size-body-large: var(--font-size-large);
@@ -36,18 +28,21 @@
     --line-height-heading: 1.2;
     --text-measure: 75ch;
 
+    /* SHAPE */
     --radius-container: 0;
     --radius-container-small: 0.25rem;
     --radius-button: 0;
-    --shadow-container: none;
+
+    /* SET BY THE MARKUP */
+    --hit-progress: 0;
+    --toc-level: 0;
 }
 
-/* LAYER 2 — SEMANTIC ROLES, LIGHT (legacy role names kept for theme compatibility) */
 .gv-semantic-light() {
     color-scheme: light;
 
     /* PAGE */
-    --bg-general: var(--color-gray-50);
+    --bg-general: var(--color-gray-100);
     --fg-general: var(--color-gray-900);
 
     /* CONTENT BOX */
@@ -64,24 +59,25 @@
 
     /* NEUTRAL SURFACES */
     --bg-canvas: var(--color-gray-200);
-    --bg-subtle: var(--color-gray-100);
+    --bg-subtle: var(--color-gray-150);
+    --bg-control: var(--color-gray-100);
 
     /* TEXT EMPHASIS */
     --fg-secondary: var(--color-gray-600);
     --fg-muted: var(--color-gray-550);
     --fg-placeholder: var(--color-gray-550);
 
-    /* LINK STATES */
+    /* HEADINGS */
+    --fg-heading: var(--color-gray-700);
+    --fg-heading-content-box: var(--color-gray-700);
+
+    /* LINKS */
     --fg-link: var(--color-link);
     --fg-link-hover: var(--color-link-hover);
     --fg-link-active: var(--color-link-active);
     --fg-link-content-box: var(--color-link);
 
-    /* HEADINGS */
-    --fg-heading: var(--color-gray-700);
-    --fg-heading-content-box: var(--color-gray-700);
-
-    /* NEUTRAL SELECTION */
+    /* SELECTION */
     --bg-selected: var(--color-gray-300);
     --fg-selected: var(--color-gray-900);
 
@@ -89,29 +85,32 @@
     --bg-hover: rgb(from var(--color-brand) r g b / 8%);
     --fg-hover: var(--color-gray-900);
 
-    /* INVERSE SURFACES — fg-inverse stays light in both modes */
+    /* INVERSE */
     --bg-inverse: var(--color-gray-700);
     --bg-inverse-hover: var(--color-slate-500);
     --fg-inverse: var(--color-gray-0);
 
-    /* LEGACY CONTROL ROLES */
-    --bg-control-active: var(--color-slate-600);
+    /* CONTROLS */
     --fg-on-control: var(--color-gray-0);
+    --bg-control-hover: var(--bg-brand-hover);
+    --fg-on-control-hover: var(--fg-on-brand);
 
     /* BORDERS */
     --border-faint: rgb(from var(--color-gray-300) r g b / 18%);
     --border-default: var(--color-gray-200);
     --border-strong: var(--color-gray-300);
-    --border-input: var(--color-slate-200);
-    --border-emphasis: var(--color-gray-500);
+    --border-input: var(--color-gray-500);
+    --border-emphasis: var(--color-gray-600);
 
-    /* BRAND — accent for text, borders and tints; fills carry --fg-inverse */
-    --brand: var(--color-brand);
-    --brand-hover: var(--color-brand-hover);
+    /* BRAND */
+    --brand: var(--color-brand-text);
+    --brand-hover: var(--color-link-hover);
     --brand-strong: color-mix(in srgb, var(--color-brand) 60%, var(--color-gray-1000));
-    --bg-brand: var(--color-brand);
+    --bg-brand: var(--color-brand-fill);
     --bg-brand-hover: var(--color-brand-hover);
-    --fg-on-brand: var(--color-gray-0);
+    --bg-brand-pressed: var(--color-brand-pressed);
+    --bg-brand-tint: rgb(from var(--color-brand) r g b / 8%);
+    --fg-on-brand: var(--color-on-brand);
     --accent: var(--color-accent);
 
     /* SUCCESS */
@@ -145,12 +144,12 @@
     --bg-info-strong: var(--color-info-strong);
     --fg-on-info-strong: var(--color-gray-0);
 
-    /* ENTITY TEXT */
+    /* ENTITIES */
     --fg-entity-person: var(--color-entity-person);
     --fg-entity-location: var(--color-entity-location);
     --fg-entity-institution: var(--color-entity-institution);
 
-    /* MAP MARKERS */
+    /* MAP */
     --bg-map-marker-primary: var(--color-map-primary);
     --bg-map-marker-secondary: var(--color-map-secondary);
     --fg-on-bright: var(--color-gray-1000);
@@ -162,12 +161,13 @@
     --outline-selection: var(--color-selection-marker);
     --fg-selection-region: var(--color-selection-region);
 
-    /* NOTIFICATIONS */
+    /* NOTIFICATION */
     --bg-notification: var(--color-notification);
 
-    /* HIGHLIGHTS AND FOCUS */
+    /* HIGHLIGHT AND FOCUS */
     --highlight: var(--color-highlight);
     --outline-focus: var(--color-focus-ring);
+    --outline-focus-inner: var(--color-gray-0);
 
     /* OCR OVERLAYS */
     --ocr-block: var(--color-ocr-block);
@@ -176,14 +176,14 @@
 
     /* SHADOWS */
     --shadow-color: var(--color-slate-900);
+    --shadow-container: none;
+    --shadow-floating: 0 1px 2px rgb(from var(--shadow-color) r g b / 6%), 0 6px 16px rgb(from var(--shadow-color) r g b / 10%);
 
-    /* DOCUMENT CANVAS */
+    /* DOCUMENT */
     --bg-document: var(--color-gray-0);
     --fg-document: var(--color-gray-1000);
     --bg-viewer-canvas: var(--color-gray-900);
     --bg-viewer-canvas-stripe: var(--color-gray-800);
-
-    /* DOCUMENT MARKINGS */
     --bg-document-highlight: var(--color-document-highlight);
     --bg-document-highlight-selected: var(--color-document-highlight-selected);
     --bg-document-selection: var(--color-document-selection);
@@ -191,32 +191,35 @@
     --outline-document-drawing: var(--color-document-selection);
     --fg-notation-active: var(--color-notation-active);
 
-    /* CHARTS AND ENTITY NAVIGATION */
+    /* CHARTS */
     --chart-chronology: var(--color-chronology);
     --bg-entity-scale-handle: var(--color-ner-scale);
 
-    /* HERO SURFACES */
+    /* HERO */
     --bg-hero: var(--color-hero);
     --bg-hero-gradient: var(--color-hero-gradient);
 
-    /* SCRIMS, MASKS AND FOCUS */
+    /* SCRIM AND MASK */
     --bg-scrim: var(--color-gray-1000);
     --bg-mask: var(--color-gray-1000);
-    --outline-focus-inner: var(--color-gray-0);
 
-    /* PRINT — fixed ink colors in both screen modes */
+    /* MODE-BOUND */
+    --display-light-only: flex;
+    --display-dark-only: none;
+    --filter-mono-image: none;
+
+    /* PRINT */
     --fg-print: var(--color-gray-1000);
     --fg-print-link: var(--color-gray-700);
     --border-print: var(--color-gray-400);
 }
 
-/* LAYER 2 — SEMANTIC ROLES, DARK */
 .gv-semantic-dark() {
     color-scheme: dark;
 
     /* PAGE */
     --bg-general: var(--color-slate-900);
-    --fg-general: rgb(from var(--color-gray-0) r g b / 80%);
+    --fg-general: var(--color-slate-100);
 
     /* CONTENT BOX */
     --bg-content-box: var(--color-slate-800);
@@ -224,62 +227,66 @@
 
     /* POPOVER */
     --bg-popover: var(--color-slate-700);
-    --fg-popover: var(--color-gray-0);
+    --fg-popover: var(--color-slate-100);
 
     /* HEADER */
-    --bg-header: var(--color-slate-950);
-    --fg-header: rgb(from var(--color-gray-0) r g b / 80%);
+    --bg-header: var(--color-slate-800);
+    --fg-header: var(--color-slate-100);
 
     /* NEUTRAL SURFACES */
-    --bg-canvas: var(--color-slate-800);
-    --bg-subtle: var(--color-slate-600);
+    --bg-canvas: var(--color-slate-950);
+    --bg-subtle: var(--color-slate-750);
+    --bg-control: var(--color-slate-600);
 
     /* TEXT EMPHASIS */
-    --fg-secondary: var(--color-slate-100);
-    --fg-muted: rgb(from var(--color-gray-0) r g b / 60%);
-    --fg-placeholder: rgb(from var(--color-gray-0) r g b / 60%);
-
-    /* LINK STATES */
-    --fg-link: rgb(from var(--color-gray-0) r g b / 80%);
-    --fg-link-hover: var(--color-gray-0);
-    --fg-link-active: var(--color-slate-100);
-    --fg-link-content-box: var(--color-slate-100);
+    --fg-secondary: var(--color-slate-300);
+    --fg-muted: var(--color-slate-400);
+    --fg-placeholder: var(--color-slate-400);
 
     /* HEADINGS */
-    --fg-heading: rgb(from var(--color-gray-0) r g b / 80%);
-    --fg-heading-content-box: rgb(from var(--color-gray-0) r g b / 80%);
+    --fg-heading: var(--color-slate-200);
+    --fg-heading-content-box: var(--color-slate-200);
 
-    /* NEUTRAL SELECTION */
-    --bg-selected: var(--color-slate-500);
+    /* LINKS */
+    --fg-link: var(--color-link-dark);
+    --fg-link-hover: var(--color-link-dark-hover);
+    --fg-link-active: var(--color-link-dark-active);
+    --fg-link-content-box: var(--color-slate-100);
+
+    /* SELECTION */
+    --bg-selected: var(--color-slate-600);
     --fg-selected: var(--color-slate-100);
 
     /* HOVER */
-    --bg-hover: var(--color-slate-500);
-    --fg-hover: var(--color-slate-200);
+    --bg-hover: rgb(from var(--color-brand-dark) r g b / 12%);
+    --fg-hover: var(--color-slate-100);
 
-    /* INVERSE SURFACES — fg-inverse stays light in both modes */
-    --bg-inverse: var(--color-slate-700);
-    --bg-inverse-hover: var(--color-slate-600);
+    /* INVERSE */
+    --bg-inverse: var(--color-slate-600);
+    --bg-inverse-hover: var(--color-slate-500);
     --fg-inverse: var(--color-gray-0);
 
-    /* LEGACY CONTROL ROLES */
-    --bg-control-active: var(--color-slate-600);
+    /* CONTROLS */
     --fg-on-control: var(--color-slate-700);
+    --bg-control-hover: var(--bg-hover);
+    --fg-on-control-hover: var(--fg-general);
 
     /* BORDERS */
-    --border-faint: transparent;
+    --border-faint: rgb(from var(--color-gray-0) r g b / 6%);
     --border-default: rgb(from var(--color-gray-0) r g b / 15%);
     --border-strong: rgb(from var(--color-gray-0) r g b / 30%);
-    --border-input: var(--color-slate-800);
-    --border-emphasis: var(--color-gray-500);
+    --border-input: var(--color-slate-500);
+    --border-emphasis: var(--color-slate-400);
 
-    /* BRAND — accent for text, borders and tints; fills carry --fg-inverse */
-    --brand: var(--color-brand-dark);
-    --brand-hover: color-mix(in srgb, var(--color-brand-dark) 80%, var(--color-gray-0));
+    /* BRAND */
+    --brand: var(--color-brand-text-dark);
+    --brand-hover: var(--color-link-dark-hover);
     --brand-strong: var(--color-brand);
-    --bg-brand: var(--color-brand);
-    --bg-brand-hover: var(--color-brand-hover);
-    --fg-on-brand: var(--color-gray-0);
+    --bg-brand: var(--color-brand-dark);
+    --bg-brand-hover: var(--color-brand-dark-hover);
+    --bg-brand-pressed: var(--color-brand-dark-pressed);
+    --bg-brand-tint: rgb(from var(--color-brand-dark) r g b / 15%);
+    --fg-on-brand: var(--color-on-brand-dark);
     --accent: var(--color-accent);
 
     /* SUCCESS */
@@ -313,12 +320,12 @@
     --bg-info-strong: var(--color-info-strong-dark);
     --fg-on-info-strong: var(--color-gray-0);
 
-    /* ENTITY TEXT */
+    /* ENTITIES */
     --fg-entity-person: var(--color-entity-person-dark);
     --fg-entity-location: var(--color-entity-location-dark);
     --fg-entity-institution: var(--color-entity-institution-dark);
 
-    /* MAP MARKERS */
+    /* MAP */
     --bg-map-marker-primary: var(--color-map-primary);
     --bg-map-marker-secondary: var(--color-map-secondary);
     --fg-on-bright: var(--color-gray-1000);
@@ -330,12 +337,13 @@
     --outline-selection: var(--color-selection-marker);
     --fg-selection-region: var(--color-selection-region-dark);
 
-    /* NOTIFICATIONS */
+    /* NOTIFICATION */
     --bg-notification: var(--color-notification);
 
-    /* HIGHLIGHTS AND FOCUS */
+    /* HIGHLIGHT AND FOCUS */
     --highlight: var(--color-highlight);
-    --outline-focus: var(--color-focus-ring);
+    --outline-focus: var(--color-focus-ring-dark);
+    --outline-focus-inner: var(--color-gray-0);
 
     /* OCR OVERLAYS */
     --ocr-block: var(--color-ocr-block-dark);
@@ -344,14 +352,15 @@
 
     /* SHADOWS */
     --shadow-color: var(--color-gray-1000);
+    --shadow-container: inset 0 1px 0 rgb(from var(--color-gray-0) r g b / 6%);
+    --shadow-floating:
+        inset 0 1px 0 rgb(from var(--color-gray-0) r g b / 8%), 0 1px 2px rgb(from var(--shadow-color) r g b / 40%), 0 6px 16px rgb(from var(--shadow-color) r g b / 50%);
 
-    /* DOCUMENT CANVAS */
+    /* DOCUMENT */
     --bg-document: var(--color-gray-0);
     --fg-document: var(--color-gray-1000);
     --bg-viewer-canvas: var(--color-gray-900);
     --bg-viewer-canvas-stripe: var(--color-gray-800);
-
-    /* DOCUMENT MARKINGS */
     --bg-document-highlight: var(--color-document-highlight);
     --bg-document-highlight-selected: var(--color-document-highlight-selected);
     --bg-document-selection: var(--color-document-selection);
@@ -359,43 +368,52 @@
     --outline-document-drawing: var(--color-document-selection);
     --fg-notation-active: var(--color-notation-active);
 
-    /* CHARTS AND ENTITY NAVIGATION */
+    /* CHARTS */
     --chart-chronology: var(--color-chronology-dark);
     --bg-entity-scale-handle: var(--color-ner-scale-dark);
 
-    /* HERO SURFACES */
+    /* HERO */
     --bg-hero: var(--color-hero);
     --bg-hero-gradient: var(--color-hero-gradient);
 
-    /* SCRIMS, MASKS AND FOCUS */
+    /* SCRIM AND MASK */
     --bg-scrim: var(--color-gray-1000);
     --bg-mask: var(--color-gray-1000);
-    --outline-focus-inner: var(--color-gray-0);
 
-    /* PRINT — fixed ink colors in both screen modes */
+    /* MODE-BOUND */
+    --display-light-only: none;
+    --display-dark-only: flex;
+    --filter-mono-image: invert(1);
+
+    /* PRINT */
     --fg-print: var(--color-gray-1000);
     --fg-print-link: var(--color-gray-700);
     --border-print: var(--color-gray-400);
 }
 
-/* LAYER 2 — SEMANTIC ROLES, ADMIN (legacy backend values, applied after light) */
 .gv-semantic-admin() {
     /* TEXT */
     --fg-general: var(--color-admin-ink);
     --fg-content-box: var(--color-admin-ink);
     --fg-popover: var(--color-admin-ink);
+    --fg-placeholder: rgb(from var(--color-gray-1000) r g b / 25%);
 
     /* LINKS AND BRAND */
     --fg-link: var(--color-brand);
     --color-brand-hover: var(--color-link);
 
-    /* NEUTRAL SURFACES */
+    /* SURFACES */
+    --bg-general: var(--color-gray-50);
     --bg-subtle: var(--color-admin-gray-100);
+    --bg-control: var(--color-admin-gray-100);
     --bg-canvas: var(--color-admin-gray-200);
     --bg-hover: var(--color-gray-100);
     --bg-inverse: var(--color-admin-slate);
-    --fg-placeholder: rgb(from var(--color-gray-1000) r g b / 25%);
     --shadow-color: var(--color-gray-1000);
+
+    /* BORDERS */
+    --border-input: var(--color-slate-200);
+    --border-emphasis: var(--color-gray-500);
 
     /* STATUS */
     --fg-success: var(--color-success-strong);
@@ -408,333 +426,24 @@
     --bg-danger-strong: var(--color-admin-danger);
 }
 
-/* LAYER 3 — FEATURE TOKENS, MODE-FREE (read layer 2 only) */
+/* FEATURE TOKENS — only what the admin scope rebinds */
 .gv-features() {
     /* WIDGET ICONS */
     --widget-body-icon: var(--fg-general);
     --widget-topbar-icon: var(--brand);
-    --widget-expand-icon: var(--brand);
-
-    /* LOGIN NAVIGATION */
-    --login-nav-bg: var(--bg-inverse);
-    --login-nav-bg-hover: var(--bg-inverse-hover);
-    --login-nav-fg: var(--fg-inverse);
-    --login-nav-fg-hover: var(--fg-inverse);
-    --login-nav-icon: var(--fg-inverse);
-    --login-nav-icon-hover: var(--fg-inverse);
-    --login-nav-bookmarks-fg: var(--fg-inverse);
-    --login-nav-bookmarks-fg-hover: var(--highlight);
-    --login-nav-bookmarks-counter-bg: var(--bg-brand);
-
-    /* SEARCH TOOLBAR */
-    --search-toolbar-bg-active: var(--bg-brand);
-    --search-toolbar-fg-active: var(--fg-on-brand);
-    --search-toolbar-icon-active: var(--fg-on-brand);
-    --search-toolbar-fg-hover: currentColor;
-    --search-toolbar-button-radius: var(--radius-button);
-    --search-toolbar-shadow-active: none;
-    --search-toolbar-outline-focus: var(--outline-focus);
-
-    /* TOC PAGE */
-    --toc-page-link-fg: var(--fg-link-content-box);
-
-    /* IMAGE CONTROLS */
-    --image-controls-bg: var(--bg-content-box);
-    --image-controls-container-border: transparent;
-    --image-controls-icon: var(--fg-general);
 
     /* DATEPICKER */
-    --datepicker-bg: var(--bg-popover);
-    --datepicker-header-bg: var(--bg-brand);
-    --datepicker-header-fg: var(--fg-on-brand);
-    --datepicker-weekday-fg: var(--fg-on-brand);
-    --datepicker-day-fg: var(--fg-popover);
     --datepicker-day-bg-hover: var(--bg-hover);
-    --datepicker-day-bg-selected: var(--bg-brand);
-    --datepicker-day-fg-selected: var(--fg-on-brand);
-    --datepicker-day-border-today: var(--brand);
     --datepicker-day-fg-disabled: var(--fg-placeholder);
-    --datepicker-day-bg-has-data: color-mix(in srgb, var(--brand) 12%, transparent);
-    --datepicker-day-fg-has-data: var(--fg-popover);
-    --datepicker-day-bg-has-data-hover: color-mix(in srgb, var(--brand) 24%, transparent);
-    --datepicker-day-fg-has-data-hover: var(--fg-popover);
-    --datepicker-day-bg-in-range: color-mix(in srgb, var(--brand) 20%, transparent);
 
-    /* NEWSPAPER SEARCH */
-    --newspaper-search-bg: var(--bg-content-box);
-    --newspaper-search-border: var(--border-default);
-    --newspaper-search-tab-bg: var(--bg-hover);
-    --newspaper-search-tab-border: var(--border-default);
-    --newspaper-search-tab-fg: var(--fg-muted);
-    --newspaper-search-tab-fg-hover: var(--fg-general);
-    --newspaper-search-tab-fg-active: var(--brand);
-    --newspaper-search-label-fg: var(--fg-muted);
-
-    /* QUICK FILTER */
-    --quick-filter-bg: var(--bg-content-box);
-    --quick-filter-fg: var(--fg-content-box);
-    --quick-filter-dropdown-bg: var(--bg-content-box);
-    --quick-filter-fields-bg: var(--bg-subtle);
-    --quick-filter-dropdown-bg-hover: var(--bg-subtle);
-    --quick-filter-toggle-bg: var(--bg-subtle);
-    --quick-filter-dropdown-shadow: none;
-    --quick-filter-input-shadow: none;
-    --quick-filter-fg-invalid: var(--fg-danger);
-    --quick-filter-accent: var(--brand);
-    --quick-filter-submit-bg: var(--bg-brand);
-    --quick-filter-submit-icon: var(--fg-on-brand);
-    --quick-filter-checkbox-bg-active: var(--bg-brand);
-    --quick-filter-status-fg: var(--brand);
-    --quick-filter-radius: 0;
-    --quick-filter-radius-sm: 0;
-
-    /* IMMERSIVE VIEW */
-    --immersive-rail-width: 40px;
-    --immersive-edge-inset: 12px;
-    --immersive-radius: 6px;
-    --immersive-radius-lg: 8px;
-    --immersive-transition: 0.15s ease;
-    --immersive-canvas-bg: var(--bg-canvas);
-    --immersive-chrome-bg: var(--bg-content-box);
-    --immersive-chrome-fg: var(--fg-content-box);
-    --immersive-accent: var(--brand);
-    --immersive-ocr-block: var(--ocr-block);
-    --immersive-ocr-line: var(--ocr-line);
-    --immersive-ocr-word: var(--ocr-word);
-    --immersive-thumb-shadow: 0 1px 2px rgb(from var(--shadow-color) r g b / 10%), 0 4px 10px rgb(from var(--shadow-color) r g b / 13%);
-    --immersive-thumb-shadow-hover: 0 2px 4px rgb(from var(--shadow-color) r g b / 10%), 0 14px 28px rgb(from var(--shadow-color) r g b / 22%);
-
-    /* WIDGET CALENDAR */
-    --widget-calendar-dot-size: 4px;
-    --widget-calendar-dot-bg: var(--brand);
-    --widget-calendar-dot-bg-selected: var(--fg-on-brand);
-    --widget-calendar-popover-bg: var(--bg-popover);
-    --widget-calendar-popover-border: var(--border-default);
-    --widget-calendar-popover-shadow: 0 2px 8px rgb(from var(--shadow-color) r g b / 15%);
-    --widget-calendar-popover-radius: 4px;
-    --widget-calendar-popover-min-width: 180px;
-    --widget-calendar-popover-item-padding: 6px 12px;
-    --widget-calendar-popover-item-fg: var(--fg-popover);
-    --widget-calendar-popover-item-bg-hover: var(--bg-hover);
-    --widget-calendar-popover-item-fg-hover: var(--fg-popover);
-    --widget-calendar-popover-font-size: var(--font-size-caption);
-
-    /* COMBINED FACETS */
-    --combined-facets-fg: var(--fg-general);
-    --combined-facets-accent: var(--brand);
-    --combined-facets-accent-bg: var(--bg-brand);
-    --combined-facets-fg-on-accent: var(--fg-on-brand);
-    --combined-facets-divider: var(--border-default);
-    --combined-facets-radius: 6px;
-    --combined-facets-fg-muted: var(--fg-muted);
-    --combined-facets-box-bg: var(--bg-general);
-    --combined-facets-badge-bg: var(--active-facets-badge-bg);
-    --combined-facets-badge-bg-hover: var(--active-facets-badge-bg-hover);
-    --combined-facets-badge-fg: var(--active-facets-badge-fg);
-    --combined-facets-badge-border: transparent;
-    --combined-facets-badge-fg-muted: var(--active-facets-badge-fg-muted);
-    --combined-facets-badge-fg-contrast: var(--active-facets-badge-fg-contrast);
-
-    /* ACTIVE FACETS BADGES */
-    --active-facets-badge-bg: var(--bg-brand);
-    --active-facets-badge-bg-hover: var(--bg-brand-hover);
-    --active-facets-badge-fg: var(--fg-on-brand);
-    --active-facets-badge-border: transparent;
-    --active-facets-badge-fg-muted: rgb(from var(--fg-on-brand) r g b / 85%);
-    --active-facets-badge-radius: var(--radius-button);
-    --active-facets-badge-fg-contrast: var(--brand);
-    --active-facets-badge-shadow-hover: 0 1px 3px rgb(from var(--shadow-color) r g b / 12%);
-
-    /* FACET INCLUDE/EXCLUDE CONTROL */
-    --facet-control-border: var(--border-strong);
-    --facet-control-fg: var(--fg-muted);
-    --facet-control-radius: 3px;
-
-    /* FOOTER */
-    --footer-topnav-bg: var(--brand-strong);
-
-    /* ARCHIVES */
-    --archives-card-bg: var(--bg-content-box);
-    --archives-title-fg: var(--fg-content-box);
-    --archives-description-fg: var(--fg-general);
-    --archives-placeholder-bg: var(--bg-content-box);
-    --archives-placeholder-icon: var(--fg-general);
-
-    /* FRONTEND CATEGORY COLORS */
-    --ner-person-fg: var(--fg-entity-person);
-    --ner-location-fg: var(--fg-entity-location);
-    --ner-institution-fg: var(--fg-entity-institution);
-    --map-marker-primary-bg: var(--bg-map-marker-primary);
-    --map-marker-primary-fg: var(--fg-inverse);
-    --map-marker-secondary-bg: var(--bg-map-marker-secondary);
-    --map-marker-secondary-fg: var(--fg-on-bright);
-    --rss-badge-bg: var(--bg-rss);
+    /* RSS */
     --rss-badge-fg: var(--fg-on-bright);
-    --sidebar-preview-outline: var(--outline-selection);
-    --image-controls-region-fg-active: var(--fg-selection-region);
-
-    /* DOCUMENTS, CHARTS AND ARCHIVE HERO */
-    --pdf-highlight-bg: var(--bg-document-highlight);
-    --pdf-highlight-bg-selected: var(--bg-document-highlight-selected);
-    --pdf-selection-bg: var(--bg-document-selection);
-    --image-region-outline-focus: var(--outline-document-focus);
-    --image-region-outline-drawing: var(--outline-document-drawing);
-    --ner-scale-handle-bg: var(--bg-entity-scale-handle);
-    --chronology-chart-fg: var(--chart-chronology);
-    --archives-hero-bg: var(--bg-hero);
-    --archives-hero-gradient-bg: var(--bg-hero-gradient);
-    --mei-note-fg-active: var(--fg-notation-active);
 }
 
-/* LAYER 3 — FEATURE TOKENS WITH A MODE-SPECIFIC VALUE, LIGHT */
-.gv-features-light() {
-    /* LOGIN NAVIGATION */
-    --login-nav-bookmarks-bg: var(--bg-inverse);
-    --login-nav-dropdown-border: rgb(from var(--fg-inverse) r g b / 10%);
-
-    /* SEARCH TOOLBAR */
-    --search-toolbar-divider: rgb(from var(--fg-general) r g b / 28%);
-    --search-toolbar-icon: var(--fg-general);
-    --search-toolbar-icon-hover: var(--fg-general);
-
-    /* TOC PAGE */
-    --toc-page-bg-hover: var(--bg-general);
-    --toc-page-toggle-icon: var(--brand);
-    --toc-page-toggle-icon-hover: var(--fg-hover);
-    --toc-page-link-fg-hover: inherit;
-    --toc-page-border: var(--border-strong);
-
-    /* IMAGE CONTROLS */
-    --image-controls-border: var(--border-default);
-    --image-controls-icon-hover: var(--fg-on-brand);
-    --image-controls-icon-active: var(--fg-on-brand);
-    --image-controls-action-bg: var(--bg-general);
-    --image-controls-action-bg-hover: var(--bg-brand-hover);
-    --image-controls-slider-thumb-bg: var(--fg-general);
-    --image-controls-slider-border: var(--fg-general);
-
-    /* QUICK FILTER */
-    --quick-filter-label-fg: var(--fg-muted);
-    --quick-filter-field-separator: var(--border-strong);
-    --quick-filter-border: var(--border-strong);
-    --quick-filter-control-bg-hover: var(--bg-subtle);
-
-    /* IMMERSIVE VIEW */
-    --immersive-canvas-fg: var(--fg-general);
-    --immersive-chrome-bg-hover: var(--bg-subtle);
-    --immersive-slider-track: rgb(from var(--fg-general) r g b / 25%);
-    --immersive-rail-bg: var(--bg-content-box);
-    --immersive-chrome-border: rgb(from var(--fg-general) r g b / 10%);
-    --immersive-key-bg: var(--bg-subtle);
-    --immersive-key-border: rgb(from var(--fg-general) r g b / 50%);
-    --immersive-divider: rgb(from var(--fg-general) r g b / 9%);
-    --immersive-highlight-bg: rgb(from var(--highlight) r g b / 35%);
-    --immersive-metadata-bg-hover: rgb(from var(--fg-general) r g b / 5%);
-    --immersive-ocr-word-fg: var(--fg-inverse);
-    --immersive-chrome-shadow: 0 1px 2px rgb(from var(--shadow-color) r g b / 6%), 0 6px 16px rgb(from var(--shadow-color) r g b / 10%);
-    --immersive-panel-shadow: 4px 0 24px rgb(from var(--shadow-color) r g b / 10%);
-    --immersive-overlay-shadow: drop-shadow(0 1px 2px rgb(from var(--fg-inverse) r g b / 90%));
-    --immersive-logo-invert: 0;
-
-    /* COMBINED FACETS */
-    --combined-facets-bg: rgb(from var(--brand) r g b / 8%);
-    --combined-facets-scrollbar: var(--border-strong);
-
-    /* FACET INCLUDE/EXCLUDE CONTROL */
-    --facet-control-bg-active: var(--bg-brand);
-    --facet-control-fg-active: var(--fg-on-brand);
-
-    /* ARCHIVES */
-    --archives-card-border-color: var(--border-faint);
-    --archives-overlay-bg: rgb(from var(--shadow-color) r g b / 65%);
-    --archives-overlay-fg: var(--fg-inverse);
-
-    /* COLOR THEME TOGGLE */
-    --theme-switch-dark-display: flex;
-    --theme-switch-light-display: none;
-
-    /* THEME LOGO — image for the active mode */
-    --theme-logo-light-display: block;
-    --theme-logo-dark-display: none;
-}
-
-/* LAYER 3 — FEATURE TOKENS WITH A MODE-SPECIFIC VALUE, DARK */
-.gv-features-dark() {
-    /* LOGIN NAVIGATION */
-    --login-nav-bookmarks-bg: var(--bg-content-box);
-    --login-nav-dropdown-border: rgb(from var(--fg-inverse) r g b / 5%);
-
-    /* SEARCH TOOLBAR */
-    --search-toolbar-divider: rgb(from var(--fg-inverse) r g b / 20%);
-    --search-toolbar-icon: rgb(from var(--fg-inverse) r g b / 92%);
-    --search-toolbar-icon-hover: var(--brand);
-
-    /* TOC PAGE */
-    --toc-page-bg-hover: var(--bg-control-active);
-    --toc-page-toggle-icon: var(--fg-content-box);
-    --toc-page-toggle-icon-hover: var(--fg-content-box);
-    --toc-page-link-fg-hover: var(--fg-content-box);
-    --toc-page-border: rgb(from var(--fg-inverse) r g b / 17%);
-
-    /* IMAGE CONTROLS */
-    --image-controls-border: transparent;
-    --image-controls-icon-hover: var(--fg-general);
-    --image-controls-icon-active: var(--fg-general);
-    --image-controls-action-bg: var(--bg-control-active);
-    --image-controls-action-bg-hover: var(--bg-hover);
-    --image-controls-slider-thumb-bg: var(--fg-muted);
-    --image-controls-slider-border: var(--fg-muted);
-
-    /* QUICK FILTER */
-    --quick-filter-label-fg: var(--fg-muted);
-    --quick-filter-field-separator: rgb(from var(--fg-inverse) r g b / 12%);
-    --quick-filter-border: rgb(from var(--fg-inverse) r g b / 12%);
-    --quick-filter-control-bg-hover: var(--bg-hover);
-
-    /* IMMERSIVE VIEW */
-    --immersive-canvas-fg: var(--fg-inverse);
-    --immersive-chrome-bg-hover: var(--bg-hover);
-    --immersive-slider-track: var(--bg-hover);
-    --immersive-rail-bg: var(--bg-popover);
-    --immersive-chrome-border: rgb(from var(--fg-inverse) r g b / 14%);
-    --immersive-key-bg: var(--bg-hover);
-    --immersive-key-border: rgb(from var(--fg-inverse) r g b / 40%);
-    --immersive-divider: rgb(from var(--fg-inverse) r g b / 12%);
-    --immersive-highlight-bg: rgb(from var(--highlight) r g b / 25%);
-    --immersive-metadata-bg-hover: rgb(from var(--fg-inverse) r g b / 5%);
-    --immersive-ocr-word-fg: var(--fg-on-control);
-    --immersive-chrome-shadow: 0 5px 14px 2px rgb(from var(--shadow-color) r g b / 9%);
-    --immersive-panel-shadow: 4px 0 16px rgb(from var(--shadow-color) r g b / 18%);
-    --immersive-overlay-shadow: drop-shadow(0 1px 4px rgb(from var(--shadow-color) r g b / 50%));
-    --immersive-logo-invert: 1;
-
-    /* COMBINED FACETS */
-    --combined-facets-bg: rgb(from var(--brand) r g b / 15%);
-    --combined-facets-scrollbar: var(--bg-control-active);
-
-    /* FACET INCLUDE/EXCLUDE CONTROL */
-    --facet-control-bg-active: var(--fg-content-box);
-    --facet-control-fg-active: var(--fg-on-control);
-
-    /* ARCHIVES */
-    --archives-card-border-color: transparent;
-    --archives-overlay-bg: rgb(from var(--shadow-color) r g b / 75%);
-    --archives-overlay-fg: var(--fg-content-box);
-
-    /* COLOR THEME TOGGLE */
-    --theme-switch-dark-display: none;
-    --theme-switch-light-display: flex;
-
-    /* THEME LOGO — image for the active mode */
-    --theme-logo-light-display: none;
-    --theme-logo-dark-display: block;
-}
-
-/* LAYER 3 — FEATURE TOKENS, ADMIN (read layer 2 only) */
 .gv-features-admin() {
     /* WIDGET ICONS */
-    --widget-topbar-icon: var(--fg-inverse);
     --widget-body-icon: var(--fg-content-box);
+    --widget-topbar-icon: var(--fg-inverse);
 
     /* DATEPICKER */
     --datepicker-day-bg-hover: var(--bg-canvas);
@@ -744,33 +453,29 @@
     --rss-badge-fg: var(--fg-inverse);
 }
 
-/* WIRING — plain selectors only, all (0,1,0); order is binding */
+/* WIRING — order is binding */
 :root {
     .gv-palette();
     .gv-base();
     .gv-semantic-light();
     .gv-features();
-    .gv-features-light();
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
         .gv-semantic-dark();
-        .gv-features-dark();
     }
 }
 
 .color-theme-dark {
     .gv-semantic-dark();
-    .gv-features-dark();
 }
 
 .color-theme-light {
     .gv-semantic-light();
-    .gv-features-light();
 }
 
-/* ADMIN SCOPE — fixed light binding; (1,1,0) beats mode wiring and theme :root */
+/* ADMIN SCOPE — fixed light binding */
 :root:has(#admin) {
     .gv-palette();
     .gv-palette-admin();
@@ -778,6 +483,5 @@
     .gv-semantic-light();
     .gv-semantic-admin();
     .gv-features();
-    .gv-features-light();
     .gv-features-admin();
 }

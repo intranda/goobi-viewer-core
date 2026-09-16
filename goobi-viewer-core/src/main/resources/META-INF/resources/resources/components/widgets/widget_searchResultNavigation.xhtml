@@ -4,6 +4,7 @@
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <composite:interface />
 
@@ -11,7 +12,8 @@
         <h:panelGroup rendered="#{configurationBean.displaySearchResultNavigation and searchBean.hitsCount > 1 and activeDocumentBean.prevHit != null}">
             <div
                 id="widgetSearchResultNavigation"
-                class="widget widget-search-result-navigation">
+                class="widget widget-search-result-navigation"
+                style="--hit-progress: #{searchBean.hitsCount > 1 ? (searchBean.currentHitIndex * 100) / (searchBean.hitsCount - 1) : 0}">
                 <div class="widget__topbar widget-search-result-navigation__topbar">
                     <h2 class="widget__title widget-search-result-navigation__title">#{msg.searchHitNavigation}</h2>
                 </div>
@@ -24,9 +26,7 @@
                                 disabled="#{searchBean.currentHitIndex == 0}"
                                 value="#{activeDocumentBean.prevHit.sidebarPrevUrl}"
                                 title="#{activeDocumentBean.prevHit.label}">
-                                <div
-                                    class="searchResultNavigationBackImg"
-                                    style="#{searchBean.currentHitIndex == 0 ? 'opacity: 0.4;' : ''}" />
+                                <div class="searchResultNavigationBackImg" />
                             </h:outputLink>
                         </div>
 
@@ -46,13 +46,7 @@
                                 disabled="#{searchBean.currentHitIndex == (searchBean.hitsCount - 1)}"
                                 value="#{activeDocumentBean.nextHit.sidebarNextUrl}"
                                 title="#{activeDocumentBean.nextHit.label}">
-                                <div
-                                    class="searchResultNavigationForwardImg"
-                                    style="
-                                        # {
-                                            searchbean.currenthitindex== (searchBean.hitsCount - 1) ? 'opacity: 0.4;' : '';
-                                        }
-                                    " />
+                                <div class="searchResultNavigationForwardImg" />
                             </h:outputLink>
                         </div>
                     </div>
@@ -60,7 +54,10 @@
                     <div class="widget-search-result-navigation__back-to-collection">
                         <h:outputLink
                             rendered="#{activeDocumentBean.nextHit != null}"
-                            value="#{searchBean.lastUsedSearchUrl}">
+                            value="#{searchBean.lastUsedSearchUrl}"
+                            title="#{msg.returnToHitlist}"
+                            pt:data-toggle="tooltip"
+                            pt:data-placement="top">
                             <span>#{msg.returnToHitlist}</span>
                         </h:outputLink>
                     </div>

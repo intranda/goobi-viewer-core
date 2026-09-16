@@ -18,10 +18,10 @@
             bottom: 0;
             left: 0;
             gap: 6px;
-            width: var(--immersive-rail-width);
+            width: @immersive-rail-width;
             padding: 10px 0 0;
-            border-right: 1px solid var(--immersive-divider);
-            background-color: var(--immersive-rail-bg);
+            border-right: 1px solid var(--border-default);
+            background-color: var(--bg-popover);
 
             .immersive__toolbar-group {
                 gap: 6px;
@@ -33,8 +33,8 @@
         }
 
         &-right {
-            top: var(--immersive-edge-inset);
-            right: var(--immersive-edge-inset);
+            top: @immersive-edge-inset;
+            right: @immersive-edge-inset;
             .mx-immersive-floating();
         }
     }
@@ -48,7 +48,7 @@
 
         & + & {
             padding-top: 2px;
-            border-top: 1px solid var(--immersive-divider);
+            border-top: 1px solid var(--border-default);
         }
     }
 
@@ -70,13 +70,13 @@
 
     &__tool-btn.-active,
     &__tool-btn[aria-pressed='true'] {
-        background-color: rgb(from var(--immersive-accent) r g b / 0.16);
-        color: var(--immersive-accent);
-        box-shadow: inset 0 0 0 2px var(--immersive-accent);
+        background-color: rgb(from var(--brand) r g b / 0.16);
+        color: var(--brand);
+        box-shadow: inset 0 0 0 2px var(--brand);
 
         &:hover {
-            color: var(--immersive-accent);
-            background-color: rgb(from var(--immersive-accent) r g b / 0.24);
+            color: var(--brand);
+            background-color: rgb(from var(--brand) r g b / 0.24);
         }
     }
 
@@ -86,7 +86,7 @@
 
         &:hover {
             background-color: transparent;
-            color: var(--immersive-chrome-fg);
+            color: var(--fg-content-box);
         }
     }
 

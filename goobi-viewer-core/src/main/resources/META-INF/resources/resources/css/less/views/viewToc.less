@@ -124,7 +124,7 @@
                 //				padding-left: 5px !important;
             }
             &:hover {
-                background-color: var(--toc-page-bg-hover);
+                background-color: var(--bg-hover);
             }
         }
     }
@@ -132,13 +132,13 @@
     &__list-full-title {
         a,
         button {
-            color: var(--toc-page-link-fg);
+            color: var(--fg-link-content-box);
             //			display: block;
             //			padding: 5px 0;
             &:hover,
             &:focus,
             &:active {
-                color: var(--toc-page-link-fg-hover);
+                color: var(--fg-content-box);
             }
         }
     }
@@ -162,21 +162,21 @@
             }
         }
         .icon-wrapper svg {
-            color: var(--toc-page-toggle-icon);
+            color: var(--brand);
         }
     }
     &__list-expandable-download-button,
     &__list-full-download-button {
         display: flex;
         .icon-wrapper svg {
-            color: var(--toc-page-toggle-icon);
+            color: var(--brand);
         }
         &:hover .icon-wrapper svg {
-            color: var(--toc-page-toggle-icon-hover);
+            color: var(--fg-content-box);
         }
         &:focus .icon-wrapper svg,
         &:active .icon-wrapper svg {
-            color: var(--toc-page-toggle-icon);
+            color: var(--brand);
         }
     }
     /* EXPAND ALL */
@@ -187,14 +187,14 @@
         gap: 10px;
         .btn {
             .icon-wrapper svg {
-                color: var(--toc-page-toggle-icon);
+                color: var(--brand);
             }
             &:hover .icon-wrapper svg {
-                color: var(--toc-page-toggle-icon-hover);
+                color: var(--fg-content-box);
             }
             &:focus .icon-wrapper svg,
             &:active .icon-wrapper svg {
-                color: var(--toc-page-toggle-icon);
+                color: var(--brand);
             }
         }
     }
@@ -211,7 +211,7 @@
     }
     &__list-expandable-elem + &__list-expandable-elem:not(.toc__list-expandable-elem--hidden),
     &__list-full-item + &__list-full-item {
-        border-top: 1px solid var(--toc-page-border);
+        border-top: 1px solid var(--border-strong);
     }
     &__list-expandable-title-wrapper,
     &__list-full-title-wrapper {
@@ -223,14 +223,14 @@
     &__list-expandable-toggle {
         display: flex;
         .icon-wrapper svg {
-            color: var(--toc-page-toggle-icon);
+            color: var(--brand);
         }
         &:hover .icon-wrapper svg {
-            color: var(--toc-page-toggle-icon-hover);
+            color: var(--fg-content-box);
         }
         &:focus .icon-wrapper svg,
         &:active .icon-wrapper svg {
-            color: var(--toc-page-toggle-icon);
+            color: var(--brand);
         }
     }
     &__list-expandable-elem--hidden {

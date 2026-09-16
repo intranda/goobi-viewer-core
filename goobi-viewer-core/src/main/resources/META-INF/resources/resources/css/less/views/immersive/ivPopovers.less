@@ -9,11 +9,11 @@
 .popover:has(.widget-social-media),
 .popover:has(imageFilters) {
     max-width: 320px;
-    color: var(--immersive-chrome-fg);
-    background-color: var(--immersive-chrome-bg);
-    border: 1px solid var(--immersive-chrome-border);
-    border-radius: var(--immersive-radius);
-    box-shadow: var(--immersive-chrome-shadow);
+    color: var(--fg-content-box);
+    background-color: var(--bg-content-box);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-container-small);
+    box-shadow: var(--shadow-floating);
 
     & :focus-visible {
         .mx-immersive-focus-ring();
@@ -21,19 +21,19 @@
 
     &.bs-popover-top .arrow::before,
     &.bs-popover-top .arrow::after {
-        border-top-color: var(--immersive-chrome-bg);
+        border-top-color: var(--bg-content-box);
     }
     &.bs-popover-right .arrow::before,
     &.bs-popover-right .arrow::after {
-        border-right-color: var(--immersive-chrome-bg);
+        border-right-color: var(--bg-content-box);
     }
     &.bs-popover-bottom .arrow::before,
     &.bs-popover-bottom .arrow::after {
-        border-bottom-color: var(--immersive-chrome-bg);
+        border-bottom-color: var(--bg-content-box);
     }
     &.bs-popover-left .arrow::before,
     &.bs-popover-left .arrow::after {
-        border-left-color: var(--immersive-chrome-bg);
+        border-left-color: var(--bg-content-box);
     }
 
     .popover-body {
@@ -43,7 +43,7 @@
     .popover-header {
         margin: 0;
         padding: 12px 14px 4px;
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
         background: transparent;
         border: 0;
         font-size: var(--font-size-caption);
@@ -74,7 +74,7 @@
 
     .widget-citation__license-text,
     .widget-citation__citerecommendation-text-info {
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
         font-size: var(--font-size-caption);
         opacity: 0.6;
     }
@@ -82,53 +82,53 @@
     .widget-citation__subtitle,
     .widget__badge-container-heading {
         margin-bottom: 6px;
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
         font-size: var(--font-size-body-small);
         font-weight: 700;
     }
 
     .widget__badge-container .badge,
     .widget__badge-container .badge-dark {
-        color: var(--immersive-accent);
-        background-color: rgb(from var(--immersive-accent) r g b / 0.08);
-        border-radius: var(--immersive-radius);
+        color: var(--brand);
+        background-color: rgb(from var(--brand) r g b / 0.08);
+        border-radius: var(--radius-container-small);
 
         &:hover,
         &:active,
         &:focus {
-            color: var(--immersive-accent);
-            background-color: rgb(from var(--immersive-accent) r g b / 0.1);
+            color: var(--brand);
+            background-color: rgb(from var(--brand) r g b / 0.1);
             text-decoration: underline;
         }
     }
 
     .custom-control--select {
-        color: var(--immersive-chrome-fg);
-        background-color: var(--immersive-chrome-bg-hover);
-        border: 1px solid var(--immersive-chrome-border);
-        border-radius: var(--immersive-radius);
+        color: var(--fg-content-box);
+        background-color: var(--bg-control);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-container-small);
 
         &::after {
-            border-top-color: var(--immersive-chrome-fg);
+            border-top-color: var(--fg-content-box);
         }
 
         select {
-            color: var(--immersive-chrome-fg);
+            color: var(--fg-content-box);
             background-color: transparent;
         }
     }
 
     .widget-citation__citerecommendation-text-wrapper .widget-citation__citerecommendation-quote-icon {
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
         opacity: 0.35;
     }
     .widget-citation__citerecommendation-copy-text {
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
 
         &:hover,
         &:active,
         &:focus {
-            color: var(--immersive-chrome-fg);
+            color: var(--fg-content-box);
         }
     }
 }
@@ -140,31 +140,31 @@
 
     .widget-social-media__link {
         padding: 6px;
-        border-radius: var(--immersive-radius-lg);
-        color: var(--immersive-chrome-fg);
-        transition: background-color var(--immersive-transition);
+        border-radius: var(--radius-container);
+        color: var(--fg-content-box);
+        transition: background-color @immersive-transition;
 
         &:hover {
-            background-color: var(--immersive-chrome-bg-hover);
+            background-color: var(--bg-control);
         }
 
         &:hover,
         &:focus {
             /* Repeated colour guards against theme a:hover/a:focus rules. */
-            color: var(--immersive-chrome-fg);
+            color: var(--fg-content-box);
         }
     }
 
     /* Only the monochrome X logo inverts per theme; brand-coloured logos must not (invert breaks their colour). */
     .widget-social-media__link img[src$='x_logo.svg'] {
-        filter: invert(var(--immersive-logo-invert));
+        filter: var(--filter-mono-image);
     }
 }
 
 .popover:has(imageFilters) {
     input[type='range'],
     input[type='checkbox'] {
-        accent-color: var(--immersive-accent);
+        accent-color: var(--brand);
     }
 
     .imagefilters__filter-list {
@@ -172,28 +172,28 @@
     }
 
     .imagefilters__label {
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
     }
 
     .imagefilters__options {
         padding: 6px 14px 14px;
 
         .btn--full {
-            color: var(--immersive-chrome-fg);
+            color: var(--fg-content-box);
             background-color: transparent;
-            border: 1px solid var(--immersive-chrome-border);
-            border-radius: var(--immersive-radius);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-container-small);
             transition:
-                border-color var(--immersive-transition),
-                background-color var(--immersive-transition),
-                color var(--immersive-transition);
+                border-color @immersive-transition,
+                background-color @immersive-transition,
+                color @immersive-transition;
 
             &:hover,
             &:active,
             &:focus {
-                color: var(--immersive-chrome-fg);
-                border-color: var(--immersive-accent);
-                background-color: var(--immersive-chrome-bg-hover);
+                color: var(--fg-content-box);
+                border-color: var(--brand);
+                background-color: var(--bg-control);
             }
         }
     }

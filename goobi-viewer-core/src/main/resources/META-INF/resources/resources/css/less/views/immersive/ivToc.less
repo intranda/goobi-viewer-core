@@ -34,7 +34,7 @@
 
     &__panel-toc {
         padding: 16px 8px 16px;
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
 
         .widget {
             margin: 0;
@@ -84,47 +84,47 @@
             &__element {
                 margin: 0;
                 padding: 0 6px;
-                border-radius: var(--immersive-radius);
-                transition: background-color var(--immersive-transition);
+                border-radius: var(--radius-container-small);
+                transition: background-color @immersive-transition;
 
                 &:hover {
-                    background-color: var(--immersive-chrome-bg-hover);
+                    background-color: var(--bg-control);
                 }
             }
 
             &__toggle {
-                color: var(--immersive-chrome-fg);
+                color: var(--fg-content-box);
                 opacity: 0.6;
 
                 &:hover {
-                    color: var(--immersive-accent);
+                    color: var(--brand);
                     opacity: 1;
                 }
             }
 
             &__element-link a {
                 padding: 4px 4px;
-                color: var(--immersive-chrome-fg);
+                color: var(--fg-content-box);
                 font-size: var(--font-size-body-small);
                 line-height: 1.4;
 
                 &:hover,
                 &:focus,
                 &:active {
-                    color: var(--immersive-chrome-fg);
+                    color: var(--fg-content-box);
                     text-decoration: none;
                 }
             }
 
             &__element-pagenumber {
-                color: var(--immersive-chrome-fg);
+                color: var(--fg-content-box);
                 font-size: var(--font-size-caption);
                 opacity: 0.75;
             }
 
             &__element.active {
-                background-color: var(--immersive-chrome-bg-hover);
-                border-left: 3px solid var(--immersive-accent);
+                background-color: var(--bg-control);
+                border-left: 3px solid var(--brand);
                 padding-left: 3px;
             }
 
@@ -133,12 +133,12 @@
             }
 
             &__element.active .widget-toc__element-link a {
-                color: var(--immersive-chrome-fg);
+                color: var(--fg-content-box);
                 font-weight: 700;
             }
 
             &__element.active .widget-toc__element-pagenumber {
-                color: var(--immersive-chrome-fg);
+                color: var(--fg-content-box);
                 opacity: 1;
             }
         }

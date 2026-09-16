@@ -103,10 +103,14 @@
     border-color: var(--bg-brand);
     background-color: var(--bg-brand);
     &:hover,
-    &:active,
     &:focus {
         color: var(--fg-on-brand);
         background-color: var(--bg-brand-hover);
+    }
+    // Being pressed is not the same as being focused, so it does not look the same.
+    &:active {
+        color: var(--fg-on-brand);
+        background-color: var(--bg-brand-pressed);
     }
 }
 

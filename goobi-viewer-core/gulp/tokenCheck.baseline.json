@@ -1,871 +1,714 @@
 {
-  "initialInventory": {
-    "date": "2026-09-09",
-    "description": "Initial source inventory before migration. Property values only; 15 local LESS color definitions from the broad 1622-statement inventory are not R10 properties. R10 keys preserve selector stack, property and value; check results also provide source lines. Only the tolerated list is the shrinking migration baseline. Shared CMS module styles remain in scope because the public user data form uses them.",
-    "areas": {
-      "admin": {
-        "declarations": 381,
-        "migration": 0,
-        "exempt": 381,
-        "staticVariableReads": 194,
-        "hexLiterals": 163,
-        "numericColorCalls": 21,
-        "namedColors": 15
-      },
-      "archives": {
-        "declarations": 64,
-        "migration": 64,
-        "exempt": 0,
-        "staticVariableReads": 26,
-        "hexLiterals": 12,
-        "numericColorCalls": 31,
-        "namedColors": 11
-      },
-      "cms": {
-        "declarations": 274,
-        "migration": 108,
-        "exempt": 166,
-        "staticVariableReads": 191,
-        "hexLiterals": 55,
-        "numericColorCalls": 18,
-        "namedColors": 12
-      },
-      "frontend": {
-        "declarations": 813,
-        "migration": 813,
-        "exempt": 0,
-        "staticVariableReads": 548,
-        "hexLiterals": 164,
-        "numericColorCalls": 66,
-        "namedColors": 42
-      },
-      "crowdsourcing": {
-        "declarations": 75,
-        "migration": 67,
-        "exempt": 8,
-        "staticVariableReads": 17,
-        "hexLiterals": 46,
-        "numericColorCalls": 2,
-        "namedColors": 10
-      }
+    "initialInventory": {
+        "date": "2026-09-09",
+        "description": "Initial source inventory before migration. Property values only; 15 local LESS color definitions from the broad 1622-statement inventory are not R10 properties. R10 keys preserve selector stack, property and value; check results also provide source lines. Only the tolerated list is the shrinking migration baseline. Shared CMS module styles remain in scope because the public user data form uses them.",
+        "areas": {
+            "admin": {
+                "declarations": 381,
+                "migration": 0,
+                "exempt": 381,
+                "staticVariableReads": 194,
+                "hexLiterals": 163,
+                "numericColorCalls": 21,
+                "namedColors": 15
+            },
+            "archives": {
+                "declarations": 64,
+                "migration": 64,
+                "exempt": 0,
+                "staticVariableReads": 26,
+                "hexLiterals": 12,
+                "numericColorCalls": 31,
+                "namedColors": 11
+            },
+            "cms": {
+                "declarations": 274,
+                "migration": 108,
+                "exempt": 166,
+                "staticVariableReads": 191,
+                "hexLiterals": 55,
+                "numericColorCalls": 18,
+                "namedColors": 12
+            },
+            "frontend": {
+                "declarations": 813,
+                "migration": 813,
+                "exempt": 0,
+                "staticVariableReads": 548,
+                "hexLiterals": 164,
+                "numericColorCalls": 66,
+                "namedColors": 42
+            },
+            "crowdsourcing": {
+                "declarations": 75,
+                "migration": 67,
+                "exempt": 8,
+                "staticVariableReads": 17,
+                "hexLiterals": 46,
+                "numericColorCalls": 2,
+                "namedColors": 10
+            }
+        },
+        "staticVariableReads": {
+            "@white": {
+                "all": 237,
+                "migration": 159
+            },
+            "@middlegray": {
+                "all": 166,
+                "migration": 132
+            },
+            "@redBar": {
+                "all": 10,
+                "migration": 3
+            },
+            "@yellowBar": {
+                "all": 10,
+                "migration": 2
+            },
+            "@blue": {
+                "all": 93,
+                "migration": 59
+            },
+            "@grayBar": {
+                "all": 7,
+                "migration": 0
+            },
+            "@greenBar": {
+                "all": 10,
+                "migration": 1
+            },
+            "@lightgray2": {
+                "all": 14,
+                "migration": 4
+            },
+            "@gray": {
+                "all": 36,
+                "migration": 28
+            },
+            "@black": {
+                "all": 97,
+                "migration": 73
+            },
+            "@adminBackend-bg": {
+                "all": 15,
+                "migration": 10
+            },
+            "@adminBackend-menu-text": {
+                "all": 11,
+                "migration": 0
+            },
+            "@inlineStatic": {
+                "all": 4,
+                "migration": 1
+            },
+            "@adminBackend-menu-hover": {
+                "all": 12,
+                "migration": 0
+            },
+            "@adminBackend-active-state": {
+                "all": 4,
+                "migration": 0
+            },
+            "@btnSuccessBgc": {
+                "all": 4,
+                "migration": 1
+            },
+            "@validDanger": {
+                "all": 12,
+                "migration": 6
+            },
+            "@validSuccess": {
+                "all": 11,
+                "migration": 6
+            },
+            "@validWarning": {
+                "all": 12,
+                "migration": 8
+            },
+            "@red": {
+                "all": 9,
+                "migration": 4
+            },
+            "@neutralgray2": {
+                "all": 7,
+                "migration": 1
+            },
+            "@darkgray": {
+                "all": 8,
+                "migration": 5
+            },
+            "@hoverblue": {
+                "all": 7,
+                "migration": 5
+            },
+            "@neutralgray": {
+                "all": 11,
+                "migration": 3
+            },
+            "@colorFonts": {
+                "all": 3,
+                "migration": 3
+            },
+            "@lightgray": {
+                "all": 49,
+                "migration": 46
+            },
+            "@btnCleanDelete": {
+                "all": 2,
+                "migration": 2
+            },
+            "@btnDanger": {
+                "all": 5,
+                "migration": 4
+            },
+            "@btnDefault": {
+                "all": 3,
+                "migration": 3
+            },
+            "@orange": {
+                "all": 2,
+                "migration": 2
+            },
+            "@btnSuccess": {
+                "all": 4,
+                "migration": 2
+            },
+            "@btnDefaultBorder": {
+                "all": 2,
+                "migration": 2
+            },
+            "@btnDefaultBgc": {
+                "all": 2,
+                "migration": 2
+            },
+            "@btnDefaultHoverBgc": {
+                "all": 2,
+                "migration": 2
+            },
+            "@btnSuccessBorder": {
+                "all": 1,
+                "migration": 1
+            },
+            "@btnSuccessHoverBgc": {
+                "all": 1,
+                "migration": 1
+            },
+            "@btnDangerBorder": {
+                "all": 1,
+                "migration": 1
+            },
+            "@btnDangerBgc": {
+                "all": 1,
+                "migration": 1
+            },
+            "@btnDangerHoverBgc": {
+                "all": 1,
+                "migration": 1
+            },
+            "@btnFullHoverBgc": {
+                "all": 1,
+                "migration": 1
+            },
+            "@personColor": {
+                "all": 10,
+                "migration": 10
+            },
+            "@locationColor": {
+                "all": 10,
+                "migration": 10
+            },
+            "@corporateColor": {
+                "all": 17,
+                "migration": 17
+            },
+            "@lowerblack": {
+                "all": 7,
+                "migration": 7
+            },
+            "@colorOutlineInner": {
+                "all": 1,
+                "migration": 1
+            },
+            "@colorOutline": {
+                "all": 1,
+                "migration": 1
+            },
+            "@activeblue": {
+                "all": 4,
+                "migration": 4
+            },
+            "@labelGray": {
+                "all": 3,
+                "migration": 3
+            },
+            "@fsMiddlegray": {
+                "all": 7,
+                "migration": 7
+            },
+            "@middlegray2": {
+                "all": 1,
+                "migration": 1
+            },
+            "@tagHoverColor": {
+                "all": 6,
+                "migration": 6
+            },
+            "@scaleHandleColor": {
+                "all": 6,
+                "migration": 6
+            },
+            "@fsDarkgray": {
+                "all": 11,
+                "migration": 11
+            },
+            "@labelHoverGray": {
+                "all": 1,
+                "migration": 1
+            },
+            "@fsLightgray": {
+                "all": 2,
+                "migration": 2
+            },
+            "@btnWarningBgc": {
+                "all": 2,
+                "migration": 2
+            }
+        },
+        "lessColorFunctions": [
+            {
+                "file": "admin/admin.less",
+                "line": 349,
+                "selector": [
+                    ".admin",
+                    "&__translations-not-translated",
+                    "&:hover"
+                ],
+                "property": "background",
+                "value": "darken(#eeeeee, 3%)",
+                "area": "admin",
+                "inScope": false
+            },
+            {
+                "file": "admin/admin.less",
+                "line": 357,
+                "selector": [
+                    ".admin",
+                    "&__translations-partially-translated",
+                    "&:hover"
+                ],
+                "property": "background",
+                "value": "darken(#f7e3b5, 3%)",
+                "area": "admin",
+                "inScope": false
+            },
+            {
+                "file": "admin/admin.less",
+                "line": 365,
+                "selector": [
+                    ".admin",
+                    "&__translations-fully-translated",
+                    "&:hover"
+                ],
+                "property": "background",
+                "value": "darken(#d4eddb, 3%)",
+                "area": "admin",
+                "inScope": false
+            },
+            {
+                "file": "archives/archivesTree.less",
+                "line": 145,
+                "selector": [
+                    ".archives-tree",
+                    "&__record-link",
+                    "&.-recordHasImageAccessDenied",
+                    "&:before"
+                ],
+                "property": "color",
+                "value": "fade(@red, 60%)",
+                "area": "archives",
+                "inScope": true
+            },
+            {
+                "file": "archives/archivesTree.less",
+                "line": 197,
+                "selector": [
+                    ".archives-tree",
+                    "&__record-link-icon-ban"
+                ],
+                "property": "color",
+                "value": "fade(@red, 90%)",
+                "area": "archives",
+                "inScope": true
+            },
+            {
+                "file": "cms/components/sectionHeader.less",
+                "line": 22,
+                "selector": [
+                    ".cms-section-header",
+                    "&__icon"
+                ],
+                "property": "box-shadow",
+                "value": "0 2px 12px fade(@black, 8%)",
+                "area": "cms",
+                "inScope": true
+            },
+            {
+                "file": "components/imageControls.less",
+                "line": 193,
+                "selector": [
+                    ".image-controls",
+                    "&__option > .btn.btn--icon:hover .icon-wrapper, &__option > .btn.btn--icon:focus .icon-wrapper, &__option > .image-controls__share-image-link:hover .icon-wrapper, &__option > .image-controls__share-image-link:focus .icon-wrapper, &__option > button:hover .icon-wrapper, &__option > button:focus .icon-wrapper, &__option [data-bookmark-list-type='add']:hover .icon-wrapper, &__option [data-bookmark-list-type='add']:focus .icon-wrapper"
+                ],
+                "property": "filter",
+                "value": "drop-shadow(0 3px 8px fade(@black, 18%))",
+                "area": "frontend",
+                "inScope": true
+            },
+            {
+                "file": "components/sliders.less",
+                "line": 164,
+                "selector": [
+                    ".slider-cover-row",
+                    "&__header"
+                ],
+                "property": "background-color",
+                "value": "fade(@black, 75%)",
+                "area": "frontend",
+                "inScope": true
+            },
+            {
+                "file": "views/common/error.less",
+                "line": 100,
+                "selector": [
+                    ".view-error",
+                    "&__actions",
+                    ".btn--full"
+                ],
+                "property": "box-shadow",
+                "value": "0 2px 8px fade(@blue, 25%)",
+                "area": "frontend",
+                "inScope": true
+            },
+            {
+                "file": "views/common/error.less",
+                "line": 105,
+                "selector": [
+                    ".view-error",
+                    "&__actions",
+                    ".btn--full",
+                    "&:hover"
+                ],
+                "property": "box-shadow",
+                "value": "0 4px 12px fade(@blue, 30%)",
+                "area": "frontend",
+                "inScope": true
+            },
+            {
+                "file": "views/common/error.less",
+                "line": 112,
+                "selector": [
+                    ".view-error",
+                    "&__actions",
+                    ".btn--full",
+                    "&:active"
+                ],
+                "property": "box-shadow",
+                "value": "0 1px 4px fade(@blue, 30%)",
+                "area": "frontend",
+                "inScope": true
+            },
+            {
+                "file": "views/search/searchCalendar.less",
+                "line": 275,
+                "selector": [
+                    ".search-calendar",
+                    "&__year-chip",
+                    "&:focus"
+                ],
+                "property": "box-shadow",
+                "value": "0 0 0 3px fade(@blue, 10%)",
+                "area": "frontend",
+                "inScope": true
+            },
+            {
+                "file": "views/search/searchList.less",
+                "line": 87,
+                "selector": [
+                    ".search-list",
+                    "&__option-button",
+                    "&:hover, &:focus",
+                    ".icon-wrapper"
+                ],
+                "property": "filter",
+                "value": "drop-shadow(0 3px 8px fade(@black, 18%))",
+                "area": "frontend",
+                "inScope": true
+            }
+        ]
     },
-    "staticVariableReads": {
-      "@white": {
-        "all": 237,
-        "migration": 159
-      },
-      "@middlegray": {
-        "all": 166,
-        "migration": 132
-      },
-      "@redBar": {
-        "all": 10,
-        "migration": 3
-      },
-      "@yellowBar": {
-        "all": 10,
-        "migration": 2
-      },
-      "@blue": {
-        "all": 93,
-        "migration": 59
-      },
-      "@grayBar": {
-        "all": 7,
-        "migration": 0
-      },
-      "@greenBar": {
-        "all": 10,
-        "migration": 1
-      },
-      "@lightgray2": {
-        "all": 14,
-        "migration": 4
-      },
-      "@gray": {
-        "all": 36,
-        "migration": 28
-      },
-      "@black": {
-        "all": 97,
-        "migration": 73
-      },
-      "@adminBackend-bg": {
-        "all": 15,
-        "migration": 10
-      },
-      "@adminBackend-menu-text": {
-        "all": 11,
-        "migration": 0
-      },
-      "@inlineStatic": {
-        "all": 4,
-        "migration": 1
-      },
-      "@adminBackend-menu-hover": {
-        "all": 12,
-        "migration": 0
-      },
-      "@adminBackend-active-state": {
-        "all": 4,
-        "migration": 0
-      },
-      "@btnSuccessBgc": {
-        "all": 4,
-        "migration": 1
-      },
-      "@validDanger": {
-        "all": 12,
-        "migration": 6
-      },
-      "@validSuccess": {
-        "all": 11,
-        "migration": 6
-      },
-      "@validWarning": {
-        "all": 12,
-        "migration": 8
-      },
-      "@red": {
-        "all": 9,
-        "migration": 4
-      },
-      "@neutralgray2": {
-        "all": 7,
-        "migration": 1
-      },
-      "@darkgray": {
-        "all": 8,
-        "migration": 5
-      },
-      "@hoverblue": {
-        "all": 7,
-        "migration": 5
-      },
-      "@neutralgray": {
-        "all": 11,
-        "migration": 3
-      },
-      "@colorFonts": {
-        "all": 3,
-        "migration": 3
-      },
-      "@lightgray": {
-        "all": 49,
-        "migration": 46
-      },
-      "@btnCleanDelete": {
-        "all": 2,
-        "migration": 2
-      },
-      "@btnDanger": {
-        "all": 5,
-        "migration": 4
-      },
-      "@btnDefault": {
-        "all": 3,
-        "migration": 3
-      },
-      "@orange": {
-        "all": 2,
-        "migration": 2
-      },
-      "@btnSuccess": {
-        "all": 4,
-        "migration": 2
-      },
-      "@btnDefaultBorder": {
-        "all": 2,
-        "migration": 2
-      },
-      "@btnDefaultBgc": {
-        "all": 2,
-        "migration": 2
-      },
-      "@btnDefaultHoverBgc": {
-        "all": 2,
-        "migration": 2
-      },
-      "@btnSuccessBorder": {
-        "all": 1,
-        "migration": 1
-      },
-      "@btnSuccessHoverBgc": {
-        "all": 1,
-        "migration": 1
-      },
-      "@btnDangerBorder": {
-        "all": 1,
-        "migration": 1
-      },
-      "@btnDangerBgc": {
-        "all": 1,
-        "migration": 1
-      },
-      "@btnDangerHoverBgc": {
-        "all": 1,
-        "migration": 1
-      },
-      "@btnFullHoverBgc": {
-        "all": 1,
-        "migration": 1
-      },
-      "@personColor": {
-        "all": 10,
-        "migration": 10
-      },
-      "@locationColor": {
-        "all": 10,
-        "migration": 10
-      },
-      "@corporateColor": {
-        "all": 17,
-        "migration": 17
-      },
-      "@lowerblack": {
-        "all": 7,
-        "migration": 7
-      },
-      "@colorOutlineInner": {
-        "all": 1,
-        "migration": 1
-      },
-      "@colorOutline": {
-        "all": 1,
-        "migration": 1
-      },
-      "@activeblue": {
-        "all": 4,
-        "migration": 4
-      },
-      "@labelGray": {
-        "all": 3,
-        "migration": 3
-      },
-      "@fsMiddlegray": {
-        "all": 7,
-        "migration": 7
-      },
-      "@middlegray2": {
-        "all": 1,
-        "migration": 1
-      },
-      "@tagHoverColor": {
-        "all": 6,
-        "migration": 6
-      },
-      "@scaleHandleColor": {
-        "all": 6,
-        "migration": 6
-      },
-      "@fsDarkgray": {
-        "all": 11,
-        "migration": 11
-      },
-      "@labelHoverGray": {
-        "all": 1,
-        "migration": 1
-      },
-      "@fsLightgray": {
-        "all": 2,
-        "migration": 2
-      },
-      "@btnWarningBgc": {
-        "all": 2,
-        "migration": 2
-      }
-    },
-    "lessColorFunctions": [
-      {
-        "file": "admin/admin.less",
-        "line": 349,
-        "selector": [
-          ".admin",
-          "&__translations-not-translated",
-          "&:hover"
-        ],
-        "property": "background",
-        "value": "darken(#eeeeee, 3%)",
-        "area": "admin",
-        "inScope": false
-      },
-      {
-        "file": "admin/admin.less",
-        "line": 357,
-        "selector": [
-          ".admin",
-          "&__translations-partially-translated",
-          "&:hover"
-        ],
-        "property": "background",
-        "value": "darken(#f7e3b5, 3%)",
-        "area": "admin",
-        "inScope": false
-      },
-      {
-        "file": "admin/admin.less",
-        "line": 365,
-        "selector": [
-          ".admin",
-          "&__translations-fully-translated",
-          "&:hover"
-        ],
-        "property": "background",
-        "value": "darken(#d4eddb, 3%)",
-        "area": "admin",
-        "inScope": false
-      },
-      {
-        "file": "archives/archivesTree.less",
-        "line": 145,
-        "selector": [
-          ".archives-tree",
-          "&__record-link",
-          "&.-recordHasImageAccessDenied",
-          "&:before"
-        ],
-        "property": "color",
-        "value": "fade(@red, 60%)",
-        "area": "archives",
-        "inScope": true
-      },
-      {
-        "file": "archives/archivesTree.less",
-        "line": 197,
-        "selector": [
-          ".archives-tree",
-          "&__record-link-icon-ban"
-        ],
-        "property": "color",
-        "value": "fade(@red, 90%)",
-        "area": "archives",
-        "inScope": true
-      },
-      {
-        "file": "cms/components/sectionHeader.less",
-        "line": 22,
-        "selector": [
-          ".cms-section-header",
-          "&__icon"
-        ],
-        "property": "box-shadow",
-        "value": "0 2px 12px fade(@black, 8%)",
-        "area": "cms",
-        "inScope": true
-      },
-      {
-        "file": "components/imageControls.less",
-        "line": 193,
-        "selector": [
-          ".image-controls",
-          "&__option > .btn.btn--icon:hover .icon-wrapper, &__option > .btn.btn--icon:focus .icon-wrapper, &__option > .image-controls__share-image-link:hover .icon-wrapper, &__option > .image-controls__share-image-link:focus .icon-wrapper, &__option > button:hover .icon-wrapper, &__option > button:focus .icon-wrapper, &__option [data-bookmark-list-type='add']:hover .icon-wrapper, &__option [data-bookmark-list-type='add']:focus .icon-wrapper"
-        ],
-        "property": "filter",
-        "value": "drop-shadow(0 3px 8px fade(@black, 18%))",
-        "area": "frontend",
-        "inScope": true
-      },
-      {
-        "file": "components/sliders.less",
-        "line": 164,
-        "selector": [
-          ".slider-cover-row",
-          "&__header"
-        ],
-        "property": "background-color",
-        "value": "fade(@black, 75%)",
-        "area": "frontend",
-        "inScope": true
-      },
-      {
-        "file": "views/common/error.less",
-        "line": 100,
-        "selector": [
-          ".view-error",
-          "&__actions",
-          ".btn--full"
-        ],
-        "property": "box-shadow",
-        "value": "0 2px 8px fade(@blue, 25%)",
-        "area": "frontend",
-        "inScope": true
-      },
-      {
-        "file": "views/common/error.less",
-        "line": 105,
-        "selector": [
-          ".view-error",
-          "&__actions",
-          ".btn--full",
-          "&:hover"
-        ],
-        "property": "box-shadow",
-        "value": "0 4px 12px fade(@blue, 30%)",
-        "area": "frontend",
-        "inScope": true
-      },
-      {
-        "file": "views/common/error.less",
-        "line": 112,
-        "selector": [
-          ".view-error",
-          "&__actions",
-          ".btn--full",
-          "&:active"
-        ],
-        "property": "box-shadow",
-        "value": "0 1px 4px fade(@blue, 30%)",
-        "area": "frontend",
-        "inScope": true
-      },
-      {
-        "file": "views/search/searchCalendar.less",
-        "line": 275,
-        "selector": [
-          ".search-calendar",
-          "&__year-chip",
-          "&:focus"
-        ],
-        "property": "box-shadow",
-        "value": "0 0 0 3px fade(@blue, 10%)",
-        "area": "frontend",
-        "inScope": true
-      },
-      {
-        "file": "views/search/searchList.less",
-        "line": 87,
-        "selector": [
-          ".search-list",
-          "&__option-button",
-          "&:hover, &:focus",
-          ".icon-wrapper"
-        ],
-        "property": "filter",
-        "value": "drop-shadow(0 3px 8px fade(@black, 18%))",
-        "area": "frontend",
-        "inScope": true
-      }
+    "colorExemptions": [
+        {
+            "path": "admin/",
+            "reason": "Admin backend remains static; excluded from the component color migration by user decision."
+        },
+        {
+            "path": "cms/views/",
+            "reason": "CMS administration and page editors use the admin template and remain static."
+        },
+        {
+            "path": "cms/includes/mediaSelect.less",
+            "reason": "Media selection overlay belongs to CMS administration."
+        },
+        {
+            "path": "crowdsourcing/admin/",
+            "reason": "Campaign administration uses the admin template and remains static."
+        }
+    ],
+    "tolerated": [],
+    "publicTokens": [
+        "--accent",
+        "--bg-brand",
+        "--bg-brand-hover",
+        "--bg-brand-pressed",
+        "--bg-brand-tint",
+        "--bg-canvas",
+        "--bg-content-box",
+        "--bg-control",
+        "--bg-control-hover",
+        "--bg-danger",
+        "--bg-danger-hover",
+        "--bg-danger-strong",
+        "--bg-document",
+        "--bg-document-highlight",
+        "--bg-document-highlight-selected",
+        "--bg-document-selection",
+        "--bg-entity-scale-handle",
+        "--bg-general",
+        "--bg-header",
+        "--bg-hero",
+        "--bg-hero-gradient",
+        "--bg-hover",
+        "--bg-info-strong",
+        "--bg-inverse",
+        "--bg-inverse-hover",
+        "--bg-map-marker-primary",
+        "--bg-map-marker-secondary",
+        "--bg-mask",
+        "--bg-notification",
+        "--bg-popover",
+        "--bg-rss",
+        "--bg-scrim",
+        "--bg-selected",
+        "--bg-subtle",
+        "--bg-success",
+        "--bg-success-hover",
+        "--bg-success-strong",
+        "--bg-viewer-canvas",
+        "--bg-viewer-canvas-stripe",
+        "--bg-warning",
+        "--bg-warning-strong",
+        "--border-danger",
+        "--border-default",
+        "--border-emphasis",
+        "--border-faint",
+        "--border-input",
+        "--border-print",
+        "--border-strong",
+        "--border-success",
+        "--border-warning",
+        "--brand",
+        "--brand-hover",
+        "--brand-strong",
+        "--chart-chronology",
+        "--color-accent",
+        "--color-annotation-focus",
+        "--color-brand",
+        "--color-brand-dark",
+        "--color-brand-dark-hover",
+        "--color-brand-dark-pressed",
+        "--color-brand-fill",
+        "--color-brand-hover",
+        "--color-brand-pressed",
+        "--color-brand-text",
+        "--color-brand-text-dark",
+        "--color-chronology",
+        "--color-chronology-dark",
+        "--color-danger",
+        "--color-danger-border",
+        "--color-danger-border-dark",
+        "--color-danger-dark",
+        "--color-danger-hover",
+        "--color-danger-hover-dark",
+        "--color-danger-strong",
+        "--color-danger-surface",
+        "--color-danger-surface-dark",
+        "--color-danger-text",
+        "--color-danger-text-dark",
+        "--color-document-highlight",
+        "--color-document-highlight-selected",
+        "--color-document-selection",
+        "--color-entity-institution",
+        "--color-entity-institution-dark",
+        "--color-entity-location",
+        "--color-entity-location-dark",
+        "--color-entity-person",
+        "--color-entity-person-dark",
+        "--color-focus-ring",
+        "--color-focus-ring-dark",
+        "--color-gray-0",
+        "--color-gray-100",
+        "--color-gray-1000",
+        "--color-gray-150",
+        "--color-gray-200",
+        "--color-gray-300",
+        "--color-gray-400",
+        "--color-gray-50",
+        "--color-gray-500",
+        "--color-gray-550",
+        "--color-gray-600",
+        "--color-gray-700",
+        "--color-gray-800",
+        "--color-gray-900",
+        "--color-hero",
+        "--color-hero-gradient",
+        "--color-highlight",
+        "--color-info-strong",
+        "--color-info-strong-dark",
+        "--color-link",
+        "--color-link-active",
+        "--color-link-dark",
+        "--color-link-dark-active",
+        "--color-link-dark-hover",
+        "--color-link-hover",
+        "--color-map-primary",
+        "--color-map-secondary",
+        "--color-ner-scale",
+        "--color-ner-scale-dark",
+        "--color-notation-active",
+        "--color-notification",
+        "--color-ocr-block",
+        "--color-ocr-block-dark",
+        "--color-ocr-line",
+        "--color-ocr-line-dark",
+        "--color-ocr-word",
+        "--color-ocr-word-dark",
+        "--color-on-brand",
+        "--color-on-brand-dark",
+        "--color-rss",
+        "--color-selection-marker",
+        "--color-selection-region",
+        "--color-selection-region-dark",
+        "--color-slate-100",
+        "--color-slate-200",
+        "--color-slate-300",
+        "--color-slate-400",
+        "--color-slate-500",
+        "--color-slate-600",
+        "--color-slate-700",
+        "--color-slate-750",
+        "--color-slate-800",
+        "--color-slate-900",
+        "--color-slate-950",
+        "--color-success",
+        "--color-success-border",
+        "--color-success-border-dark",
+        "--color-success-dark",
+        "--color-success-hover",
+        "--color-success-hover-dark",
+        "--color-success-strong",
+        "--color-success-surface",
+        "--color-success-surface-dark",
+        "--color-success-text",
+        "--color-success-text-dark",
+        "--color-warning-border-dark",
+        "--color-warning-strong",
+        "--color-warning-surface",
+        "--color-warning-surface-dark",
+        "--color-warning-text",
+        "--color-warning-text-dark",
+        "--datepicker-day-bg-hover",
+        "--datepicker-day-fg-disabled",
+        "--display-dark-only",
+        "--display-light-only",
+        "--fg-content-box",
+        "--fg-danger",
+        "--fg-document",
+        "--fg-entity-institution",
+        "--fg-entity-location",
+        "--fg-entity-person",
+        "--fg-general",
+        "--fg-header",
+        "--fg-heading",
+        "--fg-heading-content-box",
+        "--fg-hover",
+        "--fg-inverse",
+        "--fg-link",
+        "--fg-link-active",
+        "--fg-link-content-box",
+        "--fg-link-hover",
+        "--fg-muted",
+        "--fg-notation-active",
+        "--fg-on-brand",
+        "--fg-on-bright",
+        "--fg-on-control",
+        "--fg-on-control-hover",
+        "--fg-on-danger",
+        "--fg-on-danger-strong",
+        "--fg-on-info-strong",
+        "--fg-on-success",
+        "--fg-on-success-strong",
+        "--fg-on-warning",
+        "--fg-on-warning-hover",
+        "--fg-on-warning-strong",
+        "--fg-placeholder",
+        "--fg-popover",
+        "--fg-print",
+        "--fg-print-link",
+        "--fg-secondary",
+        "--fg-selected",
+        "--fg-selection-region",
+        "--fg-success",
+        "--fg-warning",
+        "--filter-mono-image",
+        "--font-family",
+        "--font-scale",
+        "--font-size-body",
+        "--font-size-body-large",
+        "--font-size-body-small",
+        "--font-size-caption",
+        "--font-size-heading-large",
+        "--font-size-heading-medium",
+        "--font-size-heading-small",
+        "--font-size-large",
+        "--font-size-medium",
+        "--font-size-normal",
+        "--font-size-prose",
+        "--font-size-small",
+        "--font-size-xlarge",
+        "--highlight",
+        "--hit-progress",
+        "--line-height-body",
+        "--line-height-heading",
+        "--line-height-prose",
+        "--ocr-block",
+        "--ocr-line",
+        "--ocr-word",
+        "--outline-document-drawing",
+        "--outline-document-focus",
+        "--outline-focus",
+        "--outline-focus-inner",
+        "--outline-selection",
+        "--radius-button",
+        "--radius-container",
+        "--radius-container-small",
+        "--rss-badge-fg",
+        "--shadow-color",
+        "--shadow-container",
+        "--shadow-floating",
+        "--text-measure",
+        "--toc-level",
+        "--widget-body-icon",
+        "--widget-topbar-icon"
     ]
-  },
-  "colorExemptions": [
-    {
-      "path": "admin/",
-      "reason": "Admin backend remains static; excluded from the component color migration by user decision."
-    },
-    {
-      "path": "cms/views/",
-      "reason": "CMS administration and page editors use the admin template and remain static."
-    },
-    {
-      "path": "cms/includes/mediaSelect.less",
-      "reason": "Media selection overlay belongs to CMS administration."
-    },
-    {
-      "path": "crowdsourcing/admin/",
-      "reason": "Campaign administration uses the admin template and remains static."
-    }
-  ],
-  "tolerated": [],
-  "publicTokens": [
-    "--accent",
-    "--active-facets-badge-bg",
-    "--active-facets-badge-bg-hover",
-    "--active-facets-badge-border",
-    "--active-facets-badge-fg",
-    "--active-facets-badge-fg-contrast",
-    "--active-facets-badge-fg-muted",
-    "--active-facets-badge-radius",
-    "--active-facets-badge-shadow-hover",
-    "--archives-card-bg",
-    "--archives-card-border-color",
-    "--archives-description-fg",
-    "--archives-hero-bg",
-    "--archives-hero-gradient-bg",
-    "--archives-overlay-bg",
-    "--archives-overlay-fg",
-    "--archives-placeholder-bg",
-    "--archives-placeholder-icon",
-    "--archives-title-fg",
-    "--bg-brand",
-    "--bg-brand-hover",
-    "--bg-canvas",
-    "--bg-content-box",
-    "--bg-control-active",
-    "--bg-danger",
-    "--bg-danger-hover",
-    "--bg-danger-strong",
-    "--bg-document",
-    "--bg-document-highlight",
-    "--bg-document-highlight-selected",
-    "--bg-document-selection",
-    "--bg-entity-scale-handle",
-    "--bg-general",
-    "--bg-header",
-    "--bg-hero",
-    "--bg-hero-gradient",
-    "--bg-hover",
-    "--bg-info-strong",
-    "--bg-inverse",
-    "--bg-inverse-hover",
-    "--bg-map-marker-primary",
-    "--bg-map-marker-secondary",
-    "--bg-mask",
-    "--bg-notification",
-    "--bg-popover",
-    "--bg-rss",
-    "--bg-scrim",
-    "--bg-selected",
-    "--bg-subtle",
-    "--bg-success",
-    "--bg-success-hover",
-    "--bg-success-strong",
-    "--bg-viewer-canvas",
-    "--bg-viewer-canvas-stripe",
-    "--bg-warning",
-    "--bg-warning-strong",
-    "--border-danger",
-    "--border-default",
-    "--border-emphasis",
-    "--border-faint",
-    "--border-input",
-    "--border-print",
-    "--border-strong",
-    "--border-success",
-    "--border-warning",
-    "--brand",
-    "--brand-hover",
-    "--brand-strong",
-    "--chart-chronology",
-    "--chronology-chart-fg",
-    "--color-accent",
-    "--color-annotation-focus",
-    "--color-brand",
-    "--color-brand-dark",
-    "--color-brand-hover",
-    "--color-chronology",
-    "--color-chronology-dark",
-    "--color-danger",
-    "--color-danger-border",
-    "--color-danger-border-dark",
-    "--color-danger-dark",
-    "--color-danger-hover",
-    "--color-danger-hover-dark",
-    "--color-danger-strong",
-    "--color-danger-surface",
-    "--color-danger-surface-dark",
-    "--color-danger-text",
-    "--color-danger-text-dark",
-    "--color-document-highlight",
-    "--color-document-highlight-selected",
-    "--color-document-selection",
-    "--color-entity-institution",
-    "--color-entity-institution-dark",
-    "--color-entity-location",
-    "--color-entity-location-dark",
-    "--color-entity-person",
-    "--color-entity-person-dark",
-    "--color-focus-ring",
-    "--color-gray-0",
-    "--color-gray-100",
-    "--color-gray-1000",
-    "--color-gray-200",
-    "--color-gray-300",
-    "--color-gray-400",
-    "--color-gray-50",
-    "--color-gray-500",
-    "--color-gray-550",
-    "--color-gray-600",
-    "--color-gray-700",
-    "--color-gray-800",
-    "--color-gray-900",
-    "--color-hero",
-    "--color-hero-gradient",
-    "--color-highlight",
-    "--color-info-strong",
-    "--color-info-strong-dark",
-    "--color-link",
-    "--color-link-active",
-    "--color-link-hover",
-    "--color-map-primary",
-    "--color-map-secondary",
-    "--color-ner-scale",
-    "--color-ner-scale-dark",
-    "--color-notation-active",
-    "--color-notification",
-    "--color-ocr-block",
-    "--color-ocr-block-dark",
-    "--color-ocr-line",
-    "--color-ocr-line-dark",
-    "--color-ocr-word",
-    "--color-ocr-word-dark",
-    "--color-rss",
-    "--color-selection-marker",
-    "--color-selection-region",
-    "--color-selection-region-dark",
-    "--color-slate-100",
-    "--color-slate-200",
-    "--color-slate-500",
-    "--color-slate-600",
-    "--color-slate-700",
-    "--color-slate-800",
-    "--color-slate-900",
-    "--color-slate-950",
-    "--color-success",
-    "--color-success-border",
-    "--color-success-border-dark",
-    "--color-success-dark",
-    "--color-success-hover",
-    "--color-success-hover-dark",
-    "--color-success-strong",
-    "--color-success-surface",
-    "--color-success-surface-dark",
-    "--color-success-text",
-    "--color-success-text-dark",
-    "--color-warning-border-dark",
-    "--color-warning-strong",
-    "--color-warning-surface",
-    "--color-warning-surface-dark",
-    "--color-warning-text",
-    "--color-warning-text-dark",
-    "--combined-facets-accent",
-    "--combined-facets-accent-bg",
-    "--combined-facets-badge-bg",
-    "--combined-facets-badge-bg-hover",
-    "--combined-facets-badge-border",
-    "--combined-facets-badge-fg",
-    "--combined-facets-badge-fg-contrast",
-    "--combined-facets-badge-fg-muted",
-    "--combined-facets-bg",
-    "--combined-facets-box-bg",
-    "--combined-facets-divider",
-    "--combined-facets-fg",
-    "--combined-facets-fg-muted",
-    "--combined-facets-fg-on-accent",
-    "--combined-facets-radius",
-    "--combined-facets-scrollbar",
-    "--datepicker-bg",
-    "--datepicker-day-bg-has-data",
-    "--datepicker-day-bg-has-data-hover",
-    "--datepicker-day-bg-hover",
-    "--datepicker-day-bg-in-range",
-    "--datepicker-day-bg-selected",
-    "--datepicker-day-border-today",
-    "--datepicker-day-fg",
-    "--datepicker-day-fg-disabled",
-    "--datepicker-day-fg-has-data",
-    "--datepicker-day-fg-has-data-hover",
-    "--datepicker-day-fg-selected",
-    "--datepicker-header-bg",
-    "--datepicker-header-fg",
-    "--datepicker-weekday-fg",
-    "--facet-control-bg-active",
-    "--facet-control-border",
-    "--facet-control-fg",
-    "--facet-control-fg-active",
-    "--facet-control-radius",
-    "--fg-content-box",
-    "--fg-danger",
-    "--fg-document",
-    "--fg-entity-institution",
-    "--fg-entity-location",
-    "--fg-entity-person",
-    "--fg-general",
-    "--fg-header",
-    "--fg-heading",
-    "--fg-heading-content-box",
-    "--fg-hover",
-    "--fg-inverse",
-    "--fg-link",
-    "--fg-link-active",
-    "--fg-link-content-box",
-    "--fg-link-hover",
-    "--fg-muted",
-    "--fg-notation-active",
-    "--fg-on-brand",
-    "--fg-on-bright",
-    "--fg-on-control",
-    "--fg-on-danger",
-    "--fg-on-danger-strong",
-    "--fg-on-info-strong",
-    "--fg-on-success",
-    "--fg-on-success-strong",
-    "--fg-on-warning",
-    "--fg-on-warning-hover",
-    "--fg-on-warning-strong",
-    "--fg-placeholder",
-    "--fg-popover",
-    "--fg-print",
-    "--fg-print-link",
-    "--fg-secondary",
-    "--fg-selected",
-    "--fg-selection-region",
-    "--fg-success",
-    "--fg-warning",
-    "--font-family",
-    "--font-scale",
-    "--font-size-body",
-    "--font-size-body-large",
-    "--font-size-body-small",
-    "--font-size-caption",
-    "--font-size-heading-large",
-    "--font-size-heading-medium",
-    "--font-size-heading-small",
-    "--font-size-large",
-    "--font-size-medium",
-    "--font-size-normal",
-    "--font-size-prose",
-    "--font-size-small",
-    "--font-size-xlarge",
-    "--footer-topnav-bg",
-    "--highlight",
-    "--image-controls-action-bg",
-    "--image-controls-action-bg-hover",
-    "--image-controls-bg",
-    "--image-controls-border",
-    "--image-controls-container-border",
-    "--image-controls-icon",
-    "--image-controls-icon-active",
-    "--image-controls-icon-hover",
-    "--image-controls-region-fg-active",
-    "--image-controls-slider-border",
-    "--image-controls-slider-thumb-bg",
-    "--image-region-outline-drawing",
-    "--image-region-outline-focus",
-    "--immersive-accent",
-    "--immersive-canvas-bg",
-    "--immersive-canvas-fg",
-    "--immersive-chrome-bg",
-    "--immersive-chrome-bg-hover",
-    "--immersive-chrome-border",
-    "--immersive-chrome-fg",
-    "--immersive-chrome-shadow",
-    "--immersive-divider",
-    "--immersive-edge-inset",
-    "--immersive-highlight-bg",
-    "--immersive-key-bg",
-    "--immersive-key-border",
-    "--immersive-logo-invert",
-    "--immersive-metadata-bg-hover",
-    "--immersive-ocr-block",
-    "--immersive-ocr-line",
-    "--immersive-ocr-word",
-    "--immersive-ocr-word-fg",
-    "--immersive-overlay-shadow",
-    "--immersive-panel-shadow",
-    "--immersive-radius",
-    "--immersive-radius-lg",
-    "--immersive-rail-bg",
-    "--immersive-rail-width",
-    "--immersive-slider-track",
-    "--immersive-thumb-shadow",
-    "--immersive-thumb-shadow-hover",
-    "--immersive-transition",
-    "--line-height-body",
-    "--line-height-heading",
-    "--line-height-prose",
-    "--login-nav-bg",
-    "--login-nav-bg-hover",
-    "--login-nav-bookmarks-bg",
-    "--login-nav-bookmarks-counter-bg",
-    "--login-nav-bookmarks-fg",
-    "--login-nav-bookmarks-fg-hover",
-    "--login-nav-dropdown-border",
-    "--login-nav-fg",
-    "--login-nav-fg-hover",
-    "--login-nav-icon",
-    "--login-nav-icon-hover",
-    "--map-marker-primary-bg",
-    "--map-marker-primary-fg",
-    "--map-marker-secondary-bg",
-    "--map-marker-secondary-fg",
-    "--mei-note-fg-active",
-    "--ner-institution-fg",
-    "--ner-location-fg",
-    "--ner-person-fg",
-    "--ner-scale-handle-bg",
-    "--newspaper-search-bg",
-    "--newspaper-search-border",
-    "--newspaper-search-label-fg",
-    "--newspaper-search-tab-bg",
-    "--newspaper-search-tab-border",
-    "--newspaper-search-tab-fg",
-    "--newspaper-search-tab-fg-active",
-    "--newspaper-search-tab-fg-hover",
-    "--ocr-block",
-    "--ocr-line",
-    "--ocr-word",
-    "--outline-document-drawing",
-    "--outline-document-focus",
-    "--outline-focus",
-    "--outline-focus-inner",
-    "--outline-selection",
-    "--pdf-highlight-bg",
-    "--pdf-highlight-bg-selected",
-    "--pdf-selection-bg",
-    "--quick-filter-accent",
-    "--quick-filter-bg",
-    "--quick-filter-border",
-    "--quick-filter-checkbox-bg-active",
-    "--quick-filter-control-bg-hover",
-    "--quick-filter-dropdown-bg",
-    "--quick-filter-dropdown-bg-hover",
-    "--quick-filter-dropdown-shadow",
-    "--quick-filter-fg",
-    "--quick-filter-fg-invalid",
-    "--quick-filter-field-separator",
-    "--quick-filter-fields-bg",
-    "--quick-filter-input-shadow",
-    "--quick-filter-label-fg",
-    "--quick-filter-radius",
-    "--quick-filter-radius-sm",
-    "--quick-filter-status-fg",
-    "--quick-filter-submit-bg",
-    "--quick-filter-submit-icon",
-    "--quick-filter-toggle-bg",
-    "--radius-button",
-    "--radius-container",
-    "--radius-container-small",
-    "--rss-badge-bg",
-    "--rss-badge-fg",
-    "--search-toolbar-bg-active",
-    "--search-toolbar-button-radius",
-    "--search-toolbar-divider",
-    "--search-toolbar-fg-active",
-    "--search-toolbar-fg-hover",
-    "--search-toolbar-icon",
-    "--search-toolbar-icon-active",
-    "--search-toolbar-icon-hover",
-    "--search-toolbar-outline-focus",
-    "--search-toolbar-shadow-active",
-    "--shadow-color",
-    "--shadow-container",
-    "--sidebar-preview-outline",
-    "--text-measure",
-    "--theme-logo-dark-display",
-    "--theme-logo-light-display",
-    "--theme-switch-dark-display",
-    "--theme-switch-light-display",
-    "--toc-page-bg-hover",
-    "--toc-page-border",
-    "--toc-page-link-fg",
-    "--toc-page-link-fg-hover",
-    "--toc-page-toggle-icon",
-    "--toc-page-toggle-icon-hover",
-    "--widget-body-icon",
-    "--widget-calendar-dot-bg",
-    "--widget-calendar-dot-bg-selected",
-    "--widget-calendar-dot-size",
-    "--widget-calendar-popover-bg",
-    "--widget-calendar-popover-border",
-    "--widget-calendar-popover-font-size",
-    "--widget-calendar-popover-item-bg-hover",
-    "--widget-calendar-popover-item-fg",
-    "--widget-calendar-popover-item-fg-hover",
-    "--widget-calendar-popover-item-padding",
-    "--widget-calendar-popover-min-width",
-    "--widget-calendar-popover-radius",
-    "--widget-calendar-popover-shadow",
-    "--widget-expand-icon",
-    "--widget-topbar-icon"
-  ]
 }

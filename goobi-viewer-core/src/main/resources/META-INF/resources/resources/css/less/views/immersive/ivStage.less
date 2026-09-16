@@ -12,10 +12,10 @@
         position: relative;
         height: 80vh;
         margin: 15px;
-        background-color: var(--immersive-canvas-bg);
-        border: 1px solid var(--immersive-chrome-border);
+        background-color: var(--bg-canvas);
+        border: 1px solid var(--border-default);
         border-radius: 12px;
-        box-shadow: var(--immersive-chrome-shadow);
+        box-shadow: var(--shadow-floating);
         overflow: hidden;
     }
 
@@ -60,7 +60,7 @@
         justify-content: center;
         padding: 24px;
         text-align: center;
-        color: var(--immersive-canvas-fg);
+        color: var(--fg-general);
     }
 
     &__image-denied-inner {
@@ -84,8 +84,8 @@
         justify-content: center;
         padding: 24px;
         text-align: center;
-        background-color: var(--immersive-canvas-bg);
-        color: var(--immersive-canvas-fg);
+        background-color: var(--bg-canvas);
+        color: var(--fg-general);
 
         &[hidden] {
             display: none;
@@ -152,6 +152,6 @@
 @media screen and (max-width: @xSmallBreakpoint) {
     .immersive__viewer {
         margin: 4px;
-        border-radius: var(--immersive-radius-lg);
+        border-radius: var(--radius-container);
     }
 }

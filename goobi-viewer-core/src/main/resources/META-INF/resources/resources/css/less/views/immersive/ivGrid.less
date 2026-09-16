@@ -8,7 +8,7 @@
 .mx-immersive-grid-slider-track() {
     height: 4px;
     border-radius: 2px;
-    background: linear-gradient(to right, var(--immersive-accent) 0 var(--_immersive-slider-fill), var(--immersive-slider-track) var(--_immersive-slider-fill));
+    background: linear-gradient(to right, var(--brand) 0 var(--_immersive-slider-fill), var(--border-strong) var(--_immersive-slider-fill));
 }
 
 .mx-immersive-grid-slider-thumb() {
@@ -16,9 +16,11 @@
     height: 16px;
     border: 0;
     border-radius: 50%;
-    background-color: var(--immersive-accent);
-    box-shadow: var(--immersive-thumb-shadow);
-    transition: transform var(--immersive-transition);
+    background-color: var(--brand);
+    box-shadow:
+        0 1px 2px rgb(from var(--shadow-color) r g b / 10%),
+        0 4px 10px rgb(from var(--shadow-color) r g b / 13%);
+    transition: transform @immersive-transition;
 }
 
 .immersive {
@@ -26,7 +28,7 @@
         position: absolute;
         inset: 0;
         z-index: 300;
-        background-color: var(--immersive-canvas-bg);
+        background-color: var(--bg-canvas);
         --_immersive-grid-col: 150px;
         --_immersive-grid-thumb-h: 220px;
 
@@ -61,7 +63,9 @@
             width: auto;
             height: auto;
             border-radius: 2px;
-            box-shadow: var(--immersive-thumb-shadow);
+            box-shadow:
+                0 1px 2px rgb(from var(--shadow-color) r g b / 10%),
+                0 4px 10px rgb(from var(--shadow-color) r g b / 13%);
             transition:
                 transform 0.2s ease,
                 box-shadow 0.2s ease;
@@ -69,7 +73,9 @@
 
         .thumbnails-image-wrapper:hover .thumbnails-image {
             transform: translateY(-5px);
-            box-shadow: var(--immersive-thumb-shadow-hover);
+            box-shadow:
+                0 2px 4px rgb(from var(--shadow-color) r g b / 10%),
+                0 14px 28px rgb(from var(--shadow-color) r g b / 22%);
         }
 
         .thumbnails-image.immersive__grid-thumb--denied {
@@ -90,7 +96,7 @@
 
         .thumbnails-label {
             max-width: 100%;
-            color: var(--immersive-chrome-fg);
+            color: var(--fg-content-box);
             font-size: var(--font-size-caption);
             font-weight: 600;
             white-space: nowrap;
@@ -101,12 +107,12 @@
         .thumbnails-image-wrapper.selected {
             .thumbnails-image {
                 box-shadow:
-                    0 0 0 3px var(--immersive-accent),
-                    0 6px 16px rgb(from var(--immersive-accent) r g b / 0.35);
+                    0 0 0 3px var(--brand),
+                    0 6px 16px rgb(from var(--brand) r g b / 0.35);
             }
 
             .thumbnails-label {
-                color: var(--immersive-accent);
+                color: var(--brand);
                 font-weight: 700;
             }
         }
@@ -116,22 +122,22 @@
         position: absolute;
         inset: 0;
         overflow-y: auto;
-        padding: calc(var(--immersive-rail-width) + 2 * var(--immersive-edge-inset)) @immersive-grid-gutter 72px;
+        padding: calc(@immersive-rail-width + 2 * @immersive-edge-inset) @immersive-grid-gutter 72px;
     }
 
     &__grid-close {
         .mx-immersive-overlay-button(40px);
         position: absolute;
-        top: var(--immersive-edge-inset);
-        right: var(--immersive-edge-inset);
+        top: @immersive-edge-inset;
+        right: @immersive-edge-inset;
         z-index: 1;
         transition:
-            opacity var(--immersive-transition),
-            color var(--immersive-transition),
-            transform var(--immersive-transition);
+            opacity @immersive-transition,
+            color @immersive-transition,
+            transform @immersive-transition;
 
         &:hover {
-            color: var(--immersive-accent);
+            color: var(--brand);
             transform: scale(1.12);
         }
     }
@@ -140,7 +146,7 @@
         .mx-immersive-icon-button(40px);
         position: absolute;
         right: @immersive-grid-gutter;
-        bottom: var(--immersive-edge-inset);
+        bottom: @immersive-edge-inset;
         z-index: 1;
         .mx-immersive-floating();
 
@@ -156,7 +162,7 @@
 
     &__grid-size {
         position: absolute;
-        bottom: var(--immersive-edge-inset);
+        bottom: @immersive-edge-inset;
         left: 50%;
         transform: translateX(-50%);
         z-index: 1;
@@ -166,7 +172,7 @@
         height: 40px;
         padding: 0 14px;
         .mx-immersive-floating();
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
     }
 
     &__grid-size-icon {

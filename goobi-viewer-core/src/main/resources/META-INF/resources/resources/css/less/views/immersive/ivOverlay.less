@@ -8,9 +8,9 @@
 .immersive {
     &__overlay-top {
         position: absolute;
-        top: var(--immersive-edge-inset);
-        right: var(--immersive-edge-inset);
-        left: var(--immersive-edge-inset);
+        top: @immersive-edge-inset;
+        right: @immersive-edge-inset;
+        left: @immersive-edge-inset;
         z-index: @immersive-z-overlay;
         display: flex;
         align-items: center;
@@ -37,14 +37,14 @@
         height: 36px;
         padding: 0 10px;
         .mx-immersive-floating();
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
         cursor: pointer;
         pointer-events: auto;
-        transition: background-color var(--immersive-transition);
+        transition: background-color @immersive-transition;
 
         &:hover {
-            background-color: var(--immersive-chrome-bg-hover);
-            color: var(--immersive-chrome-fg);
+            background-color: var(--bg-control);
+            color: var(--fg-content-box);
         }
     }
 
@@ -52,7 +52,7 @@
         flex-shrink: 0;
         width: 18px;
         height: 18px;
-        transition: transform var(--immersive-transition);
+        transition: transform @immersive-transition;
 
         .immersive__title-trigger[aria-expanded='true'] & {
             transform: rotate(180deg);
@@ -64,7 +64,7 @@
         pointer-events: none;
 
         &:hover {
-            background-color: var(--immersive-chrome-bg);
+            background-color: var(--bg-content-box);
         }
 
         .immersive__title-caret {
@@ -124,10 +124,10 @@
         max-width: 80vw;
         max-height: 60vh;
         padding: 10px;
-        border-radius: var(--immersive-radius-lg);
-        background-color: var(--immersive-chrome-bg);
-        color: var(--immersive-chrome-fg);
-        box-shadow: var(--immersive-panel-shadow);
+        border-radius: var(--radius-container);
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
+        box-shadow: var(--shadow-floating);
         pointer-events: auto;
         text-align: left;
 
@@ -149,21 +149,21 @@
     &__page-dropdown-input {
         width: 100%;
         padding: 6px 8px;
-        border: 1px solid var(--immersive-divider);
-        border-radius: var(--immersive-radius);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-container-small);
         background-color: transparent;
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
         font-size: var(--font-size-body);
 
         &:focus {
-            border-color: var(--immersive-accent);
+            border-color: var(--brand);
         }
     }
 
     &__page-dropdown-list {
         margin: 8px 0 0;
         padding: 8px 0 0;
-        border-top: 1px solid var(--immersive-divider);
+        border-top: 1px solid var(--border-default);
         list-style: none;
         overflow-y: auto;
     }
@@ -174,23 +174,23 @@
         width: 100%;
         padding: 6px 8px;
         border: 0;
-        border-radius: var(--immersive-radius);
+        border-radius: var(--radius-container-small);
         background: transparent;
-        color: var(--immersive-chrome-fg);
+        color: var(--fg-content-box);
         text-align: left;
         cursor: pointer;
 
         &:hover,
         &:active,
         &.-active {
-            background-color: var(--immersive-chrome-bg-hover);
-            color: var(--immersive-chrome-fg);
+            background-color: var(--bg-control);
+            color: var(--fg-content-box);
         }
     }
 
     &__page-dropdown-number {
         flex-shrink: 0;
-        color: var(--immersive-accent);
+        color: var(--brand);
         font-variant-numeric: tabular-nums;
 
         .immersive__page-dropdown-item.-active & {

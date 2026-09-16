@@ -37,10 +37,10 @@
         font-size: var(--font-size-body-small);
         font-weight: 500;
         line-height: normal;
-        color: var(--_afb-color, var(--active-facets-badge-fg));
-        background: var(--_afb-bg, var(--active-facets-badge-bg));
-        border: 1px solid var(--_afb-border, var(--active-facets-badge-border));
-        border-radius: var(--_afb-radius, var(--active-facets-badge-radius));
+        color: var(--_afb-color, var(--fg-on-brand));
+        background: var(--_afb-bg, var(--bg-brand));
+        border: 1px solid var(--_afb-border, transparent);
+        border-radius: var(--_afb-radius, var(--radius-button));
         text-decoration: none;
         transition:
             border-color 0.1s ease-in,
@@ -48,15 +48,15 @@
 
         &:hover,
         &:focus {
-            --_afb-bg: var(--_afb-bg-hover, var(--active-facets-badge-bg-hover));
-            color: var(--_afb-color, var(--active-facets-badge-fg));
-            border-color: var(--_afb-color, var(--active-facets-badge-fg));
-            box-shadow: var(--active-facets-badge-shadow-hover);
+            --_afb-bg: var(--_afb-bg-hover, var(--bg-brand-hover));
+            color: var(--_afb-color, var(--fg-on-brand));
+            border-color: var(--_afb-color, var(--fg-on-brand));
+            box-shadow: 0 1px 3px rgb(from var(--shadow-color) r g b / 12%);
             text-decoration: none;
 
             .active-facets-badges__badge-remove {
-                color: var(--_afb-contrast, var(--active-facets-badge-fg-contrast));
-                background: var(--_afb-color, var(--active-facets-badge-fg));
+                color: var(--_afb-contrast, var(--brand));
+                background: var(--_afb-color, var(--fg-on-brand));
             }
         }
 
@@ -76,7 +76,7 @@
         flex: 0 0 auto;
         font-weight: 400;
         white-space: nowrap;
-        color: var(--_afb-muted, var(--active-facets-badge-fg-muted));
+        color: var(--_afb-muted, rgb(from var(--fg-on-brand) r g b / 85%));
     }
 
     &__badge-remove {
@@ -86,7 +86,7 @@
         flex: 0 0 auto;
         width: 20px;
         height: 20px;
-        color: var(--_afb-muted, var(--active-facets-badge-fg-muted));
+        color: var(--_afb-muted, rgb(from var(--fg-on-brand) r g b / 85%));
         border-radius: 50%;
         transition:
             background-color 0.1s ease-in,

@@ -25,16 +25,16 @@
         &__action {
             border: 0;
             background: transparent;
-            color: var(--image-controls-icon);
+            color: var(--fg-general);
             /* ELEMENT */
             &:hover,
             &:focus {
-                background-color: var(--image-controls-action-bg-hover);
-                color: var(--image-controls-icon-hover);
+                background-color: var(--bg-control-hover);
+                color: var(--fg-on-control-hover);
             }
             &:active {
-                background-color: var(--image-controls-action-bg-hover);
-                color: var(--image-controls-icon-active);
+                background-color: var(--bg-control-hover);
+                color: var(--fg-on-control-hover);
             }
             a,
             span,
@@ -91,15 +91,15 @@
                     select {
                         font-size: var(--font-size-caption);
                         background: inherit;
-                        color: var(--image-controls-icon);
+                        color: var(--fg-general);
                     }
                 }
                 .custom-control--select {
                     background: inherit;
-                    color: var(--image-controls-icon);
+                    color: var(--fg-general);
                     select {
                         background: inherit;
-                        color: var(--image-controls-icon);
+                        color: var(--fg-general);
                     }
                     &:after {
                     }
@@ -180,15 +180,15 @@
                     height: 10px;
                     margin-top: 0;
                     background-color: transparent;
-                    border-color: var(--image-controls-slider-border);
+                    border-color: var(--fg-general);
                 }
                 .zoom-slider-handle {
                     top: -12px;
                     width: 24px;
                     height: 24px;
-                    border: 2px solid var(--image-controls-slider-border);
+                    border: 2px solid var(--fg-general);
                     border-radius: 100%;
-                    background-color: var(--image-controls-slider-thumb-bg);
+                    background-color: var(--fg-general);
                 }
             }
         }

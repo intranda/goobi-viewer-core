@@ -77,9 +77,9 @@
             text-decoration: none;
 
             .widget-search-facets__list-item-control.-include {
-                color: var(--facet-control-fg-active);
-                background: var(--facet-control-bg-active);
-                border-color: var(--facet-control-bg-active);
+                color: var(--fg-on-brand);
+                background: var(--bg-brand);
+                border-color: var(--bg-brand);
             }
         }
     }
@@ -104,9 +104,9 @@
         width: 0;
         height: 16px;
         overflow: hidden;
-        color: var(--facet-control-fg);
-        border: 0 solid var(--facet-control-border);
-        border-radius: var(--facet-control-radius);
+        color: var(--fg-muted);
+        border: 0 solid var(--border-strong);
+        border-radius: var(--radius-container-small);
         opacity: 0;
         transition: none;
 
@@ -114,9 +114,9 @@
             width: 16px;
             border-width: 1px;
             opacity: 1;
-            color: var(--facet-control-fg-active);
-            background: var(--facet-control-bg-active);
-            border-color: var(--facet-control-bg-active);
+            color: var(--fg-on-brand);
+            background: var(--bg-brand);
+            border-color: var(--bg-brand);
 
             &.-include {
                 margin-inline-end: 5px;
@@ -127,9 +127,9 @@
         &:hover,
         &:focus {
             .widget-search-facets__list-item-control {
-                color: var(--facet-control-fg-active);
-                background: var(--facet-control-bg-active);
-                border-color: var(--facet-control-bg-active);
+                color: var(--fg-on-brand);
+                background: var(--bg-brand);
+                border-color: var(--bg-brand);
             }
         }
     }
@@ -230,7 +230,7 @@
         }
     }
     &__collapse-chevron-svg {
-        color: var(--widget-expand-icon);
+        color: var(--brand);
     }
     /* combined-mode-only parts, hidden in widgets mode */
     &__collapse-alt-icon,
