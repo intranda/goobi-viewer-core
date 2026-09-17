@@ -428,6 +428,7 @@
         gap: 2px;
     }
     &__hit-info-wrapper {
+        position: relative;
     }
     &__hit-top-wrapper {
         display: flex;
@@ -477,7 +478,9 @@
         display: inline-block;
     }
     &__hit-options-wrapper {
-        position: relative;
+        position: absolute;
+        right: 0;
+        top: -25px;
         display: flex;
         flex-direction: column;
         gap: 3px;
@@ -909,6 +912,18 @@
     }
 }
 
+/* BREAKPOINT FOR DESKTOP */
+@media screen and (max-width: @mediumBreakpoint) {
+    .search-list {
+        &__hit-metadata-list {
+            grid-template-columns: 1fr;
+        }
+        &__hit-text-value {
+            grid-column: unset;
+        }
+    }
+}
+
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
     .search-list {
@@ -921,11 +936,10 @@
             width: auto;
             justify-content: flex-start;
         }
-        &__hit-metadata-list {
-            grid-template-columns: 1fr;
-        }
-        &__hit-text-value {
-            grid-column: unset;
+        &__hit-options-wrapper {
+            position: relative;
+            top: unset;
+            right: unset;
         }
     }
 }

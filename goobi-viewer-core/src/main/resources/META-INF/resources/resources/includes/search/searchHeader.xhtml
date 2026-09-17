@@ -27,8 +27,8 @@
         <ui:include src="/resources/includes/search/searchListOptions.xhtml" />
     </ui:fragment>
 
-    <h:panelGroup id="searchArea">
-        <!-- SEARCH STANDARD -->
+    <h:panelGroup layout="block" id="searchArea">
+        <!-- SEARCH STANDARD --> 
         <ui:fragment rendered="#{searchType == 0}">
             <ui:include src="/resources/includes/search/searchStandard.xhtml">
                 <ui:param

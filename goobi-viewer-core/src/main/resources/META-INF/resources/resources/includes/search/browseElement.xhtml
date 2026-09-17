@@ -17,74 +17,6 @@
         value="#{showBookmarkIcon != null ? showBookmarkIcon : false}" />
 
     <div class="search-list__hit-inner-structure">
-        <!-- ALL CONTENT/VALUES WRAPPER -->
-        <div class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-            <!-- TOP WRAPPER -->
-            <div class="search-list__hit-top-wrapper">
-                <!-- TITLE -->
-                <div
-                    class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'} #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-                    <!-- Display search hit number -->
-                    <h2 class="search-list__hit-title-heading">
-                        <a
-                            class="search-list__hit-title-link"
-                            href="#{navigationHelper.applicationUrl}#{browseElement.url}"
-                            title="#{msg[browseElement.label]}">
-                            <h:panelGroup
-                                styleClass="search-list__hit-number-wrapper"
-                                rendered="#{configurationBean.displaySearchHitNumbers}">
-                                <span
-                                    title="#{hit.hitNumber}"
-                                    class="search-list__hit-number">
-                                    #{hit.hitNumber}
-                                </span>
-                            </h:panelGroup>
-                            <h:outputText
-                                value="#{msg[browseElement.labelShort]}"
-                                escape="false" />
-                        </a>
-                    </h2> 
-                </div>
-            </div>
-
-            <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
-            <h:panelGroup rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
-                <div class="search-list__hit-docstruct">
-                    <ul>
-                        <ui:repeat
-                            value="#{browseElement.structElements}"
-                            varStatus="stat"
-                            var="struct">
-                            <li>
-                                <ui:fragment rendered="#{struct.sourceDocFormat != 'CMS'}">
-                                    <a
-                                        href="#{struct.url}"
-                                        aria-label="#{msg[struct.docStructType]}">
-                                        <h:outputText value="#{msg[struct.docStructType]}" />
-                                    </a>
-                                </ui:fragment>
-                                <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">
-                                    <h:outputText
-                                        value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
-                                </ui:fragment>
-                            </li>
-                        </ui:repeat>
-                    </ul>
-                </div>
-            </h:panelGroup>
-
-            <h:panelGroup rendered="#{browseElement.displayGroupStatus}">
-                <div class="search-list__hit-docstruct">
-                    <h:outputText value="#{msg['doctype_'.concat(browseElement.docType)]}" />
-                </div>
-            </h:panelGroup>
-
-            <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
-                <ui:param
-                    name="browseElement"
-                    value="#{browseElement}" />
-            </ui:include>
-        </div>
 
         <div class="search-list__hit-thumb-wrapper">
             <!-- THUMBNAIL -->
@@ -94,6 +26,11 @@
                     value="#{browseElement}" />
             </ui:include>
 
+        </div>
+        
+        <!-- ALL CONTENT/VALUES WRAPPER -->
+        <div class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+            
             <div class="search-list__hit-options-wrapper #{browseElement.showThumbnail ? '' : '-noThumbnail'}">
                 <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
                 <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
@@ -291,6 +228,76 @@
                 <!-- COPY TO CLIPBOARD INIT FOR THIS ELEMENT -->
                 <script>viewerJS.clipboard.init(null, null, '#{msg.copied_to_clipboard}');</script>
             </div>
+            
+            
+            
+            <!-- TOP WRAPPER -->
+            <div class="search-list__hit-top-wrapper">
+                <!-- TITLE -->
+                <div
+                    class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'} #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
+                    <!-- Display search hit number -->
+                    <h2 class="search-list__hit-title-heading">
+                        <a
+                            class="search-list__hit-title-link"
+                            href="#{navigationHelper.applicationUrl}#{browseElement.url}"
+                            title="#{msg[browseElement.label]}">
+                            <h:panelGroup
+                                styleClass="search-list__hit-number-wrapper"
+                                rendered="#{configurationBean.displaySearchHitNumbers}">
+                                <span
+                                    title="#{hit.hitNumber}"
+                                    class="search-list__hit-number">
+                                    #{hit.hitNumber}
+                                </span>
+                            </h:panelGroup>
+                            <h:outputText
+                                value="#{msg[browseElement.labelShort]}"
+                                escape="false" />
+                        </a>
+                    </h2> 
+                </div>
+            </div>
+
+            <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
+            <h:panelGroup rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
+                <div class="search-list__hit-docstruct">
+                    <ul>
+                        <ui:repeat
+                            value="#{browseElement.structElements}"
+                            varStatus="stat"
+                            var="struct">
+                            <li>
+                                <ui:fragment rendered="#{struct.sourceDocFormat != 'CMS'}">
+                                    <a
+                                        href="#{struct.url}"
+                                        aria-label="#{msg[struct.docStructType]}">
+                                        <h:outputText value="#{msg[struct.docStructType]}" />
+                                    </a>
+                                </ui:fragment>
+                                <ui:fragment rendered="#{struct.sourceDocFormat == 'CMS'}">
+                                    <h:outputText
+                                        value="#{msg['cms_category_'.concat(struct.getMetadataValue('MD_CATEGORY') != null ? struct.getMetadataValue('MD_CATEGORY') : 'default')]}" />
+                                </ui:fragment>
+                            </li>
+                        </ui:repeat>
+                    </ul>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{browseElement.displayGroupStatus}">
+                <div class="search-list__hit-docstruct">
+                    <h:outputText value="#{msg['doctype_'.concat(browseElement.docType)]}" />
+                </div>
+            </h:panelGroup>
+
+            <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
+                <ui:param
+                    name="browseElement"
+                    value="#{browseElement}" />
+            </ui:include>
         </div>
+
+
     </div>
 </ui:composition>
