@@ -16,8 +16,9 @@
 
     <!-- SEARCH LIST OPTIONS -->
     <div class="search-list__options-container">
-        <ui:fragment rendered="#{navigationHelper.currentPage == 'search' || navigationHelper.currentPage == 'searchlist'}">
-            <h1 class="search-list__options-container-heading">#{msg.search}</h1>
+        <ui:fragment
+            rendered="#{navigationHelper.currentPage == 'search' || navigationHelper.currentPage == 'searchlist' || (navigationHelper.cmsPage and not empty cmsBean.currentPage.title)}">
+            <h1 class="search-list__options-container-heading">#{navigationHelper.cmsPage and not empty cmsBean.currentPage.title ? cmsBean.currentPage.title : msg.search}</h1>
         </ui:fragment>
 
         <div class="search-list__options">
@@ -63,17 +64,6 @@
                     data-msg-timeout="#{msg.download_timeout}"
                     data-msg-error="#{msg.download_internal_error}"
                     data-msg-denied="#{msg.search_export__access_denied}">
-                    <button
-                        class="btn btn--clean dropdown-toggle search-list__option-button search-list__export-dropdown-toggle"
-                        type="button"
-                        data-toggle="dropdown"
-                        aria-expanded="false"
-                        title="#{msg.search_export__list_export_action_tooltip}">
-                        <util:icon
-                            icon="file-export"
-                            svgClass="icon" />
-                    </button>
-
                     <!-- Loading indicator shown while an export is being generated (see inline script below) -->
                     <span
                         class="search-list__export-loader d-none"

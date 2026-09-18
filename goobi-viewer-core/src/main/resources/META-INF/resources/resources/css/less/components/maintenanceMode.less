@@ -68,6 +68,23 @@
         &:active {
             color: var(--fg-on-warning-hover);
         }
+
+        /* the "X" bars are drawn via ::before/::after with background-color, not color,
+           so they need their own override to stay legible on the warning background
+           in both light and dark mode */
+        &:before,
+        &:after {
+            background-color: var(--fg-on-warning);
+        }
+
+        &:hover:before,
+        &:hover:after,
+        &:focus:before,
+        &:focus:after,
+        &:active:before,
+        &:active:after {
+            background-color: var(--fg-on-warning-hover);
+        }
     }
 }
 
