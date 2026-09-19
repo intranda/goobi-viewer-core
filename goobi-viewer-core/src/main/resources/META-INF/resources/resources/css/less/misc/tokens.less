@@ -207,6 +207,19 @@
     --bg-scrim: var(--color-gray-1000);
     --bg-mask: var(--color-gray-1000);
 
+    /* LOGIN DIALOG */
+    --bg-login-surface: var(--color-gray-0);
+    --fg-login-surface: var(--color-gray-900);
+    --bg-login-field: var(--color-gray-0);
+    --fg-login-field: var(--color-gray-900);
+    --border-login-field: var(--color-gray-500);
+    --fg-login-label: var(--color-gray-550);
+    --border-login-box: var(--color-gray-300);
+    --bg-login-aside: var(--color-slate-900);
+    --fg-login-aside: var(--color-gray-0);
+    --bg-login-aside-tile: rgb(from var(--color-gray-0) r g b / 14%);
+    --bg-login-aside-tile-hover: rgb(from var(--color-gray-0) r g b / 24%);
+
     /* MODE-BOUND */
     --display-light-only: flex;
     --display-dark-only: none;
@@ -385,6 +398,21 @@
     /* SCRIM AND MASK */
     --bg-scrim: var(--color-gray-1000);
     --bg-mask: var(--color-gray-1000);
+
+    /* LOGIN DIALOG */
+    /* The aside sits above the dialog surface here, not below it: on a dark surface a deeper
+       panel would disappear, so it lightens instead. */
+    --bg-login-surface: var(--color-slate-800);
+    --fg-login-surface: var(--color-slate-100);
+    --bg-login-field: var(--color-slate-800);
+    --fg-login-field: var(--color-slate-100);
+    --border-login-field: var(--color-slate-500);
+    --fg-login-label: var(--color-slate-400);
+    --border-login-box: rgb(from var(--color-gray-0) r g b / 30%);
+    --bg-login-aside: var(--color-slate-600);
+    --fg-login-aside: var(--color-gray-0);
+    --bg-login-aside-tile: rgb(from var(--color-gray-0) r g b / 14%);
+    --bg-login-aside-tile-hover: rgb(from var(--color-gray-0) r g b / 24%);
 
     /* MODE-BOUND */
     --display-light-only: none;

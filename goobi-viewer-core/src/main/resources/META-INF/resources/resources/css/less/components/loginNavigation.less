@@ -55,13 +55,13 @@
                 width: 260px;
                 padding: 0.35rem 0;
                 font-size: var(--font-size-body-small);
-                background: var(--bg-inverse);
-                border: 1px solid rgb(from var(--fg-inverse) r g b / 10%);
+                background: var(--bg-popover);
+                border: 1px solid var(--border-default);
                 box-shadow: 0 18px 36px rgb(from var(--shadow-color) r g b / 18%);
                 border-radius: 0.85rem;
                 overflow: hidden;
                 z-index: 2020;
-                color: var(--fg-inverse);
+                color: var(--fg-popover);
                 li {
                     margin: 0;
                 }
@@ -69,45 +69,45 @@
             &__user-dropdown-item {
                 font-size: var(--font-size-body-small);
                 &:hover {
-                    background-color: var(--bg-inverse-hover);
+                    background-color: var(--bg-hover);
                 }
             }
             &__user-dropdown-item-link {
-                display: inline-flex;
+                display: flex;
                 align-items: center;
                 gap: 1rem;
                 width: 100%;
                 padding: 0.7rem 1.2rem 0.7rem 1.5rem;
                 line-height: 1;
                 text-decoration: none;
-                color: var(--fg-inverse);
+                color: var(--fg-popover);
                 transition:
                     color 0.2s ease,
                     padding-left 0.18s ease,
                     background-color 0.2s ease;
             }
             &__user-dropdown-item-link:hover {
-                color: var(--fg-inverse);
+                color: var(--fg-popover);
                 padding-left: 1.8rem;
-                background-color: var(--bg-inverse-hover);
+                .login-navigation__user-dropdown-item-icon-text svg,
+                .login-navigation__user-dropdown-item-caret {
+                    color: var(--fg-popover);
+                }
             }
             &__user-dropdown-item-text {
                 white-space: nowrap;
-                color: var(--fg-inverse);
-                transition: color 0.2s ease;
             }
+            // THE ICON SUPPORTS THE LABEL, THE CARET ONLY HINTS AT OPENING: BOTH STAY QUIETER UNTIL HOVER
             &__user-dropdown-item-icon-text {
                 svg {
-                    color: var(--fg-inverse);
+                    color: var(--fg-secondary);
                     transition: color 0.2s ease;
                 }
             }
-            &__user-dropdown-item-link:hover &__user-dropdown-item-icon-text svg {
-                color: var(--fg-inverse);
-            }
             &__user-dropdown-item-caret {
                 margin-left: auto;
-                color: var(--fg-inverse);
+                color: var(--fg-muted);
+                transition: color 0.2s ease;
             }
             /* BOOKMARK DROPDOWN */
             &__bookmarks-dropdown {
@@ -117,7 +117,7 @@
             &__bookmarks-small-list {
                 display: none;
                 padding: 0.5rem 1rem 0.5rem 1.5rem;
-                background-color: var(--bg-inverse);
+                background-color: var(--bg-popover);
             }
             &__bookmarks-entry {
                 display: flex;
@@ -139,13 +139,13 @@
             &__bookmarks-icon-list .fa,
             &__bookmarks-icon-list svg,
             &__bookmarks-icon-list {
-                color: var(--fg-inverse);
+                color: var(--fg-popover);
                 a {
                     margin-right: 0;
-                    color: var(--fg-inverse);
+                    color: var(--fg-popover);
                 }
                 &:hover {
-                    color: var(--highlight);
+                    color: var(--fg-link-hover);
                 }
             }
             &__bookmarks-icon-list,
@@ -172,16 +172,16 @@
             &__bookmarks-counter {
                 padding: 0 0.3rem;
                 font-size: var(--font-size-caption);
-                color: var(--fg-inverse);
+                color: var(--fg-on-brand);
                 border-radius: 2px;
                 background-color: var(--bg-brand);
                 align-self: center;
             }
             &__bookmarks-overview-link {
                 margin-left: auto;
-                color: var(--fg-inverse);
+                color: var(--fg-popover);
                 &:hover {
-                    color: var(--highlight);
+                    color: var(--fg-link-hover);
                 }
             }
             &__bookmarks-trigger {
