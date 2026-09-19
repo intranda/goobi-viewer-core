@@ -8,10 +8,6 @@
 
     position: relative;
     isolation: isolate;
-    flex: 0 0 100vw;
-    min-width: 0;
-    max-width: none;
-    margin-inline: calc(50% - 50vw);
     color: var(--fg-general);
     background: color-mix(in srgb, var(--bg-content-box) 72%, var(--bg-canvas));
     border-bottom: 1px solid var(--border-default);
@@ -282,7 +278,7 @@
         overflow: hidden;
         border: 1px solid var(--border-faint);
         border-radius: 0.3rem;
-        background: var(--bg-content-box);
+        background: var(--bg-image-frame);
         box-shadow:
             0 16px 32px -14px rgb(from var(--shadow-color) r g b / 30%),
             0 2px 5px rgb(from var(--shadow-color) r g b / 8%);

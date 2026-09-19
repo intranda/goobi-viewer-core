@@ -41,6 +41,16 @@
         flex: 0 0 calc(~'25% - var(--_cc-h-gap) / 4');
         max-width: calc(~'25% - var(--_cc-h-gap) / 4');
     }
+    // FULL-WIDTH BANDS: span the viewport and stack flush against the band above
+    &.-fullbleed {
+        flex: 0 0 100vw;
+        min-width: 0;
+        max-width: none;
+        margin-inline: calc(50% - 50vw);
+    }
+    &.-fullbleed ~ &.-fullbleed {
+        margin-block-start: calc(-1 * var(--_cc-v-gap, 3.5rem));
+    }
     // HIDDEN FOR DESKTOP OR MOBILE VIEW OPTIONS
     &.-hiddenOnDesktop {
         display: none;
