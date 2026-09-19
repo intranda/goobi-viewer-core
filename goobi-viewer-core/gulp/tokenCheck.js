@@ -67,6 +67,7 @@ const STATIC = /^@([\w-]+)\s*:/;
 const READ = /var\(\s*(--[\w-]+)\s*(,)?/g;
 const AT_USE = /@([\w-]+)/g;
 const INTERNAL = /^--_/;
+const OPTIONAL_THEME_LAYOUT_TOKENS = new Set(['--page-gutter', '--page-max-width']);
 const MODE_BRANCH = /prefers-color-scheme|\.color-theme-(dark|light)|@colorModes/;
 // Any colour: hex, colour functions (relative `from` syntax reads a token and is fine) and keywords.
 const COLOR_LITERAL = new RegExp(`#[0-9a-f]{3,8}\\b|\\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\\((?!\\s*from\\b)|(?:^|[\\s,(])(?:${NAMED_COLOURS})(?=[\\s,)]|$)`, 'i');
@@ -298,7 +299,7 @@ function reads(file, p, known, out) {
     for (const r of p.reads) {
         if (INTERNAL.test(r.name)) {
             if (!r.fallback && !internalHere.has(r.name)) out.push(finding(file, r.line, `var(${r.name})`, 'internal token without a declaration in this file — declare it here or give the read a fallback'));
-        } else if (!known.has(r.name)) {
+        } else if (!known.has(r.name) && !(r.fallback && OPTIONAL_THEME_LAYOUT_TOKENS.has(r.name))) {
             out.push(finding(file, r.line, `var(${r.name})`, `no token of this name — check the spelling, or declare it in ${TOKENS_FILE}`));
         }
     }

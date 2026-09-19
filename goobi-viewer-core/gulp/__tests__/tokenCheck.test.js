@@ -45,6 +45,16 @@ it('2 flags reads of tokens nobody declares', () => {
     expect(fixes(found)).toEqual(['components/x.less:1 no token of this name', 'components/x.less:1 internal token without a declaration in this file']);
 });
 
+it('2 accepts optional theme layout tokens only with a fallback', () => {
+    expect(core({ 'views/page.less': '.page { max-width: var(--page-max-width, 192rem); padding-inline: var(--page-gutter, 2.4rem); }' })).toEqual([]);
+
+    const found = core({
+        'views/page.less': '.page { max-width: var(--page-max-width); padding-inline: var(--page-gutter); margin: var(--page-guter, 2.4rem); }',
+    });
+    expect(found.map((finding) => finding.what)).toEqual(['var(--page-max-width)', 'var(--page-gutter)', 'var(--page-guter)']);
+    expect(found.every((finding) => finding.fix.startsWith('no token of this name'))).toBe(true);
+});
+
 it('3 keeps tokens and mode branches inside the token layer', () => {
     const found = core({
         'components/x.less': '.x { --fg: 1; @media (prefers-color-scheme: dark) { color: var(--fg); } }\n.color-theme-dark .y { color: var(--fg); }',

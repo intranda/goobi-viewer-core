@@ -135,37 +135,33 @@
                             <a
                                 class="cms-search-hero__door"
                                 href="#{navigationHelper.applicationUrl}browse/">
+                                #{msg.browse}
                                 <h:outputText
                                     styleClass="cms-search-hero__numeral"
                                     value="#{searchHeroBean.collectionCount}"
                                     rendered="#{searchHeroBean.collectionCount gt 0}">
                                     <f:convertNumber />
                                 </h:outputText>
-                                #{msg.browse}
-                                <util:icon icon="arrow-narrow-right" />
                             </a>
                             <a
                                 class="cms-search-hero__door"
                                 href="#{navigationHelper.applicationUrl}timematrix/">
                                 #{msg.timematrix}
                                 <ui:fragment rendered="#{searchHeroBean.firstYear gt 0 and searchHeroBean.lastYear gt 0}">
-                                    <span class="cms-search-hero__numeral">#{searchHeroBean.firstYear}–#{searchHeroBean.lastYear}</span>
+                                    <span class="cms-search-hero__numeral">#{searchHeroBean.firstYear} – #{searchHeroBean.lastYear}</span>
                                 </ui:fragment>
-                                <util:icon icon="arrow-narrow-right" />
                             </a>
                             <ui:fragment rendered="#{not empty heroMapUrl}">
                                 <a
                                     class="cms-search-hero__door"
                                     href="#{heroMapUrl}">
                                     #{msg.map}
-                                    <util:icon icon="arrow-narrow-right" />
                                 </a>
                             </ui:fragment>
                             <a
                                 class="cms-search-hero__door"
                                 href="#{navigationHelper.applicationUrl}searchadvanced/">
                                 #{msg.searchAdvanced}
-                                <util:icon icon="arrow-narrow-right" />
                             </a>
                         </nav>
                     </div>

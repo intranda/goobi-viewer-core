@@ -1,0 +1,80 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <composite:interface>
+        <composite:attribute
+            name="component"
+            required="true" />
+    </composite:interface>
+
+    <composite:implementation>
+        <ui:fragment rendered="#{cc.attrs.component.hasAccess(userBean.user)}">
+            <section
+                aria-labelledby="#{cc.clientId}:heading"
+                class="cms-discovery-paths content-component -fullbleed #{cc.attrs.hideOnScreenSizes == 'hideMobile' ? '-hiddenOnMobile' : ''} #{cc.attrs.hideOnScreenSizes == 'hideDesktop' ? '-hiddenOnDesktop' : ''} #{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user) ? '-isPrivate' : ''}">
+                <ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
+                    <div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
+                </ui:fragment>
+
+                <div class="cms-discovery-paths__inner">
+                    <header class="cms-discovery-paths__introduction">
+                        <ui:fragment rendered="#{not empty cc.attrs.component.getContentData('eyebrow')}">
+                            <p class="cms-discovery-paths__eyebrow">
+                                <h:outputText value="#{cc.attrs.component.getContentData('eyebrow')}" />
+                            </p>
+                        </ui:fragment>
+                        <h2
+                            id="#{cc.clientId}:heading"
+                            class="cms-discovery-paths__heading">
+                            <h:outputText
+                                value="#{empty cc.attrs.component.getContentData('heading') ? msg.discovery__paths__heading : cc.attrs.component.getContentData('heading')}" />
+                        </h2>
+                    </header>
+
+                    <div class="cms-discovery-paths__stage">
+                        <ol
+                            class="cms-discovery-paths__statement"
+                            role="list">
+                            <ui:repeat
+                                var="pathNumber"
+                                value="#{fn:split('1,2,3', ',')}">
+                                <li class="cms-discovery-paths__phrase">
+                                    <a
+                                        class="cms-discovery-paths__link"
+                                        data-discovery-path-number="#{pathNumber}"
+                                        aria-describedby="#{cc.clientId}:description#{pathNumber}"
+                                        href="#{empty cc.attrs.component.getContentData('link'.concat(pathNumber)) ? navigationHelper.applicationUrl.concat(pathNumber eq '1' ? 'timematrix/' : (pathNumber eq '2' ? 'browse/' : 'searchadvanced/')) : cc.attrs.component.getContentData('link'.concat(pathNumber))}">
+                                        <span class="cms-discovery-paths__title">
+                                            <h:outputText
+                                                value="#{empty cc.attrs.component.getContentData('title'.concat(pathNumber)) ? msg['discovery__paths__title'.concat(pathNumber)] : cc.attrs.component.getContentData('title'.concat(pathNumber))}" />
+                                        </span>
+                                    </a>
+                                </li>
+                            </ui:repeat>
+                        </ol>
+                        <div class="cms-discovery-paths__captions">
+                            <p class="cms-discovery-paths__prompt">
+                                <h:outputText
+                                    value="#{empty cc.attrs.component.getContentData('introduction') ? msg.discovery__paths__introduction : cc.attrs.component.getContentData('introduction')}" />
+                            </p>
+                            <ui:repeat
+                                var="pathNumber"
+                                value="#{fn:split('1,2,3', ',')}">
+                                <p
+                                    id="#{cc.clientId}:description#{pathNumber}"
+                                    class="cms-discovery-paths__description"
+                                    data-discovery-description="#{pathNumber}">
+                                    <h:outputText
+                                        value="#{empty cc.attrs.component.getContentData('description'.concat(pathNumber)) ? msg['discovery__paths__description'.concat(pathNumber)] : cc.attrs.component.getContentData('description'.concat(pathNumber))}" />
+                                </p>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </ui:fragment>
+    </composite:implementation>
+</ui:composition>
