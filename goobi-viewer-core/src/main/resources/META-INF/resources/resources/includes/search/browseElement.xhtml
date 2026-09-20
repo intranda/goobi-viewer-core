@@ -32,37 +32,6 @@
         <div class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
             
             <div class="search-list__hit-options-wrapper #{browseElement.showThumbnail ? '' : '-noThumbnail'}">
-                <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
-                <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
-                    <!-- 	                <div class="search-list__thumb-bookmark-wrapper"> -->
-                    <button
-                        type="button"
-                        class="btn btn--icon search-list__thumb-bookmark
-							search-list__hit-options-button bookmark-toggle__button
-							search-list__hit-options-button-bookmark"
-                        data-pi="#{browseElement.pi}"
-                        aria-label="#{msg.bookmarkList_addToBookmarkList}"
-                        role="switch"
-                        aria-checked="false"
-                        data-target="bookmarkToggle"
-                        data-bookmark-list-type="add"
-                        data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
-                        data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
-                        title="#{msg.bookmarkList_addToBookmarkList}"
-                        data-toggle="tooltip">
-                        <span class="bookmark-toggle">
-                            <util:icon
-                                icon="bookmark"
-                                styleClass="bookmark-toggle__icon bookmark-toggle__icon--outline" />
-                            <util:icon
-                                icon="bookmark"
-                                filled="true"
-                                styleClass="bookmark-toggle__icon bookmark-toggle__icon--filled" />
-                        </span>
-                    </button>
-                    <!-- 	                </div> -->
-                </ui:fragment>
-
                 <!-- DOWNLOAD PDF BUTTON -->
                 <ui:fragment rendered="#{browseElement.downloadPdfAllowed}">
                     <!-- Direct download — pre-rendered PDFs exist: show small + full links -->
@@ -211,6 +180,37 @@
                             </ui:repeat>
                         </div>
                     </div>
+                </ui:fragment>
+
+                <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
+                <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
+                    <!-- 	                <div class="search-list__thumb-bookmark-wrapper"> -->
+                    <button
+                        type="button"
+                        class="btn btn--icon search-list__thumb-bookmark
+							search-list__hit-options-button bookmark-toggle__button
+							search-list__hit-options-button-bookmark"
+                        data-pi="#{browseElement.pi}"
+                        aria-label="#{msg.bookmarkList_addToBookmarkList}"
+                        role="switch"
+                        aria-checked="false"
+                        data-target="bookmarkToggle"
+                        data-bookmark-list-type="add"
+                        data-bookmark-list-title-add="#{msg.bookmarkList_addToBookmarkList}"
+                        data-bookmark-list-title-added="#{msg.bookmarkList_removeFromBookmarkList}"
+                        title="#{msg.bookmarkList_addToBookmarkList}"
+                        data-toggle="tooltip">
+                        <span class="bookmark-toggle">
+                            <util:icon
+                                icon="bookmark"
+                                styleClass="bookmark-toggle__icon bookmark-toggle__icon--outline" />
+                            <util:icon
+                                icon="bookmark"
+                                filled="true"
+                                styleClass="bookmark-toggle__icon bookmark-toggle__icon--filled" />
+                        </span>
+                    </button>
+                    <!-- 	                </div> -->
                 </ui:fragment>
 
                 <!-- TOGGLE BS TOOLTIPS ON BUTTONS/LINKS "MANUALLY" BY JS -->
