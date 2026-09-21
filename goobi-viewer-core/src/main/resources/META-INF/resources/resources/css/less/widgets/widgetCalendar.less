@@ -1,8 +1,6 @@
 /* ==============================================================
    Widget Calendar
    Inline calendar for newspaper/periodical sidebar.
-   Custom properties (--wc-*) defined in core-defaults.less,
-   overridable via theme mixins (.mx-theme-light / .mx-theme-dark).
    ==============================================================*/
 .widget-calendar {
     &__body {
@@ -68,42 +66,12 @@
         border-top: 4px solid var(--fg-on-brand);
     }
     .flatpickr-day {
-        border: none;
-        pointer-events: none;
-        &.-has-data- {
-            pointer-events: unset;
-        }
-        //			&.nextMonthDay {
-        //				color: red;
-        //			}
-    }
-    .flactpickr .flatpickr-day.-has-data- {
-        color: var(--fg-popover);
-        font-weight: 400;
-    }
-
-    .flatpickr-day.-has-multiple-::after {
-        content: '';
-        position: absolute;
-        bottom: 2px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 4px;
-        height: 4px;
-        border-radius: 50%;
-        background-color: var(--brand);
-    }
-
-    .flatpickr-day {
         color: var(--fg-placeholder);
         border: none;
         pointer-events: none;
         &.-has-data- {
             pointer-events: unset;
         }
-        //			&.nextMonthDay {
-        //				color: red;
-        //			}
     }
 
     .flatpickr-day.-has-data- {
