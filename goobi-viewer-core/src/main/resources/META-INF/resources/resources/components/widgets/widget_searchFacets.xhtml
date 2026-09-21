@@ -1,5 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
@@ -38,11 +39,20 @@
                                 styleClass="combined-facets__reset"
                                 action="#{searchBean.resetAllActiveFiltersAction}"
                                 title="#{msg.search__combined_facets__reset_all}">
+                                <f:passThroughAttribute
+                                    name="data-toggle"
+                                    value="tooltip" />
+                                <f:passThroughAttribute
+                                    name="data-placement"
+                                    value="top" />
+                                <f:passThroughAttribute
+                                    name="data-tooltip-muted"
+                                    value="true" />
                                 <util:icon-text
                                     icon="x"
                                     iconSvgClass="combined-facets__reset-icon-svg"
                                     text="#{msg.search__combined_facets__reset_all}"
-                                    textClass="combined-facets__reset-label" />
+                                    textClass="sr-only combined-facets__reset-label" />
                             </h:commandLink>
                         </h:form>
                     </div>

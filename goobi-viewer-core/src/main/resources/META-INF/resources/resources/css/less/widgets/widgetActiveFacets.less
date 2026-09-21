@@ -124,12 +124,6 @@
         &:focus {
             color: var(--brand);
             text-decoration: none;
-
-            .widget-active-facets__reset-label {
-                max-width: 200px;
-                margin-inline-start: 4px;
-                opacity: 1;
-            }
         }
     }
 
@@ -137,18 +131,6 @@
         display: block;
         width: 16px;
         height: 16px;
-    }
-
-    &__reset-label {
-        max-width: 0;
-        overflow: hidden;
-        white-space: nowrap;
-        font-size: var(--font-size-caption);
-        opacity: 0;
-        transition:
-            max-width 0.2s ease-in-out,
-            opacity 0.15s ease-in-out,
-            margin 0.2s ease-in-out;
     }
 }
 
@@ -162,12 +144,6 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    .widget-active-facets__reset:hover .widget-active-facets__reset-label,
-    .widget-active-facets__reset:focus .widget-active-facets__reset-label {
-        max-width: 0;
-        margin-inline-start: 0;
-        opacity: 0;
-    }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */

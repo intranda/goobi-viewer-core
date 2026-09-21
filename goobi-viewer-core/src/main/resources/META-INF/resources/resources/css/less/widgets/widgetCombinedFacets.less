@@ -48,12 +48,6 @@
         &:focus {
             color: var(--brand);
             text-decoration: none;
-
-            .combined-facets__reset-label {
-                max-width: 200px;
-                margin-inline-start: 4px;
-                opacity: 1;
-            }
         }
     }
 
@@ -61,17 +55,6 @@
         display: block;
         width: 16px;
         height: 16px;
-    }
-
-    &__reset-label {
-        max-width: 0;
-        overflow: hidden;
-        white-space: nowrap;
-        opacity: 0;
-        transition:
-            max-width 0.2s ease-in-out,
-            opacity 0.15s ease-in-out,
-            margin 0.2s ease-in-out;
     }
 
     /* BADGE STRIP */
