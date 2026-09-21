@@ -17,7 +17,7 @@
     <!-- SEARCH LIST OPTIONS -->
     <div class="search-list__options-container">
         <ui:fragment
-            rendered="#{navigationHelper.currentPage == 'search' || navigationHelper.currentPage == 'searchlist' || (navigationHelper.cmsPage and not empty cmsBean.currentPage.title)}">
+            rendered="#{navigationHelper.currentPage == 'search' || navigationHelper.currentPage == 'searchlist'}">
             <h1 class="search-list__options-container-heading">#{navigationHelper.cmsPage and not empty cmsBean.currentPage.title ? cmsBean.currentPage.title : msg.search}</h1>
         </ui:fragment>
 

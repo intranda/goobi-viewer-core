@@ -464,11 +464,11 @@
         font-weight: bold;
         margin-right: 7px;
         text-align: center;
-        width: 40px;
-        height: 40px;
+        width: 26px;
+        height: 26px;
         background: var(--bg-brand);
-        max-width: 40px;
-        flex: 0 0 40px;
+        max-width: 26px;
+        flex: 0 0 26px;
         align-self: flex-start;
     }
     &__hit-number {
@@ -769,11 +769,11 @@
     }
     /* ADVANCED SEARCH INFO */
     &__adv-search-info {
-        margin-bottom: 10px;
         padding: 10px;
         background-color: var(--bg-content-box);
         color: var(--fg-content-box);
-        border: 1px solid var(--border-strong);
+        border: none;
+        border-top: 1px solid var(--border-strong);
     }
     &__adv-search-info-back {
         font-size: var(--font-size-body-small);
@@ -932,14 +932,16 @@
                 padding-right: 0;
             }
         }
-        &__hit-thumbnail {
-            width: auto;
-            justify-content: flex-start;
-        }
         &__hit-options-wrapper {
             position: relative;
             top: unset;
             right: unset;
+        }
+        /* raised specificity so this wins over the unconditional
+           .search-list__hits:not(.grid):not(.list-view) .search-list__hit-thumbnail rule */
+        &__hits:not(.grid):not(.list-view) &__hit-inner-structure &__hit-thumbnail {
+            width: auto;
+            justify-content: flex-start;
         }
     }
 }

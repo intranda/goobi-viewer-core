@@ -270,6 +270,13 @@
                                             var="childHit"
                                             value="#{hit.children}">
                                             <div class="search-list__hit-content-set">
+                                                <div class="search-list__subhit-thumbnail">
+                                                    <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
+                                                        <ui:param
+                                                            name="browseElement"
+                                                            value="#{childHit.browseElement}" />
+                                                    </ui:include>
+                                                </div>
                                                 <div class="search-list__hit-text-area">
                                                     <div class="search-list__struct-title">
                                                         <h4>
@@ -331,13 +338,6 @@
                                                             </dl>
                                                         </ui:repeat>
                                                     </div>
-                                                </div>
-                                                <div class="search-list__subhit-thumbnail">
-                                                    <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
-                                                        <ui:param
-                                                            name="browseElement"
-                                                            value="#{childHit.browseElement}" />
-                                                    </ui:include>
                                                 </div>
                                             </div>
                                         </ui:repeat>
