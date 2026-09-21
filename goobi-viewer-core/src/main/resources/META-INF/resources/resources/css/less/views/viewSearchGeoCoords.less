@@ -15,12 +15,19 @@
             bottom: 35px;
             z-index: 401;
             padding: 1rem;
+            border-radius: var(--radius-container);
             background: rgb(from var(--bg-scrim) r g b / 75%);
         }
         &__submit-search {
         }
         &__reset-search {
             margin-right: 0.5rem;
+            /* opaque states, the tinted default would let the scrim show through */
+            &:hover,
+            &:focus,
+            &:active {
+                background-color: var(--bg-selected);
+            }
         }
     }
     .geo-map {
