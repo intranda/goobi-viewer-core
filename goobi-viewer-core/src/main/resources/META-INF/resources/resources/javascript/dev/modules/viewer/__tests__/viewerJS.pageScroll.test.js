@@ -52,6 +52,30 @@ describe('viewerJS.pageScroll.init click handler', () => {
     });
 });
 
+describe('viewerJS.pageScroll.init hash jump', () => {
+    // Regression: the jump used to set scrollTop to the raw anchor offset, which put the
+    // target under the sticky header. scrollIntoView respects html{scroll-padding-top}.
+    test('scrolls the hash target into view instead of setting a raw offset', async () => {
+        document.body.innerHTML = '<a id="topBtn" href="#top"></a><div id="top"></div><div id="topDocAnchor"></div>';
+        const anchorEl = document.getElementById('topDocAnchor');
+        anchorEl.scrollIntoView = jest.fn();
+        const scrollTopSpy = jest.spyOn($.fn, 'scrollTop');
+        const origHref = window.location.href;
+        history.replaceState({}, '', '/viewer/image/PI/3/#topDocAnchor');
+        try {
+            viewerJS.pageScroll.init('#topBtn', '#top');
+            // one tick for jQuery's ready callback, one for the module's setTimeout(0)
+            await new Promise((resolve) => setTimeout(resolve, 0));
+            await new Promise((resolve) => setTimeout(resolve, 0));
+            expect(anchorEl.scrollIntoView).toHaveBeenCalled();
+            expect(scrollTopSpy).not.toHaveBeenCalledWith(expect.anything());
+        } finally {
+            scrollTopSpy.mockRestore();
+            history.replaceState({}, '', origHref);
+        }
+    });
+});
+
 describe('viewerJS.pageScroll.scrollToFragment', () => {
     test('focuses the element matched by the explicit fragment selector', () => {
         document.body.innerHTML = '<input id="target" />';
