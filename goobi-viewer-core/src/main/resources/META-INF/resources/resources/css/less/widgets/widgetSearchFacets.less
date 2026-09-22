@@ -54,6 +54,16 @@
                     margin-inline-end: 8px;
                 }
             }
+
+            /* active facets: the item removes the filter, so show an x instead of plus/minus */
+            .widget-search-facets__list-item-control.-set {
+                .widget-search-facets__list-item-control-state-icon {
+                    display: none;
+                }
+                .widget-search-facets__list-item-control-remove-icon {
+                    display: inline-flex;
+                }
+            }
         }
 
         &.-active,
@@ -132,6 +142,9 @@
                 border-color: var(--bg-brand);
             }
         }
+    }
+    &__list-item-control-remove-icon {
+        display: none;
     }
     &__list-item-control-icon-svg {
         width: 12px;
