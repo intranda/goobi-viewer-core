@@ -102,6 +102,13 @@ public class MessageQueueBean implements Serializable {
 
     private TableDataProvider<ViewerMessage> lazyModelViewerHistory;
 
+    /** TTL for the cached topbar total-message count, in milliseconds. */
+    private static final long QUEUE_COUNT_CACHE_TTL_MS = 5000;
+
+    /** Cached total across all queues, refreshed at most every {@link #QUEUE_COUNT_CACHE_TTL_MS} ms. */
+    private volatile long cachedTotalMessages = 0;
+    private volatile long cachedTotalMessagesTimestamp = 0;
+
     /**
      * Creates a new MessageQueueBean instance.
      */
@@ -191,8 +198,25 @@ public class MessageQueueBean implements Serializable {
         return fastQueueContent;
     }
 
+    /**
+     * Total number of messages across all queues, for the admin topbar background-task monitor. Read from broker
+     * JMX metadata (no per-render queue browse or client connection) and cached for a few seconds, so a large
+     * backlog can no longer stall every admin page render. Returns 0 when the internal broker is disabled.
+     *
+     * @return total queued message count
+     * @should return total queue size from broker
+     * @should cache count within ttl
+     */
     public int getTotalMessagesInQueueCount() {
-        return getQueueContent().values().stream().mapToInt(i -> i).sum();
+        if (!DataManager.getInstance().getConfiguration().isStartInternalMessageBroker()) {
+            return 0;
+        }
+        long now = System.currentTimeMillis();
+        if (now - cachedTotalMessagesTimestamp > QUEUE_COUNT_CACHE_TTL_MS) {
+            cachedTotalMessages = messageBroker.getTotalQueueSize();
+            cachedTotalMessagesTimestamp = now;
+        }
+        return (int) Math.min(cachedTotalMessages, Integer.MAX_VALUE);
     }
 
     /**

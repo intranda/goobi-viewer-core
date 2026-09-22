@@ -115,6 +115,8 @@ public class AdminBean implements Serializable {
     private UserRole currentUserRole = null;
     private IpRange currentIpRange = null;
     private TranslationGroup currentTranslationGroup = null;
+    /** Session-scoped cached copy of {@link #getAllTranslationGroups()}; guarded by {@link #TRANSLATION_LOCK}. null = not built / invalidated. */
+    private List<TranslationGroup> cachedTranslationGroups = null;
     private MaintenanceMode maintenanceMode;
 
     /** Current password for password change. */
@@ -1183,7 +1185,7 @@ public class AdminBean implements Serializable {
      * @return true if at least one group is not fully translated; false otherwise
      */
     public boolean isDisplayTranslationsDashboardWidget() {
-        for (TranslationGroup group : getConfiguredTranslationGroups()) {
+        for (TranslationGroup group : getCachedTranslationGroups()) {
             if (!group.isFullyTranslated()) {
                 return true;
             }
@@ -1193,14 +1195,25 @@ public class AdminBean implements Serializable {
     }
 
     /**
+     * <<<<<<< release_26.05 ======= All available translation groups: the groups configured in config_viewer.xml plus — once at least one
+     * database-defined dynamic collection exists — a synthetic group for translating dynamic collection labels. The synthetic group is appended at
+     * the end, so the config-index-based group ids stay stable.
+     *
+     * @return List of all translation groups
+     */
+    public static List<TranslationGroup> getAllTranslationGroups() {
+        List<TranslationGroup> ret = new ArrayList<>(DataManager.getInstance().getConfiguration().getTranslationGroups());
+        return ret;
+    }
+
+    /**
+     * >>>>>>> 5efed24 Fix admin-only slowdown: read MQ queue totals via JMX with caching instead of browsing per render; refs #28456
      * getConfiguredTranslationGroupsCount.
      *
      * @return Number of configured translation grouns
      */
     public long getConfiguredTranslationGroupsCount() {
-        return DataManager.getInstance()
-                .getConfiguration()
-                .getTranslationGroups()
+        return getCachedTranslationGroups()
                 .stream()
                 .filter(g -> !g.isLoadError())
                 .filter(g -> g.getEntryCount() - g.getFullyTranslatedEntryCount() > 0)
@@ -1211,12 +1224,40 @@ public class AdminBean implements Serializable {
      * getConfiguredTranslationGroups.
      *
      * @return All configured <code>TranslationGroup</code>s
+     * @should not overwrite existing translation lock
+     * @should not set translation lock when none exists
+     * @should return same instance on repeated calls
      */
     public List<TranslationGroup> getConfiguredTranslationGroups() {
+        return getCachedTranslationGroups();
+    }
+
+    /**
+     * Session-scoped cached accessor for {@link #getAllTranslationGroups()}. Building the groups is expensive (Solr facet/field-name queries plus a
+     * message-bundle scan per key and locale), and the dashboard references the list several times per render, so the result is cached until
+     * {@link #resetTranslationGroups()} clears it.
+     *
+     * @return the cached list of translation groups
+     */
+    private List<TranslationGroup> getCachedTranslationGroups() {
         synchronized (TRANSLATION_LOCK) {
-            List<TranslationGroup> ret = DataManager.getInstance().getConfiguration().getTranslationGroups();
-            logger.trace("groups: {}", ret.size());
-            return ret;
+            if (cachedTranslationGroups == null) {
+                cachedTranslationGroups = getAllTranslationGroups();
+                logger.trace("built translation groups: {}", cachedTranslationGroups.size());
+            }
+            return cachedTranslationGroups;
+        }
+    }
+
+    /**
+     * Invalidates the cached translation groups so the next access rebuilds them. Called after translation edits and when entering the translations
+     * admin section, so the editor and overview always see current data.
+     *
+     * @should rebuild groups on next call
+     */
+    public void resetTranslationGroups() {
+        synchronized (TRANSLATION_LOCK) {
+            cachedTranslationGroups = null;
         }
     }
 
@@ -1283,6 +1324,7 @@ public class AdminBean implements Serializable {
         if (currentTranslationGroup != null) {
             currentTranslationGroup.saveSelectedEntry();
             currentTranslationGroup = null;
+            resetTranslationGroups();
         }
     }
 
@@ -1367,6 +1409,7 @@ public class AdminBean implements Serializable {
         }
 
         currentTranslationGroup.saveSelectedEntry();
+        resetTranslationGroups();
         return "pretty:adminTranslations";
     }
 
@@ -1405,7 +1448,7 @@ public class AdminBean implements Serializable {
      * @param id Looks up and loads <code>currentTranslationGroup</code> that matches the given id
      */
     public void setCurrentTranslationGroupId(int id) {
-        List<TranslationGroup> groups = DataManager.getInstance().getConfiguration().getTranslationGroups();
+        List<TranslationGroup> groups = getCachedTranslationGroups();
         if (id >= 0 && groups.size() > id) {
             TranslationGroup group = groups.get(id);
             if (!group.equals(currentTranslationGroup)) {
@@ -1480,8 +1523,8 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * Releases the translation editor lock if the given session ID matches the current editor.
-     * Also deletes vim-compatible swap files for all local messages files.
+     * Releases the translation editor lock if the given session ID matches the current editor. Also deletes vim-compatible swap files for all local
+     * messages files.
      *
      * @param sessionId the HTTP session ID requesting the unlock
      */
