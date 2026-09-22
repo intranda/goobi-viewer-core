@@ -5,13 +5,9 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:o="http://omnifaces.org/ui"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:util="http://goobi.io/util"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/template.html"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    template="/resources/themes/#{navigationHelper.theme}/template.html">
     <ui:define name="metadata">
         <f:metadata>
             <f:event
@@ -37,7 +33,7 @@
             id="userAccount"
             class="user-account">
             <h1>#{msg.admin__user_profile}</h1>
-            <!-- USER NOT LOGGED IN -->
+
             <ui:fragment rendered="#{!userBean.loggedIn}">
                 <div
                     class="alert alert-warning"
@@ -46,200 +42,240 @@
                 </div>
             </ui:fragment>
 
-            <!-- USER LOGGED IN -->
             <ui:fragment rendered="#{userBean.loggedIn}">
-                <!-- ACTIVITIES BLOCK -->
-                <h2>#{msg.label__user_crowdsourcing_activity}</h2>
-                <c:set
-                    value="#{userDataBean.getLatestActivity(userBean.user, 6)}"
-                    var="activities"
-                    scope="view" />
-                <div class="user-dashboard__form-wrapper">
-                    <c:choose>
-                        <c:when test="#{not empty activities}">
-                            <div class="user-dashboard__last-activities-wrapper">
-                                <div class="user-dashboard__last-activities-list">
-                                    <div class="user-dashboard__last-activities-timeline-wrapper">
+                <div class="user-dashboard__top">
+                    <div class="user-dashboard__identity">
+                        <img
+                            class="user-dashboard__identity-avatar"
+                            src="#{userBean.user.getAvatarUrl(300)}"
+                            alt="" />
+                        <p class="user-dashboard__identity-name">#{userBean.user.displayName}</p>
+                        <p
+                            class="user-dashboard__identity-meta"
+                            jsf:rendered="#{not empty userBean.user.lastLogin}">
+                            #{msg.lastLoginDate}:
+                            &#160;
+                            <h:outputText value="#{userBean.user.lastLogin}">
+                                <f:converter converterId="localDateTimeConverter" />
+                                <f:attribute
+                                    name="pattern"
+                                    value="#{navigationHelper.datePattern}" />
+                            </h:outputText>
+                        </p>
+                        <a
+                            href="#{request.contextPath}/user/settings/"
+                            class="btn btn--default user-dashboard__identity-action">
+                            #{msg.user_change_profile_settings}
+                        </a>
+                    </div>
+
+                    <div class="user-dashboard__panel">
+                        <h2 class="user-dashboard__panel-title">#{msg.label__user_crowdsourcing_activity}</h2>
+                        <c:set
+                            value="#{userDataBean.getLatestActivity(userBean.user, 6)}"
+                            var="activities"
+                            scope="view" />
+                        <c:choose>
+                            <c:when test="#{not empty activities}">
+                                <table class="user-dashboard__activity-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#{msg.label__type}</th>
+                                            <th scope="col">#{msg.name}</th>
+                                            <th
+                                                scope="col"
+                                                class="user-dashboard__activity-date"
+                                                aria-sort="descending">
+                                                <util:icon-text
+                                                    text="#{msg.date}"
+                                                    icon="chevron-down"
+                                                    textPosition="left"
+                                                    styleClass="user-dashboard__sort-hint"
+                                                    iconSvgClass="icon icon-xs" />
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         <ui:repeat
                                             value="#{activities}"
                                             var="activity">
-                                            <div class="user-dashboard__last-activities-timeline-item">
-                                                <div class="user-dashboard__last-activities-timeline-item-type">
+                                            <tr>
+                                                <td class="user-dashboard__activity-type">
                                                     <util:icon-text
                                                         icon="#{activity.type.icon}"
-                                                        text="#{msg[activity.type.label]}" />
-                                                </div>
-                                                <div class="user-dashboard__last-activities-timeline-item-date">
+                                                        text="#{msg[activity.type.label]}"
+                                                        textClass="user-dashboard__activity-type-label" />
+                                                </td>
+                                                <td class="user-dashboard__activity-name">#{activity.label}</td>
+                                                <td class="user-dashboard__activity-date">
                                                     <h:outputText value="#{activity.date}">
                                                         <f:converter converterId="localDateTimeConverter" />
                                                         <f:attribute
                                                             name="pattern"
                                                             value="#{navigationHelper.datePattern}" />
                                                     </h:outputText>
-                                                </div>
-                                                <div class="user-dashboard__last-activitiestimeline-item-name">#{activity.label}</div>
-                                            </div>
+                                                </td>
+                                            </tr>
                                         </ui:repeat>
-                                    </div>
-                                </div>
-                            </div>
-                        </c:when>
-                        <c:otherwise>
-                            <div class="user-dashboard__last-activities-wrapper -noEntry">
-                                <div class="user-dashboard__last-activities-placeholder-wrappper">
-                                    <util:icon-text
+                                    </tbody>
+                                </table>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="user-dashboard__empty">
+                                    <util:icon
                                         icon="rocket"
-                                        styleClass="user-dashboard__last-activities-placeholder"
-                                        iconSvgClass="icon icon-xxxl" />
-                                    <p>#{msg.warning__no_user_activity}</p>
+                                        svgClass="icon icon-xxl" />
+                                    <p class="user-dashboard__empty-text">#{msg.warning__no_user_activity}</p>
                                 </div>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
 
-                <!-- OVERVIEW BLOCK -->
                 <c:if test="#{configurationBean.bookmarksEnabled or configurationBean.searchSavingEnabled or commentBean.userCommentsEnabled}">
                     <h2>#{msg.admin__overview}</h2>
-                    <div class="user-dashboard__form-wrapper-container">
-                        <!-- BOOKMARKS BOX -->
+                    <div class="user-dashboard__cards">
+                        <!-- BOOKMARKS CARD -->
                         <div
-                            class="user-dashboard__form-wrapper -w50"
+                            class="user-dashboard__card"
                             jsf:rendered="#{configurationBean.bookmarksEnabled}">
-                            <h3>#{msg.bookmarks}</h3>
+                            <div class="user-dashboard__card-head">
+                                <h3 class="user-dashboard__card-title">#{msg.bookmarks}</h3>
+                                <span class="user-dashboard__card-count">#{userDataBean.getNumBookmarkLists(userBean.user)}</span>
+                            </div>
                             <c:choose>
                                 <c:when test="#{userDataBean.getNumBookmarkLists(userBean.user) > 0}">
-                                    <div class="user-dashboard__bookmarks-wrapper">
-                                        <ul class="user-dashboard__bookmarks-list">
+                                    <ul class="user-dashboard__card-list">
+                                        <ui:repeat
+                                            value="#{userDataBean.getBookmarkListsForUser(userBean.user, 5)}"
+                                            var="bookmarkList">
+                                            <li>
+                                                <a
+                                                    class="user-dashboard__card-row"
+                                                    href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">
+                                                    <span class="user-dashboard__card-row-title">#{bookmarkList.name}</span>
+                                                    <span class="user-dashboard__card-row-meta">#{bookmarkList.numItems} #{msg.bookmarkList_objects}</span>
+                                                </a>
+                                            </li>
+                                        </ui:repeat>
+                                    </ul>
+                                    <a
+                                        class="user-dashboard__card-link"
+                                        href="#{request.contextPath}/user/bookmarks/">
+                                        <span>#{msg.bookmarkList_overview_all}</span>
+                                        <util:icon
+                                            icon="chevron-right"
+                                            svgClass="icon icon-sm user-dashboard__card-link-icon-svg" />
+                                    </a>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="user-dashboard__empty">
+                                        <util:icon
+                                            icon="bookmark"
+                                            svgClass="icon icon-xxl" />
+                                        <p class="user-dashboard__empty-text">#{msg.warning__no_bookmarks}</p>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
+
+                        <!-- SEARCHES CARD -->
+                        <div
+                            class="user-dashboard__card"
+                            jsf:rendered="#{configurationBean.searchSavingEnabled}">
+                            <div class="user-dashboard__card-head">
+                                <h3 class="user-dashboard__card-title">#{msg.label__user_searches}</h3>
+                                <span class="user-dashboard__card-count">#{userDataBean.getNumSearches(userBean.user)}</span>
+                            </div>
+                            <c:choose>
+                                <c:when test="#{userDataBean.getNumSearches(userBean.user) > 0}">
+                                    <h:form styleClass="user-dashboard__card-form">
+                                        <ul class="user-dashboard__card-list">
                                             <ui:repeat
-                                                value="#{userDataBean.getBookmarkListsForUser(userBean.user, 5)}"
-                                                var="bookmarkList"
-                                                varStatus="status">
+                                                value="#{userDataBean.getSearches(userBean.user, 5)}"
+                                                var="search">
                                                 <li>
-                                                    <a href="#{request.contextPath}/user/bookmarks/show/#{bookmarkList.id}/">#{bookmarkList.name}</a>
+                                                    <h:commandLink
+                                                        styleClass="user-dashboard__card-row"
+                                                        action="#{searchBean.executeSavedSearchAction(search)}">
+                                                        <h:outputText
+                                                            styleClass="user-dashboard__card-row-title"
+                                                            value="#{search.name}"
+                                                            escape="true" />
+                                                        <h:outputText
+                                                            styleClass="user-dashboard__card-row-meta"
+                                                            value="#{search.lastHitsCount} #{msg.hits}" />
+                                                    </h:commandLink>
                                                 </li>
                                             </ui:repeat>
                                         </ul>
-                                    </div>
-                                    <div class="user-dashboard__searches-count">
-                                        <h:outputFormat value="#{msg.user_dashboard__bookmarklists_stored}">
-                                            <f:param value="#{userDataBean.getNumBookmarkLists(user)}" />
-                                        </h:outputFormat>
-                                    </div>
-                                    <!-- GO TO BOOKMARKS OVERVIEW PAGE -->
+                                    </h:form>
                                     <a
-                                        class="user-dashboard__show-all-link"
-                                        href="#{request.contextPath}/user/bookmarks/">
-                                        #{msg.bookmarkList_overview_all}
-                                    </a>
-                                </c:when>
-                                <c:otherwise>
-                                    <div class="user-dashboard__bookmarks-wrapper">
-                                        <div
-                                            class="alert alert-warning"
-                                            role="alert">
-                                            #{msg.warning__no_bookmarks}
-                                        </div>
-                                    </div>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-
-                        <!-- SEARCHES BOX -->
-                        <div
-                            class="user-dashboard__form-wrapper -w50"
-                            jsf:rendered="#{configurationBean.searchSavingEnabled}">
-                            <h3>#{msg.label__user_searches}</h3>
-                            <!-- SAVED SEARCHES -->
-                            <c:choose>
-                                <c:when test="#{userDataBean.getNumSearches(userBean.user) > 0}">
-                                    <div class="user-dashboard__searches-wrapper">
-                                        <!-- SHOW IF NO SEARCHES EXIST -->
-                                        <h:form>
-                                            <ul class="user-dashboard__searches-list">
-                                                <ui:repeat
-                                                    value="#{userDataBean.getSearches(userBean.user, 5)}"
-                                                    var="search">
-                                                    <li class="user-dashboard__searches-list-item">
-                                                        <h:commandLink action="#{searchBean.executeSavedSearchAction(search)}">
-                                                            <h:outputText
-                                                                value="#{search.name}"
-                                                                escape="true" />
-                                                        </h:commandLink>
-                                                    </li>
-                                                </ui:repeat>
-                                            </ul>
-                                        </h:form>
-                                    </div>
-                                    <div class="user-dashboard__searches-count">
-                                        <h:outputFormat value="#{msg.user_dashboard__searches_stored}">
-                                            <f:param value="#{userDataBean.getNumSearches(userBean.user)}" />
-                                        </h:outputFormat>
-                                    </div>
-                                    <!-- GO TO SEARCHES OVERVIEW PAGE -->
-                                    <a
-                                        class="user-dashboard__show-all-link"
+                                        class="user-dashboard__card-link"
                                         href="#{request.contextPath}/user/searches/">
-                                        #{msg.searches_overview_all}
+                                        <span>#{msg.searches_overview_all}</span>
+                                        <util:icon
+                                            icon="chevron-right"
+                                            svgClass="icon icon-sm user-dashboard__card-link-icon-svg" />
                                     </a>
                                 </c:when>
                                 <c:otherwise>
-                                    <div class="user-dashboard__searches-wrapper">
-                                        <div
-                                            class="alert alert-warning"
-                                            role="alert">
-                                            #{msg.warning__no_searches}
-                                        </div>
+                                    <div class="user-dashboard__empty">
+                                        <util:icon
+                                            icon="search"
+                                            svgClass="icon icon-xxl" />
+                                        <p class="user-dashboard__empty-text">#{msg.warning__no_searches}</p>
                                     </div>
                                 </c:otherwise>
                             </c:choose>
                         </div>
-                    </div>
 
-                    <div
-                        class="user-dashboard__form-wrapper-container"
-                        jsf:rendered="#{commentBean.userCommentsEnabled}">
-                        <!-- COMMENTS BOX -->
-                        <div class="user-dashboard__form-wrapper -w100">
-                            <h3>#{msg.userComments}</h3>
-
+                        <!-- COMMENTS CARD -->
+                        <div
+                            class="user-dashboard__card"
+                            jsf:rendered="#{commentBean.userCommentsEnabled}">
+                            <div class="user-dashboard__card-head">
+                                <h3 class="user-dashboard__card-title">#{msg.userComments}</h3>
+                                <span class="user-dashboard__card-count">#{userDataBean.commentCount}</span>
+                            </div>
                             <c:choose>
                                 <c:when test="#{userDataBean.commentCount > 0}">
-                                    <div class="user-dashboard__comments-wrapper">
-                                        <!-- USER COMMENTS -->
+                                    <ul class="user-dashboard__card-list">
                                         <ui:repeat
                                             value="#{userDataBean.getLatestComments(userBean.user, 3)}"
                                             var="comment">
-                                            <div class="user-dashboard__comments-item">
-                                                <div class="user-dashboard__comments-text">#{comment.text}</div>
+                                            <li>
                                                 <a
-                                                    href="#{navigationHelper.objectUrl}#{comment.targetLink}"
-                                                    class="user-dashboard__comments-open-record">
-                                                    #{msg.action__open_record}
+                                                    class="user-dashboard__card-row -stacked"
+                                                    href="#{navigationHelper.objectUrl}#{comment.targetLink}">
+                                                    <span class="user-dashboard__card-row-title -clamp">#{comment.displayText}</span>
+                                                    <span class="user-dashboard__card-row-meta">
+                                                        <h:outputText value="#{comment.dateCreated}">
+                                                            <f:converter converterId="localDateTimeConverter" />
+                                                            <f:attribute
+                                                                name="pattern"
+                                                                value="#{navigationHelper.datePattern}" />
+                                                        </h:outputText>
+                                                    </span>
                                                 </a>
-                                            </div>
+                                            </li>
                                         </ui:repeat>
-                                    </div>
-                                    <div class="user-dashboard__searches-count">
-                                        <h:outputFormat value="#{msg.user_dashboard__comments_created}">
-                                            <f:param value="#{userDataBean.commentCount}" />
-                                            <f:param value="#{userDataBean.getNumRecordsWithComments(userBean.user)}" />
-                                        </h:outputFormat>
-                                    </div>
-                                    <!-- TO DO: THERE IS NO OVERVIEW PAGE FOR COMMENTS YET? -->
+                                    </ul>
                                     <a
-                                        styleClass="user-dashboard__show-all-link"
+                                        class="user-dashboard__card-link"
                                         href="#{request.contextPath}/user/comments/">
-                                        #{msg.comments_overview_all}
+                                        <span>#{msg.comments_overview_all}</span>
+                                        <util:icon
+                                            icon="chevron-right"
+                                            svgClass="icon icon-sm user-dashboard__card-link-icon-svg" />
                                     </a>
                                 </c:when>
                                 <c:otherwise>
-                                    <div class="user-dashboard__comments-wrapper -noEntry">
-                                        <div
-                                            class="alert alert-warning"
-                                            role="alert">
-                                            #{msg.warning__no_comments}
-                                        </div>
+                                    <div class="user-dashboard__empty">
+                                        <util:icon
+                                            icon="message-circle"
+                                            svgClass="icon icon-xxl" />
+                                        <p class="user-dashboard__empty-text">#{msg.warning__no_comments}</p>
                                     </div>
                                 </c:otherwise>
                             </c:choose>
@@ -250,30 +286,5 @@
         </div>
     </ui:define>
 
-    <ui:define name="sidebar">
-        <h:panelGroup
-            layout="block"
-            styleClass="user-settings__profile-image-box">
-            <img
-                class="user-settings__profile-image"
-                src="#{userBean.user.getAvatarUrl(300)}"
-                alt="User Avatar" />
-
-            <div class="user-dashboard__sidebar-welcome-text">
-                <h:outputFormat
-                    value="#{msg.user_dashboard__hello}"
-                    escape="false">
-                    <f:param value="#{userBean.user.displayName}" />
-                </h:outputFormat>
-                <!-- 							<span><h:outputFormat value="#{msg.user_dashboard__hello_text}" escape="false" /></span> -->
-            </div>
-        </h:panelGroup>
-        <div class="user-dashboard__sidebar-settings-button-wrapper">
-            <a
-                href="#{request.contextPath}/user/settings/"
-                class="btn btn--default user-dashboard__sidebar-settings-button">
-                #{msg.user_change_profile_settings}
-            </a>
-        </div>
-    </ui:define>
+    <ui:define name="sidebar" />
 </ui:composition>
