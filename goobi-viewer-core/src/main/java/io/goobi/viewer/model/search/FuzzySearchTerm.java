@@ -49,11 +49,11 @@ public class FuzzySearchTerm {
     /**
      * Regex matching all characters within words, including umlauts etc.
      */
-    public static final String WORD_PATTERN = "[\\p{L}=-_\\d⸗¬]+";
+    public static final String WORD_PATTERN = "[\\p{L}=_\\d⸗¬-]+";
     /**
      * Regex matching anything not matching {@link #WORD_PATTERN}, including an empty string.
      */
-    public static final String NOT_WORD_PATTERN = "[^\\p{L}=-_\\d⸗¬]*";
+    public static final String NOT_WORD_PATTERN = "[^\\p{L}=_\\d⸗¬-]*";
     /**
      * Regex matching a word (according to {@link #WORD_PATTERN}, surrounded by other characters (according to {@link #NOT_WORD_PATTERN}. The word
      * itself is the first capture group
