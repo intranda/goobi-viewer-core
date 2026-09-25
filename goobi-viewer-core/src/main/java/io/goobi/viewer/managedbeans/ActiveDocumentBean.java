@@ -843,6 +843,7 @@ public class ActiveDocumentBean implements Serializable {
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException
      * @throws ViewerConfigurationException
      * @throws IllegalUrlParameterException
+     * @should not load record
      */
     public void setRepresentativeImage()
             throws PresentationException, IndexUnreachableException, ViewerConfigurationException, IllegalUrlParameterException {
@@ -866,7 +867,9 @@ public class ActiveDocumentBean implements Serializable {
                     .orElse(DataManager.getInstance()
                             .getConfiguration()
                             .isDoublePageNavigationDefault(this.navigationHelper.getCurrentPageType(),
-                                    Optional.ofNullable(this.getViewManager()).map(ViewManager::getMimeType).orElse(null)));
+                                    // Use the field, not getViewManager(): loading the record here would trigger a license redirect
+                                    // and reset the bean before open() runs
+                                    Optional.ofNullable(this.viewManager).map(ViewManager::getMimeType).orElse(null)));
             if (isDoublePageNavigation) {
                 image = String.format("%s-%s", image, image);
             }

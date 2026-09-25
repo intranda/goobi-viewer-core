@@ -97,6 +97,22 @@ class ActiveDocumentBeanTest extends AbstractDatabaseAndSolrEnabledTest {
     }
 
     /**
+     * @see ActiveDocumentBean#setRepresentativeImage()
+     * @verifies not load record
+     */
+    @Test
+    void setRepresentativeImage_shouldNotLoadRecord() throws Exception {
+        Mockito.when(navigationHelper.getCurrentPageType()).thenReturn(PageType.viewObject);
+        adb.setNavigationHelper(navigationHelper);
+        adb.setPersistentIdentifier(PI_KLEIUNIV);
+        Assertions.assertFalse(adb.isRecordLoaded());
+
+        adb.setRepresentativeImage();
+        Assertions.assertFalse(adb.isRecordLoaded());
+        assertTrue(adb.getImageToShow().matches("^\\d+(-\\d+)?$"));
+    }
+
+    /**
      * @see ActiveDocumentBean#update()
      * @verifies update ViewManager correctly if LOGID has changed
      */

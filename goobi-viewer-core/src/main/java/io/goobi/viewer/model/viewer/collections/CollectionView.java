@@ -838,8 +838,7 @@ public class CollectionView implements Serializable {
     /**
      * Resets the top visible element so the topmost hierarchy level is shown
      *
-     * @reset only actually resets if true
-     * @param reset a boolean.
+     * @param reset only actually resets if true
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws IllegalRequestException
