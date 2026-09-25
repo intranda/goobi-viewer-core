@@ -57,16 +57,21 @@
                 $.ajax({
     url: '#{cc.attrs.grid.content.tileGridUrl}',
     type: 'GET',
-    datatype: 'JSON',
-}).then(function (data) {
-    const masonryConfig = {
-        $grid: $('.grid'),
-        language: currentLang,
-    };
-    $(document).ready(() => {
-        cmsJS.masonry.init(masonryConfig, data);
+    dataType: 'json',
+})
+    .then(function (data) {
+        // init masonry
+        $(document).ready(() => {
+            const masonryConfig = {
+                $grid: $('#templateMasonry .grid'),
+                language: currentLang,
+            };
+            cmsJS.masonry.init(masonryConfig, data);
+        });
+    })
+    .fail(function (jqXHR, textStatus, errorThrown) {
+        console.error('Masonry: failed to load tile grid', textStatus, errorThrown);
     });
-});
             </script>
         </div>
     </composite:implementation>
