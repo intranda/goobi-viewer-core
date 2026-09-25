@@ -10,7 +10,7 @@
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <h2>#{msg.general}</h2>
-    <div class="user-settings__form-wrapper">
+    <div class="userdata__form-wrapper">
         <!-- prevent autocomplete in IE, Chrome and Firefox -->
         <input
             type="text"
@@ -173,7 +173,7 @@
     <!-- PASSWORD NEW USER -->
     <ui:fragment rendered="#{user.id == null}">
         <h2>#{msg.password}</h2>
-        <div class="user-settings__form-wrapper">
+        <div class="userdata__form-wrapper">
             <p>#{msg.admin__user_create_password_info_text}</p>
             <div
                 class="form-horizontal"
@@ -214,7 +214,7 @@
     <!-- PASSWORD CHANGE FOR EXISTING USER -->
     <ui:fragment rendered="#{user.id != null and !user.anonymous}">
         <h2>#{msg.changePassword}</h2>
-        <div class="user-settings__form-wrapper">
+        <div class="userdata__form-wrapper">
             <p>#{msg.admin__user_password_info_text}</p>
             <div
                 class="form-horizontal"

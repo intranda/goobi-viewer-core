@@ -4,9 +4,11 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:o="http://omnifaces.org/ui"
+    xmlns:util="http://goobi.io/util"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:facelet="http://goobi.io/facelets"
     template="/resources/themes/#{navigationHelper.theme}/template.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -22,6 +24,9 @@
             <f:viewAction
                 onPostback="false"
                 action="#{userBean.createBackupOfCurrentUser()}" />
+            <f:viewParam
+                name="deleteData"
+                value="#{adminBean.deleteUserContributions}" />
         </f:metadata>
     </ui:define>
 
@@ -34,9 +39,9 @@
     <ui:define name="content">
         <div
             id="userAccount"
-            class="user-account">
+            class="user-account user-settings">
             <h1>#{msg.accountSettings}</h1>
-            <!-- USER NOT LOGGED IN -->
+
             <ui:fragment rendered="#{!userBean.loggedIn}">
                 <div
                     class="alert alert-warning"
@@ -45,62 +50,399 @@
                 </div>
             </ui:fragment>
 
-            <!-- USER LOGGED IN -->
             <ui:fragment rendered="#{userBean.loggedIn}">
-                <h:form
-                    id="editUser"
-                    styleClass="form-horizontal form-group"
-                    role="form"
-                    prependId="false">
-                    <facelet:userData
-                        user="#{userBean.user.copy}"
-                        confirmEmailChange="true" />
-                    <div class="admin__final-actions">
-                        <h:commandLink
-                            id="cancelNewUserCreationButton"
-                            styleClass="btn admin__cancel-button"
-                            value="#{msg.cancel}"
-                            action="#{adminBean.resetUserAction(userBean.user, '')}"
-                            immediate="true" />
-                        <h:commandButton
-                            id="saveNewUserCreationButton"
-                            styleClass="btn btn--success"
-                            value="#{msg.save}"
-                            onclick="return typeof confirmEmailChangeOnSave==='function' ? confirmEmailChangeOnSave(event,this) : true;"
-                            action="#{adminBean.saveUserAction(userBean.user.copy, true, '')}" />
+                <div class="user-settings__layout">
+                    <div class="user-settings__aside">
+                        <h:form
+                            id="avatarForm"
+                            prependId="false"
+                            enctype="multipart/form-data">
+                            <!-- AVATAR CARD -->
+                            <h:panelGroup
+                                id="avatarCard"
+                                layout="block"
+                                styleClass="user-settings__avatar-card">
+                                <div class="user-settings__avatar-figure">
+                                    <img
+                                        class="user-settings__profile-image"
+                                        src="#{userBean.user.getAvatarUrl(300)}"
+                                        alt="" />
+
+                                    <!-- AVATAR EDIT -->
+                                    <div
+                                        class="user-settings__avatar-edit"
+                                        jsf:rendered="#{userBean.user.avatarType == 'LOCAL'}">
+                                        <!-- UPLOAD PILL -->
+                                        <ui:fragment rendered="#{!userBean.user.hasLocalAvatarImage()}">
+                                            <span class="user-settings__avatar-badge">
+                                                <util:icon-text
+                                                    icon="upload"
+                                                    text="#{msg.admin__cms_collections_image_mode_upload}" />
+                                                <o:inputFile
+                                                    id="avatarUploadDirect"
+                                                    styleClass="user-settings__avatar-input"
+                                                    pt:aria-label="#{msg.admin__cms_collections_image_mode_upload}"
+                                                    accept="image/png,image/jpeg,image/tiff"
+                                                    maxsize="#{16*1024*1024}"
+                                                    value="#{userBean.uploadedAvatarFile}">
+                                                    <f:ajax
+                                                        listener="#{userBean.uploadAvatarFileAction()}"
+                                                        render="avatarCard :messages"
+                                                        onevent="syncHeaderAvatar" />
+                                                </o:inputFile>
+                                            </span>
+                                        </ui:fragment>
+
+                                        <!-- EDIT MENU -->
+                                        <ui:fragment rendered="#{userBean.user.hasLocalAvatarImage()}">
+                                            <div class="dropdown">
+                                                <button
+                                                    type="button"
+                                                    class="user-settings__avatar-badge"
+                                                    data-toggle="dropdown"
+                                                    aria-haspopup="true"
+                                                    aria-expanded="false">
+                                                    <util:icon-text
+                                                        icon="pencil"
+                                                        text="#{msg.button__edit}" />
+                                                </button>
+
+                                                <div class="user-settings__avatar-menu dropdown-menu">
+                                                    <div class="user-settings__avatar-menu-item">
+                                                        <util:icon-text
+                                                            icon="upload"
+                                                            text="#{msg.admin__cms_collections_image_mode_upload}" />
+                                                        <o:inputFile
+                                                            id="avatarUpload"
+                                                            styleClass="user-settings__avatar-input"
+                                                            pt:aria-label="#{msg.admin__cms_collections_image_mode_upload}"
+                                                            accept="image/png,image/jpeg,image/tiff"
+                                                            maxsize="#{16*1024*1024}"
+                                                            value="#{userBean.uploadedAvatarFile}">
+                                                            <f:ajax
+                                                                listener="#{userBean.uploadAvatarFileAction()}"
+                                                                render="avatarCard :messages"
+                                                                onevent="syncHeaderAvatar" />
+                                                        </o:inputFile>
+                                                    </div>
+
+                                                    <h:commandLink
+                                                        styleClass="user-settings__avatar-menu-item -danger"
+                                                        action="#{userBean.deleteAvatarFileAction()}">
+                                                        <util:icon-text
+                                                            icon="trash"
+                                                            text="#{msg.delete}" />
+                                                        <f:ajax
+                                                            render="avatarCard :messages"
+                                                            onevent="syncHeaderAvatar" />
+                                                    </h:commandLink>
+                                                </div>
+                                            </div>
+                                        </ui:fragment>
+                                    </div>
+                                </div>
+
+                                <!-- AVATAR SOURCE -->
+                                <h:selectOneRadio
+                                    id="avatarOption"
+                                    value="#{userBean.user.avatarType}"
+                                    styleClass="user-settings__avatar-options"
+                                    layout="pageDirection">
+                                    <f:selectItem
+                                        itemValue="DEFAULT"
+                                        itemLabel="#{msg.user_change_profile_picture_label_standard}" />
+                                    <f:selectItem
+                                        itemValue="LOCAL"
+                                        itemLabel="#{msg.user_change_profile_picture_upload_image}" />
+                                    <f:selectItem
+                                        itemValue="GRAVATAR"
+                                        itemLabel="#{msg.gravatar}" />
+                                    <f:ajax
+                                        listener="#{userBean.saveAvatarOptionAction()}"
+                                        render="avatarCard :messages"
+                                        onevent="syncHeaderAvatar" />
+                                </h:selectOneRadio>
+                            </h:panelGroup>
+                        </h:form>
+
+                        <!-- HEADER AVATAR SYNC -->
+                        <script>
+                            function syncHeaderAvatar(event) {
+                                if (event.status !== 'success') {
+                                    return;
+                                }
+                                var avatar = document.querySelector('#avatarCard .user-settings__profile-image');
+                                if (!avatar) {
+                                    return;
+                                }
+                                document.querySelectorAll('img[data-user-avatar]').forEach(function (image) {
+                                    image.src = avatar.src;
+                                });
+                            }
+                        </script>
                     </div>
-                </h:form>
-                <h:form
-                    id="deleteUser"
-                    styleClass="form-horizontal form-group"
-                    role="form"
-                    prependId="false">
-                    <facelet:deleteUser user="#{userBean.user.copy}" />
-                </h:form>
+
+                    <div class="user-settings__main">
+                        <h:form
+                            id="editUser"
+                            role="form"
+                            prependId="false">
+                            <!-- GENERAL -->
+                            <div class="user-settings__panel">
+                                <div class="user-settings__panel-head">
+                                    <h2 class="user-settings__panel-title">#{msg.general}</h2>
+                                </div>
+                                <!-- AUTOCOMPLETE TRAPS -->
+                                <input
+                                    type="text"
+                                    class="hidden" />
+                                <input
+                                    type="password"
+                                    autocomplete="off"
+                                    class="hidden" />
+
+                                <div class="user-settings__field">
+                                    <label
+                                        for="displayName"
+                                        class="user-settings__label">
+                                        #{msg.admin__user_display_name}
+                                    </label>
+                                    <h:inputText
+                                        value="#{userBean.user.copy.nickName}"
+                                        id="displayName"
+                                        label="displayName"
+                                        styleClass="form-control"
+                                        validator="nicknameValidator" />
+                                    <span class="user-settings__help">#{msg.admin__user_display_name__help}</span>
+                                </div>
+
+                                <h:panelGroup
+                                    id="emailGroup"
+                                    layout="block"
+                                    styleClass="user-settings__field">
+                                    <label
+                                        for="email"
+                                        class="user-settings__label">
+                                        #{msg.email}
+                                        <span class="user-settings__required">(#{msg.form__required_field})</span>
+                                    </label>
+                                    <h:inputText
+                                        disabled="#{userBean.user.copy.anonymous}"
+                                        value="#{userBean.user.copy.email}"
+                                        id="email"
+                                        label="email"
+                                        immediate="true"
+                                        required="true"
+                                        styleClass="form-control"
+                                        pt:data-saved-email="#{userBean.user.email}">
+                                        <f:validator
+                                            validatorId="emailValidator"
+                                            for="email" />
+                                        <f:ajax render="emailGroup" />
+                                    </h:inputText>
+                                    <h:messages
+                                        for="email"
+                                        styleClass="user-settings__messages"
+                                        infoClass="user-settings__message -success"
+                                        warnClass="user-settings__message -warning"
+                                        errorClass="user-settings__message -danger" />
+                                    <span class="user-settings__help">#{msg.admin__user_email__help}</span>
+                                </h:panelGroup>
+
+                                <div class="user-settings__field">
+                                    <label
+                                        for="firstName"
+                                        class="user-settings__label">
+                                        #{msg.nameFirst}
+                                    </label>
+                                    <h:inputText
+                                        value="#{userBean.user.copy.firstName}"
+                                        id="firstName"
+                                        label="firstName"
+                                        styleClass="form-control" />
+                                    <span class="user-settings__help">#{msg.admin__user_first_name__help}</span>
+                                </div>
+
+                                <div class="user-settings__field">
+                                    <label
+                                        for="lastName"
+                                        class="user-settings__label">
+                                        #{msg.nameLast}
+                                    </label>
+                                    <h:inputText
+                                        value="#{userBean.user.copy.lastName}"
+                                        id="lastName"
+                                        label="lastName"
+                                        styleClass="form-control" />
+                                    <span class="user-settings__help">#{msg.admin__user_last_name__help}</span>
+                                </div>
+                            </div>
+
+                            <!-- CHANGE PASSWORD -->
+                            <ui:fragment rendered="#{not empty userBean.user.copy.id and !userBean.user.copy.anonymous}">
+                                <div class="user-settings__panel">
+                                    <div class="user-settings__panel-head">
+                                        <h2 class="user-settings__panel-title">#{msg.changePassword}</h2>
+                                        <p class="user-settings__panel-intro">#{msg.admin__user_password_info_text}</p>
+                                    </div>
+
+                                    <div class="user-settings__field">
+                                        <h:outputLabel
+                                            for="currentPassword"
+                                            styleClass="user-settings__label"
+                                            value="#{msg.currentUserPassword}" />
+                                        <h:inputSecret
+                                            id="currentPassword"
+                                            styleClass="form-control"
+                                            value="#{adminBean.currentPassword}" />
+                                    </div>
+                                    <div class="user-settings__field">
+                                        <h:outputLabel
+                                            for="newPassword"
+                                            styleClass="user-settings__label"
+                                            value="#{msg.newUserPasswordOne}" />
+                                        <h:inputSecret
+                                            id="newPassword"
+                                            styleClass="form-control"
+                                            value="#{adminBean.passwordOne}"
+                                            validator="passwordValidator" />
+                                    </div>
+                                    <div class="user-settings__field">
+                                        <h:outputLabel
+                                            for="newPasswordRepeat"
+                                            styleClass="user-settings__label"
+                                            value="#{msg.newUserPasswordTwo}" />
+                                        <h:inputSecret
+                                            id="newPasswordRepeat"
+                                            styleClass="form-control"
+                                            value="#{adminBean.passwordTwo}" />
+                                    </div>
+                                </div>
+                            </ui:fragment>
+
+                            <!-- ACTIONS -->
+                            <div class="user-settings__actions">
+                                <h:commandLink
+                                    id="cancelUserSettingsButton"
+                                    styleClass="btn btn--trans user-settings__cancel"
+                                    value="#{msg.cancel}"
+                                    action="#{adminBean.resetUserAction(userBean.user, '')}"
+                                    immediate="true" />
+                                <h:commandButton
+                                    id="saveUserSettingsButton"
+                                    styleClass="btn btn--full"
+                                    value="#{msg.save}"
+                                    pt:data-confirm-text="#{msg.user__change_email__confirm}"
+                                    pt:data-confirm-ok="#{msg.ok}"
+                                    onclick="return confirmUserSettingsEmailChange(this);"
+                                    action="#{adminBean.saveUserAction(userBean.user.copy, true, '')}" />
+                            </div>
+                        </h:form>
+
+                        <!-- EMAIL CHANGE CONFIRMATION -->
+                        <script>
+                            function confirmUserSettingsEmailChange(button) {
+                                if (button._emailConfirmed) {
+                                    button._emailConfirmed = false;
+                                    return true;
+                                }
+                                var emailField = document.getElementById('email');
+                                // the field re-renders on change, so defaultValue would already be the new address
+                                var savedEmail = emailField ? emailField.dataset.savedEmail : null;
+                                if (!emailField || emailField.value === savedEmail) {
+                                    return true;
+                                }
+                                viewerJS.notifications
+                                    .confirm(button.dataset.confirmText, button.dataset.confirmOk, undefined, undefined, { icon: 'question' })
+                                    .then(function () {
+                                        button._emailConfirmed = true;
+                                        button.click();
+                                    })
+                                    .catch(function () {
+                                        emailField.value = savedEmail;
+                                    });
+                                return false;
+                            }
+                        </script>
+
+                        <!-- CROWDSOURCING USER SETTINGS (E-MAIL NOTIFICATIONS) -->
+                        <c:forEach
+                            var="module"
+                            items="#{configurationBean.modules}">
+                            <ui:fragment rendered="#{not empty module.getWidgets('userSettings')}">
+                                <div class="user-settings__panel">
+                                    <c:forEach
+                                        var="contribution"
+                                        items="#{module.getWidgets('userSettings')}">
+                                        <ui:include src="/#{contribution}" />
+                                    </c:forEach>
+                                </div>
+                            </ui:fragment>
+                        </c:forEach>
+
+                        <!-- DELETE ACCOUNT -->
+                        <h:form
+                            id="deleteUser"
+                            role="form"
+                            prependId="false">
+                            <div class="user-settings__panel -danger">
+                                <div class="user-settings__panel-head">
+                                    <h2 class="user-settings__panel-title">#{msg.admin__user_delete}</h2>
+                                    <p class="user-settings__panel-intro">#{msg.admin__user_delete_description}:</p>
+                                </div>
+
+                                <div class="user-settings__field">
+                                    <div class="user-settings__choice">
+                                        <div class="form-check connected-top">
+                                            <input
+                                                type="radio"
+                                                id="keepDataOption"
+                                                name="deleteData"
+                                                value="false"
+                                                checked="#{adminBean.deleteUserContributions ? null : 'true'}" />
+                                            <label for="keepDataOption">#{msg.admin__user_delete_type_keep_data}</label>
+                                        </div>
+                                        <div class="form-check connected-bottom">
+                                            <input
+                                                type="radio"
+                                                id="deleteDataOption"
+                                                name="deleteData"
+                                                value="true"
+                                                checked="#{adminBean.deleteUserContributions ? 'true' : null}" />
+                                            <label for="deleteDataOption">#{msg.admin__user_delete_type_everything}</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="user-settings__field">
+                                    <h:outputLabel
+                                        for="emailConfirmation"
+                                        styleClass="user-settings__label"
+                                        value="#{msg.admin__user_delete_email_confirmation}" />
+                                    <h:inputText
+                                        value="#{adminBean.emailConfirmation}"
+                                        id="emailConfirmation"
+                                        label="emailConfirmation"
+                                        styleClass="form-control"
+                                        required="true"
+                                        requiredMessage="#{msg.admin__error_email_mismatch}" />
+                                </div>
+
+                                <div class="user-settings__panel-foot">
+                                    <button
+                                        id="deleteUserButton"
+                                        jsf:styleClass="btn btn--danger"
+                                        jsf:action="#{adminBean.deleteUserAction(userBean.user.copy, adminBean.deleteUserContributions)}">
+                                        #{msg.admin__user_delete_permanently}
+                                    </button>
+                                </div>
+                            </div>
+                        </h:form>
+                    </div>
+                </div>
             </ui:fragment>
         </div>
     </ui:define>
 
-    <ui:define name="sidebar">
-        <ui:fragment rendered="#{userBean.loggedIn}">
-            <!-- USER AVATAR -->
-            <facelet:userAvatar user="#{userBean.user.copy}" />
-
-            <!-- CROWDSOURCING USER SETTINGS (E-MAIL NOTIFICATIONS) -->
-            <c:forEach
-                var="module"
-                items="#{configurationBean.modules}">
-                <!-- Render the box only if the module contributes at least one user settings widget -->
-                <ui:fragment rendered="#{not empty module.getWidgets('userSettings')}">
-                    <div class="user-settings__crowdsourcing-box">
-                        <c:forEach
-                            var="contribution"
-                            items="#{module.getWidgets('userSettings')}">
-                            <ui:include src="/#{contribution}" />
-                        </c:forEach>
-                    </div>
-                </ui:fragment>
-            </c:forEach>
-        </ui:fragment>
-    </ui:define>
+    <ui:define name="sidebar" />
 </ui:composition>

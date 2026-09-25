@@ -69,6 +69,7 @@ import io.goobi.viewer.model.security.authentication.LoginResult;
 import io.goobi.viewer.model.security.authentication.OpenIdProvider;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.model.security.user.UserGroup;
+import io.goobi.viewer.model.security.user.icon.UserAvatarOption;
 import io.goobi.viewer.model.transkribus.TranskribusUtils;
 import io.goobi.viewer.model.urlresolution.ViewHistory;
 import io.goobi.viewer.model.urlresolution.ViewerPath;
@@ -83,6 +84,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 
 /**
  * JSF session-scoped backing bean responsible for user authentication, registration, and account management. Holds the currently logged-in
@@ -119,6 +121,8 @@ public class UserBean implements Serializable {
      * The logged in user.
      */
     private User user;
+
+    private transient Part uploadedAvatarFile;
     private String nickName;
     private String email;
     private transient String password;
@@ -1311,6 +1315,97 @@ public class UserBean implements Serializable {
         this.logout();
         Messages.info(messageKey);
 
+    }
+
+    /**
+     * Stores the avatar source the user just picked.
+     *
+     * The value itself is already set through the value binding of the radio group; changing the
+     * avatar is a self-contained action, so it is persisted here instead of waiting for the profile
+     * form to be submitted.
+     */
+    public void saveAvatarOptionAction() {
+        if (user == null) {
+            return;
+        }
+        persistAvatar();
+    }
+
+    /**
+     * Stores the file the user just picked as their local avatar image and selects it as the source.
+     */
+    public void uploadAvatarFileAction() {
+        if (user == null || uploadedAvatarFile == null) {
+            return;
+        }
+        try {
+            user.setAvatarFile(uploadedAvatarFile);
+        } catch (IOException e) {
+            logger.error("Error storing avatar file: {}", e.toString());
+            Messages.error(ViewerResourceBundle.getTranslation("errSave", null));
+            return;
+        } finally {
+            uploadedAvatarFile = null;
+        }
+        user.setAvatarType(UserAvatarOption.LOCAL);
+        persistAvatar();
+    }
+
+    /**
+     * Removes the user's local avatar image and falls back to the default source.
+     */
+    public void deleteAvatarFileAction() {
+        if (user == null) {
+            return;
+        }
+        try {
+            user.deleteAvatarFile();
+        } catch (IOException e) {
+            logger.error("Error deleting avatar file: {}", e.toString());
+        }
+        user.setLocalAvatarUpdated(null);
+        user.setAvatarType(UserAvatarOption.DEFAULT);
+        persistAvatar();
+    }
+
+    /**
+     * Writes the current user's avatar fields to the database and mirrors them onto the working copy
+     * the profile form edits, so that submitting that form later does not restore the previous avatar.
+     */
+    private void persistAvatar() {
+        try {
+            if (DataManager.getInstance().getDao().updateUser(user) == null) {
+                Messages.error(ViewerResourceBundle.getTranslation("errSave", null));
+                return;
+            }
+        } catch (DAOException e) {
+            logger.error("Error saving avatar: {}", e.toString());
+            Messages.error(ViewerResourceBundle.getTranslation("errSave", null));
+            return;
+        }
+        User copy = user.getCopy();
+        if (copy != null) {
+            copy.setAvatarType(user.getAvatarType());
+            copy.setLocalAvatarUpdated(user.getLocalAvatarUpdated());
+        }
+    }
+
+    /**
+     * Setter for the field <code>uploadedAvatarFile</code>.
+     *
+     * @param uploadedAvatarFile the uploaded file part containing the new avatar image
+     */
+    public void setUploadedAvatarFile(Part uploadedAvatarFile) {
+        this.uploadedAvatarFile = uploadedAvatarFile;
+    }
+
+    /**
+     * Getter for the field <code>uploadedAvatarFile</code>.
+     *
+     * @return the uploaded file part containing the new avatar image, or null if none uploaded
+     */
+    public Part getUploadedAvatarFile() {
+        return uploadedAvatarFile;
     }
 
     /**

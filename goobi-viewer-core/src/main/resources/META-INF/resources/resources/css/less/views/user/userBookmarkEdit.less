@@ -3,35 +3,64 @@
    style declarations for userBackendEditBookmarkList.xhtml
    ==============================================================*/
 /* USER BOOKMARK EDIT */
-/* BLOCK */
 .user-bookmark-edit {
-    /* ELEMENT */
-    h1 {
+    /* PANEL */
+    &__panel {
+        margin-bottom: 2rem;
+        background-color: var(--bg-content-box);
+        color: var(--fg-content-box);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-container);
+        box-shadow: var(--shadow-container);
     }
-    &__form {
-        padding: 30px 15px;
-        border: 1px solid var(--border-strong);
-        form {
-            width: 80%;
-            margin: 0 auto;
+
+    /* FIELDS */
+    &__field {
+        padding: 1.6rem 2rem;
+        & + .user-bookmark-edit__field {
+            border-top: 1px solid var(--border-faint);
         }
     }
-    .control-label {
-        font-weight: normal;
+    &__label {
+        display: block;
+        margin-bottom: 0.6rem;
+        color: var(--fg-heading-content-box);
+        font-weight: 600;
     }
-    .form-control {
-        height: 48px;
+    &__choice {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        label {
+            margin-bottom: 0;
+            color: var(--fg-heading-content-box);
+            font-weight: 600;
+        }
     }
-    textarea {
-        min-height: 125px;
+    textarea.form-control {
+        min-height: 10rem;
         resize: vertical;
     }
-    &__action {
-        text-align: right;
+    select.form-control[multiple] {
+        min-height: 10rem;
     }
-    &__action {
-        .btn {
-            margin-left: 10px;
+
+    /* ACTIONS */
+    &__panel-foot {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1.4rem 2rem;
+        background-color: var(--bg-subtle);
+        border-top: 1px solid var(--border-default);
+        border-radius: 0 0 var(--radius-container) var(--radius-container);
+    }
+    &__cancel {
+        color: var(--fg-secondary);
+        &:hover,
+        &:focus-visible {
+            color: var(--fg-general);
+            text-decoration: underline;
         }
     }
 }
@@ -50,4 +79,11 @@
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
+    .user-bookmark-edit {
+        &__field,
+        &__panel-foot {
+            padding-left: 1.4rem;
+            padding-right: 1.4rem;
+        }
+    }
 }

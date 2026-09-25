@@ -6,21 +6,22 @@
     xmlns:o="http://omnifaces.org/ui"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:util="http://goobi.io/util"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <h:panelGroup
         id="userAvatarPreview"
         layout="block"
-        styleClass="user-settings__profile-image-box">
+        styleClass="profile-picture__box">
         <img
-            class="user-settings__profile-image"
+            class="profile-picture__image"
             src="#{user.getAvatarUrl(300)}"
             alt="User Avatar" />
         <button
             data-toggle="modal"
             data-backdrop="false"
             data-target="#changeProfilePicture"
-            class="btn btn--default user-settings__profile-image-edit-button">
+            class="btn btn--default profile-picture__edit-button">
             #{msg.user_change_profile_picture}
         </button>
     </h:panelGroup>
@@ -46,8 +47,8 @@
                         type="button"
                         class="fancy-close"
                         data-dismiss="modal"
-                        aria-label="Close">
-                        <span aria-hidden="true">x</span>
+                        aria-label="#{msg.overlay__close}">
+                        <util:icon icon="x" />
                     </button>
                 </div>
                 <div class="modal-body">
@@ -56,9 +57,9 @@
                     <h:panelGroup
                         layout="block"
                         id="avatarModeGroup"
-                        styleClass="user-settings__image-actions-wrapper">
+                        styleClass="profile-picture__actions-wrapper">
                         <h:form id="changeAvatarForm">
-                            <div class="form-group user-settings__choose-image-option">
+                            <div class="form-group profile-picture__choose-option">
                                 <div class="connected-top">
                                     <!-- STANDARD PLACEHOLDER PERSON IMAGE -->
                                     <h:selectOneRadio
@@ -100,7 +101,7 @@
 
                         <h:panelGroup
                             layout="block"
-                            styleClass="user-settings__edit-image-default-wrapper"
+                            styleClass="profile-picture__edit-default"
                             rendered="#{user.avatarType != 'LOCAL'}">
                             <img
                                 src="#{user.avatarUrl}"
@@ -110,7 +111,7 @@
 
                         <h:panelGroup
                             layout="block"
-                            styleClass="user-settings__edit-image-wrapper"
+                            styleClass="profile-picture__edit"
                             id="mediaGroup"
                             rendered="#{user.avatarType == 'LOCAL'}">
                             <h:form
@@ -119,7 +120,7 @@
                                 enctype="multipart/form-data">
                                 <!-- THUMBNAIL -->
                                 <ui:fragment rendered="#{user.hasLocalAvatarImage()}">
-                                    <div class="user-settings__image-thumbnail">
+                                    <div class="profile-picture__thumbnail">
                                         <img
                                             src="#{user.avatarUrl}"
                                             class="img-fluid"
@@ -128,11 +129,11 @@
                                 </ui:fragment>
 
                                 <!-- ACTIONS -->
-                                <div class="user-settings__image-actions">
-                                    <div class="user-settings__upload-button-wrapper">
+                                <div class="profile-picture__actions">
+                                    <div class="profile-picture__upload">
                                         <div class="btn btn--default">#{msg.admin__cms_collections_image_mode_upload}</div>
                                         <o:inputFile
-                                            styleClass="user-settings__upload-button-input"
+                                            styleClass="profile-picture__upload-input"
                                             id="localFileUpload"
                                             accept="image/png,image/jpeg,image/tiff"
                                             maxsize="#{16*1024*1024}"
@@ -145,7 +146,7 @@
                                     </div>
 
                                     <h:commandLink
-                                        styleClass="user-settings__delete-image-button"
+                                        styleClass="profile-picture__delete"
                                         value="#{msg.delete}"
                                         rendered="#{user.hasLocalAvatarImage()}"
                                         action="#{user.deleteAvatarFile}">
