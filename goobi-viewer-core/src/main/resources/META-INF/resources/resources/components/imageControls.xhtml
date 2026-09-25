@@ -230,6 +230,25 @@
                                     <span class="labeltext">#{msg.resetImage}</span>
                                 </button>
                             </li>
+                            <!-- DOWNLOAD CANVAS -->
+                            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
+                                <li class="image-controls__action download-canvas-content">
+                                    <button
+                                        type="button"
+                                        class="btn btn--clear"
+                                        data-toggle="tooltip"
+                                        data-placement="#{cc.attrs.tooltipPlacement}"
+                                        title="#{msg.action__download_image_view}"
+                                        tabindex="0"
+                                        aria-label="#{msg.action__download_image_view}">
+                                        <util:icon
+                                            icon="download"
+                                            styleClass="image-controls__icon"
+                                            svgClass="image-controls__icon-svg" />
+                                        <span class="labeltext">#{msg.action__download_image_view}</span>
+                                    </button>
+                                </li>
+                            </ui:fragment>
                             <!-- FULLSCREEN -->
                             <ui:fragment rendered="#{navigationHelper.currentPage != 'fullscreen'}">
                                 <li class="image-controls__action enter-fullscreen">
@@ -364,8 +383,7 @@
 
                     <ui:fragment rendered="#{navigationHelper.currentPage != 'fulltext'}">
                         <!-- FULLTEXT -->
-                        <ui:fragment
-                            rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
+                        <ui:fragment rendered="#{activeDocumentBean.viewManager.belowFulltextThreshold and activeDocumentBean.viewManager.currentPage.fulltextAvailable}">
                             <li class="image-controls__option fulltext">
                                 <h:outputLink
                                     styleClass="btn btn--icon image-controls__fulltext-link"

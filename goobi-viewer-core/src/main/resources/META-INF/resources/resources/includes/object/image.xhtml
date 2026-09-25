@@ -24,7 +24,8 @@
             data-image-show-navigator="#{configurationBean.showImageNavigator(navigationHelper.currentPage, activeDocumentBean.viewManager)}"
             data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}"
             data-allow-zoom="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}"
-            data-max-zoom="#{activeDocumentBean.viewManager.currentPage.getMaxImageZoom(navigationHelper.currentPageType)}">
+            data-max-zoom="#{activeDocumentBean.viewManager.currentPage.getMaxImageZoom(navigationHelper.currentPageType)}"
+            data-download-filename="#{activeDocumentBean.viewManager.currentPage.fileNameBase}.jpg">
             <div
                 id="mainImageData"
                 class="d-none">
