@@ -737,7 +737,7 @@
         }
 
         loadExplorer() {
-            const explorer = `<voyager-explorer id='voyager' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none;' document='${this.getSceneUrl()}' uiMode='menu' resourceRoot='${this.resourcePath}'></voyager-explorer>`;
+            const explorer = `<voyager-explorer id='voyager' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none; color:lightgray;' document='${this.getSceneUrl()}' uiMode='menu' resourceRoot='${this.resourcePath}'></voyager-explorer>`;
 
             show(this.loadStoryButton);
             hide(this.closeStoryButton);
@@ -757,7 +757,7 @@
         }
 
         loadStory() {
-            const story = `<voyager-story id='voyagerStory' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none;' document='${this.getSceneUrl()}'></voyager-story>`;
+            const story = `<voyager-story id='voyagerStory' bgcolor='#015999 #000' bgstyle='LinearGradient' style='display:none; color:lightgray;' document='${this.getSceneUrl()}'></voyager-story>`;
 
             hide(this.loadStoryButton);
             show(this.closeStoryButton);
