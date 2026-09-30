@@ -64,7 +64,6 @@
             </span>
         </button>
     </div>
-
     <div
         id="objectContainer"
         class="view-object__object-3d -setBorderTop">
@@ -73,6 +72,7 @@
             <div
                 id="world"
                 class="view-object__object-3d-world"
+                lang="#{navigationHelper.localeString}"
                 data-resource-path="#{request.contextPath}/resources/javascript/libs/voyager/"
                 data-object-url="#{activeDocumentBean.viewManager.currentObjectUrl}"
                 data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}">
