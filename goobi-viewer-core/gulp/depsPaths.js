@@ -369,6 +369,15 @@ const depsPathsJS = [
         flatten: false,
         dest: `${jsLibsDir}`,
     },
+	
+	{
+	    // PODLOVE PLAYER
+	    expand: true,
+	    cwd: nodeModules,
+	    src: ['@podlove/web-player/embed.js'],
+	    flatten: true,
+	    dest: `${jsLibsDir}podlove-player/`,
+	}
 ];
 
 /////////////////////
@@ -513,7 +522,7 @@ const depsPathsCSS = [
         src: ['swiper/swiper-bundle.min.css'],
         flatten: true,
         dest: `${cssLibsDir}swiper/`,
-    },
+    }
 ];
 
 const tablerIconSources = [
