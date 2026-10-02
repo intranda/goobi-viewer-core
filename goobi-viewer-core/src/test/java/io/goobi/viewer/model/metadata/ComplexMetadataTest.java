@@ -31,10 +31,13 @@ import java.util.stream.IntStream;
 
 import org.apache.solr.common.SolrDocument;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import io.goobi.viewer.solr.SolrConstants;
 import io.goobi.viewer.solr.SolrConstants.DocType;
 
+@Execution(ExecutionMode.CONCURRENT)
 class ComplexMetadataTest {
 
     private static final String YEAR = "1972";

@@ -30,7 +30,10 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
+@Execution(ExecutionMode.CONCURRENT)
 class PagePermissionsTest {
 
     // --- EMPTY sentinel ---

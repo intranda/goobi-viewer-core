@@ -29,6 +29,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.parallel.ResourceLock;
 
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.dao.impl.H2JdbcDatabaseTester;
@@ -38,6 +39,7 @@ import io.goobi.viewer.dao.impl.TestEntityManagerFactoryHolder;
 /**
  * JUnit test classes that extend this class can use the embedded H2 DBMS server setup with a fixed database.
  */
+@ResourceLock("H2DB")
 public abstract class AbstractDatabaseEnabledTest extends AbstractTest {
 
     /** Number of LicenseType rows in the shared H2 test fixture. */

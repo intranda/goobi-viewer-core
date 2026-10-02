@@ -37,11 +37,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import org.apache.commons.lang3.IntegerRange;
 
 import io.goobi.viewer.solr.SolrTools;
 
+@Execution(ExecutionMode.CONCURRENT)
 class StringToolsTest {
 
     /**

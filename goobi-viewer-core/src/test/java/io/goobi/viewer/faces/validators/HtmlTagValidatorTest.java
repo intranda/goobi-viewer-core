@@ -23,11 +23,14 @@ package io.goobi.viewer.faces.validators;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * @author Florian Alpers
  *
  */
+@Execution(ExecutionMode.CONCURRENT)
 class HtmlTagValidatorTest {
 
     /**

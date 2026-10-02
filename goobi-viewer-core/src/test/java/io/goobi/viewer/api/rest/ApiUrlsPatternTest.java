@@ -32,6 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 // Imported under its short name; only v2.ApiUrls collides and stays fully-qualified inline below.
 import io.goobi.viewer.api.rest.v1.ApiUrls;
@@ -42,6 +44,7 @@ import io.goobi.viewer.api.rest.v1.ApiUrls;
  * generated OpenAPI/JSON-Schema. Inline flag groups such as {@code (?i)} are valid in Java but rejected by the OpenAPI
  * validator ("Invalid special open parenthesis"), so the case-insensitivity must be expressed with character classes.
  */
+@Execution(ExecutionMode.CONCURRENT)
 class ApiUrlsPatternTest {
 
     /** Matches a JAX-RS path template variable with a regex constraint: {@code {name: regex}}. */

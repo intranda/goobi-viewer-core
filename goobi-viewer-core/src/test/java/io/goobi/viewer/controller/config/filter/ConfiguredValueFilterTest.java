@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import io.goobi.viewer.model.variables.ReplacerVariables;
 import io.goobi.viewer.model.variables.VariableReplacer;
 
+@Execution(ExecutionMode.CONCURRENT)
 class ConfiguredValueFilterTest {
 
     VariableReplacer vr = new VariableReplacer(Map.of(

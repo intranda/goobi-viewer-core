@@ -32,7 +32,10 @@ import java.nio.file.Path;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
+@Execution(ExecutionMode.CONCURRENT)
 class VoyagerSceneBuilderTest {
 
     private static final double DELTA = 1e-6;
