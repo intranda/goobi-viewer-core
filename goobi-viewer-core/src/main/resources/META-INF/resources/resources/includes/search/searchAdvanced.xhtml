@@ -134,20 +134,20 @@
                                                     styleClass="value-text"
                                                     value="#{queryItem.field}"
                                                     valueChangeListener="#{queryItem.selectOneMenuListener}">
-                                                    <c:forEach
+                                                    <f:passThroughAttribute
+                                                        name="aria-label"
+                                                        value="#{msg.searchIn}" />
+                                                    <f:passThroughAttribute
+                                                        name="aria-haspopup"
+                                                        value="listbox" />
+                                                    <!-- f:selectItems instead of c:forEach: the field list is locale-dependent and a changing
+                                                         number of f:selectItem components causes duplicate IDs after a language switch -->
+                                                    <f:selectItems
+                                                        value="#{searchBean.advancedSearchFirstItemAllowedFields}"
                                                         var="field"
-                                                        items="#{searchBean.advancedSearchFirstItemAllowedFields}">
-                                                        <f:passThroughAttribute
-                                                            name="aria-label"
-                                                            value="#{msg.searchIn}" />
-                                                        <f:passThroughAttribute
-                                                            name="aria-haspopup"
-                                                            value="listbox" />
-                                                        <f:selectItem
-                                                            itemValue="#{field.field}"
-                                                            itemLabel="#{msg[field.label]}"
-                                                            itemDisabled="#{field.disabled}" />
-                                                    </c:forEach>
+                                                        itemValue="#{field.field}"
+                                                        itemLabel="#{msg[field.label]}"
+                                                        itemDisabled="#{field.disabled}" />
 
                                                     <f:ajax
                                                         render="searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} advsearch_value_group_0-#{status.index}-#{lineStatus.index}"
@@ -191,20 +191,18 @@
                                                         styleClass="search-advanced__select-values"
                                                         value="#{queryItem.field}"
                                                         valueChangeListener="#{queryItem.selectOneMenuListener}">
-                                                        <c:forEach
+                                                        <f:passThroughAttribute
+                                                            name="aria-label"
+                                                            value="#{msg.searchIn}" />
+                                                        <f:passThroughAttribute
+                                                            name="aria-haspopup"
+                                                            value="listbox" />
+                                                        <f:selectItems
+                                                            value="#{searchBean.advancedSearchAllowedFields}"
                                                             var="field"
-                                                            items="#{searchBean.advancedSearchAllowedFields}">
-                                                            <f:passThroughAttribute
-                                                                name="aria-label"
-                                                                value="#{msg.searchIn}" />
-                                                            <f:passThroughAttribute
-                                                                name="aria-haspopup"
-                                                                value="listbox" />
-                                                            <f:selectItem
-                                                                itemValue="#{field.field}"
-                                                                itemLabel="#{msg[field.label]}"
-                                                                itemDisabled="#{field.disabled}" />
-                                                        </c:forEach>
+                                                            itemValue="#{field.field}"
+                                                            itemLabel="#{msg[field.label]}"
+                                                            itemDisabled="#{field.disabled}" />
                                                         <f:ajax
                                                             render="searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} advsearch_value_group_0-#{status.index}-#{lineStatus.index}"
                                                             onevent="e => {if(e.status == 'success' &amp;&amp; viewerJS.datePicker) viewerJS.datePicker.init()}" />
@@ -317,11 +315,10 @@
                                             layout="block">
                                             <!-- BADGES -->
                                             <ui:fragment rendered="#{queryItem.selectType == 'badges'}">
-                                                <c:forEach
+                                                <ui:repeat
                                                     var="item"
-                                                    items="#{queryItem.getSelectItems(navigationHelper.localeString)}"
-                                                    varStatus="valueStatus">
-                                                    <h:panelGroup id="advsearch_value_group_0-#{status.index}-#{lineStatus.index}-#{valueStatus.index}">
+                                                    value="#{queryItem.getSelectItems(navigationHelper.localeString)}">
+                                                    <h:panelGroup id="advsearch_badge_group">
                                                         <button
                                                             type="button"
                                                             class="btn btn--link search-advanced__button-badge"
@@ -335,10 +332,10 @@
                                                             <ui:fragment rendered="#{!queryItem.isValueSet(item.one)}">
                                                                 <span class="badge badge-light">#{item.two}</span>
                                                             </ui:fragment>
-                                                            <f:ajax render="advsearch_value_group_0-#{status.index}-#{lineStatus.index}-#{valueStatus.index}" />
+                                                            <f:ajax render="advsearch_badge_group" />
                                                         </button>
                                                     </h:panelGroup>
-                                                </c:forEach>
+                                                </ui:repeat>
                                             </ui:fragment>
 
                                             <!-- CHECKBOXES -->
