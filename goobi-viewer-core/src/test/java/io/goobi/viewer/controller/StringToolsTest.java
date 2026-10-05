@@ -33,16 +33,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.IntegerRange;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-
-import org.apache.commons.lang3.IntegerRange;
-
-import io.goobi.viewer.solr.SolrTools;
 
 @Execution(ExecutionMode.CONCURRENT)
 class StringToolsTest {
@@ -320,7 +317,8 @@ class StringToolsTest {
      * @verifies replace +, /, backslash, pipe, and ? with Unicode escape sequences and decode percent-encoding when flagged
      */
     @Test
-    void escapeCriticalUrlChracters_shouldReplacePlusSlashBackslashPipeAndQuestionMarkWithUnicodeEscapeSequencesAndDecodePercentEncodingWhenFlagged() throws Exception {
+    void escapeCriticalUrlChracters_shouldReplacePlusSlashBackslashPipeAndQuestionMarkWithUnicodeEscapeSequencesAndDecodePercentEncodingWhenFlagged()
+            throws Exception {
         assertEquals("U002BAU002FU005CU007CU003FZ", StringTools.escapeCriticalUrlChracters("+A/\\|?Z", false));
         assertEquals("U007C", StringTools.escapeCriticalUrlChracters("%7C", true));
     }
@@ -416,7 +414,7 @@ class StringToolsTest {
         Assertions.assertEquals("abc...", StringTools.truncateText("abc def gh", 6));
         Assertions.assertEquals("abc def...", StringTools.truncateText("abc def ghij", 10));
     }
-    
+
     /**
      * @see StringTools#replaceLast(String, String, String)
      * @verifies return original text if target not found
@@ -425,7 +423,7 @@ class StringToolsTest {
     void replaceLast_shouldReturnOriginalTextIfTargetNotFound() {
         assertEquals("lorem ipsum dolor sit amet", StringTools.replaceLast("lorem ipsum dolor sit amet", "foo", "bar"));
     }
-    
+
     /**
      * @see StringTools#replaceLast(String, String, String)
      * @verifies replace the last occurrence of target substring with replacement
@@ -537,6 +535,15 @@ class StringToolsTest {
     @Test
     void parseIntRange_shouldThrowIllegalArgumentExceptionForInvalidInput() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> StringTools.parseIntRange("abc"));
+    }
+
+    /**
+     * @see StringTools#parseIntRange(String)
+     * @verifies throw IllegalArgumentException for null input
+     */
+    @Test
+    void parseIntRange_shouldThrowIllegalArgumentExceptionForNullInput() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> StringTools.parseIntRange(null));
     }
 
     /**

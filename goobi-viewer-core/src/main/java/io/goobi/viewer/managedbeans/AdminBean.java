@@ -322,7 +322,7 @@ public class AdminBean implements Serializable {
                 user.setNewPassword(passwordOne);
 
             }
-            if (DataManager.getInstance().getDao().addUser(user)) {
+            if (DataManager.getInstance().getDao().addUser(user) != null) {
                 Messages.info("newUserCreated");
                 currentPassword = null;
                 passwordOne = "";
@@ -443,7 +443,7 @@ public class AdminBean implements Serializable {
                 return "pretty:adminGroupEdit";
             }
         } else {
-            if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup())) {
+            if (DataManager.getInstance().getDao().addUserGroup(getCurrentUserGroup()) != null) {
                 Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -501,7 +501,7 @@ public class AdminBean implements Serializable {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
             }
         } else {
-            if (DataManager.getInstance().getDao().addRole(getCurrentRole())) {
+            if (DataManager.getInstance().getDao().addRole(getCurrentRole()) != null) {
                 Messages.info(StringConstants.MSG_ADMIN_ADDED_SUCCESSFULLY);
             } else {
                 Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
@@ -620,7 +620,7 @@ public class AdminBean implements Serializable {
                 // If the user group is not yet persisted, add it to DB first
                 if (userRole.getUserGroup() != null && userRole.getUserGroup().getId() == null) {
                     logger.trace("adding new user group: {}", userRole.getUserGroup());
-                    if (!DataManager.getInstance().getDao().addUserGroup(userRole.getUserGroup())) {
+                    if (DataManager.getInstance().getDao().addUserGroup(userRole.getUserGroup()) == null) {
                         logger.error("Could not save UserRole: {}", userRole);
                         Messages.info(StringConstants.MSG_ADMIN_SAVE_ERROR);
                         continue;
@@ -635,7 +635,7 @@ public class AdminBean implements Serializable {
                     }
                 } else {
                     // new
-                    if (DataManager.getInstance().getDao().addUserRole(userRole)) {
+                    if (DataManager.getInstance().getDao().addUserRole(userRole) != null) {
                         Messages.info("userGroup_memberAddSuccess");
                     } else {
                         Messages.error("userGroup_memberAddFailure");

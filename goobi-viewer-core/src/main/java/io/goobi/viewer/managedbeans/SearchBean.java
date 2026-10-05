@@ -2662,7 +2662,7 @@ public class SearchBean implements SearchInterface, Serializable {
             currentSearch.setOwner(ub.getUser());
         }
         currentSearch.setDateUpdated(DateTools.now());
-        if (DataManager.getInstance().getDao().addSearch(currentSearch)) {
+        if (DataManager.getInstance().getDao().addSearch(currentSearch) != null) {
             currentSearch.setSaved(true);
             Messages.info("saveSearchSuccess");
         } else {
