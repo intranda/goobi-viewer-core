@@ -43,7 +43,6 @@ import de.intranda.api.services.Service;
 import de.unigoettingen.sub.commons.cache.ContentServerCacheManager;
 import de.unigoettingen.sub.commons.contentlib.exceptions.ContentLibException;
 import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
-import de.unigoettingen.sub.commons.contentlib.imagelib.ImageFileFormat;
 import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Region;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.ContentServerBinding;
@@ -67,6 +66,8 @@ import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.faces.validators.PIValidator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.RequiredPrivileges;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 import jakarta.ws.rs.BadRequestException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -120,12 +121,8 @@ public class RecordsFilesImageResource extends ImageResource {
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
         request.setAttribute(FilterTools.ATTRIBUTE_FILENAME, filename);
         request.setAttribute(ImageResource.IIIF_VERSION, "3.0");
-        //Privilege must be PRIV_BORN_DIGITAL for born digital PDFs, and PRIV_VIEW_IMAGES otherwise (i.e. for images)
-        if (ImageFileFormat.PDF.equals(ImageFileFormat.getImageFileFormatFromFileExtension(filename))) {
-            request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
-        } else {
-            request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, IPrivilegeHolder.PRIV_VIEW_IMAGES);
-        }
+        // Born-digital download resources require PRIV_DOWNLOAD_BORN_DIGITAL_FILES, pages PRIV_VIEW_IMAGES, independent of the file type
+        request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE, getRequiredPrivileges(IPrivilegeHolder.PRIV_VIEW_IMAGES));
 
         String requestUrl = request.getRequestURI();
         String baseImageUrl = RECORDS_FILES_IMAGE.replace("{pi}", pi).replace("{filename}", filename);
@@ -149,7 +146,7 @@ public class RecordsFilesImageResource extends ImageResource {
                     && (!(Region.FULL_IMAGE.equals(region) || Region.SQUARE_IMAGE.equals(region))
                             || scaleWidth.orElse(Integer.MAX_VALUE) > maxUnzoomedImageWidth)) {
                 request.setAttribute(AccessConditionRequestFilter.REQUIRED_PRIVILEGE,
-                        new String[] { IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES });
+                        getRequiredPrivileges(IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES));
             }
         } else {
             //image info request
@@ -303,5 +300,19 @@ public class RecordsFilesImageResource extends ImageResource {
             throw new BadRequestException("Invalid record identifier: " + pi);
         }
         return pi;
+    }
+
+    /**
+     * Privileges required for requests to this resource. Which ones apply is decided by the access check based on the DOCTYPE of the Solr document
+     * listing the requested file: files of {@link DocType#DOWNLOAD_RESOURCE} documents require
+     * {@link IPrivilegeHolder#PRIV_DOWNLOAD_BORN_DIGITAL_FILES}, all others (i.e. pages) the given privileges.
+     *
+     * @param pagePrivileges privileges required for page files
+     * @return {@link RequiredPrivileges}
+     * @should require born digital privilege for download resources
+     * @should require given privileges for pages
+     */
+    static RequiredPrivileges getRequiredPrivileges(String... pagePrivileges) {
+        return RequiredPrivileges.of(pagePrivileges).withDocType(DocType.DOWNLOAD_RESOURCE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
     }
 }
