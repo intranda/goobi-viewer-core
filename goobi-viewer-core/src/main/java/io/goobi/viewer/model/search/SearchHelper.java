@@ -95,7 +95,6 @@ import io.goobi.viewer.model.search.SearchQueryItem.SearchItemOperator;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.goobi.viewer.model.security.LicenseType;
-import io.goobi.viewer.model.security.LicenseTypeCache;
 import io.goobi.viewer.model.security.clients.ClientApplication;
 import io.goobi.viewer.model.security.clients.ClientApplicationManager;
 import io.goobi.viewer.model.security.user.User;
@@ -205,7 +204,6 @@ public final class SearchHelper {
     private static final Pattern PATTERN_RANGE_PAIRS =
             Pattern.compile("(\\w++:\\(\\[[\\wäáàâöóòôüúùûëéèêßñ]++ TO [\\wäáàâöóòôüúùûëéèêßñ]++\\]\\))"); //NOSONAR
 
-    
     private SearchHelper() {
         //
     }
@@ -586,12 +584,10 @@ public final class SearchHelper {
     }
 
     /**
-     * Returns true if the given search terms map contains any entry that represents a user-entered
-     * text term worth highlighting (DEFAULT / FULLTEXT / NORMDATATERMS / UGCTERMS / SEARCHTERMS_ARCHIVE
-     * / CMS_TEXT_ALL, or any explicit MD_* field term). Structural-only fields like PI_ANCHOR,
-     * PI_TOPSTRUCT, DC, DOCSTRCT, DOCTYPE, TITLE_TERMS are ignored, because
-     * {@link #extractSearchTermsFromQuery(String, String)} adds those automatically from the
-     * assembled query even when the user did not type anything.
+     * Returns true if the given search terms map contains any entry that represents a user-entered text term worth highlighting (DEFAULT / FULLTEXT /
+     * NORMDATATERMS / UGCTERMS / SEARCHTERMS_ARCHIVE / CMS_TEXT_ALL, or any explicit MD_* field term). Structural-only fields like PI_ANCHOR,
+     * PI_TOPSTRUCT, DC, DOCSTRCT, DOCTYPE, TITLE_TERMS are ignored, because {@link #extractSearchTermsFromQuery(String, String)} adds those
+     * automatically from the assembled query even when the user did not type anything.
      *
      * @param searchTerms map extracted from the current query
      * @return true if a text-highlightable term is present; false otherwise
@@ -1127,7 +1123,8 @@ public final class SearchHelper {
     /**
      * Search method for auto suggestion.
      *
-     * <p><li>First search in field "DEFAULT" and analyze values tokenized, check with startsWith</li>
+     * <p>
+     * <li>First search in field "DEFAULT" and analyze values tokenized, check with startsWith</li>
      * <li>Then search in field "TITLE" and check with contains</li>
      *
      * @param suggest the search string to suggest completions for
@@ -1284,8 +1281,8 @@ public final class SearchHelper {
 
     /**
      * Computes the personal access-filter suffix for the given privilege and request <b>freshly</b>, i.e. without reading or writing the
-     * session-cached suffix (which only ever holds the {@link IPrivilegeHolder#PRIV_LIST} suffix). Use this to constrain a query by an
-     * additional privilege such as {@link IPrivilegeHolder#PRIV_DOWNLOAD_METADATA} on top of the standard listing filter.
+     * session-cached suffix (which only ever holds the {@link IPrivilegeHolder#PRIV_LIST} suffix). Use this to constrain a query by an additional
+     * privilege such as {@link IPrivilegeHolder#PRIV_DOWNLOAD_METADATA} on top of the standard listing filter.
      *
      * @param request current HTTP servlet request (may be null)
      * @param privilege privilege to check
@@ -1891,9 +1888,9 @@ public final class SearchHelper {
     }
 
     /**
-     * Returns the live number of volumes belonging to the given anchor, i.e. the current count of ISWORK records that
-     * reference it via PI_PARENT. Computed at query time rather than read from the anchor's stored NUMVOLUMES field,
-     * so it reflects volumes added or removed since the anchor was last (re-)indexed.
+     * Returns the live number of volumes belonging to the given anchor, i.e. the current count of ISWORK records that reference it via PI_PARENT.
+     * Computed at query time rather than read from the anchor's stored NUMVOLUMES field, so it reflects volumes added or removed since the anchor was
+     * last (re-)indexed.
      *
      * @param anchorPi PI of the anchor record
      * @return the current number of volumes
@@ -3714,8 +3711,8 @@ public final class SearchHelper {
     }
 
     /**
-     * Exports the given search results as CSV, one row per record. Columns are the fields configured under
-     * {@code <export><format name="csv">}. Mirrors {@link #exportSearchAsExcel} but writes RFC-4180 CSV via Jackson.
+     * Exports the given search results as CSV, one row per record. Columns are the fields configured under {@code <export><format name="csv">}.
+     * Mirrors {@link #exportSearchAsExcel} but writes RFC-4180 CSV via Jackson.
      *
      * @param writer output writer to receive the CSV
      * @param finalQuery Complete query with suffixes.
@@ -3774,8 +3771,8 @@ public final class SearchHelper {
     }
 
     /**
-     * Guards against CSV/formula injection by prefixing a value with a single quote when it starts with a character that spreadsheet
-     * applications may interpret as the beginning of a formula.
+     * Guards against CSV/formula injection by prefixing a value with a single quote when it starts with a character that spreadsheet applications may
+     * interpret as the beginning of a formula.
      *
      * @param value the raw cell value (never null)
      * @return the value, prefixed with {@code '} if it begins with a risky character
@@ -3862,7 +3859,7 @@ public final class SearchHelper {
      * @should preserve negation
      */
     public static String cleanUpSearchTerm(final String term) {
-        String s = term;
+        String s = term == null ? "" : term;
         if (StringUtils.isNotEmpty(s)) {
             boolean addNegation = false;
             boolean addLeftTruncation = false;

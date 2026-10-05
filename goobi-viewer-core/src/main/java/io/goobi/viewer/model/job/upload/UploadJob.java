@@ -219,7 +219,7 @@ public class UploadJob implements Serializable {
                 setStatus(JobStatus.WAITING);
                 setProcessId(cr.getProcessId());
                 setDateCreated(DateTools.now());
-                if (DataManager.getInstance().getDao().addUploadJob(this)) {
+                if (DataManager.getInstance().getDao().addUploadJob(this) != null) {
                     return;
                 }
             } catch (NumberFormatException e) {

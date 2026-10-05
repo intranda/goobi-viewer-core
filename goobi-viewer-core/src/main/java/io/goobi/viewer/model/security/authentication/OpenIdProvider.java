@@ -283,7 +283,7 @@ public class OpenIdProvider extends HttpAuthenticationProvider {
                 }
                 // Add to bean and persist
                 if (user.getId() == null) {
-                    if (!DataManager.getInstance().getDao().addUser(user)) {
+                    if (DataManager.getInstance().getDao().addUser(user) == null) {
                         logger.error("Could not add user to DB.");
                     }
                 } else {

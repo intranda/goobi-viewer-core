@@ -569,17 +569,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addUser(User user) throws DAOException {
+    public User addUser(User user) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(user);
             commitTransaction(em);
-            return true;
+            return user;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -644,17 +644,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException {
+    public io.goobi.viewer.model.security.user.UserToken addUserToken(io.goobi.viewer.model.security.user.UserToken token) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(token);
             commitTransaction(em);
-            return true;
+            return token;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -866,7 +866,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addUserGroup(UserGroup userGroup) throws DAOException {
+    public UserGroup addUserGroup(UserGroup userGroup) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -875,11 +875,11 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return userGroup;
     }
 
     /**
@@ -1061,7 +1061,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addBookmarkList(BookmarkList bookmarkList) throws DAOException {
+    public BookmarkList addBookmarkList(BookmarkList bookmarkList) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -1070,11 +1070,11 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return bookmarkList;
     }
 
     /** {@inheritDoc} */
@@ -1205,7 +1205,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addRole(Role role) throws DAOException {
+    public Role addRole(Role role) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -1214,11 +1214,11 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return role;
     }
 
     /** {@inheritDoc} */
@@ -1378,7 +1378,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addUserRole(UserRole userRole) throws DAOException {
+    public UserRole addUserRole(UserRole userRole) throws DAOException {
         logger.trace("addUserRole: {}", userRole);
         preQuery();
         EntityManager em = getEntityManager();
@@ -1388,11 +1388,11 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return userRole;
     }
 
     /** {@inheritDoc} */
@@ -2057,18 +2057,18 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addTicket(AccessTicket ticket) throws DAOException {
+    public AccessTicket addTicket(AccessTicket ticket) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(ticket);
             commitTransaction(em);
-            return true;
+            return ticket;
         } catch (PersistenceException e) {
             logger.error(e.getMessage());
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -2370,18 +2370,18 @@ public class JPADAO implements IDAO {
      * @see io.goobi.viewer.dao.IDAO#addCommentGroup(io.goobi.viewer.model.annotation.comments.CommentGroup)
      */
     @Override
-    public boolean addCommentGroup(CommentGroup commentGroup) throws DAOException {
+    public CommentGroup addCommentGroup(CommentGroup commentGroup) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(commentGroup);
             commitTransaction(em);
-            return true;
+            return commentGroup;
         } catch (PersistenceException e) {
             logger.error(e.toString(), e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -2595,18 +2595,18 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addComment(Comment comment) throws DAOException {
+    public Comment addComment(Comment comment) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(comment);
             commitTransaction(em);
-            return true;
+            return comment;
         } catch (PersistenceException e) {
             logger.error(e.toString(), e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -2914,7 +2914,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addSearch(Search search) throws DAOException {
+    public Search addSearch(Search search) throws DAOException {
         logger.debug("addSearch: {}", search.getQuery());
         preQuery();
         EntityManager em = getEntityManager();
@@ -2924,11 +2924,11 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return search;
     }
 
     /** {@inheritDoc} */
@@ -3022,7 +3022,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addUploadJob(UploadJob uploadJob) throws DAOException {
+    public UploadJob addUploadJob(UploadJob uploadJob) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
@@ -3032,11 +3032,11 @@ public class JPADAO implements IDAO {
         } catch (PersistenceException e) {
             logger.trace(e.getMessage(), e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return uploadJob;
     }
 
     /** {@inheritDoc} */
@@ -3439,7 +3439,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
+    public PersistentCMSComponent addCMSComponent(PersistentCMSComponent persistentCMSComponent) throws DAOException {
         synchronized (cmsRequestLock) {
 
             preQuery();
@@ -3448,11 +3448,11 @@ public class JPADAO implements IDAO {
                 startTransaction(em);
                 em.persist(persistentCMSComponent);
                 commitTransaction(em);
-                return true;
+                return persistentCMSComponent;
             } catch (PersistenceException e) {
                 logger.error("Error adding cmsPage to database", e);
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -3548,7 +3548,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addCMSMediaItem(CMSMediaItem item) throws DAOException {
+    public CMSMediaItem addCMSMediaItem(CMSMediaItem item) throws DAOException {
         synchronized (cmsRequestLock) {
 
             preQuery();
@@ -3557,10 +3557,10 @@ public class JPADAO implements IDAO {
                 startTransaction(em);
                 em.persist(item);
                 commitTransaction(em);
-                return true;
+                return item;
             } catch (PersistenceException e) {
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -3663,7 +3663,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addCMSNavigationItem(CMSNavigationItem item) throws DAOException {
+    public CMSNavigationItem addCMSNavigationItem(CMSNavigationItem item) throws DAOException {
         synchronized (cmsRequestLock) {
 
             preQuery();
@@ -3672,10 +3672,10 @@ public class JPADAO implements IDAO {
                 startTransaction(em);
                 em.persist(item);
                 commitTransaction(em);
-                return true;
+                return item;
             } catch (PersistenceException e) {
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -3793,17 +3793,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addTranskribusJob(TranskribusJob job) throws DAOException {
+    public TranskribusJob addTranskribusJob(TranskribusJob job) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(job);
             commitTransaction(em);
-            return true;
+            return job;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -4464,17 +4464,17 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      */
     @Override
-    public boolean addStaticPage(CMSStaticPage page) throws DAOException {
+    public CMSStaticPage addStaticPage(CMSStaticPage page) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(page);
             commitTransaction(em);
-            return true;
+            return page;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -4821,17 +4821,17 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addDynamicCollection(DynamicCollection collection) throws DAOException {
+    public DynamicCollection addDynamicCollection(DynamicCollection collection) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(collection);
             commitTransaction(em);
-            return true;
+            return collection;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -5091,17 +5091,17 @@ public class JPADAO implements IDAO {
      * Persist a new {@link CMSCategory} object
      */
     @Override
-    public boolean addCategory(CMSCategory category) throws DAOException {
+    public CMSCategory addCategory(CMSCategory category) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(category);
             commitTransaction(em);
-            return true;
+            return category;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -5688,9 +5688,9 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
+    public CrowdsourcingAnnotation addAnnotation(CrowdsourcingAnnotation annotation) throws DAOException {
         if (getAnnotation(annotation.getId()) != null) {
-            return false;
+            return null;
         }
         preQuery();
         EntityManager em = getEntityManager();
@@ -5700,11 +5700,11 @@ public class JPADAO implements IDAO {
             commitTransaction(em);
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
-        return true;
+        return annotation;
     }
 
     /** {@inheritDoc} */
@@ -6081,19 +6081,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addRecordNote(CMSRecordNote note) throws DAOException {
+    public CMSRecordNote addRecordNote(CMSRecordNote note) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(note);
             commitTransaction(em);
-            return true;
+            return note;
         } catch (IllegalArgumentException e) {
-            return false;
+            return null;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -6180,19 +6180,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addSlider(CMSSlider slider) throws DAOException {
+    public CMSSlider addSlider(CMSSlider slider) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(slider);
             commitTransaction(em);
-            return true;
+            return slider;
         } catch (IllegalArgumentException e) {
-            return false;
+            return null;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -6302,19 +6302,19 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addTheme(ThemeConfiguration theme) throws DAOException {
+    public ThemeConfiguration addTheme(ThemeConfiguration theme) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(theme);
             commitTransaction(em);
-            return true;
+            return theme;
         } catch (IllegalArgumentException e) {
-            return false;
+            return null;
         } catch (PersistenceException e) {
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -6395,7 +6395,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addCustomWidget(CustomSidebarWidget widget) throws DAOException {
+    public CustomSidebarWidget addCustomWidget(CustomSidebarWidget widget) throws DAOException {
         synchronized (cmsRequestLock) {
             preQuery();
             EntityManager em = getEntityManager();
@@ -6403,11 +6403,11 @@ public class JPADAO implements IDAO {
                 startTransaction(em);
                 em.persist(widget);
                 commitTransaction(em);
-                return true;
+                return widget;
             } catch (IllegalArgumentException | PersistenceException e) {
                 logger.error(e.toString(), e);
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -7123,18 +7123,18 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException {
+    public DailySessionUsageStatistics addUsageStatistics(DailySessionUsageStatistics statistics) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(statistics);
             commitTransaction(em);
-            return true;
+            return statistics;
         } catch (PersistenceException e) {
             logger.error("Error saving usage statistics", e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -7269,7 +7269,7 @@ public class JPADAO implements IDAO {
 
     /** {@inheritDoc} */
     @Override
-    public boolean addViewerMessage(ViewerMessage message) throws DAOException {
+    public ViewerMessage addViewerMessage(ViewerMessage message) throws DAOException {
         // Synchronized to prevent concurrent INSERT deadlocks on mq_message_properties (MariaDB error 1213)
         synchronized (viewerMessageLock) {
             preQuery();
@@ -7278,11 +7278,11 @@ public class JPADAO implements IDAO {
                 startTransaction(em);
                 em.persist(message);
                 commitTransaction(em);
-                return true;
+                return message;
             } catch (PersistenceException e) {
                 logger.error("Error adding ViewerMessage to database", e);
                 handleException(em);
-                return false;
+                return null;
             } finally {
                 close(em);
             }
@@ -7528,18 +7528,18 @@ public class JPADAO implements IDAO {
     }
 
     @Override
-    public boolean addRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException {
+    public RecurringTaskTrigger addRecurringTaskTrigger(RecurringTaskTrigger trigger) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(trigger);
             commitTransaction(em);
-            return true;
+            return trigger;
         } catch (PersistenceException e) {
             logger.error("Error adding ViewerMessage to database", e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
@@ -7582,7 +7582,7 @@ public class JPADAO implements IDAO {
     }
 
     @Override
-    public boolean addHighlight(HighlightData object) throws DAOException {
+    public HighlightData addHighlight(HighlightData object) throws DAOException {
         return addEntity(object);
     }
 
@@ -7637,18 +7637,18 @@ public class JPADAO implements IDAO {
         return getEntities(HighlightData.class, first, pageSize, sortField, descending, filters);
     }
 
-    private boolean addEntity(Serializable obj) throws DAOException {
+    private <T extends Serializable> T addEntity(T obj) throws DAOException {
         preQuery();
         EntityManager em = getEntityManager();
         try {
             startTransaction(em);
             em.persist(obj);
             commitTransaction(em);
-            return true;
+            return obj;
         } catch (PersistenceException e) {
             logger.error("Error adding object to database", e);
             handleException(em);
-            return false;
+            return null;
         } finally {
             close(em);
         }
