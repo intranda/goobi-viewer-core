@@ -66,9 +66,13 @@ public class FuzzySearchTerm {
     private final boolean wildcardBack;
     private final int maxDistance;
 
+    /**
+     * @param term search term, possibly containing fuzzy syntax
+     * @should handle null term
+     */
     public FuzzySearchTerm(String term) {
         this.fullTerm = term == null ? "" : term;
-        if (isFuzzyTerm(term)) {
+        if (isFuzzyTerm(this.fullTerm)) {
             this.term =
                     this.fullTerm.replaceAll("[*]{0,1}([^\\p{L}=-_\\d⸗¬*]*)[*]{0,1}~\\d", "$1") //NOSONAR no catastrophic backtracking detected
                             .toLowerCase();
@@ -103,8 +107,13 @@ public class FuzzySearchTerm {
         return wildcardFront;
     }
 
+    /**
+     * @param term term to check
+     * @return true if term uses fuzzy search syntax; false otherwise
+     * @should return false for null
+     */
     public static boolean isFuzzyTerm(String term) {
-        return term.matches("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~\\d");
+        return term != null && term.matches("[*]{0,1}" + WORD_PATTERN + "[*]{0,1}~\\d");
     }
 
     /**
