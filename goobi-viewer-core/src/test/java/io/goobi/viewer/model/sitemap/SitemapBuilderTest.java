@@ -26,15 +26,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Unit tests for {@link SitemapBuilder}. Intentionally does not extend a Solr/DB-backed base class
  * — the assertion only inspects the static workerThread field via reflection and must not pay the
  * cost of spinning up embedded infrastructure.
  */
-@Execution(ExecutionMode.CONCURRENT)
 class SitemapBuilderTest {
 
     /**
