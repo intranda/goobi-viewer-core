@@ -38,6 +38,7 @@ import io.goobi.viewer.exceptions.RecordNotFoundException;
 import io.goobi.viewer.model.iiif.presentation.v3.builder.DataRetriever;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.RequiredPrivileges;
 import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -158,23 +159,16 @@ public class AccessRightsRequestFilter implements ContainerRequestFilter {
                 if (StringUtils.isBlank(pi)) {
                     throw new ServiceNotAllowedException("Serving this resource is currently impossible Because no persistent identifier is given");
                 } else if (StringUtils.isNotBlank(contentFileName)) {
-                    for (String privilege : privileges) {
-                        access = AccessConditionUtils
-                                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, contentFileName, privilege,
-                                        NetTools.getIpAddress(
-                                                request))
-                                .isGranted();
-                    }
+                    access = AccessConditionUtils
+                            .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, contentFileName,
+                                    RequiredPrivileges.of(privileges), NetTools.getIpAddress(request), null)
+                            .isGranted();
                 } else if (pageNo != null) {
-                    for (String privilege : privileges) {
-                        access = AccessConditionUtils
-                                .checkAccessPermissionByIdentifierAndPageOrder(pi, pageNo, privilege, request)
-                                .isGranted();
-                    }
+                    access = FilterTools.isGrantedForAllPrivileges(privileges,
+                            privilege -> AccessConditionUtils.checkAccessPermissionByIdentifierAndPageOrder(pi, pageNo, privilege, request));
                 } else {
-                    for (String privilege : privileges) {
-                        access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request).isGranted();
-                    }
+                    access = FilterTools.isGrantedForAllPrivileges(privileges,
+                            privilege -> AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request));
                 }
             }
         } catch (IndexUnreachableException | DAOException e) {

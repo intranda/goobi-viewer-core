@@ -40,6 +40,7 @@ import io.goobi.viewer.exceptions.ViewerConfigurationException;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.security.AccessConditionUtils;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.security.RequiredPrivileges;
 import jakarta.annotation.Priority;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -127,24 +128,19 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
                         .isGranted();
                 // logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
             } else {
-                String[] privileges = getRequiredPrivileges(request);
-                if (privileges.length == 0) {
-                    privileges = new String[] { IPrivilegeHolder.PRIV_LIST };
-                }
+                RequiredPrivileges requiredPrivileges = getRequiredPrivilegeSet(request);
                 if (StringUtils.isBlank(pi)) {
                     throw new ServiceNotAllowedException("Serving this resource is currently impossible Because no persistent identifier is given");
                 } else if (StringUtils.isNotBlank(contentFileName)) {
-                    for (String privilege : privileges) {
-                        access = AccessConditionUtils
-                                .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, contentFileName, privilege,
-                                        NetTools.getIpAddress(
-                                                request))
-                                .isGranted();
-                    }
+                    // Privileges may depend on the DOCTYPE of the document listing the file, which is resolved by the access check query itself
+                    access = AccessConditionUtils
+                            .checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request.getSession(), pi, contentFileName, requiredPrivileges,
+                                    NetTools.getIpAddress(request), null)
+                            .isGranted();
                 } else {
-                    for (String privilege : privileges) {
-                        access = AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request).isGranted();
-                    }
+                    // No file, so the record's (or logical element's) default privileges apply
+                    access = FilterTools.isGrantedForAllPrivileges(requiredPrivileges.getPrivileges(null),
+                            privilege -> AccessConditionUtils.checkAccessPermissionByIdentifierAndLogId(pi, logid, privilege, request));
                 }
             }
         } catch (IndexUnreachableException | DAOException e) {
@@ -158,7 +154,8 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
     }
 
     /**
-     * Reads attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't exist, return an empty array
+     * Reads attribute {@link #REQUIRED_PRIVILEGE} from request and return it as String array. If the attribute doesn't exist, return an empty array.
+     * If the attribute is a {@link RequiredPrivileges} instance, its default privileges are returned.
      *
      * @param request HTTP servlet request carrying the privilege attribute
      * @return Required privileges as {@link String}[]
@@ -167,11 +164,31 @@ public class AccessConditionRequestFilter implements ContainerRequestFilter {
         Object privileges = request.getAttribute(REQUIRED_PRIVILEGE);
         if (privileges == null) {
             return new String[0];
+        } else if (privileges instanceof RequiredPrivileges requiredPrivileges) {
+            return requiredPrivileges.getPrivileges(null);
         } else if (privileges.getClass().isArray()) {
             return (String[]) privileges;
         } else {
             return new String[] { privileges.toString() };
         }
+    }
+
+    /**
+     * Reads attribute {@link #REQUIRED_PRIVILEGE} from request. The attribute may either be a {@link RequiredPrivileges} instance (if the required
+     * privileges depend on the document type of the requested file), a String array or a single privilege name.
+     *
+     * @param request HTTP servlet request carrying the privilege attribute
+     * @return {@link RequiredPrivileges}; requiring {@link IPrivilegeHolder#PRIV_LIST} if the attribute doesn't exist
+     * @should return attribute if it is a required privileges instance
+     * @should wrap plain privilege attributes
+     * @should fall back to list privilege if attribute missing
+     */
+    public static RequiredPrivileges getRequiredPrivilegeSet(HttpServletRequest request) {
+        if (request.getAttribute(REQUIRED_PRIVILEGE) instanceof RequiredPrivileges requiredPrivileges) {
+            return requiredPrivileges;
+        }
+        String[] privileges = getRequiredPrivileges(request);
+        return RequiredPrivileges.of(privileges.length > 0 ? privileges : new String[] { IPrivilegeHolder.PRIV_LIST });
     }
 
 }
