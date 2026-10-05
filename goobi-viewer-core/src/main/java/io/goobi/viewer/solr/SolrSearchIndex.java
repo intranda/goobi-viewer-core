@@ -103,7 +103,7 @@ public class SolrSearchIndex implements java.io.Closeable {
     private Map<String, Long> dataRepositoryTimestamps = new HashMap<>();
 
     /** volatile: read unsynchronized by every query method, so a replacement must become visible without a lock. */
-    private volatile SolrClient client;
+    private volatile SolrClient client; //NOSONAR S3077: SolrClient is thread-safe; volatile only publishes the replaced reference
 
     private List<String> solrFields = null;
     /**
