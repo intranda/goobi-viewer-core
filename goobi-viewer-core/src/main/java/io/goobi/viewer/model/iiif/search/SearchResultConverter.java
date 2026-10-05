@@ -179,6 +179,10 @@ public class SearchResultConverter {
     public SearchHit convertCommentToHit(String queryRegex, String pi, Comment comment) {
         SearchHit hit = new SearchHit();
 
+        if (comment == null || comment.getText() == null) {
+            return hit;
+        }
+
         // IIIF TextQuoteSelector prefix/suffix are plain text per the W3C Web Annotation spec.
         // Comment.getDisplayText() goes through HtmlSanitizer.cleanComment which rewrites \n
         // to <br>\n for HTML rendering — that markup must not bleed into the IIIF JSON

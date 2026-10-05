@@ -24,7 +24,6 @@ package io.goobi.viewer.model.job.mq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 
@@ -51,7 +50,7 @@ class PurgeExpiredDownloadsHandlerTest extends AbstractDatabaseEnabledTest {
         IDAO dao = DataManager.getInstance().getDao();
 
         AccessTicket recordTicket = createTicket(AccessTicketType.RECORD, DateTools.now().minusDays(1));
-        assertTrue(dao.addTicket(recordTicket));
+        assertNotNull(dao.addTicket(recordTicket));
 
         assertEquals(MessageStatus.FINISH,
                 new PurgeExpiredDownloadsHandler().call(new ViewerMessage(TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS.name()), null));
@@ -70,7 +69,7 @@ class PurgeExpiredDownloadsHandlerTest extends AbstractDatabaseEnabledTest {
         IDAO dao = DataManager.getInstance().getDao();
 
         AccessTicket recordTicket = createTicket(AccessTicketType.RECORD, DateTools.now().plusDays(1));
-        assertTrue(dao.addTicket(recordTicket));
+        assertNotNull(dao.addTicket(recordTicket));
 
         assertEquals(MessageStatus.FINISH,
                 new PurgeExpiredDownloadsHandler().call(new ViewerMessage(TaskType.PURGE_EXPIRED_DOWNLOAD_TICKETS.name()), null));

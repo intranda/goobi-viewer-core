@@ -21,6 +21,11 @@
  */
 package io.goobi.viewer.api.rest.model.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -33,10 +38,6 @@ import io.goobi.viewer.controller.DateTools;
 import io.goobi.viewer.dao.IDAO;
 import io.goobi.viewer.model.security.tickets.AccessTicket;
 import io.goobi.viewer.model.security.tickets.AccessTicket.AccessTicketType;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TaskManagerTest extends AbstractDatabaseEnabledTest {
 
@@ -64,7 +65,7 @@ class TaskManagerTest extends AbstractDatabaseEnabledTest {
         recordTicket.setPi("PPN789");
         recordTicket.setPasswordHash("$2a$10$H580saN37o2P03A5myUCm.V0ac/lO.79AfkiNjVhDzljqS3RGojzO");
         recordTicket.setExpirationDate(DateTools.now().minusDays(1));
-        assertTrue(dao.addTicket(recordTicket));
+        assertNotNull(dao.addTicket(recordTicket));
 
         assertEquals(2, TaskManager.deleteExpiredDownloadTickets());
         assertNull(dao.getTicket(recordTicket.getId()));

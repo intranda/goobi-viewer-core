@@ -103,4 +103,11 @@ class IpRangeTest extends AbstractDatabaseEnabledTest {
         Assertions.assertFalse(ipRange.matchIp("192.168.1.9"));
         Assertions.assertFalse(ipRange.matchIp("192.168.2.11"));
     }
+
+    @Test
+    void matchIp_parseIPV6Address() {
+        IpRange ipRange = new IpRange();
+        ipRange.setSubnetMask("192.168.1.10/31");
+        Assertions.assertFalse(ipRange.matchIp("2001:638:301:1a03::a"));
+    }
 }
