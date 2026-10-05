@@ -27,14 +27,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import de.intranda.metadata.multilanguage.IMetadataValue;
 import de.intranda.metadata.multilanguage.MultiLanguageMetadataValue;
 import io.goobi.viewer.model.metadata.MetadataParameter.MetadataParameterType;
 
-@Execution(ExecutionMode.CONCURRENT)
 class MetadataBuilderTest {
 
     /**
