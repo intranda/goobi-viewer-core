@@ -61,4 +61,25 @@ class FuzzySearchTermTest {
         assertTrue(fuzzy2.matches("ſtraſſe"));
     }
 
+    /**
+     * @see FuzzySearchTerm#FuzzySearchTerm(String)
+     * @verifies handle null term
+     */
+    @Test
+    void FuzzySearchTerm_shouldHandleNullTerm() {
+        FuzzySearchTerm fuzzy = new FuzzySearchTerm(null);
+        assertEquals("", fuzzy.getFullTerm());
+        assertEquals("", fuzzy.getTerm());
+        assertEquals(0, fuzzy.getMaxDistance());
+    }
+
+    /**
+     * @see FuzzySearchTerm#isFuzzyTerm(String)
+     * @verifies return false for null
+     */
+    @Test
+    void isFuzzyTerm_shouldReturnFalseForNull() {
+        assertFalse(FuzzySearchTerm.isFuzzyTerm(null));
+    }
+
 }
