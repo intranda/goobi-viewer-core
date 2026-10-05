@@ -138,15 +138,12 @@ public final class AccessConditionUtils {
         switch (action) {
             case "image":
             case "application":
-                if ("pdf".equalsIgnoreCase(FilenameUtils.getExtension(contentFileName))) {
-                    return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName,
-                            IPrivilegeHolder.PRIV_DOWNLOAD_PDF, ipAddress, user);
-                }
-                if (isThumbnail) {
+                if (isThumbnail && !"pdf".equalsIgnoreCase(FilenameUtils.getExtension(contentFileName))) {
                     return checkAccessPermissionForThumbnail(session, pi, contentFileName, ipAddress);
                     // logger.trace("Checked thumbnail access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
                 }
-                return checkAccessPermissionForImage(session, pi, contentFileName, ipAddress);
+                return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName,
+                        getRequiredPrivilegesForImageAction(contentFileName), ipAddress, user);
             // logger.trace("Checked image access: {}/{}: {}", pi, contentFileName, access); //NOSONAR Debug
             case "text":
             case "ocrdump":
@@ -172,6 +169,22 @@ public final class AccessConditionUtils {
         }
 
         return AccessPermission.denied();
+    }
+
+    /**
+     * Privileges required by {@link #checkAccess(HttpSession, String, String, String, String, boolean, User)} for the actions "image" and
+     * "application". Files listed in {@link DocType#DOWNLOAD_RESOURCE} documents always require
+     * {@link IPrivilegeHolder#PRIV_DOWNLOAD_BORN_DIGITAL_FILES}, independent of their file type.
+     *
+     * @param contentFileName name of the requested content file
+     * @return {@link RequiredPrivileges}
+     * @should require born digital privilege for download resources
+     * @should keep previous privileges for page files
+     */
+    static RequiredPrivileges getRequiredPrivilegesForImageAction(String contentFileName) {
+        String pagePrivilege = "pdf".equalsIgnoreCase(FilenameUtils.getExtension(contentFileName)) ? IPrivilegeHolder.PRIV_DOWNLOAD_PDF
+                : IPrivilegeHolder.PRIV_VIEW_IMAGES;
+        return RequiredPrivileges.of(pagePrivilege).withDocType(DocType.DOWNLOAD_RESOURCE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
     }
 
     /**
@@ -286,21 +299,38 @@ public final class AccessConditionUtils {
     }
 
     /**
-     * Checks whether the client may access an image (by PI + file name).
+     * Builds the Solr query for the record-level {@link SolrConstants#THUMBNAIL THUMBNAIL} fallback used when a thumbnail access check finds no page
+     * hit. The file name is wrapped in quotes so that thumbnail values which are absolute http(s) URLs (e.g. external AV player links) do not break
+     * the Solr query parser on their colons.
      *
      * @param identifier Work identifier (PI).
-     * @param fileName Image file name. For all files of a record, use "*".
-     * @param privilegeName access privilege name to verify
+     * @param fileName Thumbnail file name or URL.
+     * @return Generated Solr query
+     * @should build valid query for url file name
+     */
+    static String generateThumbnailAccessCheckQuery(String identifier, String fileName) {
+        return "+%s:%s +%s:\"%s\"".formatted(SolrConstants.PI, ClientUtils.escapeQueryChars(identifier), SolrConstants.THUMBNAIL, fileName);
+    }
+
+    /**
+     * Checks whether the client may access a content file (by PI + file name). The single access check query also returns the
+     * {@link SolrConstants#DOCTYPE DOCTYPE} of each hit, so that the privileges can be chosen per document type (see {@link RequiredPrivileges})
+     * without an additional query. Up to two hits are evaluated for a single file name, so that a file name indexed both as page and as download
+     * resource is only accessible if the requirements for both are satisfied.
+     *
+     * @param identifier Work identifier (PI).
+     * @param fileName Content file name. For all files of a record, use "*".
+     * @param requiredPrivileges privileges to verify, optionally depending on the document type
      * @param ipAddress client IP address
      * @param session HTTP session for caching permission results
      * @param user currently logged-in user, or null for anonymous access
-     * @return true if access is granted; false otherwise.
+     * @return Map containing the {@link AccessPermission} for fileName; empty map if the file could not be found
      * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      */
-    static Map<String, AccessPermission> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName, String privilegeName,
-            String ipAddress, HttpSession session, User user) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, privilegeName); //NOSONAR Debug
+    static Map<String, AccessPermission> checkAccessPermissionByIdentifierAndFileName(String identifier, String fileName,
+            RequiredPrivileges requiredPrivileges, String ipAddress, HttpSession session, User user) throws IndexUnreachableException, DAOException {
+        // logger.trace("checkAccessPermissionByIdentifierAndFileName({}, {}, {})", identifier, fileName, requiredPrivileges); //NOSONAR Debug
         if (StringUtils.isEmpty(identifier)) {
             return Collections.emptyMap();
         }
@@ -308,56 +338,93 @@ public final class AccessConditionUtils {
         String query = generateAccessCheckQuery(identifier, fileName);
         // logger.trace("query: {}", query); //NOSONAR Sonar considers this log msg a security issue, so leave it commented out when not needed
         try {
-            // Collect access conditions required by the page
-            Map<String, Set<String>> requiredAccessConditions = new HashMap<>();
+            List<String> fields = Arrays.asList(SolrConstants.ACCESSCONDITION, SolrConstants.DOCTYPE);
             SolrDocumentList results = DataManager.getInstance()
                     .getSearchIndex()
-                    .search(query, "*".equals(fileName) ? SolrSearchIndex.MAX_HITS : 1, null,
-                            Arrays.asList(SolrConstants.ACCESSCONDITION));
-            if (results != null) {
-                if (results.isEmpty()) {
-                    //if thumbnail request, get hits for record THUMBNAIL
-                    if (IPrivilegeHolder.PRIV_VIEW_THUMBNAILS.equals(privilegeName)) {
-                        query = "+PI:%s +THUMBNAIL:%s".formatted(identifier, fileName);
-                        results = DataManager.getInstance()
-                                .getSearchIndex()
-                                .search(query, 1, null, Arrays.asList(SolrConstants.ACCESSCONDITION));
-                    }
-                    if (results.isEmpty()) {
-                        logger.debug("No hits for permission check query: {}", query); //NOSONAR this will help identify index inconsistencies
-                    }
+                    .search(query, "*".equals(fileName) ? SolrSearchIndex.MAX_HITS : 2, null, fields);
+            if (results == null) {
+                return Collections.emptyMap();
+            }
+            if (results.isEmpty()) {
+                //if thumbnail request, get hits for record THUMBNAIL
+                if (requiredPrivileges.contains(IPrivilegeHolder.PRIV_VIEW_THUMBNAILS)) {
+                    query = generateThumbnailAccessCheckQuery(identifier, fileName);
+                    results = DataManager.getInstance()
+                            .getSearchIndex()
+                            .search(query, 1, null, fields);
                 }
-                for (SolrDocument doc : results) {
-                    Collection<Object> fieldsAccessConddition = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
-                    if (fieldsAccessConddition != null) {
-                        Set<String> pageAccessConditions = new HashSet<>();
-                        for (Object accessCondition : fieldsAccessConddition) {
-                            pageAccessConditions.add(accessCondition.toString());
-                            // logger.trace(accessCondition.toString()); //NOSONAR Debug
-                        }
-                        requiredAccessConditions.put(fileName, pageAccessConditions);
-                    }
+                if (results.isEmpty()) {
+                    logger.debug("No hits for permission check query: {}", query); //NOSONAR this will help identify index inconsistencies
+                    return Collections.emptyMap();
                 }
             }
 
-            Map<String, AccessPermission> ret = HashMap.newHashMap(requiredAccessConditions.size());
-            // Resolve user once before the loop to avoid repeated expensive session attribute scans
-            // (findInstanceInSessionAttributes) when requiredAccessConditions has multiple entries.
+            // Resolve user and license types once rather than per hit and privilege (expensive session attribute scans)
             User resolvedUser = user != null ? user : retrieveUserFromContext(session);
-            // Hoisted out of the loop for the same reason; the cache returns the same immutable snapshot.
             List<LicenseType> licenseTypes = DataManager.getInstance().getLicenseTypeCache().getRecordLicenseTypes();
-            for (Entry<String, Set<String>> entry : requiredAccessConditions.entrySet()) {
-                Set<String> pageAccessConditions = entry.getValue();
-                AccessPermission access = checkAccessPermission(licenseTypes, pageAccessConditions,
-                        privilegeName, resolvedUser, ipAddress,
-                        ClientApplicationManager.getClientFromSession(session), query);
-                ret.put(entry.getKey(), access);
-            }
-            return ret;
+            AccessPermission access = checkAccessPermissionForFileHits(results, requiredPrivileges, licenseTypes, resolvedUser, ipAddress,
+                    ClientApplicationManager.getClientFromSession(session), query);
+            return Collections.singletonMap(fileName, access);
         } catch (PresentationException e) {
             logger.debug(e.getMessage());
             return Collections.emptyMap();
         }
+    }
+
+    /**
+     * Evaluates the access permission for the Solr documents that list a content file. For each document, the privileges required for its
+     * {@link SolrConstants#DOCTYPE DOCTYPE} are checked against its access conditions. Access is only granted if all privileges are granted for all
+     * documents.
+     *
+     * @param hits Solr documents containing {@link SolrConstants#ACCESSCONDITION} and {@link SolrConstants#DOCTYPE}
+     * @param requiredPrivileges privileges to verify, depending on the document type
+     * @param licenseTypes all record license types
+     * @param user user requesting access; may be null
+     * @param ipAddress client IP address
+     * @param client client application requesting access
+     * @param query Solr query used to retrieve the hits (used for moving wall checks)
+     * @return First denied {@link AccessPermission}; otherwise the first granted one; denied if hits are empty
+     * @throws IndexUnreachableException
+     * @throws PresentationException
+     * @throws DAOException
+     * @should use default privileges for page hits
+     * @should use mapped privileges for download resource hits
+     * @should use default privileges if doc type missing
+     * @should deny if any hit is denied
+     * @should require all privileges
+     * @should deny if no hits
+     */
+    static AccessPermission checkAccessPermissionForFileHits(List<SolrDocument> hits, RequiredPrivileges requiredPrivileges,
+            List<LicenseType> licenseTypes, User user, String ipAddress, Optional<ClientApplication> client, String query)
+            throws IndexUnreachableException, PresentationException, DAOException {
+        AccessPermission ret = null;
+        for (SolrDocument doc : hits) {
+            Collection<Object> fieldValues = doc.getFieldValues(SolrConstants.ACCESSCONDITION);
+            if (fieldValues == null) {
+                // Documents without access conditions are not considered accessible (checkAccessPermission would grant access)
+                return AccessPermission.denied();
+            }
+            Set<String> accessConditions = HashSet.newHashSet(fieldValues.size());
+            for (Object accessCondition : fieldValues) {
+                accessConditions.add(accessCondition.toString());
+            }
+            DocType docType = DocType.getByName((String) doc.getFirstValue(SolrConstants.DOCTYPE));
+            String[] privileges = requiredPrivileges.getPrivileges(docType);
+            if (privileges.length == 0) {
+                return AccessPermission.denied();
+            }
+            for (String privilege : privileges) {
+                AccessPermission access = checkAccessPermission(licenseTypes, accessConditions, privilege, user, ipAddress, client, query);
+                if (!access.isGranted()) {
+                    return access;
+                }
+                if (ret == null) {
+                    ret = access;
+                }
+            }
+        }
+
+        return ret != null ? ret : AccessPermission.denied();
     }
 
     /**
@@ -1314,16 +1381,43 @@ public final class AccessConditionUtils {
      * @throws io.goobi.viewer.exceptions.DAOException if any.
      * @should remove PRIV_ attributes of the previous pi on pi change
      */
-    @SuppressWarnings("unchecked")
     public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpSession session, String pi,
             String contentFileName, String privilegeType, String ipAddress, User user) throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, privilegeType); //NOSONAR Debug
         if (privilegeType == null) {
             throw new IllegalArgumentException("privilegeType may not be null");
         }
+        return checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, pi, contentFileName, RequiredPrivileges.of(privilegeType),
+                ipAddress, user);
+    }
+
+    /**
+     * Checks access permission for the given content file and puts the permission status into the corresponding session map. The required
+     * privileges may depend on the {@link SolrConstants#DOCTYPE DOCTYPE} of the Solr document listing the file, which is determined by the same
+     * query that retrieves the access conditions. All required privileges must be granted.
+     *
+     * @param session HTTP session for caching permission results
+     * @param pi persistent identifier of the record
+     * @param contentFileName name of the content file to check
+     * @param requiredPrivileges privileges to verify, optionally depending on the document type
+     * @param ipAddress client IP address
+     * @param user the {@link User} requesting access. May be null in which case the the method will attempt to retrieve the user from the
+     *            {@link UserBean}, given an existing jsfContext
+     * @return {@link AccessPermission}
+     * @throws io.goobi.viewer.exceptions.IndexUnreachableException if any.
+     * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should grant access to open access page file and cache under combined key
+     */
+    @SuppressWarnings("unchecked")
+    public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpSession session, String pi,
+            String contentFileName, RequiredPrivileges requiredPrivileges, String ipAddress, User user)
+            throws IndexUnreachableException, DAOException {
+        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, requiredPrivileges); //NOSONAR Debug
+        if (requiredPrivileges == null) {
+            throw new IllegalArgumentException("requiredPrivileges may not be null");
+        }
         // logger.debug("session id: " + session.getId()); //NOSONAR Debug
         // Session persistent permission check: Servlet-local method.
-        String attributeName = IPrivilegeHolder.PREFIX_PRIV + privilegeType + "_" + pi + "_" + contentFileName;
+        String attributeName = IPrivilegeHolder.PREFIX_PRIV + requiredPrivileges.getCacheKey() + "_" + pi + "_" + contentFileName;
         // logger.trace("Checking session attribute: {}", attributeName); //NOSONAR Debug
         Map<String, AccessPermission> permissions = (Map<String, AccessPermission>) getSessionPermission(attributeName, session);
         if (permissions == null) {
@@ -1354,12 +1448,12 @@ public final class AccessConditionUtils {
 
         if (permissions.containsKey(key) && permissions.get(key) != null) {
             return permissions.get(key);
-            // logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", privilegeType,
+            // logger.trace("Access ({}) previously checked and is {} for '{}/{}' (Session ID {})", requiredPrivileges,
             // ret.isGranted(), pi, contentFileName, session.getId()); //NOSONAR Debug
         }
         // TODO check for all images and save to map
         Map<String, AccessPermission> accessMap =
-                checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, privilegeType, ipAddress, session, user);
+                checkAccessPermissionByIdentifierAndFileName(pi, contentFileName, requiredPrivileges, ipAddress, session, user);
         for (Entry<String, AccessPermission> entry : accessMap.entrySet()) {
             String newKey = new StringBuilder(pi).append('_').append(entry.getKey()).toString();
             AccessPermission pageAccess = entry.getValue();
@@ -1370,7 +1464,7 @@ public final class AccessConditionUtils {
         addSessionPermission(attributeName, permissions, session);
 
         return permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
-        // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", privilegeType, pi, contentFileName, ret.isGranted()); //NOSONAR Deb
+        // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", requiredPrivileges, pi, contentFileName, ret.isGranted()); //NOSONAR Deb
     }
 
     /**
