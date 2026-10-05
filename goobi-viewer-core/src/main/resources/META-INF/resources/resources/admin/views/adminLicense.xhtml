@@ -150,14 +150,6 @@
                                                                 alt=""
                                                                 src="#{adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).mediaThumbnailURI}" />
                                                         </ui:fragment>
-                                                        <ui:fragment
-                                                            rendered="#{!adminLicenseBean.currentLicenseType.getPlaceholderInfo(adminLicenseBean.currentLicenseType.selectedLocale).hasMediaItem()}">
-                                                            <img
-                                                                src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
-                                                                data-viewer-thumbnail="thumbnail"
-                                                                class="img-fluid"
-                                                                alt="" />
-                                                        </ui:fragment>
                                                     </div>
 
                                                     <!-- ACTIONS -->

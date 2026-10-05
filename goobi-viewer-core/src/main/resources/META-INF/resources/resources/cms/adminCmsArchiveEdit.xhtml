@@ -176,13 +176,6 @@
                                                             class="img-fluid"
                                                             alt="" />
                                                     </ui:fragment>
-                                                    <ui:fragment rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(0)}">
-                                                        <img
-                                                            src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
-                                                            data-viewer-thumbnail="thumbnail"
-                                                            class="img-fluid"
-                                                            alt="" />
-                                                    </ui:fragment>
                                                 </div>
 
                                                 <!-- ACTIONS -->
@@ -253,13 +246,6 @@
                                                     <ui:fragment rendered="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(1)}">
                                                         <img
                                                             src="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.getMediaItem(1).iconURI}"
-                                                            class="img-fluid"
-                                                            alt="" />
-                                                    </ui:fragment>
-                                                    <ui:fragment rendered="#{!cmsArchivesBean.selectedArchiveWrapper.archiveConfig.hasMediaItem(1)}">
-                                                        <img
-                                                            src="#{imageDelivery.thumbs.getThumbnailPath(null)}"
-                                                            data-viewer-thumbnail="thumbnail"
                                                             class="img-fluid"
                                                             alt="" />
                                                     </ui:fragment>
