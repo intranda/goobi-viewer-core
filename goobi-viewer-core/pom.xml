@@ -46,6 +46,9 @@
 		<!-- Gates offline OpenAPI generation + Spectral validation. Defaults to the JS-test
 		     gate so it runs in CI (-DskipTests=false) and is skipped in default local builds. -->
 		<skipOpenApiValidation>${skipJsTests}</skipOpenApiValidation>
+		<!-- Number of parallel surefire test JVMs. Each fork has its own DataManager singleton and in-memory H2
+		     database, so the DB/Solr based tests can run side by side. Use -Dtest.forkCount=1 for a serial run. -->
+		<test.forkCount>2</test.forkCount>
 		<frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
 		<frontend.node.version>v22.13.1</frontend.node.version>
 		<skipDependencyCheck>true</skipDependencyCheck>
@@ -1049,11 +1052,15 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
+					<forkCount>${test.forkCount}</forkCount>
+					<reuseForks>true</reuseForks>
 					<excludes>
 						<exclude>**/Abstract*.java</exclude>
 					</excludes>
 					<systemPropertyVariables>
 						<java.util.logging.config.file>src/test/resources/log4j2.test.xml</java.util.logging.config.file>
+						<!-- Random free port for the Jersey/Grizzly test containers, so REST tests in parallel forks don't collide on 9998 -->
+						<jersey.config.test.container.port>0</jersey.config.test.container.port>
 					</systemPropertyVariables>
 					<argLine>@{argLine} -javaagent:${mockito.agent.jar}</argLine>
 				</configuration>
