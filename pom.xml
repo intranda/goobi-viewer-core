@@ -84,7 +84,7 @@
 		<git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
 		<buildnumber-maven-plugin.version>3.3.1</buildnumber-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
-		<versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
+		<versions-maven-plugin.version>2.22.0</versions-maven-plugin.version>
 		<dependency-check-maven.version>12.2.2</dependency-check-maven.version>
 		<flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
 
