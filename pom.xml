@@ -86,7 +86,7 @@
 		<jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
 		<versions-maven-plugin.version>2.22.0</versions-maven-plugin.version>
 		<dependency-check-maven.version>12.2.2</dependency-check-maven.version>
-		<flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
+		<flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
 
 		<!-- Mockito is shared by core and connector. The agent jar is handed to surefire explicitly because
 		     the JDK deprecates self-attaching agents. -->
