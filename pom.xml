@@ -90,7 +90,7 @@
 
 		<!-- Mockito is shared by core and connector. The agent jar is handed to surefire explicitly because
 		     the JDK deprecates self-attaching agents. -->
-		<mockito.version>5.23.0</mockito.version>
+		<mockito.version>5.24.0</mockito.version>
 		<mockito.agent.jar>${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</mockito.agent.jar>
 	</properties>
 
