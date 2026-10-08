@@ -275,7 +275,8 @@ public class AdminBean implements Serializable {
             Messages.error("email", ViewerResourceBundle.getTranslation("user_emailTaken", null).replace("{0}", user.getEmail().trim()));
             return false;
         }
-        if (UserTools.isNicknameInUse(user.getNickName(), user.getId())) {
+        // Users without a nickname (e.g. accounts created without a display name) skip the uniqueness check
+        if (user.getNickName() != null && UserTools.isNicknameInUse(user.getNickName(), user.getId())) {
             Messages.error("displayName", ViewerResourceBundle.getTranslation("user_nicknameTaken", null).replace("{0}", user.getNickName().trim()));
             return false;
         }
