@@ -24,7 +24,7 @@ package io.goobi.viewer.model.archives;
 /**
  * A single card of a card catalog drawer: one EAD file-level node with its ordering title and the
  * associated record that carries the card scan. Instances are immutable; the position of a card is
- * given by its index within the drawer's entry list.
+ * given by its position in the drawer's Solr ordering.
  */
 public class CardCatalogEntry {
 

@@ -39,6 +39,7 @@ public class CardCatalogIndex {
     private final String pi;
     private final String label;
     private final long dateIndexed;
+    private final boolean restrictedDescendants;
     private final List<CardCatalogDrawer> drawers;
     private final Map<String, CardCatalogDrawer> drawersById;
     private final int totalEntries;
@@ -50,11 +51,13 @@ public class CardCatalogIndex {
      * @param label display label of the archive
      * @param dateIndexed latest DATEINDEXED value of the archive's root document
      * @param drawers drawers in catalog order
+     * @param restrictedDescendants whether any descendant node has a non-public access condition
      */
-    public CardCatalogIndex(String pi, String label, long dateIndexed, List<CardCatalogDrawer> drawers) {
+    public CardCatalogIndex(String pi, String label, long dateIndexed, List<CardCatalogDrawer> drawers, boolean restrictedDescendants) {
         this.pi = pi;
         this.label = label;
         this.dateIndexed = dateIndexed;
+        this.restrictedDescendants = restrictedDescendants;
         this.drawers = Collections.unmodifiableList(drawers);
         this.drawersById = drawers.stream().collect(Collectors.toMap(CardCatalogDrawer::getId, Function.identity(), (a, b) -> a));
         this.totalEntries = drawers.stream().mapToInt(CardCatalogDrawer::getEntryCount).sum();
@@ -70,6 +73,10 @@ public class CardCatalogIndex {
 
     public long getDateIndexed() {
         return dateIndexed;
+    }
+
+    public boolean hasRestrictedDescendants() {
+        return restrictedDescendants;
     }
 
     public List<CardCatalogDrawer> getDrawers() {

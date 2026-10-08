@@ -25,8 +25,8 @@ import java.util.List;
 
 /**
  * A drawer of a card catalog: an EAD structure node whose children are the individual cards.
- * The card list and the computed register ranges are loaded lazily and cached on the drawer;
- * both are populated by {@link CardCatalogManager} under synchronization on this instance.
+ * Register ranges are computed lazily and cached on the drawer. Card pages are read from Solr
+ * on demand so large drawers do not have to be materialized in memory.
  */
 public class CardCatalogDrawer {
 
@@ -35,8 +35,18 @@ public class CardCatalogDrawer {
     private final String label;
     private final int entryCount;
 
-    private volatile List<CardCatalogEntry> entries = null;
-    private volatile List<CardCatalogRegisterRange> registerRanges = null;
+    private volatile RegisterCache registerCache;
+
+    private static class RegisterCache {
+
+        private final int chunkSize;
+        private final List<CardCatalogRegisterRange> ranges;
+
+        private RegisterCache(int chunkSize, List<CardCatalogRegisterRange> ranges) {
+            this.chunkSize = chunkSize;
+            this.ranges = ranges;
+        }
+    }
 
     /**
      * @param id EAD node ID of the drawer node
@@ -67,19 +77,12 @@ public class CardCatalogDrawer {
         return entryCount;
     }
 
-    public List<CardCatalogEntry> getEntries() {
-        return entries;
+    public List<CardCatalogRegisterRange> getRegisterRanges(int chunkSize) {
+        RegisterCache cache = registerCache;
+        return cache != null && cache.chunkSize == chunkSize ? cache.ranges : null;
     }
 
-    void setEntries(List<CardCatalogEntry> entries) {
-        this.entries = entries;
-    }
-
-    public List<CardCatalogRegisterRange> getRegisterRanges() {
-        return registerRanges;
-    }
-
-    void setRegisterRanges(List<CardCatalogRegisterRange> registerRanges) {
-        this.registerRanges = registerRanges;
+    void setRegisterRanges(int chunkSize, List<CardCatalogRegisterRange> registerRanges) {
+        this.registerCache = new RegisterCache(chunkSize, registerRanges);
     }
 }
