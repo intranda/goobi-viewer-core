@@ -21,6 +21,7 @@
  */
 package io.goobi.viewer.model.security;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import io.goobi.viewer.AbstractDatabaseAndSolrEnabledTest;
@@ -62,6 +65,7 @@ import io.goobi.viewer.model.search.SearchHelper;
 import io.goobi.viewer.model.security.user.IpRange;
 import io.goobi.viewer.model.security.user.User;
 import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
 import jakarta.servlet.http.HttpSession;
 
 class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
@@ -1331,5 +1335,152 @@ class AccessConditionUtilsTest extends AbstractDatabaseAndSolrEnabledTest {
             assertNotNull(permission);
             assertFalse(permission.isGranted());
         }
+    }
+
+    private static final RequiredPrivileges IMAGE_OR_BORN_DIGITAL = RequiredPrivileges.of(IPrivilegeHolder.PRIV_VIEW_IMAGES)
+            .withDocType(DocType.DOWNLOAD_RESOURCE, IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES);
+
+    private static List<LicenseType> restrictedLicenseTypeAllowing(String... privileges) {
+        LicenseType lt = new LicenseType();
+        lt.setName("restricted");
+        lt.getPrivileges().addAll(Arrays.asList(privileges));
+        return Collections.singletonList(lt);
+    }
+
+    private static SolrDocument fileHit(DocType docType) {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.ACCESSCONDITION, Collections.singletonList("restricted"));
+        if (docType != null) {
+            doc.setField(SolrConstants.DOCTYPE, docType.name());
+        }
+        return doc;
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionForFileHits(List,RequiredPrivileges,List,User,String,Optional,String)
+     * @verifies use default privileges for page hits
+     */
+    @Test
+    void checkAccessPermissionForFileHits_shouldUseDefaultPrivilegesForPageHits() throws Exception {
+        assertTrue(AccessConditionUtils.checkAccessPermissionForFileHits(Collections.singletonList(fileHit(DocType.PAGE)), IMAGE_OR_BORN_DIGITAL,
+                restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_VIEW_IMAGES), null, null, Optional.empty(), null).isGranted());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionForFileHits(List,RequiredPrivileges,List,User,String,Optional,String)
+     * @verifies use mapped privileges for download resource hits
+     */
+    @Test
+    void checkAccessPermissionForFileHits_shouldUseMappedPrivilegesForDownloadResourceHits() throws Exception {
+        // VIEW_IMAGES alone must not unlock a born-digital download resource, regardless of its file type
+        assertFalse(AccessConditionUtils.checkAccessPermissionForFileHits(Collections.singletonList(fileHit(DocType.DOWNLOAD_RESOURCE)),
+                IMAGE_OR_BORN_DIGITAL, restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_VIEW_IMAGES), null, null, Optional.empty(), null)
+                .isGranted());
+        assertTrue(AccessConditionUtils.checkAccessPermissionForFileHits(Collections.singletonList(fileHit(DocType.DOWNLOAD_RESOURCE)),
+                IMAGE_OR_BORN_DIGITAL, restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES), null, null,
+                Optional.empty(), null).isGranted());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionForFileHits(List,RequiredPrivileges,List,User,String,Optional,String)
+     * @verifies use default privileges if doc type missing
+     */
+    @Test
+    void checkAccessPermissionForFileHits_shouldUseDefaultPrivilegesIfDocTypeMissing() throws Exception {
+        assertTrue(AccessConditionUtils.checkAccessPermissionForFileHits(Collections.singletonList(fileHit(null)), IMAGE_OR_BORN_DIGITAL,
+                restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_VIEW_IMAGES), null, null, Optional.empty(), null).isGranted());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionForFileHits(List,RequiredPrivileges,List,User,String,Optional,String)
+     * @verifies deny if any hit is denied
+     */
+    @Test
+    void checkAccessPermissionForFileHits_shouldDenyIfAnyHitIsDenied() throws Exception {
+        // Same file name indexed both as page and as download resource: the stricter requirement wins
+        assertFalse(AccessConditionUtils.checkAccessPermissionForFileHits(Arrays.asList(fileHit(DocType.PAGE), fileHit(DocType.DOWNLOAD_RESOURCE)),
+                IMAGE_OR_BORN_DIGITAL, restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_VIEW_IMAGES), null, null, Optional.empty(), null)
+                .isGranted());
+        assertFalse(AccessConditionUtils.checkAccessPermissionForFileHits(Arrays.asList(fileHit(DocType.DOWNLOAD_RESOURCE), fileHit(DocType.PAGE)),
+                IMAGE_OR_BORN_DIGITAL, restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_VIEW_IMAGES), null, null, Optional.empty(), null)
+                .isGranted());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionForFileHits(List,RequiredPrivileges,List,User,String,Optional,String)
+     * @verifies require all privileges
+     */
+    @Test
+    void checkAccessPermissionForFileHits_shouldRequireAllPrivileges() throws Exception {
+        RequiredPrivileges zoom = RequiredPrivileges.of(IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES);
+        assertFalse(AccessConditionUtils.checkAccessPermissionForFileHits(Collections.singletonList(fileHit(DocType.PAGE)), zoom,
+                restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_VIEW_IMAGES), null, null, Optional.empty(), null).isGranted());
+        assertFalse(AccessConditionUtils.checkAccessPermissionForFileHits(Collections.singletonList(fileHit(DocType.PAGE)), zoom,
+                restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_ZOOM_IMAGES), null, null, Optional.empty(), null).isGranted());
+        assertTrue(AccessConditionUtils.checkAccessPermissionForFileHits(Collections.singletonList(fileHit(DocType.PAGE)), zoom,
+                restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_VIEW_IMAGES, IPrivilegeHolder.PRIV_ZOOM_IMAGES), null, null, Optional.empty(),
+                null).isGranted());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionForFileHits(List,RequiredPrivileges,List,User,String,Optional,String)
+     * @verifies deny if access conditions missing
+     */
+    @Test
+    void checkAccessPermissionForFileHits_shouldDenyIfAccessConditionsMissing() throws Exception {
+        SolrDocument doc = new SolrDocument();
+        doc.setField(SolrConstants.DOCTYPE, DocType.PAGE.name());
+        assertFalse(AccessConditionUtils.checkAccessPermissionForFileHits(Collections.singletonList(doc), IMAGE_OR_BORN_DIGITAL,
+                restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_VIEW_IMAGES), null, null, Optional.empty(), null).isGranted());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionForFileHits(List,RequiredPrivileges,List,User,String,Optional,String)
+     * @verifies deny if no hits
+     */
+    @Test
+    void checkAccessPermissionForFileHits_shouldDenyIfNoHits() throws Exception {
+        assertFalse(AccessConditionUtils.checkAccessPermissionForFileHits(Collections.emptyList(), IMAGE_OR_BORN_DIGITAL,
+                restrictedLicenseTypeAllowing(IPrivilegeHolder.PRIV_VIEW_IMAGES), null, null, Optional.empty(), null).isGranted());
+    }
+
+    /**
+     * @see AccessConditionUtils#checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpSession,String,String,RequiredPrivileges,String,User)
+     * @verifies grant access to open access page file and cache under combined key
+     */
+    @Test
+    void checkAccessPermissionByIdentifierAndFileNameWithSessionMap_shouldGrantAccessToOpenAccessPageFileAndCacheUnderCombinedKey()
+            throws Exception {
+        HttpSession session = mock(HttpSession.class);
+        when(session.getAttributeNames()).thenReturn(Collections.emptyEnumeration());
+        AccessPermission access = AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(session, "15920242",
+                "01_portrait_wseeost.pdf", IMAGE_OR_BORN_DIGITAL, null, null);
+        assertTrue(access.isGranted());
+        verify(session).setAttribute(Mockito.eq(IPrivilegeHolder.PREFIX_PRIV + IMAGE_OR_BORN_DIGITAL.getCacheKey() + "_15920242_01_portrait_wseeost.pdf"),
+                Mockito.any());
+    }
+
+    /**
+     * @see AccessConditionUtils#getRequiredPrivilegesForImageAction(String)
+     * @verifies require born digital privilege for download resources
+     */
+    @Test
+    void getRequiredPrivilegesForImageAction_shouldRequireBornDigitalPrivilegeForDownloadResources() {
+        for (String fileName : Arrays.asList("file.pdf", "file.jpg")) {
+            assertArrayEquals(new String[] { IPrivilegeHolder.PRIV_DOWNLOAD_BORN_DIGITAL_FILES },
+                    AccessConditionUtils.getRequiredPrivilegesForImageAction(fileName).getPrivileges(DocType.DOWNLOAD_RESOURCE));
+        }
+    }
+
+    /**
+     * @see AccessConditionUtils#getRequiredPrivilegesForImageAction(String)
+     * @verifies keep previous privileges for page files
+     */
+    @Test
+    void getRequiredPrivilegesForImageAction_shouldKeepPreviousPrivilegesForPageFiles() {
+        assertArrayEquals(new String[] { IPrivilegeHolder.PRIV_DOWNLOAD_PDF },
+                AccessConditionUtils.getRequiredPrivilegesForImageAction("file.PDF").getPrivileges(DocType.PAGE));
+        assertArrayEquals(new String[] { IPrivilegeHolder.PRIV_VIEW_IMAGES },
+                AccessConditionUtils.getRequiredPrivilegesForImageAction("file.jpg").getPrivileges(DocType.PAGE));
     }
 }
