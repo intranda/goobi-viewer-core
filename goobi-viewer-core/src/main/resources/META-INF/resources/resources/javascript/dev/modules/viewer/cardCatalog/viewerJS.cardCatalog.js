@@ -21,7 +21,7 @@
  * Card catalog view (Zettelkastenansicht) for archives flagged as card catalogs: drawer entry
  * points in the sidebar, KatZoom-style interval zoom with clickable gaps between boundary cards,
  * a full view with an inline OpenSeadragon stage and an endlessly scrolling thumbnail strip, and
- * an optional computed from-to register. All data comes from the /api/v2/archives/{pi}/cardcatalog
+ * an optional computed from-to register. All data comes from the /api/v1/archives/{pi}/cardcatalog
  * endpoints; navigation state lives in the URL query so every view is deep-linkable and browser
  * back/forward work.
  */
@@ -30,11 +30,10 @@ var viewerJS = (function (viewer, $) {
 
     var _debug = false;
 
-    var _stripLoadThreshold = 200;
-
     var _defaults = {
         pi: '',
         apiUrl: '',
+        rootUrl: '',
         osdScriptUrl: '',
         msg: {},
     };
@@ -57,18 +56,31 @@ var viewerJS = (function (viewer, $) {
         previous: 'previous',
         next: 'next',
         errOccurred: 'archives__card_catalog_error',
+        loading: 'archives__card_catalog_loading',
+        loadMoreError: 'archives__card_catalog_load_more_error',
+        retry: 'archives__card_catalog_retry',
     };
 
     viewer.cardCatalog = {
         info: null,
         register: null,
+        registerLoaded: null,
+        registerController: null,
+        registerPendingDrawer: null,
+        registerErrorDrawer: null,
         state: null,
         section: null,
         stripLoading: false,
         stripPromise: null,
+        stripErrorRange: null,
         stageViewer: null,
         osdPromise: null,
         renderSeq: 0,
+        renderController: null,
+        stripController: null,
+        stageSeq: 0,
+        initSeq: 0,
+        initController: null,
         listenersBound: false,
 
         init: function (config) {
@@ -80,6 +92,22 @@ var viewerJS = (function (viewer, $) {
             this.$counts = $('[data-cc="counts"]');
             this.$register = $('[data-cc="register"]');
             this.$content = $('[data-cc="content"]');
+            this.cancelRender();
+            this.resetContent();
+            if (this.initController) {
+                this.initController.abort();
+            }
+            if (this.registerController) {
+                this.registerController.abort();
+                this.registerController = null;
+            }
+            this.initController = new AbortController();
+            var sequence = ++this.initSeq;
+            this.info = null;
+            this.register = { drawers: [] };
+            this.registerLoaded = new Set();
+            this.registerPendingDrawer = null;
+            this.registerErrorDrawer = null;
 
             this.fitViewportHeight();
             if (!this.listenersBound) {
@@ -95,23 +123,25 @@ var viewerJS = (function (viewer, $) {
                 });
             }
 
-            this.fetchJson(this.catalogUrl(), 'cardcatalog info')
+            this.fetchJson(this.catalogUrl(), 'cardcatalog info', this.initController.signal)
                 .then((info) => {
+                    if (sequence !== this.initSeq) {
+                        return;
+                    }
                     this.info = info;
                     var params = new URLSearchParams(window.location.search);
                     this.state = this.keptState(window.history.state && window.history.state.cc) || this.stateFromParams(params, info);
                     this.renderSidebar();
                     this.render();
-                    if (info.mode === 'REGISTER') {
-                        this.loadRegister();
-                    }
                     if (!this.state.drawer && params.get('selected')) {
                         this.openSelectedEntry(params.get('selected'));
                     }
                 })
                 .catch((error) => {
-                    console.error('ERROR - could not initialize card catalog: ', error);
-                    this.$content.html(`<div class="archives-cardcatalog__error">${this.msg('errOccurred')}</div>`);
+                    if (sequence === this.initSeq && error.name !== 'AbortError') {
+                        console.error('ERROR - could not initialize card catalog: ', error);
+                        this.showError();
+                    }
                 });
         },
 
@@ -129,89 +159,13 @@ var viewerJS = (function (viewer, $) {
             wrapper.style.height = 'calc(100vh - ' + Math.max(0, Math.round(offset)) + 'px)';
         },
 
-        /* ---------- state ---------- */
-
-        /**
-         * Derives the navigation state from URL query parameters. Exposed as a pure function for tests.
-         * @param params URLSearchParams of the current location
-         * @param info bootstrap info of the catalog (for drawer validation)
-         * @returns state object {drawer, from, to, card, chain}
-         */
-        stateFromParams: function (params, info) {
-            var state = { drawer: null, from: null, to: null, card: null, chain: [] };
-            var drawerId = params.get('drawer');
-            var drawer = drawerId && info ? info.drawers.find((d) => d.id === drawerId) : null;
-            if (drawer) {
-                state.drawer = drawerId;
-                var from = parseInt(params.get('from'), 10);
-                var to = Math.min(parseInt(params.get('to'), 10), drawer.entryCount);
-                if (from > 0 && to >= from) {
-                    state.from = from;
-                    state.to = to;
-                    state.chain = [{ from: 1, to: drawer.entryCount }];
-                }
-                var card = parseInt(params.get('card'), 10);
-                if (card > 0 && card <= drawer.entryCount) {
-                    state.card = card;
-                }
-            }
-            return state;
-        },
-
-        /**
-         * Accepts a restored history.state entry only if its drawer still exists in the loaded
-         * info — persisted entries can predate a reindex. Falls back to null (→ URL parameters).
-         */
-        keptState: function (state) {
-            return state && state.drawer && this.info.drawers.some((d) => d.id === state.drawer) ? state : null;
-        },
-
-        /**
-         * Serializes the navigation state into URL query parameters, preserving unrelated parameters.
-         * The chain is intentionally not serialized: it lives in history.state only, and
-         * stateFromParams synthesizes its root step for plain deep links. Pure, for tests.
-         */
-        paramsFromState: function (state, params) {
-            ['drawer', 'from', 'to', 'card'].forEach((key) => params.delete(key));
-            if (state.drawer) {
-                params.set('drawer', state.drawer);
-                if (state.from && state.to) {
-                    params.set('from', state.from);
-                    params.set('to', state.to);
-                }
-                if (state.card) {
-                    params.set('card', state.card);
-                }
-            }
-            return params;
-        },
-
-        /**
-         * Writes the current state into the URL: push creates a history entry (user navigation),
-         * replace only syncs the current one. A resolved ?selected= deep link is always dropped.
-         */
-        syncUrl: function (push) {
-            var params = this.paramsFromState(this.state, new URLSearchParams(window.location.search));
-            params.delete('selected');
-            var query = params.toString();
-            var url = window.location.pathname + (query ? '?' + query : '') + window.location.hash;
-            history[push ? 'pushState' : 'replaceState']({ cc: this.state }, '', url);
-        },
-
-        /**
-         * Full view window of the configured size centered around a card, clamped to the drawer.
-         */
-        windowAround: function (position, drawer) {
-            var size = this.info.config.fullViewThreshold;
-            var from = Math.max(1, Math.min(position - Math.floor(size / 2), drawer.entryCount - size + 1));
-            return { from: from, to: Math.min(from + size - 1, drawer.entryCount) };
-        },
-
         openSelectedEntry: function (entryId) {
-            fetch(this.catalogUrl() + 'lookup?entryId=' + encodeURIComponent(entryId))
+            var selected = entryId;
+            var sequence = this.initSeq;
+            fetch(this.catalogUrl() + 'lookup?entryId=' + encodeURIComponent(entryId), { signal: this.initController.signal })
                 .then((response) => (response.ok ? response.json() : null))
                 .then((location) => {
-                    if (this.state.drawer) {
+                    if (sequence !== this.initSeq || this.state.drawer || new URLSearchParams(window.location.search).get('selected') !== selected) {
                         return;
                     }
                     var drawer = location ? this.drawerById(location.drawerId) : null;
@@ -230,7 +184,11 @@ var viewerJS = (function (viewer, $) {
                     this.renderSidebar();
                     this.render();
                 })
-                .catch((error) => console.error('ERROR - could not resolve selected card catalog entry: ', error));
+                .catch((error) => {
+                    if (error.name !== 'AbortError') {
+                        console.error('ERROR - could not resolve selected card catalog entry: ', error);
+                    }
+                });
         },
 
         selectDrawer: function (drawerId, from, to) {
@@ -331,12 +289,21 @@ var viewerJS = (function (viewer, $) {
                 this.selectCard(target);
                 return;
             }
+            if (target < this.section.from - 1 || target > this.section.to + 1) {
+                var range = this.windowAround(target, drawer);
+                this.state.from = range.from;
+                this.state.to = range.to;
+                this.state.card = target;
+                this.syncUrl(false);
+                this.render();
+                return;
+            }
             var section = this.section;
             var expectedCard = this.state.card;
             var step = this.info.config.listPageSize;
             var loading = delta > 0 ? this.extendStrip(this.section.to + 1, this.section.to + step) : this.extendStrip(this.section.from - step, this.section.from - 1);
             loading.then(() => {
-                if (this.section === section && this.state.card === expectedCard) {
+                if (this.section === section && this.state.card === expectedCard && section.items.some((item) => item.position === target)) {
                     this.selectCard(target);
                 }
             });
@@ -348,8 +315,8 @@ var viewerJS = (function (viewer, $) {
             return this.config.apiUrl + '/archives/' + encodeURIComponent(this.config.pi) + '/cardcatalog/';
         },
 
-        fetchJson: function (url, what) {
-            return fetch(url).then((response) => {
+        fetchJson: function (url, what, signal) {
+            return fetch(url, signal ? { signal: signal } : undefined).then((response) => {
                 if (!response.ok) {
                     throw new Error(what + ' request failed: ' + response.status);
                 }
@@ -358,7 +325,7 @@ var viewerJS = (function (viewer, $) {
         },
 
         rootUrl: function () {
-            return this.config.apiUrl.replace(/\/api\/v2$/, '');
+            return this.config.rootUrl || this.config.apiUrl.replace(/\/api\/v\d+\/?$/, '');
         },
 
         drawerById: function (drawerId) {
@@ -370,15 +337,66 @@ var viewerJS = (function (viewer, $) {
         },
 
         loadRegister: function () {
-            fetch(this.catalogUrl() + 'register')
-                .then((response) => (response.ok ? response.json() : null))
+            if (!this.info || this.info.mode !== 'REGISTER' || !this.state.drawer) {
+                if (this.registerController) {
+                    this.registerController.abort();
+                    this.registerController = null;
+                    this.registerPendingDrawer = null;
+                }
+                return;
+            }
+            var drawerId = this.state.drawer;
+            if (this.registerLoaded.has(drawerId) || this.registerPendingDrawer === drawerId) {
+                return;
+            }
+            if (this.registerController) {
+                this.registerController.abort();
+            }
+            var controller = new AbortController();
+            this.registerController = controller;
+            this.registerPendingDrawer = drawerId;
+            if (this.registerErrorDrawer === drawerId) {
+                this.registerErrorDrawer = null;
+                this.renderRegister();
+            }
+            var sequence = this.initSeq;
+            return this.fetchJson(this.catalogUrl() + 'drawers/' + encodeURIComponent(drawerId) + '/register', 'register', controller.signal)
                 .then((register) => {
-                    if (register && register.available) {
-                        this.register = register;
-                        this.renderRegister();
+                    if (sequence !== this.initSeq || controller.signal.aborted) {
+                        return;
+                    }
+                    if (
+                        !register ||
+                        typeof register.available !== 'boolean' ||
+                        (register.available && (!Array.isArray(register.drawers) || register.drawers.length !== 1 || register.drawers[0].id !== drawerId))
+                    ) {
+                        throw new Error('invalid register response for drawer ' + drawerId);
+                    }
+                    this.registerLoaded.add(drawerId);
+                    if (register.available) {
+                        this.register.drawers.push(register.drawers[0]);
+                        if (this.state.drawer === drawerId) {
+                            this.renderRegister();
+                        }
                     }
                 })
-                .catch((error) => console.error('ERROR - could not load card catalog register: ', error));
+                .catch((error) => {
+                    if (error.name !== 'AbortError') {
+                        console.error('ERROR - could not load card catalog register: ', error);
+                        if (sequence === this.initSeq && !controller.signal.aborted) {
+                            this.registerErrorDrawer = drawerId;
+                            if (this.state.drawer === drawerId) {
+                                this.renderRegister();
+                            }
+                        }
+                    }
+                })
+                .finally(() => {
+                    if (this.registerController === controller) {
+                        this.registerController = null;
+                        this.registerPendingDrawer = null;
+                    }
+                });
         },
 
         /**
@@ -414,7 +432,8 @@ var viewerJS = (function (viewer, $) {
             var html = this.info.drawers
                 .map((drawer) => {
                     var active = this.state.drawer === drawer.id ? ' -active' : '';
-                    return `<button type="button" class="archives-cardcatalog__drawer${active}" data-drawer="${this.escape(drawer.id)}" title="${this.formatNumber(drawer.entryCount)} ${this.msg('cards')}">${this.escape(drawer.label)}</button>`;
+                    var current = active ? ' aria-current="true"' : '';
+                    return `<button type="button" class="archives-cardcatalog__drawer${active}" data-drawer="${this.escape(drawer.id)}" title="${this.formatNumber(drawer.entryCount)} ${this.msg('cards')}"${current}>${this.escape(drawer.label)}</button>`;
                 })
                 .join('');
             this.$drawers.html(html);
@@ -438,14 +457,23 @@ var viewerJS = (function (viewer, $) {
         renderRegister: function () {
             var drawer = this.register && this.state.drawer ? this.register.drawers.find((d) => d.id === this.state.drawer) : null;
             if (!drawer) {
-                this.$register.empty();
+                if (this.state.drawer && this.registerErrorDrawer === this.state.drawer) {
+                    this.$register.html(
+                        `<div class="archives-cardcatalog__register-error" role="alert">${this.msg('errOccurred')} ` +
+                            `<button type="button" class="archives-cardcatalog__register-retry" data-register-retry="true">${this.msg('retry')}</button></div>`
+                    );
+                    this.$register.find('[data-register-retry]').on('click', () => this.loadRegister());
+                } else {
+                    this.$register.empty();
+                }
                 return;
             }
             var html = `<h3 class="archives-cardcatalog__sidebar-heading">${this.msg('register')}</h3>`;
             html += drawer.ranges
                 .map((range) => {
                     var active = this.state.from === range.from && this.state.to === range.to ? ' -active' : '';
-                    return `<button type="button" class="archives-cardcatalog__register-range${active}" data-drawer="${this.escape(drawer.id)}" data-from="${Number(range.from)}" data-to="${Number(range.to)}">${this.escape(range.fromLabel)} &ndash; ${this.escape(range.toLabel)}</button>`;
+                    var current = active ? ' aria-current="true"' : '';
+                    return `<button type="button" class="archives-cardcatalog__register-range${active}" data-drawer="${this.escape(drawer.id)}" data-from="${Number(range.from)}" data-to="${Number(range.to)}"${current}>${this.escape(range.fromLabel)} &ndash; ${this.escape(range.toLabel)}</button>`;
                 })
                 .join('');
             this.$register.html(html);
@@ -460,11 +488,17 @@ var viewerJS = (function (viewer, $) {
         render: function () {
             this.renderCounts();
             this.renderRegister();
+            this.loadRegister();
             this.$drawers.find('[data-drawer]').removeClass('-active');
+            this.$drawers.find('[data-drawer]').removeAttr('aria-current');
             if (this.state.drawer) {
-                this.$drawers.find('[data-drawer="' + $.escapeSelector(this.state.drawer) + '"]').addClass('-active');
+                this.$drawers
+                    .find('[data-drawer="' + $.escapeSelector(this.state.drawer) + '"]')
+                    .addClass('-active')
+                    .attr('aria-current', 'true');
             }
             if (!this.state.drawer) {
+                this.cancelRender();
                 this.resetContent();
                 this.$content.html(`<div class="archives-cardcatalog__hint">${this.msg('chooseDrawer')}</div>`);
                 return;
@@ -497,15 +531,15 @@ var viewerJS = (function (viewer, $) {
         },
 
         renderZoomView: function (drawer, from, to) {
-            var token = ++this.renderSeq;
+            var request = this.beginRender();
             this.showLoader();
-            this.fetchJson(`${this.catalogUrl()}drawers/${encodeURIComponent(drawer.id)}/boundaries?from=${from}&to=${to}`, 'boundaries')
+            this.fetchJson(`${this.catalogUrl()}drawers/${encodeURIComponent(drawer.id)}/boundaries?from=${from}&to=${to}`, 'boundaries', request.signal)
                 .then((section) => {
-                    if (token !== this.renderSeq) {
+                    if (request.token !== this.renderSeq) {
                         return;
                     }
                     if (!section.items || !section.items.length) {
-                        this.$content.html(`<div class="archives-cardcatalog__error">${this.msg('errOccurred')}</div>`);
+                        this.showError();
                         return;
                     }
                     var header =
@@ -531,9 +565,9 @@ var viewerJS = (function (viewer, $) {
                     this.bindContentEvents();
                 })
                 .catch((error) => {
-                    console.error('ERROR - could not load card catalog boundaries: ', error);
-                    if (token === this.renderSeq) {
-                        this.$content.html(`<div class="archives-cardcatalog__error">${this.msg('errOccurred')}</div>`);
+                    if (request.token === this.renderSeq && error.name !== 'AbortError') {
+                        console.error('ERROR - could not load card catalog boundaries: ', error);
+                        this.showError();
                     }
                 });
         },
@@ -544,28 +578,26 @@ var viewerJS = (function (viewer, $) {
          */
         renderZoomCard: function (item) {
             var src = this.headCropUrl(item.imageUrl) || item.thumbnailUrl;
-            var image = src
-                ? `<img loading="lazy" src="${this.escape(src)}" alt="${this.escape(item.label || '')}"/>`
-                : `<span class="archives-cardcatalog__no-image">${this.msg('noImage')}</span>`;
+            var image = src ? `<img loading="lazy" src="${this.escape(src)}" alt=""/>` : `<span class="archives-cardcatalog__no-image">${this.msg('noImage')}</span>`;
             return (
-                `<figure class="archives-cardcatalog__zoomcard" data-open="${Number(item.position)}" role="button" tabindex="0" title="${this.msg('fullView')}">` +
-                `${image}<figcaption>` +
+                `<button type="button" class="archives-cardcatalog__zoomcard" data-open="${Number(item.position)}" title="${this.msg('fullView')}">` +
+                `${image}<span class="archives-cardcatalog__zoomcard-caption">` +
                 `<span class="archives-cardcatalog__card-position">${this.msg('card')} ${this.formatNumber(item.position)}</span>` +
                 `<span class="archives-cardcatalog__card-title">${this.escape(item.label || '')}</span>` +
-                `</figcaption></figure>`
+                `</span></button>`
             );
         },
 
         renderFullView: function (drawer, from, to) {
-            var token = ++this.renderSeq;
+            var request = this.beginRender();
             this.showLoader();
-            this.fetchJson(`${this.catalogUrl()}drawers/${encodeURIComponent(drawer.id)}/entries?from=${from}&to=${to}`, 'entries')
+            this.fetchJson(`${this.catalogUrl()}drawers/${encodeURIComponent(drawer.id)}/entries?from=${from}&to=${to}`, 'entries', request.signal)
                 .then((section) => {
-                    if (token !== this.renderSeq) {
+                    if (request.token !== this.renderSeq) {
                         return;
                     }
                     if (!section.items || !section.items.length) {
-                        this.$content.html(`<div class="archives-cardcatalog__error">${this.msg('errOccurred')}</div>`);
+                        this.showError();
                         return;
                     }
                     this.section = section;
@@ -578,11 +610,11 @@ var viewerJS = (function (viewer, $) {
                     var header = `<div class="archives-cardcatalog__content-header">${this.renderBreadcrumb(drawer, from, to)}<div class="archives-cardcatalog__mode-label">${this.msg('fullView')}</div></div>`;
                     var stage =
                         `<div class="archives-cardcatalog__stage">` +
-                        `<div class="archives-cardcatalog__stage-body"><div class="archives-cardcatalog__stage-viewer" id="ccStageViewer"></div></div>` +
+                        `<div class="archives-cardcatalog__stage-body"><div class="archives-cardcatalog__stage-viewer" id="ccStageViewer" role="img"></div></div>` +
                         `<div class="archives-cardcatalog__stage-caption"><div class="archives-cardcatalog__stage-caption-text" data-cc-caption="true"></div>` +
                         `<div class="archives-cardcatalog__stage-actions">` +
-                        `<button type="button" class="archives-cardcatalog__stage-action" data-shift="-1" title="${this.msg('previous')}">${this.iconSvg('chevron-left')}</button>` +
-                        `<button type="button" class="archives-cardcatalog__stage-action" data-shift="1" title="${this.msg('next')}">${this.iconSvg('chevron-right')}</button>` +
+                        `<button type="button" class="archives-cardcatalog__stage-action" data-shift="-1" title="${this.msg('previous')}" aria-label="${this.msg('previous')}">${this.iconSvg('chevron-left')}</button>` +
+                        `<button type="button" class="archives-cardcatalog__stage-action" data-shift="1" title="${this.msg('next')}" aria-label="${this.msg('next')}">${this.iconSvg('chevron-right')}</button>` +
                         `</div></div></div>`;
                     var strip = `<div class="archives-cardcatalog__strip" data-cc-strip="true"></div>`;
                     this.$content.html(`<div class="archives-cardcatalog__fullview">${header}<div class="archives-cardcatalog__stage-row">${stage}${strip}</div></div>`);
@@ -590,9 +622,9 @@ var viewerJS = (function (viewer, $) {
                     this.updateStage(current);
                 })
                 .catch((error) => {
-                    console.error('ERROR - could not load card catalog entries: ', error);
-                    if (token === this.renderSeq) {
-                        this.$content.html(`<div class="archives-cardcatalog__error">${this.msg('errOccurred')}</div>`);
+                    if (request.token === this.renderSeq && error.name !== 'AbortError') {
+                        console.error('ERROR - could not load card catalog entries: ', error);
+                        this.showError();
                     }
                 });
         },
@@ -619,9 +651,13 @@ var viewerJS = (function (viewer, $) {
             if ($strip.attr('data-range') !== range) {
                 $strip.attr('data-range', range).html(this.section.items.map((i) => this.renderStripThumb(i, item.position)).join(''));
             } else {
-                $strip.find('.-current').removeClass('-current');
-                $strip.find('[data-stage="' + item.position + '"]').addClass('-current');
+                $strip.find('.-current').removeClass('-current').removeAttr('aria-current');
+                $strip
+                    .find('[data-stage="' + item.position + '"]')
+                    .addClass('-current')
+                    .attr('aria-current', 'true');
             }
+            this.$content.find('#ccStageViewer').attr('aria-label', `${this.msgText('card')} ${this.formatNumber(item.position)}: ${item.label || ''}`);
             var currentThumb = $strip.find('[data-stage="' + item.position + '"]')[0];
             if (currentThumb) {
                 $strip[0].scrollTop = currentThumb.offsetTop - ($strip[0].clientHeight - currentThumb.clientHeight) / 2;
@@ -638,116 +674,6 @@ var viewerJS = (function (viewer, $) {
             this.showStageImage(item);
         },
 
-        renderStripThumb: function (item, currentPosition) {
-            var current = item.position === currentPosition ? ' -current' : '';
-            var image = item.thumbnailUrl
-                ? `<img loading="lazy" src="${this.escape(item.thumbnailUrl)}" alt="${this.escape(item.label || '')}"/>`
-                : '<span class="archives-cardcatalog__no-image"></span>';
-            return (
-                `<button type="button" class="archives-cardcatalog__strip-thumb${current}" data-stage="${Number(item.position)}" title="${this.escape(item.label || '')}">` +
-                `${image}<span class="archives-cardcatalog__strip-position">${this.formatNumber(item.position)}</span>` +
-                `</button>`
-            );
-        },
-
-        /**
-         * Clamps a requested strip extension to the drawer bounds and trims the part that is
-         * already loaded. Returns null when nothing is left to load. Pure, for tests.
-         */
-        clampExtension: function (section, from, to, entryCount) {
-            from = Math.max(1, from);
-            to = Math.min(entryCount, to);
-            if (from >= section.from && from <= section.to) {
-                from = section.to + 1;
-            }
-            if (to >= section.from && to <= section.to) {
-                to = section.from - 1;
-            }
-            return to < from ? null : { from: from, to: to };
-        },
-
-        /**
-         * Extends the loaded strip contiguously at either end while the section object keeps
-         * spanning everything that is loaded; prepending compensates the scroll position.
-         */
-        extendStrip: function (from, to) {
-            if (!this.section) {
-                return Promise.resolve();
-            }
-            if (this.stripLoading && this.stripPromise) {
-                var pending = this.section;
-                return this.stripPromise.then(() => (this.section === pending ? this.extendStrip(from, to) : undefined));
-            }
-            var drawer = this.currentDrawer();
-            var section = this.section;
-            var range = this.clampExtension(section, from, to, drawer.entryCount);
-            if (!range) {
-                return Promise.resolve();
-            }
-            from = range.from;
-            to = range.to;
-            this.stripLoading = true;
-            this.stripPromise = this.fetchJson(`${this.catalogUrl()}drawers/${encodeURIComponent(drawer.id)}/entries?from=${from}&to=${to}`, 'entries')
-                .then((chunk) => {
-                    if (this.section !== section) {
-                        return;
-                    }
-                    this.stripLoading = false;
-                    var items = chunk.items || [];
-                    if (!items.length) {
-                        return;
-                    }
-                    var $strip = this.$content.find('[data-cc-strip]');
-                    var strip = $strip[0];
-                    var html = items.map((item) => this.renderStripThumb(item, this.state.card)).join('');
-                    if (from > section.to) {
-                        section.items = section.items.concat(items);
-                        section.to = from + items.length - 1;
-                        $strip.append(html);
-                    } else {
-                        var beforeHeight = strip.scrollHeight;
-                        var beforeWidth = strip.scrollWidth;
-                        section.items = items.concat(section.items);
-                        section.from = to - items.length + 1;
-                        $strip.prepend(html);
-                        strip.scrollTop += strip.scrollHeight - beforeHeight;
-                        strip.scrollLeft += strip.scrollWidth - beforeWidth;
-                    }
-                    $strip.attr('data-range', section.from + '-' + section.to);
-                })
-                .catch((error) => {
-                    if (this.section === section) {
-                        this.stripLoading = false;
-                    }
-                    console.error('ERROR - could not extend card catalog strip: ', error);
-                });
-            return this.stripPromise;
-        },
-
-        /**
-         * Scrolling near either end of the strip loads the adjacent cards — the strip behaves
-         * like the whole drawer instead of a paged window.
-         */
-        onStripScroll: function () {
-            if (!this.section || this.stripLoading) {
-                return;
-            }
-            var strip = this.$content.find('[data-cc-strip]')[0];
-            if (!strip) {
-                return;
-            }
-            var step = this.info.config.listPageSize;
-            var vertical = !getComputedStyle(strip).flexDirection.startsWith('row');
-            var position = vertical ? strip.scrollTop : strip.scrollLeft;
-            var extent = vertical ? strip.clientHeight : strip.clientWidth;
-            var total = vertical ? strip.scrollHeight : strip.scrollWidth;
-            if (position + extent > total - _stripLoadThreshold) {
-                this.extendStrip(this.section.to + 1, this.section.to + step);
-            } else if (position < _stripLoadThreshold) {
-                this.extendStrip(this.section.from - step, this.section.from - 1);
-            }
-        },
-
         bindContentEvents: function () {
             this.$content.find('[data-chain]').on('click', (event) => {
                 this.chainJump(parseInt($(event.currentTarget).attr('data-chain'), 10));
@@ -756,11 +682,7 @@ var viewerJS = (function (viewer, $) {
                 var $el = $(event.currentTarget);
                 this.zoomTo(parseInt($el.attr('data-from'), 10), parseInt($el.attr('data-to'), 10));
             });
-            this.$content.find('[data-open]').on('click keydown', (event) => {
-                if (event.type === 'keydown' && event.key !== 'Enter' && event.key !== ' ') {
-                    return;
-                }
-                event.preventDefault();
+            this.$content.find('[data-open]').on('click', (event) => {
                 this.openCardAt(parseInt($(event.currentTarget).attr('data-open'), 10));
             });
             this.$content.find('[data-shift]').on('click', (event) => {
@@ -770,6 +692,7 @@ var viewerJS = (function (viewer, $) {
             $strip.on('click', '[data-stage]', (event) => {
                 this.selectCard(parseInt($(event.currentTarget).attr('data-stage'), 10));
             });
+            this.$content.find('.archives-cardcatalog__stage-caption').on('click', '[data-strip-retry]', () => this.retryStrip());
             $strip.on('scroll', () => this.onStripScroll());
             $strip.on('wheel', (event) => {
                 var strip = event.currentTarget;
@@ -784,9 +707,27 @@ var viewerJS = (function (viewer, $) {
             });
         },
 
+        cancelRender: function () {
+            this.renderSeq++;
+            if (this.renderController) {
+                this.renderController.abort();
+                this.renderController = null;
+            }
+        },
+
+        beginRender: function () {
+            this.cancelRender();
+            this.renderController = new AbortController();
+            return { token: this.renderSeq, signal: this.renderController.signal };
+        },
+
+        showError: function () {
+            this.$content.html(`<div class="archives-cardcatalog__error" role="alert">${this.msg('errOccurred')}</div>`);
+        },
+
         showLoader: function () {
             this.resetContent();
-            this.$content.html('<div class="archives-cardcatalog__loader"></div>');
+            this.$content.html('<div class="archives-cardcatalog__loader" role="status" aria-label="' + this.msg('loading') + '"></div>');
         },
 
         /**
@@ -794,93 +735,16 @@ var viewerJS = (function (viewer, $) {
          * nulling the section makes the identity guards drop any in-flight strip response.
          */
         resetContent: function () {
+            this.stageSeq++;
             this.destroyStageViewer();
+            if (this.stripController) {
+                this.stripController.abort();
+                this.stripController = null;
+            }
             this.section = null;
             this.stripLoading = false;
-        },
-
-        /* ---------- stage image ---------- */
-
-        /**
-         * Shows a card on the stage: OpenSeadragon fills the stage so the card can be zoomed
-         * and panned in place. The viewer instance is kept while paging within the window.
-         */
-        showStageImage: function (item) {
-            if (!document.getElementById('ccStageViewer')) {
-                return;
-            }
-            var infoUrl = this.imageInfoUrl(item.imageUrl || item.thumbnailUrl);
-            var renderPlainImage = () => {
-                this.destroyStageViewer();
-                var container = document.getElementById('ccStageViewer');
-                var src = item.imageUrl || item.thumbnailUrl;
-                if (container) {
-                    container.innerHTML = src
-                        ? `<img src="${this.escape(src)}" alt="${this.escape(item.label || '')}"/>`
-                        : `<span class="archives-cardcatalog__no-image">${this.msg('noImage')}</span>`;
-                }
-            };
-            if (!infoUrl) {
-                renderPlainImage();
-                return;
-            }
-            this.loadOpenSeadragon()
-                .then(() => {
-                    var container = document.getElementById('ccStageViewer');
-                    if (!container) {
-                        return;
-                    }
-                    if (this.stageViewer && !this.stageViewer.element.isConnected) {
-                        this.destroyStageViewer();
-                    }
-                    if (this.stageViewer) {
-                        this.stageViewer.removeAllHandlers('open-failed');
-                        this.stageViewer.addOnceHandler('open-failed', renderPlainImage);
-                        this.stageViewer.open([infoUrl]);
-                        return;
-                    }
-                    container.innerHTML = '';
-                    this.stageViewer = OpenSeadragon({
-                        element: container,
-                        tileSources: [infoUrl],
-                        prefixUrl: '',
-                        showNavigationControl: false,
-                        gestureSettingsMouse: { clickToZoom: true, dblClickToZoom: true },
-                        crossOriginPolicy: 'Anonymous',
-                        drawer: 'canvas',
-                    });
-                    this.stageViewer.addOnceHandler('open-failed', renderPlainImage);
-                })
-                .catch(renderPlainImage);
-        },
-
-        destroyStageViewer: function () {
-            if (this.stageViewer) {
-                this.stageViewer.destroy();
-                this.stageViewer = null;
-            }
-        },
-
-        loadOpenSeadragon: function () {
-            if (window.OpenSeadragon) {
-                return Promise.resolve();
-            }
-            if (!this.config.osdScriptUrl) {
-                return Promise.reject(new Error('no OpenSeadragon script url configured'));
-            }
-            if (!this.osdPromise) {
-                this.osdPromise = new Promise((resolve, reject) => {
-                    var script = document.createElement('script');
-                    script.src = this.config.osdScriptUrl;
-                    script.onload = resolve;
-                    script.onerror = () => {
-                        this.osdPromise = null;
-                        reject(new Error('could not load OpenSeadragon'));
-                    };
-                    document.head.appendChild(script);
-                });
-            }
-            return this.osdPromise;
+            this.stripPromise = null;
+            this.stripErrorRange = null;
         },
 
         /* ---------- util ---------- */
@@ -889,8 +753,12 @@ var viewerJS = (function (viewer, $) {
          * Translated text for a key, HTML-escaped — safe to interpolate into templates directly.
          */
         msg: function (key) {
+            return this.escape(this.msgText(key));
+        },
+
+        msgText: function (key) {
             var bundleKey = _msgKeys[key] || key;
-            return this.escape(this.config.msg[bundleKey] || bundleKey);
+            return String(this.config.msg[bundleKey] || bundleKey);
         },
 
         formatNumber: function (value) {

@@ -583,6 +583,8 @@ function bundleViewerJS(changedFilePath = null) {
                 joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.helper.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'viewerJS.*.js'),
+                joinPosix(paths.jsModulesRoot, 'viewer', 'cardCatalog', 'viewerJS.cardCatalog.js'),
+                joinPosix(paths.jsModulesRoot, 'viewer', 'cardCatalog', 'viewerJS.cardCatalog.*.js'),
                 joinPosix(paths.jsModulesRoot, 'modules.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'geoMap', 'viewerJS.geoMap.js'),
                 joinPosix(paths.jsModulesRoot, 'viewer', 'geoMap', '*.js'),
