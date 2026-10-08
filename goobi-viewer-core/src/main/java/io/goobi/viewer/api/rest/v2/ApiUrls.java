@@ -132,12 +132,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2 = "/{subfolder}/{subsubfolder}/{auxfilename}";
     public static final String RECORDS_FILES_3D_AUXILIARY_FILE_2_ALT = "//{subfolder}/{subsubfolder}/{auxfilename}";
 
-    public static final String ARCHIVES_CARDCATALOG = "/archives/{pi}/cardcatalog";
-    public static final String ARCHIVES_CARDCATALOG_BOUNDARIES = "/drawers/{drawerId}/boundaries";
-    public static final String ARCHIVES_CARDCATALOG_ENTRIES = "/drawers/{drawerId}/entries";
-    public static final String ARCHIVES_CARDCATALOG_REGISTER = "/register";
-    public static final String ARCHIVES_CARDCATALOG_LOOKUP = "/lookup";
-
     public static final String COLLECTIONS = "/collections/{field}";
     public static final String COLLECTIONS_COLLECTION = "/{collection}";
     public static final String COLLECTIONS_CONTENTASSIST = "/contentassist";

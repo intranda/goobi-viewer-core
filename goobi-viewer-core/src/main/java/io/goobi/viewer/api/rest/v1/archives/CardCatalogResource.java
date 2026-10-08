@@ -23,6 +23,7 @@ package io.goobi.viewer.api.rest.v1.archives;
 
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_BOUNDARIES;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_DRAWER_REGISTER;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_ENTRIES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_LOOKUP;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_REGISTER;
@@ -34,6 +35,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.unigoettingen.sub.commons.contentlib.servlet.rest.CORSBinding;
+import io.goobi.viewer.api.rest.bindings.AccessRightsBinding;
 import io.goobi.viewer.api.rest.bindings.ViewerRestServiceBinding;
 import io.goobi.viewer.api.rest.filters.FilterTools;
 import io.goobi.viewer.api.rest.model.archives.CardCatalogEntryLocation;
@@ -53,12 +55,14 @@ import io.goobi.viewer.model.archives.CardCatalogIndex;
 import io.goobi.viewer.model.archives.CardCatalogManager;
 import io.goobi.viewer.model.archives.CardCatalogRegisterRange;
 import io.goobi.viewer.model.cms.CMSArchiveLink;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.PathParam;
@@ -74,6 +78,7 @@ import jakarta.ws.rs.core.MediaType;
  */
 @jakarta.ws.rs.Path(ARCHIVES_CARDCATALOG)
 @ViewerRestServiceBinding
+@AccessRightsBinding({ IPrivilegeHolder.PRIV_ARCHIVE_DISPLAY_NODE })
 @CORSBinding
 public class CardCatalogResource {
 
@@ -81,7 +86,7 @@ public class CardCatalogResource {
 
     private static final int THUMBNAIL_SIZE = 400;
     private static final int IMAGE_SIZE = 1200;
-    private static final String CACHE_CONTROL = "public, max-age=60";
+    private static final String CACHE_CONTROL = "private, no-store";
 
     @Context
     private HttpServletRequest servletRequest;
@@ -114,12 +119,13 @@ public class CardCatalogResource {
         ret.setTotalEntries(index.getTotalEntries());
         ret.setMode(index.getTotalEntries() > config.getCardCatalogRegisterThreshold() ? CardCatalogInfo.MODE_LETTERS
                 : CardCatalogInfo.MODE_REGISTER);
-        ret.getConfig().setZoomFactor(config.getCardCatalogZoomFactor());
+        ret.getConfig().setZoomFactor(CardCatalogManager.normalizeZoomFactor(config.getCardCatalogZoomFactor()));
         // the entries endpoint hard-caps ranges at MAX_ENTRIES_PER_REQUEST, so the page size
         // advertised to the client must never exceed it — otherwise the client would skip
         // the silently dropped tail when paging
-        ret.getConfig().setListPageSize(Math.min(config.getCardCatalogListPageSize(), CardCatalogManager.MAX_ENTRIES_PER_REQUEST));
-        ret.getConfig().setFullViewThreshold(config.getCardCatalogFullViewThreshold());
+        ret.getConfig().setListPageSize(Math.max(1, Math.min(config.getCardCatalogListPageSize(), CardCatalogManager.MAX_ENTRIES_PER_REQUEST)));
+        ret.getConfig().setFullViewThreshold(Math.max(2,
+                Math.min(config.getCardCatalogFullViewThreshold(), CardCatalogManager.MAX_ENTRIES_PER_REQUEST)));
         ret.getConfig().setRegisterThreshold(config.getCardCatalogRegisterThreshold());
         for (CardCatalogDrawer drawer : index.getDrawers()) {
             ret.getDrawers().add(new CardCatalogInfo.Drawer(drawer.getId(), drawer.getLabel(), drawer.getEntryCount()));
@@ -134,7 +140,7 @@ public class CardCatalogResource {
             logger.warn("Could not load archive configuration for '{}': {}", pi, e.getMessage());
         }
 
-        setCacheHeaders(index);
+        setCacheHeaders();
         return ret;
     }
 
@@ -155,22 +161,21 @@ public class CardCatalogResource {
         CardCatalogDrawer drawer = getDrawer(index, drawerId);
         CardCatalogManager manager = DataManager.getInstance().getCardCatalogManager();
 
-        List<CardCatalogEntry> entries = manager.getEntries(index, drawer);
-        List<Integer> positions = manager.getBoundaryPositions(index, drawer, from, to, count);
+        List<Integer> positions = manager.getBoundaryPositions(drawer, from, to, count);
 
         CardCatalogSection ret = new CardCatalogSection();
         ret.setDrawerId(drawer.getId());
-        ret.setEntryCount(entries.size());
+        ret.setEntryCount(drawer.getEntryCount());
         if (!positions.isEmpty()) {
             ret.setFrom(positions.get(0));
             ret.setTo(positions.get(positions.size() - 1));
         }
-        for (int position : positions) {
-            // boundary cards are displayed full-size in the vertical zoom list, so they need the large image URL as well
-            ret.getItems().add(createItem(entries.get(position - 1), position, true));
+        List<CardCatalogEntry> entries = manager.getEntriesAtPositions(drawer, positions);
+        for (int i = 0; i < positions.size(); i++) {
+            ret.getItems().add(createItem(entries.get(i), positions.get(i)));
         }
 
-        setCacheHeaders(index);
+        setCacheHeaders();
         return ret;
     }
 
@@ -189,8 +194,7 @@ public class CardCatalogResource {
         CardCatalogDrawer drawer = getDrawer(index, drawerId);
         CardCatalogManager manager = DataManager.getInstance().getCardCatalogManager();
 
-        List<CardCatalogEntry> entries = manager.getEntries(index, drawer);
-        int n = entries.size();
+        int n = drawer.getEntryCount();
         CardCatalogSection ret = new CardCatalogSection();
         ret.setDrawerId(drawer.getId());
         ret.setEntryCount(n);
@@ -200,12 +204,13 @@ public class CardCatalogResource {
             toPos = Math.min(toPos, fromPos + CardCatalogManager.MAX_ENTRIES_PER_REQUEST - 1);
             ret.setFrom(fromPos);
             ret.setTo(toPos);
-            for (int position = fromPos; position <= toPos; position++) {
-                ret.getItems().add(createItem(entries.get(position - 1), position, true));
+            List<CardCatalogEntry> entries = manager.getEntryRange(drawer, fromPos, toPos);
+            for (int i = 0; i < entries.size(); i++) {
+                ret.getItems().add(createItem(entries.get(i), fromPos + i));
             }
         }
 
-        setCacheHeaders(index);
+        setCacheHeaders();
         return ret;
     }
 
@@ -225,19 +230,43 @@ public class CardCatalogResource {
         ret.setAvailable(register != null);
         if (register != null) {
             for (Map.Entry<CardCatalogDrawer, List<CardCatalogRegisterRange>> entry : register.entrySet()) {
-                CardCatalogRegister.RegisterDrawer drawer = new CardCatalogRegister.RegisterDrawer();
-                drawer.setId(entry.getKey().getId());
-                drawer.setLabel(entry.getKey().getLabel());
-                drawer.setEntryCount(entry.getKey().getEntryCount());
-                for (CardCatalogRegisterRange range : entry.getValue()) {
-                    drawer.getRanges().add(new CardCatalogRegister.Range(range.getFrom(), range.getTo(), range.getFromLabel(), range.getToLabel()));
-                }
-                ret.getDrawers().add(drawer);
+                ret.getDrawers().add(createRegisterDrawer(entry.getKey(), entry.getValue()));
             }
         }
 
-        setCacheHeaders(index);
+        setCacheHeaders();
         return ret;
+    }
+
+    @GET
+    @jakarta.ws.rs.Path(ARCHIVES_CARDCATALOG_DRAWER_REGISTER)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "archives" }, summary = "Get the computed from-to register for one card catalog drawer")
+    @ApiResponse(responseCode = "200", description = "One drawer's register ranges, or available=false above the threshold")
+    @ApiResponse(responseCode = "404", description = "Unknown archive or drawer")
+    public CardCatalogRegister getDrawerRegister(
+            @Parameter(description = "EAD node ID of the drawer") @PathParam("drawerId") String drawerId)
+            throws PresentationException, IndexUnreachableException {
+        CardCatalogIndex index = getIndex();
+        CardCatalogDrawer drawer = getDrawer(index, drawerId);
+        CardCatalogRegister ret = new CardCatalogRegister();
+        DataManager.getInstance().getCardCatalogManager().getDrawerRegister(index, drawer).ifPresent(ranges -> {
+            ret.setAvailable(true);
+            ret.getDrawers().add(createRegisterDrawer(drawer, ranges));
+        });
+        setCacheHeaders();
+        return ret;
+    }
+
+    private static CardCatalogRegister.RegisterDrawer createRegisterDrawer(CardCatalogDrawer source, List<CardCatalogRegisterRange> ranges) {
+        CardCatalogRegister.RegisterDrawer drawer = new CardCatalogRegister.RegisterDrawer();
+        drawer.setId(source.getId());
+        drawer.setLabel(source.getLabel());
+        drawer.setEntryCount(source.getEntryCount());
+        for (CardCatalogRegisterRange range : ranges) {
+            drawer.getRanges().add(new CardCatalogRegister.Range(range.getFrom(), range.getTo(), range.getFromLabel(), range.getToLabel()));
+        }
+        return drawer;
     }
 
     @GET
@@ -250,6 +279,7 @@ public class CardCatalogResource {
             @Parameter(description = "EAD node ID of the card to locate") @QueryParam("entryId") String entryId)
             throws PresentationException, IndexUnreachableException {
         CardCatalogIndex index = getIndex();
+        setCacheHeaders();
         return DataManager.getInstance()
                 .getCardCatalogManager()
                 .findEntryPosition(index, entryId)
@@ -258,10 +288,23 @@ public class CardCatalogResource {
     }
 
     private CardCatalogIndex getIndex() throws PresentationException, IndexUnreachableException {
-        return DataManager.getInstance()
+        CardCatalogIndex index = DataManager.getInstance()
                 .getCardCatalogManager()
                 .getCatalog(pi)
                 .orElseThrow(() -> new NotFoundException("No indexed archive found with identifier: " + pi));
+        return requirePublicDescendants(index);
+    }
+
+    /**
+     * A positional catalog cannot omit individual protected nodes without changing every range,
+     * boundary and deep link. Until the API supports permission-specific positions, a catalog
+     * with protected descendants is unavailable as a whole.
+     */
+    static CardCatalogIndex requirePublicDescendants(CardCatalogIndex index) {
+        if (index.hasRestrictedDescendants()) {
+            throw new ForbiddenException("Card catalog contains restricted archive nodes: " + index.getPi());
+        }
+        return index;
     }
 
     private static CardCatalogDrawer getDrawer(CardCatalogIndex index, String drawerId) {
@@ -269,7 +312,7 @@ public class CardCatalogResource {
                 .orElseThrow(() -> new NotFoundException("No drawer found with id: " + drawerId));
     }
 
-    private CardCatalogSection.CardItem createItem(CardCatalogEntry entry, int position, boolean withImageUrl) {
+    private CardCatalogSection.CardItem createItem(CardCatalogEntry entry, int position) {
         CardCatalogSection.CardItem item = new CardCatalogSection.CardItem();
         item.setPosition(position);
         item.setEntryId(entry.getId());
@@ -282,9 +325,7 @@ public class CardCatalogResource {
                         .getThumbs()
                         .getThumbnailUrl(entry.getRecordPi(), THUMBNAIL_SIZE,
                                 THUMBNAIL_SIZE));
-                if (withImageUrl) {
-                    item.setImageUrl(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(entry.getRecordPi(), IMAGE_SIZE, IMAGE_SIZE));
-                }
+                item.setImageUrl(BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(entry.getRecordPi(), IMAGE_SIZE, IMAGE_SIZE));
             } catch (IndexUnreachableException | PresentationException | ViewerConfigurationException e) {
                 logger.warn("Could not build image URL for record '{}': {}", entry.getRecordPi(), e.getMessage());
             }
@@ -292,10 +333,9 @@ public class CardCatalogResource {
         return item;
     }
 
-    private void setCacheHeaders(CardCatalogIndex index) {
+    private void setCacheHeaders() {
         if (servletResponse != null) {
             servletResponse.setHeader("Cache-Control", CACHE_CONTROL);
-            servletResponse.setHeader("ETag", '"' + index.getPi() + '_' + index.getDateIndexed() + '"');
         }
     }
 }
