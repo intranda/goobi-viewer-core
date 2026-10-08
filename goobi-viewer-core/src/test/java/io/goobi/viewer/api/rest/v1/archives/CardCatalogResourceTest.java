@@ -176,7 +176,7 @@ class CardCatalogResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * @verifies return 404 for unknown archives and entries
+     * @verifies return 403 for unknown archives and 404 for unknown entries
      */
     @Test
     void endpoints_shouldRejectUnknownArchivesAndReturn404ForUnknownEntries() {

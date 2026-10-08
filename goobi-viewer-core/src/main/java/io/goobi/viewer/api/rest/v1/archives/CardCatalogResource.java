@@ -108,7 +108,8 @@ public class CardCatalogResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "archives" }, summary = "Get card catalog structure and configuration for an archive")
     @ApiResponse(responseCode = "200", description = "Card catalog info with drawers and navigation configuration")
-    @ApiResponse(responseCode = "404", description = "No indexed archive with the given identifier")
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive")
     public CardCatalogInfo getInfo() throws PresentationException, IndexUnreachableException {
         CardCatalogIndex index = getIndex();
         io.goobi.viewer.controller.Configuration config = DataManager.getInstance().getConfiguration();
@@ -150,7 +151,8 @@ public class CardCatalogResource {
     @Operation(tags = { "archives" },
             summary = "Get the boundary cards of one zoom step, evenly distributed over a position interval of a drawer")
     @ApiResponse(responseCode = "200", description = "Boundary cards with positions, labels and image URLs")
-    @ApiResponse(responseCode = "404", description = "Unknown archive or drawer")
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown drawer")
     public CardCatalogSection getBoundaries(
             @Parameter(description = "EAD node ID of the drawer") @PathParam("drawerId") String drawerId,
             @Parameter(description = "1-based start position within the drawer; defaults to 1") @QueryParam("from") Integer from,
@@ -184,7 +186,8 @@ public class CardCatalogResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "archives" }, summary = "Get a dense card range of a drawer for the full view")
     @ApiResponse(responseCode = "200", description = "Cards of the requested position range")
-    @ApiResponse(responseCode = "404", description = "Unknown archive or drawer")
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown drawer")
     public CardCatalogSection getEntries(
             @Parameter(description = "EAD node ID of the drawer") @PathParam("drawerId") String drawerId,
             @Parameter(description = "1-based start position within the drawer; defaults to 1") @QueryParam("from") Integer from,
@@ -220,7 +223,8 @@ public class CardCatalogResource {
     @Operation(tags = { "archives" },
             summary = "Get the computed from-to register of the card catalog; unavailable above the configured register threshold")
     @ApiResponse(responseCode = "200", description = "Register ranges per drawer, or available=false above the threshold")
-    @ApiResponse(responseCode = "404", description = "No indexed archive with the given identifier")
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive")
     public CardCatalogRegister getRegister() throws PresentationException, IndexUnreachableException {
         CardCatalogIndex index = getIndex();
         CardCatalogManager manager = DataManager.getInstance().getCardCatalogManager();
@@ -243,7 +247,8 @@ public class CardCatalogResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "archives" }, summary = "Get the computed from-to register for one card catalog drawer")
     @ApiResponse(responseCode = "200", description = "One drawer's register ranges, or available=false above the threshold")
-    @ApiResponse(responseCode = "404", description = "Unknown archive or drawer")
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown drawer")
     public CardCatalogRegister getDrawerRegister(
             @Parameter(description = "EAD node ID of the drawer") @PathParam("drawerId") String drawerId)
             throws PresentationException, IndexUnreachableException {
@@ -274,7 +279,8 @@ public class CardCatalogResource {
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "archives" }, summary = "Locate a card within the catalog by its EAD node ID (drawer and position)")
     @ApiResponse(responseCode = "200", description = "Drawer id and 1-based position of the card")
-    @ApiResponse(responseCode = "404", description = "Unknown archive or entry")
+    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
+    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown entry")
     public CardCatalogEntryLocation lookupEntry(
             @Parameter(description = "EAD node ID of the card to locate") @QueryParam("entryId") String entryId)
             throws PresentationException, IndexUnreachableException {
