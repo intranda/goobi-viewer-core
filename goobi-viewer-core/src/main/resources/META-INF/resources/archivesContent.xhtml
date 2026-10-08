@@ -32,7 +32,7 @@
             <div
                 class="archives__hero#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1) ? '' : ' archives__hero--no-image'}"
                 role="region"
-                aria-label="#{archiveBean.displayEntry.label}">
+                aria-label="#{archiveBean.archiveDisplayLabel}">
                 <ui:fragment rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1)}">
                     <img
                         class="archives__hero-image"
@@ -42,12 +42,12 @@
                                 #{archiveBean.archiveConfig.getMediaItem(1).getIconURI(800,260)} 800w"
                         sizes="100vw"
                         src="#{archiveBean.archiveConfig.getMediaItem(1).getIconURI(1200,400)}"
-                        alt="#{archiveBean.archiveConfig.getMediaItem(1).alternativeText != '' ? archiveBean.archiveConfig.getMediaItem(1).alternativeText : archiveBean.displayEntry.label}" />
+                        alt="#{archiveBean.archiveConfig.getMediaItem(1).alternativeText != '' ? archiveBean.archiveConfig.getMediaItem(1).alternativeText : archiveBean.archiveDisplayLabel}" />
                 </ui:fragment>
                 <div class="archives__hero-content">
                     <h1 class="archives__hero-title">
                         #{archiveBean.archiveConfig != null and not empty archiveBean.archiveConfig.title.textOrDefault
-                        ? archiveBean.archiveConfig.title.textOrDefault : archiveBean.displayEntry.label}
+                        ? archiveBean.archiveConfig.title.textOrDefault : archiveBean.archiveDisplayLabel}
                     </h1>
                     <ui:fragment rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.description.isValid(navigationHelper.locale)}">
                         <div class="archives__hero-description">

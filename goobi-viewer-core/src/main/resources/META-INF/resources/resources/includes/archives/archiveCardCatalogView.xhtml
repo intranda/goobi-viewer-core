@@ -6,7 +6,7 @@
     <!-- CARD CATALOG -->
     <div class="archives-cardcatalog__wrapper">
         <!-- LEFT SIDEBAR -->
-        <aside class="archives-cardcatalog__sidebar archives-cardcatalog__sidebar--left">
+        <aside class="archives-cardcatalog__sidebar">
             <div
                 class="archives-cardcatalog__counts"
                 data-cc="counts" />
@@ -49,17 +49,14 @@
     </div>
 
     <script>
-        viewerJS.cardCatalog.init({
-            pi: "#{archiveBean.currentResource}",
-            apiUrl: "#{request.contextPath}/api/v1",
-            osdScriptUrl: "#{request.contextPath}/resources/javascript/libs/openseadragon/openseadragon.min.js",
-            msg: #{navigationHelper.getTranslationsAsJson(
+        viewerJS.cardCatalog.init(#{archiveBean.getCardCatalogBootstrapJson(request.contextPath,
+            navigationHelper.getTranslationsAsJson(
                     ["archives__card_catalog_total", "archives__card_catalog_search_area", "archives__card_catalog_interval",
                     "archives__card_catalog_cards", "archives__card_catalog_card", "archives__card_catalog_of",
                     "archives__card_catalog_zoom_mode", "archives__card_catalog_zoom_hint", "archives__card_catalog_zoom_in",
                     "archives__card_catalog_full_view", "archives__card_catalog_register", "archives__card_catalog_choose_drawer",
                     "archives__card_catalog_no_image", "archives__open_record", "previous", "next",
-                    "archives__card_catalog_error"])}
-        });
+                    "archives__card_catalog_error", "archives__card_catalog_loading",
+                    "archives__card_catalog_load_more_error", "archives__card_catalog_retry"]))});
     </script>
 </ui:composition>
