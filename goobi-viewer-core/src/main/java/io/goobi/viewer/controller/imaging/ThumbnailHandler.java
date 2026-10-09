@@ -645,8 +645,7 @@ public class ThumbnailHandler {
             return thumbnailUrl;
         } else if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getModifiedIIIFFUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
-        } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
-            return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, null, getScale(width, height).toString(), null, null, null);
+
         } else if (thumbnailUrl != null) {
             String region = Region.FULL_IMAGE;
 
@@ -887,9 +886,11 @@ public class ThumbnailHandler {
                 ret = getThumbnailPath(EPUB_THUMB).toString();
             } else if (mediaType.isMEI() || StringUtils.isNotBlank(doc.getMetadataValue(SolrConstants.FILENAME_MEI))) {
                 ret = getThumbnailPath(MEI_THUMB).toString();
-            } else if (logger.isWarnEnabled()) {
-                ret = thumbnailUrl;
-                logger.warn("Mime type of '{}' (file: {}) not supported: {}", doc.getPi(), getFilename(doc).orElse("unknown"), mimeType);
+            } else {
+                //                ret = thumbnailUrl;
+                if (logger.isWarnEnabled()) {
+                    logger.warn("Mime type of '{}' (file: {}) not supported: {}", doc.getPi(), getFilename(doc).orElse("unknown"), mimeType);
+                }
             }
         }
 
