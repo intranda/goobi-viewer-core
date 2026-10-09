@@ -2506,10 +2506,14 @@ public class JPADAO implements IDAO {
      * {@inheritDoc}
      *
      * @should return user comments sorted by dateCreated or dateModified with given limit
+     * @should return empty list if user null
      */
     @SuppressWarnings("unchecked")
     @Override
     public List<Comment> getCommentsOfUser(User user, int maxResults, String sortField, boolean descending) throws DAOException {
+        if (user == null) {
+            return Collections.emptyList();
+        }
         preQuery();
         EntityManager em = getEntityManager();
         try {

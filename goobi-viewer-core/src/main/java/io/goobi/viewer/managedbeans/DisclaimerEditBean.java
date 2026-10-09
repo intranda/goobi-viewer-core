@@ -101,10 +101,11 @@ public class DisclaimerEditBean implements Serializable {
      *
      * @param active a boolean
      * @throws io.goobi.viewer.exceptions.DAOException
+     * @should persist new disclaimer if none exists
      */
     public void setDisclaimerActive(boolean active) throws DAOException {
         if (this.dao != null) {
-            Disclaimer disclaimer = dao.getDisclaimer();
+            Disclaimer disclaimer = getPersistedOrNewDisclaimer();
             disclaimer.setActive(active);
             dao.saveDisclaimer(disclaimer);
             if (this.disclaimerForEdit != null) {
@@ -133,7 +134,7 @@ public class DisclaimerEditBean implements Serializable {
         //save the current date both to the banner managed by the persistence context and to the copy we are editing
         //this way, saving the current banner is not required, but is a save is performed, the date is not overwritten
         if (this.dao != null) {
-            Disclaimer disclaimer = dao.getDisclaimer();
+            Disclaimer disclaimer = getPersistedOrNewDisclaimer();
             disclaimer.setRequiresConsentAfter(DateTools.now());
             if (dao.saveDisclaimer(disclaimer) != null) {
                 if (this.disclaimerForEdit != null) {
@@ -144,6 +145,11 @@ public class DisclaimerEditBean implements Serializable {
                 Messages.error("admin__legal__disclaimer_reset_consent__error");
             }
         }
+    }
+
+    private Disclaimer getPersistedOrNewDisclaimer() throws DAOException {
+        Disclaimer disclaimer = dao.getDisclaimer();
+        return disclaimer != null ? disclaimer : new Disclaimer();
     }
 
     private Disclaimer loadDisclaimerForEdit() {

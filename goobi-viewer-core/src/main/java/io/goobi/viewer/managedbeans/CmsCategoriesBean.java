@@ -90,9 +90,16 @@ public class CmsCategoriesBean implements Serializable {
     /**
      * Start editing the given category. Editing will continue until either {@link #saveCategoryAction()} or {@link #cancelAction()} is executed
      *
+     * <p>A null category ends any editing in progress instead.
+     *
      * @param category The category to edit
+     * @should end editing if category null
      */
     public void edit(CMSCategory category) {
+        if (category == null) {
+            endEditing();
+            return;
+        }
         this.selectedCategory = category;
         this.setCategoryName(category.getName());
         this.setCategoryDescription(category.getDescription());

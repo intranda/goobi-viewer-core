@@ -3462,6 +3462,15 @@ class JPADAOTest extends AbstractDatabaseEnabledTest {
 
     /**
      * @see JPADAO#getCommentsOfUser(User,int,String,boolean)
+     * @verifies return empty list if user null
+     */
+    @Test
+    void getCommentsOfUser_shouldReturnEmptyListIfUserNull() throws Exception {
+        assertTrue(DataManager.getInstance().getDao().getCommentsOfUser(null, 2, "dateCreated", true).isEmpty());
+    }
+
+    /**
+     * @see JPADAO#getCommentsOfUser(User,int,String,boolean)
      * @verifies return user comments sorted by dateCreated or dateModified with given limit
      */
     @Test
