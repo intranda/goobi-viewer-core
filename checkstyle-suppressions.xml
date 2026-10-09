@@ -6,7 +6,7 @@
 	<!-- The Apache lib used is throwing the general Exception... -->
 	<suppress checks="IllegalCatch"
 		  files="MessageQueueManager.java"
-		  lines="250-650"/>
+		  lines="250-670"/>
 	<!-- Best-effort filter: any exception in the prewarm path must never break tile delivery,
 	     so a wide RuntimeException guard around the submit call is intentional. -->
 	<suppress checks="IllegalCatch"

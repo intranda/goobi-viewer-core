@@ -1411,7 +1411,8 @@ public final class AccessConditionUtils {
     public static AccessPermission checkAccessPermissionByIdentifierAndFileNameWithSessionMap(HttpSession session, String pi,
             String contentFileName, RequiredPrivileges requiredPrivileges, String ipAddress, User user)
             throws IndexUnreachableException, DAOException {
-        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", pi, contentFileName, requiredPrivileges); //NOSONAR Debug
+        // logger.trace("checkAccessPermissionByIdentifierAndFileNameWithSessionMap: {}, {}, {}", //NOSONAR Debug
+        //         pi, contentFileName, requiredPrivileges);
         if (requiredPrivileges == null) {
             throw new IllegalArgumentException("requiredPrivileges may not be null");
         }
@@ -1462,7 +1463,6 @@ public final class AccessConditionUtils {
         addSessionPermission(attributeName, permissions, session);
 
         return permissions.get(key) != null ? permissions.get(key) : AccessPermission.denied();
-        // logger.debug("Access ({}) not yet checked for '{}/{}', access is {}", requiredPrivileges, pi, contentFileName, ret.isGranted()); //NOSONAR Deb
     }
 
     /**
