@@ -1195,9 +1195,9 @@ public class AdminBean implements Serializable {
     }
 
     /**
-     * <<<<<<< release_26.05 ======= All available translation groups: the groups configured in config_viewer.xml plus — once at least one
-     * database-defined dynamic collection exists — a synthetic group for translating dynamic collection labels. The synthetic group is appended at
-     * the end, so the config-index-based group ids stay stable.
+     * All available translation groups: the groups configured in config_viewer.xml plus — once at least one database-defined dynamic collection
+     * exists — a synthetic group for translating dynamic collection labels. The synthetic group is appended at the end, so the config-index-based
+     * group ids stay stable.
      *
      * @return List of all translation groups
      */
