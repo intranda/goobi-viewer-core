@@ -125,12 +125,15 @@ public final class ViewerPathBuilder {
      * @param queryString the raw HTTP query string, may be null
      * @return A {@link io.goobi.viewer.model.urlresolution.ViewerPath} containing the complete path information
      * @throws io.goobi.viewer.exceptions.DAOException if any.
+     * @should encode spaces as %20 and plus signs as %2B
      */
     public static Optional<ViewerPath> createPath(String applicationUrl, String applicationName, final String serviceUrl, String queryString)
             throws DAOException {
         String useServiceUrl = serviceUrl.replace(applicationUrl, "").replaceAll("^\\/", "");
         try {
-            useServiceUrl = URLEncoder.encode(useServiceUrl, "utf-8").replace("%2F", "/");
+            // Encode spaces path-style as '%20' rather than '+': the URL is already decoded at this point, so a '+' would be indistinguishable
+            // from a literal plus sign (encoded as '%2B') once the resulting URL is requested again (e.g. after a history.pushState and reload)
+            useServiceUrl = URLEncoder.encode(useServiceUrl, "utf-8").replace("%2F", "/").replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
             //
         }
