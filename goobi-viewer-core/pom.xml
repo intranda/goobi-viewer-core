@@ -153,6 +153,7 @@
 		<weld-servlet-shaded.version>5.1.7.Final</weld-servlet-shaded.version>
 		<xmlParserAPIs.version>2.6.2</xmlParserAPIs.version>
 		<xml-apis.version>1.4.01</xml-apis.version>
+		<zookeeper.version>3.9.6</zookeeper.version>
 		<sf-geojson.version>3.3.3</sf-geojson.version>
 	</properties>
 
@@ -168,6 +169,17 @@
 				<version>${netty.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<!-- solr-solrj pulls in ZooKeeper (and through it Netty 4.1) transitively; pin the patched release -->
+			<dependency>
+				<groupId>org.apache.zookeeper</groupId>
+				<artifactId>zookeeper</artifactId>
+				<version>${zookeeper.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.zookeeper</groupId>
+				<artifactId>zookeeper-jute</artifactId>
+				<version>${zookeeper.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
