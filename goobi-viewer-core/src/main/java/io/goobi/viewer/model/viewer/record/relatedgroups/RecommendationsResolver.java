@@ -298,6 +298,9 @@ public class RecommendationsResolver {
 
     /** True if the doc is an anchor (ISANCHOR:true) or a group record (DOCTYPE:GROUP); such records have no own images. */
     private static boolean isAnchorOrGroup(SolrDocument doc) {
+        if (doc == null) {
+            return false;
+        }
         if (SolrTools.isAnchor(doc)) {
             return true;
         }
