@@ -467,7 +467,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, null, scale, null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
-            return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, scale, Rotation.NONE, Colortype.DEFAULT, format);
+            return iiifUrlHandler.getIIIFImageUrl(IIIFUrlResolver.getIIIFImageBaseUrl(path), RegionRequest.FULL, scale, Rotation.NONE,
+                    Colortype.DEFAULT, format);
         } else {
             // Reached only with a non-null page: every caller resolves the page through ImageDeliveryBean.getCurrentPageIfExists()
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", //NOSONAR
@@ -504,7 +505,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return IIIFUrlResolver.getModifiedIIIFFUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
-            return IIIFUrlResolver.getIIIFImageUrl(path, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
+            return IIIFUrlResolver.getIIIFImageUrl(IIIFUrlResolver.getIIIFImageBaseUrl(path), Region.SQUARE_IMAGE, getScale(size, size).toString(),
+                    null, null, null);
         } else {
             // Reached only with a non-null page: every caller resolves the page through ImageDeliveryBean.getCurrentPageIfExists()
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.SQUARE_IMAGE, size + ",", "0", //NOSONAR
@@ -702,7 +704,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(path)) {
             return iiifUrlHandler.getModifiedIIIFFUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(path)) {
-            return iiifUrlHandler.getIIIFImageUrl(path, RegionRequest.FULL, Scale.MAX, Rotation.NONE, Colortype.DEFAULT, format);
+            return iiifUrlHandler.getIIIFImageUrl(IIIFUrlResolver.getIIIFImageBaseUrl(path), RegionRequest.FULL, Scale.MAX, Rotation.NONE,
+                    Colortype.DEFAULT, format);
         } else {
             return this.iiifUrlHandler.getIIIFImageUrl(path, page.getPi(), Region.FULL_IMAGE, scale.toString(), "0", StringConstants.DEFAULT,
                     format.getFileExtension());
@@ -735,7 +738,8 @@ public class ThumbnailHandler {
         } else if (IIIFUrlResolver.isIIIFImageUrl(thumbnailUrl)) {
             return IIIFUrlResolver.getModifiedIIIFFUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
         } else if (IIIFUrlResolver.isIIIFImageInfoUrl(thumbnailUrl)) {
-            return IIIFUrlResolver.getIIIFImageUrl(thumbnailUrl, Region.SQUARE_IMAGE, getScale(size, size).toString(), null, null, null);
+            return IIIFUrlResolver.getIIIFImageUrl(IIIFUrlResolver.getIIIFImageBaseUrl(thumbnailUrl), Region.SQUARE_IMAGE,
+                    getScale(size, size).toString(), null, null, null);
         } else if (se != null) {
             return this.iiifUrlHandler.getIIIFImageUrl(thumbnailUrl, se.getPi(), Region.SQUARE_IMAGE, size + ",", "0", StringConstants.DEFAULT,
                     "jpg");
