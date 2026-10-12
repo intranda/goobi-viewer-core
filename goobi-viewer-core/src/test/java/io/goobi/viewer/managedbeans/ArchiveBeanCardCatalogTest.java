@@ -21,6 +21,7 @@
 package io.goobi.viewer.managedbeans;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
@@ -39,7 +40,7 @@ class ArchiveBeanCardCatalogTest {
         String identifier = "archive\"</script>\u2028&";
         bean.setCurrentResource(identifier);
 
-        String json = bean.getCardCatalogBootstrapJson("/viewer", "{\"label\":\"</script> & \\\"quoted\\\"\"}");
+        String json = bean.getCardCatalogBootstrapJson("/viewer", Map.of("label", "</script> & \"quoted\""));
 
         Assertions.assertFalse(json.toLowerCase().contains("</script>"));
         Assertions.assertTrue(json.contains("\\u003c"));
@@ -48,6 +49,7 @@ class ArchiveBeanCardCatalogTest {
         Assertions.assertEquals(identifier, parsed.getString("pi"));
         Assertions.assertEquals("/viewer/api/v1", parsed.getString("apiUrl"));
         Assertions.assertEquals("/viewer", parsed.getString("rootUrl"));
+        Assertions.assertFalse(parsed.has("portrait"));
         Assertions.assertEquals("</script> & \"quoted\"", parsed.getJSONObject("msg").getString("label"));
     }
 

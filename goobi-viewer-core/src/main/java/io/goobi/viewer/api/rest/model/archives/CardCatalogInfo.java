@@ -38,10 +38,10 @@ public class CardCatalogInfo {
     private String pi;
     private String label;
     private int totalEntries;
+    private long dateIndexed;
     private String mode;
     private Config config = new Config();
     private List<Drawer> drawers = new ArrayList<>();
-    private List<Link> links = new ArrayList<>();
 
     public static class Config {
 
@@ -111,28 +111,6 @@ public class CardCatalogInfo {
         }
     }
 
-    public static class Link {
-
-        private String label;
-        private String url;
-
-        public Link() {
-        }
-
-        public Link(String label, String url) {
-            this.label = label;
-            this.url = url;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-    }
-
     public String getPi() {
         return pi;
     }
@@ -157,6 +135,14 @@ public class CardCatalogInfo {
         this.totalEntries = totalEntries;
     }
 
+    public long getDateIndexed() {
+        return dateIndexed;
+    }
+
+    public void setDateIndexed(long dateIndexed) {
+        this.dateIndexed = dateIndexed;
+    }
+
     public String getMode() {
         return mode;
     }
@@ -171,9 +157,5 @@ public class CardCatalogInfo {
 
     public List<Drawer> getDrawers() {
         return drawers;
-    }
-
-    public List<Link> getLinks() {
-        return links;
     }
 }

@@ -107,6 +107,9 @@ public class ArchiveBean implements Serializable {
     }
 
     /**
+     * Loads the archive tree of the current resource. For card catalogs no tree is built at all: that view loads its data through the card
+     * catalog REST API, and the full tree may hold hundreds of thousands of nodes.
+     *
      * @param selectedEntryId ID of the archive entry to select after loading; may be null
      * @throws io.goobi.viewer.exceptions.ArchiveException if the archive database cannot be retrieved
      * @should not throw NullPointerException when archive becomes unresolvable after the null check
@@ -127,8 +130,6 @@ public class ArchiveBean implements Serializable {
                     logger.trace("Found configuration for archive resource: {}", currentArchive.getResourceId());
                     this.archiveConfig = config.get();
                 }
-                // The card catalog view loads its data via the card catalog REST API; the full
-                // archive tree (potentially hundreds of thousands of nodes) must not be built for it
                 if (isCardCatalog()) {
                     this.archiveTree = null;
                     this.databaseLoaded = true;
@@ -215,17 +216,17 @@ public class ArchiveBean implements Serializable {
      * the script element before the browser parses the JSON value.
      *
      * @param contextPath servlet context path
-     * @param translationsJson JSON object containing the translated UI strings
+     * @param translations translated UI strings keyed by message key
      * @return a JavaScript-safe JSON object literal
      */
-    public String getCardCatalogBootstrapJson(String contextPath, String translationsJson) {
+    public String getCardCatalogBootstrapJson(String contextPath, Map<String, String> translations) {
         String root = StringUtils.defaultString(contextPath);
         JSONObject config = new JSONObject();
         config.put("pi", currentResource);
         config.put("apiUrl", root + "/api/v1");
         config.put("rootUrl", root);
         config.put("osdScriptUrl", root + "/resources/javascript/libs/openseadragon/openseadragon.min.js");
-        config.put("msg", new JSONObject(translationsJson));
+        config.put("msg", new JSONObject(translations));
         return config.toString()
                 .replace("&", "\\u0026")
                 .replace("<", "\\u003c")

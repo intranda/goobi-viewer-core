@@ -63,6 +63,7 @@ class CardCatalogResourceTest extends AbstractRestApiTest {
             JSONObject info = new JSONObject(response.readEntity(String.class));
             assertEquals(PI, info.getString("pi"));
             assertTrue(info.getInt("totalEntries") > 0);
+            assertTrue(info.getLong("dateIndexed") > 0);
             assertFalse(info.getJSONArray("drawers").isEmpty());
             assertTrue(info.getJSONObject("config").getInt("zoomFactor") >= 2);
             assertTrue(info.getJSONObject("config").getInt("zoomFactor") < 25);
@@ -146,21 +147,15 @@ class CardCatalogResourceTest extends AbstractRestApiTest {
     }
 
     /**
-     * @verifies return register below the configured threshold
+     * @verifies return the drawer register below the configured threshold
      */
     @Test
-    void getRegister_shouldReturnRegisterBelowThreshold() {
+    void getDrawerRegister_shouldReturnRegisterBelowThreshold() {
         // test config: registerThreshold=2000, the test archive has a few hundred nodes
         String drawerId;
         try (Response response = target("/archives/" + PI + "/cardcatalog/").request().get()) {
             assertEquals(200, response.getStatus());
             drawerId = new JSONObject(response.readEntity(String.class)).getJSONArray("drawers").getJSONObject(0).getString("id");
-        }
-        try (Response response = target("/archives/" + PI + "/cardcatalog/register").request().get()) {
-            assertEquals(200, response.getStatus());
-            JSONObject register = new JSONObject(response.readEntity(String.class));
-            assertTrue(register.getBoolean("available"));
-            assertFalse(register.getJSONArray("drawers").isEmpty());
         }
         try (Response response = target("/archives/" + PI + "/cardcatalog/drawers/" + drawerId + "/register").request().get()) {
             assertEquals(200, response.getStatus());

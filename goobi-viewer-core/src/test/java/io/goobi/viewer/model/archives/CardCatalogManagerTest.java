@@ -170,8 +170,8 @@ class CardCatalogManagerTest {
         CardCatalogDrawer drawer = new CardCatalogDrawer("drawer", "iddoc", "A", 100);
         assertEquals(2, CardCatalogManager.normalizeZoomFactor(1));
         assertEquals(CardCatalogManager.MAX_BOUNDARIES - 1, CardCatalogManager.normalizeZoomFactor(Integer.MAX_VALUE));
-        List<Integer> positions = manager.getBoundaryPositions(drawer, 1, 100, 2);
-        assertEquals(3, positions.size());
+        List<Integer> positions = manager.getBoundaryPositions(drawer, 1, 100);
+        assertTrue(positions.size() >= 3);
         assertTrue(positions.get(1) < 100);
     }
 
@@ -346,11 +346,14 @@ class CardCatalogManagerTest {
     void findEntryPosition_shouldScanWhenIndexedOrderDoesNotMatchSortedPage() throws Exception {
         SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
         SolrDocument location = new SolrDocument();
+        location.setField(SolrConstants.IDDOC, "targetDoc");
         location.setField(SolrConstants.IDDOC_PARENT, "drawerDoc");
         location.setField("SORTNUM_ARCHIVE_ORDER", 1);
         Mockito.when(searchIndex.getFirstDoc(anyString(), anyList())).thenReturn(location);
-        QueryResponse wrongPosition = cardPage(List.of("other"), 1, 1);
-        Mockito.when(searchIndex.search(anyString(), eq(0), eq(1), anyList(), isNull(), anyList())).thenReturn(wrongPosition);
+        Mockito.when(searchIndex.search(anyString(), eq(0), eq(1), anyList(), isNull(), anyList())).thenAnswer(invocation -> {
+            String query = invocation.getArgument(0);
+            return query.contains("[1 TO 1]") ? cardPage(List.of("other"), 1, 1) : cardPage(List.of("first"), 1, 0);
+        });
         QueryResponse completePage = cardPage(List.of("first", "other", "target"), 3, 0);
         Mockito.when(searchIndex.search(anyString(), eq(0), eq(3), anyList(), isNull(), anyList()))
                 .thenReturn(completePage);
@@ -358,6 +361,56 @@ class CardCatalogManagerTest {
         CardCatalogDrawer drawer = new CardCatalogDrawer("drawer", "drawerDoc", "A", 3);
         CardCatalogIndex index = new CardCatalogIndex("archive", "Archive", 1, List.of(drawer), false);
         assertEquals(3, managerWith(searchIndex).findEntryPosition(index, "target").orElseThrow().getRight());
+    }
+
+    @Test
+    void findEntryPosition_shouldCountPrecedingSiblingsInsteadOfScanning() throws Exception {
+        SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
+        SolrDocument location = new SolrDocument();
+        location.setField(SolrConstants.IDDOC, "targetDoc");
+        location.setField(SolrConstants.IDDOC_PARENT, "drawerDoc");
+        location.setField("SORTNUM_ARCHIVE_ORDER", 7);
+        Mockito.when(searchIndex.getFirstDoc(anyString(), anyList())).thenReturn(location);
+        Mockito.when(searchIndex.search(anyString(), eq(0), eq(1), anyList(), isNull(), anyList())).thenAnswer(invocation -> {
+            String query = invocation.getArgument(0);
+            return query.contains("[3 TO 3]") ? cardPage(List.of("target"), 1, 3) : cardPage(List.of("other"), 1, 7);
+        });
+        Mockito.when(searchIndex.getHitCount(anyString())).thenAnswer(invocation -> {
+            String query = invocation.getArgument(0);
+            return query.contains("[* TO 6]") ? 2L : 1L;
+        });
+
+        CardCatalogDrawer drawer = new CardCatalogDrawer("drawer", "drawerDoc", "A", 1000);
+        CardCatalogIndex index = new CardCatalogIndex("archive", "Archive", 1, List.of(drawer), false);
+        assertEquals(4, managerWith(searchIndex).findEntryPosition(index, "target").orElseThrow().getRight());
+        Mockito.verify(searchIndex, Mockito.times(2)).getHitCount(anyString());
+        Mockito.verify(searchIndex, Mockito.times(2)).search(anyString(), anyInt(), anyInt(), anyList(), isNull(), anyList());
+    }
+
+    @Test
+    void findEntryPosition_shouldGiveUpAfterTheBoundedScan() throws Exception {
+        SolrSearchIndex searchIndex = Mockito.mock(SolrSearchIndex.class);
+        SolrDocument location = new SolrDocument();
+        location.setField(SolrConstants.IDDOC_PARENT, "drawerDoc");
+        Mockito.when(searchIndex.getFirstDoc(anyString(), anyList())).thenReturn(location);
+        int pageSize = CardCatalogManager.MAX_ENTRIES_PER_REQUEST;
+        Mockito.when(searchIndex.search(anyString(), eq(0), eq(pageSize), anyList(), isNull(), anyList())).thenAnswer(invocation -> {
+            Matcher range = Pattern.compile("\\[(\\d+) TO (\\d+)\\]").matcher(invocation.getArgument(0));
+            assertTrue(range.find());
+            int start = Integer.parseInt(range.group(1));
+            List<String> ids = new ArrayList<>();
+            for (int i = 0; i < pageSize; i++) {
+                ids.add("card" + (start + i));
+            }
+            return cardPage(ids, pageSize, start);
+        });
+
+        CardCatalogDrawer drawer = new CardCatalogDrawer("drawer", "drawerDoc", "A", 100_000);
+        CardCatalogIndex index = new CardCatalogIndex("archive", "Archive", 1, List.of(drawer), false);
+        assertTrue(managerWith(searchIndex).findEntryPosition(index, "target").isEmpty());
+        Mockito.verify(searchIndex, Mockito.times(CardCatalogManager.MAX_POSITION_SCAN_PAGES))
+                .search(anyString(), anyInt(), anyInt(), anyList(), isNull(), anyList());
+        Mockito.verify(searchIndex, Mockito.never()).getHitCount(anyString());
     }
 
     @Test

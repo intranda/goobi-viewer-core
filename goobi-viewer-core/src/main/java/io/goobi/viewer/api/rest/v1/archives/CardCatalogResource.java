@@ -26,10 +26,8 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_BOUNDARIE
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_DRAWER_REGISTER;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_ENTRIES;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_LOOKUP;
-import static io.goobi.viewer.api.rest.v1.ApiUrls.ARCHIVES_CARDCATALOG_REGISTER;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,8 +40,8 @@ import io.goobi.viewer.api.rest.model.archives.CardCatalogEntryLocation;
 import io.goobi.viewer.api.rest.model.archives.CardCatalogInfo;
 import io.goobi.viewer.api.rest.model.archives.CardCatalogRegister;
 import io.goobi.viewer.api.rest.model.archives.CardCatalogSection;
+import io.goobi.viewer.controller.Configuration;
 import io.goobi.viewer.controller.DataManager;
-import io.goobi.viewer.exceptions.DAOException;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
@@ -54,7 +52,6 @@ import io.goobi.viewer.model.archives.CardCatalogEntry;
 import io.goobi.viewer.model.archives.CardCatalogIndex;
 import io.goobi.viewer.model.archives.CardCatalogManager;
 import io.goobi.viewer.model.archives.CardCatalogRegisterRange;
-import io.goobi.viewer.model.cms.CMSArchiveLink;
 import io.goobi.viewer.model.security.IPrivilegeHolder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -65,6 +62,7 @@ import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
@@ -76,7 +74,7 @@ import jakarta.ws.rs.core.MediaType;
  * dense card ranges, computed from-to register). The endpoints are independent of whether the archive is flagged as a card catalog; the flag only
  * controls which view the archive page renders.
  */
-@jakarta.ws.rs.Path(ARCHIVES_CARDCATALOG)
+@Path(ARCHIVES_CARDCATALOG)
 @ViewerRestServiceBinding
 @AccessRightsBinding({ IPrivilegeHolder.PRIV_ARCHIVE_DISPLAY_NODE })
 @CORSBinding
@@ -88,8 +86,6 @@ public class CardCatalogResource {
     private static final int IMAGE_SIZE = 1200;
     private static final String CACHE_CONTROL = "private, no-store";
 
-    @Context
-    private HttpServletRequest servletRequest;
     @Context
     private HttpServletResponse servletResponse;
 
@@ -104,6 +100,15 @@ public class CardCatalogResource {
         request.setAttribute(FilterTools.ATTRIBUTE_PI, pi);
     }
 
+    /**
+     * Structure and navigation configuration of the catalog. The advertised page size and full-view threshold never exceed
+     * {@link CardCatalogManager#MAX_ENTRIES_PER_REQUEST}, the hard cap of the entries endpoint; a larger page size would make paging clients skip the
+     * silently dropped tail of each page.
+     *
+     * @return card catalog info with drawers and navigation configuration
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "archives" }, summary = "Get card catalog structure and configuration for an archive")
@@ -112,18 +117,16 @@ public class CardCatalogResource {
     @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive")
     public CardCatalogInfo getInfo() throws PresentationException, IndexUnreachableException {
         CardCatalogIndex index = getIndex();
-        io.goobi.viewer.controller.Configuration config = DataManager.getInstance().getConfiguration();
+        Configuration config = DataManager.getInstance().getConfiguration();
 
         CardCatalogInfo ret = new CardCatalogInfo();
         ret.setPi(index.getPi());
         ret.setLabel(index.getLabel());
         ret.setTotalEntries(index.getTotalEntries());
+        ret.setDateIndexed(index.getDateIndexed());
         ret.setMode(index.getTotalEntries() > config.getCardCatalogRegisterThreshold() ? CardCatalogInfo.MODE_LETTERS
                 : CardCatalogInfo.MODE_REGISTER);
         ret.getConfig().setZoomFactor(CardCatalogManager.normalizeZoomFactor(config.getCardCatalogZoomFactor()));
-        // the entries endpoint hard-caps ranges at MAX_ENTRIES_PER_REQUEST, so the page size
-        // advertised to the client must never exceed it — otherwise the client would skip
-        // the silently dropped tail when paging
         ret.getConfig().setListPageSize(Math.max(1, Math.min(config.getCardCatalogListPageSize(), CardCatalogManager.MAX_ENTRIES_PER_REQUEST)));
         ret.getConfig().setFullViewThreshold(Math.max(2,
                 Math.min(config.getCardCatalogFullViewThreshold(), CardCatalogManager.MAX_ENTRIES_PER_REQUEST)));
@@ -131,22 +134,13 @@ public class CardCatalogResource {
         for (CardCatalogDrawer drawer : index.getDrawers()) {
             ret.getDrawers().add(new CardCatalogInfo.Drawer(drawer.getId(), drawer.getLabel(), drawer.getEntryCount()));
         }
-        try {
-            DataManager.getInstance().getDao().getCmsArchiveConfigForArchive(pi).ifPresent(archiveConfig -> {
-                for (CMSArchiveLink link : archiveConfig.getLinks()) {
-                    ret.getLinks().add(new CardCatalogInfo.Link(link.getLabel().getTextOrDefault(), link.getUrl()));
-                }
-            });
-        } catch (DAOException e) {
-            logger.warn("Could not load archive configuration for '{}': {}", pi, e.getMessage());
-        }
 
         setCacheHeaders();
         return ret;
     }
 
     @GET
-    @jakarta.ws.rs.Path(ARCHIVES_CARDCATALOG_BOUNDARIES)
+    @Path(ARCHIVES_CARDCATALOG_BOUNDARIES)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "archives" },
             summary = "Get the boundary cards of one zoom step, evenly distributed over a position interval of a drawer")
@@ -156,14 +150,13 @@ public class CardCatalogResource {
     public CardCatalogSection getBoundaries(
             @Parameter(description = "EAD node ID of the drawer") @PathParam("drawerId") String drawerId,
             @Parameter(description = "1-based start position within the drawer; defaults to 1") @QueryParam("from") Integer from,
-            @Parameter(description = "1-based end position within the drawer; defaults to the drawer size") @QueryParam("to") Integer to,
-            @Parameter(description = "Number of boundary cards; defaults to zoomFactor + 1") @QueryParam("count") Integer count)
+            @Parameter(description = "1-based end position within the drawer; defaults to the drawer size") @QueryParam("to") Integer to)
             throws PresentationException, IndexUnreachableException {
         CardCatalogIndex index = getIndex();
         CardCatalogDrawer drawer = getDrawer(index, drawerId);
         CardCatalogManager manager = DataManager.getInstance().getCardCatalogManager();
 
-        List<Integer> positions = manager.getBoundaryPositions(drawer, from, to, count);
+        List<Integer> positions = manager.getBoundaryPositions(drawer, from, to);
 
         CardCatalogSection ret = new CardCatalogSection();
         ret.setDrawerId(drawer.getId());
@@ -182,7 +175,7 @@ public class CardCatalogResource {
     }
 
     @GET
-    @jakarta.ws.rs.Path(ARCHIVES_CARDCATALOG_ENTRIES)
+    @Path(ARCHIVES_CARDCATALOG_ENTRIES)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "archives" }, summary = "Get a dense card range of a drawer for the full view")
     @ApiResponse(responseCode = "200", description = "Cards of the requested position range")
@@ -218,32 +211,7 @@ public class CardCatalogResource {
     }
 
     @GET
-    @jakarta.ws.rs.Path(ARCHIVES_CARDCATALOG_REGISTER)
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "archives" },
-            summary = "Get the computed from-to register of the card catalog; unavailable above the configured register threshold")
-    @ApiResponse(responseCode = "200", description = "Register ranges per drawer, or available=false above the threshold")
-    @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
-    @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive")
-    public CardCatalogRegister getRegister() throws PresentationException, IndexUnreachableException {
-        CardCatalogIndex index = getIndex();
-        CardCatalogManager manager = DataManager.getInstance().getCardCatalogManager();
-
-        CardCatalogRegister ret = new CardCatalogRegister();
-        Map<CardCatalogDrawer, List<CardCatalogRegisterRange>> register = manager.getRegister(index).orElse(null);
-        ret.setAvailable(register != null);
-        if (register != null) {
-            for (Map.Entry<CardCatalogDrawer, List<CardCatalogRegisterRange>> entry : register.entrySet()) {
-                ret.getDrawers().add(createRegisterDrawer(entry.getKey(), entry.getValue()));
-            }
-        }
-
-        setCacheHeaders();
-        return ret;
-    }
-
-    @GET
-    @jakarta.ws.rs.Path(ARCHIVES_CARDCATALOG_DRAWER_REGISTER)
+    @Path(ARCHIVES_CARDCATALOG_DRAWER_REGISTER)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "archives" }, summary = "Get the computed from-to register for one card catalog drawer")
     @ApiResponse(responseCode = "200", description = "One drawer's register ranges, or available=false above the threshold")
@@ -275,7 +243,7 @@ public class CardCatalogResource {
     }
 
     @GET
-    @jakarta.ws.rs.Path(ARCHIVES_CARDCATALOG_LOOKUP)
+    @Path(ARCHIVES_CARDCATALOG_LOOKUP)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "archives" }, summary = "Locate a card within the catalog by its EAD node ID (drawer and position)")
     @ApiResponse(responseCode = "200", description = "Drawer id and 1-based position of the card")

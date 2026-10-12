@@ -140,6 +140,7 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
         this.cardCatalog = cardCatalog;
     }
 
+
     public List<CMSArchiveLink> getLinks() {
         return links;
     }
@@ -150,6 +151,14 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
 
     public void removeLink(CMSArchiveLink link) {
         links.remove(link);
+    }
+
+    /**
+     * Drops links without a URL, e.g. rows added in the admin form but left empty, and normalizes the remaining addresses.
+     */
+    public void normalizeLinks() {
+        links.removeIf(link -> link.getUrl() == null || link.getUrl().isBlank());
+        links.forEach(link -> link.setUrl(CMSArchiveLink.normalizeUrl(link.getUrl())));
     }
 
     

@@ -30,7 +30,7 @@
             encoding="utf-8">
             <!-- HERO HEADER -->
             <div
-                class="archives__hero#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1) ? '' : ' archives__hero--no-image'}"
+                class="archives__hero#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1) ? '' : ' archives__hero--no-image'}#{archiveBean.cardCatalog ? ' archives__hero--compact' : ''}"
                 role="region"
                 aria-label="#{archiveBean.archiveDisplayLabel}">
                 <ui:fragment rendered="#{archiveBean.archiveConfig != null and archiveBean.archiveConfig.hasMediaItem(1)}">
@@ -59,7 +59,7 @@
                 </div>
             </div>
 
-            <!-- CARD CATALOG VIEW (archives flagged as card catalogs) -->
+            <!-- CARD CATALOG VIEW -->
             <c:if test="#{archiveBean.cardCatalog}">
                 <ui:include src="/resources/includes/archives/archiveCardCatalogView.xhtml" />
             </c:if>
@@ -149,21 +149,7 @@
                             </ui:include>
                         </h:panelGroup>
 
-                        <!-- CATALOG HELP LINKS (maintained in the CMS archive configuration) -->
-                        <ui:fragment rendered="#{archiveBean.archiveConfig != null and not empty archiveBean.archiveConfig.links}">
-                            <div class="archives__helplinks">
-                                <h2 class="archives__helplinks-heading">#{msg.archives__card_catalog_help}</h2>
-                                <ui:repeat
-                                    var="link"
-                                    value="#{archiveBean.archiveConfig.links}">
-                                    <a
-                                        class="archives__helplink"
-                                        href="#{link.url}">
-                                        #{link.label.textOrDefault}
-                                    </a>
-                                </ui:repeat>
-                            </div>
-                        </ui:fragment>
+                        <ui:include src="/resources/includes/archives/archiveHelpLinks.xhtml" />
                     </div>
 
                     <!-- RIGHT SIDE -->
@@ -177,8 +163,6 @@
                                 <ui:repeat
                                     var="entry"
                                     value="#{archiveBean.getArchiveHierarchyForIdentifier(archiveBean.displayEntry.id)}">
-                                    <!-- TODO proper level tag -->
-                                    <!-- TODO bold via CSS -->
                                     <div class="archives__text-tree-entry">
                                         <div class="archives__text-tree-level">
                                             <h:outputText

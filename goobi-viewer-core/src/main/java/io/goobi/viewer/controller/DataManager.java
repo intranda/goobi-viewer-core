@@ -117,7 +117,7 @@ public final class DataManager {
 
     private ArchiveManager archiveManager = null;
 
-    private CardCatalogManager cardCatalogManager = null;
+    private volatile CardCatalogManager cardCatalogManager = null;
 
     private ClientApplicationManager clientManager = null;
 
@@ -574,7 +574,9 @@ public final class DataManager {
     public CardCatalogManager getCardCatalogManager() {
         if (cardCatalogManager == null) {
             synchronized (LOCK) {
-                cardCatalogManager = new CardCatalogManager();
+                if (cardCatalogManager == null) {
+                    cardCatalogManager = new CardCatalogManager();
+                }
             }
         }
         return cardCatalogManager;

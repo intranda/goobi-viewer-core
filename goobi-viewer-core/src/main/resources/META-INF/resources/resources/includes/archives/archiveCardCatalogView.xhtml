@@ -2,61 +2,69 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- CARD CATALOG -->
     <div class="archives-cardcatalog__wrapper">
         <!-- LEFT SIDEBAR -->
         <aside class="archives-cardcatalog__sidebar">
-            <div
-                class="archives-cardcatalog__counts"
-                data-cc="counts" />
-            <h2 class="archives-cardcatalog__sidebar-heading">#{msg.archives__card_catalog_drawers}</h2>
-            <div
-                class="archives-cardcatalog__drawers"
-                data-cc="drawers" />
+            <div class="archives-cardcatalog__sidebar-body">
+                <h2 class="archives-cardcatalog__sidebar-heading">#{msg.archives__card_catalog_drawers}</h2>
+                <div
+                    class="archives-cardcatalog__drawers"
+                    data-cc="drawers" />
+            </div>
         </aside>
 
         <!-- CONTENT: FULL VIEW -->
-        <main class="archives-cardcatalog__content">
+        <div class="archives-cardcatalog__content">
             <div
                 class="archives-cardcatalog__content-body"
                 data-cc="content">
                 <div class="archives-cardcatalog__loader" />
             </div>
-        </main>
+        </div>
 
         <!-- RIGHT SIDEBAR -->
         <aside class="archives-cardcatalog__sidebar archives-cardcatalog__sidebar--right">
-            <div
-                class="archives-cardcatalog__register"
-                data-cc="register" />
-
-            <ui:fragment rendered="#{archiveBean.archiveConfig != null and not empty archiveBean.archiveConfig.links}">
-                <div class="archives-cardcatalog__helplinks">
-                    <h2 class="archives-cardcatalog__sidebar-heading">#{msg.archives__card_catalog_help}</h2>
-                    <ui:repeat
-                        var="link"
-                        value="#{archiveBean.archiveConfig.links}">
-                        <a
-                            class="archives-cardcatalog__helplink"
-                            href="#{link.url}">
-                            #{link.label.textOrDefault}
-                        </a>
-                    </ui:repeat>
-                </div>
-            </ui:fragment>
+            <div class="archives-cardcatalog__sidebar-body">
+                <div
+                    class="archives-cardcatalog__register"
+                    data-cc="register" />
+                <div
+                    class="archives-cardcatalog__counts"
+                    data-cc="counts" />
+                <div
+                    class="archives-cardcatalog__guide"
+                    data-cc="guide" />
+                <ui:include src="/resources/includes/archives/archiveHelpLinks.xhtml" />
+            </div>
         </aside>
     </div>
 
+    <!-- CONTACT MODAL -->
+    <viewerComponent:modalFeedbackForm id="feedbackModal" />
+
     <script>
         viewerJS.cardCatalog.init(#{archiveBean.getCardCatalogBootstrapJson(request.contextPath,
-            navigationHelper.getTranslationsAsJson(
-                    ["archives__card_catalog_total", "archives__card_catalog_search_area", "archives__card_catalog_interval",
-                    "archives__card_catalog_cards", "archives__card_catalog_card", "archives__card_catalog_of",
-                    "archives__card_catalog_zoom_mode", "archives__card_catalog_zoom_hint", "archives__card_catalog_zoom_in",
+            navigationHelper.getTranslations(
+                    ["archives__card_catalog_interval", "archives__card_catalog_cards", "archives__card_catalog_card",
+                    "archives__card_catalog_of", "archives__card_catalog_zoom_mode", "archives__card_catalog_zoom_in",
                     "archives__card_catalog_full_view", "archives__card_catalog_register", "archives__card_catalog_choose_drawer",
-                    "archives__card_catalog_no_image", "archives__open_record", "previous", "next",
-                    "archives__card_catalog_error", "archives__card_catalog_loading",
-                    "archives__card_catalog_load_more_error", "archives__card_catalog_retry"]))});
+                    "archives__card_catalog_no_image", "archives__open_record", "previous", "next", "archives__card_catalog_error",
+                    "archives__card_catalog_loading", "archives__card_catalog_load_more_error", "archives__card_catalog_retry",
+                    "archives__card_catalog_back", "archives__card_catalog_path", "archives__card_catalog_whole_drawer",
+                    "archives__card_catalog_drawer", "archives__card_catalog_drawers", "archives__card_catalog_show_full_cards",
+                    "archives__card_catalog_complete_cards", "archives__card_catalog_previous_drawer",
+                    "archives__card_catalog_next_drawer", "archives__card_catalog_view_card", "archives__card_catalog_feedback",
+                    "archives__card_catalog_feedback_message", "archives__card_catalog_letters", "archives__card_catalog_catalog",
+                    "archives__card_catalog_index_date", "archives__card_catalog_selection", "archives__card_catalog_guide",
+                    "archives__card_catalog_guide_drawer", "archives__card_catalog_guide_drawer_text",
+                    "archives__card_catalog_guide_letters", "archives__card_catalog_guide_zoom",
+                    "archives__card_catalog_guide_zoom_text", "archives__card_catalog_guide_zoom_steps",
+                    "archives__card_catalog_guide_zoom_steps_one", "archives__card_catalog_guide_register",
+                    "archives__card_catalog_guide_read", "archives__card_catalog_guide_read_text",
+                    "archives__card_catalog_guide_record", "archives__card_catalog_guide_feedback_text", "fullscreen_enter",
+                    "fullscreen_exit"]))});
     </script>
 </ui:composition>

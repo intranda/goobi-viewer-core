@@ -152,7 +152,6 @@ public class ApiUrls extends AbstractApiUrlManager {
     public static final String ARCHIVES_CARDCATALOG = "/archives/{pi}/cardcatalog";
     public static final String ARCHIVES_CARDCATALOG_BOUNDARIES = "/drawers/{drawerId}/boundaries";
     public static final String ARCHIVES_CARDCATALOG_ENTRIES = "/drawers/{drawerId}/entries";
-    public static final String ARCHIVES_CARDCATALOG_REGISTER = "/register";
     public static final String ARCHIVES_CARDCATALOG_DRAWER_REGISTER = "/drawers/{drawerId}/register";
     public static final String ARCHIVES_CARDCATALOG_LOOKUP = "/lookup";
 

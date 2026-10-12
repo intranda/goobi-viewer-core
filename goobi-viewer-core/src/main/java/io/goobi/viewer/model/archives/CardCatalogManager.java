@@ -75,6 +75,8 @@ public class CardCatalogManager {
     public static final int MAX_BOUNDARIES = 25;
     /** Upper bound for the number of cards returned by one entries request. */
     public static final int MAX_ENTRIES_PER_REQUEST = 100;
+    /** Upper bound of pages read when a card has to be located by scanning its drawer. */
+    public static final int MAX_POSITION_SCAN_PAGES = 10;
     private static final int REGISTER_PAGE_SIZE = 1000;
     private static final int STRUCTURE_IDS_PER_QUERY = 256;
     private static final int CATALOG_LOCK_COUNT = 64;
@@ -157,23 +159,22 @@ public class CardCatalogManager {
     }
 
     /**
-     * Returns the boundary cards of one zoom step: {@code count} cards evenly distributed over the position interval [from, to] of the given drawer.
+     * Returns the boundary cards of one zoom step: zoomFactor + 1 cards evenly distributed over the position interval [from, to] of the given
+     * drawer.
      *
      * @param drawer drawer to resolve positions in
      * @param from 1-based start position; values out of range are clamped
      * @param to 1-based end position; values out of range are clamped
-     * @param count number of boundary cards; clamped to [3, {@link #MAX_BOUNDARIES}]
      * @return boundary positions (1-based) in ascending order, without duplicates
      */
-    public List<Integer> getBoundaryPositions(CardCatalogDrawer drawer, Integer from, Integer to, Integer count) {
+    public List<Integer> getBoundaryPositions(CardCatalogDrawer drawer, Integer from, Integer to) {
         int n = drawer.getEntryCount();
         if (n == 0) {
             return Collections.emptyList();
         }
         int fromPos = clamp(from != null ? from : 1, 1, n);
         int toPos = clamp(to != null ? to : n, fromPos, n);
-        int boundaryCount = count != null ? clamp(count, 3, MAX_BOUNDARIES)
-                : normalizeZoomFactor(DataManager.getInstance().getConfiguration().getCardCatalogZoomFactor()) + 1;
+        int boundaryCount = normalizeZoomFactor(DataManager.getInstance().getConfiguration().getCardCatalogZoomFactor()) + 1;
         return computeBoundaryPositions(fromPos, toPos, boundaryCount);
     }
 
@@ -249,31 +250,6 @@ public class CardCatalogManager {
         return toEntries(docs, true);
     }
 
-    /**
-     * Returns the computed from-to register of the given catalog, or empty if the catalog exceeds the configured register threshold. The register is
-     * computed once per drawer and cached.
-     *
-     * @param index card catalog index
-     * @return register ranges per drawer, in drawer order; empty if the catalog is above the register threshold
-     * @throws PresentationException
-     * @throws IndexUnreachableException
-     */
-    public Optional<Map<CardCatalogDrawer, List<CardCatalogRegisterRange>>> getRegister(CardCatalogIndex index)
-            throws PresentationException, IndexUnreachableException {
-        int threshold = DataManager.getInstance().getConfiguration().getCardCatalogRegisterThreshold();
-        if (index.getTotalEntries() > threshold) {
-            return Optional.empty();
-        }
-
-        int chunkSize = Math.max(1, DataManager.getInstance().getConfiguration().getCardCatalogRegisterChunkSize());
-        Map<CardCatalogDrawer, List<CardCatalogRegisterRange>> ret = new java.util.LinkedHashMap<>();
-        for (CardCatalogDrawer drawer : index.getDrawers()) {
-            ret.put(drawer, getOrLoadRegisterRanges(drawer, chunkSize));
-        }
-
-        return Optional.of(ret);
-    }
-
     /** Returns only the requested drawer's register without computing any other drawer. */
     public Optional<List<CardCatalogRegisterRange>> getDrawerRegister(CardCatalogIndex index, CardCatalogDrawer drawer)
             throws PresentationException, IndexUnreachableException {
@@ -336,12 +312,13 @@ public class CardCatalogManager {
 
     /**
      * Locates a card within the catalog by its EAD node ID: the drawer containing it and its 1-based position within that drawer. Current indexes
-     * store a dense, zero-based sibling order, which is verified against the sorted card at that position. Older or inconsistent indexes fall back
-     * to a bounded-page scan of that drawer.
+     * store a dense, zero-based sibling order, which is verified against the sorted card at that position. Otherwise the position is derived from
+     * two Solr count queries (siblings sorting before the card) and verified the same way; as a last resort the first
+     * {@link #MAX_POSITION_SCAN_PAGES} pages of the drawer are scanned.
      *
      * @param index card catalog index
      * @param entryId EAD node ID of the card
-     * @return drawer and 1-based position; empty if the entry is not part of a drawer of this catalog
+     * @return drawer and 1-based position; empty if the entry is not part of a drawer of this catalog or could not be located
      * @throws PresentationException
      * @throws IndexUnreachableException
      */
@@ -352,7 +329,7 @@ public class CardCatalogManager {
         }
         SolrDocument doc = getSearchIndex().getFirstDoc("+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +"
                 + SolrConstants.PI_TOPSTRUCT + ":" + quoteSolr(index.getPi()) + " +" + SolrConstants.EAD_NODE_ID + ":" + quoteSolr(entryId),
-                Arrays.asList(SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ORDER));
+                Arrays.asList(SolrConstants.IDDOC, SolrConstants.IDDOC_PARENT, FIELD_ARCHIVE_ORDER));
         if (doc == null) {
             return Optional.empty();
         }
@@ -360,22 +337,25 @@ public class CardCatalogManager {
         for (CardCatalogDrawer drawer : index.getDrawers()) {
             if (drawer.getIddoc().equals(parentIddoc)) {
                 Integer order = getIndexedOrder(doc);
-                if (order != null && order >= 0 && order < drawer.getEntryCount()) {
-                    CardCatalogEntry candidate = loadEntries(drawer, order, 1, false).get(0);
-                    if (entryId.equals(candidate.getId())) {
-                        return Optional.of(new ImmutablePair<>(drawer, order + 1));
-                    }
-                    logger.warn("Archive order for card '{}' in drawer '{}' is not positional; scanning drawer as fallback.", entryId, drawer.getId());
+                if (order != null && order >= 0 && isEntryAt(drawer, order, entryId)) {
+                    return Optional.of(new ImmutablePair<>(drawer, order + 1));
                 }
-                for (int start = 0; start < drawer.getEntryCount(); start += MAX_ENTRIES_PER_REQUEST) {
-                    List<CardCatalogEntry> entries = loadEntries(drawer, start,
-                            Math.min(MAX_ENTRIES_PER_REQUEST, drawer.getEntryCount() - start), false);
+                logger.warn("Archive order for card '{}' in drawer '{}' is not positional; counting preceding siblings as fallback.", entryId,
+                        drawer.getId());
+                Optional<Integer> counted = countPrecedingSiblings(drawer, doc);
+                if (counted.isPresent() && isEntryAt(drawer, counted.get(), entryId)) {
+                    return Optional.of(new ImmutablePair<>(drawer, counted.get() + 1));
+                }
+                int scanLimit = Math.min(drawer.getEntryCount(), MAX_ENTRIES_PER_REQUEST * MAX_POSITION_SCAN_PAGES);
+                for (int start = 0; start < scanLimit; start += MAX_ENTRIES_PER_REQUEST) {
+                    List<CardCatalogEntry> entries = loadEntries(drawer, start, Math.min(MAX_ENTRIES_PER_REQUEST, scanLimit - start), false);
                     for (int i = 0; i < entries.size(); i++) {
                         if (entryId.equals(entries.get(i).getId())) {
                             return Optional.of(new ImmutablePair<>(drawer, start + i + 1));
                         }
                     }
                 }
+                logger.warn("Card '{}' not found within the first {} cards of drawer '{}'; giving up.", entryId, scanLimit, drawer.getId());
                 return Optional.empty();
             }
         }
@@ -433,11 +413,22 @@ public class CardCatalogManager {
         return ret;
     }
 
+    /**
+     * Builds the drawer index of an archive in three passes: child counts per parent node from one facet query over the whole archive, the
+     * structure nodes (nodes with children) read in bounded batches, and finally the drawers, i.e. the structure nodes without structural children
+     * in depth-first catalog order, which skips intermediate wrapping levels such as a single "Zettelkatalog" folder.
+     *
+     * @param pi archive identifier
+     * @param rootDoc Solr document of the archive root
+     * @param dateIndexed index timestamp of the archive
+     * @return the built index
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
     private CardCatalogIndex buildIndex(String pi, SolrDocument rootDoc, long dateIndexed)
             throws PresentationException, IndexUnreachableException {
         logger.debug("Building card catalog index for '{}'.", pi);
 
-        // Child counts per parent node over the entire archive
         String nodesQuery = "+" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name() + " +" + SolrConstants.PI_TOPSTRUCT + ":" + quoteSolr(pi);
         QueryResponse facetResponse = getSearchIndex().searchFacetsAndStatistics(nodesQuery, null,
                 Arrays.asList(SolrConstants.IDDOC_PARENT, SolrConstants.ACCESSCONDITION), 1, false);
@@ -457,7 +448,6 @@ public class CardCatalogManager {
         }
         boolean restrictedDescendants = hasRestrictedDescendantConditions(rootDoc, accessConditions);
 
-        // Read only structure nodes (= nodes with children) in bounded batches.
         Map<String, List<SolrDocument>> structureChildren = new HashMap<>();
         String rootIddoc = null;
         List<String> structureIds = new ArrayList<>(childCounts.keySet());
@@ -491,8 +481,6 @@ public class CardCatalogManager {
                     .thenComparing(doc -> StringUtils.defaultString(SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC))));
         }
 
-        // Drawers are the structure nodes without structural children, in depth-first catalog order.
-        // Intermediate levels (e.g. a single wrapping "Zettelkatalog" folder) are skipped this way.
         List<CardCatalogDrawer> drawers = new ArrayList<>();
         if (rootIddoc != null) {
             collectDrawers(rootIddoc, rootDoc, structureChildren, childCounts, drawers);
@@ -567,6 +555,37 @@ public class CardCatalogManager {
             }
         }
         return Collections.unmodifiableList(ranges);
+    }
+
+    private boolean isEntryAt(CardCatalogDrawer drawer, int position, String entryId) throws PresentationException, IndexUnreachableException {
+        if (position < 0 || position >= drawer.getEntryCount()) {
+            return false;
+        }
+        List<CardCatalogEntry> candidates = loadEntries(drawer, position, 1, false);
+        return !candidates.isEmpty() && entryId.equals(candidates.get(0).getId());
+    }
+
+    /**
+     * Zero-based rank of a card from two count queries: siblings with a lower archive order plus siblings with the same order and a smaller IDDOC,
+     * the tie-breaker of the entry sort.
+     *
+     * @param drawer drawer containing the card
+     * @param doc Solr document of the card with IDDOC and archive order
+     * @return rank within the drawer; empty if the card carries no usable order or the counts exceed the drawer
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private Optional<Integer> countPrecedingSiblings(CardCatalogDrawer drawer, SolrDocument doc)
+            throws PresentationException, IndexUnreachableException {
+        Integer order = getIndexedOrder(doc);
+        String iddoc = SolrTools.getSingleFieldStringValue(doc, SolrConstants.IDDOC);
+        if (order == null || iddoc == null) {
+            return Optional.empty();
+        }
+        long preceding = getSearchIndex().getHitCount(entryBaseQuery(drawer) + " +" + FIELD_ARCHIVE_ORDER + ":[* TO " + (order - 1) + "]")
+                + getSearchIndex().getHitCount(entryBaseQuery(drawer) + " +" + FIELD_ARCHIVE_ORDER + ":" + order + " +" + SolrConstants.IDDOC
+                        + ":[* TO " + quoteSolr(iddoc) + "}");
+        return preceding < drawer.getEntryCount() ? Optional.of((int) preceding) : Optional.empty();
     }
 
     private List<CardCatalogEntry> loadEntries(CardCatalogDrawer drawer, int start, int rows, boolean withRecords)
