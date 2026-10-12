@@ -1,10 +1,7 @@
-/**
- * Unit tests for the pure helper functions of viewerJS.cardCatalog:
- * URL state (de)serialization and IIIF info URL derivation.
- * jQuery + jsdom are wired up by jest-setup-browser.js.
- */
 const viewerJS = require('../viewerJS.cardCatalog.js');
 require('../viewerJS.cardCatalog.state.js');
+require('../viewerJS.cardCatalog.sidebar.js');
+require('../viewerJS.cardCatalog.overview.js');
 require('../viewerJS.cardCatalog.stage.js');
 require('../viewerJS.cardCatalog.strip.js');
 
@@ -16,101 +13,6 @@ const info = {
         { id: 'drawer-ze', label: 'Ze', entryCount: 816 },
     ],
 };
-
-describe('viewerJS.cardCatalog.stateFromParams', function () {
-    test('should return empty state without parameters', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams(''), info);
-        expect(state).toEqual({ drawer: null, from: null, to: null, card: null, chain: [] });
-    });
-
-    test('should read drawer, interval and card from parameters', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=17&to=129&card=20'), info);
-        expect(state.drawer).toBe('drawer-a');
-        expect(state.from).toBe(17);
-        expect(state.to).toBe(129);
-        expect(state.card).toBe(20);
-    });
-
-    test('should synthesize a breadcrumb chain for interval deep links (reload regression)', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=17&to=129'), info);
-        expect(state.chain).toEqual([{ from: 1, to: 1022 }]);
-    });
-
-    test('should not synthesize a chain without an interval', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a'), info);
-        expect(state.chain).toEqual([]);
-    });
-
-    test('should ignore unknown drawers', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=unknown&from=1&to=5'), info);
-        expect(state.drawer).toBeNull();
-        expect(state.from).toBeNull();
-    });
-
-    test('should ignore invalid intervals', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=100&to=5'), info);
-        expect(state.drawer).toBe('drawer-a');
-        expect(state.from).toBeNull();
-        expect(state.to).toBeNull();
-    });
-
-    test('should reject an interval with a missing bound but keep the card', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=17&card=3'), info);
-        expect(state.from).toBeNull();
-        expect(state.to).toBeNull();
-        expect(state.card).toBe(3);
-    });
-
-    test('should return an empty state without info', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=1&to=5'), null);
-        expect(state).toEqual({ drawer: null, from: null, to: null, card: null, chain: [] });
-    });
-
-    test('should keep the card without an interval (small drawer deep link)', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&card=7'), info);
-        expect(state.drawer).toBe('drawer-a');
-        expect(state.from).toBeNull();
-        expect(state.to).toBeNull();
-        expect(state.card).toBe(7);
-    });
-
-    test('should reject non-numeric interval values', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=abc&to=50&card=x'), info);
-        expect(state.from).toBeNull();
-        expect(state.to).toBeNull();
-        expect(state.card).toBeNull();
-    });
-
-    test('should clamp hand-edited deep link values to the drawer size', function () {
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=1000&to=999999&card=999999'), info);
-        expect(state.to).toBe(1022);
-        expect(state.card).toBeNull();
-        // from beyond the drawer size: the whole interval is rejected
-        const beyond = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=2000&to=999999'), info);
-        expect(beyond.from).toBeNull();
-        expect(beyond.to).toBeNull();
-    });
-
-    test('should reject partially numeric positions and open a card deep link in a bounded window', function () {
-        const catalogInfo = { drawers: info.drawers, config: { fullViewThreshold: 16 } };
-        expect(cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=17foo&to=50'), catalogInfo).from).toBeNull();
-        expect(cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&card=20foo'), catalogInfo).card).toBeNull();
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&card=100'), catalogInfo);
-        expect(state).toEqual({ drawer: 'drawer-a', from: 92, to: 107, card: 100, chain: [{ from: 1, to: 1022 }] });
-    });
-
-    test('should show a card deep link even when its explicit interval is wider than the full view', function () {
-        const catalogInfo = { drawers: info.drawers, config: { fullViewThreshold: 16 } };
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=1&to=1000&card=500'), catalogInfo);
-        expect(state).toEqual({ drawer: 'drawer-a', from: 492, to: 507, card: 500, chain: [{ from: 1, to: 1022 }] });
-    });
-
-    test('should open a card outside a narrow URL interval instead of selecting another card', function () {
-        const catalogInfo = { drawers: info.drawers, config: { fullViewThreshold: 16 } };
-        const state = cardCatalog.stateFromParams(new URLSearchParams('drawer=drawer-a&from=1&to=4&card=500'), catalogInfo);
-        expect(state).toEqual({ drawer: 'drawer-a', from: 492, to: 507, card: 500, chain: [{ from: 1, to: 1022 }] });
-    });
-});
 
 describe('viewerJS.cardCatalog url helpers', function () {
     beforeEach(function () {
@@ -145,6 +47,7 @@ describe('viewerJS.cardCatalog async view ownership', function () {
         cardCatalog.$drawers = jQuery('<div>');
         cardCatalog.$register = jQuery('<div>');
         cardCatalog.$counts = jQuery('<div>');
+        cardCatalog.$guide = jQuery('<div>');
         jest.spyOn(cardCatalog, 'fetchJson').mockImplementation(
             () =>
                 new Promise((resolve) => {
@@ -185,86 +88,6 @@ describe('viewerJS.cardCatalog async view ownership', function () {
         responses[1]({ items: [{ position: 1, label: 'New drawer' }] });
         await Promise.resolve();
         expect(cardCatalog.$content.text()).toContain('New drawer');
-    });
-});
-
-describe('viewerJS.cardCatalog stage ownership', function () {
-    test('should not open a stale image after leaving the stage', async function () {
-        document.body.innerHTML = '<div id="ccStageViewer"></div>';
-        cardCatalog.config = { osdScriptUrl: '/osd.js', msg: {} };
-        const original = window.OpenSeadragon;
-        window.OpenSeadragon = jest.fn();
-        let finishLoading;
-        jest.spyOn(cardCatalog, 'loadOpenSeadragon').mockImplementation(
-            () =>
-                new Promise((resolve) => {
-                    finishLoading = resolve;
-                })
-        );
-        cardCatalog.showStageImage({ imageUrl: '/iiif/full/!400,400/0/default.jpg', label: 'Old image' });
-        cardCatalog.resetContent();
-        finishLoading();
-        await Promise.resolve();
-        expect(window.OpenSeadragon).not.toHaveBeenCalled();
-        window.OpenSeadragon = original;
-        cardCatalog.config = null;
-        document.body.innerHTML = '';
-        jest.restoreAllMocks();
-    });
-});
-
-describe('viewerJS.cardCatalog.paramsFromState', function () {
-    test('should serialize state and preserve unrelated parameters', function () {
-        const params = cardCatalog.paramsFromState({ drawer: 'drawer-ze', from: 1, to: 50, card: 3, chain: [] }, new URLSearchParams('foo=bar&card=99'));
-        expect(params.get('foo')).toBe('bar');
-        expect(params.get('drawer')).toBe('drawer-ze');
-        expect(params.get('from')).toBe('1');
-        expect(params.get('to')).toBe('50');
-        expect(params.get('card')).toBe('3');
-    });
-
-    test('should remove all card catalog parameters without a drawer', function () {
-        const params = cardCatalog.paramsFromState(
-            { drawer: null, from: null, to: null, card: null, chain: [] },
-            new URLSearchParams('drawer=drawer-a&from=1&to=5&card=2&selected=xyz')
-        );
-        expect(params.get('drawer')).toBeNull();
-        expect(params.get('from')).toBeNull();
-        expect(params.get('selected')).toBe('xyz');
-    });
-
-    test('should not serialize a half interval', function () {
-        const params = cardCatalog.paramsFromState({ drawer: 'drawer-a', from: 5, to: null, card: null, chain: [] }, new URLSearchParams(''));
-        expect(params.get('drawer')).toBe('drawer-a');
-        expect(params.get('from')).toBeNull();
-        expect(params.get('to')).toBeNull();
-    });
-
-    test('should round-trip through stateFromParams', function () {
-        const state = { drawer: 'drawer-a', from: 17, to: 129, card: 20, chain: [] };
-        const params = cardCatalog.paramsFromState(state, new URLSearchParams(''));
-        const restored = cardCatalog.stateFromParams(params, info);
-        expect(restored.drawer).toBe(state.drawer);
-        expect(restored.from).toBe(state.from);
-        expect(restored.to).toBe(state.to);
-        expect(restored.card).toBe(state.card);
-    });
-});
-
-describe('viewerJS.cardCatalog.imageInfoUrl', function () {
-    test('should derive info.json from a scaled IIIF image URL', function () {
-        expect(cardCatalog.imageInfoUrl('https://example.org/viewer/api/v1/records/94_584/representative/full/!400,400/0/default.jpg')).toBe(
-            'https://example.org/viewer/api/v1/records/94_584/representative/info.json'
-        );
-    });
-
-    test('should return null for unusable input', function () {
-        expect(cardCatalog.imageInfoUrl(null)).toBeNull();
-        expect(cardCatalog.imageInfoUrl('https://example.org/no-iiif.jpg')).toBeNull();
-    });
-
-    test('should use the last /full/ occurrence when the identifier contains one itself', function () {
-        expect(cardCatalog.imageInfoUrl('https://example.org/iiif/images/full/scan/full/!400,400/0/default.jpg')).toBe('https://example.org/iiif/images/full/scan/info.json');
     });
 });
 
@@ -314,152 +137,19 @@ describe('viewerJS.cardCatalog accessible markup', function () {
     });
 });
 
-describe('viewerJS.cardCatalog.headCropUrl', function () {
-    test('should derive the head strip region from a full image URL', function () {
-        expect(cardCatalog.headCropUrl('https://example.org/viewer/api/v1/records/94_584/representative/full/!1200,1200/0/default.jpg')).toBe(
-            'https://example.org/viewer/api/v1/records/94_584/representative/pct:0,0,100,40/!1200,480/0/default.jpg'
-        );
-    });
-
-    test('should return null for missing input', function () {
-        expect(cardCatalog.headCropUrl(null)).toBeNull();
-    });
-
-    test('should return null instead of an uncropped URL when the size pattern does not match', function () {
-        expect(cardCatalog.headCropUrl('https://example.org/viewer/api/v1/records/94_584/representative/full/max/0/default.jpg')).toBeNull();
-    });
-});
-
-describe('viewerJS.cardCatalog.windowAround', function () {
-    beforeEach(function () {
-        cardCatalog.info = { config: { fullViewThreshold: 16 } };
-    });
-
-    afterEach(function () {
-        cardCatalog.info = null;
-    });
-
-    test('should center the window around the position', function () {
-        expect(cardCatalog.windowAround(100, { entryCount: 1000 })).toEqual({ from: 92, to: 107 });
-    });
-
-    test('should clamp the window at the start of the drawer', function () {
-        expect(cardCatalog.windowAround(1, { entryCount: 1000 })).toEqual({ from: 1, to: 16 });
-    });
-
-    test('should clamp the window at the end of the drawer', function () {
-        expect(cardCatalog.windowAround(998, { entryCount: 1000 })).toEqual({ from: 985, to: 1000 });
-    });
-
-    test('should span the whole drawer when it is smaller than the window', function () {
-        expect(cardCatalog.windowAround(3, { entryCount: 10 })).toEqual({ from: 1, to: 10 });
-    });
-});
-
 describe('viewerJS.cardCatalog.msg', function () {
     afterEach(function () {
         cardCatalog.config = null;
     });
 
     test('should look up the bundle key for a short name and escape the translation', function () {
-        cardCatalog.config = { msg: { archives__card_catalog_total: 'Total <b>&</b>' } };
-        expect(cardCatalog.msg('total')).toBe('Total &lt;b&gt;&amp;&lt;/b&gt;');
+        cardCatalog.config = { msg: { archives__card_catalog_catalog: 'Katalog <b>&</b>' } };
+        expect(cardCatalog.msg('catalog')).toBe('Katalog &lt;b&gt;&amp;&lt;/b&gt;');
     });
 
     test('should fall back to the escaped key for unknown keys', function () {
         cardCatalog.config = { msg: {} };
         expect(cardCatalog.msg('unknown_key')).toBe('unknown_key');
-    });
-});
-
-describe('viewerJS.cardCatalog.clampExtension', function () {
-    const section = { from: 17, to: 32 };
-
-    test('should clamp the request to the drawer bounds', function () {
-        expect(cardCatalog.clampExtension(section, -5, 10, 1000)).toEqual({ from: 1, to: 10 });
-        expect(cardCatalog.clampExtension(section, 990, 1010, 1000)).toEqual({ from: 990, to: 1000 });
-    });
-
-    test('should trim the already loaded part on either end', function () {
-        expect(cardCatalog.clampExtension(section, 30, 40, 1000)).toEqual({ from: 33, to: 40 });
-        expect(cardCatalog.clampExtension(section, 10, 20, 1000)).toEqual({ from: 10, to: 16 });
-    });
-
-    test('should return null when nothing is left to load', function () {
-        expect(cardCatalog.clampExtension(section, 17, 32, 1000)).toBeNull();
-        expect(cardCatalog.clampExtension({ from: 1, to: 16 }, -15, 0, 1000)).toBeNull();
-    });
-});
-
-describe('viewerJS.cardCatalog.extendStrip', function () {
-    test('should not retry forever when a pending strip load made no progress', async function () {
-        cardCatalog.section = { from: 1, to: 16, items: [] };
-        cardCatalog.stripLoading = true;
-        cardCatalog.stripPromise = Promise.resolve();
-        const fetchJson = jest.spyOn(cardCatalog, 'fetchJson');
-        await cardCatalog.extendStrip(17, 32);
-        expect(fetchJson).not.toHaveBeenCalled();
-        cardCatalog.section = null;
-        cardCatalog.stripLoading = false;
-        cardCatalog.stripPromise = null;
-        jest.restoreAllMocks();
-    });
-
-    test('should bound the loaded strip and preserve a way back to an evicted selected card', async function () {
-        const items = Array.from({ length: 100 }, (_, index) => ({ position: index + 1, label: String(index + 1) }));
-        cardCatalog.info = { drawers: [{ id: 'drawer-a', entryCount: 1000 }], config: { fullViewThreshold: 100, listPageSize: 50 } };
-        cardCatalog.config = { apiUrl: '/api/v1', pi: 'catalog', msg: {} };
-        cardCatalog.state = { drawer: 'drawer-a', from: 1, to: 100, card: 1, chain: [] };
-        cardCatalog.section = { from: 1, to: 100, items: items };
-        cardCatalog.$content = jQuery('<div><div class="archives-cardcatalog__stage-caption"></div><div data-cc-strip></div></div>');
-        cardCatalog.$content.find('[data-cc-strip]').html(items.map((item) => cardCatalog.renderStripThumb(item, 1)).join(''));
-        jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue({ items: Array.from({ length: 100 }, (_, index) => ({ position: index + 101, label: String(index + 101) })) });
-
-        await cardCatalog.extendStrip(101, 200);
-
-        expect(cardCatalog.section.from).toBe(51);
-        expect(cardCatalog.section.to).toBe(200);
-        expect(cardCatalog.section.items).toHaveLength(150);
-        expect(cardCatalog.$content.find('[data-stage]')).toHaveLength(150);
-        const render = jest.spyOn(cardCatalog, 'render').mockImplementation(() => {});
-        jest.spyOn(cardCatalog, 'syncUrl').mockImplementation(() => {});
-        cardCatalog.shiftCard(1);
-        expect(cardCatalog.state.card).toBe(2);
-        expect(cardCatalog.state.from).toBe(1);
-        expect(render).toHaveBeenCalled();
-
-        cardCatalog.resetContent();
-        cardCatalog.info = null;
-        cardCatalog.config = null;
-        cardCatalog.state = null;
-        jest.restoreAllMocks();
-    });
-
-    test('should show a retry action after a failed strip request', async function () {
-        const items = Array.from({ length: 16 }, (_, index) => ({ position: index + 1, label: String(index + 1) }));
-        cardCatalog.info = { drawers: [{ id: 'drawer-a', entryCount: 100 }], config: { fullViewThreshold: 16, listPageSize: 16 } };
-        cardCatalog.config = { apiUrl: '/api/v1', pi: 'catalog', msg: {} };
-        cardCatalog.state = { drawer: 'drawer-a', from: 1, to: 16, card: 16, chain: [] };
-        cardCatalog.section = { from: 1, to: 16, items: items };
-        cardCatalog.$content = jQuery('<div><div class="archives-cardcatalog__stage-caption"></div><div data-cc-strip></div></div>');
-        jest.spyOn(console, 'error').mockImplementation(() => {});
-        jest.spyOn(cardCatalog, 'fetchJson')
-            .mockRejectedValueOnce(new Error('network'))
-            .mockResolvedValueOnce({ items: Array.from({ length: 16 }, (_, index) => ({ position: index + 17, label: String(index + 17) })) });
-
-        await cardCatalog.extendStrip(17, 32);
-        expect(cardCatalog.stripErrorRange).toEqual({ from: 17, to: 32 });
-        expect(cardCatalog.$content.find('[data-strip-retry]')).toHaveLength(1);
-        expect(cardCatalog.$content.find('.archives-cardcatalog__stage-caption [data-strip-error]')).toHaveLength(1);
-        await cardCatalog.retryStrip();
-        expect(cardCatalog.$content.find('[data-strip-error]')).toHaveLength(0);
-        expect(cardCatalog.section.items.some((item) => item.position === 17)).toBe(true);
-
-        cardCatalog.resetContent();
-        cardCatalog.info = null;
-        cardCatalog.config = null;
-        cardCatalog.state = null;
-        jest.restoreAllMocks();
     });
 });
 
@@ -491,12 +181,15 @@ describe('viewerJS.cardCatalog.chainJump', function () {
 
 describe('viewerJS.cardCatalog.selectDrawer', function () {
     beforeEach(function () {
-        cardCatalog.info = info;
+        cardCatalog.info = { drawers: info.drawers.map((drawer) => ({ ...drawer })), config: { fullViewThreshold: 16 } };
     });
 
     afterEach(function () {
+        cardCatalog.cancelRender();
+        cardCatalog.resetContent();
         jest.restoreAllMocks();
         cardCatalog.info = null;
+        cardCatalog.config = null;
         cardCatalog.state = null;
     });
 
@@ -518,95 +211,51 @@ describe('viewerJS.cardCatalog.selectDrawer', function () {
         expect(syncUrl).toHaveBeenCalledWith(true);
         expect(cardCatalog.state.drawer).toBe('drawer-ze');
     });
-});
 
-describe('viewerJS.cardCatalog.loadRegister', function () {
-    beforeEach(function () {
-        cardCatalog.info = { mode: 'REGISTER', drawers: [{ id: 'drawer-a' }, { id: 'drawer-b' }] };
+    test('should not stack history when the first card of a small drawer is already displayed', function () {
+        cardCatalog.info.drawers[0].entryCount = 2;
+        cardCatalog.state = { drawer: 'drawer-a', from: null, to: null, card: 1, chain: [] };
+        const syncUrl = jest.spyOn(cardCatalog, 'syncUrl').mockImplementation(() => {});
+        const render = jest.spyOn(cardCatalog, 'render').mockImplementation(() => {});
+
+        cardCatalog.selectDrawer('drawer-a');
+
+        expect(syncUrl).not.toHaveBeenCalled();
+        expect(render).not.toHaveBeenCalled();
+        expect(cardCatalog.state.card).toBe(1);
+    });
+
+    test('should return to the first card when reselecting a small drawer from a later card', async function () {
+        cardCatalog.info.drawers[0].entryCount = 2;
         cardCatalog.config = { apiUrl: '/api/v1', pi: 'catalog', msg: {} };
-        cardCatalog.state = { drawer: 'drawer-a', from: null, to: null, card: null, chain: [] };
-        cardCatalog.register = { drawers: [] };
-        cardCatalog.registerLoaded = new Set();
-        cardCatalog.registerController = null;
-        cardCatalog.registerPendingDrawer = null;
-        cardCatalog.registerErrorDrawer = null;
+        cardCatalog.state = { drawer: 'drawer-a', from: null, to: null, card: 2, chain: [] };
+        cardCatalog.$drawers = jQuery('<div>');
+        cardCatalog.$counts = jQuery('<div>');
+        cardCatalog.$guide = jQuery('<div>');
         cardCatalog.$register = jQuery('<div>');
-        cardCatalog.initSeq = 1;
+        cardCatalog.$content = jQuery('<div>');
+        jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue({ from: 1, to: 2, items: [{ position: 1 }, { position: 2 }] });
+        jest.spyOn(cardCatalog, 'showStageImage').mockImplementation(() => {});
+        const syncUrl = jest.spyOn(cardCatalog, 'syncUrl').mockImplementation(() => {});
+
+        cardCatalog.selectDrawer('drawer-a');
+        await Promise.resolve();
+
+        expect(cardCatalog.state).toEqual({ drawer: 'drawer-a', from: null, to: null, card: 1, chain: [] });
+        expect(syncUrl.mock.calls.filter(([push]) => push)).toHaveLength(1);
+        expect(cardCatalog.$content.find('[data-stage="1"]').attr('aria-current')).toBe('true');
     });
 
-    afterEach(function () {
-        if (cardCatalog.registerController) {
-            cardCatalog.registerController.abort();
-        }
-        cardCatalog.info = null;
-        cardCatalog.config = null;
-        cardCatalog.state = null;
-        cardCatalog.register = null;
-        cardCatalog.registerLoaded = null;
-        cardCatalog.registerController = null;
-        cardCatalog.registerPendingDrawer = null;
-        cardCatalog.registerErrorDrawer = null;
-        jest.restoreAllMocks();
-    });
+    test('should not stack history when the first card of the selected register range is already displayed', function () {
+        cardCatalog.state = { drawer: 'drawer-a', from: 5, to: 10, card: 5, chain: [{ from: 1, to: 1022 }] };
+        const syncUrl = jest.spyOn(cardCatalog, 'syncUrl').mockImplementation(() => {});
+        const render = jest.spyOn(cardCatalog, 'render').mockImplementation(() => {});
 
-    test('should load only the active drawer and cache its register', async function () {
-        const fetchJson = jest.spyOn(cardCatalog, 'fetchJson').mockImplementation((url) =>
-            Promise.resolve({
-                available: true,
-                drawers: [{ id: url.includes('drawer-a') ? 'drawer-a' : 'drawer-b', ranges: [] }],
-            })
-        );
+        cardCatalog.selectDrawer('drawer-a', 5, 10);
 
-        await cardCatalog.loadRegister();
-        expect(fetchJson).toHaveBeenCalledWith('/api/v1/archives/catalog/cardcatalog/drawers/drawer-a/register', 'register', expect.anything());
-        expect(cardCatalog.register.drawers.map((drawer) => drawer.id)).toEqual(['drawer-a']);
-
-        cardCatalog.state.drawer = 'drawer-b';
-        await cardCatalog.loadRegister();
-        expect(cardCatalog.register.drawers.map((drawer) => drawer.id)).toEqual(['drawer-a', 'drawer-b']);
-        cardCatalog.state.drawer = 'drawer-a';
-        cardCatalog.loadRegister();
-        expect(fetchJson).toHaveBeenCalledTimes(2);
-    });
-
-    test('should ignore an aborted drawer response after changing drawers', async function () {
-        let resolveFirst;
-        jest.spyOn(cardCatalog, 'fetchJson')
-            .mockImplementationOnce(
-                () =>
-                    new Promise((resolve) => {
-                        resolveFirst = resolve;
-                    })
-            )
-            .mockResolvedValueOnce({ available: true, drawers: [{ id: 'drawer-b', ranges: [] }] });
-
-        const first = cardCatalog.loadRegister();
-        cardCatalog.state.drawer = 'drawer-b';
-        await cardCatalog.loadRegister();
-        resolveFirst({ available: true, drawers: [{ id: 'drawer-a', ranges: [] }] });
-        await first;
-
-        expect(cardCatalog.register.drawers.map((drawer) => drawer.id)).toEqual(['drawer-b']);
-        expect(cardCatalog.registerLoaded.has('drawer-a')).toBe(false);
-    });
-
-    test('should show a retry after a transient register failure', async function () {
-        jest.spyOn(console, 'error').mockImplementation(() => {});
-        const fetchJson = jest
-            .spyOn(cardCatalog, 'fetchJson')
-            .mockRejectedValueOnce(new Error('temporary failure'))
-            .mockResolvedValueOnce({ available: true, drawers: [{ id: 'drawer-a', ranges: [] }] });
-
-        await cardCatalog.loadRegister();
-        expect(cardCatalog.$register.find('[data-register-retry]').length).toBe(1);
-        expect(cardCatalog.registerLoaded.has('drawer-a')).toBe(false);
-
-        cardCatalog.$register.find('[data-register-retry]').trigger('click');
-        await new Promise((resolve) => setTimeout(resolve, 0));
-
-        expect(fetchJson).toHaveBeenCalledTimes(2);
-        expect(cardCatalog.registerLoaded.has('drawer-a')).toBe(true);
-        expect(cardCatalog.$register.find('[data-register-retry]').length).toBe(0);
+        expect(syncUrl).not.toHaveBeenCalled();
+        expect(render).not.toHaveBeenCalled();
+        expect(cardCatalog.state.card).toBe(5);
     });
 });
 
@@ -679,5 +328,234 @@ describe('viewerJS.cardCatalog.fetchJson', function () {
     test('should resolve with the parsed body for ok responses', async function () {
         global.fetch = jest.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ a: 1 }) });
         await expect(cardCatalog.fetchJson('http://x/', 'test')).resolves.toEqual({ a: 1 });
+    });
+
+    test('should expose the HTTP status on the rejection', async function () {
+        global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 404 });
+        await expect(cardCatalog.fetchJson('http://x/', 'test')).rejects.toMatchObject({ status: 404 });
+    });
+});
+
+describe('viewerJS.cardCatalog.openSelectedEntry', function () {
+    afterEach(function () {
+        cardCatalog.config = null;
+        cardCatalog.state = null;
+        cardCatalog.initController = null;
+        jest.restoreAllMocks();
+    });
+
+    test('should treat an unknown selected entry as not found without logging an error', async function () {
+        cardCatalog.config = { apiUrl: '/api/v1', pi: 'catalog', msg: {} };
+        cardCatalog.initController = new AbortController();
+        cardCatalog.state = { drawer: null, from: null, to: null, card: null, chain: [] };
+        jest.spyOn(cardCatalog, 'fetchJson').mockRejectedValue(Object.assign(new Error('lookup request failed: 404'), { status: 404 }));
+        const render = jest.spyOn(cardCatalog, 'render').mockImplementation(() => {});
+        const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        cardCatalog.openSelectedEntry('missing');
+        for (let i = 0; i < 5; i++) {
+            await Promise.resolve();
+        }
+
+        expect(error).not.toHaveBeenCalled();
+        expect(render).not.toHaveBeenCalled();
+    });
+});
+
+describe('viewerJS.cardCatalog drawer boundaries', function () {
+    beforeEach(function () {
+        cardCatalog.info = {
+            drawers: [
+                { id: 'empty-first', label: 'Empty first', entryCount: 0 },
+                { id: 'drawer-a', label: 'A', entryCount: 100 },
+                { id: 'empty-middle', label: 'Empty middle', entryCount: 0 },
+                { id: 'drawer-b', label: 'B', entryCount: 50 },
+                { id: 'empty-last', label: 'Empty last', entryCount: 0 },
+            ],
+            totalEntries: 150,
+            config: { fullViewThreshold: 16, listPageSize: 16 },
+        };
+        cardCatalog.config = { apiUrl: '/api/v1', pi: 'catalog', msg: {} };
+        cardCatalog.state = {
+            drawer: 'drawer-a',
+            from: 85,
+            to: 100,
+            card: 100,
+            chain: [
+                { from: 1, to: 100 },
+                { from: 50, to: 100 },
+            ],
+        };
+        cardCatalog.section = { from: 85, to: 100, items: [{ position: 99 }, { position: 100 }] };
+        cardCatalog.$drawers = jQuery('<div>');
+        cardCatalog.$counts = jQuery('<div>');
+        cardCatalog.$guide = jQuery('<div>');
+        cardCatalog.$register = jQuery('<div>');
+        cardCatalog.$content = jQuery('<div><div data-cc-caption></div><div data-cc-strip></div><button data-shift="-1"></button><button data-shift="1"></button></div>');
+        jest.spyOn(cardCatalog, 'syncUrl').mockImplementation(() => {});
+        jest.spyOn(cardCatalog, 'showStageImage').mockImplementation(() => {});
+    });
+
+    afterEach(function () {
+        cardCatalog.cancelRender();
+        cardCatalog.resetContent();
+        cardCatalog.info = null;
+        cardCatalog.config = null;
+        cardCatalog.state = null;
+        jest.restoreAllMocks();
+    });
+
+    test('should find the next nonempty drawer and skip empty drawers', function () {
+        expect(cardCatalog.adjacentDrawer(1).id).toBe('drawer-b');
+    });
+
+    test('should find the previous nonempty drawer symmetrically', function () {
+        cardCatalog.state.drawer = 'drawer-b';
+        expect(cardCatalog.adjacentDrawer(-1).id).toBe('drawer-a');
+    });
+
+    test('should return no adjacent drawer at either catalog boundary', function () {
+        expect(cardCatalog.adjacentDrawer(-1)).toBeNull();
+        cardCatalog.state.drawer = 'drawer-b';
+        expect(cardCatalog.adjacentDrawer(1)).toBeNull();
+    });
+
+    test('should not choose a drawer without a direction or a valid current drawer', function () {
+        expect(cardCatalog.adjacentDrawer(0)).toBeNull();
+        cardCatalog.state.drawer = 'unknown';
+        expect(cardCatalog.adjacentDrawer(1)).toBeNull();
+        expect(cardCatalog.adjacentDrawer(-1)).toBeNull();
+    });
+
+    test('should enter the next drawer only when advancing beyond the last card', function () {
+        const render = jest.spyOn(cardCatalog, 'render').mockImplementation(() => {});
+
+        cardCatalog.shiftCard(1);
+
+        expect(cardCatalog.state).toEqual({ drawer: 'drawer-b', from: 1, to: 16, card: 1, chain: [{ from: 1, to: 50 }] });
+        expect(cardCatalog.syncUrl).toHaveBeenCalledWith(true);
+        expect(render).toHaveBeenCalledTimes(1);
+    });
+
+    test('should enter the previous drawer at its last card', function () {
+        cardCatalog.state = { drawer: 'drawer-b', from: 1, to: 16, card: 1, chain: [{ from: 1, to: 50 }] };
+        cardCatalog.section = { from: 1, to: 16, items: [{ position: 1 }] };
+        jest.spyOn(cardCatalog, 'render').mockImplementation(() => {});
+
+        cardCatalog.shiftCard(-1);
+
+        expect(cardCatalog.state).toEqual({ drawer: 'drawer-a', from: 85, to: 100, card: 100, chain: [{ from: 1, to: 100 }] });
+        expect(cardCatalog.syncUrl).toHaveBeenCalledWith(true);
+    });
+
+    test.each([1, 2, 16])('should enter a complete next drawer of %i cards without creating a redundant zoom level', async function (entryCount) {
+        cardCatalog.drawerById('drawer-b').entryCount = entryCount;
+        jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue({
+            from: 1,
+            to: entryCount,
+            items: Array.from({ length: entryCount }, (_, index) => ({ position: index + 1 })),
+        });
+
+        cardCatalog.shiftCard(1);
+        await Promise.resolve();
+
+        expect(cardCatalog.state).toEqual({ drawer: 'drawer-b', from: null, to: null, card: 1, chain: [] });
+        expect(cardCatalog.$content.find('.archives-cardcatalog__back')).toHaveLength(0);
+        expect(cardCatalog.$content.find('[data-chain]')).toHaveLength(0);
+        expect(cardCatalog.$content.find('.archives-cardcatalog__chip[aria-current="step"]')).toHaveLength(1);
+    });
+
+    test.each([1, 2])('should enter a complete previous drawer of %i cards at its last card without a redundant zoom level', async function (entryCount) {
+        cardCatalog.drawerById('drawer-a').entryCount = entryCount;
+        cardCatalog.state = { drawer: 'drawer-b', from: 1, to: 16, card: 1, chain: [{ from: 1, to: 50 }] };
+        cardCatalog.section = { from: 1, to: 16, items: [{ position: 1 }] };
+        jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue({
+            from: 1,
+            to: entryCount,
+            items: Array.from({ length: entryCount }, (_, index) => ({ position: index + 1 })),
+        });
+
+        cardCatalog.shiftCard(-1);
+        await Promise.resolve();
+
+        expect(cardCatalog.state).toEqual({ drawer: 'drawer-a', from: null, to: null, card: entryCount, chain: [] });
+        expect(cardCatalog.$content.find('.archives-cardcatalog__back')).toHaveLength(0);
+        expect(cardCatalog.$content.find('[data-chain]')).toHaveLength(0);
+    });
+
+    test.each([1, 2])('should retain only genuine zoom levels for a next drawer of %i cards with a threshold of one', async function (entryCount) {
+        cardCatalog.info.config.fullViewThreshold = 1;
+        cardCatalog.drawerById('drawer-b').entryCount = entryCount;
+        jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue({ from: 1, to: 1, items: [{ position: 1 }] });
+
+        cardCatalog.shiftCard(1);
+        await Promise.resolve();
+
+        expect(cardCatalog.state).toEqual({
+            drawer: 'drawer-b',
+            from: entryCount === 1 ? null : 1,
+            to: entryCount === 1 ? null : 1,
+            card: 1,
+            chain: entryCount === 1 ? [] : [{ from: 1, to: entryCount }],
+        });
+        expect(cardCatalog.$content.find('.archives-cardcatalog__chip[data-chain]')).toHaveLength(entryCount === 1 ? 0 : 1);
+    });
+
+    test('should not leave the drawer when displaying its last card', function () {
+        cardCatalog.state.card = 99;
+        const render = jest.spyOn(cardCatalog, 'render').mockImplementation(() => {});
+
+        cardCatalog.shiftCard(1);
+
+        expect(cardCatalog.state.drawer).toBe('drawer-a');
+        expect(cardCatalog.state.card).toBe(100);
+        expect(render).not.toHaveBeenCalled();
+        expect(cardCatalog.$content.find('[data-shift="1"]').prop('disabled')).toBe(false);
+    });
+
+    test('should keep previous and next enabled at internal drawer boundaries', function () {
+        cardCatalog.updateStage({ position: 100 });
+        expect(cardCatalog.$content.find('[data-shift="1"]').prop('disabled')).toBe(false);
+
+        cardCatalog.state.drawer = 'drawer-b';
+        cardCatalog.state.card = 1;
+        cardCatalog.updateStage({ position: 1 });
+        expect(cardCatalog.$content.find('[data-shift="-1"]').prop('disabled')).toBe(false);
+    });
+
+    test('should disable navigation only at absolute catalog boundaries', function () {
+        cardCatalog.state.card = 1;
+        cardCatalog.updateStage({ position: 1 });
+        expect(cardCatalog.$content.find('[data-shift="-1"]').prop('disabled')).toBe(true);
+
+        cardCatalog.state.drawer = 'drawer-b';
+        cardCatalog.state.card = 50;
+        cardCatalog.updateStage({ position: 50 });
+        expect(cardCatalog.$content.find('[data-shift="1"]').prop('disabled')).toBe(true);
+    });
+
+    test('should not add history entries when moving beyond either end of the catalog', function () {
+        const render = jest.spyOn(cardCatalog, 'render').mockImplementation(() => {});
+        cardCatalog.state.card = 1;
+        cardCatalog.shiftCard(-1);
+        cardCatalog.state.drawer = 'drawer-b';
+        cardCatalog.state.card = 50;
+        cardCatalog.shiftCard(1);
+
+        expect(cardCatalog.syncUrl).not.toHaveBeenCalled();
+        expect(render).not.toHaveBeenCalled();
+    });
+
+    test('should update the active sidebar drawer and counts after crossing a drawer boundary', function () {
+        cardCatalog.renderSidebar();
+        jest.spyOn(cardCatalog, 'renderFullView').mockImplementation(() => {});
+
+        cardCatalog.shiftCard(1);
+
+        expect(cardCatalog.$drawers.find('[aria-current="true"]').attr('data-drawer')).toBe('drawer-b');
+        expect(cardCatalog.$drawers.find('[data-drawer="drawer-a"]').hasClass('-active')).toBe(false);
+        expect(cardCatalog.$counts.text()).toContain('B');
+        expect(cardCatalog.$counts.text()).toContain('50');
+        expect(cardCatalog.$counts.text()).not.toContain('85');
     });
 });

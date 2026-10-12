@@ -23,6 +23,9 @@ var viewerJS = (function (viewer, $) {
     var stripLoadThreshold = 200;
 
     Object.assign(viewer.cardCatalog, {
+        /**
+         * Thumbnail button of a card in the strip, marked as current when it is the shown card.
+         */
         renderStripThumb: function (item, currentPosition) {
             var current = item.position === currentPosition ? ' -current' : '';
             var currentAttribute = current ? ' aria-current="true"' : '';
@@ -34,6 +37,9 @@ var viewerJS = (function (viewer, $) {
             );
         },
 
+        /**
+         * Trims a requested strip extension to the drawer bounds and to the part not loaded yet; null when nothing is left.
+         */
         clampExtension: function (section, from, to, entryCount) {
             from = Math.max(1, from);
             to = Math.min(entryCount, to);
@@ -46,6 +52,9 @@ var viewerJS = (function (viewer, $) {
             return to < from ? null : { from: from, to: to };
         },
 
+        /**
+         * Loads neighboring cards into the strip, keeps the scroll position stable and evicts the far end beyond the size limit.
+         */
         extendStrip: function (from, to) {
             if (!this.section) {
                 return Promise.resolve();
@@ -139,6 +148,9 @@ var viewerJS = (function (viewer, $) {
             return this.stripPromise;
         },
 
+        /**
+         * Retries the strip extension that failed last.
+         */
         retryStrip: function () {
             if (!this.stripErrorRange || this.stripLoading) {
                 return;
@@ -147,6 +159,9 @@ var viewerJS = (function (viewer, $) {
             return this.extendStrip(range.from, range.to);
         },
 
+        /**
+         * Near either end of the strip, loads the next page of cards in that direction.
+         */
         onStripScroll: function () {
             if (!this.section || this.stripLoading || this.stripErrorRange) {
                 return;
@@ -155,16 +170,55 @@ var viewerJS = (function (viewer, $) {
             if (!strip) {
                 return;
             }
-            var step = this.info.config.listPageSize;
             var vertical = !getComputedStyle(strip).flexDirection.startsWith('row');
             var position = vertical ? strip.scrollTop : strip.scrollLeft;
             var extent = vertical ? strip.clientHeight : strip.clientWidth;
             var total = vertical ? strip.scrollHeight : strip.scrollWidth;
             if (position + extent > total - stripLoadThreshold) {
-                this.extendStrip(this.section.to + 1, this.section.to + step);
+                this.extendStripTowards(1);
             } else if (position < stripLoadThreshold) {
-                this.extendStrip(this.section.from - step, this.section.from - 1);
+                this.extendStripTowards(-1);
             }
+        },
+
+        /**
+         * Next strip page after (direction > 0) or before the loaded cards, or null at that end of the drawer.
+         */
+        nextStripRange: function (direction) {
+            var step = this.info.config.listPageSize;
+            var range = direction > 0 ? [this.section.to + 1, this.section.to + step] : [this.section.from - step, this.section.from - 1];
+            return range[0] > this.currentDrawer().entryCount || range[1] < 1 ? null : range;
+        },
+
+        /**
+         * Loads the next strip page in a direction unless a load is pending or failed.
+         */
+        extendStripTowards: function (direction) {
+            if (!this.section || this.stripLoading || this.stripErrorRange) {
+                return Promise.resolve();
+            }
+            var range = this.nextStripRange(direction);
+            return range ? this.extendStrip(range[0], range[1]) : Promise.resolve();
+        },
+
+        /**
+         * Loads pages after, then before, the loaded cards until the strip overflows and can scroll, or the drawer is exhausted.
+         */
+        fillStrip: function () {
+            var strip = this.$content.find('[data-cc-strip]')[0];
+            var section = this.section;
+            if (!strip || !section || this.stripLoading || this.stripErrorRange) {
+                return Promise.resolve();
+            }
+            var vertical = !getComputedStyle(strip).flexDirection.startsWith('row');
+            var extent = vertical ? strip.clientHeight : strip.clientWidth;
+            var total = vertical ? strip.scrollHeight : strip.scrollWidth;
+            var range = extent && total <= extent ? this.nextStripRange(1) || this.nextStripRange(-1) : null;
+            if (!range) {
+                return Promise.resolve();
+            }
+            var before = section.from + '-' + section.to;
+            return this.extendStrip(range[0], range[1]).then(() => (this.section === section && section.from + '-' + section.to !== before ? this.fillStrip() : undefined));
         },
     });
 

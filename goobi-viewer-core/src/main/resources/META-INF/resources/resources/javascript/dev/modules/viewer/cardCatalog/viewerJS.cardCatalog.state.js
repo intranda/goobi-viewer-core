@@ -21,6 +21,9 @@ var viewerJS = (function (viewer) {
     'use strict';
 
     Object.assign(viewer.cardCatalog, {
+        /**
+         * Builds the view state from URL parameters, validating drawer, interval and card against the catalog info.
+         */
         stateFromParams: function (params, info) {
             var state = { drawer: null, from: null, to: null, card: null, chain: [] };
             var drawerId = params.get('drawer');
@@ -52,10 +55,16 @@ var viewerJS = (function (viewer) {
             return state;
         },
 
+        /**
+         * Positive integer from a URL parameter, or null for anything else.
+         */
         parsePosition: function (value) {
             return value && /^[1-9]\d*$/.test(value) && Number.isSafeInteger(Number(value)) ? Number(value) : null;
         },
 
+        /**
+         * Reuses a history-entry state when it matches the URL, keeping its zoom chain if the chain is still valid.
+         */
         keptState: function (state) {
             if (!state || !this.info) {
                 return null;
@@ -79,6 +88,9 @@ var viewerJS = (function (viewer) {
             return urlState;
         },
 
+        /**
+         * Writes the view state into URL parameters, replacing the catalog parameters and keeping unrelated ones.
+         */
         paramsFromState: function (state, params) {
             ['drawer', 'from', 'to', 'card'].forEach((key) => params.delete(key));
             if (state.drawer) {
@@ -94,14 +106,26 @@ var viewerJS = (function (viewer) {
             return params;
         },
 
-        syncUrl: function (push) {
+        /**
+         * Path and query of the current view, the deep link to the shown card or range.
+         */
+        cardUrl: function () {
             var params = this.paramsFromState(this.state, new URLSearchParams(window.location.search));
             params.delete('selected');
             var query = params.toString();
-            var url = window.location.pathname + (query ? '?' + query : '') + window.location.hash;
-            history[push ? 'pushState' : 'replaceState'](Object.assign({}, history.state, { cc: this.state }), '', url);
+            return window.location.pathname + (query ? '?' + query : '');
         },
 
+        /**
+         * Writes the current state to the URL, as a new history entry or replacing the current one.
+         */
+        syncUrl: function (push) {
+            history[push ? 'pushState' : 'replaceState'](Object.assign({}, history.state, { cc: this.state }), '', this.cardUrl() + window.location.hash);
+        },
+
+        /**
+         * Full-view window of configured size centered on a position and clamped to the drawer bounds.
+         */
         windowAround: function (position, drawer, config) {
             var size = Math.max(1, (config || this.info.config).fullViewThreshold);
             var from = Math.max(1, Math.min(position - Math.floor(size / 2), drawer.entryCount - size + 1));
