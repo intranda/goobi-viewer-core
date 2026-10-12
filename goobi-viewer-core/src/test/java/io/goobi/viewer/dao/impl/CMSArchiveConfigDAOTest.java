@@ -54,7 +54,7 @@ class CMSArchiveConfigDAOTest extends AbstractDatabaseEnabledTest {
         config.getLinks().get(1).getLabel().setText("Suchhilfe", Locale.GERMAN);
         config.getLinks().get(1).setUrl("https://example.org/suchhilfe");
 
-        assertTrue(DataManager.getInstance().getDao().saveCMSArchiveConfig(config));
+        assertNotNull(DataManager.getInstance().getDao().saveCMSArchiveConfig(config));
 
         Optional<CMSArchiveConfig> loaded = DataManager.getInstance().getDao().getCmsArchiveConfigForArchive("PI_CARDCATALOG");
         assertTrue(loaded.isPresent());
@@ -79,7 +79,7 @@ class CMSArchiveConfigDAOTest extends AbstractDatabaseEnabledTest {
         config.addLink();
         config.getLinks().get(0).getLabel().setText("Hinweise", Locale.GERMAN);
         config.getLinks().get(0).setUrl("https://example.org/hinweise");
-        assertTrue(DataManager.getInstance().getDao().saveCMSArchiveConfig(config));
+        assertNotNull(DataManager.getInstance().getDao().saveCMSArchiveConfig(config));
 
         CMSArchiveConfig saved =
                 DataManager.getInstance().getDao().getCmsArchiveConfigForArchive("PI_CARDCATALOG_DELETE").orElseThrow();

@@ -111,8 +111,11 @@ public class CardCatalogResource {
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "archives" }, summary = "Get card catalog structure and configuration for an archive")
-    @ApiResponse(responseCode = "200", description = "Card catalog info with drawers and navigation configuration")
+    @Operation(tags = { "archives" }, summary = "Get card catalog structure and configuration for an archive",
+            description = "Lists the drawers with their card counts and the navigation settings for the client. The mode is 'register' while the"
+                    + " total card count stays within the register threshold and 'letters' above it. A catalog with access-restricted"
+                    + " descendants is refused as a whole, since omitting single cards would shift every position.")
+    @ApiResponse(responseCode = "200", description = "Card catalog info with drawers and navigation configuration", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
     @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive")
     public CardCatalogInfo getInfo() throws PresentationException, IndexUnreachableException {
@@ -143,8 +146,10 @@ public class CardCatalogResource {
     @Path(ARCHIVES_CARDCATALOG_BOUNDARIES)
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(tags = { "archives" },
-            summary = "Get the boundary cards of one zoom step, evenly distributed over a position interval of a drawer")
-    @ApiResponse(responseCode = "200", description = "Boundary cards with positions, labels and image URLs")
+            summary = "Get the boundary cards of one zoom step, evenly distributed over a position interval of a drawer",
+            description = "Picks cards at evenly spaced positions between from and to, the number of steps following the configured zoom"
+                    + " factor. Positions are 1-based within the drawer; omitted bounds default to the whole drawer.")
+    @ApiResponse(responseCode = "200", description = "Boundary cards with positions, labels and image URLs", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
     @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown drawer")
     public CardCatalogSection getBoundaries(
@@ -177,8 +182,10 @@ public class CardCatalogResource {
     @GET
     @Path(ARCHIVES_CARDCATALOG_ENTRIES)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "archives" }, summary = "Get a dense card range of a drawer for the full view")
-    @ApiResponse(responseCode = "200", description = "Cards of the requested position range")
+    @Operation(tags = { "archives" }, summary = "Get a dense card range of a drawer for the full view",
+            description = "Returns every card between the 1-based positions from and to, clamped to the drawer size. At most 100 cards are"
+                    + " returned per request; the response states the range actually delivered so clients can page on.")
+    @ApiResponse(responseCode = "200", description = "Cards of the requested position range", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
     @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown drawer")
     public CardCatalogSection getEntries(
@@ -213,8 +220,11 @@ public class CardCatalogResource {
     @GET
     @Path(ARCHIVES_CARDCATALOG_DRAWER_REGISTER)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "archives" }, summary = "Get the computed from-to register for one card catalog drawer")
-    @ApiResponse(responseCode = "200", description = "One drawer's register ranges, or available=false above the threshold")
+    @Operation(tags = { "archives" }, summary = "Get the computed from-to register for one card catalog drawer",
+            description = "Splits the drawer into consecutive ranges labelled with their first and last card. When the catalog exceeds the"
+                    + " configured register threshold, no register is computed and the response reports available=false.")
+    @ApiResponse(responseCode = "200", description = "One drawer's register ranges, or available=false above the threshold",
+            useReturnTypeSchema = true)
     @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
     @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown drawer")
     public CardCatalogRegister getDrawerRegister(
@@ -245,8 +255,10 @@ public class CardCatalogResource {
     @GET
     @Path(ARCHIVES_CARDCATALOG_LOOKUP)
     @Produces({ MediaType.APPLICATION_JSON })
-    @Operation(tags = { "archives" }, summary = "Locate a card within the catalog by its EAD node ID (drawer and position)")
-    @ApiResponse(responseCode = "200", description = "Drawer id and 1-based position of the card")
+    @Operation(tags = { "archives" }, summary = "Locate a card within the catalog by its EAD node ID (drawer and position)",
+            description = "Resolves a deep link to a single card: returns the drawer containing the given EAD node and the card's 1-based"
+                    + " position within it, which the client then opens in the full view.")
+    @ApiResponse(responseCode = "200", description = "Drawer id and 1-based position of the card", useReturnTypeSchema = true)
     @ApiResponse(responseCode = "403", description = "Unknown or inaccessible archive, or restricted descendants")
     @ApiResponse(responseCode = "404", description = "No card catalog indexed for an accessible archive, or unknown entry")
     public CardCatalogEntryLocation lookupEntry(
