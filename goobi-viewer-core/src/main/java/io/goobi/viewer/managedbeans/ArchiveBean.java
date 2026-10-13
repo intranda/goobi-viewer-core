@@ -143,7 +143,7 @@ public class ArchiveBean implements Serializable {
                 logger.error("Error initializing archive tree: {}", e.getMessage());
                 Messages.error("Error initializing archive tree: " + e.getMessage());
                 this.databaseLoaded = false;
-                throw new ArchiveConnectionException("Error retrieving database {} from {}", getCurrentResource());
+                throw new ArchiveConnectionException("Error retrieving database {}", getCurrentResource(), e);
             }
         }
     }
@@ -208,12 +208,8 @@ public class ArchiveBean implements Serializable {
             return;
         }
         synchronized (getArchiveTree()) {
-            boolean updateTree = entry.isChildrenFound() && !entry.isChildrenLoaded();
+            // Loads the entry's children if necessary and regenerates the tree if they are not yet part of it
             getArchiveTree().expandEntry(entry);
-            if (updateTree) {
-                logger.trace("Updating tree");
-                getArchiveTree().update(entry.getRootNode());
-            }
         }
     }
 
@@ -289,6 +285,9 @@ public class ArchiveBean implements Serializable {
         }
 
         getArchiveTree().search(searchString);
+        if (getArchiveTree().isSearchResultsIncomplete()) {
+            Messages.warn("archives__search_too_broad");
+        }
         List<ArchiveEntry> results;
         results = getArchiveTree().getFlatEntryList();
         if (results == null || results.isEmpty()) {

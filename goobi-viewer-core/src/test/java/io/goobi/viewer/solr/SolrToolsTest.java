@@ -405,8 +405,6 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
         assertTrue(SolrTools.isQuerySyntaxError(new Exception("'rows' parameter cannot be negative")));
         assertTrue(SolrTools.isQuerySyntaxError(new Exception("expected ']' at position 175")));
         assertTrue(SolrTools.isQuerySyntaxError(new Exception("SyntaxError in query")));
-        assertTrue(SolrTools.isQuerySyntaxError(
-                new Exception("Error from server at http://localhost:8983/solr/current/select: parsing error")));
     }
 
     /**
@@ -417,6 +415,9 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
     void isQuerySyntaxError_shouldReturnFalseForNonSyntaxErrors() {
         assertFalse(SolrTools.isQuerySyntaxError(new Exception("Server refused connection")));
         assertFalse(SolrTools.isQuerySyntaxError(new Exception("IOException occured when talking to server")));
+        // SolrJ reports a response that was cut off (e.g. by a socket timeout) as "parsing error"; that is not a query syntax problem
+        assertFalse(SolrTools.isQuerySyntaxError(
+                new Exception("Error from server at http://localhost:8983/solr/current/select: parsing error")));
         assertFalse(SolrTools.isQuerySyntaxError(new Exception((String) null)));
         assertFalse(SolrTools.isQuerySyntaxError(new Exception("")));
     }
