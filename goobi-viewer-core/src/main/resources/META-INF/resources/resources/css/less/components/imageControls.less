@@ -12,8 +12,8 @@
 .image-controls {
     padding: 12px;
     position: relative;
-    background: var(--bg-content-box);
-    color: var(--fg-general);
+    background: var(--bg-surface);
+    color: var(--fg-default);
     border: 1px solid transparent;
     &.-ltr,
     .-ltr {
@@ -41,7 +41,7 @@
     }
     // GROUPS: paging | view | document, set apart by space and one rule
     &__actions-additional {
-        border-inline-start: 1px solid var(--border-faint);
+        border-inline-start: 1px solid var(--border-subtle);
         padding-inline-start: @image-controls-group-gap;
     }
     /* DOCUMENT OPTIONS */
@@ -55,7 +55,7 @@
         align-items: center;
         flex: 0 0 auto;
         margin: 0;
-        color: var(--fg-general);
+        color: var(--fg-default);
         font-size: inherit;
         line-height: 1;
 
@@ -131,7 +131,7 @@
         &.share-image-region {
             cursor: pointer;
             a.active {
-                color: var(--fg-selection-region);
+                color: var(--color-region);
             }
         }
     }
@@ -219,7 +219,7 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        color: var(--fg-general);
+        color: var(--fg-default);
         &:hover,
         &:focus {
             background-color: var(--bg-control-hover);
@@ -263,7 +263,7 @@
             }
         }
         .custom-control--select::after {
-            border-top-color: var(--fg-general);
+            border-top-color: var(--fg-default);
         }
         button {
             white-space: nowrap;
@@ -315,18 +315,18 @@
         }
         &.select {
             width: 110px;
-            border: 1px solid var(--border-faint);
+            border: 1px solid var(--border-subtle);
             .custom-control--select {
                 height: 100%;
                 min-height: 0;
                 border: none;
                 background: inherit;
-                color: var(--fg-general);
+                color: var(--fg-default);
                 select {
                     height: 100%;
                     min-height: 0;
                     background: inherit;
-                    color: var(--fg-general);
+                    color: var(--fg-default);
                 }
                 &:after {
                 }
@@ -382,13 +382,13 @@
                 &::-moz-range-track {
                     height: 3px;
                     border-radius: 2px;
-                    background-color: var(--fg-general);
+                    background-color: var(--fg-default);
                 }
                 &::-moz-range-thumb {
                     width: 12px;
                     height: 12px;
                     border: none;
-                    background-color: var(--fg-general);
+                    background-color: var(--fg-default);
                     border-radius: 50%;
                 }
                 //Chrome
@@ -402,14 +402,14 @@
                     width: 12px;
                     height: 12px;
                     border: none;
-                    background-color: var(--fg-general);
+                    background-color: var(--fg-default);
                     border-radius: 50%;
                     margin-top: -4.5px;
                 }
                 &::-webkit-slider-runnable-track {
                     height: 3px;
                     border-radius: 2px;
-                    background-color: var(--fg-general);
+                    background-color: var(--fg-default);
                 }
             }
         }
@@ -421,7 +421,7 @@
     }
     .share-image-area {
         .btn.btn--full {
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
         }
         a {
             color: var(--fg-link);
@@ -444,7 +444,7 @@
 
 .image-controls__actions-nav .image-controls__icon,
 .image-controls__actions-additional .image-controls__icon {
-    color: var(--fg-general);
+    color: var(--fg-default);
 }
 
 .image-controls__icon {
@@ -488,7 +488,7 @@
     position: absolute;
     z-index: 10000;
     background-color: var(--bg-inverse);
-    color: var(--fg-inverse);
+    color: var(--fg-on-inverse);
     padding: 3px;
     vertical-align: middle;
     border-radius: 10px;

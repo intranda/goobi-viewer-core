@@ -43,7 +43,7 @@
         flex-direction: column;
         max-width: 100%;
         overflow: hidden;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         text-align: center;
         &:hover {
             .sidebar-scroll-preview__image {
@@ -58,7 +58,7 @@
         &.-highlighted {
             pointer-events: none;
             .sidebar-scroll-preview__image-wrapper {
-                outline: 2px solid var(--outline-selection);
+                outline: 2px solid var(--color-scroll-marker);
                 outline-offset: 2px;
             }
             .sidebar-scroll-preview__button-text {
@@ -119,10 +119,10 @@
         left: 0;
         background-color: rgb(from var(--shadow-color) r g b / 70%);
         &__button {
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
         }
         .simplebar-scrollbar::before {
-            background: var(--bg-content-box);
+            background: var(--bg-surface);
         }
         &__inner {
             height: calc(100% - 80px);

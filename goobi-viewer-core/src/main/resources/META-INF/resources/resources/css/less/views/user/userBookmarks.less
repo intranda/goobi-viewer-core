@@ -47,11 +47,11 @@
     }
     &__add-panel {
         margin-bottom: 2rem;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-container);
-        box-shadow: var(--shadow-container);
+        box-shadow: var(--shadow-surface);
         &[hidden] {
             display: none;
         }
@@ -62,7 +62,7 @@
     &__add-label {
         display: block;
         margin-bottom: 0.6rem;
-        color: var(--fg-heading-content-box);
+        color: var(--fg-heading);
         font-weight: 600;
     }
     &__add-foot {
@@ -82,7 +82,7 @@
         color: var(--fg-secondary);
         &:hover,
         &:focus-visible {
-            color: var(--fg-general);
+            color: var(--fg-default);
             text-decoration: underline;
         }
     }
@@ -112,11 +112,11 @@
     /* PANEL */
     &__panel {
         margin-bottom: 2rem;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-container);
-        box-shadow: var(--shadow-container);
+        box-shadow: var(--shadow-surface);
     }
     &__panel-head {
         display: grid;
@@ -132,11 +132,11 @@
         font-weight: 700;
         overflow-wrap: anywhere;
         a {
-            color: var(--fg-heading-content-box);
+            color: var(--fg-heading);
             text-decoration: none;
             &:hover,
             &:focus-visible {
-                color: var(--fg-heading-content-box);
+                color: var(--fg-heading);
                 text-decoration: underline;
             }
         }
@@ -176,7 +176,7 @@
         background-size: cover;
         background-position: 50% 0;
         border-radius: var(--radius-container-small);
-        box-shadow: var(--shadow-container);
+        box-shadow: var(--shadow-surface);
         overflow: hidden;
         a {
             display: block;
@@ -206,12 +206,12 @@
             padding: 0.4rem 0;
             background: transparent;
             border: 0;
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             font-size: var(--font-size-body-small);
             cursor: pointer;
             &:hover,
             &:focus-visible {
-                color: var(--fg-content-box);
+                color: var(--fg-default);
                 text-decoration: none;
                 span {
                     text-decoration: underline;
@@ -224,7 +224,7 @@
         button {
             margin-bottom: 0.3rem;
             padding: 0.6rem 1.2rem;
-            color: var(--fg-popover);
+            color: var(--fg-default);
             font-size: var(--font-size-body-small);
         }
     }
@@ -235,7 +235,7 @@
         align-items: center;
         justify-content: center;
         padding: 3rem 2rem;
-        background-color: var(--bg-content-box);
+        background-color: var(--bg-surface);
         border: 1px dashed var(--border-default);
         border-radius: var(--radius-container);
         color: var(--fg-muted);

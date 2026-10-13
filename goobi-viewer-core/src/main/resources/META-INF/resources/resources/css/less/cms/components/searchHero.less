@@ -8,8 +8,8 @@
 
     position: relative;
     isolation: isolate;
-    color: var(--fg-general);
-    background: color-mix(in srgb, var(--bg-content-box) 72%, var(--bg-canvas));
+    color: var(--fg-default);
+    background: color-mix(in srgb, var(--bg-surface) 72%, var(--bg-sunken));
     border-bottom: 1px solid var(--border-default);
 
     &__stage {
@@ -45,7 +45,7 @@
             content: '';
             flex: 0 0 2.8rem;
             height: 2px;
-            background: var(--brand);
+            background: var(--fg-brand);
         }
     }
     &__heading {
@@ -66,7 +66,7 @@
             font-weight: inherit;
         }
         a {
-            color: var(--brand);
+            color: var(--fg-brand);
             text-decoration: underline;
             text-decoration-thickness: 0.025em;
             text-underline-offset: 0.12em;
@@ -92,15 +92,15 @@
         margin-top: 3.2rem;
         border: 1px solid var(--border-strong);
         border-radius: 1rem;
-        background: var(--bg-content-box);
+        background: var(--bg-surface);
         box-shadow: 0 8px 28px rgb(from var(--shadow-color) r g b / 5%);
         transition:
             border-color 0.18s ease,
             box-shadow 0.18s ease;
         &:focus-within {
-            border-color: var(--brand);
+            border-color: var(--border-brand);
             box-shadow:
-                0 0 0 3px var(--bg-brand-tint),
+                0 0 0 3px var(--bg-brand-subtle),
                 0 8px 28px rgb(from var(--shadow-color) r g b / 5%);
         }
     }
@@ -247,7 +247,7 @@
         text-decoration-color: var(--border-strong);
         text-underline-offset: 0.3em;
         &:hover {
-            color: var(--brand);
+            color: var(--fg-brand);
             text-decoration-color: currentColor;
         }
         &:focus-visible {
@@ -276,9 +276,9 @@
         min-width: 0;
         min-height: 0;
         overflow: hidden;
-        border: 1px solid var(--border-faint);
+        border: 1px solid var(--border-subtle);
         border-radius: 0.3rem;
-        background: var(--bg-image-frame);
+        background: var(--color-image-frame);
         box-shadow:
             0 16px 32px -14px rgb(from var(--shadow-color) r g b / 30%),
             0 2px 5px rgb(from var(--shadow-color) r g b / 8%);
@@ -311,7 +311,7 @@
             z-index: 1;
             pointer-events: none;
             background-color: var(--bg-subtle);
-            background-image: linear-gradient(110deg, transparent 30%, rgb(from var(--bg-content-box) r g b / 70%) 50%, transparent 70%);
+            background-image: linear-gradient(110deg, transparent 30%, rgb(from var(--bg-surface) r g b / 70%) 50%, transparent 70%);
             background-size: 240% 100%;
             background-position: 50% 0;
             opacity: 1;
@@ -374,7 +374,7 @@
         gap: 0.5rem;
         padding: 3.6rem 1.4rem 1.4rem;
         background: linear-gradient(to top, rgb(from var(--bg-scrim) r g b / 90%), transparent);
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         opacity: 0;
         transition: opacity 0.2s ease;
     }
@@ -459,7 +459,7 @@
         text-decoration: none;
         &:hover,
         &:focus-visible {
-            color: var(--brand);
+            color: var(--fg-brand);
             text-decoration: none;
         }
         &:focus-visible {

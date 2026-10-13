@@ -13,7 +13,7 @@
         min-height: 45px;
         padding: 10px 0;
         width: 100%;
-        background: var(--bg-warning);
+        background: var(--bg-warning-subtle);
         position: relative;
     }
 
@@ -21,7 +21,7 @@
         display: flex;
         gap: 40px;
         align-items: center;
-        color: var(--fg-on-warning);
+        color: var(--fg-on-warning-subtle);
         padding-right: 40px;
     }
 
@@ -32,7 +32,7 @@
     &__text {
         p,
         a {
-            color: var(--fg-on-warning);
+            color: var(--fg-on-warning-subtle);
             font-size: var(--font-size-body);
             line-height: 1.4;
 
@@ -47,7 +47,7 @@
             &:hover,
             &:focus,
             &:active {
-                color: var(--fg-on-warning-hover);
+                color: var(--color-maintenance-link-strong);
             }
         }
     }
@@ -61,12 +61,12 @@
         background: transparent;
         padding: 0;
         border: none;
-        color: var(--fg-on-warning);
+        color: var(--fg-on-warning-subtle);
 
         &:hover,
         &:focus,
         &:active {
-            color: var(--fg-on-warning-hover);
+            color: var(--color-maintenance-link-strong);
         }
 
         /* the "X" bars are drawn via ::before/::after with background-color, not color,
@@ -74,7 +74,7 @@
            in both light and dark mode */
         &:before,
         &:after {
-            background-color: var(--fg-on-warning);
+            background-color: var(--fg-on-warning-subtle);
         }
 
         &:hover:before,
@@ -83,7 +83,7 @@
         &:focus:after,
         &:active:before,
         &:active:after {
-            background-color: var(--fg-on-warning-hover);
+            background-color: var(--color-maintenance-link-strong);
         }
     }
 }

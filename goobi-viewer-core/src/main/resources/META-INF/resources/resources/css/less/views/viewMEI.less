@@ -4,8 +4,8 @@
    ==============================================================*/
 .view-mei {
     &__wrapper {
-        background: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background: var(--bg-surface);
+        color: var(--fg-default);
         padding: 15px;
     }
 }
@@ -34,7 +34,7 @@
         flex-direction: row;
         flex-wrap: wrap;
         flex-shrink: 0;
-        border: 1px solid var(--border-emphasis);
+        border: 1px solid var(--border-contrast);
         margin: 0 19px;
     }
     &__toolbar-zoom-controls,
@@ -93,7 +93,7 @@
         display: flex;
         align-items: center;
         gap: 0.25rem;
-        border: 1px solid var(--border-emphasis);
+        border: 1px solid var(--border-contrast);
         border-top: none;
         border-bottom: none;
     }
@@ -106,14 +106,14 @@
     }
     &__toolbar-status-controls {
         display: flex;
-        border-right: 1px solid var(--border-emphasis);
+        border-right: 1px solid var(--border-contrast);
     }
 
     // Color effect for the note played at the moment
     .-highlighted-note {
-        stroke: var(--fg-notation-active);
-        fill: var(--fg-notation-active);
-        color: var(--fg-notation-active);
+        stroke: var(--color-document-notation);
+        fill: var(--color-document-notation);
+        color: var(--color-document-notation);
     }
 }
 
@@ -157,7 +157,7 @@
             justify-content: center;
             border-right: none;
             flex-wrap: wrap;
-            border-top: 1px solid var(--border-emphasis);
+            border-top: 1px solid var(--border-contrast);
             padding-bottom: 10px;
             order: 3;
         }

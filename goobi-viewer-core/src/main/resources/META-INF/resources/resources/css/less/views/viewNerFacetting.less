@@ -61,7 +61,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: var(--bg-content-box);
+    background-color: var(--bg-surface);
     background-image: url('@{images}/ajax_preloader.gif');
     background-position: center center;
     background-repeat: no-repeat;
@@ -129,10 +129,10 @@
         max-width: 100%;
         padding: 2px 4px;
         font-size: var(--font-size-body-small);
-        color: var(--fg-popover);
-        border: 1px solid var(--border-emphasis);
+        color: var(--fg-default);
+        border: 1px solid var(--border-contrast);
         border-radius: 4px;
-        background-color: var(--bg-popover);
+        background-color: var(--bg-elevated);
         box-shadow: 0px 5px 7px rgb(from var(--shadow-color) r g b / 40%);
         z-index: 999;
         &:before {
@@ -145,7 +145,7 @@
             height: 0;
             border-width: 5px;
             border-style: solid;
-            border-color: transparent transparent var(--border-emphasis) transparent;
+            border-color: transparent transparent var(--border-contrast) transparent;
         }
         .page-tag {
             float: left;
@@ -189,12 +189,12 @@
                     font-size: var(--font-size-body);
                     font-weight: bold;
                     a {
-                        color: var(--fg-content-box);
+                        color: var(--fg-default);
                         &:hover,
                         &:active,
                         &:focus {
                             text-decoration: none;
-                            color: var(--fg-content-box);
+                            color: var(--fg-default);
                         }
                     }
                 }
@@ -292,7 +292,7 @@
         right: 3px;
         width: 2px;
         height: 100px;
-        background-color: var(--bg-entity-scale-handle);
+        background-color: var(--color-chart-ner);
         z-index: 11;
     }
 }
@@ -311,7 +311,7 @@
         height: 16px;
         margin-bottom: -8px;
         border: none;
-        background: var(--bg-entity-scale-handle);
+        background: var(--color-chart-ner);
         &:after {
             content: '';
             position: absolute;
@@ -322,7 +322,7 @@
             height: 0;
             border-width: 15px;
             border-style: solid;
-            border-color: transparent transparent transparent var(--bg-entity-scale-handle);
+            border-color: transparent transparent transparent var(--color-chart-ner);
         }
         &:focus {
             outline: none;
@@ -333,7 +333,7 @@
             left: 2.6em;
             padding: 2px 4px;
             font-size: var(--font-size-body);
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
             border-radius: 4px;
             background-color: var(--bg-inverse);
             white-space: nowrap;

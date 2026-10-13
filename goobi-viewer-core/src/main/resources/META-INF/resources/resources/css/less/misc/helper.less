@@ -46,7 +46,7 @@ mark,
         position: absolute;
         top: 45%;
         border-radius: 50%;
-        border-right: 2px solid var(--brand);
+        border-right: 2px solid var(--border-brand);
         text-align: center;
         animation-name: smallButtonLoaderSpin;
         animation-duration: 900ms;
@@ -149,26 +149,26 @@ mark,
     font-size: var(--font-size-caption);
     text-align: center;
     border-radius: 50%;
-    color: var(--fg-inverse);
+    color: var(--fg-on-inverse);
     top: 14px;
     z-index: 50;
     &.-success {
-        background-color: var(--bg-success-strong);
-        color: var(--fg-on-success-strong);
+        background-color: var(--bg-success);
+        color: var(--fg-on-success);
         .fa-check {
             display: inline-block;
         }
     }
     &.-warning {
-        background-color: var(--bg-warning-strong);
-        color: var(--fg-on-warning-strong);
+        background-color: var(--bg-warning);
+        color: var(--fg-on-warning);
         .fa-check {
             display: inline-block;
         }
     }
     &.-danger {
-        background-color: var(--bg-danger-strong);
-        color: var(--fg-on-danger-strong);
+        background-color: var(--bg-danger);
+        color: var(--fg-on-danger);
         .fa-exclamation {
             display: inline-block;
         }
@@ -282,7 +282,7 @@ mark,
 }
 /* COORDS HIGHLIGHTING */
 .coords-highlighting {
-    background-color: var(--highlight);
+    background-color: var(--bg-highlight);
     opacity: 0.5;
     &.focus {
     }

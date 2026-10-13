@@ -35,9 +35,9 @@
             // (this element has a type="button" attribute,
             // which makes webkit style it as a button, if not unset)
             -webkit-appearance: unset;
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
             &:hover {
-                color: var(--fg-inverse);
+                color: var(--fg-on-inverse);
             }
         }
     }
@@ -73,12 +73,12 @@
         padding: 0;
         border: none;
         background: none;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         &:hover,
         &:focus,
         &:active,
         &:active:focus {
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
         }
     }
 
@@ -89,7 +89,7 @@
         font-size: 1.7rem; // Fixed icon/marker geometry; independent of text scale.
         border: none;
         background: none;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         &.active {
             display: block;
         }
@@ -99,7 +99,7 @@
             text-decoration: none;
             color: inherit;
             background: none;
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
         }
     }
 
@@ -254,13 +254,13 @@
     align-items: center;
     border-radius: 4px;
     padding: 0;
-    border: 2px solid rgb(from var(--border-emphasis) r g b / 20%);
+    border: 2px solid rgb(from var(--border-contrast) r g b / 20%);
     .fa-map-marker {
         color: var(--fg-secondary);
         width: 30px;
         height: 30px;
         line-height: 30px;
-        background-color: var(--bg-content-box);
+        background-color: var(--bg-surface);
         font-size: 1.8rem; // Fixed icon/marker geometry; independent of text scale.
     }
     &:hover,
@@ -274,7 +274,7 @@
     }
     &:focus {
         .fa-map-marker {
-            background-color: var(--bg-content-box);
+            background-color: var(--bg-surface);
             color: var(--fg-secondary);
         }
     }

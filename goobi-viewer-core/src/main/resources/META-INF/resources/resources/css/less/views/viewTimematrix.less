@@ -44,8 +44,8 @@
     &__selection {
         padding: 2rem 2rem 1rem 2rem;
         border: 1px solid var(--border-strong);
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         margin-bottom: 2rem;
         display: flex;
         flex-wrap: wrap;
@@ -86,14 +86,14 @@
                     margin-left: -1.7rem;
                     font-size: var(--font-size-body-small);
                     text-align: center;
-                    color: var(--fg-content-box);
+                    color: var(--fg-default);
                     height: 100%;
                     top: -2rem;
                 }
             }
             .ui-slider-handle {
                 margin-left: -0.1rem;
-                color: var(--fg-inverse);
+                color: var(--fg-on-inverse);
                 &::before {
                     content: '';
                     position: relative;
@@ -101,7 +101,7 @@
                     width: 2.2rem;
                     height: 2.2rem;
                     margin: 0 auto;
-                    background-color: var(--fg-inverse);
+                    background-color: var(--fg-on-inverse);
                     mask: url('../../icons/outline/chevron-right.svg') center/contain no-repeat;
                     -webkit-mask: url('../../icons/outline/chevron-right.svg') center/contain no-repeat;
                 }
@@ -170,7 +170,7 @@
         }
         input {
             width: 5ch;
-            border-bottom: 1px solid var(--border-emphasis);
+            border-bottom: 1px solid var(--border-contrast);
         }
     }
     &__objects {
@@ -182,8 +182,8 @@
     &__content {
         border: 1px solid var(--border-strong);
         margin: 0.5rem;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         position: relative;
         text-align: center;
         flex: 0 0 calc(16.6666% - 1rem);
@@ -209,7 +209,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         background-color: rgb(from var(--bg-scrim) r g b / 65%);
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         width: 100%;
         height: 100%;
         transition: all 0.3s ease-in;
@@ -232,7 +232,7 @@
             margin-top: auto;
         }
         a {
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
             position: absolute;
             bottom: 0;
             margin-left: auto;
@@ -244,7 +244,7 @@
             &:hover,
             &:focus,
             &:active {
-                color: var(--fg-inverse);
+                color: var(--fg-on-inverse);
             }
         }
     }

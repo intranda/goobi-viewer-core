@@ -6,13 +6,13 @@
 .archives-list {
     &__title {
         margin-bottom: 20px;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
     }
 
     &__empty {
         text-align: center;
         padding: 48px 16px;
-        color: var(--fg-general);
+        color: var(--fg-default);
         font-size: var(--font-size-body);
     }
 
@@ -26,8 +26,8 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        background: var(--bg-content-box);
-        border: 1px solid var(--border-faint);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
         border-radius: 4px;
         overflow: hidden;
         transition: box-shadow 0.2s ease;
@@ -57,7 +57,7 @@
         grid-row: 1;
         grid-column: 1;
         overflow: hidden;
-        background: var(--bg-content-box);
+        background: var(--bg-surface);
     }
 
     &__image {
@@ -72,7 +72,7 @@
         justify-content: center;
         height: 100%;
         padding-bottom: 30px;
-        background: var(--bg-content-box);
+        background: var(--bg-surface);
 
         &::before {
             content: '';
@@ -80,7 +80,7 @@
             width: 55%;
             height: 55%;
             opacity: 0.35;
-            background-color: var(--fg-general);
+            background-color: var(--fg-default);
             mask: url('../../icons/outline/photo-off.svg') center/100% 100% no-repeat;
             -webkit-mask: url('../../icons/outline/photo-off.svg') center/100% 100% no-repeat;
         }
@@ -92,7 +92,7 @@
         align-self: end;
         z-index: 1;
         background: rgb(from var(--bg-scrim) r g b / 65%);
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         font-size: var(--font-size-body);
         font-weight: 700;
         padding: 6px 15px;
@@ -103,7 +103,7 @@
 
     &__description {
         padding: 10px 15px;
-        color: var(--fg-general);
+        color: var(--fg-default);
         font-size: var(--font-size-body-small);
         line-height: 1.5;
         word-break: break-word;
@@ -118,7 +118,7 @@
         gap: 6px;
         padding: 6px 10px;
         background: rgb(from var(--bg-scrim) r g b / 70%);
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         text-decoration: none;
         border-radius: 4px;
         opacity: 0;
@@ -127,13 +127,13 @@
 
         &:hover {
             background: rgb(from var(--bg-scrim) r g b / 85%);
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
             text-decoration: none;
         }
 
         &:active,
         &:visited {
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
         }
 
         &:focus-visible {

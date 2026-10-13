@@ -19,7 +19,7 @@
             transition: border-color @immersive-transition;
 
             &:focus-within {
-                border-color: var(--brand);
+                border-color: var(--border-brand);
             }
         }
 
@@ -31,18 +31,18 @@
             border: 0;
             background: transparent;
             box-shadow: none;
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             font-size: var(--font-size-body);
 
             &::placeholder {
-                color: var(--fg-content-box);
+                color: var(--fg-default);
                 opacity: 0.75;
             }
 
             &:focus {
                 box-shadow: none;
                 background: transparent;
-                color: var(--fg-content-box);
+                color: var(--fg-default);
             }
 
             &:focus-visible {
@@ -58,7 +58,7 @@
             padding: 0 0 2px;
             border: 0;
             background: transparent;
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             font-size: 2rem; // Fixed icon/marker geometry; independent of text scale.
             line-height: 1;
             opacity: 0.75;
@@ -73,7 +73,7 @@
 
             &:hover {
                 opacity: 1;
-                color: var(--brand);
+                color: var(--fg-brand);
             }
         }
 
@@ -93,13 +93,13 @@
             border: 0;
             border-radius: 0;
             background: transparent;
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             cursor: pointer;
             transition: color @immersive-transition;
 
             &:hover,
             &:focus {
-                color: var(--brand);
+                color: var(--fg-brand);
                 background-color: transparent;
             }
 
@@ -116,7 +116,7 @@
         margin-top: 14px;
         padding-top: 14px;
         border-top: 1px solid var(--border-default);
-        color: var(--fg-content-box);
+        color: var(--fg-default);
     }
 
     &__results-head {
@@ -146,7 +146,7 @@
             background-color @immersive-transition;
 
         &:hover {
-            color: var(--brand);
+            color: var(--fg-brand);
         }
     }
 
@@ -190,14 +190,14 @@
 
         &.-active {
             background-color: var(--bg-control);
-            border-left-color: var(--brand);
+            border-left-color: var(--border-brand);
         }
     }
 
     &__results-page {
         flex-shrink: 0;
         min-width: 1.7em;
-        color: var(--brand);
+        color: var(--fg-brand);
         font-weight: 700;
         font-variant-numeric: tabular-nums;
         line-height: 1.45;
@@ -210,13 +210,13 @@
 
     &__results-match {
         background: transparent;
-        color: var(--brand);
+        color: var(--fg-brand);
         font-weight: 600;
     }
 
     &__results-empty {
         padding: 12px 10px;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         opacity: 0.75;
     }
 }

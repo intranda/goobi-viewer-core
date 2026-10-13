@@ -53,6 +53,14 @@ const adminRelevant = (file) => !FRONTEND_ONLY.test(file) && file !== PALETTE_FI
 // A theme keeps its token layer in these files; literals belong in its palette mixins.
 const THEME_LAYER = /^(?:misc\/(?:mixins|palette|tokens|variables)\.less$|subthemes\/[^/]+\/subThemeConstructor\.less$)/;
 const THEME_PALETTE_MIXIN = /^\.mx-theme-[\w-]*palette\(\)$/;
+// Roles carry their property first; palette names carry tone and step only (sentence 7).
+const ROLE_PREFIX = /^--(?:bg|fg|border|outline|shadow|display|filter)-/;
+const PALETTE_WORD = /-(?:bg|fg|border|text|surface|hover|pressed|selected|disabled|active|fill)(?:-|$)/;
+// The status tones keep their legacy names until the tonal ramp; --color-on-* is a component colour's text partner.
+const PALETTE_WORD_EXEMPT = /^--color-(?:on-|(?:success|danger|warning|info)-)/;
+const LIGHT_DARK = /\blight-dark\(/;
+// Roles that share a value with another role by design: static partners of surfaces (sentence 8).
+const TWIN_PARTNERS = /^--(?:fg-on-|fg-white$|fg-black$|bg-document$|fg-document$|bg-input$|outline-focus-inner$|bg-scrim$|fg-placeholder$)/;
 const SUBTHEME_CONSTRUCTOR = /^subthemes\/[^/]+\/subThemeConstructor\.less$/;
 
 /* ---------- syntax ---------- */
@@ -67,7 +75,6 @@ const STATIC = /^@([\w-]+)\s*:/;
 const READ = /var\(\s*(--[\w-]+)\s*(,)?/g;
 const AT_USE = /@([\w-]+)/g;
 const INTERNAL = /^--_/;
-const OPTIONAL_THEME_LAYOUT_TOKENS = new Set(['--page-gutter', '--page-max-width']);
 const MODE_BRANCH = /prefers-color-scheme|\.color-theme-(dark|light)|@colorModes/;
 // Any colour: hex, colour functions (relative `from` syntax reads a token and is fine) and keywords.
 const COLOR_LITERAL = new RegExp(`#[0-9a-f]{3,8}\\b|\\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\\((?!\\s*from\\b)|(?:^|[\\s,(])(?:${NAMED_COLOURS})(?=[\\s,)]|$)`, 'i');
@@ -299,7 +306,7 @@ function reads(file, p, known, out) {
     for (const r of p.reads) {
         if (INTERNAL.test(r.name)) {
             if (!r.fallback && !internalHere.has(r.name)) out.push(finding(file, r.line, `var(${r.name})`, 'internal token without a declaration in this file — declare it here or give the read a fallback'));
-        } else if (!known.has(r.name) && !(r.fallback && OPTIONAL_THEME_LAYOUT_TOKENS.has(r.name))) {
+        } else if (!known.has(r.name)) {
             out.push(finding(file, r.line, `var(${r.name})`, `no token of this name — check the spelling, or declare it in ${TOKENS_FILE}`));
         }
     }
@@ -314,6 +321,23 @@ function modeSymmetry(mixins, out) {
         const other = mixins.get(counterpart) || new Map();
         for (const [name, site] of declared) if (!other.has(name)) out.push(finding(site.file, site.line, name, `declared in ${mixin} but not in ${counterpart} — the other mode keeps the previous value`));
     }
+}
+
+// Sentence 8: two roles with the same value in every binding are one role.
+function twins(parsed, out) {
+    const value = (file, mixin) => new Map((parsed.get(file)?.declarations || []).filter((d) => d.stack.includes(mixin)).map((d) => [d.name, d.value.replace(/\s+/g, ' ').trim()]));
+    const light = value(TOKENS_FILE, '.gv-semantic-light()'), dark = value(TOKENS_FILE, '.gv-semantic-dark()'), admin = value(ADMIN_TOKENS_FILE, '.gv-semantic-admin()');
+    const names = [...light.keys()].filter((n) => dark.has(n));
+    for (let i = 0; i < names.length; i++)
+        for (let j = i + 1; j < names.length; j++) {
+            const a = names[i], b = names[j];
+            if (light.get(a) !== light.get(b) || dark.get(a) !== dark.get(b)) continue;
+            if (admin.has(a) && admin.has(b) && admin.get(a) !== admin.get(b)) continue;
+            if (TWIN_PARTNERS.test(a) && TWIN_PARTNERS.test(b)) continue;
+            if (TWIN_PARTNERS.test(a) || TWIN_PARTNERS.test(b)) continue;
+            const site = (parsed.get(TOKENS_FILE).declarations.find((d) => d.name === b && d.stack.includes('.gv-semantic-light()')) || {}).line;
+            out.push(finding(TOKENS_FILE, site, b, `same value as ${a} in every binding — read ${a}, or bind a different value`));
+        }
 }
 
 function mixinTokens(parsed, files) {
@@ -345,6 +369,8 @@ function checkTree(core, theme = null) {
     for (const file of TOKEN_LAYER) for (const d of parsed.get(file)?.declarations || []) if (!INTERNAL.test(d.name)) tokens.add(d.name);
     for (const file of PALETTE_FILES) for (const d of parsed.get(file)?.declarations || []) palette.add(d.name);
     const staticColours = staticColorNames(parsed.get(VARIABLES_FILE));
+    const roleInputs = new Set();
+    for (const file of [TOKENS_FILE, ADMIN_TOKENS_FILE]) for (const r of parsed.get(file)?.reads || []) roleInputs.add(r.name);
     const themeParsed = theme ? parseAll(theme) : new Map();
     const typeSizes = staticTypeSizes([parsed, themeParsed]);
 
@@ -356,18 +382,24 @@ function checkTree(core, theme = null) {
                 else if (!underRoot(d.stack) && !inMixin(d.stack)) out.core.push(finding(file, d.line, d.name, `declared under "${flattened(d.stack) || '(top level)'}" — only ${ROOT_SELECTORS.join(', ')} or a mixin`));
                 if (!PALETTE_FILES.includes(file) && COLOR_LITERAL.test(withoutStrings(d.value)))
                     out.core.push(finding(file, d.line, `${d.name}: ${d.value}`, `colour literal in the token layer — every colour comes from ${file === ADMIN_TOKENS_FILE ? ADMIN_PALETTE_FILE : PALETTE_FILE}`));
+                if (!PALETTE_FILES.includes(file) && LIGHT_DARK.test(d.value)) out.core.push(finding(file, d.line, `${d.name}: ${d.value}`, 'light-dark() outside the palette — a component colour carries its mode in the palette, a role binds per mode'));
+                if (d.stack.some((h) => SEMANTIC_MIXIN.test(h)) && !ROLE_PREFIX.test(d.name)) out.core.push(finding(file, d.line, d.name, 'role name without a property prefix — roles start with bg-, fg-, border-, outline-, shadow-, display- or filter-'));
+                if (PALETTE_FILES.includes(file) && PALETTE_WORD.test(d.name) && !PALETTE_WORD_EXEMPT.test(d.name)) out.core.push(finding(file, d.line, d.name, 'property or state word in a palette name — the palette carries tone and step only'));
             }
         } else if (file !== VARIABLES_FILE) {
             for (const d of p.declarations) if (!INTERNAL.test(d.name)) out.core.push(finding(file, d.line, d.name, `public token declared outside the token layer — declare it in ${TOKENS_FILE}, or use --_${d.name.slice(2)} for a local value`));
             for (const b of p.blocks) if (MODE_BRANCH.test(b.header)) out.core.push(finding(file, b.line, flattened([...b.stack, b.header]), 'light/dark branch outside the token layer — read a token that differs per mode'));
+            for (const d of [...p.declarations, ...p.properties]) if (LIGHT_DARK.test(d.value)) out.core.push(finding(file, d.line, `${d.name}: ${d.value}`, 'light-dark() in a component — read a token that differs per mode'));
             if (!STATIC_COLOUR_TREES.test(file)) componentValues(file, p, core.get(file), staticColours, typeSizes, out.core);
         }
         reads(file, p, tokens, out.core);
+        // Sentence 5, ownership: a palette line belongs to the roles or to one component, never to both.
         for (const r of p.reads) {
-            if (!palette.has(r.name) || PALETTE_FILES.includes(file) || (layer && r.stack.some((h) => SEMANTIC_MIXIN.test(h)))) continue;
-            out.core.push(finding(file, r.line, `var(${r.name})`, 'palette colour read outside the semantic roles — read a role instead'));
+            if (!palette.has(r.name) || layer || !roleInputs.has(r.name)) continue;
+            out.core.push(finding(file, r.line, `var(${r.name})`, 'palette colour owned by the roles — read a role instead'));
         }
     }
+    twins(parsed, out.core);
     modeSymmetry(mixinTokens(parsed, TOKEN_LAYER), out.core);
 
     // Sentence 6: the admin token files bind what admin pages read, and nothing else.
@@ -384,23 +416,28 @@ function checkTree(core, theme = null) {
         const known = new Set(tokens);
         const themePalette = new Set(palette);
         const themeStatics = new Set();
-        for (const p of themeParsed.values()) {
+        const themeRoleInputs = new Set(roleInputs);
+        for (const [file, p] of themeParsed) {
             for (const d of p.declarations) {
                 if (INTERNAL.test(d.name)) continue;
                 known.add(d.name);
                 if (d.name.startsWith('--color-') && d.stack.some((h) => THEME_PALETTE_MIXIN.test(h))) themePalette.add(d.name);
             }
+            if (file === TOKENS_FILE) for (const r of p.reads) themeRoleInputs.add(r.name);
             for (const name of staticColorNames(p)) themeStatics.add(name);
         }
         for (const [file, p] of themeParsed) {
             const inLayer = THEME_LAYER.test(file);
             const at = `theme/${file}`;
             reads(at, p, known, out.theme);
-            for (const r of p.reads) if (themePalette.has(r.name) && !inLayer) out.theme.push(finding(at, r.line, `var(${r.name})`, 'palette colour read in a component — read a role instead'));
+            for (const r of p.reads) if (themePalette.has(r.name) && !inLayer && themeRoleInputs.has(r.name)) out.theme.push(finding(at, r.line, `var(${r.name})`, 'palette colour owned by the roles — read a role instead'));
             for (const d of p.declarations) {
                 if (INTERNAL.test(d.name)) continue;
                 if (!inLayer) out.theme.push(finding(at, d.line, d.name, 'public token declared outside the theme token layer — put it into the root wiring of misc/tokens.less'));
-                const paletteSpot = d.stack.some((h) => THEME_PALETTE_MIXIN.test(h)) || (SUBTHEME_CONSTRUCTOR.test(file) && /^--color-brand(-hover|-dark)?$/.test(d.name));
+                if (inLayer && ROLE_PREFIX.test(d.name) && !tokens.has(d.name)) out.theme.push(finding(at, d.line, d.name, 'role name the core does not declare — a theme token is named after its component, the property last'));
+                if (inLayer && d.name.startsWith('--color-') && !palette.has(d.name) && !d.name.startsWith('--color-theme-')) out.theme.push(finding(at, d.line, d.name, 'palette colour the core does not declare — own colours are --color-theme-*'));
+                if (!d.stack.some((h) => THEME_PALETTE_MIXIN.test(h)) && LIGHT_DARK.test(d.value)) out.theme.push(finding(at, d.line, `${d.name}: ${d.value}`, 'light-dark() outside the palette — read a token that differs per mode'));
+                const paletteSpot = d.stack.some((h) => THEME_PALETTE_MIXIN.test(h)) || (SUBTHEME_CONSTRUCTOR.test(file) && /^--color-brand(-400)?$/.test(d.name));
                 if (!paletteSpot && COLOR_LITERAL.test(withoutStrings(d.value))) out.theme.push(finding(at, d.line, `${d.name}: ${d.value}`, 'colour literal outside the palette — declare it as --color-* in .mx-theme-palette() and read it here'));
             }
             if (inLayer) continue;

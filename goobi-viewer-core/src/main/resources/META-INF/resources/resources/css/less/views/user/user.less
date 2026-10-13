@@ -21,11 +21,11 @@
     &__avatar-card,
     &__panel,
     &__actions {
-        background: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background: var(--bg-surface);
+        color: var(--fg-default);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-container);
-        box-shadow: var(--shadow-container);
+        box-shadow: var(--shadow-surface);
     }
 
     /* AVATAR CARD */
@@ -46,7 +46,7 @@
         max-width: 20rem;
         aspect-ratio: 1;
         margin-bottom: 0;
-        border: 1px solid var(--border-faint);
+        border: 1px solid var(--border-subtle);
         border-radius: 50%;
         object-fit: cover;
     }
@@ -61,11 +61,11 @@
         align-items: center;
         gap: 0.6rem;
         padding: 0.6rem 1.2rem;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-button);
-        box-shadow: var(--shadow-floating);
+        box-shadow: var(--shadow-elevated);
         font-size: var(--font-size-body-small);
         white-space: nowrap;
         cursor: pointer;
@@ -93,10 +93,10 @@
         min-width: 22rem;
         margin-top: 0.6rem;
         padding: 0.6rem 0;
-        background-color: var(--bg-content-box);
+        background-color: var(--bg-surface);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-container);
-        box-shadow: var(--shadow-floating);
+        box-shadow: var(--shadow-elevated);
     }
     &__avatar-menu-item {
         position: relative;
@@ -104,14 +104,14 @@
         align-items: center;
         width: 100%;
         padding: 0.9rem 1.4rem;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         font-size: var(--font-size-body-small);
         text-align: left;
         cursor: pointer;
         &:hover,
         &:focus-visible,
         &:has(.user-settings__avatar-input:focus-visible) {
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             background-image: linear-gradient(var(--bg-hover), var(--bg-hover));
             text-decoration: none;
         }
@@ -148,7 +148,7 @@
             cursor: pointer;
             & + td,
             tr + tr & {
-                border-top: 1px solid var(--border-faint);
+                border-top: 1px solid var(--border-subtle);
             }
             &:has(input:checked) {
                 background-image: linear-gradient(var(--bg-hover), var(--bg-hover));
@@ -179,7 +179,7 @@
     &__panel-title {
         margin-top: 0;
         margin-bottom: 0;
-        color: var(--fg-heading-content-box);
+        color: var(--fg-heading);
         font-size: var(--font-size-caption);
         font-weight: 600;
         letter-spacing: 0.06em;
@@ -205,13 +205,13 @@
     &__field {
         padding: 1.6rem 2rem;
         & + .user-settings__field {
-            border-top: 1px solid var(--border-faint);
+            border-top: 1px solid var(--border-subtle);
         }
     }
     &__label {
         display: block;
         margin-bottom: 0.6rem;
-        color: var(--fg-heading-content-box);
+        color: var(--fg-heading);
         font-weight: 600;
     }
     &__required {
@@ -265,7 +265,7 @@
         color: var(--fg-secondary);
         &:hover,
         &:focus-visible {
-            color: var(--fg-general);
+            color: var(--fg-default);
             text-decoration: underline;
         }
     }

@@ -5,8 +5,8 @@
 /* FULLSCREEN */
 #fullscreen {
     padding: 0;
-    background-color: var(--bg-content-box);
-    color: var(--fg-content-box);
+    background-color: var(--bg-surface);
+    color: var(--fg-default);
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -28,8 +28,8 @@
         align-items: center;
         height: 70px;
         border-bottom: 1px solid var(--border-strong);
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         transition: all 0.3s linear;
         opacity: 1;
         z-index: 1050;
@@ -148,14 +148,14 @@
         padding: 0.4rem 0.7rem;
         border-radius: 4px;
         background: var(--bg-inverse);
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         font-size: var(--font-size-body-small);
 
         &:hover,
         &:focus,
         &:active {
             text-decoration: none;
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
             background: var(--bg-inverse-hover);
         }
     }
@@ -288,8 +288,8 @@
         flex-grow: 1;
 
         .view-object__object-3d-world-before-load-text {
-            background: var(--bg-content-box);
-            color: var(--fg-content-box);
+            background: var(--bg-surface);
+            color: var(--fg-default);
             border: 1px solid var(--border-strong);
         }
     }
@@ -297,13 +297,8 @@
     &__view-image-inner {
         height: 100%;
         position: relative;
-        background: repeating-linear-gradient(
-            -55deg,
-            var(--bg-viewer-canvas),
-            var(--bg-viewer-canvas) 10px,
-            var(--bg-viewer-canvas-stripe) 10px,
-            var(--bg-viewer-canvas-stripe) 20px
-        );
+        --_stripe: oklch(from var(--bg-stage) calc(l + 0.085) c h);
+        background: repeating-linear-gradient(-55deg, var(--bg-stage), var(--bg-stage) 10px, var(--_stripe) 10px, var(--_stripe) 20px);
 
         .view-object {
             &__object-3d,
@@ -386,7 +381,7 @@
     &__view-image-thumb-image-order {
         padding: 5px;
         text-align: center;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         opacity: 0;
         transition: all 0.3s ease-in;
 
@@ -402,8 +397,8 @@
         right: -130px;
         padding: 10px;
         padding-top: 5px;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         opacity: 0;
         transition: all 0.3s linear;
         z-index: 1010;
@@ -454,7 +449,7 @@
         bottom: 0;
         width: 500px;
         padding-top: 70px;
-        background-color: rgb(from var(--bg-content-box) r g b / 90%);
+        background-color: rgb(from var(--bg-surface) r g b / 90%);
         overflow-y: auto;
         z-index: 100;
 
@@ -499,8 +494,8 @@
         display: flex;
         align-items: center;
         padding: 15px;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
 
         .btn {
             width: 30px;
@@ -533,8 +528,8 @@
     /* SIDEBAR WORK TITLE */
     &__view-sidebar-work-title {
         padding: 15px;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         word-break: break-word;
 
         h1,
@@ -571,8 +566,8 @@
 
     &__view-sidebar-accordeon-panel {
         position: relative;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
 
         &.fs-metadata {
         }
@@ -654,8 +649,8 @@
         padding: 10px 15px;
         font-size: var(--font-size-body);
         border-top: 1px solid var(--border-strong);
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         cursor: pointer;
         z-index: 20;
 
@@ -668,7 +663,7 @@
 
         &.in {
             background-color: var(--bg-subtle);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
 
         .ajax_loader {
@@ -733,7 +728,7 @@
     }
 
     .widget__topbar-icon-svg {
-        color: var(--fg-content-box);
+        color: var(--fg-default);
     }
 }
 

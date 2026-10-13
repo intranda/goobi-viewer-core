@@ -12,7 +12,7 @@
         padding: 15px;
         border: 1px solid var(--border-strong);
         background-color: var(--bg-subtle);
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         text-align: center;
         h2 {
         }
@@ -28,7 +28,7 @@
     }
     &__comment-info {
         background-color: var(--bg-subtle);
-        color: var(--fg-content-box);
+        color: var(--fg-default);
     }
     &__comment-image {
         padding: 10px;
@@ -36,7 +36,7 @@
         text-align: center;
         img {
             border-radius: 50%;
-            border: 5px solid var(--bg-content-box);
+            border: 5px solid var(--bg-surface);
             z-index: 999;
             width: 100px;
             height: 100px;
@@ -68,18 +68,18 @@
             justify-content: flex-start;
             padding: 1rem 0.5rem 0 0.5rem;
             border-bottom: 1px solid var(--border-strong);
-            background-color: var(--bg-content-box);
+            background-color: var(--bg-surface);
             span {
                 align-self: center;
                 margin-left: 10px;
             }
             a,
             button {
-                color: var(--fg-content-box);
+                color: var(--fg-default);
                 &:hover,
                 &:active,
                 &:focus {
-                    color: var(--fg-content-box);
+                    color: var(--fg-default);
                 }
             }
             &-last-change {
@@ -147,7 +147,7 @@
         background-image: url('@{images}/ajax_preloader.gif');
         background-position: center center;
         background-repeat: no-repeat;
-        background-color: rgb(from var(--bg-content-box) r g b / 75%);
+        background-color: rgb(from var(--bg-surface) r g b / 75%);
         z-index: 10;
     }
     &__add-comment {
@@ -178,17 +178,17 @@
             padding-top: 20px;
             border: 1px solid var(--border-strong);
             background-color: var(--bg-subtle);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             textarea {
                 width: 100%;
                 height: 45px;
                 padding: 10px;
                 border: 1px solid var(--border-strong);
                 resize: none;
-                background-color: var(--bg-content-box);
+                background-color: var(--bg-surface);
                 opacity: 0.4;
                 transition: all 0.3s ease-in;
-                color: var(--fg-content-box);
+                color: var(--fg-default);
                 &:focus {
                     height: 100px;
                     opacity: 1;

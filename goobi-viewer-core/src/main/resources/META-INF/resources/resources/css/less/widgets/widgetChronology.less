@@ -6,7 +6,7 @@
 /* BLOCK */
 .widget-chronology-slider {
     overflow: hidden;
-    color: var(--fg-content-box);
+    color: var(--fg-default);
     &__topbar {
         flex: 0 0 100%;
         display: flex;
@@ -122,15 +122,15 @@
             }
         }
         .ui-slider-range {
-            border-color: var(--brand);
-            background-color: var(--brand);
+            border-color: var(--border-brand);
+            background-color: var(--fg-brand);
         }
         .ui-slider-handle {
             width: 1rem;
             height: 1rem;
             top: 0;
             margin: 0;
-            border-color: var(--border-emphasis);
+            border-color: var(--border-contrast);
             background-color: var(--bg-selected);
             cursor: pointer;
         }
@@ -171,14 +171,14 @@
     &__graph {
         height: 150px;
         &-line {
-            color: var(--chart-chronology);
+            color: var(--color-chart-chronology);
         }
         &-area {
-            color: rgb(from var(--chart-chronology) r g b / 30%);
+            color: rgb(from var(--color-chart-chronology) r g b / 30%);
         }
         &-range {
-            color: var(--brand);
-            background-color: var(--brand);
+            color: var(--fg-brand);
+            background-color: var(--fg-brand);
             opacity: 0.1;
         }
     }

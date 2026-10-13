@@ -21,8 +21,8 @@
         left: 0;
         width: 200px;
         height: 100%;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         opacity: 0.8;
         font-size: var(--font-size-caption);
         z-index: 500;
@@ -42,8 +42,8 @@
     &__options_wrapper {
         width: 100%;
         z-index: 500;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         li {
             display: flex;
             gap: 20px;
@@ -55,12 +55,12 @@
     background-clip: padding-box;
     border-radius: 20px;
     &-blue {
-        background-color: var(--bg-map-marker-primary);
-        color: var(--fg-inverse);
+        background-color: var(--color-map-marker);
+        color: var(--fg-on-inverse);
     }
     &-red {
-        background-color: var(--bg-map-marker-secondary);
-        color: var(--fg-on-bright);
+        background-color: var(--color-map-marker-alt);
+        color: var(--fg-black);
     }
     div {
         width: 30px;

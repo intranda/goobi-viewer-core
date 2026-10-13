@@ -24,7 +24,7 @@ a {
         text-decoration: underline;
     }
     &:active {
-        color: var(--fg-link-active);
+        color: var(--fg-link-pressed);
     }
     &:focus {
     }
@@ -123,7 +123,7 @@ button,
         left: 50%;
         top: 50%;
         display: block;
-        background-color: var(--fg-general);
+        background-color: var(--fg-default);
         transition: all 150ms ease-in;
     }
     &:hover:before,
@@ -188,12 +188,12 @@ button:focus {
 }
 
 .badge-active {
-    background-color: var(--bg-success-strong);
-    color: var(--fg-on-success-strong);
+    background-color: var(--bg-success);
+    color: var(--fg-on-success);
 }
 .badge-info {
-    background-color: var(--bg-info-strong);
-    color: var(--fg-on-info-strong);
+    background-color: var(--bg-info);
+    color: var(--fg-on-info);
 }
 
 .page-header {
@@ -204,7 +204,7 @@ button:focus {
 .nav-tabs {
     & > li > a:hover {
         border-color: var(--border-strong) var(--border-strong) var(--border-strong);
-        background-color: var(--bg-content-box);
+        background-color: var(--bg-surface);
     }
     li {
         a {
@@ -230,8 +230,8 @@ button:focus {
         &.active {
             a {
                 border-color: var(--border-strong);
-                border-bottom: 1px solid var(--bg-content-box);
-                background-color: var(--bg-content-box);
+                border-bottom: 1px solid var(--bg-surface);
+                background-color: var(--bg-surface);
             }
         }
         &.nav-tabs__sidebar-button {
@@ -247,8 +247,8 @@ button:focus {
     }
 }
 .tab-content {
-    background-color: var(--bg-content-box);
-    color: var(--fg-content-box);
+    background-color: var(--bg-surface);
+    color: var(--fg-default);
 }
 .tab-pane {
     padding: 10px;
@@ -260,7 +260,7 @@ button:focus {
     border-radius: 0;
     box-shadow: none;
     &:focus {
-        border-color: var(--brand);
+        border-color: var(--border-brand);
         box-shadow: none;
         outline: none;
     }
@@ -279,7 +279,7 @@ button:focus {
 */
 
 .popover-content {
-    color: var(--fg-popover);
+    color: var(--fg-default);
 }
 .table > tbody > tr > td {
     word-break: break-word;
@@ -515,7 +515,7 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
 }
 
 .swal2-popup.swal2-toast {
-    border-left: 4px solid var(--bg-notification);
+    border-left: 4px solid var(--color-toast);
     border-radius: 5px;
 }
 
@@ -528,16 +528,16 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
 .swal2-popup.swal2-toast .swal2-title {
     font-size: var(--font-size-caption);
     font-family: 'Inter', Arial, sans-serif;
-    color: var(--fg-inverse);
+    color: var(--fg-on-inverse);
 }
 
 // SHORT FLASH FOR NOTIFICATION
 @keyframes flashForSwal2Toast {
     from {
-        border-left: 4px solid var(--highlight);
+        border-left: 4px solid var(--bg-highlight);
     }
     to {
-        border-left: 4px solid var(--bg-notification);
+        border-left: 4px solid var(--color-toast);
     }
 }
 

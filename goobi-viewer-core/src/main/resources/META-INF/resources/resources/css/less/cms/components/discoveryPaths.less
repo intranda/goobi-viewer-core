@@ -1,9 +1,9 @@
 .cms-discovery-paths {
     --_discovery-paths-type-fluid: 7.2vw;
     --_discovery-paths-transition-duration: 280ms;
-    --_discovery-paths-edge: var(--bg-content-box);
+    --_discovery-paths-edge: var(--bg-surface);
 
-    color: var(--fg-general);
+    color: var(--fg-default);
     background-color: var(--_discovery-paths-edge);
     border-bottom: 1px solid var(--border-default);
 
@@ -86,7 +86,7 @@
 
         &:hover,
         &:focus-visible {
-            color: var(--brand);
+            color: var(--fg-brand);
             text-decoration: underline;
             text-decoration-thickness: 0.025em;
             text-underline-offset: 0.12em;
@@ -110,7 +110,7 @@
     }
 
     &__phrase:nth-child(2) .cms-discovery-paths__link {
-        color: var(--brand);
+        color: var(--fg-brand);
         text-decoration: underline;
         text-decoration-thickness: 0.025em;
         text-underline-offset: 0.12em;

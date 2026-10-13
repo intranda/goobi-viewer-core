@@ -62,16 +62,16 @@
 
         .ugcBox {
             &.focus {
-                border: 2px solid var(--outline-document-focus);
+                border: 2px solid var(--color-document-focus);
             }
 
             &.drawing {
-                border: 2px solid var(--outline-document-drawing);
+                border: 2px solid var(--color-document-selection);
             }
         }
 
         .openseadragon-canvas:focus-visible {
-            background: rgb(from var(--outline-document-focus) r g b / 40%) !important;
+            background: rgb(from var(--color-document-focus) r g b / 40%) !important;
             z-index: 1 !important;
         }
         #objectSize {
@@ -95,16 +95,16 @@
 
         .ugcBox {
             &.focus {
-                border: 2px solid var(--outline-document-focus);
+                border: 2px solid var(--color-document-focus);
             }
 
             &.drawing {
-                border: 2px solid var(--outline-document-drawing);
+                border: 2px solid var(--color-document-selection);
             }
         }
 
         .openseadragon-canvas:focus-visible {
-            background: rgb(from var(--outline-document-focus) r g b / 40%) !important;
+            background: rgb(from var(--color-document-focus) r g b / 40%) !important;
             z-index: 1 !important;
         }
     }
@@ -159,8 +159,8 @@
     /* TEXT */
     &__text {
         text-align: center;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         border: 1px solid var(--border-strong);
         border-top: 0;
         padding: 10px;
@@ -224,7 +224,7 @@
         background: rgb(from var(--bg-scrim) r g b / 60%);
         transform: translate(0%, 0%);
         transition: all 0.3s ease;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
 
         .icon-wrapper {
             display: block;
@@ -245,7 +245,7 @@
         bottom: 70%;
         transition: all 0.3s ease;
         font-weight: 700;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         opacity: 0;
         width: 100%;
         text-align: center;
@@ -287,8 +287,8 @@
 }
 
 .view-object-content {
-    background-color: var(--bg-content-box);
-    color: var(--fg-content-box);
+    background-color: var(--bg-surface);
+    color: var(--fg-default);
     border: 1px solid var(--border-strong);
     padding: 1.5rem;
     display: flex;
@@ -333,7 +333,7 @@
 
 .image-fragment {
     background-color: rgb(from var(--bg-document) r g b / 30%);
-    border-color: var(--fg-selection-region);
+    border-color: var(--color-region);
     border-style: solid;
     border-width: 2px;
 
@@ -344,7 +344,7 @@
 
 .page-area {
     display: none;
-    border-color: rgb(from var(--brand) r g b / 50%);
+    border-color: rgb(from var(--border-brand) r g b / 50%);
     border-style: solid;
     border-width: 2px;
     cursor: pointer;
@@ -355,7 +355,7 @@
     }
 
     &:hover {
-        border-color: var(--brand);
+        border-color: var(--border-brand);
     }
 
     &-label {
@@ -429,8 +429,8 @@ popover [data-copy] {
 
 .tooltipp {
     position: absolute;
-    background: var(--bg-content-box);
-    color: var(--fg-content-box);
+    background: var(--bg-surface);
+    color: var(--fg-default);
     z-index: 10; //must be >1 to be visible
 }
 
@@ -438,7 +438,7 @@ popover [data-copy] {
 .highlight-tooltip {
     position: absolute;
     background: var(--bg-inverse);
-    color: var(--fg-inverse);
+    color: var(--fg-on-inverse);
     padding: 8px 12px;
     border-radius: 6px;
     white-space: nowrap;
@@ -450,7 +450,7 @@ popover [data-copy] {
     position: absolute;
     display: none;
     background: var(--bg-inverse);
-    color: var(--fg-inverse);
+    color: var(--fg-on-inverse);
     padding: 8px 12px;
     border-radius: 6px;
     font-size: var(--font-size-body-small);

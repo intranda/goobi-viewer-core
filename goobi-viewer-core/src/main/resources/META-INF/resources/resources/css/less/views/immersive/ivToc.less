@@ -34,7 +34,7 @@
 
     &__panel-toc {
         padding: 16px 8px 16px;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
 
         .widget {
             margin: 0;
@@ -93,38 +93,38 @@
             }
 
             &__toggle {
-                color: var(--fg-content-box);
+                color: var(--fg-default);
                 opacity: 0.6;
 
                 &:hover {
-                    color: var(--brand);
+                    color: var(--fg-brand);
                     opacity: 1;
                 }
             }
 
             &__element-link a {
                 padding: 4px 4px;
-                color: var(--fg-content-box);
+                color: var(--fg-default);
                 font-size: var(--font-size-body-small);
                 line-height: 1.4;
 
                 &:hover,
                 &:focus,
                 &:active {
-                    color: var(--fg-content-box);
+                    color: var(--fg-default);
                     text-decoration: none;
                 }
             }
 
             &__element-pagenumber {
-                color: var(--fg-content-box);
+                color: var(--fg-default);
                 font-size: var(--font-size-caption);
                 opacity: 0.75;
             }
 
             &__element.active {
                 background-color: var(--bg-control);
-                border-left: 3px solid var(--brand);
+                border-left: 3px solid var(--border-brand);
                 padding-left: 3px;
             }
 
@@ -133,12 +133,12 @@
             }
 
             &__element.active .widget-toc__element-link a {
-                color: var(--fg-content-box);
+                color: var(--fg-default);
                 font-weight: 700;
             }
 
             &__element.active .widget-toc__element-pagenumber {
-                color: var(--fg-content-box);
+                color: var(--fg-default);
                 opacity: 1;
             }
         }

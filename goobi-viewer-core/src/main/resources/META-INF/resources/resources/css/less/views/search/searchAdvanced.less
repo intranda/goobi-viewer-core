@@ -44,7 +44,7 @@
         background-image: url('@{images}/ajax_preloader.gif');
         background-position: center center;
         background-repeat: no-repeat;
-        background-color: rgb(from var(--bg-content-box) r g b / 75%);
+        background-color: rgb(from var(--bg-surface) r g b / 75%);
         z-index: 10;
     }
 
@@ -61,23 +61,23 @@
         input[type='text'] {
             height: auto;
             &:focus {
-                border-right-color: var(--brand);
+                border-right-color: var(--border-brand);
             }
         }
         .input-group-append {
             padding: 0;
             border-radius: 0;
-            background-color: var(--bg-content-box);
-            color: var(--fg-content-box);
+            background-color: var(--bg-surface);
+            color: var(--fg-default);
             border: 1px solid var(--border-strong);
             border-left: none;
             a {
-                color: var(--fg-content-box);
+                color: var(--fg-default);
                 &:hover,
                 &:focus,
                 &:active {
                     text-decoration: none;
-                    color: var(--fg-content-box);
+                    color: var(--fg-default);
                 }
             }
         }
@@ -228,7 +228,7 @@
         }
         .badge-light {
             background: var(--bg-subtle);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
     }
 
@@ -279,8 +279,8 @@
         position: absolute;
         left: 0;
         top: calc(~'100% + 1px');
-        background: var(--bg-popover);
-        color: var(--fg-popover);
+        background: var(--bg-elevated);
+        color: var(--fg-default);
         padding: 5px 20px 15px 20px;
         flex-direction: column;
         list-style: none;
@@ -302,8 +302,8 @@
         background: transparent;
         padding: 10px @gap-sizer;
         border: none;
-        background: var(--bg-popover);
-        color: var(--fg-popover);
+        background: var(--bg-elevated);
+        color: var(--fg-default);
     }
     &__entity-tabs-dropdown-link {
         padding: 5px 0px;

@@ -33,7 +33,7 @@
         margin: 0 0 0 -0.5rem;
         border-width: 0.5rem;
         border-style: solid;
-        border-color: transparent transparent var(--border-emphasis) transparent;
+        border-color: transparent transparent var(--border-contrast) transparent;
     }
 }
 .ner-detail-trigger {
@@ -51,9 +51,9 @@
 .ner-popover {
     position: absolute;
     width: 18.75rem;
-    border: 2px solid var(--border-emphasis);
-    background-color: var(--bg-popover);
-    color: var(--fg-popover);
+    border: 2px solid var(--border-contrast);
+    background-color: var(--bg-elevated);
+    color: var(--fg-default);
     z-index: 100;
 }
 .ner-popover-close {
@@ -87,7 +87,7 @@
         .ner-popover-detail {
             position: relative;
             background-color: var(--bg-subtle);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             box-shadow: 0 1px 3px rgb(from var(--shadow-color) r g b / 25%) inset;
         }
         .ner-popover-detail-header {

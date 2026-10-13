@@ -7,12 +7,12 @@
 .view-error-card {
     border: 1px solid var(--border-default);
     border-radius: 3px;
-    background: var(--bg-content-box);
-    color: var(--fg-content-box);
+    background: var(--bg-surface);
+    color: var(--fg-default);
     padding: 2rem;
     /* MODIFICATION */
     &--warning {
-        border-top: 5px solid var(--highlight);
+        border-top: 5px solid var(--bg-highlight);
     }
     &--danger {
         border-top: 5px solid var(--border-danger);
@@ -21,7 +21,7 @@
     &__title {
         font-size: var(--font-size-heading-small);
         font-weight: 700;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         margin: 0 0 1rem;
         line-height: 1.2;
     }
@@ -31,7 +31,7 @@
         line-height: 1.7;
         margin: 0;
         a {
-            color: var(--fg-link-content-box);
+            color: var(--fg-link-subtle);
         }
     }
     &__divider {
@@ -48,12 +48,12 @@
         margin-bottom: 0.8rem;
     }
     &__details-block {
-        background: var(--bg-general);
+        background: var(--bg-page);
         border: 1px solid var(--border-default);
         padding: 1rem 1.2rem;
         font-family: monospace;
         font-size: var(--font-size-caption);
-        color: var(--fg-general);
+        color: var(--fg-default);
         line-height: 1.8;
         margin: 0;
         dt {

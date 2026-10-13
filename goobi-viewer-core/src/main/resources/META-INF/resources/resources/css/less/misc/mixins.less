@@ -124,16 +124,16 @@
 
 /* IMMERSIVE VIEW: accent-coloured focus ring, scoped to the immersive surface */
 .mx-immersive-focus-ring() {
-    outline: 2px solid var(--brand);
+    outline: 2px solid var(--fg-brand);
     outline-offset: 2px;
 }
 
 /* IMMERSIVE VIEW: floating chrome surface (toolbar, bottombar, back link) */
 .mx-immersive-floating() {
-    background-color: var(--bg-content-box);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-container-small);
-    box-shadow: var(--shadow-floating);
+    box-shadow: var(--shadow-elevated);
 }
 
 /* IMMERSIVE VIEW: borderless icon button on a chrome surface */
@@ -147,14 +147,14 @@
     border: 0;
     border-radius: var(--radius-container-small);
     background: transparent;
-    color: var(--fg-content-box);
+    color: var(--fg-default);
     cursor: pointer;
     transition: background-color @immersive-transition;
 
     &:hover {
         background-color: var(--bg-control);
         /* Repeated colour guards against theme a:hover/button:hover rules. */
-        color: var(--fg-content-box);
+        color: var(--fg-default);
     }
 }
 
@@ -168,10 +168,10 @@
     padding: 0;
     border: 0;
     background: transparent;
-    color: var(--fg-general);
+    color: var(--fg-default);
     cursor: pointer;
     opacity: 0.85;
-    filter: drop-shadow(0 1px 2px rgb(from var(--bg-general) r g b / 90%));
+    filter: drop-shadow(0 1px 2px rgb(from var(--bg-page) r g b / 90%));
 
     &:hover {
         opacity: 1;
@@ -185,7 +185,7 @@
     padding: 4px 0;
     border: 0;
     background: transparent;
-    color: var(--brand);
+    color: var(--fg-brand);
     font-size: var(--font-size-caption);
     font-weight: 600;
     text-transform: uppercase;
@@ -193,7 +193,7 @@
     cursor: pointer;
 
     &:hover {
-        color: var(--brand);
+        color: var(--fg-brand);
         background: transparent;
         text-decoration: underline;
     }

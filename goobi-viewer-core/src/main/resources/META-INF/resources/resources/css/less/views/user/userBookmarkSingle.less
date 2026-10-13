@@ -34,7 +34,7 @@
         font-size: var(--font-size-body-small);
         &:hover,
         &:focus-visible {
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             text-decoration: none;
             span {
                 text-decoration: underline;
@@ -84,17 +84,17 @@
     &__entry {
         margin-bottom: 2rem;
         padding: 2rem;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-container);
-        box-shadow: var(--shadow-container);
+        box-shadow: var(--shadow-surface);
     }
 
     /* EMPTY STATE */
     &__empty {
         padding: 2.4rem 0;
-        border-top: 1px solid var(--border-faint);
+        border-top: 1px solid var(--border-subtle);
         color: var(--fg-muted);
     }
     &__empty-text {

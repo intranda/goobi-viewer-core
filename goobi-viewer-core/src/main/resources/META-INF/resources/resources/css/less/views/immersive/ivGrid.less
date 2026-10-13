@@ -8,7 +8,7 @@
 .mx-immersive-grid-slider-track() {
     height: 4px;
     border-radius: 2px;
-    background: linear-gradient(to right, var(--brand) 0 var(--_immersive-slider-fill), var(--border-strong) var(--_immersive-slider-fill));
+    background: linear-gradient(to right, var(--fg-brand) 0 var(--_immersive-slider-fill), var(--border-strong) var(--_immersive-slider-fill));
 }
 
 .mx-immersive-grid-slider-thumb() {
@@ -16,7 +16,7 @@
     height: 16px;
     border: 0;
     border-radius: 50%;
-    background-color: var(--brand);
+    background-color: var(--fg-brand);
     box-shadow:
         0 1px 2px rgb(from var(--shadow-color) r g b / 10%),
         0 4px 10px rgb(from var(--shadow-color) r g b / 13%);
@@ -28,7 +28,7 @@
         position: absolute;
         inset: 0;
         z-index: 300;
-        background-color: var(--bg-canvas);
+        background-color: var(--bg-sunken);
         --_immersive-grid-col: 150px;
         --_immersive-grid-thumb-h: 220px;
 
@@ -96,7 +96,7 @@
 
         .thumbnails-label {
             max-width: 100%;
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             font-size: var(--font-size-caption);
             font-weight: 600;
             white-space: nowrap;
@@ -107,12 +107,12 @@
         .thumbnails-image-wrapper.selected {
             .thumbnails-image {
                 box-shadow:
-                    0 0 0 3px var(--brand),
-                    0 6px 16px rgb(from var(--brand) r g b / 0.35);
+                    0 0 0 3px var(--fg-brand),
+                    0 6px 16px rgb(from var(--fg-brand) r g b / 0.35);
             }
 
             .thumbnails-label {
-                color: var(--brand);
+                color: var(--fg-brand);
                 font-weight: 700;
             }
         }
@@ -137,7 +137,7 @@
             transform @immersive-transition;
 
         &:hover {
-            color: var(--brand);
+            color: var(--fg-brand);
             transform: scale(1.12);
         }
     }
@@ -172,7 +172,7 @@
         height: 40px;
         padding: 0 14px;
         .mx-immersive-floating();
-        color: var(--fg-content-box);
+        color: var(--fg-default);
     }
 
     &__grid-size-icon {

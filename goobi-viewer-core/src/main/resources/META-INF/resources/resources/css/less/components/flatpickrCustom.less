@@ -2,10 +2,10 @@
 
 /* Calendar container */
 .flatpickr-calendar {
-    background: var(--bg-popover);
+    background: var(--bg-elevated);
     border: none;
     border-radius: 6px;
-    color: var(--fg-popover);
+    color: var(--fg-default);
     font-family: inherit;
     box-shadow:
         0 4px 16px rgb(from var(--shadow-color) r g b / 10%),
@@ -154,7 +154,7 @@ span.flatpickr-weekday {
 
 /* Day cells — uniform spacing via margin + calc */
 .flatpickr-day {
-    color: var(--fg-popover);
+    color: var(--fg-default);
     border-radius: 2px;
     margin: 1px;
     max-width: calc(~'100% / 7 - 2px');
@@ -171,13 +171,13 @@ span.flatpickr-weekday {
     }
 
     &.today {
-        border-color: var(--brand);
+        border-color: var(--border-brand);
         font-weight: 600;
 
         &:hover {
             background: var(--bg-hover);
             border-color: var(--bg-hover);
-            color: var(--fg-popover);
+            color: var(--fg-default);
         }
     }
 
@@ -196,7 +196,7 @@ span.flatpickr-weekday {
     }
 
     &.inRange {
-        --_in-range: color-mix(in srgb, var(--brand) 20%, transparent);
+        --_in-range: color-mix(in srgb, var(--fg-brand) 20%, transparent);
         background: var(--_in-range);
         border-color: var(--_in-range);
         // the shadow closes the gap between adjacent days so the range reads as one band
@@ -214,15 +214,15 @@ span.flatpickr-weekday {
 
     /* Custom: newspaper day has data */
     &.-has-data- {
-        --_has-data: color-mix(in srgb, var(--brand) 12%, transparent);
+        --_has-data: color-mix(in srgb, var(--fg-brand) 12%, transparent);
         background-color: var(--_has-data);
         border-color: var(--_has-data);
-        color: var(--fg-popover);
+        color: var(--fg-default);
         font-weight: 700;
 
         &:hover {
-            --_has-data: color-mix(in srgb, var(--brand) 24%, transparent);
-            color: var(--fg-popover);
+            --_has-data: color-mix(in srgb, var(--fg-brand) 24%, transparent);
+            color: var(--fg-default);
         }
     }
 

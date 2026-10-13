@@ -37,7 +37,7 @@
     &__century-year-link a,
     &__century-year-text {
         padding: 4px 8px;
-        border: 1px solid var(--border-emphasis);
+        border: 1px solid var(--border-contrast);
         line-height: 1;
         font-size: var(--font-size-body-small);
     }
@@ -54,8 +54,8 @@
         margin-top: 20px;
         padding: 21px;
         border: 1px solid var(--border-strong);
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         input {
             box-shadow: none;
         }
@@ -120,7 +120,7 @@
         }
         .popover-title {
             line-height: normal;
-            color: var(--fg-popover);
+            color: var(--fg-default);
         }
         .popover-content {
             a {
@@ -128,7 +128,7 @@
                 &:hover,
                 &:active,
                 &:focus {
-                    color: var(--fg-popover);
+                    color: var(--fg-default);
                     background-color: transparent;
                 }
             }
@@ -166,8 +166,8 @@
     }
     &__newspaper-search-body {
         border: 1px solid var(--border-strong);
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         padding: 24px;
     }
     &__newspaper-search-title,
@@ -258,8 +258,8 @@
         padding: 8px 16px;
         border: 1px solid var(--border-strong);
         border-radius: 20px;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         font-size: var(--font-size-body-small);
         line-height: 1;
         cursor: pointer;
@@ -271,12 +271,12 @@
 
         &:hover {
             background-color: var(--bg-subtle);
-            border-color: var(--border-emphasis);
+            border-color: var(--border-contrast);
         }
 
         &:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgb(from var(--brand) r g b / 10%);
+            box-shadow: 0 0 0 3px rgb(from var(--fg-brand) r g b / 10%);
         }
 
         &.-active {

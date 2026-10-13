@@ -13,8 +13,8 @@
         display: flex;
         max-width: 150px;
         flex: 1 0 auto;
-        background: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background: var(--bg-surface);
+        color: var(--fg-default);
         align-items: center;
         &.-green {
             .copyright-indicator__status-icon {
@@ -57,7 +57,7 @@
         align-items: center;
         justify-content: center;
         font-size: 30px; // Fixed icon/marker geometry; independent of text scale.
-        color: var(--fg-general);
+        color: var(--fg-default);
     }
     &__status-icon {
         &:before {
@@ -112,22 +112,22 @@
                 display: none;
             }
             &.-green {
-                background: var(--bg-success);
-                color: var(--fg-on-success);
+                background: var(--bg-success-subtle);
+                color: var(--fg-on-success-subtle);
                 .icon-wrapper {
                     display: inline-flex;
                 }
             }
             &.-yellow {
-                background: var(--bg-warning);
-                color: var(--fg-on-warning);
+                background: var(--bg-warning-subtle);
+                color: var(--fg-on-warning-subtle);
                 .icon-wrapper {
                     display: inline-flex;
                 }
             }
             &.-red {
-                background: var(--bg-danger);
-                color: var(--fg-on-danger);
+                background: var(--bg-danger-subtle);
+                color: var(--fg-on-danger-subtle);
                 .icon-wrapper {
                     display: inline-flex;
                 }

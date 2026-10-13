@@ -14,8 +14,8 @@
         top: 0;
         width: 100vw;
         height: 100vh;
-        background-color: var(--bg-login-surface);
-        color: var(--fg-login-surface);
+        background-color: var(--color-login-card);
+        color: var(--color-login-ink);
         overflow-y: auto;
         z-index: 9999;
     }
@@ -24,8 +24,8 @@
         width: 98%;
         max-width: 400px;
         padding: 10px;
-        background-color: var(--bg-login-surface);
-        color: var(--fg-login-surface);
+        background-color: var(--color-login-card);
+        color: var(--color-login-ink);
     }
     /* HEADER / BODY */
     &__header,
@@ -156,27 +156,27 @@
     }
     &__body-login-open-id {
         ul a {
-            color: var(--fg-login-aside);
-            background: var(--bg-login-aside-tile);
+            color: var(--fg-white);
+            background: var(--color-login-tile);
             border-radius: 4px;
             transition: background-color 0.2s ease;
             &:hover,
             &:active,
             &focus {
-                color: var(--fg-login-aside);
-                background: var(--bg-login-aside-tile-hover);
+                color: var(--fg-white);
+                background: var(--color-login-tile-strong);
             }
         }
     }
     &__terms-text {
-        border: 1px solid var(--border-login-box);
+        border: 1px solid var(--color-login-box-line);
         padding: 0.5rem 1rem;
         height: 150px;
         overflow-y: auto;
     }
     &__new-account-submit {
         width: 100%;
-        color: var(--fg-login-surface);
+        color: var(--color-login-ink);
         background-color: transparent;
         border: none;
         &:hover {
@@ -198,7 +198,7 @@
         padding: 5px 0;
         font-size: var(--font-size-caption);
         text-align: center;
-        color: var(--fg-login-label);
+        color: var(--color-login-label);
         .btn {
             font-size: inherit;
             vertical-align: inherit;
@@ -215,11 +215,11 @@
     &__inner {
         flex-direction: row;
         overflow: hidden;
-        background-color: var(--bg-login-surface);
-        color: var(--fg-login-surface);
+        background-color: var(--color-login-card);
+        color: var(--color-login-ink);
         border: none;
         border-radius: var(--radius-container);
-        box-shadow: var(--shadow-floating);
+        box-shadow: var(--shadow-elevated);
     }
     &__left {
         flex: 0 0 70%;
@@ -229,8 +229,8 @@
         position: relative;
         flex: 0 0 30%;
         max-width: 30%;
-        background: var(--bg-login-aside);
-        color: var(--fg-login-aside);
+        background: var(--color-login-aside);
+        color: var(--fg-white);
         display: flex;
         align-items: center;
         justify-content: space-evenly;
@@ -242,7 +242,7 @@
         background: transparent;
         &::before,
         &::after {
-            background-color: var(--fg-login-aside);
+            background-color: var(--fg-white);
         }
     }
     &__form-row {
@@ -252,9 +252,9 @@
     // EVERY FIELD IN THE DIALOG, INCLUDING THOSE CARRYING ONLY THE BOOTSTRAP CLASS
     .form-control,
     .user-login-modal__form-control {
-        background-color: var(--bg-login-field);
-        color: var(--fg-login-field);
-        border: 1px solid var(--border-login-field);
+        background-color: var(--color-login-card);
+        color: var(--color-login-ink);
+        border: 1px solid var(--color-login-field-line);
     }
     &__form-control {
         height: auto;
@@ -264,8 +264,8 @@
                 font-size: var(--font-size-caption);
                 top: 0;
                 left: 10px;
-                background-color: var(--bg-login-surface);
-                color: var(--fg-login-field);
+                background-color: var(--color-login-card);
+                color: var(--color-login-ink);
                 padding: 0 0.25em 0 0.25em;
             }
         }
@@ -273,8 +273,8 @@
     // THE STYLED SELECT DRAWS ITS BOX ON THE WRAPPER, SO THE CONTROL INSIDE STAYS FLAT
     .custom-control--select.user-login-modal__form-control {
         display: flex;
-        background: var(--bg-login-field);
-        border: 1px solid var(--border-login-field);
+        background: var(--color-login-card);
+        border: 1px solid var(--color-login-field-line);
         // a flex item with height auto stretches, so the control fills the box the wrapper sets
         select {
             width: 100%;
@@ -285,7 +285,7 @@
         }
     }
     .effect-label {
-        color: var(--fg-login-label);
+        color: var(--color-login-label);
         font-size: var(--font-size-body-small);
         position: absolute;
         pointer-events: none;
@@ -297,7 +297,7 @@
     input:focus + .effect-label {
         top: 0;
         left: 10px;
-        background-color: var(--bg-login-surface);
+        background-color: var(--color-login-card);
         padding: 0 0.25em 0 0.25em;
         font-size: var(--font-size-caption);
     }
@@ -307,7 +307,7 @@
     }
     // KEYBOARD ANIMATION
     &__keyboard {
-        border: 5px solid var(--fg-login-aside);
+        border: 5px solid var(--fg-white);
         border-radius: 10px;
         width: 87px;
         height: 48px;
@@ -321,7 +321,7 @@
     &__keyboard-space-button {
         width: 47px;
         height: 6px;
-        background: var(--fg-login-aside);
+        background: var(--fg-white);
         position: absolute;
         left: 15px;
         bottom: 5px;
@@ -330,7 +330,7 @@
     &__keyboard-single-key {
         width: 7px;
         height: 7px;
-        background: var(--fg-login-aside);
+        background: var(--fg-white);
         position: absolute;
         border-radius: 1px;
         &-1 {
@@ -442,9 +442,9 @@
     }
     // REMOVES YELLOW AUTOCOMPLETE BACKGROUND
     :-webkit-autofill {
-        -webkit-text-fill-color: var(--fg-login-field);
+        -webkit-text-fill-color: var(--color-login-ink);
         filter: none; /* needed for firefox! */
-        box-shadow: 0 0 0 100px var(--bg-login-field) inset !important;
+        box-shadow: 0 0 0 100px var(--color-login-card) inset !important;
     }
     // OVERRIDING BOOTSTRAP PADDING
     .no-gutters input {
@@ -461,7 +461,7 @@
         align-items: center;
         justify-content: center;
         background-color: var(--bg-subtle);
-        color: var(--fg-content-box);
+        color: var(--fg-default);
     }
     .user-login-modal {
         display: block;
@@ -525,7 +525,7 @@
         .fancy-close {
             &::before,
             &::after {
-                background-color: var(--fg-login-aside);
+                background-color: var(--fg-white);
             }
         }
     }

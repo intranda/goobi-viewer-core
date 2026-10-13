@@ -7,7 +7,7 @@
 #archivesWrapper {
     min-height: 100vh;
     background-color: var(--bg-subtle);
-    color: var(--fg-content-box);
+    color: var(--fg-default);
 }
 
 .archives {
@@ -20,7 +20,7 @@
         width: 100%;
         z-index: 10;
         padding-bottom: 1rem;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
 
         &::before {
             content: '';
@@ -31,8 +31,8 @@
             bottom: 0;
             backdrop-filter: blur(2px);
             -webkit-backdrop-filter: blur(2px);
-            -webkit-mask-image: linear-gradient(to bottom, var(--bg-mask) 0%, var(--bg-mask) 30%, transparent 100%);
-            mask-image: linear-gradient(to bottom, var(--bg-mask) 0%, var(--bg-mask) 30%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, var(--bg-scrim) 0%, var(--bg-scrim) 30%, transparent 100%);
+            mask-image: linear-gradient(to bottom, var(--bg-scrim) 0%, var(--bg-scrim) 30%, transparent 100%);
             z-index: -1;
         }
 
@@ -52,24 +52,24 @@
         display: flex;
         align-items: center;
         min-height: @archives-header-height;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         text-shadow:
             0 1px 3px rgb(from var(--shadow-color) r g b / 70%),
             0 0 8px rgb(from var(--shadow-color) r g b / 40%),
             0 0 20px rgb(from var(--shadow-color) r g b / 15%);
 
         a {
-            color: rgb(from var(--fg-inverse) r g b / 90%);
+            color: rgb(from var(--fg-on-inverse) r g b / 90%);
 
             &:hover,
             &:focus,
             &:active {
-                color: var(--fg-inverse);
+                color: var(--fg-on-inverse);
             }
 
             &:focus-visible {
                 .mx-focus-visible;
-                outline-color: var(--bg-content-box);
+                outline-color: var(--bg-surface);
             }
         }
     }
@@ -92,11 +92,11 @@
 
         a {
             font-size: var(--font-size-body);
-            color: rgb(from var(--fg-inverse) r g b / 90%);
+            color: rgb(from var(--fg-on-inverse) r g b / 90%);
 
             &:hover {
                 text-decoration: none;
-                color: var(--fg-inverse);
+                color: var(--fg-on-inverse);
             }
         }
 
@@ -104,7 +104,7 @@
             font-size: var(--font-size-body);
             font-weight: 400;
             display: inline;
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
         }
 
         .icon-wrapper {
@@ -133,7 +133,7 @@
             place-items: center;
             width: 30px;
             height: 30px;
-            color: var(--fg-inverse);
+            color: var(--fg-on-inverse);
 
             svg {
                 display: none;
@@ -162,8 +162,8 @@
     &__left-side {
         flex: calc(~'40% - 2rem');
         max-width: calc(~'40% - 2rem');
-        background: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background: var(--bg-surface);
+        color: var(--fg-default);
         margin-right: 2rem;
         margin-bottom: 2rem;
     }
@@ -178,8 +178,8 @@
     }
 
     &__text-tree {
-        background: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background: var(--bg-surface);
+        color: var(--fg-default);
         margin-bottom: 2rem;
         padding: 2rem;
         cursor: pointer;
@@ -245,8 +245,8 @@
     }
 
     &__object-info {
-        background: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background: var(--bg-surface);
+        color: var(--fg-default);
         padding: 2rem;
         display: flex;
         flex-wrap: wrap;
@@ -322,7 +322,7 @@
         &:hover {
             .archives__object-image-overlay {
                 opacity: 1;
-                color: var(--fg-inverse);
+                color: var(--fg-on-inverse);
             }
 
             .archives__object-image-hover-icon {
@@ -368,7 +368,7 @@
         bottom: 20px;
         transform: translate(0%, 0%);
         transition: all 0.3s ease;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
 
         .icon-wrapper {
             display: block;
@@ -389,7 +389,7 @@
         bottom: 70%;
         transition: all 0.3s ease;
         font-weight: 700;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         opacity: 0;
         width: 100%;
         text-align: center;
@@ -411,7 +411,7 @@
 
     &__object-ajax-loader {
         padding: 0 2rem;
-        background: var(--bg-content-box);
+        background: var(--bg-surface);
         margin-top: 2rem;
     }
 
@@ -451,7 +451,7 @@
     }
 
     .thumbnails-label {
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         font-weight: 700;
         max-height: 100%;
         text-align: center;
@@ -460,7 +460,7 @@
 
     &__main {
         background-color: var(--bg-subtle);
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         display: block;
     }
 
@@ -482,8 +482,8 @@
 
     &__content-left {
         width: 50%;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         border: 1px solid var(--border-strong);
         margin-top: 1.5rem;
         margin-bottom: 1.5rem;
@@ -567,8 +567,8 @@
     &__content-right-title {
         margin-bottom: 10px;
         margin-top: 0;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         padding: 1rem;
         margin-bottom: 1rem;
         border: 1px solid var(--border-strong);
@@ -650,7 +650,7 @@
         display: flex;
         align-items: center;
         background: var(--bg-subtle);
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         padding-bottom: 2rem;
     }
     &__select-database-dropdown-label {
@@ -676,8 +676,8 @@
         background: transparent;
         font-size: var(--font-size-body);
         flex: 1;
-        background: var(--bg-popover);
-        color: var(--fg-popover);
+        background: var(--bg-elevated);
+        color: var(--fg-default);
         border: 1px solid var(--border-strong);
         padding: 0.5rem 1rem;
         overflow: hidden;
@@ -704,12 +704,12 @@
     }
 
     &__modal-select-database-dropdown {
-        color: var(--fg-popover);
+        color: var(--fg-default);
         border: none;
         background: transparent;
         font-size: var(--font-size-body);
         flex: 1;
-        background: var(--bg-popover);
+        background: var(--bg-elevated);
         border: 1px solid var(--border-strong);
         padding: 0.5rem 1rem;
         overflow: hidden;
@@ -731,7 +731,7 @@
         position: relative;
         height: 370px;
         overflow: hidden;
-        background: var(--bg-hero);
+        background: var(--color-hero);
 
         &::after {
             content: '';
@@ -754,7 +754,7 @@
             height: auto;
             min-height: 120px;
             padding-top: @archives-header-height;
-            background: linear-gradient(135deg, var(--bg-hero) 0%, var(--bg-hero-gradient) 100%);
+            background: linear-gradient(135deg, var(--color-hero) 0%, var(--color-hero-gradient) 100%);
 
             &::after {
                 display: none;
@@ -776,7 +776,7 @@
         right: 0;
         padding: 2rem;
         z-index: 1;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         max-height: 100%;
         overflow: hidden;
 
@@ -790,7 +790,7 @@
         font-weight: 700;
         line-height: 1.2;
         margin: 0 0 0.5rem 0;
-        color: var(--fg-inverse);
+        color: var(--fg-on-inverse);
         text-shadow:
             0 1px 3px rgb(from var(--shadow-color) r g b / 50%),
             0 0 10px rgb(from var(--shadow-color) r g b / 15%);
@@ -804,7 +804,7 @@
         font-size: var(--font-size-body);
         line-height: 1.5;
         margin: 0;
-        color: rgb(from var(--fg-inverse) r g b / 90%);
+        color: rgb(from var(--fg-on-inverse) r g b / 90%);
         text-shadow:
             0 1px 2px rgb(from var(--shadow-color) r g b / 70%),
             0 2px 6px rgb(from var(--shadow-color) r g b / 30%),
@@ -823,8 +823,8 @@
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
     .archives__object-thumbnails {
-        background: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background: var(--bg-surface);
+        color: var(--fg-default);
         display: grid;
         grid-gap: 15px;
         grid-template-columns: auto auto auto auto;

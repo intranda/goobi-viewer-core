@@ -1,67 +1,47 @@
 /* ==============================================================
-   Palette — layer 1: mode-free color primitives (--color-*)
-   Read by the semantic roles in tokens.less only. Brand tones
-   derive in OKLCH; the ramps are CIE L* steps (gulp/tonalRamp.js).
+   Palette — layer 1: every colour literal
+   Role inputs first: mode-free ramps, read by tokens.less only.
+   Then the component colours: complete values, mode included via
+   light-dark(), read by one component each and never by a role.
    ==============================================================*/
 
 .gv-palette() {
-    /* BRAND */
-    --color-brand: @blue;
-    --color-brand-fill: oklch(from var(--color-brand) min(l, 0.55) c h);
-    --color-brand-hover: oklch(from var(--color-brand-fill) calc(l - 0.06) c h);
-    --color-brand-pressed: oklch(from var(--color-brand-fill) calc(l - 0.12) c h);
-    --color-brand-dark: oklch(from var(--color-brand) 0.72 min(c, 0.12) h);
-    --color-brand-dark-hover: oklch(from var(--color-brand-dark) calc(l + 0.07) calc(c * 0.85) h);
-    --color-brand-dark-pressed: oklch(from var(--color-brand-dark) calc(l - 0.06) c h);
-    --color-brand-text: oklch(from var(--color-brand) 0.45 min(c, 0.2) h);
-    --color-brand-text-dark: oklch(from var(--color-brand-dark) calc(l + 0.08) calc(c * 0.8) h);
-    --color-on-brand: @white;
-    --color-on-brand-dark: oklch(from var(--color-brand-dark) 0.15 c h);
+    /* ---------- ROLE INPUTS ---------- */
 
-    /* LINK */
-    --color-link: oklch(from var(--color-brand) 0.5 min(c, 0.2) h);
-    --color-link-hover: oklch(from var(--color-brand) 0.42 min(c, 0.2) h);
-    --color-link-active: oklch(from var(--color-brand) 0.35 min(c, 0.2) h);
-    --color-link-dark: var(--color-brand-text-dark);
-    --color-link-dark-hover: oklch(from var(--color-brand-dark) calc(l + 0.15) calc(c * 0.5) h);
-    --color-link-dark-active: oklch(from var(--color-brand-dark) calc(l - 0.02) c h);
+    /* NEUTRAL — L* 100 98 96 94 91 84 77 66 55 50 44 34 28 22 17 12 6 0 */
+    --color-neutral-0: #fff;
+    --color-neutral-50: #f6fafd;
+    --color-neutral-100: #f1f4f7;
+    --color-neutral-150: #ebeef1;
+    --color-neutral-200: #e2e6e9;
+    --color-neutral-300: #cfd2d5;
+    --color-neutral-350: #b5c3cf;
+    --color-neutral-400: #9ea1a4;
+    --color-neutral-450: #909da9;
+    --color-neutral-500: #74777a;
+    --color-neutral-550: #66686b;
+    --color-neutral-600: #4e5053;
+    --color-neutral-700: #3c4852;
+    --color-neutral-800: #2a3640;
+    --color-neutral-850: #202b35;
+    --color-neutral-900: #15212a;
+    --color-neutral-950: #07151e;
+    --color-neutral-1000: #000;
+
+    /* BRAND — the seed and the dark-mode seed; every other brand tone derives in the roles */
+    --color-brand: @blue;
+    --color-brand-400: oklch(from var(--color-brand) 0.72 min(c, 0.12) h);
 
     /* ACCENT, HIGHLIGHT, FOCUS */
     --color-accent: #f59f00;
+    --color-accent-300: #ffd073;
+    --color-accent-400: #feae1a;
+    --color-accent-700: #875100;
     --color-highlight: #ffd500;
-    --color-focus-ring: @colorOutline;
-    --color-focus-ring-dark: oklch(from var(--color-focus-ring) 0.72 min(c, 0.12) h);
+    --color-focus: @colorOutline;
+    --color-focus-300: oklch(from var(--color-focus) 0.72 min(c, 0.12) h);
 
-    /* GRAY RAMP — CIE L* 100 98 96 94 91 84 66 50 44 34 28 22 12 0 */
-    --color-gray-0: @white;
-    --color-gray-50: #f6fafd;
-    --color-gray-100: #f1f4f7;
-    --color-gray-150: #ebeef1;
-    --color-gray-200: #e2e6e9;
-    --color-gray-300: #cfd2d5;
-    --color-gray-400: #9ea1a4;
-    --color-gray-500: #74777a;
-    --color-gray-550: #66686b;
-    --color-gray-600: #4e5053;
-    --color-gray-700: #404245;
-    --color-gray-800: #323537;
-    --color-gray-900: #1d2022;
-    --color-gray-1000: #000;
-
-    /* SLATE RAMP — CIE L* 92 86 78 64 46 30 22 17 12 6 3.5 */
-    --color-slate-100: #dceaf7;
-    --color-slate-200: #cbd9e5;
-    --color-slate-300: #b5c3cf;
-    --color-slate-400: #909da9;
-    --color-slate-500: #626f7a;
-    --color-slate-600: #3c4852;
-    --color-slate-700: #2a3640;
-    --color-slate-750: #202b35;
-    --color-slate-800: #15212a;
-    --color-slate-900: #07151e;
-    --color-slate-950: #000e18;
-
-    /* SUCCESS */
+    /* STATUS — names and values as today until the tonal ramp (question 4) */
     --color-success: #007600;
     --color-success-dark: #80d68a;
     --color-success-text: #155724;
@@ -73,8 +53,6 @@
     --color-success-hover: #abd9b5;
     --color-success-hover-dark: #245238;
     --color-success-strong: #087f0d;
-
-    /* DANGER */
     --color-danger: #b33226;
     --color-danger-dark: #ffaaa9;
     --color-danger-text: #721c24;
@@ -86,60 +64,65 @@
     --color-danger-hover: #e3abb2;
     --color-danger-hover-dark: #57303a;
     --color-danger-strong: #b8271c;
-
-    /* WARNING */
     --color-warning-text: #875100;
     --color-warning-text-dark: #ffd073;
     --color-warning-surface: #fed44c;
     --color-warning-surface-dark: #493c17;
     --color-warning-border-dark: #c6a45a;
     --color-warning-strong: #9b5d00;
-
-    /* INFO */
     --color-info-strong: #008295;
     --color-info-strong-dark: #006e80;
 
-    /* OCR OVERLAYS — colorblind-safe */
-    --color-ocr-block: #aa4499;
-    --color-ocr-block-dark: #cc79a7;
-    --color-ocr-line: #0072b2;
-    --color-ocr-line-dark: #56b4e9;
-    --color-ocr-word: #b34700;
-    --color-ocr-word-dark: #e69f00;
+    /* ENTITIES — category colours, read by the entity roles */
+    --color-entity-person-700: #0064c2;
+    --color-entity-person-300: #70bbff;
+    --color-entity-location-700: #964800;
+    --color-entity-location-300: #ffb366;
+    --color-entity-institution-700: #226f07;
+    --color-entity-institution-300: #8bd46a;
 
-    /* ENTITIES */
-    --color-entity-person: #0064c2;
-    --color-entity-person-dark: #70bbff;
-    --color-entity-location: #964800;
-    --color-entity-location-dark: #ffb366;
-    --color-entity-institution: #226f07;
-    --color-entity-institution-dark: #8bd46a;
+    /* ---------- COMPONENT COLOURS — complete values, one component each, never a role ---------- */
 
-    /* MAP, RSS, NOTIFICATION */
-    --color-map-primary: #144a4d;
-    --color-map-secondary: #ff8a1d;
+    /* OCR OVERLAYS */
+    --color-ocr-block: light-dark(#aa4499, #cc79a7);
+    --color-ocr-line: light-dark(#0072b2, #56b4e9);
+    --color-ocr-word: light-dark(#b34700, #e69f00);
+    --color-on-ocr-word: light-dark(var(--color-neutral-0), var(--color-neutral-1000));
+
+    /* CHARTS */
+    --color-chart-ner: light-dark(#8a0808, #f48d8d);
+    --color-chart-chronology: light-dark(#c85999, #eb9aca);
+
+    /* IMAGE REGION, IMAGE FRAME, MAP, BADGES */
+    --color-region: light-dark(#c92b29, #ffaaa9);
+    --color-image-frame: light-dark(var(--color-neutral-0), var(--color-brand-400));
+    --color-map-marker: #144a4d;
+    --color-map-marker-alt: #ff8a1d;
     --color-rss: #f08422;
-    --color-notification: #1b2330;
-
-    /* SELECTION MARKERS */
-    --color-selection-marker: #a3f97c;
-    --color-selection-region: #c92b29;
-    --color-selection-region-dark: #ffaaa9;
+    --color-toast: #1b2330;
+    --color-scroll-marker: #a3f97c;
 
     /* DOCUMENT MARKINGS */
     --color-document-highlight: #b400aa;
-    --color-document-highlight-selected: #006400;
+    --color-document-highlight-current: #006400;
     --color-document-selection: #0000ff;
-    --color-annotation-focus: #ff0000;
-    --color-notation-active: #d2042d;
+    --color-document-focus: #ff0000;
+    --color-document-notation: #d2042d;
 
-    /* CHARTS */
-    --color-ner-scale: #8a0808;
-    --color-ner-scale-dark: #f48d8d;
-    --color-chronology: #c85999;
-    --color-chronology-dark: #eb9aca;
-
-    /* HERO */
+    /* ARCHIVES HERO */
     --color-hero: #2c3e50;
     --color-hero-gradient: #34495e;
+
+    /* LOGIN — pinned to today's values, slate on the dark side (question 6: exact) */
+    --color-login-card: light-dark(#fff, #15212a);
+    --color-login-ink: light-dark(#1d2022, #dceaf7);
+    --color-login-field-line: light-dark(#74777a, #626f7a);
+    --color-login-label: light-dark(#66686b, #909da9);
+    --color-login-box-line: light-dark(#cfd2d5, rgb(from #fff r g b / 30%));
+    --color-login-aside: light-dark(#07151e, #3c4852);
+    --color-login-tile: rgb(from #fff r g b / 14%);
+    --color-login-tile-strong: rgb(from #fff r g b / 24%);
+
+    /* MAINTENANCE BANNER */
+    --color-maintenance-link-strong: #323537;
 }

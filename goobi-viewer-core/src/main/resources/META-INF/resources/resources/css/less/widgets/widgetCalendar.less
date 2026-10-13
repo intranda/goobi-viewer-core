@@ -75,7 +75,7 @@
     }
 
     .flatpickr-day.-has-data- {
-        color: var(--fg-popover);
+        color: var(--fg-default);
         font-weight: 400;
     }
 
@@ -88,7 +88,7 @@
         width: 4px;
         height: 4px;
         border-radius: 50%;
-        background-color: var(--brand);
+        background-color: var(--fg-brand);
     }
 
     .flatpickr-day.-has-multiple-.-current-issue-::after {
@@ -96,7 +96,7 @@
     }
 
     .flatpickr-day.-has-multiple-.-current-issue-:hover::after {
-        background-color: var(--brand);
+        background-color: var(--fg-brand);
     }
 
     &__popover {
@@ -105,7 +105,7 @@
         min-width: 180px;
         max-width: calc(100vw - 8px);
         padding: 4px 0;
-        background: var(--bg-popover);
+        background: var(--bg-elevated);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-container-small);
         box-shadow: 0 2px 8px rgb(from var(--shadow-color) r g b / 15%);
@@ -115,7 +115,7 @@
         display: block;
         padding: 6px 12px;
         font-size: var(--font-size-caption);
-        color: var(--fg-popover);
+        color: var(--fg-default);
         text-decoration: none;
         white-space: nowrap;
         overflow: hidden;
@@ -125,13 +125,13 @@
         &:focus,
         &:active {
             background-color: var(--bg-hover);
-            color: var(--fg-popover);
+            color: var(--fg-default);
             text-decoration: none;
         }
 
         &.-active- {
             font-weight: 700;
-            color: var(--fg-popover);
+            color: var(--fg-default);
         }
     }
 }

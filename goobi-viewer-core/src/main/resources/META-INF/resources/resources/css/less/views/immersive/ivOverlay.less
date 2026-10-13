@@ -37,14 +37,14 @@
         height: 36px;
         padding: 0 10px;
         .mx-immersive-floating();
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         cursor: pointer;
         pointer-events: auto;
         transition: background-color @immersive-transition;
 
         &:hover {
             background-color: var(--bg-control);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
     }
 
@@ -64,7 +64,7 @@
         pointer-events: none;
 
         &:hover {
-            background-color: var(--bg-content-box);
+            background-color: var(--bg-surface);
         }
 
         .immersive__title-caret {
@@ -125,9 +125,9 @@
         max-height: 60vh;
         padding: 10px;
         border-radius: var(--radius-container);
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
-        box-shadow: var(--shadow-floating);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
+        box-shadow: var(--shadow-elevated);
         pointer-events: auto;
         text-align: left;
 
@@ -152,11 +152,11 @@
         border: 1px solid var(--border-default);
         border-radius: var(--radius-container-small);
         background-color: transparent;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         font-size: var(--font-size-body);
 
         &:focus {
-            border-color: var(--brand);
+            border-color: var(--border-brand);
         }
     }
 
@@ -176,7 +176,7 @@
         border: 0;
         border-radius: var(--radius-container-small);
         background: transparent;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         text-align: left;
         cursor: pointer;
 
@@ -184,13 +184,13 @@
         &:active,
         &.-active {
             background-color: var(--bg-control);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
     }
 
     &__page-dropdown-number {
         flex-shrink: 0;
-        color: var(--brand);
+        color: var(--fg-brand);
         font-variant-numeric: tabular-nums;
 
         .immersive__page-dropdown-item.-active & {

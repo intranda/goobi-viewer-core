@@ -9,11 +9,11 @@
 .popover:has(.widget-social-media),
 .popover:has(imageFilters) {
     max-width: 320px;
-    color: var(--fg-content-box);
-    background-color: var(--bg-content-box);
+    color: var(--fg-default);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-container-small);
-    box-shadow: var(--shadow-floating);
+    box-shadow: var(--shadow-elevated);
 
     & :focus-visible {
         .mx-immersive-focus-ring();
@@ -21,19 +21,19 @@
 
     &.bs-popover-top .arrow::before,
     &.bs-popover-top .arrow::after {
-        border-top-color: var(--bg-content-box);
+        border-top-color: var(--bg-surface);
     }
     &.bs-popover-right .arrow::before,
     &.bs-popover-right .arrow::after {
-        border-right-color: var(--bg-content-box);
+        border-right-color: var(--bg-surface);
     }
     &.bs-popover-bottom .arrow::before,
     &.bs-popover-bottom .arrow::after {
-        border-bottom-color: var(--bg-content-box);
+        border-bottom-color: var(--bg-surface);
     }
     &.bs-popover-left .arrow::before,
     &.bs-popover-left .arrow::after {
-        border-left-color: var(--bg-content-box);
+        border-left-color: var(--bg-surface);
     }
 
     .popover-body {
@@ -43,7 +43,7 @@
     .popover-header {
         margin: 0;
         padding: 12px 14px 4px;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         background: transparent;
         border: 0;
         font-size: var(--font-size-caption);
@@ -74,7 +74,7 @@
 
     .widget-citation__license-text,
     .widget-citation__citerecommendation-text-info {
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         font-size: var(--font-size-caption);
         opacity: 0.6;
     }
@@ -82,53 +82,53 @@
     .widget-citation__subtitle,
     .widget__badge-container-heading {
         margin-bottom: 6px;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         font-size: var(--font-size-body-small);
         font-weight: 700;
     }
 
     .widget__badge-container .badge,
     .widget__badge-container .badge-dark {
-        color: var(--brand);
-        background-color: rgb(from var(--brand) r g b / 0.08);
+        color: var(--fg-brand);
+        background-color: rgb(from var(--fg-brand) r g b / 0.08);
         border-radius: var(--radius-container-small);
 
         &:hover,
         &:active,
         &:focus {
-            color: var(--brand);
-            background-color: rgb(from var(--brand) r g b / 0.1);
+            color: var(--fg-brand);
+            background-color: rgb(from var(--fg-brand) r g b / 0.1);
             text-decoration: underline;
         }
     }
 
     .custom-control--select {
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         background-color: var(--bg-control);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-container-small);
 
         &::after {
-            border-top-color: var(--fg-content-box);
+            border-top-color: var(--fg-default);
         }
 
         select {
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             background-color: transparent;
         }
     }
 
     .widget-citation__citerecommendation-text-wrapper .widget-citation__citerecommendation-quote-icon {
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         opacity: 0.35;
     }
     .widget-citation__citerecommendation-copy-text {
-        color: var(--fg-content-box);
+        color: var(--fg-default);
 
         &:hover,
         &:active,
         &:focus {
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
     }
 }
@@ -141,7 +141,7 @@
     .widget-social-media__link {
         padding: 6px;
         border-radius: var(--radius-container);
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         transition: background-color @immersive-transition;
 
         &:hover {
@@ -151,7 +151,7 @@
         &:hover,
         &:focus {
             /* Repeated colour guards against theme a:hover/a:focus rules. */
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
     }
 
@@ -164,7 +164,7 @@
 .popover:has(imageFilters) {
     input[type='range'],
     input[type='checkbox'] {
-        accent-color: var(--brand);
+        accent-color: var(--fg-brand);
     }
 
     .imagefilters__filter-list {
@@ -172,14 +172,14 @@
     }
 
     .imagefilters__label {
-        color: var(--fg-content-box);
+        color: var(--fg-default);
     }
 
     .imagefilters__options {
         padding: 6px 14px 14px;
 
         .btn--full {
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             background-color: transparent;
             border: 1px solid var(--border-default);
             border-radius: var(--radius-container-small);
@@ -191,8 +191,8 @@
             &:hover,
             &:active,
             &:focus {
-                color: var(--fg-content-box);
-                border-color: var(--brand);
+                color: var(--fg-default);
+                border-color: var(--border-brand);
                 background-color: var(--bg-control);
             }
         }

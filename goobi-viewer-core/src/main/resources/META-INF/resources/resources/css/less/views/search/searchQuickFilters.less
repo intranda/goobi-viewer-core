@@ -72,7 +72,7 @@
     border-radius: var(--radius-button);
     cursor: pointer;
     text-decoration: none;
-    color: var(--fg-content-box);
+    color: var(--fg-default);
     z-index: 1;
 
     > span {
@@ -96,7 +96,7 @@
 
     &:hover {
         background: var(--bg-control);
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         text-decoration: none;
     }
 }
@@ -114,7 +114,7 @@
     left: 0;
     right: 0;
     z-index: 100;
-    color: var(--fg-content-box);
+    color: var(--fg-default);
     box-shadow: none;
 
     &.-open {
@@ -145,7 +145,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: var(--bg-content-box);
+        background: var(--bg-surface);
         padding: 15px 45px;
     }
 
@@ -201,12 +201,12 @@
         padding: 4px 0;
         background: transparent;
         border: none;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         text-align: left;
         font: inherit;
 
         &:hover {
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
 
         &:focus {
@@ -214,7 +214,7 @@
         }
 
         &:focus-visible {
-            outline: 2px solid var(--brand);
+            outline: 2px solid var(--fg-brand);
             outline-offset: 2px;
             border-radius: var(--radius-button);
         }
@@ -240,7 +240,7 @@
 
         &:hover > .icon-wrapper {
             background: var(--bg-control);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
 
         &[aria-expanded='true'] > .icon-wrapper {
@@ -280,7 +280,7 @@
         &:hover,
         &:focus-visible {
             background: var(--bg-control);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             outline: none;
         }
     }
@@ -310,7 +310,7 @@
         border: none;
         border-bottom: 1px solid transparent;
         background: transparent;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         padding-bottom: 6px;
         flex: 1;
         width: 100%;
@@ -337,7 +337,7 @@
         left: 12px;
         right: 12px;
         z-index: 1000;
-        background: var(--bg-content-box);
+        background: var(--bg-surface);
         border: 1px solid var(--border-strong);
         border-radius: var(--radius-button);
         box-shadow: none;
@@ -382,7 +382,7 @@
 
         &:hover {
             background: var(--bg-subtle);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
     }
 
@@ -439,7 +439,7 @@
 
         &::-webkit-scrollbar-thumb {
             background: var(--bg-subtle);
-            border: 3px solid var(--bg-content-box);
+            border: 3px solid var(--bg-surface);
             border-radius: 5px;
             min-height: 30px;
         }
@@ -468,7 +468,7 @@
             gap: 2px;
             font-weight: 600;
             font-size: var(--font-size-caption);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             padding: 10px 13px 4px;
 
             .icon-wrapper svg {
@@ -532,12 +532,12 @@
             cursor: pointer;
             position: relative;
             flex-shrink: 0;
-            background: var(--bg-content-box);
+            background: var(--bg-surface);
 
             &:checked {
                 background: var(--bg-brand);
                 border-color: var(--bg-brand);
-                box-shadow: inset 0 0 0 2px var(--bg-content-box);
+                box-shadow: inset 0 0 0 2px var(--bg-surface);
             }
 
             &:focus {
@@ -556,7 +556,7 @@
     }
 
     &__status-bar.-inner {
-        background: var(--bg-content-box);
+        background: var(--bg-surface);
         border-radius: 0 0 var(--radius-button) var(--radius-button);
         padding: 10px 45px;
         position: relative;
@@ -577,7 +577,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        color: var(--brand);
+        color: var(--fg-brand);
         font-weight: 600;
         cursor: help;
 
@@ -609,7 +609,7 @@
         }
 
         &:hover {
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             text-decoration: none;
         }
     }
@@ -630,7 +630,7 @@
         align-items: center;
         gap: 5px;
         font-size: var(--font-size-body-small);
-        color: var(--brand);
+        color: var(--fg-brand);
         text-decoration: none;
         cursor: pointer;
 
@@ -641,7 +641,7 @@
 
         &:hover {
             opacity: 0.8;
-            color: var(--brand);
+            color: var(--fg-brand);
             text-decoration: none;
         }
 
@@ -653,10 +653,10 @@
             }
 
             &:hover {
-                color: var(--fg-content-box);
+                color: var(--fg-default);
 
                 .icon-wrapper {
-                    color: var(--fg-content-box);
+                    color: var(--fg-default);
                 }
             }
         }

@@ -69,7 +69,7 @@
         min-width: var(--_search-option-button-size);
         border-radius: var(--radius-button);
         line-height: 1;
-        color: var(--fg-general);
+        color: var(--fg-default);
         background-color: transparent;
         border: none;
         box-shadow: none;
@@ -85,9 +85,9 @@
                 transform: scale(1.08) translateY(-1px);
                 filter: drop-shadow(0 3px 8px rgb(from var(--shadow-color) r g b / 18%));
                 svg {
-                    color: var(--fg-hover);
-                    stroke: var(--fg-hover);
-                    fill: var(--fg-hover);
+                    color: var(--fg-default);
+                    stroke: var(--fg-default);
+                    fill: var(--fg-default);
                 }
             }
         }
@@ -203,7 +203,7 @@
 
     &__export-dropdown-link,
     &__hit-export-dropdown-link {
-        color: var(--fg-popover);
+        color: var(--fg-default);
         font-size: var(--font-size-body);
     }
 
@@ -301,7 +301,7 @@
         padding: 15px;
         border: 1px solid var(--border-strong);
         background-color: var(--bg-subtle);
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         max-width: 100%;
     }
     &__hit-header-inner {
@@ -316,13 +316,13 @@
         margin-top: 10px;
         padding-top: 10px;
         text-align: left;
-        color: var(--fg-content-box);
-        border-top: 1px dotted var(--border-emphasis);
+        color: var(--fg-default);
+        border-top: 1px dotted var(--border-contrast);
         &:hover,
         &:focus,
         &:active {
             text-decoration: none;
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
         &.active {
             display: inline-block;
@@ -362,7 +362,7 @@
             padding: 0;
             padding-bottom: 0.5rem;
             font-size: var(--font-size-body);
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
     }
     &__metadata-info {
@@ -407,12 +407,12 @@
         padding: 5px;
         text-align: center;
         a {
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             &:hover,
             &:focus,
             &:active {
                 text-decoration: none;
-                color: var(--fg-content-box);
+                color: var(--fg-default);
             }
         }
     }
@@ -569,7 +569,7 @@
             //                display: flex;
             //            }
             // position: absolute;
-            //            color: var(--brand);
+            //            color: var(--fg-brand);
             background-image: none;
             //            .bookmark-toggle {
             //                align-items: center;
@@ -618,7 +618,7 @@
             max-width: 100%;
             max-height: 250px;
             line-height: normal;
-            border: 2px solid var(--bg-content-box);
+            border: 2px solid var(--bg-surface);
             border-radius: 0;
             box-shadow: 2px 2px 5px rgb(from var(--shadow-color) r g b / 30%);
         }
@@ -626,7 +626,7 @@
             position: absolute;
             top: 8px;
             right: 5px;
-            color: var(--brand);
+            color: var(--fg-brand);
             background-image: none;
             //            .bookmark-toggle {
             //                align-items: center;
@@ -702,15 +702,15 @@
             .input-group-addon {
                 padding: 0;
                 border-radius: 0;
-                background-color: var(--bg-content-box);
-                color: var(--fg-content-box);
+                background-color: var(--bg-surface);
+                color: var(--fg-default);
                 a {
-                    color: var(--fg-content-box);
+                    color: var(--fg-default);
                     &:hover,
                     &:focus,
                     &:active {
                         text-decoration: none;
-                        color: var(--fg-content-box);
+                        color: var(--fg-default);
                     }
                 }
                 a,
@@ -729,11 +729,11 @@
                 &.reset {
                     flex: 0 0 4rem;
                     background-color: var(--bg-subtle);
-                    color: var(--fg-content-box);
+                    color: var(--fg-default);
                     justify-content: center;
                     border: 1px solid var(--border-strong);
                     &.focus {
-                        border-color: var(--brand);
+                        border-color: var(--border-brand);
                     }
                 }
                 &.search {
@@ -771,14 +771,14 @@
     /* ADVANCED SEARCH INFO */
     &__adv-search-info {
         padding: 10px;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         border: none;
         border-top: 1px solid var(--border-strong);
     }
     &__adv-search-info-back {
         font-size: var(--font-size-body-small);
-        color: var(--fg-content-box);
+        color: var(--fg-default);
     }
     &__options-wrapper {
         display: flex;
@@ -790,7 +790,7 @@
     }
     /* MODIFICATION */
     &--highlight {
-        background-color: rgb(from var(--highlight) r g b / 50%);
+        background-color: rgb(from var(--bg-highlight) r g b / 50%);
     }
 }
 
@@ -802,9 +802,9 @@
     height: 101%;
     top: 0;
     opacity: 0;
-    border: 2px solid var(--bg-content-box);
+    border: 2px solid var(--bg-surface);
     box-shadow: 2px 2px 5px rgb(from var(--shadow-color) r g b / 30%);
-    background: var(--bg-content-box);
+    background: var(--bg-surface);
     transition:
         transform 0.12s linear,
         opacity 0.5s linear;
@@ -814,11 +814,11 @@
 }
 
 .stacked-thumbnail {
-    border: 2px solid var(--bg-content-box);
+    border: 2px solid var(--bg-surface);
     -webkit-box-shadow: 2px 2px 5px rgb(from var(--shadow-color) r g b / 30%);
     -moz-box-shadow: 2px 2px 5px rgb(from var(--shadow-color) r g b / 30%);
     box-shadow: 2px 2px 5px rgb(from var(--shadow-color) r g b / 30%);
-    background: var(--bg-content-box);
+    background: var(--bg-surface);
     position: relative;
 }
 
@@ -859,7 +859,7 @@
     margin-top: 0px;
     width: 106%;
     height: calc(100% + 3px);
-    background: var(--bg-content-box);
+    background: var(--bg-surface);
 }
 
 .stacked-thumbnail a img {

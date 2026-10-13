@@ -7,24 +7,24 @@
     /* PANEL */
     &__panel {
         margin-bottom: 2rem;
-        background-color: var(--bg-content-box);
-        color: var(--fg-content-box);
+        background-color: var(--bg-surface);
+        color: var(--fg-default);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-container);
-        box-shadow: var(--shadow-container);
+        box-shadow: var(--shadow-surface);
     }
 
     /* FIELDS */
     &__field {
         padding: 1.6rem 2rem;
         & + .user-bookmark-edit__field {
-            border-top: 1px solid var(--border-faint);
+            border-top: 1px solid var(--border-subtle);
         }
     }
     &__label {
         display: block;
         margin-bottom: 0.6rem;
-        color: var(--fg-heading-content-box);
+        color: var(--fg-heading);
         font-weight: 600;
     }
     &__choice {
@@ -33,7 +33,7 @@
         gap: 0.6rem;
         label {
             margin-bottom: 0;
-            color: var(--fg-heading-content-box);
+            color: var(--fg-heading);
             font-weight: 600;
         }
     }
@@ -59,7 +59,7 @@
         color: var(--fg-secondary);
         &:hover,
         &:focus-visible {
-            color: var(--fg-general);
+            color: var(--fg-default);
             text-decoration: underline;
         }
     }

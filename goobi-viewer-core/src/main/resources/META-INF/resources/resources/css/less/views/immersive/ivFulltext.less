@@ -9,7 +9,7 @@
     }
 
     &__fulltext {
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         font-size: var(--font-size-body-small);
         line-height: 1.7;
         white-space: pre-wrap;
@@ -20,7 +20,7 @@
             padding-top: 8px;
             font-style: italic;
             text-align: center;
-            color: var(--fg-content-box);
+            color: var(--fg-default);
             opacity: 0.75;
         }
     }
@@ -42,14 +42,14 @@
     }
 
     &__highlight {
-        border: 2px solid var(--brand);
+        border: 2px solid var(--border-brand);
         background-color: transparent;
         pointer-events: none;
         border-radius: 1px;
         transition: background-color @immersive-transition;
 
         &.-active {
-            background-color: rgb(from var(--highlight) r g b / 35%);
+            background-color: rgb(from var(--bg-highlight) r g b / 35%);
         }
     }
 
@@ -67,8 +67,8 @@
         }
 
         &.is-linked-active {
-            border-left-color: var(--ocr-block);
-            background-color: rgb(from var(--ocr-block) r g b / 0.08);
+            border-left-color: var(--color-ocr-block);
+            background-color: rgb(from var(--color-ocr-block) r g b / 0.08);
         }
     }
 
@@ -78,7 +78,7 @@
         transition: background-color 0.1s ease;
 
         &.is-linked-active {
-            background-color: rgb(from var(--ocr-line) r g b / 0.16);
+            background-color: rgb(from var(--color-ocr-line) r g b / 0.16);
         }
     }
 
@@ -89,8 +89,8 @@
         /* Near-opaque chip with its own ink: a translucent fill over the
            stacked line/block tints cannot hold AA contrast in the dark theme. */
         &.is-linked-active {
-            background-color: rgb(from var(--ocr-word) r g b / 0.9);
-            color: var(--fg-on-control);
+            background-color: rgb(from var(--color-ocr-word) r g b / 0.9);
+            color: var(--color-on-ocr-word);
         }
     }
 
@@ -102,29 +102,29 @@
             background-color 0.1s ease;
 
         &.is-linked-active {
-            border-color: var(--brand);
-            background-color: rgb(from var(--highlight) r g b / 35%);
+            border-color: var(--border-brand);
+            background-color: rgb(from var(--bg-highlight) r g b / 35%);
         }
     }
 
     &__text-region-block {
         border-width: 1px;
         border-style: dashed;
-        border-color: rgb(from var(--ocr-block) r g b / 0.5);
+        border-color: rgb(from var(--color-ocr-block) r g b / 0.5);
 
         &.is-linked-active {
-            border-color: var(--ocr-block);
-            background-color: rgb(from var(--ocr-block) r g b / 0.08);
+            border-color: var(--color-ocr-block);
+            background-color: rgb(from var(--color-ocr-block) r g b / 0.08);
         }
     }
 
     &__text-region-line {
         border-width: 1px;
-        border-color: rgb(from var(--ocr-line) r g b / 0.25);
+        border-color: rgb(from var(--color-ocr-line) r g b / 0.25);
 
         &.is-linked-active {
-            border-color: var(--ocr-line);
-            background-color: rgb(from var(--ocr-line) r g b / 0.16);
+            border-color: var(--color-ocr-line);
+            background-color: rgb(from var(--color-ocr-line) r g b / 0.16);
         }
     }
 
@@ -132,8 +132,8 @@
         border-width: 1px;
 
         &.is-linked-active {
-            border-color: var(--ocr-word);
-            background-color: rgb(from var(--ocr-word) r g b / 0.35);
+            border-color: var(--color-ocr-word);
+            background-color: rgb(from var(--color-ocr-word) r g b / 0.35);
         }
     }
 
@@ -142,7 +142,7 @@
         flex-wrap: wrap;
         gap: 4px 14px;
         margin: 10px 0 12px;
-        color: var(--fg-content-box);
+        color: var(--fg-default);
         font-size: var(--font-size-caption);
     }
 
@@ -162,18 +162,18 @@
     }
 
     &__fulltext-legend-item-block::before {
-        border: 1px dashed var(--ocr-block);
-        background-color: rgb(from var(--ocr-block) r g b / 0.08);
+        border: 1px dashed var(--color-ocr-block);
+        background-color: rgb(from var(--color-ocr-block) r g b / 0.08);
     }
 
     &__fulltext-legend-item-line::before {
-        border-color: var(--ocr-line);
-        background-color: rgb(from var(--ocr-line) r g b / 0.16);
+        border-color: var(--color-ocr-line);
+        background-color: rgb(from var(--color-ocr-line) r g b / 0.16);
     }
 
     &__fulltext-legend-item-word::before {
-        border-color: var(--ocr-word);
-        background-color: rgb(from var(--ocr-word) r g b / 0.9);
+        border-color: var(--color-ocr-word);
+        background-color: rgb(from var(--color-ocr-word) r g b / 0.9);
     }
 }
 

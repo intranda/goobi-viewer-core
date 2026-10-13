@@ -21,7 +21,7 @@
             width: @immersive-rail-width;
             padding: 10px 0 0;
             border-right: 1px solid var(--border-default);
-            background-color: var(--bg-popover);
+            background-color: var(--bg-elevated);
 
             .immersive__toolbar-group {
                 gap: 6px;
@@ -70,13 +70,13 @@
 
     &__tool-btn.-active,
     &__tool-btn[aria-pressed='true'] {
-        background-color: rgb(from var(--brand) r g b / 0.16);
-        color: var(--brand);
-        box-shadow: inset 0 0 0 2px var(--brand);
+        background-color: rgb(from var(--fg-brand) r g b / 0.16);
+        color: var(--fg-brand);
+        box-shadow: inset 0 0 0 2px var(--fg-brand);
 
         &:hover {
-            color: var(--brand);
-            background-color: rgb(from var(--brand) r g b / 0.24);
+            color: var(--fg-brand);
+            background-color: rgb(from var(--fg-brand) r g b / 0.24);
         }
     }
 
@@ -86,7 +86,7 @@
 
         &:hover {
             background-color: transparent;
-            color: var(--fg-content-box);
+            color: var(--fg-default);
         }
     }
 

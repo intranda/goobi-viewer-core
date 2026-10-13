@@ -7,22 +7,17 @@
 .gv-palette-admin() {
     /* BRAND */
     --color-brand: #015999;
-    --color-brand-fill: oklch(from var(--color-brand) min(l, 0.55) c h);
-    --color-brand-hover: var(--color-link);
-    --color-brand-pressed: oklch(from var(--color-brand-fill) calc(l - 0.12) c h);
-    --color-brand-text: oklch(from var(--color-brand) 0.45 min(c, 0.2) h);
-    --color-on-brand: #fff;
 
     /* LINK */
     --color-link: #3365a9;
-    --color-link-hover: #134ea0;
-    --color-link-active: #0d3a79;
+    --color-link-600: #134ea0;
+    --color-link-700: #0d3a79;
 
-    /* ACCENT, HIGHLIGHT, FOCUS */
+    /* HIGHLIGHT, FOCUS */
     --color-highlight: #ffd500;
-    --color-focus-ring: #cb002d;
+    --color-focus: #cb002d;
 
-    /* GRAY RAMP — legacy backend grays */
+    /* GRAY RAMP — legacy backend greys; own names, so the theme's neutral ramp stays untouched on admin pages */
     --color-gray-0: #fff;
     --color-gray-50: #f5f8fd;
     --color-gray-100: #f2f3f4;
@@ -33,44 +28,36 @@
     --color-gray-550: #636363;
     --color-gray-600: #555;
     --color-gray-700: #444;
-    --color-gray-800: #333;
     --color-gray-900: #212529;
     --color-gray-1000: #000;
 
-    /* SLATE RAMP — legacy backend slates */
-    --color-slate-500: #5b6473;
-
-    /* SUCCESS */
+    /* STATUS */
     --color-success-text: #155724;
     --color-success-surface: #d4edda;
     --color-success-hover: #abd9b5;
     --color-success-strong: #087f0d;
-
-    /* DANGER */
     --color-danger-text: #721c24;
     --color-danger-surface: #f8d7da;
     --color-danger-hover: #e3abb2;
-
-    /* WARNING */
     --color-warning-surface: #fed44c;
-
-    /* INFO */
     --color-info-strong: #008295;
 
     /* ENTITIES */
-    --color-entity-person: #0064c2;
-    --color-entity-location: #964800;
-    --color-entity-institution: #226f07;
+    --color-entity-person-700: #0064c2;
+    --color-entity-location-700: #964800;
+    --color-entity-institution-700: #226f07;
 
-    /* MAP, RSS, NOTIFICATION */
-    --color-map-primary: #144a4d;
-    --color-map-secondary: #ff8a1d;
+    /* COMPONENT COLOURS */
+    --color-map-marker: #144a4d;
+    --color-map-marker-alt: #ff8a1d;
     --color-rss: #f08422;
-    --color-notification: #1b2330;
+    --color-toast: #1b2330;
+    --color-scroll-marker: #a3f97c;
+    --color-region: #c92b29;
+    --color-maintenance-link-strong: #333;
 
-    /* SELECTION MARKERS */
-    --color-selection-marker: #a3f97c;
-    --color-selection-region: #c92b29;
+    /* SLATE RAMP — legacy backend slates */
+    --color-slate-500: #5b6473;
 
     /* BACKEND */
     --color-admin-ink: #1a1a1a;
