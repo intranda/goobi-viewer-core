@@ -1,23 +1,18 @@
 /* ==============================================================
    Styling for popovers
    ==============================================================*/
-
 popover {
     display: none;
 }
-.popover {
-    max-width: 350px;
-}
-.popover popover {
-    display: block;
-}
 
+.popover popover,
 .popover .viewerPopover {
     display: block;
 }
 
 .viewerPopover {
     display: none;
+
     a {
         display: block;
         margin-bottom: 0.3rem;
@@ -26,11 +21,14 @@ popover {
 
 .popover {
     z-index: 2020;
+    max-width: 350px;
     color: var(--fg-default);
     background-color: var(--bg-elevated);
+
     .popover-body {
         color: var(--fg-default);
     }
+
     .popover-title-custom {
         padding: 8px 14px;
         margin: 0;
@@ -39,10 +37,9 @@ popover {
         border-bottom: 1px solid var(--border-default);
         border-radius: 5px 5px 0 0;
     }
-    .popover-content {
-    }
 }
 
+/* IMAGE FILTERS */
 imageFilters {
     .imagefilters {
         &__filter {
@@ -51,37 +48,43 @@ imageFilters {
             justify-content: space-between;
             min-width: 220px;
             margin-bottom: 15px;
+
             &:last-child {
                 margin-bottom: 5px;
             }
         }
+
         &__options {
             padding: 10px 5px;
+
             button {
                 width: 100%;
                 color: var(--fg-on-inverse);
+
                 &:hover {
                     color: var(--fg-on-inverse);
                 }
             }
         }
+
         &__label {
             flex-basis: 40%;
-            /* Bootstrap hard-codes .popover-body { color: #212529 }, which is invisible
-               on the dark popover surface in dark mode. Pair the label with the popover's
-               own --fg-default token so it tracks light/dark like the surface. */
             color: var(--fg-default);
+
             &-long {
                 flex-basis: 80%;
             }
         }
+
         &__checkbox {
             margin: 0;
         }
+
         &__slider {
             flex-basis: 60%;
             flex-grow: 1;
             min-width: 0;
+
             &[disabled] {
                 color: var(--fg-placeholder);
             }
@@ -89,9 +92,7 @@ imageFilters {
     }
 }
 
-/* Social-media share widget rendered as popover content (e.g. immersive view).
-   The shared widget ships no icon sizing; fsShare.less only covers the inline
-   fullscreen variant, so size the SVG logos here for the portaled popover. */
+/* SOCIAL MEDIA WIDGET IN POPOVERS */
 .popover .widget-social-media {
     &__links-wrapper {
         display: flex;
@@ -99,19 +100,15 @@ imageFilters {
         padding: 0;
         margin: 0;
         list-style: none;
+
         img {
             width: 30px;
             max-height: 50px;
         }
     }
+
     &__link {
         display: flex;
-    }
-}
-
-.page-content__sidebar {
-    .popover {
-        z-index: 2050;
     }
 }
 

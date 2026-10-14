@@ -1,13 +1,9 @@
 /* ==============================================================
    Immersive View: Popovers
-   style declarations for viewImmersive.xhtml (share/cite/filter popovers);
-   Bootstrap portals them to <body>, outside .immersive — so they are
-   targeted by their content and restyled to match the immersive chrome
+   style declarations for viewImmersive.xhtml (share/cite/filter popovers)
    ==============================================================*/
 
-.popover:has(.widget-citation),
-.popover:has(.widget-social-media),
-.popover:has(imageFilters) {
+.popover--tool {
     max-width: 320px;
     color: var(--fg-default);
     background-color: var(--bg-surface);
@@ -62,7 +58,7 @@
     }
 }
 
-.popover:has(.widget-citation) {
+.popover--tool {
     .widget-citation__topbar {
         display: none;
     }
@@ -133,7 +129,7 @@
     }
 }
 
-.popover:has(.widget-social-media) {
+.popover--tool {
     .widget-social-media__body {
         padding: 8px 14px 14px;
     }
@@ -161,7 +157,7 @@
     }
 }
 
-.popover:has(imageFilters) {
+.popover--tool {
     input[type='range'],
     input[type='checkbox'] {
         accent-color: var(--fg-brand);
