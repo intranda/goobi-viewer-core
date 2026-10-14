@@ -194,6 +194,7 @@
                                         "
                                         type="button"
                                         class="btn btn--clean"
+                                        aria-expanded="false"
                                         data-toggle="hit-content"
                                         data-toggle-id="childHits_#{status.index}"
                                         data-load-hits-script="loadChildHits_#{status.index}"
@@ -201,7 +202,7 @@
                                         <util:icon
                                             icon="caret-right"
                                             svgClass="icon"
-                                            styleClass="icon-rot-on-open" />
+                                            styleClass="icon-rot-on-open--90" />
                                         <h:outputFormat
                                             rendered="#{hit.cmsPageHitCount > 0}"
                                             value="#{msg.searchChildCmsPageHitCount}">
