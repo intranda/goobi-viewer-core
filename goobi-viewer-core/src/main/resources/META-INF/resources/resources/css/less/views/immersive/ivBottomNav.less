@@ -4,6 +4,7 @@
    ==============================================================*/
 
 .immersive {
+    /* CHEVRON */
     &__chevron {
         .mx-immersive-overlay-button(48px);
         display: none;
@@ -23,12 +24,14 @@
         &[hidden] {
             display: none;
         }
-        &-left {
-            left: calc(@immersive-rail-width + @immersive-edge-inset);
-        }
-        &-right {
-            right: @immersive-edge-inset;
-        }
+    }
+
+    &__chevron-left {
+        left: calc(@immersive-rail-width + @immersive-edge-inset);
+    }
+
+    &__chevron-right {
+        right: @immersive-edge-inset;
     }
 
     &__chevron-icon {
@@ -36,6 +39,7 @@
         height: 32px;
     }
 
+    /* BOTTOMBAR */
     &__bottombar {
         position: absolute;
         bottom: @immersive-edge-inset;
@@ -63,6 +67,7 @@
         }
     }
 
+    /* BAR BUTTONS */
     &__bar-btn {
         .mx-immersive-icon-button(32px);
     }
@@ -72,6 +77,7 @@
         height: 18px;
     }
 
+    /* PAGE INDICATOR */
     &__page-indicator {
         min-width: 4em;
         padding: 0 4px;

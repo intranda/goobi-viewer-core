@@ -9,6 +9,7 @@
 @immersive-z-resize-handle: 95;
 
 .immersive {
+    /* PANEL */
     &__panel {
         position: absolute;
         top: 0;
@@ -22,14 +23,14 @@
         background-color: var(--bg-surface);
         box-shadow: var(--shadow-elevated);
         transition: transform 0.25s ease;
+    }
 
-        &-left {
-            left: @immersive-rail-width;
-            transform: translateX(calc(-100% - @immersive-rail-width));
+    &__panel-left {
+        left: @immersive-rail-width;
+        transform: translateX(calc(-100% - @immersive-rail-width));
 
-            &.is-open {
-                transform: translateX(0);
-            }
+        &.is-open {
+            transform: translateX(0);
         }
     }
 
@@ -94,6 +95,7 @@
         }
     }
 
+    /* FULLSCREEN PANEL WIDTH */
     &__viewer:fullscreen:not(.is-double-page) {
         --_immersive-panel-width: @immersive-panel-width-fullscreen;
     }
@@ -103,19 +105,7 @@
     }
 }
 
-/* PANEL VARIANTS */
-.immersive__panel-toc {
-}
-
-.immersive__panel-metadata {
-}
-
-.immersive__panel-search {
-}
-
-.immersive__panel-fulltext {
-}
-
+/* SEARCH HINT */
 .immersive__search-hint {
     font-style: italic;
 }

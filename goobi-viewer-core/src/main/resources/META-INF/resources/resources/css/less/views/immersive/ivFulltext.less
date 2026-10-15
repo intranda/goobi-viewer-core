@@ -4,10 +4,12 @@
    ==============================================================*/
 
 .immersive {
+    /* PANEL */
     &__panel-fulltext {
         padding: 16px 16px 18px;
     }
 
+    /* FULLTEXT */
     &__fulltext {
         color: var(--fg-default);
         font-size: var(--font-size-body-small);
@@ -41,6 +43,7 @@
         }
     }
 
+    /* HIGHLIGHT */
     &__highlight {
         border: 2px solid var(--border-brand);
         background-color: transparent;
@@ -53,6 +56,7 @@
         }
     }
 
+    /* TEXT STRUCTURE */
     &__fulltext-block {
         margin: 0 0 14px;
         padding-left: 10px;
@@ -86,14 +90,14 @@
         border-radius: 2px;
         transition: background-color 0.1s ease;
 
-        /* Near-opaque chip with its own ink: a translucent fill over the
-           stacked line/block tints cannot hold AA contrast in the dark theme. */
+        /* WORD CHIP */
         &.is-linked-active {
             background-color: rgb(from var(--color-ocr-word) r g b / 0.9);
             color: var(--color-on-ocr-word);
         }
     }
 
+    /* TEXT REGION */
     &__text-region {
         pointer-events: auto;
         border: 2px solid transparent;
@@ -137,6 +141,7 @@
         }
     }
 
+    /* FULLTEXT LEGEND */
     &__fulltext-legend {
         display: flex;
         flex-wrap: wrap;

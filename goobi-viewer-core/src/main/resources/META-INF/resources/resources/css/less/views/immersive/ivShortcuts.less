@@ -3,11 +3,11 @@
    style declarations for viewImmersive.xhtml (keyboard shortcuts modal)
    ==============================================================*/
 
-// topmost stage layer: above the grid overlay (300) and @immersive-z-overlay (110)
+/* STAGE LAYER ABOVE GRID AND OVERLAY */
 @immersive-z-shortcuts: 400;
 
 .immersive {
-    // pins the trigger to the bottom of the left rail (flex column)
+    /* RAIL BOTTOM */
     &__shortcuts-btn {
         margin-top: auto;
         margin-bottom: @immersive-edge-inset;
@@ -23,7 +23,6 @@
         padding: calc(2 * @immersive-edge-inset);
         background-color: rgb(from var(--bg-scrim) r g b / 40%);
 
-        // the display: flex above would otherwise override the UA [hidden] rule
         &[hidden] {
             display: none;
         }
@@ -95,7 +94,7 @@
         font-size: var(--font-size-body);
         white-space: nowrap;
 
-        // fully replaces Bootstrap's kbd defaults (white on #212529, rem padding)
+        /* KEYCAP */
         kbd {
             display: inline-flex;
             align-items: center;
@@ -113,8 +112,7 @@
         }
     }
 
-    /* Own flex item inside the keycap: centered by the box, not the glyph's
-       baseline (the ⌥/⇧ fallback glyphs sit high above the text otherwise). */
+    /* KEY SYMBOL */
     &__shortcuts-key-symbol {
         margin-right: 4px;
         line-height: 1;
