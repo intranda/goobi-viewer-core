@@ -44,8 +44,6 @@
 
     /* MULTI VOLUME TOC */
     /* ELEMENT */
-    h3 {
-    }
     &__multi-volume {
         margin-top: 35px;
         margin-bottom: 35px;
@@ -87,8 +85,6 @@
             border: 0;
             background-color: transparent;
             display: none;
-            h3 {
-            }
         }
         a {
             display: block;
@@ -96,10 +92,6 @@
         .row {
             margin: 0;
         }
-    }
-    &__mv-element-title {
-    }
-    &__mv-element-link {
     }
     &__mv-element-img {
         overflow: hidden;
@@ -118,9 +110,6 @@
         padding: 10px 15px;
         border-top: 1px solid var(--border-strong);
         li {
-            &:first-child {
-                //				padding-left: 5px !important;
-            }
             &:hover {
                 background-color: var(--bg-hover);
             }
@@ -131,8 +120,6 @@
         a,
         button {
             color: var(--fg-link-subtle);
-            //			display: block;
-            //			padding: 5px 0;
             &:hover,
             &:focus,
             &:active {
@@ -197,15 +184,9 @@
         }
     }
     /* TOC EXPANDABLE */
-    &__list-expandable {
-    }
     &__list-expandable-elem,
     &__list-full-item {
         padding: 4px 0px;
-        &.parent {
-        }
-        &.child {
-        }
     }
     &__list-expandable-elem + &__list-expandable-elem:not(.toc__list-expandable-elem--hidden),
     &__list-full-item + &__list-full-item {
@@ -215,8 +196,6 @@
     &__list-full-title-wrapper {
         display: flex;
         align-items: center;
-    }
-    &__list-expandable-expand {
     }
     &__list-expandable-toggle {
         display: flex;
@@ -240,48 +219,12 @@
     &__list-expandable-elem:not(.toc__list-expandable-elem--expanded) .icon-wrapper:has(.toc__icon-collapse) {
         display: none;
     }
-    &__list-expandable-title {
-        a {
-            &:hover,
-            &:focus,
-            &:active {
-            }
-        }
-    }
-    &__list-expandable-number {
-        li {
-        }
-        a {
-            &:hover,
-            &:focus,
-            &:active {
-            }
-        }
-    }
     /* TOC FULL */
     &__list-full {
         margin-top: 15px;
     }
-    &__list-full-title {
-        a {
-            &:hover,
-            &:focus,
-            &:active {
-            }
-        }
-    }
-    &__list-full-number {
-        li {
-        }
-        a {
-            &:hover,
-            &:focus,
-            &:active {
-            }
-        }
-    }
 
-    // TILE/GRID VIEW OF TOC ENTRIES
+    /* TILE/GRID VIEW OF TOC ENTRIES */
     &__mv-tile-grid-heading {
         // REMOVE THIS IF HEADING NEEDED
         display: none;
@@ -315,8 +258,6 @@
     }
     &__mv-tile-image-wrapper {
         height: 240px;
-    }
-    &__mv-tile-title-wrapper {
     }
     &__mv-tile-title {
         word-wrap: break-word;

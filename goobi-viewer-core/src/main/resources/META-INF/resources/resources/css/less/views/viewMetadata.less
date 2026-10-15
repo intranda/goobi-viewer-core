@@ -37,13 +37,6 @@
             }
         }
     }
-
-    /* ELEMENTS / EVENTS */
-    &__elements,
-    &__events {
-        dd {
-        }
-    }
     &__wrapper {
         margin-bottom: 1rem;
         &.-isBoxed {
@@ -61,10 +54,7 @@
             }
         }
     }
-    /* THESE PROPERTIES HAVE IMPACT ON VIEWER BACKEND RECORD NOTES AS WELL */
-    &__element,
-    &__event {
-    }
+    /* ELEMENTS / EVENTS */
     &__element-dl,
     &__event-dl {
         display: grid;
@@ -84,8 +74,7 @@
             }
         }
     }
-    &__element-value,
-    &__event-value {
+    &__element-value {
         display: block;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -95,41 +84,18 @@
         }
     }
     /* ELEMENT */
-    &__element {
-        &-level-0 {
-            &:hover {
-            }
-            &:first-child {
-            }
-        }
-        &-level-1 {
-            .metadata__element-dl {
-                grid-template-columns: 230px auto;
-            }
-            dt {
-                &::before {
-                }
-            }
-        }
-        &-level-2 {
-        }
-        &-level-3 {
-        }
-        &-level-4 {
+    &__element-level-1 {
+        .metadata__element-dl {
+            grid-template-columns: 230px auto;
         }
     }
-    &__elements {
-        &-level-0 {
-        }
-        &-level-1 {
-            margin-left: 3rem;
-        }
-        &-level-2 {
-            margin-left: 6rem;
-        }
+    &__elements-level-1 {
+        margin-left: 3rem;
+    }
+    &__elements-level-2 {
+        margin-left: 6rem;
     }
     &__elements-h2 {
-        // display: none;
         margin-bottom: 1rem;
         margin-top: 3.5rem;
     }
@@ -148,8 +114,6 @@
         color: var(--fg-default);
         padding: 1rem 1.5rem;
         margin-bottom: 1rem;
-        dt {
-        }
     }
     &__element-dl {
         display: grid;
@@ -157,29 +121,14 @@
         dt {
             width: auto;
         }
-        dt {
-        }
-        dd {
-        }
-    }
-    &__element-value {
     }
     /* EVENT */
-    &__events {
-    }
-    &__event {
-    }
     &__event-dl {
         dt {
             width: auto;
         }
-        dd {
-        }
-    }
-    &__event-value {
     }
     &__event-inside-wrapper {
-        // background: #f6f6f6;
         padding: 1rem;
         margin-bottom: unset;
     }
@@ -188,9 +137,6 @@
         color: var(--fg-default);
         margin-top: 1rem;
         padding: 1.5rem;
-        dt,
-        dd {
-        }
         .metadata__element-wrapper {
             background: var(--bg-subtle);
             color: var(--fg-default);
@@ -202,18 +148,12 @@
         background: var(--bg-surface);
         color: var(--fg-default);
         padding: 1rem 1.5rem;
-        // margin-bottom: 1rem;
         &:last-child {
             margin-bottom: 0;
-            dd {
-                // margin-bottom: 0;
-            }
         }
     }
     &__element-ungrouped {
         grid-template-columns: 250px auto;
-        dt {
-        }
     }
     &__heading {
         font-weight: 700;
@@ -239,10 +179,6 @@
                 -webkit-mask: url('../../icons/outline/chevron-right.svg') center/100% 100% no-repeat;
             }
         }
-        &.level-1 {
-        }
-        &.level-2 {
-        }
     }
     &__key-value-pairs-list {
         dd {
@@ -256,8 +192,6 @@
         flex-wrap: wrap;
     }
     &__fold-wrapper {
-        &.-visibleByDefault {
-        }
         &.-hidden {
             display: none;
         }
@@ -300,32 +234,6 @@
         li {
             display: inline-block;
             margin-bottom: 4px;
-            a {
-            }
-            .btn {
-            }
-            /* BLOCK */
-            &.dl-links {
-                /* ELEMENT */
-                &__mets {
-                }
-                &__mets-all {
-                }
-                &__marcxml {
-                }
-                &__dc {
-                }
-                &__ese {
-                }
-                &__dfg {
-                }
-                &__opac {
-                }
-                &__pdf {
-                }
-                &__epub {
-                }
-            }
         }
     }
 }
@@ -344,17 +252,13 @@
             margin-right: unset;
             margin-left: 5px;
         }
-        &__elements {
-            &-level-0 {
-            }
-            &-level-1 {
-                margin-right: 3rem;
-                margin-left: unset;
-            }
-            &-level-2 {
-                margin-right: 6rem;
-                margin-left: unset;
-            }
+        &__elements-level-1 {
+            margin-right: 3rem;
+            margin-left: unset;
+        }
+        &__elements-level-2 {
+            margin-right: 6rem;
+            margin-left: unset;
         }
         &__heading {
             &.level-1,
@@ -368,10 +272,6 @@
                     mask: url('../../icons/outline/chevron-left.svg') center/100% 100% no-repeat;
                     -webkit-mask: url('../../icons/outline/chevron-left.svg') center/100% 100% no-repeat;
                 }
-            }
-            &.level-1 {
-            }
-            &.level-2 {
             }
         }
     }
@@ -408,24 +308,22 @@
             grid-template-columns: unset;
             grid-template-rows: auto;
         }
-        &__element {
-            &-level-0 {
-                .metadata__element-dl {
-                    grid-template-columns: unset;
-                    grid-template-rows: auto;
-                }
+        &__element-level-0 {
+            .metadata__element-dl {
+                grid-template-columns: unset;
+                grid-template-rows: auto;
             }
-            &-level-1 {
-                .metadata__element-dl {
-                    grid-template-columns: unset;
-                    grid-template-rows: auto;
-                }
+        }
+        &__element-level-1 {
+            .metadata__element-dl {
+                grid-template-columns: unset;
+                grid-template-rows: auto;
             }
-            &-level-2 {
-                .metadata__element-dl {
-                    grid-template-columns: unset;
-                    grid-template-rows: auto;
-                }
+        }
+        &__element-level-2 {
+            .metadata__element-dl {
+                grid-template-columns: unset;
+                grid-template-rows: auto;
             }
         }
         &__grouped-wrapper {

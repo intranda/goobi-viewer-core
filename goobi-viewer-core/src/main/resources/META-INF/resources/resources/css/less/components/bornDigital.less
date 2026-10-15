@@ -26,37 +26,24 @@
         margin-bottom: 1rem;
         margin-top: 3.5rem;
     }
-    p {
-    }
     &__items-wrapper {
         display: grid;
         grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
-        grid-gap: 0px;
         grid-column: span 5;
         grid-gap: 5px;
         padding: 0 15px;
         margin-left: -15px;
         margin-right: -15px;
     }
-    &__items {
-    }
     &__head-wrapper {
         display: grid;
         grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
-        // padding: 1.5rem;
         padding-bottom: 0;
         grid-gap: 5px;
     }
     &__head-mobile {
         font-weight: 700;
         display: none;
-    }
-    &__head-mobile-wrapper {
-        display: grid;
-        grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
-        padding: 1.5rem;
-        padding-bottom: 0;
-        grid-gap: 5px;
     }
     &__head {
         font-weight: bold;
@@ -65,30 +52,15 @@
         position: relative;
         word-wrap: anywhere;
         place-self: center start;
-        &-download-last {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
     }
-    &__item-order-label {
-        display: block;
-        margin-top: 3px;
-        padding: 1px 3px;
-        color: var(--fg-on-brand);
-        font-size: var(--font-size-caption);
-        border-radius: 5px;
-        background-color: var(--bg-brand);
-    }
-    &__item-download-dummy {
-        visibility: 0;
-        opacity: 0;
+    &__item-download-last {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
 }
 
 .download-external-resource {
-    &__wrapper {
-    }
     &__heading {
         font-size: var(--font-size-body-small);
         margin: 0;
@@ -104,8 +76,6 @@
         padding: 0 15px;
         margin-left: -15px;
         margin-right: -15px;
-        &:hover {
-        }
     }
     &__error_wrapper {
         display: none;
@@ -148,12 +118,6 @@
             display: block;
         }
     }
-    &__cancel_download {
-        display: none;
-        &.-active {
-            display: block;
-        }
-    }
     &__results {
         display: none;
         &.-active {
@@ -176,7 +140,6 @@
     .born-digital__items-wrapper {
         grid-template-columns: 1fr;
         grid-gap: 0px;
-        // margin-bottom: 1.5rem;
         &:last-child {
             margin-bottom: 0;
         }
@@ -198,10 +161,8 @@
         &__items-wrapper {
             padding: 10px 15px;
         }
-        &__item {
-            &-download-last {
-                justify-content: flex-start;
-            }
+        &__item-download-last {
+            justify-content: flex-start;
         }
     }
     .download-external-resource {
