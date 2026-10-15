@@ -1,6 +1,8 @@
-/**
- * Styling for overlays covering the entire screen if active
- */
+/* ==============================================================
+   Overlay
+   style declarations for overlay.xhtml
+   ==============================================================*/
+/* OVERLAY */
 [data-overlay='content'] {
     display: none;
 }
@@ -23,14 +25,6 @@
                 width: 100%;
                 height: 100%;
             }
-            .fullscreen-close {
-                position: absolute;
-                bottom: 35px;
-                right: 15px;
-                font-size: var(--font-size-body-small);
-                width: auto;
-                height: auto;
-            }
         }
     }
     &.modal-container {
@@ -40,24 +34,16 @@
     .modal {
         background-color: rgb(from var(--bg-scrim) r g b / 80%);
     }
-    .fullscreen-close {
-        display: none;
-    }
 }
 
+/* MODAL OVERLAY */
 .overlay-modal {
-    &__inner {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100%;
-        padding: 10px;
-    }
     .modal-content {
         max-width: 800px;
     }
 }
 
+/* PLAIN OVERLAY */
 .overlay-plain {
     .close {
         position: absolute;
@@ -76,9 +62,26 @@
     }
 }
 
+/* FULLSCREEN OVERLAY */
 .overlay-fullscreen {
     iframe {
         width: 100%;
         height: 100%;
     }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }
