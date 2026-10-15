@@ -3,11 +3,7 @@
    style declarations for cms_template_21_faq.xhtml
    ==============================================================*/
 /* FAQ */
-/* BLOCK */
 .tpl-faq {
-    /* ELEMENT */
-    h1 {
-    }
     &__description {
         margin-bottom: 15px;
         padding: 2rem;
@@ -28,8 +24,6 @@
         .card-header {
             border: none;
             border-radius: 0;
-            &:hover {
-            }
             &__fragment-link {
                 padding-left: 10px;
                 font-size: var(--font-size-body-small);
@@ -39,7 +33,6 @@
                 }
             }
         }
-
         .card-title {
             font-size: var(--font-size-body);
             font-weight: 400;
@@ -54,20 +47,6 @@
                 }
                 .fa {
                     margin-right: 5px;
-                }
-                .fa-chevron-down {
-                    display: none;
-                }
-                .fa-chevron-up {
-                    display: inline-block;
-                }
-                &.collapsed {
-                    .fa-chevron-down {
-                        display: inline-block;
-                    }
-                    .fa-chevron-up {
-                        display: none;
-                    }
                 }
             }
         }

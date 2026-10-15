@@ -3,11 +3,7 @@
    style declarations for cms_template_15_stackedCollection.xhtml
    ==============================================================*/
 /* TPL STACKED COLLECTION */
-/* BLOCK */
 .tpl-stacked-collection {
-    h1 {
-    }
-    /* ELEMENT */
     &__text {
         margin-bottom: 15px;
     }
@@ -72,31 +68,9 @@
             i {
                 color: var(--fg-secondary);
                 padding-left: 10px;
-                &.fa-angle-flip {
-                    &::before {
-                        content: '';
-                        display: inline-block;
-                        width: 1em;
-                        height: 1em;
-                        vertical-align: middle;
-                        background-color: currentColor;
-                        mask: url('../../icons/outline/chevron-up.svg') center/contain no-repeat;
-                        -webkit-mask: url('../../icons/outline/chevron-up.svg') center/contain no-repeat;
-                    }
-                }
             }
             &.card-title-collapse {
                 flex-grow: 1;
-            }
-            &.collapsed {
-                i {
-                    &.fa-angle-flip {
-                        &::before {
-                            mask: url('../../icons/outline/chevron-down.svg') center/contain no-repeat;
-                            -webkit-mask: url('../../icons/outline/chevron-down.svg') center/contain no-repeat;
-                        }
-                    }
-                }
             }
         }
     }
@@ -112,8 +86,6 @@
             background-color: var(--color-rss);
         }
     }
-    .card-collapse {
-    }
     .card-body {
         padding-left: 59px;
         border-top-color: var(--border-strong) !important;
@@ -125,17 +97,6 @@
         }
         &__list {
             margin-left: 20px;
-        }
-        ul {
-        }
-        li {
-        }
-        a {
-        }
-        &__collection,
-        &__rss {
-        }
-        &__collection {
         }
         &__rss {
             .fa {
@@ -166,7 +127,6 @@
 }
 
 /* MODIFICATION */
-
 @{RTL} {
     .tpl-stacked-collection {
         &__actions {

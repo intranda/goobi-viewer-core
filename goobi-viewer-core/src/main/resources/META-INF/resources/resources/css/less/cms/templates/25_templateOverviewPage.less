@@ -8,8 +8,6 @@
         margin: 0;
         margin-bottom: 5px;
     }
-    &__subtitle {
-    }
     /* OVERVIEW */
     &__overview {
         display: flex;
@@ -20,8 +18,6 @@
         max-width: 25%;
         margin-right: 30px;
         min-width: 180px;
-        img {
-        }
     }
     &__overview-metadata {
         flex-grow: 1;
@@ -38,20 +34,13 @@
             word-break: break-word;
         }
     }
-    &__overview-metadata-label {
-    }
-    &__overview-metadata-value {
-    }
-    /* LITERATURE / HISTORY */
-    &__literature,
-    &__history {
+    &__literature {
         margin-bottom: 30px;
         padding: 15px;
         border: 1px solid var(--border-strong);
         background-color: var(--bg-surface);
         color: var(--fg-default);
     }
-    /* LITERATURE */
     &__literature {
         position: relative;
         min-height: 72px;
@@ -60,19 +49,6 @@
             top: 15px;
             left: 50%;
             margin-left: -34px;
-        }
-        .pdf_view {
-            display: none;
-            width: 100%;
-        }
-    }
-
-    /* HISTORY */
-    &__history {
-        h2 {
-        }
-        table {
-            margin: 0;
         }
     }
 }

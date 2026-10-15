@@ -3,13 +3,7 @@
    style declarations for cms_template_13_staticGrid.xhtml
    ==============================================================*/
 /* TPL STATIC GRID */
-/* BLOCK */
 .tpl-static-grid {
-    h1 {
-    }
-    /* ELEMENT */
-    &__text {
-    }
     &__grid {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -85,7 +79,6 @@
         background-color: var(--bg-selected);
         color: var(--fg-selected);
     }
-
     &__image {
         max-width: 100%;
         object-fit: contain;
@@ -100,7 +93,6 @@
 }
 
 /* MODIFICATION */
-
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
     .tpl-static-grid {
