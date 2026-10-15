@@ -2,9 +2,7 @@
    Forms
    style declarations for forms
    ==============================================================*/
-/* INPUT PLACEHOLDER */
-// Bootstrap's fixed rem sizes bypass the viewer typography. Keep the backend's
-// Bootstrap defaults, and let public controls grow with their text.
+/* PUBLIC CONTROLS GROW WITH THEIR TEXT, THE BACKEND KEEPS BOOTSTRAP */
 :where(html:not(:has(#admin))) {
     input,
     select,
@@ -46,34 +44,25 @@
         font-size: var(--font-size-body-large);
         height: auto;
     }
-
-    .form-text,
-    .invalid-feedback,
-    .valid-feedback {
-        font-size: var(--font-size-body-small);
-        line-height: var(--line-height-body);
-    }
 }
 
 ::-webkit-input-placeholder {
     color: var(--fg-placeholder);
 }
-/* Mozilla Firefox 4 to 18 */
+/* INPUT PLACEHOLDER */
 :-moz-placeholder {
     color: var(--fg-placeholder);
     opacity: 1;
 }
-/* Mozilla Firefox 19+ */
 ::-moz-placeholder {
     color: var(--fg-placeholder);
     opacity: 1;
 }
-/* Internet Explorer 10-11 */
 :-ms-input-placeholder {
     color: var(--fg-placeholder);
 }
 
-/* iOS Webkit Hack to prevent input zoom in */
+/* IOS WEBKIT: NO INPUT ZOOM */
 @media only screen and (-webkit-min-device-pixel-ratio: 2) {
     select,
     textarea,
@@ -98,4 +87,20 @@
     input[type='week'] {
         font-size: var(--font-size-body) !important;
     }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
+}
+
+/* BREAKPOINT FOR TABLETS */
+@media screen and (max-width: @smallBreakpoint) {
+}
+
+/* BREAKPOINT FOR SMARTPHONES */
+@media screen and (max-width: @xSmallBreakpoint) {
 }

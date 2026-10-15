@@ -174,7 +174,7 @@
         color: var(--fg-muted);
     }
 
-    /* VALUE LISTS (the 400px height cap comes from the widgets-mode base rule) */
+    /* VALUE LISTS, THE HEIGHT CAP COMES FROM THE WIDGETS MODE */
     .widget-search-facets__collection ul {
         overscroll-behavior: contain;
         scrollbar-width: thin;
@@ -263,8 +263,7 @@
         height: 24px;
     }
 
-    /* focus-visible only (no sticky click state); the radius sits in the base state
-       so the closing background fade keeps round corners */
+    /* FOCUS-VISIBLE ONLY, THE RADIUS SITS IN THE BASE STATE */
     .widget-search-facets__filter .widget-search-facets__filter-button {
         color: var(--fg-muted);
         border-radius: 4px;
@@ -282,7 +281,7 @@
         background: var(--bg-brand);
     }
 
-    /* currentColor defeats the theme's generic topbar icon color */
+    /* CURRENTCOLOR DEFEATS THE GENERIC TOPBAR ICON COLOR */
     .widget-search-facets__filter-button .widget-search-facets__topbar-icon-svg {
         width: 18px;
         height: 18px;
@@ -348,7 +347,7 @@
         display: inline;
     }
 
-    /* currentColor defeats the theme's generic topbar icon color */
+    /* SECTION ACTIONS */
     .widget-chronology-slider__action-reset-button,
     .widget-geofacetting__actions button {
         color: var(--fg-muted);
@@ -359,7 +358,7 @@
         }
     }
 
-    /* the theme forces the chronology actions white via [data-reset] — outgun its specificity */
+    /* OUTGUNS THE [data-reset] RULE OF THE THEME */
     .widget-chronology-slider__item.chronology-slider-actions,
     .widget-chronology-slider__item.chronology-slider-actions [data-reset='chrono-slider'] {
         color: var(--fg-muted);
@@ -374,8 +373,7 @@
         color: currentColor;
     }
 
-    /* CHRONOLOGY SECTION */
-    /* double class keeps the specificity above the theme's content-box backgrounds */
+    /* CHRONOLOGY SECTION, DOUBLE CLASS BEATS THE CONTENT-BOX BACKGROUNDS */
     .widget-chronology-slider__item.chronology-slider-start,
     .widget-chronology-slider__item.chronology-slider-end,
     .widget-chronology-slider__item.chronology-slider {
@@ -394,7 +392,7 @@
 
     .widget-chronology-slider__slider {
         height: 4px;
-        /* keep the overhanging right handle clear of the container edge */
+        /* KEEPS THE RIGHT HANDLE CLEAR OF THE CONTAINER EDGE */
         margin-inline-end: 5px;
         border-radius: 4px;
         background-color: color-mix(in srgb, var(--fg-default) 15%, transparent);

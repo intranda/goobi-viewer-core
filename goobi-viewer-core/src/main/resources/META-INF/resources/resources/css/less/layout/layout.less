@@ -1,6 +1,8 @@
-/* 
- * message box 
- * */
+/* ==============================================================
+   Layout
+   message box, warning popover, ajax loaders, support overlay
+   ==============================================================*/
+/* MESSAGE BOX */
 .messages {
     display: none;
     position: fixed;
@@ -41,19 +43,12 @@
     }
 }
 
-.img-flexible {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-}
-
 .container-fluid {
     padding: 0;
 }
 
 /* AJAX Loaders */
-#AJAXLoader,
-#AJAXLoaderSidebarToc {
+#AJAXLoader {
     display: none;
     position: absolute;
     top: 0;
@@ -66,15 +61,8 @@
     z-index: 999;
 }
 
-#fullscreenTemplate #AJAXLoader,
 #image_container #AJAXLoader {
     background-image: url('@{images}/image_preloader.gif');
-    background-repeat: no-repeat;
-    background-position: center center;
-}
-
-#searchgroup #AJAXLoader {
-    background-image: url('@{images}/ajax_preloader.gif');
     background-repeat: no-repeat;
     background-position: center center;
 }
@@ -135,7 +123,7 @@ html.is-IE {
     }
 }
 
-/* general class for hiding things*/
+/* HIDE */
 .hide {
     display: none;
 }

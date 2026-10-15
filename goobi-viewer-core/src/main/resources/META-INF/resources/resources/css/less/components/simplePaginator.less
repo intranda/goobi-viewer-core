@@ -5,10 +5,10 @@
 /* NUMERIC PAGINATOR */
 /* BLOCK */
 .numeric-paginator {
+    margin: 15px 0;
     &.-rtl {
         direction: rtl;
     }
-    margin: 15px 0;
     /* ELEMENT */
     ul {
         display: flex;
@@ -43,19 +43,12 @@
             background-color: var(--bg-subtle);
         }
     }
-    span {
-    }
     &.-active {
         a,
         span,
         button {
             background-color: var(--bg-selected);
             color: var(--fg-selected);
-        }
-    }
-    &__dots {
-        a,
-        span {
         }
     }
     &__active {
@@ -81,39 +74,6 @@
                     color: var(--fg-default);
                 }
             }
-        }
-    }
-    &__navigate-text {
-        border: none;
-        display: flex;
-    }
-    &__page-number {
-        &-label {
-            display: flex;
-            align-items: center;
-            span {
-                display: inline;
-                background: transparent;
-                padding-block: 0;
-            }
-        }
-        &-input {
-            display: none;
-            input {
-                min-width: 0;
-                max-width: 100%;
-                padding-top: 3px;
-                padding-left: 3px;
-            }
-        }
-    }
-    &__navigate-first-svg,
-    &__navigate-last-svg,
-    &__navigate-next-svg,
-    &__navigate-prev-svg {
-        svg {
-            width: 22px;
-            height: 22px;
         }
     }
     &__icon-svg {

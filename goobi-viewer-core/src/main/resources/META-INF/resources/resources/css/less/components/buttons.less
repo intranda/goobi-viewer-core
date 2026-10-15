@@ -1,23 +1,9 @@
-// Buttons
-//
-// Various button styles.
-//
-// Weight: 1
-//
-// Markup:
-// <button type="button" class="btn {{modifier_class}}">Button Element</button>
-// <input type="button" class="btn {{modifier_class}}" value="Input Element" />
-// <a href="#" class="btn {{modifier_class}}">Link Element</a>
-//
-// .btn--default - Modifier class for a default button.
-// .btn--success - Modifier class for a success button.
-// .btn--danger - Modifier class for a danger button.
-// .btn--full - Modifier class for a CI button.
-// .btn--clean - Modifier class for a button without styling.
-// .btn--link - Modifier class for a button which looks like a link.
-// .btn--inactive - Modifier class for an inactive button.
-//
-// Styleguide Components.button
+/* ==============================================================
+   Buttons
+   modifiers: btn--default, btn--success, btn--danger, btn--full,
+   btn--trans, btn--clean, btn--link, btn--icon, btn--inactive
+   ==============================================================*/
+/* PUBLIC BUTTONS GROW WITH THEIR TEXT */
 :where(html:not(:has(#admin))) {
     .btn {
         font-size: var(--font-size-body);
@@ -107,7 +93,7 @@
         color: var(--fg-on-brand);
         background-color: var(--bg-brand-hover);
     }
-    // Being pressed is not the same as being focused, so it does not look the same.
+    /* PRESSED IS NOT FOCUSED */
     &:active {
         color: var(--fg-on-brand);
         background-color: var(--bg-brand-pressed);
@@ -133,10 +119,6 @@
     }
 }
 
-.btn--hidden {
-    display: none !important;
-}
-
 .btn--inactive {
     cursor: not-allowed;
     opacity: 0.65;
@@ -144,7 +126,7 @@
 
 .btn--icon {
     padding: 2px;
-    font-size: inherit; // !important removed - check themes for changes
+    font-size: inherit;
     color: var(--fg-default);
     border: none;
     &:hover,
@@ -158,7 +140,7 @@ a.btn--icon {
     line-height: normal;
 }
 
-// BUTTONS MIN-WIDTH
+/* MIN-WIDTH */
 .btn--full,
 .btn--default,
 .btn--danger,
@@ -166,6 +148,7 @@ a.btn--icon {
     min-width: 100px;
 }
 
+/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
 
@@ -175,7 +158,7 @@ a.btn--icon {
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    // BUTTONS MIN-WIDTH
+    /* MIN-WIDTH */
     .btn--full,
     .btn--default,
     .btn--danger,

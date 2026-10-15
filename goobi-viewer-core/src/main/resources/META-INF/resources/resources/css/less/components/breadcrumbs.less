@@ -21,11 +21,7 @@
             align-items: center;
         }
     }
-    /* ELEMENTS */
-    ul {
-    }
-    li {
-    }
+    /* ELEMENT */
     a,
     span {
         display: inline-block;
@@ -34,10 +30,6 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-    a {
-    }
-    span {
     }
     &__starttext {
         a,
@@ -64,10 +56,6 @@
         mask: url('../../icons/outline/chevron-right.svg') center/100% 100% no-repeat;
         -webkit-mask: url('../../icons/outline/chevron-right.svg') center/100% 100% no-repeat;
     }
-    &__first-crumb-icon {
-        &:before {
-        }
-    }
 }
 
 @{RTL} .breadcrumbs {
@@ -86,6 +74,7 @@
         -webkit-mask: url('../../icons/outline/chevron-left.svg') center/100% 100% no-repeat;
     }
 }
+
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }

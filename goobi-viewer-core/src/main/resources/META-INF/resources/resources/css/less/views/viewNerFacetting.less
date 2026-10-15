@@ -5,8 +5,6 @@
 #nerFacetting {
     float: left;
     width: 100%;
-    h2 {
-    }
     ul {
         margin: 0;
         padding: 0;
@@ -15,8 +13,6 @@
     .facetting-content {
         #overview {
             .page-tag {
-                &.empty {
-                }
                 &.PERSON {
                     color: var(--fg-entity-person);
                 }
@@ -26,17 +22,6 @@
                 &.CORPORATION {
                     color: var(--fg-entity-institution);
                 }
-                &.INSTITUTION {
-                    color: var(--fg-entity-institution);
-                }
-            }
-        }
-        .nav-tabs {
-            li {
-                a {
-                    .fa {
-                    }
-                }
             }
         }
         .tab-content {
@@ -44,10 +29,6 @@
             .tab-pane {
                 position: relative;
                 padding: 10px;
-                &.active {
-                }
-                h3 {
-                }
             }
         }
     }
@@ -154,8 +135,6 @@
             &:hover {
                 background-color: var(--bg-subtle);
             }
-            &.empty {
-            }
             &.PERSON {
                 color: var(--fg-entity-person);
             }
@@ -163,9 +142,6 @@
                 color: var(--fg-entity-location);
             }
             &.CORPORATION {
-                color: var(--fg-entity-institution);
-            }
-            &.INSTITUTION {
                 color: var(--fg-entity-institution);
             }
         }
@@ -207,8 +183,6 @@
                         &:hover {
                             background-color: var(--bg-subtle);
                         }
-                        &.empty {
-                        }
                         &.PERSON {
                             color: var(--fg-entity-person);
                         }
@@ -218,18 +192,11 @@
                         &.CORPORATION {
                             color: var(--fg-entity-institution);
                         }
-                        &.INSTITUTION {
-                            color: var(--fg-entity-institution);
-                        }
                     }
                 }
             }
         }
     }
-}
-
-/* SECTION */
-#nerFacetting #section {
 }
 
 #nerFacetting #sliderScale {
@@ -379,9 +346,6 @@
             color: var(--fg-entity-location);
         }
         &.CORPORATION {
-            color: var(--fg-entity-institution);
-        }
-        &.INSTITUTION {
             color: var(--fg-entity-institution);
         }
     }

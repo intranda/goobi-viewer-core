@@ -3,8 +3,6 @@
    style declarations for searchList.xhtml
    ==============================================================*/
 /* SEARCH LIST */
-/* VARIABLES */
-
 /* BLOCK */
 .search-list {
     margin-bottom: 21px;
@@ -146,9 +144,6 @@
     &__hitcount,
     &__rss,
     &__save-search,
-    &__excel-export,
-    &__ris-export,
-    &__toggle-thumbs,
     &__views,
     &__help {
         display: inline-flex;
@@ -165,30 +160,8 @@
             align-items: center;
         }
     }
-    &__excel-export,
-    &__ris-export {
-        .excel-export-loader,
-        .ris-export-loader {
-            display: none;
-            font-size: var(--font-size-caption);
-            color: var(--fg-muted);
-            gap: 3px;
-            align-items: center;
-            img {
-                width: 14px;
-                height: 14px;
-                margin: 0;
-            }
-        }
-    }
 
-    /* GENERAL EXPORT DROPDOWN FOR ALL SEARCH HITS */
-    &__export-dropdown-wrapper,
-    &__export-dropdown {
-    }
-    &__hit-export-dropdown-wrapper,
-    &__hit-export-dropdown {
-    }
+    /* EXPORT DROPDOWNS */
     &__hit-export-dropdown {
         min-width: 20rem;
     }
@@ -207,10 +180,6 @@
         font-size: var(--font-size-body);
     }
 
-    &__export-dropdown-wrapper {
-    }
-    &__export-dropdown {
-    }
     &__export-dropdown-toggle {
         display: flex;
         align-items: center;
@@ -219,62 +188,41 @@
         display: flex;
         align-items: flex-start;
     }
-    &__hit-export-dropdown {
-    }
     &__hit-export-dropdown-toggle {
         align-items: center;
         display: flex;
         flex-direction: column;
         gap: 2px;
     }
-    &__hit-export-dropdown-heading {
-    }
-    &__toggle-thumbs {
-        position: relative;
-    }
 
     /* HIT LIST (searchHitList.xhtml) */
-    &__hits-geo-map-results-container {
-        margin-bottom: 2rem;
-    }
-    &__geomap {
-        height: 200px;
-        margin-bottom: 21px;
-        border: 1px solid var(--border-strong);
-        .geomap {
-            height: 100%;
-        }
-    }
     &__hits {
-        //display: none;
         opacity: 0;
     }
     /* SORTING */
-    &__nav-helper {
-        &-wrapper {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+    &__nav-helper-wrapper {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    &__nav-helper-item {
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-column-gap: 20px;
+        align-items: center;
+        form {
+            height: 100%;
         }
-        &-item {
-            display: grid;
-            grid-template-columns: auto auto;
-            grid-column-gap: 20px;
-            align-items: center;
-            form {
-                height: 100%;
-            }
-            .custom-control--select select {
-                max-width: 160px;
-            }
+        .custom-control--select select {
+            max-width: 160px;
         }
-        &-label {
-            label {
-                white-space: nowrap;
-                font-weight: normal;
-                margin: 0;
-            }
+    }
+    &__nav-helper-label {
+        label {
+            white-space: nowrap;
+            font-weight: normal;
+            margin: 0;
         }
     }
     &__hits-list {
@@ -295,7 +243,7 @@
         margin: 5px 0 0 0;
     }
     &__hit {
-        // min-width needed so content of subhits does not push/overflow content out of container
+        /* MIN-WIDTH KEEPS SUB-HIT CONTENT INSIDE THE CONTAINER */
         min-width: 0;
         position: relative;
         padding: 15px;
@@ -303,9 +251,6 @@
         background-color: var(--bg-subtle);
         color: var(--fg-default);
         max-width: 100%;
-    }
-    &__hit-header-inner {
-        display: flex;
     }
     a[data-toggle='hit-content'],
     button[data-toggle='hit-content'] {
@@ -365,17 +310,6 @@
             color: var(--fg-default);
         }
     }
-    &__metadata-info {
-        padding-left: 16px;
-        td {
-            vertical-align: top;
-            word-break: break-all;
-            &:first-child {
-                padding-right: 5px;
-                white-space: nowrap;
-            }
-        }
-    }
     &__struct-child-hits {
         padding-left: 15px;
         dd {
@@ -384,12 +318,6 @@
             white-space: nowrap;
             overflow: hidden;
         }
-    }
-    &__struct-chapter {
-        padding-left: 5%;
-    }
-    &__struct-chapter + .search-list__struct-title {
-        margin-top: 10px;
     }
     &__subhit-thumbnail {
         margin-left: 0.5rem;
@@ -436,9 +364,6 @@
     }
     &__hit-title {
         position: relative;
-        .search-list__hit-title &.-noThumbnail {
-            padding-right: 2.4rem;
-        }
         &.-hitNumber {
             display: flex;
             align-items: center;
@@ -537,12 +462,6 @@
         text-align: left;
     }
 
-    &__hit-options-button-bookmark {
-    }
-    &__hit-options-button-download {
-    }
-    &__hit-options-button-clipboard {
-    }
     &__hit-options-button-citation {
         &:after {
             display: none;
@@ -560,27 +479,9 @@
         font-size: var(--font-size-body-small);
         margin: 0;
     }
-    &__thumb-bookmark-wrapper {
-    }
     &__thumb-bookmark {
-        //        padding: 0;
         &[data-bookmark-list-type='add'] {
-            //            & > span {
-            //                display: flex;
-            //            }
-            // position: absolute;
-            //            color: var(--fg-brand);
             background-image: none;
-            //            .bookmark-toggle {
-            //                align-items: center;
-            //                justify-content: center;
-            //                width: 100%;
-            //                height: 100%;
-            //            }
-            //            .bookmark-toggle__icon {
-            //                width: 2.2rem;
-            //                height: 2.2rem;
-            //            }
         }
     }
     &__hit-docstruct {
@@ -605,7 +506,6 @@
 
     /* THUMBNAIL (browseElementThumbnail.xhtml) */
     &__hit-thumbnail {
-        // position: relative;
         width: 100%;
         margin-bottom: 0;
         display: flex;
@@ -628,20 +528,10 @@
             right: 5px;
             color: var(--fg-brand);
             background-image: none;
-            //            .bookmark-toggle {
-            //                align-items: center;
-            //                justify-content: center;
-            //                width: 100%;
-            //                height: 100%;
-            //            }
-            //            .bookmark-toggle__icon {
-            //                width: 2.2rem;
-            //                height: 2.2rem;
-            //            }
         }
     }
 
-    // METADATA LIST HANDLING (browseElementMetadata.xhtml)
+    /* METADATA LIST (browseElementMetadata.xhtml) */
     &__hit-metadata-list {
         display: grid;
         grid-template-columns: 200px 1fr;
@@ -665,109 +555,11 @@
         font-weight: 400;
         margin-bottom: 0;
     }
-    &__hit-info {
-        margin-top: 10px;
-    }
-    /* EXTRA METADATA LIST FOR GRID - HIDE BY DEFAULT */
+    /* EXTRA METADATA LIST FOR GRID, HIDDEN BY DEFAULT */
     &__hit-metadata-second {
         display: none;
     }
 
-    /* LEGACY */
-    &__title {
-        margin-bottom: 10px;
-        h2,
-        .h2 {
-            margin: 0;
-            line-height: normal;
-            font-size: var(--font-size-body);
-        }
-    }
-    /* CURRENT SEARCH */
-    &__label {
-        display: inline-block;
-        padding: 6px 0;
-    }
-    &__current-search {
-        margin-bottom: 5px;
-        .form-group {
-            margin-bottom: 5px;
-        }
-        .input-group {
-            display: flex;
-            display: -webkit-box;
-            display: -moz-box;
-            display: -ms-flexbox;
-            display: -webkit-flex;
-            .input-group-addon {
-                padding: 0;
-                border-radius: 0;
-                background-color: var(--bg-surface);
-                color: var(--fg-default);
-                a {
-                    color: var(--fg-default);
-                    &:hover,
-                    &:focus,
-                    &:active {
-                        text-decoration: none;
-                        color: var(--fg-default);
-                    }
-                }
-                a,
-                button {
-                    height: 100%;
-                    width: 100%;
-                }
-                input[type='submit'] {
-                    background-image: url('@{images}/icons/icon-search.png');
-                    background-repeat: no-repeat;
-                    background-position: center center;
-                    background-size: 40%;
-                    width: 100%;
-                    padding: 0;
-                }
-                &.reset {
-                    flex: 0 0 4rem;
-                    background-color: var(--bg-subtle);
-                    color: var(--fg-default);
-                    justify-content: center;
-                    border: 1px solid var(--border-strong);
-                    &.focus {
-                        border-color: var(--border-brand);
-                    }
-                }
-                &.search {
-                    flex: 0 0 4rem;
-                    background-color: var(--bg-brand);
-                    border-color: var(--bg-brand);
-                    display: inherit;
-                    a {
-                        display: block;
-                        color: var(--fg-on-brand);
-                    }
-                }
-            }
-        }
-        .form-control {
-            border-right: none;
-            height: auto;
-            &:focus {
-                border-left-color: var(--border-strong);
-            }
-        }
-    }
-    /* LINKS */
-    &__links {
-        button {
-            padding-right: 12px;
-        }
-        form {
-            display: inline-block;
-        }
-        a {
-            font-size: var(--font-size-body-small);
-        }
-    }
     /* ADVANCED SEARCH INFO */
     &__adv-search-info {
         padding: 10px;
@@ -779,10 +571,6 @@
     &__adv-search-info-back {
         font-size: var(--font-size-body-small);
         color: var(--fg-default);
-    }
-    &__options-wrapper {
-        display: flex;
-        gap: 10px;
     }
     /* FACETS HEADING */
     &__facets-heading {
@@ -888,14 +676,6 @@
         padding-right: 5px;
         padding-left: 0px;
     }
-    &__toggle-thumbs {
-        border-left: none;
-        border-right: 1px solid var(--border-strong);
-    }
-    &__excel-export {
-        padding-left: 5px;
-        padding-right: 0px;
-    }
     &__hitcount {
         padding-right: 0px;
         padding-left: 5px;
@@ -905,10 +685,8 @@
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
     .search-list {
-        &__nav-helper {
-            &-wrapper {
-                gap: 15px;
-            }
+        &__nav-helper-wrapper {
+            gap: 15px;
         }
     }
 }
@@ -938,8 +716,7 @@
             top: unset;
             right: unset;
         }
-        /* raised specificity so this wins over the unconditional
-           .search-list__hits:not(.grid):not(.list-view) .search-list__hit-thumbnail rule */
+        /* RAISED SPECIFICITY TO WIN OVER THE UNCONDITIONAL ROW RULE */
         &__hits:not(.grid):not(.list-view) &__hit-inner-structure &__hit-thumbnail {
             width: auto;
             justify-content: flex-start;
@@ -953,39 +730,5 @@
         &__hit-inner-structure {
             grid-template-columns: 1fr;
         }
-        &__thumb-wrapper {
-            position: static;
-        }
-        //		&__hit-text {
-        //			flex-direction: column;
-        //			margin-bottom: 5px;
-        //		}
-        //		&__hit-text-label {
-        //			width: 100%;
-        //			max-width: 100%;
-        //			flex: 0 0 100%;
-        //		}
-        //		&__hit-text-value {
-        //			margin: 0;
-        //			flex: 0 0 100%;
-        //			max-width: 100%;
-        //		}
-        //		&__hit-thumbnail {
-        //			text-align: center;
-        //		}
-        //		&__struct-child-hits,
-        //		&__metadata-info {
-        //			padding-left: 0;
-        //		}
-        //		&__hit-content dt {
-        //			float: left;
-        //		}
-        //		&__metadata-info dt {
-        //			float: left;
-        //			width: 30%;
-        //		}
-        //		&__metadata-info dd {
-        //			margin-left: 30%;
-        //		}
     }
 }

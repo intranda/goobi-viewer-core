@@ -14,18 +14,6 @@
         max-width: calc(~'100% - 36px');
         word-wrap: anywhere;
     }
-    &__body {
-        li {
-            &.active {
-                //                margin-bottom: 3px;
-                a {
-                    //                    background-color: @lightgray;
-                }
-            }
-        }
-        a {
-        }
-    }
     &__body-icon-svg {
         color: currentColor;
     }
@@ -55,7 +43,7 @@
                 }
             }
 
-            /* active facets: the item removes the filter, so show an x instead of plus/minus */
+            /* A SET FILTER SHOWS THE REMOVE ICON INSTEAD OF PLUS OR MINUS */
             .widget-search-facets__list-item-control.-set {
                 .widget-search-facets__list-item-control-state-icon {
                     display: none;
@@ -74,7 +62,7 @@
         }
     }
 
-    /* nested under the list item to win over the generic ".widget__body a { display: block }" rule */
+    /* NESTED UNDER THE LIST ITEM TO WIN OVER .widget__body a */
     &__list-item &__list-item-link {
         display: flex;
         align-items: flex-start;
@@ -219,41 +207,30 @@
         pointer-events: all;
     }
 
-    /* COLLECTION/GROUPS */
-    &__collection,
-    &__groups {
+    /* COLLECTION */
+    &__collection {
+        position: relative;
         ul {
             max-height: 400px;
             overflow-y: auto;
         }
-    }
-    &__collection {
-        position: relative;
-    }
-    &__groups {
     }
     /* COLLAPSE FACETS */
     &__collapse {
         display: flex;
         justify-content: center;
     }
-    &__collapse-button {
-        &.-expand,
-        &.-collapse {
-        }
-    }
     &__collapse-chevron-svg {
         color: var(--fg-brand);
     }
-    /* combined-mode-only parts, hidden in widgets mode */
+    /* COMBINED MODE ONLY, HIDDEN IN WIDGETS MODE */
     &__collapse-alt-icon,
     &__collapse-label,
     &__filter-icon,
     &__section-toggle {
         display: none;
     }
-    /* hidden without JS in BOTH modes: viewerJS.listFilter's enable() reveals the
-       wrapper via jQuery .show() when a value filter is configured */
+    /* HIDDEN WITHOUT JS, viewerJS.listFilter REVEALS THE WRAPPER */
     &__filter {
         display: none;
     }
@@ -305,8 +282,7 @@
 @media screen and (max-width: @smallBreakpoint) {
 }
 
-/* no hover capability (touch devices, regardless of viewport width):
-   include/exclude controls are always visible instead of hover-revealed */
+/* NO HOVER: INCLUDE AND EXCLUDE CONTROLS STAY VISIBLE */
 @media (hover: none) {
     .widget-search-facets__list-item-control {
         width: 16px;

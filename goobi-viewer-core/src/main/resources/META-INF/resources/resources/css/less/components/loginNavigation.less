@@ -15,15 +15,10 @@
         align-items: center;
     }
     /* ELEMENT */
-    /* NOT LOGGED IN */
-    [data-login='false'] {
-    }
     /* LOGGED IN */
     [data-login='true'] {
         button[data-toggle='user-dropdown'] {
             font-size: var(--font-size-body-small);
-            span {
-            }
             display: flex;
             align-items: center;
             justify-content: center;
@@ -97,7 +92,7 @@
             &__user-dropdown-item-text {
                 white-space: nowrap;
             }
-            // THE ICON SUPPORTS THE LABEL, THE CARET ONLY HINTS AT OPENING: BOTH STAY QUIETER UNTIL HOVER
+            /* ICON AND CARET STAY QUIET UNTIL HOVER */
             &__user-dropdown-item-icon-text {
                 svg {
                     color: var(--fg-secondary);
@@ -210,10 +205,6 @@
                         margin-left: 0.7rem;
                         margin-right: unset;
                     }
-                }
-                &__user-dropdown-item-icon {
-                    padding-left: 0;
-                    padding-right: 1.5rem;
                 }
             }
         }

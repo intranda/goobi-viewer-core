@@ -15,7 +15,7 @@ body {
     font-size: var(--font-size-body);
     line-height: var(--line-height-body);
 
-    // Styling for fucussed elements
+    /* KEYBOARD FOCUS */
     &.using-keyboard :focus-visible {
         .mx-focus-visible !important;
     }
@@ -26,8 +26,7 @@ body {
     text-decoration-skip-ink: auto;
 }
 
-// HTML hierarchy and visual roles are independent. Components can choose a
-// smaller heading role without changing the document outline.
+/* HEADING ROLES ARE INDEPENDENT OF THE DOCUMENT OUTLINE */
 h1,
 h2,
 h3,
@@ -68,8 +67,7 @@ h6,
     font-size: var(--font-size-body-small);
 }
 
-// Editorial copy has its own reading size. Only prose receives a line-length
-// limit; media, search results and grids retain their available width.
+/* PROSE: OWN READING SIZE AND LINE LENGTH */
 .content-component__text,
 .content-component__htmltext,
 .content-component__split-text-content,
@@ -94,9 +92,6 @@ small,
     line-height: var(--line-height-body);
 }
 
-p {
-}
-
 pre {
     padding: 1rem;
     font-family: monospace;
@@ -112,45 +107,9 @@ nav ul {
     margin: 0;
 }
 
-ul {
-}
-
-ol {
-}
-
-ul,
-ol {
-}
-
-a {
-    &:hover {
-    }
-    &:active {
-    }
-    &:focus {
-    }
-}
-
 table,
 .table {
     width: 100%;
-}
-
-#ajaxloader_image {
-    width: 100%;
-    height: 100%;
-    background-color: var(--bg-surface);
-    display: none;
-}
-
-#ajaxloader_image img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    padding-top: -50px;
-    padding-left: -50px;
-    width: 100px;
-    height: 100px;
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

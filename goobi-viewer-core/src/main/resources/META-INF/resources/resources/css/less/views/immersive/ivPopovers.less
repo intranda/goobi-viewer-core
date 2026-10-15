@@ -63,7 +63,7 @@
         display: none;
     }
     .widget-citation__body {
-        /* !important overrides the inline display left behind by the sidebar slideToggle collapse. */
+        /* !IMPORTANT BEATS THE INLINE DISPLAY LEFT BY THE SIDEBAR COLLAPSE */
         display: block !important;
         padding: 4px 14px 14px;
     }
@@ -146,12 +146,12 @@
 
         &:hover,
         &:focus {
-            /* Repeated colour guards against theme a:hover/a:focus rules. */
+            /* GUARDS AGAINST THEME LINK HOVER RULES */
             color: var(--fg-default);
         }
     }
 
-    /* Only the monochrome X logo inverts per theme; brand-coloured logos must not (invert breaks their colour). */
+    /* ONLY THE MONOCHROME X LOGO INVERTS */
     .widget-social-media__link img[src$='x_logo.svg'] {
         filter: var(--filter-mono-image);
     }
@@ -193,6 +193,10 @@
             }
         }
     }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
 }
 
 /* BREAKPOINT FOR DESKTOPS */

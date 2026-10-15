@@ -35,8 +35,6 @@
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
                 grid-gap: 10px;
-                // grid-auto-rows: minmax(300px, auto);
-                // grid-auto-flow: dense;
             }
             .search-list__hit {
                 margin: 0;
@@ -116,7 +114,7 @@
             .search-list__hit-content {
                 .mx-hidden;
             }
-            // EXTRA METADATA LIST FOR GRID STYLING
+            /* EXTRA METADATA LIST FOR GRID */
             .search-list__hit-info-wrapper.-extraMetadataForGrid {
                 display: block !important;
                 visibility: visible !important;
@@ -129,20 +127,7 @@
                     .search-list__hit-text-label {
                         display: none;
                     }
-                    .search-list__hit-text {
-                        //						font-size: 13px;
-                        //						display: flex;
-                        //						flex-direction: column;
-                        .search-list__hit-text-value {
-                            max-width: 100%;
-                            width: 100%;
-                        }
-                    }
                 }
-            }
-            a[data-toggle='hit-content'],
-            button[data-toggle='hit-content'] {
-                //		display: none;
             }
         }
     }

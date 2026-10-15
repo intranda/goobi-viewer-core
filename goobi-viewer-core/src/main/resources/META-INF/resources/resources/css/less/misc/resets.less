@@ -2,10 +2,6 @@
    Resets for CSS Libs
    ==============================================================*/
 /* BOOTSTRAP */
-
-/* .modal-open .modal {
-    overflow-y: hidden;
-} */
 form {
     margin: 0;
 }
@@ -26,8 +22,6 @@ a {
     &:active {
         color: var(--fg-link-pressed);
     }
-    &:focus {
-    }
 }
 
 button,
@@ -39,8 +33,6 @@ button,
     }
     &:active {
         color: var(--fg-secondary);
-    }
-    &:focus {
     }
 }
 
@@ -141,20 +133,9 @@ button,
         height: 26px;
         margin: -13px auto auto -1px;
     }
-
-    //  &:hover:before {
-    //    width: 12px;
-    //    height: 2px;
-    //    margin: -1px auto auto -6px;
-    //  }
-    //  &:hover:after {
-    //    width: 2px;
-    //    height: 12px;
-    //    margin: -6px auto auto -1px;
-    //  }
 }
 
-// Shared library adapters use the same roles as native viewer components.
+/* SHARED LIBRARY ADAPTERS READ THE SAME ROLES */
 :where(html:not(:has(#admin))) {
     .dropdown-menu,
     .dropdown-item,
@@ -210,12 +191,8 @@ button:focus {
         a {
             display: inline-block;
             padding: 1rem 1.5rem;
-            //			border: 1px solid @middlegray;
             background-color: var(--bg-subtle);
-            //			border-radius: 0;
-            //			border-color: @middlegray;
             margin-right: 0.2rem;
-            //			border-bottom: none;
         }
         span {
             display: block;
@@ -265,28 +242,11 @@ button:focus {
         outline: none;
     }
 }
-/*
-.form-horizontal {
-    .form-group {
-        label {
-            padding-left: 0.9375rem;
-            text-align: left;
-        }
-        .form-control {}
-        .btn {}
-    }
-}
-*/
-
 .popover-content {
     color: var(--fg-default);
 }
 .table > tbody > tr > td {
     word-break: break-word;
-}
-/* LABELS */
-.label-default {
-    background-color: var(--bg-inverse);
 }
 /* BS GRID RESETS */
 .row {
@@ -426,7 +386,7 @@ button {
     outline: none;
 }
 
-/* default styling for leaflet map markers font */
+/* LEAFLET MARKER FONT */
 .leaflet-marker-icon {
     .fa-number {
         font-family: var(--font-family), sans-serif !important;
@@ -439,24 +399,23 @@ button {
     }
 }
 
-// prevent tinymce dropdowns from overlapping backend components
+/* TINYMCE DROPDOWNS ABOVE BACKEND COMPONENTS */
 .tox.tox-tinymce-aux {
     z-index: 1250;
 }
 
-// TinyMCE fullscreen editor below admin topbar
+/* TINYMCE FULLSCREEN BELOW THE ADMIN TOPBAR, IMPORTANT AGAINST ITS INLINE STYLES */
 .admin .tox.tox-tinymce.tox-fullscreen {
     top: 35px !important;
-    // Rule is important, because tinyMCE applies inline styles in chrome browser (overriding needed)
 }
 
-// SWEET ALERT 2 OVERRIDES
+/* SWEETALERT2 */
 
 .swal2-container {
     z-index: 2401;
 }
 
-// Move swal notification a bit away from top so admin topbar is visible
+/* TOASTS BELOW THE ADMIN TOPBAR */
 
 body.swal2-toast-shown .swal2-container.swal2-top-end,
 body.swal2-toast-shown .swal2-container.swal2-top-right,
@@ -509,11 +468,6 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
         flex-wrap: wrap;
     }
 }
-.swal2-container.swal2-backdrop-show,
-.swal2-container.swal2-noanimation {
-    // background: rgba(0,0,0,.8);
-}
-
 .swal2-popup.swal2-toast {
     border-left: 4px solid var(--color-toast);
     border-radius: 5px;
@@ -531,7 +485,7 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
     color: var(--fg-on-inverse);
 }
 
-// SHORT FLASH FOR NOTIFICATION
+/* SHORT FLASH FOR NOTIFICATIONS */
 @keyframes flashForSwal2Toast {
     from {
         border-left: 4px solid var(--bg-highlight);
@@ -567,21 +521,6 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
     }
 }
 
-//@keyframes swal2-toast-show {
-// 0% {
-//  transform:translateY(-.625em) rotateZ(0deg)
-// }
-// 33% {
-//  transform:translateY(0) rotateZ(0deg)
-// }
-// 66% {
-//  transform:translateY(.3125em) rotateZ(0deg)
-// }
-// 100% {
-//  transform:translateY(0) rotateZ(0)
-// }
-//}
-
 @keyframes swal2-toast-show {
     0% {
         opacity: 0;
@@ -598,7 +537,7 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
     }
 }
 
-// Simple light box z-index changes
+/* SIMPLE LIGHTBOX */
 
 #viewer .slbOverlay {
     z-index: 2100;
@@ -606,29 +545,8 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
 #viewer .slbWrapOuter {
     z-index: 2105;
 }
-// JAKARTA ERROR MESSAGES
-// due to dev mode in context.xml (tomcat)
-// shown at the end of DOM - HIDE FOR NOW
+/* JAKARTA FACES DEVELOPMENT MESSAGES, HIDDEN */
 #jakarta_faces_developmentstage_messages {
     margin: 0 !important;
     display: none !important;
 }
-
-/* add a focus ring for better accessibility */
-/* set to important, because of styles in bootstrap.custom.css */
-/* focus ring on form elements can be switched off (-no-outline), instead a blue border can be added
-/* another option using js: add a utility class (.show-outlines) to the body when tab is pressed, remove it when users click
-
-*:focus, a:focus {
-	outline: 1px dotted !important;
-}
-
-.-no-outline:focus, .-no-outline:active {
-	outline: none !important;
-}
-
-.-active-border:focus, .-active-border:active {
-	border: 1px solid #3365a9 !important;
-}
-
-*/
