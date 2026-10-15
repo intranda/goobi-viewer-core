@@ -11,12 +11,14 @@
     z-index: 2;
     position: relative;
 
+    /* ACTIONS */
     &__actions {
         display: flex;
         margin-left: auto;
         align-items: center;
     }
 
+    /* ACTIONS */
     &__action-overlay {
         position: absolute;
         width: 100%;
@@ -98,6 +100,7 @@
         }
     }
 
+    /* BODY */
     &__body {
         padding: 1.5rem;
         position: relative;
@@ -111,6 +114,7 @@
         }
     }
 
+    /* OVERLAY */
     &__overlay {
         display: none;
         width: 100%;
@@ -123,6 +127,7 @@
         }
     }
 
+    /* LOADER */
     &__loader-wrapper {
         display: block;
         position: relative;
@@ -137,6 +142,7 @@
         transform: translate(-50%, -50%);
     }
 
+    /* GEO MAP */
     .geo-map {
         min-height: 350px;
         .mapboxgl-popup-content {
@@ -160,6 +166,7 @@
         }
     }
 
+    /* OVERLAY */
     &__overlay-buttons-wrapper {
         position: absolute;
         right: 15px;
@@ -211,9 +218,11 @@
     }
 }
 
+/* GEOMAP */
 .overlay__geomap {
     width: 100%;
     height: 100%;
+    /* GEO MAP */
     .geo-map {
         width: 100%;
         height: 100%;
@@ -229,12 +238,14 @@
         }
     }
 
+    /* GEOCODER */
     .geocoder {
         position: absolute;
         right: 30px;
         top: 30px;
         z-index: 401;
     }
+    /* GEOCODER INPUT */
     .mapboxgl-ctrl-geocoder--input {
         &:focus {
             outline: none;
@@ -242,6 +253,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .widget-geofacetting {
         &__actions {

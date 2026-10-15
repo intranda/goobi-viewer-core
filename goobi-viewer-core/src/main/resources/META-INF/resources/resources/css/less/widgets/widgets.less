@@ -3,14 +3,15 @@
    style declarations for sidebar widgets
    ==============================================================*/
 /* WIDGETS */
-/* BLOCK */
 .widget {
     margin-bottom: 20px;
     width: 100%;
+    /* BADGE ICONS */
     .badge .icon-wrapper svg,
     .icon-wrapper.icon-badge svg {
         color: currentColor;
     }
+    /* TOPBAR */
     &__topbar {
         display: flex;
         justify-content: space-between;
@@ -40,6 +41,7 @@
     &__topbar-icon-svg {
         color: var(--fg-brand);
     }
+    /* TITLE */
     &__title {
         font-size: var(--font-size-heading-small);
         line-height: var(--line-height-heading);
@@ -48,6 +50,7 @@
         display: flex;
     }
 
+    /* BODY */
     &__body {
         padding: 1.2rem 1.5rem;
         word-break: break-word;
@@ -91,6 +94,7 @@
         color: var(--fg-default);
     }
 
+    /* DESCRIPTION TEXT */
     &__description-text {
         margin-bottom: 10px;
 
@@ -99,6 +103,7 @@
         }
     }
 
+    /* BADGE CONTAINER */
     &__badge-container {
         margin-bottom: 18px;
         display: flex;
@@ -129,6 +134,7 @@
         }
     }
 
+    /* PDF BADGES */
     .widget-downloads__page-download-pdf,
     .widget-downloads__work-download-pdf {
         line-height: 1;
@@ -146,6 +152,7 @@
         }
     }
 
+    /* BADGE CONTAINER HEADING */
     &__badge-container-heading {
         margin-bottom: 0px;
         flex: 0 0 100%;
@@ -158,11 +165,13 @@
     background-color: var(--bg-inverse);
     color: var(--fg-on-inverse);
 
+    /* TITLE */
     &__title {
         padding: 0.7rem 1.5rem;
         margin-bottom: 1rem;
     }
 
+    /* BODY */
     &__body {
         padding: 1rem 1.5rem;
 

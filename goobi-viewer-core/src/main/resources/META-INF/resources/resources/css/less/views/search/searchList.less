@@ -3,9 +3,9 @@
    style declarations for searchList.xhtml
    ==============================================================*/
 /* SEARCH LIST */
-/* BLOCK */
 .search-list {
     margin-bottom: 21px;
+    /* GEOMAP */
     .geomap {
         height: 250px;
     }
@@ -141,6 +141,7 @@
             }
         }
     }
+    /* OPTION BAR ITEMS */
     &__hitcount,
     &__rss,
     &__save-search,
@@ -154,6 +155,7 @@
         white-space: nowrap;
         margin-bottom: 0;
     }
+    /* SAVE SEARCH */
     &__save-search {
         > span {
             display: inline-flex;
@@ -166,6 +168,7 @@
         min-width: 20rem;
     }
 
+    /* EXPORT DROPDOWN */
     &__export-dropdown-heading,
     &__hit-export-dropdown-heading {
         font-weight: 700;
@@ -184,6 +187,7 @@
         display: flex;
         align-items: center;
     }
+    /* HIT EXPORT DROPDOWN */
     &__hit-export-dropdown-wrapper {
         display: flex;
         align-items: flex-start;
@@ -225,6 +229,7 @@
             margin: 0;
         }
     }
+    /* HITS LIST */
     &__hits-list {
         display: flex;
         flex-direction: column;
@@ -300,6 +305,7 @@
         max-width: 100%;
         min-width: 160px;
     }
+    /* STRUCT TITLE */
     &__struct-title {
         h4 {
             line-height: normal;
@@ -319,6 +325,7 @@
             overflow: hidden;
         }
     }
+    /* SUBHIT THUMBNAIL */
     &__subhit-thumbnail {
         margin-left: 0.5rem;
         img {
@@ -326,11 +333,13 @@
             max-width: 100px;
         }
     }
+    /* LOADER */
     &__loader {
         display: flex;
         width: 100%;
         justify-content: center;
     }
+    /* HIT CONTENT */
     &__hit-content-more {
         padding: 5px;
         text-align: center;
@@ -479,11 +488,13 @@
         font-size: var(--font-size-body-small);
         margin: 0;
     }
+    /* THUMB BOOKMARK */
     &__thumb-bookmark {
         &[data-bookmark-list-type='add'] {
             background-image: none;
         }
     }
+    /* HIT DOCSTRUCT */
     &__hit-docstruct {
         margin-bottom: 10px;
         ul {
@@ -654,6 +665,7 @@
     display: block;
 }
 
+/* RTL */
 @{RTL} .search-list {
     &__hit-thumbnail {
         [data-bookmark-list-type='add'] {

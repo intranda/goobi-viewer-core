@@ -6,6 +6,7 @@
 #widgetUserInteractions {
     background: var(--bg-inverse);
     color: var(--fg-on-inverse);
+    /* MODAL TITLE */
     .modal-title {
         color: var(--fg-default);
     }
@@ -47,6 +48,7 @@
             }
         }
     }
+    /* DELETE RECORD WRAPPER */
     .widget-user-interactions__delete-record-wrapper {
         margin-bottom: 0;
     }
@@ -57,12 +59,14 @@
     padding: 2rem;
     background-color: var(--bg-inverse);
     color: var(--fg-on-inverse);
+    /* INFO TEXT */
     &__info-text {
         font-size: var(--font-size-caption);
         font-style: italic;
         margin-bottom: 1rem;
         color: var(--fg-on-inverse);
     }
+    /* DELETE RECORD */
     &__delete-record-message {
         padding: 1.5rem;
         padding-top: 5px;
@@ -102,11 +106,13 @@
             }
         }
     }
+    /* CUSTOM CONTROL SELECT */
     .custom-control--select {
         font-size: var(--font-size-caption);
     }
 }
 
+/* RTL */
 @{RTL} {
     .widget-user-interactions {
         &__delete-record-action {

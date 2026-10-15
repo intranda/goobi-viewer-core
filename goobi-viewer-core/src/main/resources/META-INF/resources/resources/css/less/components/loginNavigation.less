@@ -3,18 +3,18 @@
    style declarations for loginNavigation.xhtml
    ==============================================================*/
 /* LOGIN NAVIGATION */
-/* BLOCK */
 .login-navigation {
     .mx-list-reset;
     position: relative;
+    /* LIST */
     &__list {
         .mx-list-reset;
     }
+    /* TOGGLE BUTTON */
     &__toggle-button {
         display: flex;
         align-items: center;
     }
-    /* ELEMENT */
     /* LOGGED IN */
     [data-login='true'] {
         button[data-toggle='user-dropdown'] {
@@ -192,6 +192,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .login-navigation {
         [data-login='true'] {

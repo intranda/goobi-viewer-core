@@ -3,11 +3,11 @@
    style declarations for viewMetadata.xhtml 
    ==============================================================*/
 /* METADATA */
-/* BLOCK */
 /* THESE PROPERTIES HAVE IMPACT ON VIEWER BACKEND RECORD NOTES AS WELL */
 .metadata {
     position: relative;
     margin-bottom: 1.3125rem;
+    /* TITLE */
     &__title-wrapper {
         margin-bottom: 1.5rem;
         & + .metadata__element-wrapper {
@@ -20,6 +20,7 @@
         flex: 0 0 calc(100% - 25px);
         margin: 0;
     }
+    /* BOOKMARK BUTTON */
     &__bookmark-button {
         &[data-bookmark-list-type='add'] {
             flex: 0 0 25px;
@@ -37,6 +38,7 @@
             }
         }
     }
+    /* WRAPPER */
     &__wrapper {
         margin-bottom: 1rem;
         &.-isBoxed {
@@ -83,12 +85,12 @@
             margin-bottom: 0;
         }
     }
-    /* ELEMENT */
     &__element-level-1 {
         .metadata__element-dl {
             grid-template-columns: 230px auto;
         }
     }
+    /* ELEMENTS */
     &__elements-level-1 {
         margin-left: 3rem;
     }
@@ -99,16 +101,19 @@
         margin-bottom: 1rem;
         margin-top: 3.5rem;
     }
+    /* ELEMENT WRAPPER */
     &__element-wrapper {
         .fa {
             margin-right: 5px;
         }
     }
+    /* LOCKED VALUE ICON */
     &__locked-value-icon {
         .fa {
             margin-right: 5px;
         }
     }
+    /* ELEMENT */
     &__element-wrapper-single {
         background: var(--bg-surface);
         color: var(--fg-default);
@@ -132,6 +137,7 @@
         padding: 1rem;
         margin-bottom: unset;
     }
+    /* GROUPED WRAPPER */
     &__grouped-wrapper {
         background: var(--bg-surface);
         color: var(--fg-default);
@@ -144,6 +150,7 @@
             margin-bottom: unset;
         }
     }
+    /* UNGROUPED WRAPPER */
     &__ungrouped-wrapper {
         background: var(--bg-surface);
         color: var(--fg-default);
@@ -152,9 +159,11 @@
             margin-bottom: 0;
         }
     }
+    /* ELEMENT UNGROUPED */
     &__element-ungrouped {
         grid-template-columns: 250px auto;
     }
+    /* HEADING */
     &__heading {
         font-weight: 700;
         background: var(--bg-surface);
@@ -180,6 +189,7 @@
             }
         }
     }
+    /* KEY VALUE PAIRS LIST */
     &__key-value-pairs-list {
         dd {
             &:last-child {
@@ -187,10 +197,12 @@
             }
         }
     }
+    /* ELEMENT WRAPPER SINGLE CUSTOM WRAPPER */
     &__element-wrapper-single-custom-wrapper {
         display: flex;
         flex-wrap: wrap;
     }
+    /* FOLD */
     &__fold-wrapper {
         &.-hidden {
             display: none;
@@ -215,6 +227,7 @@
     }
 }
 
+/* HIERARCHY SEPARATOR */
 .hierarchy-separator {
     display: inline-block;
     width: 1.2rem;
@@ -238,6 +251,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .metadata {
         &__element-dl,

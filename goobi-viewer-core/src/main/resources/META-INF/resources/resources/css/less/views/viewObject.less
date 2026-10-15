@@ -7,9 +7,7 @@
 @view-object-rail-width: 168px;
 
 /* VIEW OBJECT */
-/* BLOCK */
 .view-object {
-    /* ELEMENT */
     /* IMAGE */
     &__object-3d,
     &__image {
@@ -73,6 +71,7 @@
             font-weight: 700;
         }
     }
+    /* IMAGE MAP */
     &__image-map {
         position: relative;
         width: 100%;
@@ -103,11 +102,13 @@
             z-index: 1 !important;
         }
     }
+    /* 3D WORLD */
     &__object-3d-world-before-load-text {
         text-align: center;
         padding: 10px 20px;
         font-size: var(--font-size-body);
     }
+    /* ACCESS DENIED */
     &__access-denied {
         text-align: center;
         overflow: hidden;
@@ -249,6 +250,7 @@
         }
     }
 
+    /* USER GENERATED CONTENT */
     &__user_generated_content {
         margin-top: 40px;
         h2 {
@@ -256,10 +258,12 @@
         }
     }
 
+    /* UPDATE FORM */
     &__update-form {
         display: none !important;
     }
 
+    /* ACCESS DENIED */
     &__access-denied {
         margin-top: 10px;
     }
@@ -279,6 +283,7 @@
     display: flex;
     margin-bottom: 1.5rem;
 
+    /* THUMB */
     &__thumb {
         flex: 0 0 30%;
 
@@ -287,6 +292,7 @@
         }
     }
 
+    /* OBJECTS */
     &__objects {
         flex: 0 0 70%;
         padding-left: 1.5rem;
@@ -297,6 +303,7 @@
         }
     }
 
+    /* AUDIO */
     &__audio {
         width: 70%;
         margin: 0 auto;
@@ -316,6 +323,7 @@
     }
 }
 
+/* IMAGE FRAGMENT */
 .image-fragment {
     background-color: rgb(from var(--bg-document) r g b / 30%);
     border-color: var(--color-region);
@@ -327,6 +335,7 @@
     }
 }
 
+/* PAGE AREA */
 .page-area {
     display: none;
     border-color: rgb(from var(--border-brand) r g b / 50%);
@@ -385,16 +394,20 @@
     }
 }
 
+/* COPY POPOVER */
 popover [data-copy] {
     cursor: pointer;
 }
 
+/* AJAX LOADER */
 .ajax_loader {
+    /* IMAGE UPDATE */
     &__image_update {
         &.-hidden {
             display: none;
         }
     }
+    /* CONTENT AREA */
     &__content_area {
         height: 2.5rem;
         display: flex;
@@ -404,6 +417,7 @@ popover [data-copy] {
             height: 4rem;
         }
     }
+    /* SIDEBAR */
     &__sidebar {
         height: 1.9rem;
         display: flex;

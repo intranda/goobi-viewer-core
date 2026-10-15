@@ -6,6 +6,7 @@
 @immersive-z-overlay: 110;
 
 .immersive {
+    /* OVERLAY TOP */
     &__overlay-top {
         position: absolute;
         top: @immersive-edge-inset;
@@ -19,6 +20,7 @@
         transition: opacity 0.2s ease;
     }
 
+    /* TITLE */
     &__title {
         position: relative;
         display: flex;
@@ -112,6 +114,7 @@
         }
     }
 
+    /* PAGE DROPDOWN */
     &__page-dropdown {
         position: absolute;
         top: calc(100% + 8px);

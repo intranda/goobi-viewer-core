@@ -3,10 +3,12 @@
    Inline calendar for newspaper/periodical sidebar.
    ==============================================================*/
 .widget-calendar {
+    /* BODY */
     &__body {
         padding: 0;
         position: relative;
     }
+    /* CALENDAR */
     .flatpickr-calendar {
         width: 100%;
         max-width: 100%;
@@ -22,18 +24,21 @@
         width: 100%;
     }
 
+    /* DAY CONTAINER */
     .dayContainer {
         width: 100%;
         max-width: 100%;
         min-width: 100%;
     }
 
+    /* MONTH ARROWS */
     .flatpickr-prev-month.-disabled-,
     .flatpickr-next-month.-disabled- {
         opacity: 0.3;
         cursor: default;
     }
 
+    /* YEAR SPINNER */
     .numInputWrapper span.arrowUp,
     .numInputWrapper span.arrowDown {
         display: block;
@@ -65,6 +70,7 @@
     .numInputWrapper span.arrowDown::after {
         border-top: 4px solid var(--fg-on-brand);
     }
+    /* DAYS */
     .flatpickr-day {
         color: var(--fg-placeholder);
         border: none;
@@ -99,6 +105,7 @@
         background-color: var(--fg-brand);
     }
 
+    /* ISSUE POPOVER */
     &__popover {
         position: fixed;
         z-index: 1050;

@@ -4,7 +4,6 @@
    widget_searchFacets.xhtml (one connected filter container)
    ==============================================================*/
 
-/* BLOCK */
 .combined-facets {
     position: relative;
     padding: 24px;
@@ -13,7 +12,7 @@
     background: var(--bg-brand-subtle);
     border-radius: var(--radius-button);
 
-    /* ELEMENTS */
+    /* HEAD */
     &__head {
         display: flex;
         align-items: center;
@@ -22,6 +21,7 @@
         margin-bottom: 16px;
     }
 
+    /* TITLE */
     &__title {
         margin: 0;
         padding: 0;
@@ -30,6 +30,7 @@
         color: var(--fg-default);
     }
 
+    /* RESET */
     &__reset {
         display: inline-flex;
         align-items: center;
@@ -62,10 +63,12 @@
         margin-bottom: 16px;
     }
 
+    /* LIST */
     .active-facets-badges__list {
         gap: 5px;
     }
 
+    /* BADGE */
     .active-facets-badges__badge {
         --_afb-bg: var(--bg-brand);
         --_afb-bg-hover: var(--bg-brand-hover);
@@ -105,6 +108,7 @@
         box-shadow: none;
     }
 
+    /* TOPBAR */
     .widget__topbar {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto auto;
@@ -138,6 +142,7 @@
         transition: transform 0.15s ease-in-out;
     }
 
+    /* COLLAPSED SECTION */
     .widget.-section-collapsed {
         .widget-search-facets__section-toggle-icon-svg {
             transform: rotate(0deg);
@@ -156,6 +161,7 @@
         }
     }
 
+    /* TITLE */
     .widget__title {
         padding: 0;
         font-size: var(--font-size-body);
@@ -163,12 +169,14 @@
         color: var(--fg-default);
     }
 
+    /* BODY */
     .widget__body {
         padding: 12px 0 0;
         background: transparent;
         border: 0;
     }
 
+    /* DESCRIPTION TEXT */
     .widget__description-text {
         font-size: var(--font-size-caption);
         color: var(--fg-muted);
@@ -181,6 +189,7 @@
         scrollbar-color: var(--border-strong) transparent;
     }
 
+    /* LIST */
     .widget-search-facets__list {
         gap: 10px;
     }
@@ -369,6 +378,7 @@
         color: var(--fg-brand);
     }
 
+    /* TOPBAR ICON */
     .widget__topbar .widget__topbar-icon-svg {
         color: currentColor;
     }
@@ -386,10 +396,12 @@
         color: var(--fg-muted);
     }
 
+    /* WIDGET CHRONOLOGY SLIDER */
     .widget-chronology-slider {
         overflow: visible;
     }
 
+    /* SLIDER */
     .widget-chronology-slider__slider {
         height: 4px;
         /* KEEPS THE RIGHT HANDLE CLEAR OF THE CONTAINER EDGE */

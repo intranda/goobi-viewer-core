@@ -3,9 +3,8 @@
    style declarations for viewFulltext.xhtml 
    ==============================================================*/
 /* VIEW FULLTEXT */
-/* BLOCK */
 .view-fulltext {
-    /* ELEMENT */
+    /* BOX */
     &__box {
         pre {
             padding: 10px;
@@ -19,6 +18,7 @@
             }
         }
     }
+    /* CONTENT */
     &__content {
         padding: 10px;
         border: 1px solid var(--border-strong);
@@ -32,6 +32,7 @@
             max-width: 100%;
         }
     }
+    /* POPOVER BUTTON */
     &__popover-button {
         display: flex;
         align-items: center;
@@ -46,6 +47,7 @@
             text-decoration: none;
         }
     }
+    /* ENTITY ACTION BUTTON */
     &__entity-action-button {
         background: transparent;
         display: inline;
@@ -57,6 +59,7 @@
     }
 }
 
+/* POPOVER */
 .view-fulltext__popover-button {
     display: inline-flex;
     align-items: center;

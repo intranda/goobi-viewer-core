@@ -3,13 +3,11 @@
    style declarations for simplePaginator.xhtml
    ==============================================================*/
 /* NUMERIC PAGINATOR */
-/* BLOCK */
 .numeric-paginator {
     margin: 15px 0;
     &.-rtl {
         direction: rtl;
     }
-    /* ELEMENT */
     ul {
         display: flex;
         justify-content: center;
@@ -51,9 +49,11 @@
             color: var(--fg-selected);
         }
     }
+    /* ACTIVE */
     &__active {
         font-weight: 700;
     }
+    /* NAVIGATE */
     &__navigate {
         button {
             border: none;
@@ -76,6 +76,7 @@
             }
         }
     }
+    /* ICON */
     &__icon-svg {
         width: 16px;
         height: 16px;
@@ -110,7 +111,6 @@
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
     .numeric-paginator {
-        /* ELEMENT */
         li {
             margin-right: -1px;
         }

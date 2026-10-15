@@ -8,7 +8,6 @@
 @image-controls-gap: 4px;
 @image-controls-group-gap: 20px;
 /* CONTROLS */
-/* BLOCK */
 .image-controls {
     padding: 12px;
     position: relative;
@@ -23,6 +22,7 @@
     .-rtl {
         direction: rtl;
     }
+    /* INNER */
     &__inner {
         display: flex;
         align-items: center;
@@ -50,6 +50,7 @@
         padding: 0;
         list-style: none;
     }
+    /* OPTIONS */
     &__option {
         display: flex;
         align-items: center;
@@ -190,9 +191,11 @@
             align-self: center;
         }
     }
+    /* INCLUDES */
     &__includes-container {
         display: none;
     }
+    /* ACTIONS */
     &__action {
         /* TEXT AND PAGE SELECTORS SET THE MINIMUM, ICONS KEEP THEIR SIZE */
         --_action-size: ~'max(32px, calc(var(--font-size-body-small) * var(--line-height-body) + 0.6rem + 2px))';
@@ -215,7 +218,6 @@
             background-color: var(--bg-control-hover);
             color: var(--fg-on-control-hover);
         }
-        /* ELEMENT */
         a,
         span,
         button {
@@ -359,6 +361,7 @@
         padding: 0;
         display: none !important;
     }
+    /* SHARE IMAGE AREA */
     .share-image-area {
         .btn.btn--full {
             color: var(--fg-on-inverse);
@@ -382,11 +385,13 @@
     }
 }
 
+/* ACTIONS NAV ICONS */
 .image-controls__actions-nav .image-controls__icon,
 .image-controls__actions-additional .image-controls__icon {
     color: var(--fg-default);
 }
 
+/* ICONS */
 .image-controls__icon {
     display: inline-flex;
     align-items: center;
@@ -405,6 +410,7 @@
     fill: none;
 }
 
+/* ACTION ICONS */
 .image-controls__action .image-controls__icon-svg {
     width: @image-controls-icon-size;
     height: @image-controls-icon-size;
@@ -423,6 +429,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .image-controls {
         direction: rtl;

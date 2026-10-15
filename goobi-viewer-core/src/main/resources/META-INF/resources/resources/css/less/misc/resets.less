@@ -5,14 +5,17 @@
 form {
     margin: 0;
 }
+/* ALERT DANGER */
 .alert-danger {
     word-wrap: break-word;
 }
 
+/* MODAL DIALOG */
 .modal-dialog {
     z-index: 2031;
 }
 
+/* LINKS */
 a {
     color: var(--fg-link);
     &:hover {
@@ -24,6 +27,7 @@ a {
     }
 }
 
+/* BUTTONS */
 button,
 .btn {
     color: var(--fg-secondary);
@@ -36,10 +40,12 @@ button,
     }
 }
 
+/* NAV TABS */
 .nav-tabs li a:hover {
     text-decoration: none;
 }
 
+/* MODAL */
 .modal {
     overflow-y: auto;
     z-index: 9999;
@@ -88,6 +94,7 @@ button,
     padding: 3rem 3rem 3rem 3rem;
 }
 
+/* FANCY CLOSE */
 .fancy-close {
     position: absolute;
     top: auto;
@@ -137,12 +144,14 @@ button,
 
 /* SHARED LIBRARY ADAPTERS READ THE SAME ROLES */
 :where(html:not(:has(#admin))) {
+    /* DROPDOWN MENU */
     .dropdown-menu,
     .dropdown-item,
     .multiselect-dropdown {
         font-size: var(--font-size-body);
         line-height: var(--line-height-body);
     }
+    /* BADGE AND OVERLAY TEXT */
     .badge,
     .tooltip,
     .popover {
@@ -151,19 +160,23 @@ button,
     }
 }
 
+/* PREFORMATTED TEXT */
 pre {
     font-size: var(--font-size-caption);
     line-height: var(--line-height-body);
 }
 
+/* TOOLTIP */
 .tooltip {
     font-size: var(--font-size-caption);
 }
 
+/* BUTTON FOCUS */
 button:focus {
     outline: none;
 }
 
+/* BADGE */
 .badge {
     padding: 0.2em 0.6em 0.3em;
 }
@@ -177,11 +190,13 @@ button:focus {
     color: var(--fg-on-info);
 }
 
+/* PAGE HEADER */
 .page-header {
     padding-bottom: 0;
     margin: 0;
     border-bottom: none;
 }
+/* NAV TABS */
 .nav-tabs {
     & > li > a:hover {
         border-color: var(--border-strong) var(--border-strong) var(--border-strong);
@@ -223,6 +238,7 @@ button:focus {
         margin-bottom: -1px;
     }
 }
+/* TAB CONTENT */
 .tab-content {
     background-color: var(--bg-surface);
     color: var(--fg-default);
@@ -233,6 +249,7 @@ button:focus {
     border-bottom: 1px solid var(--border-strong);
     border-left: 1px solid var(--border-strong);
 }
+/* FORM CONTROL */
 .form-control {
     border-radius: 0;
     box-shadow: none;
@@ -242,9 +259,11 @@ button:focus {
         outline: none;
     }
 }
+/* POPOVER CONTENT */
 .popover-content {
     color: var(--fg-default);
 }
+/* TABLE CELLS */
 .table > tbody > tr > td {
     word-break: break-word;
 }
@@ -254,6 +273,7 @@ button:focus {
         margin: 0;
     }
 }
+/* COLUMNS */
 .col-1,
 .col-2,
 .col-3,
@@ -306,6 +326,7 @@ button:focus {
         padding: 0;
     }
 }
+/* NO GUTTERS */
 .no-gutters {
     margin-right: 0;
     margin-left: 0;
@@ -315,10 +336,12 @@ button:focus {
     }
 }
 
+/* TOOLTIP */
 .tooltip {
     z-index: 9999;
 }
 
+/* LINKS */
 a {
     &.badge-dark:focus,
     &.badge-dark.focus {
@@ -331,6 +354,7 @@ a {
         }
     }
 }
+/* INPUT GROUP ADDON */
 .input-group-addon {
     padding: 6px 12px;
     font-size: var(--font-size-body-small);
@@ -347,6 +371,7 @@ a {
     }
 }
 
+/* CARET */
 .caret {
     display: inline-block;
     width: 0;
@@ -359,6 +384,7 @@ a {
     border-left: 4px solid transparent;
 }
 
+/* HIDDEN */
 .hidden {
     display: none !important;
 }
@@ -367,6 +393,7 @@ a {
     cursor: pointer;
 }
 
+/* HORIZONTAL DEFINITION LISTS */
 .dl-horizontal dt {
     float: left;
     width: 160px;
@@ -431,6 +458,7 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
     bottom: 90px;
 }
 
+/* SWEET ALERT */
 .swal2-header {
     h1 {
         font-size: var(--font-size-body);
@@ -495,6 +523,7 @@ body.swal2-toast-shown .swal2-container.swal2-bottom {
     }
 }
 
+/* SWEET ALERT ANIMATIONS */
 .-sweetAlertShowAnimation {
     animation: swalAnimShow 0.2s ease;
 }

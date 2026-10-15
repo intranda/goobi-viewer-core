@@ -3,20 +3,21 @@
    style declarations for bornDigital.xhtml
    ==============================================================*/
 /* BORN DIGITAL */
-/* BLOCK */
 .born-digital {
     margin-bottom: 21px;
     margin-top: 25px;
-    /* ELEMENT */
+    /* NO ACCESS BOX */
     &__no-access-box {
         padding: 1.5rem;
         p {
             margin-bottom: 0;
         }
     }
+    /* BOX */
     &__box {
         padding: 1.5rem;
     }
+    /* INTERNAL RESOURCES WRAPPER */
     &__internal-resources-wrapper {
         display: flex;
         flex-direction: column;
@@ -26,6 +27,7 @@
         margin-bottom: 1rem;
         margin-top: 3.5rem;
     }
+    /* ITEMS WRAPPER */
     &__items-wrapper {
         display: grid;
         grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
@@ -35,6 +37,7 @@
         margin-left: -15px;
         margin-right: -15px;
     }
+    /* HEAD */
     &__head-wrapper {
         display: grid;
         grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
@@ -48,6 +51,7 @@
     &__head {
         font-weight: bold;
     }
+    /* ITEM */
     &__item {
         position: relative;
         word-wrap: anywhere;
@@ -60,23 +64,28 @@
     }
 }
 
+/* DOWNLOAD EXTERNAL RESOURCE */
 .download-external-resource {
+    /* HEADING */
     &__heading {
         font-size: var(--font-size-body-small);
         margin: 0;
         font-weight: 700;
         margin-top: 5px;
     }
+    /* LIST */
     &__list {
         display: flex;
         flex-direction: column;
         gap: 5px;
     }
+    /* ITEM */
     &__item {
         padding: 0 15px;
         margin-left: -15px;
         margin-right: -15px;
     }
+    /* ERROR */
     &__error_wrapper {
         display: none;
         color: var(--fg-danger);
@@ -84,6 +93,7 @@
             display: block;
         }
     }
+    /* INNER WRAPPER */
     &__inner-wrapper {
         display: none;
         gap: 0 20px;
@@ -92,32 +102,38 @@
             align-items: center;
         }
     }
+    /* LABEL */
     &__label {
         margin-right: auto;
         display: block;
         word-break: break-all;
     }
+    /* BUTTON WRAPPER */
     &__button-wrapper {
         min-width: 120px;
     }
+    /* ORDER */
     &__order {
         display: none;
         &.-active {
             display: block;
         }
     }
+    /* WAITING ANIMATION */
     &__waiting_animation {
         display: none;
         &.-active {
             display: block;
         }
     }
+    /* LOADING ANIMATION */
     &__loading_animation {
         display: none;
         &.-active {
             display: block;
         }
     }
+    /* RESULTS */
     &__results {
         display: none;
         &.-active {

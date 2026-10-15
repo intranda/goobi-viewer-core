@@ -3,10 +3,9 @@
    style declarations for viewThumbs.xhtml 
    ==============================================================*/
 /* VIEW THUMBS */
-/* BLOCK */
 .view-thumbs {
     margin-bottom: 15px;
-    /* ELEMENT */
+    /* THUMBNAILS */
     &__thumbnails {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
@@ -19,6 +18,7 @@
             direction: rtl;
         }
     }
+    /* THUMBNAIL */
     &__thumbnail {
         padding: 5px;
         border: 1px solid var(--border-default);
@@ -50,6 +50,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .view-thumbs {
         &__thumbnails {

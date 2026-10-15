@@ -3,11 +3,13 @@
    style declarations for widget_searchresultNavigation.xhtml
    ==============================================================*/
 .widget-search-result-navigation {
+    /* WRAPPER */
     &__wrapper {
         display: flex;
         align-items: center;
         margin-bottom: 5px;
     }
+    /* COLUMNS */
     &__left,
     &__center,
     &__right {
@@ -47,6 +49,7 @@
             transform: rotate(180deg);
         }
     }
+    /* CENTER */
     &__center {
         max-width: 60%;
         flex: 0 0 60%;
@@ -54,6 +57,7 @@
         margin-left: auto;
         margin-right: auto;
     }
+    /* RIGHT */
     &__right {
         max-width: 20%;
         flex: 0 0 20%;
@@ -80,6 +84,7 @@
             transition: transform 140ms ease;
         }
     }
+    /* BACK TO COLLECTION */
     &__back-to-collection {
         display: flex;
         align-items: center;
@@ -112,6 +117,7 @@
     }
 }
 
+/* RTL */
 @{RTL} .widget-search-result-navigation {
     &__back-to-collection {
         a {

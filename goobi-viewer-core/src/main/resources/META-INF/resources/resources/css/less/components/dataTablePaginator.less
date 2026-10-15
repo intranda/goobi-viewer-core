@@ -3,10 +3,8 @@
    style declarations for dataTablePaginator.xhtml
    ==============================================================*/
 /* DATATABLE PAGINATOR */
-/* BLOCK */
 .data-table-paginator {
     margin-bottom: 15px;
-    /* ELEMENT */
     ul {
         position: relative;
         float: left;
@@ -25,6 +23,7 @@
         display: block;
         padding: 5px 15px;
     }
+    /* PAGE COUNT */
     &__page-count {
         span {
             display: inline-block;
@@ -41,15 +40,18 @@
             padding-right: 8px;
         }
     }
+    /* TOTAL COUNT */
     &__total-count,
     &__current-page {
         cursor: pointer;
     }
+    /* INPUT */
     &__input {
         input {
             max-width: 40px;
         }
     }
+    /* BUTTON */
     &__button {
         border-color: var(--border-strong);
         background-color: var(--bg-subtle);
@@ -60,6 +62,7 @@
         align-items: center;
         justify-content: center;
     }
+    /* ICON */
     &__icon {
         padding: 0;
         display: inline-flex;
@@ -72,11 +75,13 @@
     }
 }
 
+/* MOVE TO INPUTS */
 #txtMoveTo2,
 input[id*='cmdMoveTo'] {
     display: none;
 }
 
+/* RTL */
 @{RTL} {
     .data-table-paginator {
         &__page-count {

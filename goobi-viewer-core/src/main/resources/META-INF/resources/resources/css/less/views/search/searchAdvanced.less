@@ -7,6 +7,7 @@
     /* GAP SIZING VARIABLE */
     @gap-sizer: 20px;
 
+    /* ENTRY AREA */
     &__entry-area-title,
     &__additional-options-title {
         margin-bottom: 10px;
@@ -35,6 +36,7 @@
             padding-top: 30px;
         }
     }
+    /* LOADER */
     &__loader {
         display: none;
         position: absolute;
@@ -49,11 +51,13 @@
         z-index: 10;
     }
 
+    /* OPERATOR FIELD PAIR WRAPPER */
     &__operator-field-pair-wrapper {
         display: grid;
         gap: @gap-sizer;
         grid-template-columns: minmax(100px, auto) minmax(100px, auto);
     }
+    /* INPUT GROUP */
     &__input-group {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -116,6 +120,7 @@
         width: 1%;
         margin-bottom: 0;
     }
+    /* DATEPICKER INPUT */
     .datepicker-input {
         flex: 1 1 auto;
         width: 1%;
@@ -124,15 +129,18 @@
             width: 100%;
         }
     }
+    /* SELECT VALUES */
     &__select-values {
         width: auto;
     }
+    /* BETWEEN ARROW */
     &__between-arrow {
         display: flex;
         align-items: center;
         padding: 0 0.7rem;
         font-size: var(--font-size-body);
     }
+    /* YEAR SPAN */
     &__year-span-from {
         align-self: center;
         margin-right: 1rem;
@@ -143,6 +151,7 @@
         margin-left: 1rem;
     }
 
+    /* INPUT COL */
     &__input-col {
         a,
         button {
@@ -171,13 +180,16 @@
             margin: 0 0 0 5px;
         }
     }
+    /* FUZZY SEARCH OPTION WRAPPER */
     &__fuzzy-search-option-wrapper {
         display: flex;
         gap: @gap-sizer;
     }
+    /* ADDITIONAL OPTIONS AREA */
     &__additional-options-area {
         margin: 30px 0;
     }
+    /* NAV HELPER BOX */
     &__nav-helper-box {
         display: flex;
         justify-content: space-between;
@@ -191,6 +203,7 @@
         grid-column-gap: 20px;
         align-items: center;
     }
+    /* CUSTOM CONTROL */
     &__custom-control {
         width: auto;
         select {
@@ -198,9 +211,11 @@
             width: 100%;
         }
     }
+    /* VALUE GROUP */
     &__value-group {
         min-width: 0;
     }
+    /* BUTTON BADGE */
     &__button-badge {
         max-width: 100%;
         .badge {
@@ -290,6 +305,7 @@
     }
 }
 
+/* RTL */
 @{RTL} .search-advanced {
     &__input-group {
         .form-control__select,

@@ -2,21 +2,24 @@
    Widget Search Drill Down
    style declarations for widget_searchFacets.xhtml
    ==============================================================*/
-/* BLOCK */
 .widget-search-facets {
+    /* TOPBAR */
     &__topbar {
         overflow: hidden;
     }
 
+    /* TITLE */
     &__title {
         width: 100%;
         display: inline-block;
         max-width: calc(~'100% - 36px');
         word-wrap: anywhere;
     }
+    /* BODY ICON */
     &__body-icon-svg {
         color: currentColor;
     }
+    /* LIST */
     &__list {
         display: flex;
         flex-direction: column;
@@ -234,6 +237,7 @@
     &__filter {
         display: none;
     }
+    /* BOOLEAN */
     &__boolean {
         display: flex;
         gap: 20px;
@@ -257,6 +261,7 @@
     }
 }
 
+/* RTL */
 @{RTL} .widget-search-facets {
     &__filter {
         [data-toggle='searchFacetFilter'] {

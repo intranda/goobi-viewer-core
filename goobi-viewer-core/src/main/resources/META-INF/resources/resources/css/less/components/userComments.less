@@ -3,10 +3,9 @@
    style declarations for userComments.xhtml
    ==============================================================*/
 /* USER COMMENTS */
-/* BLOCK */
 .user-comments {
     margin-top: 30px;
-    /* ELEMENT */
+    /* MESSAGE LOGIN */
     &__message-login {
         margin-bottom: 15px;
         padding: 15px;
@@ -18,6 +17,7 @@
             margin-top: 15px;
         }
     }
+    /* COMMENT */
     &__comment {
         display: grid;
         grid-template-columns: minmax(10px, 1fr) minmax(10px, 3fr);
@@ -138,6 +138,7 @@
         background-color: rgb(from var(--bg-surface) r g b / 75%);
         z-index: 10;
     }
+    /* ADD COMMENT */
     &__add-comment {
         margin-top: 30px;
         margin-bottom: 15px;
@@ -191,6 +192,7 @@
             margin: 0;
         }
     }
+    /* ACTION WRAPPER */
     &__action-wrapper {
         position: absolute;
         display: flex;
@@ -198,6 +200,7 @@
         left: 0;
         padding: 10px 15px;
     }
+    /* ACTION BUTTONS */
     &__edit-comment-button,
     &__delete-comment-button {
         opacity: 0;
@@ -211,6 +214,7 @@
             text-decoration: underline;
         }
     }
+    /* DELETE COMMENT BUTTON */
     &__delete-comment-button {
         color: var(--fg-danger);
         margin-left: 2rem;
@@ -231,6 +235,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .user-comments {
         &__add-comment {

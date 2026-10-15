@@ -2,9 +2,8 @@
    Search Calendar
    style declarations for searchCalendar.xhtml
    ==============================================================*/
-/* BLOCK */
 .search-calendar {
-    /* ELEMENT */
+    /* CENTURY */
     &__century-outer {
         display: flex;
         flex-direction: column;
@@ -46,12 +45,14 @@
     &__century-separator-heading {
         margin-bottom: 0;
     }
+    /* MONTHS */
     &__months {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
         gap: 30px;
         margin-bottom: 21px;
     }
+    /* MONTH */
     &__month {
         min-height: 270px;
     }
@@ -122,6 +123,7 @@
         margin-bottom: 16px;
         font-size: var(--font-size-body-large);
     }
+    /* ISSUES HEADER */
     &__issues-header {
         display: flex;
         align-items: baseline;
@@ -133,6 +135,7 @@
     &__issues-header &__issues-title {
         margin: 0;
     }
+    /* YEAR SELECT */
     &__year-select {
         flex-shrink: 0;
         .form-control {
@@ -140,6 +143,7 @@
             min-width: 160px;
         }
     }
+    /* NEWSPAPER SEARCH */
     &__newspaper-search-date {
         display: flex;
         align-items: stretch;
@@ -181,6 +185,7 @@
         overflow-y: auto;
         padding: 2px;
     }
+    /* DECADE HEADER */
     &__decade-header {
         flex-basis: 100%;
         font-size: var(--font-size-caption);
@@ -193,6 +198,7 @@
             margin-top: 0;
         }
     }
+    /* YEAR CHIP */
     &__year-chip {
         display: inline-flex;
         justify-content: center;

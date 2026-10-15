@@ -31,9 +31,11 @@
 }
 
 .widget-annotations {
+    /* ENTRY LINK */
     a.widget-annotations__entry {
         display: flex;
     }
+    /* BODY */
     .widget__body {
         overflow: hidden;
         &.-scrollable {
@@ -41,6 +43,7 @@
             overflow: hidden auto;
         }
     }
+    /* ENTRY */
     &__entry {
         display: flex;
         align-items: center;
@@ -57,11 +60,13 @@
             padding-left: 0.5rem;
         }
     }
+    /* TYPE */
     &__type {
         display: none;
         flex: 23px 0 0;
         max-width: 50px;
     }
+    /* BUTTON */
     &__button {
         display: inline-block;
         width: 1.6rem;
@@ -79,6 +84,7 @@
             opacity: 0.25;
         }
     }
+    /* PAGE */
     &__page {
         margin-left: auto;
         padding-left: 0.6rem;
@@ -93,6 +99,7 @@
     }
 }
 
+/* RTL */
 @{RTL} .widget-annotations {
     &__page {
         margin-left: unset;

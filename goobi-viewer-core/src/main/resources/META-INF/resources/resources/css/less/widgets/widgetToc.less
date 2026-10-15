@@ -5,12 +5,13 @@
 /* WIDGET TOC */
 .widget-toc {
     position: relative;
-    /* TITLE */
+    /* BODY */
     &__body {
         ul {
             gap: 5px;
         }
     }
+    /* TITLE */
     &__title {
         width: 100%;
         display: flex;
@@ -47,6 +48,7 @@
         max-height: 600px;
         overflow-y: auto;
     }
+    /* ELEMENT */
     &__element {
         display: flex;
         justify-content: flex-start;
@@ -65,6 +67,7 @@
     &__element-expand {
         max-width: 20px;
     }
+    /* TOGGLE */
     &__toggle-icon-svg {
         transition: transform 0.15s ease;
     }
@@ -80,6 +83,7 @@
             color: currentColor;
         }
     }
+    /* ELEMENT LINK */
     &__element-link {
         width: calc(~'100% - 20px');
         padding-left: 5px;
@@ -120,6 +124,7 @@
     }
 }
 
+/* RTL */
 @{RTL} {
     .widget-toc {
         &__title-expand {
