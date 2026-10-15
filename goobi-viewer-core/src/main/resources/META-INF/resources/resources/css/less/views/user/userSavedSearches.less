@@ -3,15 +3,10 @@
    style declarations for userBackendSearches.xhtml
    ==============================================================*/
 /* MY SEARCHES */
-/* BLOCK */
 .my-searches {
-    /* ELEMENT */
-    h1 {
-    }
-
+    /* TABLE */
     &__table,
-  // Bootstrap + user-backen-table overrides
-  .user-backend-table tbody tr td {
+    .user-backend-table tbody tr td {
         border-left: 0;
         border-right: 0;
         border-top: 0;
@@ -47,23 +42,16 @@
                 .my-searches__table__actions {
                     a,
                     button {
-                        /* Show on hovering the whole row */
                         opacity: 1;
                         transition: opacity 0.2s ease;
                     }
                 }
             }
         }
-        th {
-        }
         thead {
             border-bottom: 1px solid var(--border-contrast) !important;
             tr {
                 th {
-                    &:nth-child(1) {
-                    }
-                    &:nth-child(2) {
-                    }
                     &:nth-child(3) {
                         text-align: center;
                     }
@@ -76,10 +64,6 @@
                     background: var(--bg-subtle);
                 }
                 td {
-                    &:nth-child(1) {
-                    }
-                    &:nth-child(2) {
-                    }
                     &:nth-child(3) {
                         text-align: center;
                     }
@@ -87,6 +71,7 @@
             }
         }
     }
+    /* ACTIONS */
     &__action,
     &__delete-button {
         display: inline-block;
@@ -101,52 +86,9 @@
             padding-left: 0;
         }
     }
-    &__action {
-    }
-    &__delete-button {
-    }
-    &__delete-modal {
-    }
 }
 
-/* DEPRECATED SINCE 3.4 */
-#mySearches {
-    h1 {
-    }
-    #my_saved_searches_data_table {
-        thead {
-            tr {
-                th {
-                    &:nth-child(1) {
-                    }
-                    &:nth-child(2) {
-                    }
-                    &:nth-child(3) {
-                        text-align: center;
-                    }
-                }
-            }
-        }
-        tbody {
-            tr {
-                td {
-                    &:nth-child(1) {
-                    }
-                    &:nth-child(2) {
-                    }
-                    &:nth-child(3) {
-                        text-align: center;
-                        button {
-                            padding: 0 5px;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// Show actions when using keyboard navigation
+/* KEYBOARD USERS */
 .using-keyboard .my-searches__table__actions {
     a,
     button {

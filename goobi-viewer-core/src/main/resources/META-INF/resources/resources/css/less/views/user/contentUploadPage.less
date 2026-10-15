@@ -19,7 +19,6 @@
         font-size: var(--font-size-body);
     }
     &__table-title-status,
-    &__table-title-title,
     &__table-title-date {
         display: flex;
     }
@@ -41,13 +40,13 @@
         &:hover {
             background: var(--bg-subtle);
         }
-        &-status {
-            font-size: 25px; // Fixed icon/marker geometry; independent of text scale.
-            text-align: center;
-        }
-        &-label {
-            word-break: break-word;
-        }
+    }
+    &__table-entry-status {
+        font-size: 25px; // Fixed icon/marker geometry; independent of text scale.
+        text-align: center;
+    }
+    &__table-entry-label {
+        word-break: break-word;
     }
 }
 
@@ -70,9 +69,6 @@
             &:nth-child(odd) {
                 background: var(--bg-subtle);
             }
-        }
-        &__table-entry-action-link {
-            opacity: 1;
         }
         .admin__search-input-wrapper {
             margin-top: 0.5rem;

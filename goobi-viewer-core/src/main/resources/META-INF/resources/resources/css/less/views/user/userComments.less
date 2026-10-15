@@ -2,9 +2,6 @@
    Style declarations for userBackendComments.xhtml
    ==============================================================*/
 /* USER COMMENTS TABLE */
-#userCommentsTable {
-}
-
 .user-comments {
     &__table {
         background: var(--bg-surface);
@@ -20,8 +17,6 @@
         border-bottom: 1px solid var(--border-contrast);
         font-weight: 600;
         font-size: var(--font-size-body);
-    }
-    &__table-body {
     }
     .admin__table-sorting-arrow-hidden {
         opacity: 0;
@@ -57,13 +52,13 @@
                 text-decoration: none;
             }
         }
-        &-label,
-        &-text {
-            word-break: break-all;
-        }
-        &-label {
-            color: var(--fg-default);
-        }
+    }
+    &__table-entry-label,
+    &__table-entry-text {
+        word-break: break-all;
+    }
+    &__table-entry-label {
+        color: var(--fg-default);
     }
     &__table-entry-label-record {
         display: block;
@@ -75,6 +70,8 @@
         transition: opacity 0.2s ease;
     }
 }
+
+/* KEYBOARD USERS */
 .using-keyboard {
     .user-comments__table-entry-action-link {
         opacity: 1;

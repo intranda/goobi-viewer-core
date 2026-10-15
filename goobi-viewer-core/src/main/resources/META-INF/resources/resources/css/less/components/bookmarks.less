@@ -2,34 +2,14 @@
    Bookmarks
    style declarations for all bookmark actions
    ==============================================================*/
-/* BOOKMARK NAVIGATION */
-/* BLOCK */
+/* BOOKMARK TOGGLE */
 .bookmark-toggle {
     display: inline-flex;
-    //    align-items: center;
-    //    justify-content: center;
-    //    line-height: 1;
 
     &__button {
         position: relative;
         align-items: center;
         justify-content: center;
-    }
-
-    &__icon {
-        //        display: inline-flex;
-        //        align-items: center;
-        //        justify-content: center;
-        //        width: 1.55rem;
-        //        height: 1.55rem;
-
-        svg {
-            //            width: 100% !important;
-            //            height: 100% !important;
-            //            stroke: currentColor;
-            //
-            //            fill: transparent;
-        }
     }
 
     &__icon--filled {
@@ -63,12 +43,13 @@
     }
 }
 
+/* BOOKMARK NAVIGATION */
 .bookmark-navigation {
-    /* ELEMENT */
+    /* DROPDOWN WRAPPER */
     &__dropdown-wrapper {
         position: relative;
     }
-    /* TOOGLE DROPDOWN */
+    /* TOGGLE */
     &__counter {
         padding: 0 3px;
         font-size: var(--font-size-caption);
@@ -119,13 +100,6 @@
             max-height: 250px;
         }
     }
-    &__dropdown-title {
-        display: block;
-        width: 100%;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        font-weight: 400;
-    }
     &__dropdown-list-counter {
         display: inline-block;
         float: right;
@@ -155,12 +129,6 @@
         }
         border-top: 1px solid var(--border-strong);
     }
-    &__dropdown-list-single-entry {
-    }
-    &__dropdown-list-title {
-    }
-    &__dropdown-list-remove {
-    }
     &__dropdown-list-reset,
     &__dropdown-list-send,
     &__dropdown-list-search,
@@ -176,7 +144,7 @@
             padding: 10px;
         }
     }
-    /* COLOR OF ALL LINKS/BUTTONS IN LOGGED OUT BOOKMARK LIST */
+    /* DROPDOWN LINKS */
     &__dropdown-list-single-entry,
     &__dropdown-list-title,
     &__dropdown-list-remove,
@@ -196,32 +164,12 @@
             }
         }
     }
-    &__dropdown-list-reset {
-        button {
-            span {
-            }
-            .fa {
-            }
-        }
-    }
-    &__dropdown-list-send,
-    &__dropdown-list-mirador {
-        a {
-            span {
-            }
-            .fa {
-            }
-        }
-    }
-    &__dropdown-list-send {
-    }
     &__dropdown-list-mirador {
         border: none;
     }
 }
 
-/* POPUPS */
-/* BLOCK */
+/* POPUP */
 .bookmark-popup {
     position: absolute;
     width: 280px;
@@ -231,10 +179,6 @@
     color: var(--fg-default);
     box-shadow: 0px 2px 5px rgb(from var(--shadow-color) r g b / 15%);
     z-index: 99999;
-    &.top {
-    }
-    &.right {
-    }
     &.bottom {
         &:before {
             content: '';
@@ -250,9 +194,7 @@
             border-color: transparent transparent var(--border-strong) transparent;
         }
     }
-    &.left {
-    }
-    /* ELEMENT */
+    /* SECTIONS */
     &__header,
     &__body,
     &__radio-buttons,
@@ -277,6 +219,16 @@
         height: 50px;
         padding: 0 10px;
         border-bottom: 1px solid var(--border-strong);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        label {
+            display: flex;
+        }
+        input {
+            vertical-align: sub;
+            margin-right: 10px;
+        }
     }
     &__body {
         top: 80px;
@@ -340,18 +292,6 @@
             stroke: currentColor;
         }
     }
-    &__radio-buttons {
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-        label {
-            display: flex;
-        }
-        input {
-            vertical-align: sub;
-            margin-right: 10px;
-        }
-    }
     &__footer {
         bottom: 0;
         height: 40px;
@@ -387,9 +327,8 @@
             }
         }
     }
-    &__list {
-    }
 }
+
 /* ACTION BUTTONS */
 [data-bookmark-list-type='dropdown'],
 [data-bookmark-list-type='get'],
@@ -401,31 +340,12 @@
     background-repeat: no-repeat;
     background-position: center center;
 }
-[data-bookmark-list-type='counter'] {
-}
 [data-bookmark-list-type='dropdown'] {
     display: none;
     align-items: center;
 }
-[data-bookmark-list-type='get'] {
-}
-[data-bookmark-list-type='add'] {
-    &.white {
-        //		background-image: url("@{images}/icons/icon-bs-herz-weiss_thin.svg");
-    }
-    &.added {
-        //		background-image: url("@{images}/icons/icon-bs-herz-blau.svg");
-        &.white {
-            //			background-image: url("@{images}/icons/icon-bs-herz-weiss.svg");
-        }
-    }
-}
-[data-bookmark-list-type='delete'] {
-}
 [data-bookmark-list-type='link'] {
     background-image: url('@{images}/icons/icon-bs-link.svg');
-}
-[data-bookmark-list-type='reset'] {
 }
 
 @{RTL} {

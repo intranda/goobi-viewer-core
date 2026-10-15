@@ -19,18 +19,6 @@
         overflow-y: auto;
         z-index: 9999;
     }
-    /* WRAPPER */
-    &__wrapper {
-        width: 98%;
-        max-width: 400px;
-        padding: 10px;
-        background-color: var(--color-login-card);
-        color: var(--color-login-ink);
-    }
-    /* HEADER / BODY */
-    &__header,
-    &__body {
-    }
     /* HEADER */
     &__header {
         display: flex;
@@ -40,15 +28,6 @@
             margin: 0;
             font-size: var(--font-size-body-large);
         }
-    }
-    &__header-logo {
-        align-self: normal;
-        flex: 0 0 6rem;
-        max-width: 6rem;
-        background-image: url('@{images}/goobi_logo-blue.png');
-        background-repeat: no-repeat;
-        background-position: right center;
-        background-size: contain;
     }
     &__header-title {
         font-size: var(--font-size-heading-medium);
@@ -66,13 +45,8 @@
     .modal-body {
         min-height: 275px;
     }
-    &__body-login-select {
-    }
-    &__body-login-type-wrapper {
-    }
     &__body-login-type {
         position: relative;
-        // background-color: @white;
         &.local {
             display: block;
         }
@@ -193,22 +167,7 @@
         max-width: 200px;
         margin-right: 2rem;
     }
-    /* FOOTER */
-    &__footer {
-        padding: 5px 0;
-        font-size: var(--font-size-caption);
-        text-align: center;
-        color: var(--color-login-label);
-        .btn {
-            font-size: inherit;
-            vertical-align: inherit;
-        }
-        button {
-            vertical-align: inherit;
-        }
-    }
-
-    // NEW FANCY STUFF
+    /* DIALOG LAYOUT */
     &__outer-wrapper {
         max-width: 700px;
     }
@@ -249,7 +208,7 @@
         position: relative;
         margin-bottom: 1.8rem;
     }
-    // EVERY FIELD IN THE DIALOG, INCLUDING THOSE CARRYING ONLY THE BOOTSTRAP CLASS
+    /* FIELDS */
     .form-control,
     .user-login-modal__form-control {
         background-color: var(--color-login-card);
@@ -270,12 +229,11 @@
             }
         }
     }
-    // THE STYLED SELECT DRAWS ITS BOX ON THE WRAPPER, SO THE CONTROL INSIDE STAYS FLAT
+    /* STYLED SELECT */
     .custom-control--select.user-login-modal__form-control {
         display: flex;
         background: var(--color-login-card);
         border: 1px solid var(--color-login-field-line);
-        // a flex item with height auto stretches, so the control fills the box the wrapper sets
         select {
             width: 100%;
             height: auto;
@@ -305,7 +263,7 @@
         border-bottom: none;
         padding-bottom: 0;
     }
-    // KEYBOARD ANIMATION
+    /* KEYBOARD ANIMATION */
     &__keyboard {
         border: 5px solid var(--fg-white);
         border-radius: 10px;
@@ -333,73 +291,72 @@
         background: var(--fg-white);
         position: absolute;
         border-radius: 1px;
-        &-1 {
-            top: 5px;
-            left: 5px;
-        }
-        &-2 {
-            top: 5px;
-            left: 15px;
-        }
-        &-3 {
-            top: 5px;
-            left: 25px;
-        }
-        &-4 {
-            top: 5px;
-            left: 35px;
-        }
-        &-5 {
-            top: 5px;
-            left: 45px;
-        }
-        &-6 {
-            top: 5px;
-            left: 55px;
-        }
-        &-7 {
-            top: 5px;
-            left: 65px;
-        }
-        &-8 {
-            top: 5px;
-            left: 65px;
-        }
-        &-9 {
-            top: 16px;
-            left: 20px;
-        }
-        &-10 {
-            top: 16px;
-            left: 30px;
-        }
-
-        &-11 {
-            top: 16px;
-            left: 40px;
-        }
-        &-12 {
-            top: 16px;
-            left: 50px;
-        }
-        &-13 {
-            bottom: 5px;
-            left: 65px;
-        }
-        &-14 {
-            top: 16px;
-            left: 60px;
-            width: 12px;
-        }
-        &-15 {
-            top: 16px;
-            left: 5px;
-            width: 12px;
-        }
-        &-16 {
-            bottom: 5px;
-            left: 5px;
-        }
+    }
+    &__keyboard-single-key-1 {
+        top: 5px;
+        left: 5px;
+    }
+    &__keyboard-single-key-2 {
+        top: 5px;
+        left: 15px;
+    }
+    &__keyboard-single-key-3 {
+        top: 5px;
+        left: 25px;
+    }
+    &__keyboard-single-key-4 {
+        top: 5px;
+        left: 35px;
+    }
+    &__keyboard-single-key-5 {
+        top: 5px;
+        left: 45px;
+    }
+    &__keyboard-single-key-6 {
+        top: 5px;
+        left: 55px;
+    }
+    &__keyboard-single-key-7 {
+        top: 5px;
+        left: 65px;
+    }
+    &__keyboard-single-key-8 {
+        top: 5px;
+        left: 65px;
+    }
+    &__keyboard-single-key-9 {
+        top: 16px;
+        left: 20px;
+    }
+    &__keyboard-single-key-10 {
+        top: 16px;
+        left: 30px;
+    }
+    &__keyboard-single-key-11 {
+        top: 16px;
+        left: 40px;
+    }
+    &__keyboard-single-key-12 {
+        top: 16px;
+        left: 50px;
+    }
+    &__keyboard-single-key-13 {
+        bottom: 5px;
+        left: 65px;
+    }
+    &__keyboard-single-key-14 {
+        top: 16px;
+        left: 60px;
+        width: 12px;
+    }
+    &__keyboard-single-key-15 {
+        top: 16px;
+        left: 5px;
+        width: 12px;
+    }
+    &__keyboard-single-key-16 {
+        bottom: 5px;
+        left: 5px;
     }
     .-keyPressAnimation {
         animation: scalor 0.4s ease;
@@ -440,29 +397,20 @@
     .form-control {
         transition: border-color 0.15s ease-in-out;
     }
-    // REMOVES YELLOW AUTOCOMPLETE BACKGROUND
+    /* AUTOFILL */
     :-webkit-autofill {
         -webkit-text-fill-color: var(--color-login-ink);
-        filter: none; /* needed for firefox! */
+        filter: none;
         box-shadow: 0 0 0 100px var(--color-login-card) inset !important;
     }
-    // OVERRIDING BOOTSTRAP PADDING
+    /* INPUT PADDING */
     .no-gutters input {
         padding: 0.5rem 1rem;
     }
 }
 
-/* MODIFICATION */
+/* LOGIN PAGE */
 #login-body {
-    .user-login {
-        width: 100vw;
-        height: 100vh;
-        display: block;
-        align-items: center;
-        justify-content: center;
-        background-color: var(--bg-subtle);
-        color: var(--fg-default);
-    }
     .user-login-modal {
         display: block;
     }
@@ -472,7 +420,6 @@
     .user-login-modal {
         &__terms-accept {
             .mr-3 {
-                // BOOTSTRAP OVERRIDE
                 margin-right: unset !important;
                 margin-left: 1.6rem !important;
             }
