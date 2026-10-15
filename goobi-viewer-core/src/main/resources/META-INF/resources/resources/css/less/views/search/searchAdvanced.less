@@ -2,9 +2,11 @@
    Search Advanced
    style declarations for searchAdvanced.xhtml
    ==============================================================*/
-
-/* SAERCH ADVANCED */
+/* SEARCH ADVANCED */
 .search-advanced {
+    /* GAP SIZING VARIABLE */
+    @gap-sizer: 20px;
+
     &__entry-area-title,
     &__additional-options-title {
         margin-bottom: 10px;
@@ -30,7 +32,6 @@
             }
         }
         &.-resultsGroupsActive {
-            // border-top: none;
             padding-top: 30px;
         }
     }
@@ -126,13 +127,6 @@
     &__select-values {
         width: auto;
     }
-    &__additional-wrapper {
-        display: flex;
-        align-items: center;
-    }
-    &__additional-action {
-        font-size: var(--font-size-body-small);
-    }
     &__between-arrow {
         display: flex;
         align-items: center;
@@ -159,20 +153,17 @@
             &:focus,
             &:active {
                 text-decoration: none;
-                outline: none !important;
                 color: inherit;
             }
             &[disabled='disabled'] {
                 display: none;
             }
         }
-        span {
-            //display: none;
-        }
         .form-group {
             margin: 0;
         }
     }
+    /* SEARCH BUTTON FIRST IN THE MARKUP, SHOWN LAST */
     &__action {
         display: flex;
         flex-flow: row-reverse;
@@ -200,19 +191,11 @@
         grid-column-gap: 20px;
         align-items: center;
     }
-    &__nav-helper-label {
-    }
     &__custom-control {
         width: auto;
         select {
             max-width: 100%;
             width: 100%;
-        }
-    }
-    // GAP SIZING VARIABLE
-    @gap-sizer: 20px;
-    .admin__radio-switch {
-        label {
         }
     }
     &__value-group {
@@ -232,7 +215,7 @@
         }
     }
 
-    // ENTITY TABS
+    /* ENTITY TABS */
     &__entity-tabs {
         display: flex;
         gap: @gap-sizer;
@@ -243,7 +226,6 @@
         display: flex;
         gap: 5px;
         flex-wrap: wrap;
-        // margin-bottom: -1px;
     }
     &__entity-tab-link-wrapper {
         position: relative;
@@ -258,9 +240,6 @@
         &:focus,
         &:active {
             text-decoration: none;
-            // padding-top: 8px;
-        }
-        &.-standard {
         }
         &.-active {
             height: 39px;
@@ -269,7 +248,7 @@
         }
     }
 
-    // ENTITY TABS MOBILE DROPDOWN
+    /* ENTITY TABS MOBILE DROPDOWN */
     &__entity-tabs-dropdown-button-wrapper {
         width: 100%;
         display: none;
@@ -311,8 +290,6 @@
     }
 }
 
-/* MODIFICATION */
-
 @{RTL} .search-advanced {
     &__input-group {
         .form-control__select,
@@ -330,8 +307,6 @@
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
     .search-advanced {
-        &__entity-tabs-dropdown {
-        }
         &__entity-tabs-dropdown-button-wrapper {
             display: flex;
         }

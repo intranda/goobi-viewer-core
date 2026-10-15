@@ -5,10 +5,6 @@
 /* BLOCK */
 .search-calendar {
     /* ELEMENT */
-    &__title {
-        h1 {
-        }
-    }
     &__century-outer {
         display: flex;
         flex-direction: column;
@@ -49,29 +45,6 @@
     }
     &__century-separator-heading {
         margin-bottom: 0;
-    }
-    &__input {
-        margin-top: 20px;
-        padding: 21px;
-        border: 1px solid var(--border-strong);
-        background-color: var(--bg-surface);
-        color: var(--fg-default);
-        input {
-            box-shadow: none;
-        }
-        .form-horizontal {
-        }
-        .form-group {
-            margin: 0;
-        }
-        .col-sm-4 {
-        }
-        .col-sm-8 {
-        }
-        .control-label {
-        }
-        .form-control {
-        }
     }
     &__months {
         display: grid;
@@ -118,21 +91,6 @@
             padding: 5px 10px;
             line-height: 19px;
         }
-        .popover-title {
-            line-height: normal;
-            color: var(--fg-default);
-        }
-        .popover-content {
-            a {
-                background-color: transparent;
-                &:hover,
-                &:active,
-                &:focus {
-                    color: var(--fg-default);
-                    background-color: transparent;
-                }
-            }
-        }
     }
     &__month-day-link,
     &__month-day-button {
@@ -151,19 +109,7 @@
     &__month-day-empty {
         min-height: 1px;
     }
-    &__action {
-    }
-    &__incomplete {
-        padding-top: 15px;
-        padding-bottom: 15px;
-        .label {
-            padding: 7px 15px;
-            font-size: var(--font-size-caption);
-        }
-    }
     /* NEWSPAPER SEARCH */
-    &__newspaper-search {
-    }
     &__newspaper-search-body {
         border: 1px solid var(--border-strong);
         background-color: var(--bg-surface);
@@ -193,9 +139,6 @@
             width: auto;
             min-width: 160px;
         }
-    }
-    &__search-field {
-        margin-bottom: 20px;
     }
     &__newspaper-search-date {
         display: flex;
@@ -319,12 +262,10 @@
         }
         &__newspaper-search-date-fields {
             flex-direction: column;
+            align-items: unset;
         }
         &__newspaper-search-btn {
             width: 100%;
-        }
-        &__newspaper-search-date-fields {
-            align-items: unset;
         }
     }
 }

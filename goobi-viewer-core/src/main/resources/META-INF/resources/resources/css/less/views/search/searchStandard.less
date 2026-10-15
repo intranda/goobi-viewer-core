@@ -6,29 +6,12 @@
 /* BLOCK */
 .search-standard {
     margin-bottom: 20px;
-    //    padding: 10px;
-    //    border: 1px solid @middlegray;
     /* ELEMENT */
-    &__title {
-        display: flex;
-        justify-content: space-between;
-        h2 {
-            padding-inline-end: 1rem;
-        }
-    }
-    // &__input {}
     &__input-slim {
         display: flex;
         .search-standard__input-autocomplete {
             flex-grow: 1;
         }
-    }
-    &__input-label,
-    &__filter-label {
-        min-height: 1.75rem;
-        line-height: var(--line-height-body);
-    }
-    &__input-label {
     }
     &__input-autocomplete {
         position: relative;
@@ -56,17 +39,6 @@
             }
         }
     }
-    &__filter {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        padding-top: 7px;
-        padding-bottom: 15px;
-    }
-    &__filter-label {
-        padding-left: 0;
-        display: inline-block;
-    }
     &__filter-select {
         min-width: 130px;
         max-width: 130px;
@@ -89,99 +61,22 @@
         border-right: none;
         height: 100%;
     }
-    &__filter-link {
-        font-size: var(--font-size-body-small);
-        text-align: right;
-        a {
-        }
-    }
-    &__action {
-        // swap buttons visually
-        // "Search" has to be first in the html
-        // First submit is always the default
-        // We want the search submit to be triggered when pressing the enter key
-        display: flex;
-        flex-flow: row-reverse;
-
-        padding-top: 15px;
-        text-align: right;
-        .btn {
-            margin: 0 0 0 5px;
-        }
-    }
     /* MODIFICATION */
 }
 
+/* AUTOCOMPLETE DROPDOWN */
 .ui-autocomplete.ui-menu {
     border: 1px solid var(--border-default);
     background-color: var(--bg-elevated);
     color: var(--fg-default);
+    max-height: 500px;
+    overflow: hidden auto;
     .ui-menu-item {
         .ui-state-active {
             background-color: var(--bg-selected);
             color: var(--fg-selected);
         }
     }
-}
-
-/* SEARCH HELP MODAL */
-/* BLOCK */
-.search-help {
-    /* ELEMENT */
-    .modal-dialog {
-    }
-    .modal-content {
-    }
-    .modal-header {
-    }
-    .modal-title {
-    }
-    .modal-body {
-    }
-    .modal-footer {
-    }
-    /* MODIFICATION */
-}
-
-/* SEARCH TILE */
-/* BLOCK */
-.search-tile {
-    margin-bottom: 21px;
-    padding: 10px;
-    border: 1px solid var(--border-strong);
-    /* ELEMENT */
-    &__description {
-        min-height: 125px;
-        h2 {
-            display: inline-block;
-        }
-    }
-    &__icon {
-        float: right;
-        margin: 0 0 10px 10px;
-        font-size: 3rem; // Fixed icon/marker geometry; independent of text scale.
-    }
-    &__input {
-    }
-    &__action {
-        padding-top: 15px;
-        text-align: right;
-        .btn {
-            margin: 0;
-        }
-    }
-    /* MODIFICATION */
-}
-
-@{RTL} .search-standard {
-    &__title {
-    }
-}
-
-// LIMIT AUTOCOMPLETE LIST VISUALLY TO A MAX HEIGHT
-.ui-autocomplete.ui-menu {
-    max-height: 500px;
-    overflow: hidden auto;
 }
 
 /* BREAKPOINT FOR LARGE DESKTOPS */

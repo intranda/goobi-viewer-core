@@ -33,15 +33,19 @@
 
 /* BREAKPOINT FOR TABLETS */
 @media screen and (max-width: @smallBreakpoint) {
-    .search-termlist__list ul {
-        column-count: 2;
+    .search-termlist {
+        &__list ul {
+            column-count: 2;
+        }
     }
 }
 
 /* BREAKPOINT FOR SMARTPHONES */
 @media screen and (max-width: @xSmallBreakpoint) {
-    .search-termlist__list ul {
-        column-count: 1;
-        column-gap: 0;
+    .search-termlist {
+        &__list ul {
+            column-count: 1;
+            column-gap: 0;
+        }
     }
 }

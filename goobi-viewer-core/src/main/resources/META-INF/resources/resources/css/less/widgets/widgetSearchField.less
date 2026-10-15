@@ -17,30 +17,13 @@
                 flex: 1 1 auto;
                 input {
                     width: 100%;
-                    &.focused {
-                        opacity: 1;
-                    }
                 }
-            }
-            input {
             }
         }
     }
     .input-group-addon {
         padding: 0;
         border-radius: 0;
-        input {
-            width: 30px;
-            height: 30px;
-            margin: 0;
-            padding: 0;
-            border: none;
-            background-image: url('@{images}/icons/icon-search.svg');
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-size: 20px;
-            background-color: transparent;
-        }
         button {
             margin: 0;
             padding: 5px 15px;
@@ -58,18 +41,7 @@
     }
 }
 
-/* CHROME POSITIONING HACK */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-    .widget-searchfield {
-        .input-group-addon {
-            input {
-                position: relative;
-                top: 1px;
-            }
-        }
-    }
-}
-
+/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
 
