@@ -832,6 +832,8 @@ public class SearchBean implements SearchInterface, Serializable {
      * @throws IndexUnreachableException
      * @should construct query correctly
      * @should construct query info correctly
+     * @should include both range bounds in query info
+     * @should include both range bounds in query info for NOT item
      * @should add multiple facets for the same field correctly
      * @should add multiple facets for the same field correctly if field already in current facets
      * @should only add identical facets once
@@ -996,38 +998,12 @@ public class SearchBean implements SearchInterface, Serializable {
                     String infoFieldLabel =
                             SearchHelper.SEARCH_FILTER_ALL.getField().equals(item.getField()) ? item.getLabel() : item.getField();
                     sbInfo.append('(').append(ViewerResourceBundle.getTranslation(infoFieldLabel, BeanUtils.getLocale())).append(": ");
-                    switch (line.getOperator()) {
-                        case AND:
-                            if (SolrConstants.BOOKMARKS.equals(item.getField()) && !userBean.isLoggedIn()) {
-                                // Session bookmark list value
-                                sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
-                            } else if (item.isRange()) {
-                                sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
-                            } else {
-                                if (item.isDisplaySelectItems()) {
-                                    sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
-                                } else {
-                                    sbInfo.append(item.getValue());
-                                }
-                            }
-                            break;
-                        case NOT:
-                            if (item.isDisplaySelectItems()) {
-                                sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
-                            } else {
-                                sbInfo.append(item.getValue());
-                            }
-                            break;
-                        default:
-                            if (item.isRange()) {
-                                sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
-                            } else {
-                                if (item.isDisplaySelectItems()) {
-                                    sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
-                                } else {
-                                    sbInfo.append(item.getValue());
-                                }
-                            }
+                    if (SearchItemOperator.AND == line.getOperator() && SolrConstants.BOOKMARKS.equals(item.getField())
+                            && !userBean.isLoggedIn()) {
+                        // Session bookmark list value
+                        sbInfo.append(ViewerResourceBundle.getTranslation("bookmarkList_session", BeanUtils.getLocale()));
+                    } else {
+                        appendQueryInfoValue(sbInfo, item);
                     }
                     sbInfo.append(')');
                 }
@@ -1098,6 +1074,22 @@ public class SearchBean implements SearchInterface, Serializable {
         logger.debug("advanced query: {}", sb);
 
         return sb.toString();
+    }
+
+    /**
+     * Appends the human-readable value of the given query item to the advanced search query info.
+     *
+     * @param sbInfo Query info builder to append to
+     * @param item Query item whose value(s) to append
+     */
+    private static void appendQueryInfoValue(StringBuilder sbInfo, SearchQueryItem item) {
+        if (item.isRangeQuery()) {
+            sbInfo.append('[').append(item.getValue()).append(" - ").append(item.getValue2()).append(']');
+        } else if (item.isDisplaySelectItems()) {
+            sbInfo.append(ViewerResourceBundle.getTranslation(item.getValue(), BeanUtils.getLocale()));
+        } else {
+            sbInfo.append(item.getValue());
+        }
     }
 
     /**

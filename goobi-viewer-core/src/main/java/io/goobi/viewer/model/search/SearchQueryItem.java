@@ -312,6 +312,23 @@ public class SearchQueryItem implements Serializable {
     }
 
     /**
+     * Checks whether the first line of this item will be searched as a range. Mirrors the conditions in
+     * {@link #generateQuery(Set, boolean, boolean)}: both bounds must be set and the field must be configured as a range or datepicker
+     * field, or be {@link SolrConstants#CALENDAR_DAY}.
+     *
+     * @return true if this item's first line represents a range search; false otherwise
+     * @should return true for CALENDAR_DAY field with both values set
+     * @should return false if value2 blank
+     * @should return false if field not range datepicker or CALENDAR_DAY
+     */
+    public boolean isRangeQuery() {
+        if (StringUtils.isBlank(getValue()) || StringUtils.isBlank(getValue2())) {
+            return false;
+        }
+        return isRange() || isDatepicker() || SolrConstants.CALENDAR_DAY.equals(field);
+    }
+
+    /**
      * isUntokenizeForPhraseSearch.
      *
      * @return true or false
