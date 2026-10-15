@@ -15,8 +15,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
     }
-    /* transparent to the grid layout above, so its children (start/end) keep
-       occupying their own grid columns as if this wrapper didn't exist */
+    /* GRID-TRANSPARENT GROUP */
     &__group {
         display: contents;
     }
@@ -34,9 +33,6 @@
         }
         &.chronology-slider-actions {
             gap: 10px;
-        }
-
-        &.chronology-slider-actions {
             ul {
                 .mx-list-reset;
                 display: flex;
@@ -48,8 +44,6 @@
             img {
                 width: 20px;
                 height: 20px;
-            }
-            [data-reset='chrono-slider'] {
             }
         }
         &.chronology-slider-action-loader,
@@ -64,15 +58,9 @@
                 visibility: visible;
             }
         }
-        &.chronology-slider-action-loader {
-        }
-        &.chronology-slider-action-reset {
-        }
         &.chronology-slider-start,
         &.chronology-slider-end {
             font-size: var(--font-size-body-small);
-        }
-        &.chronology-slider-start {
         }
         &.chronology-slider-end {
             text-align: right;
@@ -83,10 +71,6 @@
         }
     }
     &__item-input {
-        /* &::selection {
-	    	background: rgba(201, 102, 102, 0.6);
-	    	color: white;
-		} */
         background: transparent;
         width: 4em;
         border: 1px solid transparent;
@@ -103,9 +87,6 @@
         background: none;
         padding: 0;
     }
-}
-
-.widget-chronology-slider {
     &__slider {
         height: 1rem;
         border: none;
@@ -157,10 +138,6 @@
         padding: 0.3rem;
         height: unset;
     }
-    &__input-start {
-    }
-    &__input-end {
-    }
     &__ok-button {
         min-width: unset;
         margin-left: 15px;
@@ -170,25 +147,22 @@
     }
     &__graph {
         height: 150px;
-        &-line {
-            color: var(--color-chart-chronology);
-        }
-        &-area {
-            color: rgb(from var(--color-chart-chronology) r g b / 30%);
-        }
-        &-range {
-            color: var(--fg-brand);
-            background-color: var(--fg-brand);
-            opacity: 0.1;
-        }
+    }
+    &__graph-line {
+        color: var(--color-chart-chronology);
+    }
+    &__graph-area {
+        color: rgb(from var(--color-chart-chronology) r g b / 30%);
+    }
+    &__graph-range {
+        color: var(--fg-brand);
+        background-color: var(--fg-brand);
+        opacity: 0.1;
     }
 }
 
 @{RTL} .widget-chronology-slider {
     &__item {
-        &.chronology-slider-label,
-        &.chronology-slider-actions {
-        }
         &.chronology-slider-label {
             margin-right: unset;
             margin-left: auto;
