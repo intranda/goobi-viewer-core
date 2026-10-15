@@ -82,54 +82,49 @@
     &__header-controls {
         display: flex;
         align-items: center;
+    }
 
-        &__options {
-            .btn--clean {
-                margin-left: 10px;
+    &__header-controls__options {
+        .btn--clean {
+            margin-left: 10px;
 
-                .header-controls__options-thumbs-symbol {
-                    display: block;
+            .header-controls__options-thumbs-symbol {
+                display: block;
 
-                    svg {
-                        width: 28px;
-                        height: 28px;
-                    }
+                svg {
+                    width: 28px;
+                    height: 28px;
+                }
+            }
+
+            .header-controls__options-close-symbol {
+                display: none;
+
+                svg {
+                    width: 22px;
+                    height: 22px;
+                }
+            }
+
+            &[data-show='thumbs'] {
+                svg {
+                    stroke: var(--fg-muted);
                 }
 
-                .header-controls__options-close-symbol {
-                    display: none;
-
-                    svg {
-                        width: 22px;
-                        height: 22px;
-                    }
-                }
-
-                &[data-show='thumbs'] {
-                    svg {
-                        stroke: var(--fg-muted);
+                &.in {
+                    .header-controls__options-thumbs-symbol {
+                        display: none;
                     }
 
-                    //		    		background-image: url("@{images}/icons/icon_fs-thumbs.svg");
-                    //		    		background-repeat: no-repeat;
-                    //		    		background-position: center center;
-                    //		    		background-size: 22px;
-
-                    &.in {
-                        .header-controls__options-thumbs-symbol {
-                            display: none;
-                        }
-
-                        .header-controls__options-close-symbol {
-                            display: block;
-                        }
+                    .header-controls__options-close-symbol {
+                        display: block;
                     }
                 }
+            }
 
-                .fullscreen__header-docstruct-navigation-icon {
-                    width: 1.25rem;
-                    height: 1.25rem;
-                }
+            .fullscreen__header-docstruct-navigation-icon {
+                width: 1.25rem;
+                height: 1.25rem;
             }
         }
     }
@@ -373,9 +368,6 @@
                 opacity: 1;
             }
         }
-
-        figcaption {
-        }
     }
 
     &__view-image-thumb-image-order {
@@ -569,9 +561,6 @@
         background-color: var(--bg-surface);
         color: var(--fg-default);
 
-        &.fs-metadata {
-        }
-
         &.fs-toc {
             .fullscreen__view-sidebar-accordeon-panel-body {
                 padding-top: 0;
@@ -580,12 +569,6 @@
             .widget-toc__title .ajax_loader {
                 display: none !important;
             }
-        }
-
-        &.fs-downloads {
-        }
-
-        &.fs-fulltext {
         }
 
         &.fs-search-hit-navigation {
@@ -656,9 +639,6 @@
 
         &:hover {
             background-color: var(--bg-subtle);
-        }
-
-        span {
         }
 
         &.in {

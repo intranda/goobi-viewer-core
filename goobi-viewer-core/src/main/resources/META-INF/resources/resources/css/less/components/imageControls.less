@@ -29,7 +29,7 @@
         flex-wrap: wrap;
         gap: 8px @image-controls-group-gap;
     }
-    // GRID/GAP SIZING FOR THE IMAGE ACTIONS/CONTROLS + (DOC) OPTIONS
+    /* GRID AND GAP SIZING FOR ACTIONS AND OPTIONS */
     &__actions,
     &__actions-nav,
     &__actions-additional,
@@ -39,7 +39,7 @@
         gap: @image-controls-gap;
         flex-wrap: wrap;
     }
-    // GROUPS: paging | view | document, set apart by space and one rule
+    /* GROUPS: PAGING, VIEW, DOCUMENT */
     &__actions-additional {
         border-inline-start: 1px solid var(--border-subtle);
         padding-inline-start: @image-controls-group-gap;
@@ -92,8 +92,6 @@
             color: var(--fg-on-control-hover);
         }
 
-        &.fulltext {
-        }
         &.add-to-bookmark {
             [data-bookmark-list-type='add'] {
                 background-image: none;
@@ -186,29 +184,17 @@
     }
     /* ACTIONS */
     &__actions {
-        // margin-right: auto;
         flex-grow: 1;
         gap: @image-controls-group-gap;
-        ul {
-        }
         li {
             align-self: center;
-        }
-    }
-    &__select-text {
-        display: flex;
-        align-items: center;
-        margin-inline-end: 1rem;
-        & + .image-controls__action.select {
-            width: 145px;
         }
     }
     &__includes-container {
         display: none;
     }
     &__action {
-        // Text and page selectors determine the minimum; icon artwork stays at
-        // its original size. This also gives percentage-height children a box.
+        /* TEXT AND PAGE SELECTORS SET THE MINIMUM, ICONS KEEP THEIR SIZE */
         --_action-size: ~'max(32px, calc(var(--font-size-body-small) * var(--line-height-body) + 0.6rem + 2px))';
         width: var(--_action-size);
         height: var(--_action-size);
@@ -280,28 +266,6 @@
             &:focus {
                 background-color: transparent;
             }
-            a,
-            span,
-            button {
-            }
-            //	    	> img, svg {
-            //	    		width: 32px;
-            //	    		height: 32px;
-            //	    		padding: 0.4rem;
-            //	    	}
-        }
-        /* ELEMENT */
-        &.start {
-        }
-        &.page-browse,
-        &.select {
-        }
-        &.page-browse {
-            a,
-            span {
-            }
-        }
-        &.back {
         }
         &.select-text {
             width: auto;
@@ -328,13 +292,7 @@
                     background: inherit;
                     color: var(--fg-default);
                 }
-                &:after {
-                }
             }
-        }
-        &.forward {
-        }
-        &.end {
         }
         &.double-page-view,
         &.single-page-view,
@@ -344,24 +302,6 @@
             button {
                 padding: 0.7rem;
             }
-        }
-        &.double-page-view {
-        }
-        &.single-page-view {
-        }
-        &.switch-pages {
-            a {
-            }
-            svg {
-            }
-        }
-        &.rotate-left {
-        }
-        &.rotate-right {
-        }
-        &.reset {
-        }
-        &.enter-fullscreen {
         }
         &.zoom-slider-wrapper {
             width: 104px;
@@ -378,7 +318,7 @@
                 height: 20px;
                 border: 0;
                 max-width: 100%;
-                //Firefox
+                /* FIREFOX */
                 &::-moz-range-track {
                     height: 3px;
                     border-radius: 2px;
@@ -391,11 +331,11 @@
                     background-color: var(--fg-default);
                     border-radius: 50%;
                 }
-                //Chrome
-                -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
-                background: transparent; /* Otherwise white in Chrome */
+                /* CHROME */
+                -webkit-appearance: none;
+                background: transparent;
                 &:focus {
-                    outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+                    outline: none;
                 }
                 &::-webkit-slider-thumb {
                     -webkit-appearance: none;
@@ -483,18 +423,6 @@
     }
 }
 
-.tooltip_clipboard {
-    display: none;
-    position: absolute;
-    z-index: 10000;
-    background-color: var(--bg-inverse);
-    color: var(--fg-on-inverse);
-    padding: 3px;
-    vertical-align: middle;
-    border-radius: 10px;
-    font-size: var(--font-size-caption);
-}
-
 @{RTL} {
     .image-controls {
         direction: rtl;
@@ -512,14 +440,7 @@
     }
 }
 
-/* FIREFOX CORRECTION */
-@-moz-document url-prefix() {
-    .image-controls__action.switch-pages .image-switchPages {
-        width: 21px;
-    }
-}
-
-/* BREAKPOINT FOR LARGE DESKTOP */
+/* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
 }
 

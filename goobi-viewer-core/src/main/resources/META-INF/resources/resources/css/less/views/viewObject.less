@@ -37,15 +37,10 @@
     &__object-3d-voyager-editor-button-wrapper {
         margin-bottom: 5px;
     }
-    &__object-3d-voyager-open-editor-button {
-    }
     &__object-3d-voyager-editor-button-inside {
         display: flex;
         gap: 7px;
         align-items: center;
-    }
-
-    &__image-loader {
     }
 
     &__object-3d-world {
@@ -133,12 +128,6 @@
         z-index: 10;
     }
 
-    /* VIDEO, AUDIO, TEXT */
-    &__video,
-    &__audio,
-    &__text {
-    }
-
     /* VIDEO */
     &__video {
         display: flex;
@@ -150,10 +139,6 @@
         width: 100%;
         background: rgb(from var(--bg-scrim) r g b / 2%);
         cursor: pointer;
-    }
-
-    /* AUDIO */
-    &__audio {
     }
 
     /* TEXT */
@@ -250,7 +235,7 @@
         width: 100%;
         text-align: center;
     }
-    // METADATA BELOW IMAGE ON OBJECT PAGE - ONLY VISIBLE WITH CONFIGURATION
+    /* METADATA BELOW THE IMAGE, ONLY WITH CONFIGURATION */
     &__metadata {
         position: relative;
         margin-top: 40px;
@@ -382,7 +367,7 @@
             }
         }
 
-        /* Little arrow */
+        /* ARROW */
         &.test::after {
             content: '';
             position: absolute;
@@ -426,66 +411,6 @@ popover [data-copy] {
         justify-content: flex-end;
     }
 }
-
-.tooltipp {
-    position: absolute;
-    background: var(--bg-surface);
-    color: var(--fg-default);
-    z-index: 10; //must be >1 to be visible
-}
-
-/* TOOLTIPS are directly in body*/
-.highlight-tooltip {
-    position: absolute;
-    background: var(--bg-inverse);
-    color: var(--fg-on-inverse);
-    padding: 8px 12px;
-    border-radius: 6px;
-    white-space: nowrap;
-    display: none;
-    z-index: 1000; /* ensure it shows above canvas */
-    pointer-events: none; /* tooltip doesn't block hover */
-}
-.image-tooltip {
-    position: absolute;
-    display: none;
-    background: var(--bg-inverse);
-    color: var(--fg-on-inverse);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: var(--font-size-body-small);
-    white-space: nowrap;
-    transform: translateY(-5px);
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s ease;
-    z-index: 9999;
-}
-/* Little arrow */
-.image-tooltip::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 6px;
-    border-style: solid;
-    border-color: var(--bg-inverse) transparent transparent transparent;
-}
-.image-tooltip.show {
-    opacity: 1;
-}
-
-//@{RTL} {
-//	.view-object {
-//		&__image {
-//			&.-sequenceScrolling {
-//				padding-left: 10px !important;
-//				padding-right: 10px !important;
-//			}
-//		}
-//	}
-//}
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
