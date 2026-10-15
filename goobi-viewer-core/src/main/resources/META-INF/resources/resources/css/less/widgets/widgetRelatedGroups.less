@@ -2,9 +2,6 @@
    Widget RelatedGroups
    style declarations for widget_RelatedGroups.xhtml
    ==============================================================*/
-#widgetRelatedGroups {
-}
-
 .widget-related-groups {
     &__series {
         h2 {
@@ -39,21 +36,13 @@
     }
 }
 
-/* ==============================================================
-   Related Groups Content Section (below object image)
-   style declarations for relatedGroupsSection.xhtml
-   ============================================================== */
+/* RELATED GROUPS CONTENT SECTION */
 .related-groups-section {
     margin-top: 30px;
     color: var(--fg-default);
 
     &__heading {
         margin: 0 0 20px 0;
-    }
-    &__heading-link {
-        word-wrap: anywhere;
-        text-decoration: underline;
-        color: var(--fg-link-subtle);
     }
     &__grid {
         display: grid;
@@ -155,6 +144,14 @@
         font-size: var(--font-size-body-small);
         font-weight: 600;
     }
+}
+
+/* BREAKPOINT FOR LARGE DESKTOPS */
+@media screen and (max-width: @largeBreakpoint) {
+}
+
+/* BREAKPOINT FOR DESKTOPS */
+@media screen and (max-width: @mediumBreakpoint) {
 }
 
 /* BREAKPOINT FOR TABLETS */

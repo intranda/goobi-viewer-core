@@ -6,8 +6,6 @@
 .widget-toc {
     position: relative;
     /* TITLE */
-    &__topbar {
-    }
     &__body {
         ul {
             gap: 5px;
@@ -38,7 +36,7 @@
         display: flex;
         align-items: center;
     }
-    /* one button, two glyphs: the state decides which one shows */
+    /* TOGGLE-ALL GLYPHS */
     &__title-toggle-all-button[aria-expanded='false'] &__title-toggle-all-collapse,
     &__title-toggle-all-button[aria-expanded='true'] &__title-toggle-all-expand {
         display: none;
@@ -62,12 +60,6 @@
             display: flex;
             justify-content: flex-start;
             align-items: center;
-        }
-        &.parent {
-        }
-        &.child {
-        }
-        &.active {
         }
     }
     &__element-expand {
@@ -125,32 +117,6 @@
     &__element-pagenumber {
         width: 45px;
         text-align: right;
-    }
-    /* LOADING */
-    &__loader,
-    &__overlay {
-        display: none;
-    }
-    &__loader {
-        position: relative;
-        width: 32px;
-        height: 32px;
-        margin-top: 1px;
-        border-radius: 10px;
-        background-image: url('@{images}/infinity_loader.svg');
-        background-repeat: no-repeat;
-        background-position: center center;
-        background-size: 85%;
-        z-index: 11;
-    }
-    &__overlay {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        background-color: rgb(from var(--bg-surface) r g b / 85%);
-        z-index: 10;
     }
 }
 
