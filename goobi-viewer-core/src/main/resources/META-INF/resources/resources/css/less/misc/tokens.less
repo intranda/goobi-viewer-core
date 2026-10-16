@@ -1,7 +1,6 @@
 /* ==============================================================
-   Tokens — layer 2: semantic roles, one set per color mode
-   The only core file that branches on the mode. Components read
-   roles; the palette is read here only.
+   Tokens
+   semantic roles, one set per color mode
    ==============================================================*/
 
 .gv-base() {
@@ -282,7 +281,7 @@
     --filter-mono-image: invert(1);
 }
 
-/* WIRING — order is binding */
+/* WIRING */
 :root {
     .gv-palette();
     .gv-base();

@@ -1,14 +1,12 @@
 /* ==============================================================
-   Palette — layer 1: every colour literal
-   Role inputs first: mode-free ramps, read by tokens.less only.
-   Then the component colours: complete values, mode included via
-   light-dark(), read by one component each and never by a role.
+   Palette
+   every colour literal, role inputs and component colours
    ==============================================================*/
 
 .gv-palette() {
     /* ---------- ROLE INPUTS ---------- */
 
-    /* NEUTRAL — L* 100 98 96 94 91 84 77 66 55 50 44 34 28 22 17 12 6 0 */
+    /* NEUTRAL RAMP */
     --color-neutral-0: #fff;
     --color-neutral-50: #f6fafd;
     --color-neutral-100: #f1f4f7;
@@ -28,7 +26,7 @@
     --color-neutral-950: #07151e;
     --color-neutral-1000: #000;
 
-    /* BRAND — the seed and the dark-mode seed; every other brand tone derives in the roles */
+    /* BRAND */
     --color-brand: @blue;
     --color-brand-400: oklch(from var(--color-brand) 0.72 min(c, 0.12) h);
 
@@ -41,7 +39,7 @@
     --color-focus: @colorOutline;
     --color-focus-300: oklch(from var(--color-focus) 0.72 min(c, 0.12) h);
 
-    /* STATUS — names and values as today until the tonal ramp (question 4) */
+    /* STATUS */
     --color-success: #007600;
     --color-success-dark: #80d68a;
     --color-success-text: #155724;
@@ -73,7 +71,7 @@
     --color-info-strong: #008295;
     --color-info-strong-dark: #006e80;
 
-    /* ENTITIES — category colours, read by the entity roles */
+    /* ENTITIES */
     --color-entity-person-700: #0064c2;
     --color-entity-person-300: #70bbff;
     --color-entity-location-700: #964800;
@@ -81,7 +79,7 @@
     --color-entity-institution-700: #226f07;
     --color-entity-institution-300: #8bd46a;
 
-    /* ---------- COMPONENT COLOURS — complete values, one component each, never a role ---------- */
+    /* ---------- COMPONENT COLOURS ---------- */
 
     /* OCR OVERLAYS */
     --color-ocr-block: light-dark(#aa4499, #cc79a7);
@@ -113,7 +111,7 @@
     --color-hero: #2c3e50;
     --color-hero-gradient: #34495e;
 
-    /* LOGIN — pinned to today's values, slate on the dark side (question 6: exact) */
+    /* LOGIN */
     --color-login-card: light-dark(#fff, #15212a);
     --color-login-ink: light-dark(#1d2022, #dceaf7);
     --color-login-field-line: light-dark(#74777a, #626f7a);
