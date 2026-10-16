@@ -78,8 +78,8 @@ public class CmsMediaBean implements Serializable {
     private static final String GENERAL_FILTER = "GENERAL";
     private static final String FILENAME_FILTER = "FILENAME";
 
-    private static final String[] IMAGE_FILE_TYPES = { "png", "jpeg", "gif", "tiff", "jp2", "svg", "ico" };
-    private static final String IMAGE_FILE_TYPE_VALIDATION_REGEX = "png|jpe?g|gif|tiff?|jp2|svg|ico";
+    private static final String[] IMAGE_FILE_TYPES = { "png", "jpeg", "gif", "tiff", "jp2", "svg", "ico", "webp" };
+    private static final String IMAGE_FILE_TYPE_VALIDATION_REGEX = "png|jpe?g|gif|tiff?|jp2|svg|ico|webp";
     private static final String[] VIDEO_FILE_TYPES = { "mpeg4", "avi", "mov", "wmv" };
     private static final String VIDEO_FILE_TYPE_VALIDATION_REGEX = "mp4|mpeg4|avi|mov|wmv";
     private static final String[] AUDIO_FILE_TYPES = { "mp3", "mpeg", "wav", "ogg", "wma" };
@@ -422,6 +422,7 @@ public class CmsMediaBean implements Serializable {
             case CMSMediaItem.CONTENT_TYPE_XML:
             case CMSMediaItem.CONTENT_TYPE_SVG:
             case CMSMediaItem.CONTENT_TYPE_ICO:
+            case CMSMediaItem.CONTENT_TYPE_WEBP:
                 return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName());
             case CMSMediaItem.CONTENT_TYPE_GIF:
                 return ThumbnailHandler.getCMSMediaImageApiUrl(item.getFileName()) + "/full.gif";
@@ -647,6 +648,7 @@ public class CmsMediaBean implements Serializable {
      *
      * @return a regex matching only filenames ending with one of the supported image format suffixes
      * @should return true for given input
+     * @should match webp files
      */
     public static String getImageFilter() {
         return String.format(FILE_TYPE_REGEX_TEMPLATE, IMAGE_FILE_TYPE_VALIDATION_REGEX);

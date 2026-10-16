@@ -11,7 +11,7 @@ riot.tag2('adminmediaupload', '<div class="admin-cms-media__upload-wrapper"><div
         if(this.opts.fileTypes) {
             this.fileTypes = this.opts.fileTypes;
         } else {
-        	this.fileTypes = 'jpg, png, tif, jp2, gif, pdf, svg, ico, mp4';
+        	this.fileTypes = 'jpg, png, tif, jp2, gif, webp, pdf, svg, ico, mp4';
         }
 
         this.on('mount', function () {

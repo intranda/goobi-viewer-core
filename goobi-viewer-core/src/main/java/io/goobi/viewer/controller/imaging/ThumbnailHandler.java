@@ -1083,6 +1083,7 @@ public class ThumbnailHandler {
      * @param width maximum thumbnail width in pixels
      * @param height maximum thumbnail height in pixels
      * @return the thumbnail image URL for the given CMS media item scaled to fit within the given bounds
+     * @should return plain file url for webp
      */
     public String getThumbnailUrl(Optional<CMSMediaItem> optional, int width, int height) {
         return optional.map(item -> {
@@ -1093,6 +1094,8 @@ public class ThumbnailHandler {
                 switch (contentType) {
                     case CMSMediaItem.CONTENT_TYPE_VIDEO, CMSMediaItem.CONTENT_TYPE_AUDIO, CMSMediaItem.CONTENT_TYPE_PDF:
                     case CMSMediaItem.CONTENT_TYPE_XML, CMSMediaItem.CONTENT_TYPE_SVG, CMSMediaItem.CONTENT_TYPE_ICO:
+                    case CMSMediaItem.CONTENT_TYPE_WEBP:
+                        // WebP is not supported by the image server; deliver the original file
                         return imageApiUrl;
                     case CMSMediaItem.CONTENT_TYPE_GIF:
                         return imageApiUrl + "/full.gif";

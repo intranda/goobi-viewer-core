@@ -146,8 +146,12 @@ public final class SearchHelper {
     public static final String EMBEDDED_QUERY_TEMPLATE = "_query_:\"{0}\"";
     /** Standard Solr query for all records and anchors. */
     public static final String ALL_RECORDS_QUERY = "+(ISWORK:true ISANCHOR:true)";
-    /** Constant <code>DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY="(ISWORK:true OR ISANCHOR:true) AND NOT("{trunked}</code>. */
-    public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -IDDOC_PARENT:*";
+    /**
+     * Default filter query for search results and collection listings: all records and anchors, but no volumes. Volumes are excluded via the
+     * stable PI_PARENT: a volume's IDDOC_PARENT refers to the anchor across records and is missing or outdated if the anchor was not yet
+     * indexed or has been re-indexed since (within a record, IDDOC_PARENT remains the reference to the parent node).
+     */
+    public static final String DEFAULT_DOCSTRCT_WHITELIST_FILTER_QUERY = ALL_RECORDS_QUERY + " -" + SolrConstants.PI_PARENT + ":*";
     /**
      * Constant <code>FUZZY_SEARCH_TERM_TEMPLATE_WITH_BOOST="String prefix, String suffix"</code>. {t} is the actual search term, {d} the maximal edit
      * distance to search. {p} and {s} are prefix and suffix to be applied to the search term.
