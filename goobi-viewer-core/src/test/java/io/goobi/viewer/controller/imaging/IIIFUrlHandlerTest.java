@@ -93,6 +93,18 @@ class IIIFUrlHandlerTest extends AbstractTest {
 
     /**
      * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
+     * @verifies url from external image url containing nested url
+     */
+    @Test
+    void getIIIFImageUrl_shouldUrlFromExternalImageUrlContainingNestedUrl() {
+        fileUrl = "https://images.podigee-cdn.net/0x,sW-ya=/https://main.podigee-cdn.net/uploads/u56152/24b68377.jpg";
+        String url = handler.getIIIFImageUrl(fileUrl, pi, region, size, rotation, quality, format);
+        Assertions.assertTrue(url.startsWith("/api/v1/images/external/https:U002FU002Fimages.podigee-cdn.net"), url);
+        Assertions.assertTrue(url.endsWith("24b68377.jpg/full/max/0/default.jpg"), url);
+    }
+
+    /**
+     * @see IIIFUrlHandler#getIIIFImageUrl(String, String, String, String, String, String, String)
      * @verifies url from local file url
      */
     @Test

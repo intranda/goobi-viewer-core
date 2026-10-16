@@ -89,6 +89,7 @@ public class IIIFUrlHandler {
      * @should url from file
      * @should url from local url
      * @should url from external image url
+     * @should url from external image url containing nested url
      * @should url from local file url
      * @should url from local file url with space
      * @should url from windows file url
@@ -117,7 +118,10 @@ public class IIIFUrlHandler {
             String rotation, String quality, String format) {
         String fileUrl = inFileUrl;
         try {
-            if (PathConverter.isInternalUrl(fileUrl) || ImageHandler.isRestrictedUrl(fileUrl)) {
+            // http(s) URLs are never internal; skip PathConverter.isInternalUrl() for them because it converts the URL path into a file system
+            // path, which fails on Windows for URLs whose path contains a ':' (e.g. CDN proxy URLs with a nested URL)
+            boolean internalUrl = !ImageHandler.isExternalUrl(fileUrl) && PathConverter.isInternalUrl(fileUrl);
+            if (internalUrl || ImageHandler.isRestrictedUrl(fileUrl)) {
                 try {
                     URI uri = PathConverter.toURI(fileUrl);
                     if (StringUtils.isBlank(uri.getScheme())) {

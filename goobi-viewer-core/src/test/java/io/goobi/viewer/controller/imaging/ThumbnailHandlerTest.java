@@ -44,6 +44,7 @@ import de.unigoettingen.sub.commons.contentlib.imagelib.transform.Scale;
 import io.goobi.viewer.AbstractTest;
 import io.goobi.viewer.api.rest.v1.ApiUrls;
 import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.StringConstants;
 import io.goobi.viewer.controller.StringTools;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
@@ -393,6 +394,136 @@ class ThumbnailHandlerTest extends AbstractTest {
 
         String url = handler.getThumbnailUrl(docMock, 200, 300);
         Assertions.assertEquals("http://localhost:8080/viewer/resources/images/multivolume_thumbnail.jpg", url);
+    }
+
+    /**
+     * @see ThumbnailHandler#getImagePath(StructElement)
+     * @verifies return own thumbnail url for group
+     */
+    @Test
+    void getImagePath_shouldReturnOwnThumbnailUrlForGroup() throws IndexUnreachableException, PresentationException {
+        StructElement doc = Mockito.spy(new StructElement("1", createGroupDoc("https://example.com/images/podcast.jpg")));
+
+        Assertions.assertEquals("https://example.com/images/podcast.jpg", handler.getImagePath(doc));
+        Mockito.verify(doc, Mockito.never()).getFirstVolume(Mockito.anyList());
+        Mockito.verify(doc, Mockito.never()).getFirstVolume(Mockito.anyList(), Mockito.anyList());
+    }
+
+    /**
+     * @see ThumbnailHandler#getThumbnailUrl(StructElement, int, int)
+     * @verifies return external url for group thumbnail containing nested url
+     */
+    @Test
+    void getThumbnailUrl_shouldReturnExternalUrlForGroupThumbnailContainingNestedUrl() throws IndexUnreachableException {
+        String thumbnail = "https://images.podigee-cdn.net/0x,sW-ya_n_tFVxG5KyqS_bSEVX9EUq5ZNFvCjrwiVwJqww=/"
+                + "https://main.podigee-cdn.net/uploads/u56152/24b68377-f751-4781-8aa6-50a9f15fc18a.jpg";
+        StructElement doc = new StructElement("1", createGroupDoc(thumbnail));
+
+        String url = handler.getThumbnailUrl(doc, 200, 300);
+        Assertions.assertEquals("/api/v1/images/external/https:U002FU002Fimages.podigee-cdn.netU002F0x,sW-ya_n_tFVxG5KyqS_bSEVX9EUq5ZNFvCjrwiVwJqww="
+                + "U002Fhttps:U002FU002Fmain.podigee-cdn.netU002FuploadsU002Fu56152U002F24b68377-f751-4781-8aa6-50a9f15fc18a.jpg"
+                + "/full/!200,300/0/default.jpg", url);
+    }
+
+    /**
+     * @see ThumbnailHandler#getImagePath(StructElement)
+     * @verifies return first volume thumbnail for group without own thumbnail
+     */
+    @Test
+    void getImagePath_shouldReturnFirstVolumeThumbnailForGroupWithoutOwnThumbnail() throws IndexUnreachableException, PresentationException {
+        StructElement doc = Mockito.spy(new StructElement("1", createGroupDoc(null)));
+        StructElement docVolume = new StructElement("2", createEpisodeDoc());
+        Mockito.doReturn(docVolume).when(doc).getFirstVolume(Mockito.anyList(), Mockito.eq(List.of(SolrConstants.THUMBNAIL)));
+
+        Assertions.assertEquals("https://example.com/images/episode.jpg", handler.getImagePath(doc));
+    }
+
+    /**
+     * @see ThumbnailHandler#getImagePath(StructElement)
+     * @verifies ignore relative own thumbnail for group
+     */
+    @Test
+    void getImagePath_shouldIgnoreRelativeOwnThumbnailForGroup() throws IndexUnreachableException, PresentationException {
+        StructElement doc = Mockito.spy(new StructElement("1", createGroupDoc("podcast.jpg")));
+        StructElement docVolume = new StructElement("2", createEpisodeDoc());
+        Mockito.doReturn(docVolume).when(doc).getFirstVolume(Mockito.anyList(), Mockito.eq(List.of(SolrConstants.THUMBNAIL)));
+
+        Assertions.assertEquals("https://example.com/images/episode.jpg", handler.getImagePath(doc));
+    }
+
+    /**
+     * @see ThumbnailHandler#getAnchorImagePath(StructElement,String,String)
+     * @verifies return podcast thumbnail for podcast group in generic mode
+     */
+    @Test
+    void getAnchorImagePath_shouldReturnPodcastThumbnailForPodcastGroupInGenericMode() throws IndexUnreachableException {
+        StructElement doc = new StructElement("1", createGroupDoc(null));
+
+        Assertions.assertEquals("http://localhost:8080/viewer/resources/images/thumbnail_podcast.png",
+                handler.getAnchorImagePath(doc, null, StringConstants.ANCHOR_THUMBNAIL_MODE_GENERIC));
+    }
+
+    /**
+     * @see ThumbnailHandler#getAnchorImagePath(StructElement,String,String)
+     * @verifies return podcast thumbnail for podcast group without episodes in first volume mode
+     */
+    @Test
+    void getAnchorImagePath_shouldReturnPodcastThumbnailForPodcastGroupWithoutEpisodesInFirstVolumeMode()
+            throws IndexUnreachableException, PresentationException {
+        StructElement doc = Mockito.spy(new StructElement("1", createGroupDoc(null)));
+        Mockito.doReturn(null).when(doc).getFirstVolume(Mockito.anyList(), Mockito.anyList());
+        Mockito.doReturn(null).when(doc).getFirstVolume(Mockito.anyList());
+
+        Assertions.assertEquals("http://localhost:8080/viewer/resources/images/thumbnail_podcast.png",
+                handler.getAnchorImagePath(doc, null, StringConstants.ANCHOR_THUMBNAIL_MODE_FIRSTVOLUME));
+    }
+
+    /**
+     * @see ThumbnailHandler#getAnchorImagePath(StructElement,String,String)
+     * @verifies return anchor thumbnail for non podcast group in generic mode
+     */
+    @Test
+    void getAnchorImagePath_shouldReturnAnchorThumbnailForNonPodcastGroupInGenericMode() throws IndexUnreachableException {
+        SolrDocument solrDoc = createGroupDoc(null);
+        solrDoc.setField(SolrConstants.DOCSTRCT, "series");
+        solrDoc.setField(SolrConstants.GROUPTYPE, "GROUPID_SERIES");
+        StructElement doc = new StructElement("1", solrDoc);
+
+        Assertions.assertEquals("http://localhost:8080/viewer/resources/images/multivolume_thumbnail.jpg",
+                handler.getAnchorImagePath(doc, null, StringConstants.ANCHOR_THUMBNAIL_MODE_GENERIC));
+    }
+
+    /**
+     * @param thumbnail Optional THUMBNAIL value
+     * @return {@link SolrDocument} representing a podcast group
+     */
+    private static SolrDocument createGroupDoc(String thumbnail) {
+        SolrDocument solrDoc = new SolrDocument();
+        solrDoc.setField(SolrConstants.DOCTYPE, DocType.GROUP);
+        solrDoc.setField(SolrConstants.DOCSTRCT, "podcast");
+        solrDoc.setField(SolrConstants.GROUPTYPE, "GROUPID_PODCAST");
+        solrDoc.setField(SolrConstants.PI, "PODCAST123");
+        solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "PODCAST123");
+        if (thumbnail != null) {
+            solrDoc.setField(SolrConstants.THUMBNAIL, thumbnail);
+        }
+        return solrDoc;
+    }
+
+    /**
+     * @return {@link SolrDocument} representing a podcast episode with an external thumbnail
+     */
+    private static SolrDocument createEpisodeDoc() {
+        SolrDocument solrDoc = new SolrDocument();
+        solrDoc.setField(SolrConstants.MIMETYPE, "audio/mpeg");
+        solrDoc.setField(SolrConstants.THUMBNAIL, "https://example.com/images/episode.jpg");
+        solrDoc.setField(SolrConstants.DOCTYPE, DocType.DOCSTRCT);
+        solrDoc.setField(SolrConstants.DOCSTRCT, "issue");
+        solrDoc.setField(SolrConstants.ISWORK, true);
+        solrDoc.setField(SolrConstants.PI, "EPISODE1");
+        solrDoc.setField(SolrConstants.PI_TOPSTRUCT, "EPISODE1");
+        solrDoc.setField("GROUPID_PODCAST", "PODCAST123");
+        return solrDoc;
     }
 
     /**
