@@ -1,7 +1,6 @@
 /* ==============================================================
 	General layout/styling for content components @ frontend
    ==============================================================*/
-
 /* GENERAL LAYOUT FRONTEND WRAPPER */
 .content-components {
     &__all-items-container {
@@ -24,7 +23,6 @@
         padding: 7px;
         color: var(--fg-on-warning-subtle);
     }
-    // WIDTH OPTIONS
     &.-width-100 {
         flex: 0 0 calc(~'100%');
         max-width: calc(~'100%');
@@ -41,7 +39,6 @@
         flex: 0 0 calc(~'25% - var(--_cc-h-gap) / 4');
         max-width: calc(~'25% - var(--_cc-h-gap) / 4');
     }
-    // FULL-WIDTH BANDS: span the viewport and stack flush against the band above
     &.-fullbleed {
         flex: 0 0 100vw;
         min-width: 0;
@@ -51,23 +48,14 @@
     &.-fullbleed ~ &.-fullbleed {
         margin-block-start: calc(-1 * var(--_cc-v-gap, 3.5rem));
     }
-    // HIDDEN FOR DESKTOP OR MOBILE VIEW OPTIONS
     &.-hiddenOnDesktop {
         display: none;
     }
     &.-isPrivate {
-        // border: 2px dashed rgba(255, 109, 109, 0.59) !important;
         padding: 10px;
         padding-top: 0;
         border: 2px dashed var(--border-warning) !important;
         border-top: none !important;
-    }
-
-    &__heading {
-        h2 {
-            margin: 0;
-            line-height: 1.5;
-        }
     }
     &__text {
         p {
@@ -75,16 +63,6 @@
             margin-bottom: 0;
         }
     }
-    &__floating-text-image {
-        img {
-            float: left;
-            width: 40%;
-            margin-inline-end: 1rem;
-            margin-bottom: 1rem;
-            margin-top: 5px;
-        }
-    }
-    // HELPER FOR LEGACY TEMPLATES
     &__legacy-full-width {
         flex: 0 0 100%;
         max-width: 100%;
@@ -92,7 +70,6 @@
     }
 }
 
-// SOME FONT TWEAKS FOR PERFECT ALIGNMENT
 .fixedFont(@line-height-base: 1.5) {
     @line-height-target: (1 - @line-height-base);
     &::before {
@@ -106,14 +83,10 @@
 
 /* BREAKPOINT FOR LARGE DESKTOPS */
 @media screen and (max-width: @largeBreakpoint) {
-    .content-component {
-    }
 }
 
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
-    .content-component {
-    }
 }
 
 /* BREAKPOINT FOR TABLETS */

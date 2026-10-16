@@ -1,32 +1,31 @@
 /* ==============================================================
 	Styling for content component frontend image
    ==============================================================*/
-
 .content-component {
     &__image {
         display: block;
-        &-link {
-            display: block;
+    }
+    &__image-link {
+        display: block;
+    }
+    &__image-lightbox-link {
+        display: block;
+        &:hover {
+            text-decoration: none;
         }
-        &-lightbox-link {
-            display: block;
-            &:hover {
-                text-decoration: none;
-            }
-        }
-        &-img {
-            max-width: 100%;
-        }
-        &-text {
-            display: block;
-            margin-top: 10px;
+    }
+    &__image-img {
+        max-width: 100%;
+    }
+    &__image-text {
+        display: block;
+        margin-top: 10px;
+        color: var(--fg-muted);
+        text-align: center;
+        &:hover &:focus,
+        &:active {
+            text-decoration: none;
             color: var(--fg-muted);
-            text-align: center;
-            &:hover &:focus,
-            &:active {
-                text-decoration: none;
-                color: var(--fg-muted);
-            }
         }
     }
     &__video {
