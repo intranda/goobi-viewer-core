@@ -26,7 +26,7 @@
         <f:view
             contentType="text/html"
             encoding="utf-8">
-            <!-- No access ticket required or already unlocked -->
+            <!-- RECORD -->
             <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
                 <div id="nerFacetting">
                     <a name="nerFacettingTop" />
@@ -80,7 +80,6 @@
                                     <span class="pull-left">#{msg.widgetNerFacetting_setRange}:</span>
                                     <span class="pull-right">#{msg.widgetNerFacetting_filterTags}:</span>
                                 </div>
-
                                 <div class="clearfix" />
 
                                 <!-- SET RANGE -->
@@ -154,9 +153,9 @@
                                         </a>
                                     </li>
                                 </ul>
-
                                 <div class="clearfix" />
 
+                                <!-- OVERVIEW CONTENT -->
                                 <div class="overview-content" />
                             </div>
 
@@ -170,7 +169,6 @@
                                     <span class="pull-left">#{msg.widgetNerFacetting_setSection}:</span>
                                     <span class="pull-right">#{msg.widgetNerFacetting_filterTags}:</span>
                                 </div>
-
                                 <div class="clearfix" />
 
                                 <!-- SET RANGE -->
@@ -237,7 +235,6 @@
                                         </a>
                                     </li>
                                 </ul>
-
                                 <div class="clearfix" />
 
                                 <!-- SCALE -->
@@ -265,7 +262,6 @@
 
                                 <!-- TAGS -->
                                 <div id="sectionTags" />
-
                                 <div class="clearfix" />
                             </div>
                         </div>
@@ -273,7 +269,7 @@
                 </div>
             </ui:fragment>
 
-            <!-- Access ticket required -->
+            <!-- ACCESS TICKET -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
                 <div class="access-ticket-info">
                     <div class="access-ticket-info__inner">
@@ -292,46 +288,49 @@
                 </div>
             </ui:fragment>
 
+            <!-- NER FACETTING CONFIG -->
             <script type="text/javascript">
                 var nerFacettingConfig = {
-    currentPage: '#{navigationHelper.currentPage}',
-    baseUrl: '#{request.contextPath}',
-    workId: '#{activeDocumentBean.viewManager.pi}',
-    overviewTrigger: '#overviewTrigger',
-    overviewContent: '.overview-content',
-    sectionTrigger: '#sectionTrigger',
-    sectionContent: '.section-content',
-    facettingTrigger: '.facetting-trigger',
-    setTagRange: '.set-tag-range-view',
-    setTagRangeOverview: '.set-tag-range-view.overview',
-    setTagRangeSection: '.set-tag-range-view.section',
-    slider: '#sliderVertical',
-    sliderScale: '#sliderScale',
-    sectionTags: '#sectionTags',
-    currentTags: '.current-tags',
-    sliderHandle: '#sliderVertical .ui-slider-handle',
-    sliderSectionStripe: '#sliderScale .scale-section-stripe',
-    recurrenceNumber: 25,
-    recurrenceSectionNumber: 150,
-    loader: '#nerFacettingLoader',
-    msg: {
-        noJSON: '#{msg.widgetNerFacetting_noJSON}',
-        emptyTag: '#{msg.widgetNerFacetting_emptyTag}',
-        page: '#{msg.widgetNerFacetting_page}',
-        tags: '#{msg.widgetNerFacetting_tags}',
-    },
-};
+                    currentPage: '#{navigationHelper.currentPage}',
+                    baseUrl: '#{request.contextPath}',
+                    workId: '#{activeDocumentBean.viewManager.pi}',
+                    overviewTrigger: '#overviewTrigger',
+                    overviewContent: '.overview-content',
+                    sectionTrigger: '#sectionTrigger',
+                    sectionContent: '.section-content',
+                    facettingTrigger: '.facetting-trigger',
+                    setTagRange: '.set-tag-range-view',
+                    setTagRangeOverview: '.set-tag-range-view.overview',
+                    setTagRangeSection: '.set-tag-range-view.section',
+                    slider: '#sliderVertical',
+                    sliderScale: '#sliderScale',
+                    sectionTags: '#sectionTags',
+                    currentTags: '.current-tags',
+                    sliderHandle: '#sliderVertical .ui-slider-handle',
+                    sliderSectionStripe: '#sliderScale .scale-section-stripe',
+                    recurrenceNumber: 25,
+                    recurrenceSectionNumber: 150,
+                    loader: '#nerFacettingLoader',
+                    msg: {
+                        noJSON: '#{msg.widgetNerFacetting_noJSON}',
+                        emptyTag: '#{msg.widgetNerFacetting_emptyTag}',
+                        page: '#{msg.widgetNerFacetting_page}',
+                        tags: '#{msg.widgetNerFacetting_tags}',
+                    },
+                };
 
-viewerJS.nerFacetting.init(nerFacettingConfig);
+                viewerJS.nerFacetting.init(nerFacettingConfig);
             </script>
         </f:view>
     </ui:define>
 
     <ui:define name="sidebar">
-        <!-- HIDE SIDEBAR IF ACCESS TICKET REQUIRED FOR OBJECT -->
+        <!-- SIDEBAR -->
         <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
+            <!-- VIEWS -->
             <widgetComponent:widget_views pageType="nerfacetting" />
 
+            <!-- MODULE CONTRIBUTIONS -->
             <c:forEach
                 var="module"
                 items="#{configurationBean.modules}">
@@ -342,6 +341,7 @@ viewerJS.nerFacetting.init(nerFacettingConfig);
                 </c:forEach>
             </c:forEach>
 
+            <!-- USER INTERACTIONS -->
             <widgetComponent:widget_userInteractions />
         </ui:fragment>
     </ui:define>

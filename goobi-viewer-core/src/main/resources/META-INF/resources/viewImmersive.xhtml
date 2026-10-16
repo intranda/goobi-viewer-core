@@ -10,8 +10,6 @@
             <f:event
                 type="preRenderView"
                 listener="#{navigationHelper.setCurrentView('immersive')}" />
-            <!-- Without these two listeners (as in viewObject.xhtml) bibliographic
-                 metadata and pagination would not be initialised -->
             <f:event
                 type="preRenderView"
                 listener="#{metadataBean.selectFirstMetadataViewOfLocation('objectview')}" />
@@ -35,13 +33,12 @@
     </ui:define>
 
     <ui:define name="content-immersive">
+        <!-- RECORD -->
         <ui:fragment rendered="#{!activeDocumentBean.viewManager.recordAccessTicketRequired}">
             <ui:include src="/resources/includes/immersive/iv_layout.xhtml" />
         </ui:fragment>
 
-        <!-- AP4: access-restricted works show an infobox instead of the viewer.
-             Reuses the access-ticket pattern from viewObject.xhtml; the displayed
-             text is maintained via the message bundle / customer config. -->
+        <!-- ACCESS TICKET -->
         <ui:fragment rendered="#{activeDocumentBean.viewManager.recordAccessTicketRequired}">
             <div class="access-ticket-info">
                 <div class="access-ticket-info__inner">

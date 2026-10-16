@@ -5,13 +5,11 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     template="/resources/themes/#{navigationHelper.theme}/template.html">
     <ui:define name="metadata">
         <f:metadata>
-            <!--             <f:event type="preRenderView" listener="#{navigationHelper.setCurrentView('')}" /> -->
             <f:event
                 type="preRenderView"
                 listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('downloadHeading',1)}" />
@@ -93,6 +91,7 @@
                                             escape="false" />
                                     </div>
 
+                                    <!-- LICENSE AGREEMENT -->
                                     <h:form prependId="false">
                                         <div class="row">
                                             <div class="col-9">
@@ -120,22 +119,11 @@
                     </h:panelGroup>
                 </div>
 
+                <!-- STATUS POLLING -->
                 <script>
                     updateJobStatus();
                     var interval = setInterval(function () {
                         $('#viewDownload').load(document.URL + ' #viewDownload .download__status', function () {
-                            // After a poll, the job-status hidden field is missing in two situations:
-                            //   1. The expected redirect: openDownloadAction() threw a DownloadException
-                            //      and MyExceptionHandler routed the response to error.xhtml (which has
-                            //      no #jobStatusField).
-                            //   2. A transient AJAX failure: 5xx from the container before JSF runs,
-                            //      network blip, request timeout — .load() callback still fires but the
-                            //      response body lacks the selector.
-                            // Both cases are handled the same way: full reload. In case (1) the user
-                            // lands on error.xhtml (correct destination). In case (2) the reload either
-                            // re-establishes the WAIT card or surfaces the still-broken backend as a
-                            // proper error page. The slight over-trigger on transient blips is
-                            // acceptable — better than getting stuck on an empty status block.
                             if ($('#jobStatusField').length === 0) {
                                 clearInterval(interval);
                                 window.location.reload();
@@ -149,10 +137,6 @@
                         var status = $('#jobStatusField').val();
                         switch (status) {
                             case 'ERROR':
-                                // Defensive fallback: should be unreachable now that openDownloadAction()
-                                // throws DownloadException on ERROR status. If the inline branch ever
-                                // returns ERROR (e.g. due to a future regression), reload to land on
-                                // the standard error page.
                                 clearInterval(interval);
                                 window.location.reload();
                                 break;
@@ -173,8 +157,10 @@
     </ui:define>
 
     <ui:define name="sidebar">
+        <!-- VIEWS -->
         <widgetComponent:widget_views pageType="overview" />
 
+        <!-- MODULE CONTRIBUTIONS -->
         <c:forEach
             var="module"
             items="#{configurationBean.modules}">
@@ -185,6 +171,7 @@
             </c:forEach>
         </c:forEach>
 
+        <!-- USER INTERACTIONS -->
         <widgetComponent:widget_userInteractions />
     </ui:define>
 </ui:composition>
