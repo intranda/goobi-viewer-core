@@ -45,29 +45,6 @@
             }
         }
     }
-    &__top {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        min-height: 60px;
-        color: var(--fg-on-inverse);
-        a,
-        button {
-            color: var(--fg-on-inverse);
-            &:hover,
-            &:active,
-            &:focus {
-                text-decoration: none;
-            }
-        }
-        .bookmark-navigation {
-            &__dropdown-list {
-                a {
-                    color: var(--fg-default);
-                }
-            }
-        }
-    }
     &__top-mobile-nav,
     &__top-mobile-sidebar {
         display: none;
@@ -83,7 +60,6 @@
                 text-decoration: none;
             }
         }
-
         .icon-wrapper {
             display: inline-flex;
             align-items: center;
@@ -91,7 +67,6 @@
             width: 1.1rem;
             height: 1.1rem;
             margin: 0;
-
             svg {
                 width: 100%;
                 height: 100%;
@@ -142,8 +117,6 @@
             padding-top: 0.1rem;
             z-index: 2000;
             box-shadow: none;
-            ul {
-            }
             li {
                 display: list-item;
                 float: none;
@@ -163,8 +136,6 @@
                     background-color: var(--bg-inverse-hover);
                     color: var(--fg-on-inverse);
                 }
-            }
-            img {
             }
         }
     }
@@ -274,18 +245,8 @@
                     .image_thumbnails {
                         .thumbnails-image-wrapper {
                             display: none;
-                            img {
-                            }
                             &.selected {
                                 border: 5px solid var(--border-brand);
-                                img {
-                                }
-                            }
-                            &.annotate {
-                                &:before {
-                                }
-                                &:after {
-                                }
                             }
                             &.locked {
                                 display: block;
@@ -303,7 +264,6 @@
                                     top: 0;
                                     left: 0;
                                     opacity: 1;
-                                    //							background: white;
                                     width: 100%;
                                     height: 100%;
                                     content: '';
@@ -405,23 +365,7 @@
                 margin-left: 0.9rem;
                 &.-activeFilter {
                     font-weight: 700;
-                    &::before {
-                    }
                 }
-            }
-            .thumbnails-filter-finished {
-                &::before {
-                }
-            }
-            .thumbnails-filter-unfinished {
-                &::before {
-                }
-            }
-            .thumbnails-filter-reset {
-                &::before {
-                }
-            }
-            .thumbnails-filter-annotated {
             }
             .image_thumbnails {
                 display: grid;
@@ -443,14 +387,6 @@
                     }
                     &.selected {
                         border: 5px solid var(--border-brand);
-                        img {
-                        }
-                    }
-                    &.annotate {
-                        &:before {
-                        }
-                        &:after {
-                        }
                     }
                     &.locked {
                         img {
@@ -467,7 +403,6 @@
                             top: 0;
                             left: 0;
                             opacity: 1;
-                            //							background: white;
                             width: 100%;
                             height: 100%;
                             content: '';
@@ -509,7 +444,6 @@
                             top: 0;
                             left: 0;
                             opacity: 1;
-                            //							background: white;
                             width: 100%;
                             height: 100%;
                             content: '';
@@ -605,7 +539,6 @@
         padding-top: 1.5rem;
     }
     &__content-right-title {
-        margin-bottom: 10px;
         margin-top: 0;
         background-color: var(--bg-surface);
         color: var(--fg-default);
@@ -619,8 +552,6 @@
                 border-width: 2px;
             }
         }
-    }
-    &__instruction {
     }
     &__single-instruction {
         margin: 1rem 0;
@@ -646,22 +577,6 @@
         flex-wrap: wrap;
         &.-small {
             min-height: 0;
-        }
-        &__image {
-            width: 100px;
-            height: 100px;
-            display: flex;
-            flex-flow: row nowrap;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--border-strong);
-            margin-right: 20px;
-            background-color: var(--bg-subtle);
-            color: var(--fg-default);
-            img {
-                max-width: 100%;
-                max-height: 100%;
-            }
         }
         .cms-module__actions {
             margin-left: auto;
@@ -698,10 +613,6 @@
         align-items: center;
         flex-wrap: wrap;
         align-content: center;
-
-        flex-basis label {
-            max-width: 150px;
-        }
         input {
             padding-left: 0;
         }
@@ -709,7 +620,6 @@
             flex: 1;
             text-align: left;
             background-color: transparent;
-            border: 0px solid;
             height: 100%;
             resize: none;
             border: 1px solid var(--border-strong);
@@ -725,12 +635,6 @@
             }
         }
     }
-    &__button {
-        float: right;
-        margin-right: 10px;
-    }
-
-    // MAPS + GEOCODING STYLING
     .geo-map__wrapper {
         position: relative;
     }
@@ -753,16 +657,8 @@
     .leaflet-marker-icon i:not([number]) {
         margin-left: 0;
     }
-    //		.mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
-    //			border: 2px solid rgba(0,0,0,0.2);
-    //		}
     .mapboxgl-ctrl-geocoder--input:focus {
         outline: none;
-    }
-    //		.mapboxgl-ctrl-geocoder, .mapboxgl-ctrl-geocoder .suggestions {
-    //			box-shadow: unset;
-    //		}
-    &__delete-annotation {
     }
     &__jump-to-gnd {
         flex: 0 0 100%;
@@ -791,8 +687,6 @@
         div {
             margin: 5px 20px;
         }
-        &__option {
-        }
     }
     &__annotation-action {
         flex: 0 0 100%;
@@ -813,20 +707,13 @@
         word-wrap: anywhere;
         padding-right: 1rem;
     }
-    &__question-metadata-list-item-original-field,
     &__question-metadata-list-item-input {
         flex-grow: 1;
-    }
-    &__question-metadata-list-item-original-field {
     }
     &__question-metadata-list-item-input {
         min-width: unset;
         height: auto;
         align-self: stretch;
-    }
-    .breadcrumbs-wrapper {
-        height: 30px;
-        margin-bottom: 0;
     }
     .login-navigation__bookmarks-list-wrapper {
         display: none;
@@ -849,21 +736,9 @@
                 color: var(--fg-on-brand);
                 &:hover {
                     background-color: var(--bg-brand);
-                    curso: none;
                 }
             }
         }
-        &__separator {
-        }
-    }
-    // not working zoom slider handle
-    .zoom-slider-handle {
-        position: relative;
-        display: block;
-        top: -5px;
-        height: 2.3rem;
-        width: 1.075rem;
-        background-color: var(--bg-inverse);
     }
     &__log-wrapper {
         background: var(--bg-surface);
@@ -890,7 +765,6 @@
         text-align: right;
         cursor: pointer;
         color: inherit;
-
         &:focus,
         &:hover,
         &:active {
@@ -940,7 +814,6 @@
             padding-top: 2px;
         }
     }
-
     &__log-message-info {
         margin-bottom: 0.6rem;
         display: flex;
@@ -968,7 +841,6 @@
     }
     &__log-message-text {
         flex: 0 0 100%;
-        break-word: break;
     }
     &__log-send-message-area {
         display: flex;
@@ -1026,8 +898,6 @@
     &__sidebar-visibility {
         margin-bottom: 2.3rem;
     }
-    &__sidebar-review-settings {
-    }
     &__sidebar-review-dropdown {
         margin-bottom: 2.3rem;
     }
@@ -1036,10 +906,6 @@
         .admin__radio-switch {
             width: auto;
         }
-    }
-    &__sidebar-access-licence {
-    }
-    &__sidebar-log {
     }
 }
 
@@ -1057,7 +923,6 @@
             margin-right: auto;
         }
         &__annotation-action {
-            text-align: unset;
             text-align: left;
         }
         &__log-expand {

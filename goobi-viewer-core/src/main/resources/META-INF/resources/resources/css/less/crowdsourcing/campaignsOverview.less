@@ -5,7 +5,6 @@
 .crowdsourcing-campaigns-overview {
     display: flex;
     flex-direction: column;
-
     &__campaign {
         display: flex;
         align-items: stretch;
@@ -16,30 +15,24 @@
         background: var(--bg-surface);
         color: var(--fg-default);
         padding: 10px;
-
         > div {
             padding: 5px;
         }
-
         &__image {
             width: 25%;
             flex-shrink: 0;
             display: flex;
             align-items: flex-start;
             flex-direction: column;
-
             img {
                 max-width: 100%;
-                // max-height: 300px;
             }
         }
-
         &__text {
             display: flex;
             width: 50%;
             flex-direction: column;
         }
-
         &__actions {
             width: 25%;
             display: flex;
@@ -51,7 +44,6 @@
                 width: 100%;
             }
         }
-
         &__statistics {
             margin-top: 10px;
             width: 100%;
@@ -62,7 +54,6 @@
                 font-size: 1.8em;
             }
         }
-
         .campaign-statistics {
             &__item {
                 display: flex;
@@ -72,19 +63,10 @@
             &__text {
                 dl {
                     grid-template-columns: 50% 50%;
-                    dt {
-                        &:after {
-                        }
-                    }
-                    dd {
-                    }
                 }
             }
-
             &__bar {
                 overflow: hidden;
-                progressBar {
-                }
                 .goobi-progress-bar-wrapper {
                     background: var(--bg-subtle);
                     .goobi-progress-bar {
@@ -115,12 +97,12 @@
     .crowdsourcing-campaigns-overview__campaign__image img {
         max-width: 100%;
     }
-
     .campaign-statistics__bar .goobi-progress-bar-wrapper .goobi-progress-bar {
         display: flex;
         overflow: hidden;
     }
 }
+
 /* BREAKPOINT FOR DESKTOPS */
 @media screen and (max-width: @mediumBreakpoint) {
 }
