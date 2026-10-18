@@ -56,7 +56,7 @@ module.exports = {
                 xmlSelfClosingSpace: true,
                 singleAttributePerLine: true,
                 bracketSameLine: true,
-                xmlWhitespaceSensitivity: 'ignore',
+                xmlWhitespaceSensitivity: 'strict',
                 useTabs: false,
                 tabWidth: 4,
                 printWidth: 180,

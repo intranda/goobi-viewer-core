@@ -82,8 +82,7 @@
                                                         value="#{adminLicenseBean.accessTypeValues}"
                                                         itemValue="#{item}"
                                                         itemLabel="#{msg[item.labelKey]}" />
-                                                    <f:ajax
-                                                        render="licenseeGroup licenseeGroup2 licenseeTypeGroup2 infoGroup licenseTypeGroup saveButtonGroup" />
+                                                    <f:ajax render="licenseeGroup licenseeGroup2 licenseeTypeGroup2 infoGroup licenseTypeGroup saveButtonGroup" />
                                                     <!-- Reset all set licensee values so that the lower menus are reset as well -->
                                                     <f:ajax listener="#{licensee.setUser(null)}" />
                                                     <f:ajax listener="#{licensee.setUserGroup(null)}" />

@@ -40,15 +40,15 @@
                             <ui:fragment rendered="#{!campaign.hasStarted or (campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0)}">
                                 <span class="crowdsourcing-campaigns-overview__campaign__statistics__message">
                                     <h:outputFormat
-                                        rendered="#{!campaign.hasStarted}"
-                                        value="#{msg.label__crowdsourcing_campaign_days_before_start}"
-                                        escape="false">
+                                            rendered="#{!campaign.hasStarted}"
+                                            value="#{msg.label__crowdsourcing_campaign_days_before_start}"
+                                            escape="false">
                                         <f:param value="#{campaign.daysBeforeStart}" />
                                     </h:outputFormat>
                                     <!-- Current campaign: motivational message-->
                                     <h:outputText
-                                        rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0}"
-                                        value="#{msg.label__crowdsourcing_campaign_contribute}" />
+                                            rendered="#{campaign.hasStarted and !campaign.hasEnded and campaign.contributorCount == 0}"
+                                            value="#{msg.label__crowdsourcing_campaign_contribute}" />
                                 </span>
                             </ui:fragment>
                         </div>

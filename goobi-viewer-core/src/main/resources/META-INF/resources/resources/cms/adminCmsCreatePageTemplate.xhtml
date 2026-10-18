@@ -169,8 +169,7 @@
                                                                                             <ui:repeat
                                                                                                 var="attribute"
                                                                                                 value="#{cmsComponent.attributes.values()}">
-                                                                                                <ui:fragment
-                                                                                                    rendered="#{attribute.display and attribute.type == 'toggle'}">
+                                                                                                <ui:fragment rendered="#{attribute.display and attribute.type == 'toggle'}">
                                                                                                     <ui:repeat
                                                                                                         var="option"
                                                                                                         value="#{attribute.options}">
@@ -185,8 +184,7 @@
                                                                                                     </ui:repeat>
                                                                                                 </ui:fragment>
 
-                                                                                                <ui:fragment
-                                                                                                    rendered="#{attribute.display and attribute.type != 'toggle'}">
+                                                                                                <ui:fragment rendered="#{attribute.display and attribute.type != 'toggle'}">
                                                                                                     <ui:repeat
                                                                                                         var="option"
                                                                                                         value="#{attribute.options}">
