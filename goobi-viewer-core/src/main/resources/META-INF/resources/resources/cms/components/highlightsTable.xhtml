@@ -164,10 +164,10 @@
             });
 
             if ($('#tableWrapper_#{cc.clientId} .admin__table-entry').length == 0) {
-                $('#tableWrapper_#{cc.clientId}.admin__table-content').append('
-            <br />
-            <p>#{msg.hitsZero}</p>
-            ');
+                $('#tableWrapper_#{cc.clientId}.admin__table-content').append(
+                    document.createElement('br'),
+                    $(document.createElement('p')).text(#{navigationHelper.getTranslationsAsJson(['hitsZero'])}.hitsZero)
+                );
             }
         </script>
     </composite:implementation>

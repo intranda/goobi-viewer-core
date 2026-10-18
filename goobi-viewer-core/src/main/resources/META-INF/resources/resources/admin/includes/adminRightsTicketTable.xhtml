@@ -66,11 +66,12 @@
 
                         <!-- UNFOLD LONG MESSAGES SCRIPT -->
                         <script>
-                            function debounce(func, time){
+                            //<![CDATA[
+                            function debounce(func, time) {
                                 var time = time || 100; // 100 by default if no param
                                 var timer;
-                                return function(event){
-                                    if(timer) clearTimeout(timer);
+                                return function (event) {
+                                    if (timer) clearTimeout(timer);
                                     timer = setTimeout(func, time, event);
                                 };
                             }
@@ -79,15 +80,18 @@
                                 checkTextLength();
                             }
 
-                            window.addEventListener("resize", debounce( resizeContent, 150 ));
+                            window.addEventListener('resize', debounce(resizeContent, 150));
 
                             function checkTextLength() {
-                                $('.admin__tickets-pending-ticket-value-message-wrapper').each(function() {
-                                    if ( $(this).find('.admin__tickets-pending-ticket-value-invis-message').height() > 85 &amp; &amp; !$(this).find('.admin__tickets-pending-ticket-value-message').hasClass("-unfolded") )  {
+                                $('.admin__tickets-pending-ticket-value-message-wrapper').each(function () {
+                                    if (
+                                        $(this).find('.admin__tickets-pending-ticket-value-invis-message').height() > 85 &&
+                                        !$(this).find('.admin__tickets-pending-ticket-value-message').hasClass('-unfolded')
+                                    ) {
                                         $(this).find('.admin__tickets-pending-ticket-unfold-button').fadeIn('fast');
                                         $(this).find('.admin__tickets-pending-ticket-value-message').addClass('-unfoldable');
 
-                                        $(this).on('click', function() {
+                                        $(this).on('click', function () {
                                             $(this).find('.admin__tickets-pending-ticket-value-message').addClass('-unfolded');
                                             $(this).find('.admin__tickets-pending-ticket-unfold-button').hide();
                                             $(this).find('.admin__tickets-pending-ticket-value-invis-message').addClass('-unfolded');
@@ -99,9 +103,10 @@
                                 });
                             }
 
-                            $(document).ready(function() {
+                            $(document).ready(function () {
                                 checkTextLength();
                             });
+                            //]]>
                         </script>
                         <div class="admin__tickets-pending-ticket-actions">
                             <button
@@ -305,17 +310,14 @@
                     <!-- NO ENTRIES MESSAGE SCRIPT -->
                     <script type="text/javascript">
                         if ($('.admin__grid-table-data-row').length == 0) {
-                            $('.admin__grid-table-data-row-area').append('
-                        <div
-                            class="admin__grid-table-data-row"
-                            role="row">
-                            <div
-                                class="admin__grid-table-data"
-                                role="gridcell">
-                                #{msg.hitsZero}
-                            </div>
-                        </div>
-                        ');
+                            $('.admin__grid-table-data-row-area').append(
+                                $(document.createElement('div'))
+                                    .addClass('admin__grid-table-data-row')
+                                    .attr('role', 'row')
+                                    .append(
+                                        $(document.createElement('div')).addClass('admin__grid-table-data').attr('role', 'gridcell').text(#{navigationHelper.getTranslationsAsJson(['hitsZero'])}.hitsZero)
+                                    )
+                            );
                         }
                     </script>
                 </div>

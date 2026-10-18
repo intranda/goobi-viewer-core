@@ -159,10 +159,7 @@
             });
 
             if ($('.admin__table-entry').length == 0) {
-                $('.admin__table-content').append('
-            <br />
-            <p>#{msg.hitsZero}</p>
-            ');
+                $('.admin__table-content').append(document.createElement('br'), $(document.createElement('p')).text(#{navigationHelper.getTranslationsAsJson(['hitsZero'])}.hitsZero));
             }
         </script>
     </ui:define>
