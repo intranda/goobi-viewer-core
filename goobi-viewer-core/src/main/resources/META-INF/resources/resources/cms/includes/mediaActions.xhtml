@@ -4,8 +4,6 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
     <!-- ACTIONS -->
     <div class="admin-cms-media__actions">
@@ -37,7 +35,6 @@
                             svgClass="icon" />
                     </span>
                 </label>
-
                 <div class="custom-control custom-control--select">
                     <select
                         id="bulkActionSelect#{index}"
@@ -104,7 +101,7 @@
                 id="reloadButton#{index}"
                 style="display: none"
                 action="#{cmsMediaBean.reloadMediaList}">
-                <!-- Must not submit form, otherwise the CMSMediaItem-listing will become confused after file upload -->
+                <!-- MUST NOT SUBMIT THE FORM (BREAKS THE MEDIA LISTING AFTER UPLOAD) -->
                 <f:ajax
                     execute="adminCmsMediaFilter"
                     render="@form"

@@ -18,7 +18,6 @@
             <c:set
                 var="heroMapUrl"
                 value="#{cc.attrs.component.getContentData('mapUrl')}" />
-
             <div
                 data-search-hero="true"
                 data-search-hero-api="#{request.contextPath}/api/v1/"
@@ -28,7 +27,6 @@
                 <ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
                     <div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
                 </ui:fragment>
-
                 <div class="cms-search-hero__stage">
                     <div class="cms-search-hero__address">
                         <ui:fragment rendered="#{not empty cc.attrs.component.getContentData('eyebrow')}">
@@ -80,7 +78,7 @@
                         </ui:fragment>
                     </div>
 
-                    <!-- Each frame has its own configurable Solr query. -->
+                    <!-- ONE SOLR QUERY PER FRAME -->
                     <div class="cms-search-hero__gallery">
                         <div
                             class="cms-search-hero__case"
@@ -168,6 +166,7 @@
                 </div>
             </div>
 
+            <!-- SEARCH HERO SCRIPT -->
             <h:outputScript>
                 $(document).ready(function() {
                     if (viewerJS.searchHero) {

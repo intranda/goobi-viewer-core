@@ -3,18 +3,11 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:util="http://goobi.io/util">
     <ui:param
         name="renderTitle"
         value="#{renderTitle == null ? true : renderTitle}" />
-
     <ui:fragment rendered="#{!metadataElement.skip}">
         <div class="metadata__element-wrapper">
             <ui:fragment rendered="#{renderTitle and !metadataElement.hasMetadataTypeLabels(metadataBean.activeMetadataView.index)}">
@@ -23,7 +16,7 @@
                 </h2>
             </ui:fragment>
 
-            <!-- COLLAPSED VIEW: only metadataListBeforeFold -->
+            <!-- COLLAPSED VIEW -->
             <c:forEach
                 var="type"
                 items="#{metadataElement.metadataTypes}">
@@ -35,15 +28,15 @@
 
                 <!-- METADATA ELEMENT -->
                 <div class="metadata__wrapper #{metadataElement.isDisplayBoxed(type.type) ? '-isBoxed' : ''}">
-                    <!-- Initial VIEW: metadataList before <fold/> element -->
+                    <!-- BEFORE FOLD -->
                     <div class="metadata__fold-wrapper -visibleByDefault">
                         <c:forEach
                             items="#{metadataElement.metadataListBeforeFold}"
                             var="metadata">
                             <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
-                                <!-- grouped="true" -->
+                                <!-- GROUPED VALUES -->
                                 <h:panelGroup rendered="#{metadata.group}">
-                                    <!-- Single label for all values, each value is a single string -->
+                                    <!-- SINGLE STRING -->
                                     <h:panelGroup rendered="#{metadata.singleString}">
                                         <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
                                             <ui:param
@@ -52,7 +45,7 @@
                                         </ui:include>
                                     </h:panelGroup>
 
-                                    <!-- Each value has a label column and a value column -->
+                                    <!-- KEY VALUE PAIRS -->
                                     <h:panelGroup rendered="#{!metadata.singleString}">
                                         <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
                                             <ui:param
@@ -62,7 +55,7 @@
                                     </h:panelGroup>
                                 </h:panelGroup>
 
-                                <!-- grouped="false" -->
+                                <!-- UNGROUPED VALUES -->
                                 <h:panelGroup
                                     styleClass="metadata__ungrouped-wrapper"
                                     layout="block"
@@ -90,7 +83,7 @@
                         </c:forEach>
                     </div>
 
-                    <!-- EXPANDED VIEW: full metadataList (hidden by default) -->
+                    <!-- EXPANDED VIEW -->
                     <div
                         class="metadata__fold-wrapper -hidden"
                         data-target="collapsedMetadataBlock">
@@ -98,9 +91,9 @@
                             items="#{metadataElement.metadataList}"
                             var="metadata">
                             <h:panelGroup rendered="#{metadata.type == type.type and !metadata.blank}">
-                                <!-- grouped="true" -->
+                                <!-- GROUPED VALUES -->
                                 <h:panelGroup rendered="#{metadata.group}">
-                                    <!-- Single label for all values, each value is a single string -->
+                                    <!-- SINGLE STRING -->
                                     <h:panelGroup rendered="#{metadata.singleString}">
                                         <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
                                             <ui:param
@@ -109,7 +102,7 @@
                                         </ui:include>
                                     </h:panelGroup>
 
-                                    <!-- Each value has a label column and a value column -->
+                                    <!-- KEY VALUE PAIRS -->
                                     <h:panelGroup rendered="#{!metadata.singleString}">
                                         <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
                                             <ui:param
@@ -119,7 +112,7 @@
                                     </h:panelGroup>
                                 </h:panelGroup>
 
-                                <!-- grouped="false" -->
+                                <!-- UNGROUPED VALUES -->
                                 <h:panelGroup
                                     styleClass="metadata__ungrouped-wrapper"
                                     layout="block"
@@ -147,11 +140,11 @@
                         </c:forEach>
                     </div>
 
-                    <!-- FOLD BUTTONS: only shown when the full list is longer than the before-fold list -->
+                    <!-- FOLD BUTTONS -->
                     <h:panelGroup
                         layout="block"
                         rendered="#{metadataElement.hasMetadataListFold}">
-                        <!-- Show more -->
+                        <!-- SHOW MORE -->
                         <button
                             type="button"
                             class="btn btn--default metadata__fold-button metadata__fold-button-more"
@@ -163,7 +156,8 @@
                                 </span>
                             </span>
                         </button>
-                        <!-- Show less -->
+
+                        <!-- SHOW LESS -->
                         <button
                             type="button"
                             class="btn btn--default metadata__fold-button metadata__fold-button-less -hidden"
@@ -178,16 +172,14 @@
                     </h:panelGroup>
                     <script>
                         $(document)
-                            // "Show more": reveals full list, hides default block, swaps buttons
-                            .on('click', '[data-trigger="expandMetadata"]', function() {
+                            .on('click', '[data-trigger="expandMetadata"]', function () {
                                 var $w = $(this).closest('.metadata__wrapper');
                                 $w.find('.-visibleByDefault').addClass('-hidden');
                                 $w.find('[data-target="collapsedMetadataBlock"]').removeClass('-hidden');
                                 $(this).addClass('-hidden');
                                 $w.find('[data-trigger="collapseMetadata"]').removeClass('-hidden');
                             })
-                            // "Show less": hides full list, restores default block, swaps buttons
-                            .on('click', '[data-trigger="collapseMetadata"]', function() {
+                            .on('click', '[data-trigger="collapseMetadata"]', function () {
                                 var $w = $(this).closest('.metadata__wrapper');
                                 $w.find('[data-target="collapsedMetadataBlock"]').addClass('-hidden');
                                 $w.find('.-visibleByDefault').removeClass('-hidden');

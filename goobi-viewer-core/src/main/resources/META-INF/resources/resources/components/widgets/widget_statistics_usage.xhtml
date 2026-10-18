@@ -2,15 +2,11 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:o="http://omnifaces.org/ui"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
     <composite:interface />
 
     <composite:implementation>
@@ -18,7 +14,6 @@
             <ui:param
                 name="stats"
                 value="#{statisticsBean.getUsageStatisticsForRecord(activeDocumentBean.viewManager.pi)}" />
-
             <div
                 id="widgetUsageStatistics"
                 class="widget widget-usage-statistics">
@@ -33,13 +28,11 @@
                         action="#{viewBean.put('showRecordStatistics', 'true')}"
                         onbegin="document.querySelector('.usage-statistics-loader')?.classList.remove('d-none')"
                         oncomplete="document.querySelector('.usage-statistics-loader')?.classList.add('d-none')" />
-
                     <div
                         tabindex="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'statistics-usage') ? '0' : ''}"
                         role="#{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'statistics-usage') ? 'button' : ''}"
                         class="widget__topbar widget-usage-statistics__topbar #{configurationBean.isSidebarWidgetForViewCollapsible(navigationHelper.currentView,'statistics-usage') ? 'collapsible' : ''} #{!configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'statistics-usage') ? 'in' : ''}">
                         <h2 class="widget__title widget-usage-statistics__title">#{msg.widget_usage_statistics__title}</h2>
-
                         <div class="widget__topbar-icons-container">
                             <util:icon
                                 icon="chevron-down"
@@ -47,7 +40,6 @@
                                 svgClass="widget__topbar-icon-svg widget-usage-statistics__topbar-icon-svg" />
                         </div>
                     </div>
-
                     <div
                         id="widgetUsageStatisticsBody"
                         class="widget__body widget-usage-statistics__body #{configurationBean.isSidebarWidgetForViewCollapsedByDefault(navigationHelper.currentView,'statistics-usage') ? '-collapsed' : ''}">
@@ -77,7 +69,6 @@
                                             )
                                         </span>
                                     </div>
-
                                     <div class="widget-usage-statistics__key">#{msg.widget_usage_statistics__total_downloads}:</div>
                                     <div>
                                         <span class="widget-usage-statistics__value">#{stats.getTotalRequests('FILE_DOWNLOAD')}</span>

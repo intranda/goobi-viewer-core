@@ -5,7 +5,6 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
@@ -16,7 +15,7 @@
 
     <composite:implementation>
         <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.displayArchivesWidget}">
-            <!-- neighbours is a pair of optionals holding the ids of the previous and succeeding archives entry. This format is used to avoid querying solr more than once -->
+            <!-- NEIGHBOURS, ONE SOLR QUERY FOR BOTH -->
             <c:set
                 scope="view"
                 var="neighbours"

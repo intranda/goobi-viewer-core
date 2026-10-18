@@ -1,14 +1,8 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
     <ui:param
         name="search"
         value="#{search != null ? search : searchBean}" />
@@ -27,8 +21,11 @@
         <ui:include src="/resources/includes/search/searchListOptions.xhtml" />
     </ui:fragment>
 
-    <h:panelGroup layout="block" id="searchArea">
-        <!-- SEARCH STANDARD --> 
+    <!-- SEARCH AREA -->
+    <h:panelGroup
+        layout="block"
+        id="searchArea">
+        <!-- SEARCH STANDARD -->
         <ui:fragment rendered="#{searchType == 0}">
             <ui:include src="/resources/includes/search/searchStandard.xhtml">
                 <ui:param
@@ -75,7 +72,6 @@
                 <h:outputText
                     value="#{msg.date}: "
                     escape="false" />
-
                 <h:outputText value="#{calendarBean.currentDate}">
                     <f:converter converterId="localDateTimeConverter" />
                     <f:attribute

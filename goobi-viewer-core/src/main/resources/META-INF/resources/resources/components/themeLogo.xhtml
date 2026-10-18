@@ -2,12 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-    <!--
-        Theme logo with a dark mode variant. Renders one image per color mode; CSS shows the one
-        matching the active mode. Per mode the source is the configured dark logo, else the
-        configured logo, else the given default file. A theme that configures a single logo
-        therefore shows that logo in both modes.
-    -->
+    <!-- ONE LOGO PER COLOR MODE, DARK FALLS BACK TO THE LOGO -->
     <composite:interface>
         <composite:attribute
             name="variant"

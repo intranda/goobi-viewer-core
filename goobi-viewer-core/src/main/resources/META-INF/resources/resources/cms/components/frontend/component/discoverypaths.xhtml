@@ -18,7 +18,6 @@
                 <ui:fragment rendered="#{cc.attrs.component.isPrivate() and cc.attrs.component.hasAccess(userBean.user)}">
                     <div class="content-component__not-published-info">#{msg.cms__content_not_published_yet}</div>
                 </ui:fragment>
-
                 <div class="cms-discovery-paths__inner">
                     <header class="cms-discovery-paths__introduction">
                         <ui:fragment rendered="#{not empty cc.attrs.component.getContentData('eyebrow')}">
@@ -34,6 +33,7 @@
                         </h2>
                     </header>
 
+                    <!-- STAGE -->
                     <div class="cms-discovery-paths__stage">
                         <ol
                             class="cms-discovery-paths__statement"

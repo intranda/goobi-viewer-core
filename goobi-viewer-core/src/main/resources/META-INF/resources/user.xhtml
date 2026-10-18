@@ -42,6 +42,7 @@
             class="user-account user-settings">
             <h1>#{msg.accountSettings}</h1>
 
+            <!-- NOT LOGGED IN -->
             <ui:fragment rendered="#{!userBean.loggedIn}">
                 <div
                     class="alert alert-warning"
@@ -50,6 +51,7 @@
                 </div>
             </ui:fragment>
 
+            <!-- SETTINGS -->
             <ui:fragment rendered="#{userBean.loggedIn}">
                 <div class="user-settings__layout">
                     <div class="user-settings__aside">
@@ -106,7 +108,6 @@
                                                         icon="pencil"
                                                         text="#{msg.button__edit}" />
                                                 </button>
-
                                                 <div class="user-settings__avatar-menu dropdown-menu">
                                                     <div class="user-settings__avatar-menu-item">
                                                         <util:icon-text
@@ -125,7 +126,6 @@
                                                                 onevent="syncHeaderAvatar" />
                                                         </o:inputFile>
                                                     </div>
-
                                                     <h:commandLink
                                                         styleClass="user-settings__avatar-menu-item -danger"
                                                         action="#{userBean.deleteAvatarFileAction()}">
@@ -182,6 +182,7 @@
                         </script>
                     </div>
 
+                    <!-- SETTINGS FORMS -->
                     <div class="user-settings__main">
                         <h:form
                             id="editUser"
@@ -192,6 +193,7 @@
                                 <div class="user-settings__panel-head">
                                     <h2 class="user-settings__panel-title">#{msg.general}</h2>
                                 </div>
+
                                 <!-- AUTOCOMPLETE TRAPS -->
                                 <input
                                     type="text"
@@ -201,6 +203,7 @@
                                     autocomplete="off"
                                     class="hidden" />
 
+                                <!-- USER DISPLAY NAME -->
                                 <div class="user-settings__field">
                                     <label
                                         for="displayName"
@@ -216,6 +219,7 @@
                                     <span class="user-settings__help">#{msg.admin__user_display_name__help}</span>
                                 </div>
 
+                                <!-- USER EMAIL ADDRESS -->
                                 <h:panelGroup
                                     id="emailGroup"
                                     layout="block"
@@ -249,6 +253,7 @@
                                     <span class="user-settings__help">#{msg.admin__user_email__help}</span>
                                 </h:panelGroup>
 
+                                <!-- USER FIRST NAME -->
                                 <div class="user-settings__field">
                                     <label
                                         for="firstName"
@@ -263,6 +268,7 @@
                                     <span class="user-settings__help">#{msg.admin__user_first_name__help}</span>
                                 </div>
 
+                                <!-- USER LAST NAME -->
                                 <div class="user-settings__field">
                                     <label
                                         for="lastName"
@@ -286,6 +292,7 @@
                                         <p class="user-settings__panel-intro">#{msg.admin__user_password_info_text}</p>
                                     </div>
 
+                                    <!-- CURRENT PASSWORD -->
                                     <div class="user-settings__field">
                                         <h:outputLabel
                                             for="currentPassword"
@@ -347,7 +354,7 @@
                                     return true;
                                 }
                                 var emailField = document.getElementById('email');
-                                // the field re-renders on change, so defaultValue would already be the new address
+                                // SAVED EMAIL FROM DATA ATTRIBUTE, DEFAULTVALUE CHANGES ON RE-RENDER
                                 var savedEmail = emailField ? emailField.dataset.savedEmail : null;
                                 if (!emailField || emailField.value === savedEmail) {
                                     return true;
@@ -391,6 +398,7 @@
                                     <p class="user-settings__panel-intro">#{msg.admin__user_delete_description}:</p>
                                 </div>
 
+                                <!-- KEEP DATA OPTION -->
                                 <div class="user-settings__field">
                                     <div class="user-settings__choice">
                                         <div class="form-check connected-top">
@@ -414,6 +422,7 @@
                                     </div>
                                 </div>
 
+                                <!-- EMAIL CONFIRMATION -->
                                 <div class="user-settings__field">
                                     <h:outputLabel
                                         for="emailConfirmation"
@@ -427,7 +436,6 @@
                                         required="true"
                                         requiredMessage="#{msg.admin__error_email_mismatch}" />
                                 </div>
-
                                 <div class="user-settings__panel-foot">
                                     <button
                                         id="deleteUserButton"

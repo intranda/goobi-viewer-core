@@ -1,15 +1,11 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -34,9 +30,7 @@
                     <div class="admin__title-bar">
                         <h1 class="admin__title">#{msg.admin__cms_archives_edit}</h1>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <div class="admin__content-wrapper">
                             <div class="admin__content-main">
@@ -54,7 +48,6 @@
                                                     render="titleGroup"
                                                     execute="titleGroup" />
                                             </div>
-
                                             <div class="admin__cms-archive-edit__field-block">
                                                 <div class="admin__cms-archive-edit__field-row form-group">
                                                     <div class="admin__cms-archive-edit__field-label">#{msg.title}:</div>
@@ -97,7 +90,6 @@
                                                     render="descriptionGroup"
                                                     execute="descriptionGroup" />
                                             </div>
-
                                             <div class="admin__cms-archive-edit__field-block">
                                                 <div class="admin__cms-archive-edit__field-row form-group">
                                                     <div class="admin__cms-archive-edit__field-label">#{msg.description}:</div>
@@ -133,7 +125,6 @@
                                     <h2 class="admin__cms-archive-edit__section-title">#{msg.admin__cms_archives_image_tile}</h2>
                                     <div class="admin__cms-archive-edit__image-block">
                                         <p class="admin__cms-archive-edit__image-description">#{msg.admin__cms_archives_image_tile_desc}</p>
-
                                         <h:panelGroup
                                             layout="block"
                                             id="imageModeGroupTile"
@@ -162,7 +153,6 @@
                                                     </h:selectOneRadio>
                                                 </div>
                                             </div>
-
                                             <h:panelGroup
                                                 layout="block"
                                                 styleClass="admin__cms-archive-edit__image-preview"
@@ -206,7 +196,6 @@
                                     <h2 class="admin__cms-archive-edit__section-title">#{msg.admin__cms_archives_image_header}</h2>
                                     <div class="admin__cms-archive-edit__image-block">
                                         <p class="admin__cms-archive-edit__image-description">#{msg.admin__cms_archives_image_header_desc}</p>
-
                                         <h:panelGroup
                                             layout="block"
                                             id="imageModeGroupHeader"
@@ -235,7 +224,6 @@
                                                     </h:selectOneRadio>
                                                 </div>
                                             </div>
-
                                             <h:panelGroup
                                                 layout="block"
                                                 styleClass="admin__cms-archive-edit__image-preview"
@@ -295,7 +283,6 @@
                                         </button>
                                     </div>
                                 </h:form>
-
                                 <h:panelGroup id="mediaSelectPanel0">
                                     <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                                         <div class="admin-cms-media-select-overlay">
@@ -322,7 +309,6 @@
                                         </div>
                                     </ui:fragment>
                                 </h:panelGroup>
-
                                 <h:panelGroup id="mediaSelectPanel1">
                                     <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                                         <div class="admin-cms-media-select-overlay">
@@ -364,7 +350,6 @@
                                         </div>
                                         <div class="admin__cms-archive-edit__hint-schema-label">#{msg.admin__cms_archives_hint_tile_label}</div>
                                     </div>
-
                                     <div class="admin__form-help-text in mt-3">#{msg.admin__cms_archives_hint_tile_text}</div>
                                     <div class="admin__cms-archive-edit__hint-meta">
                                         #{msg.admin__cms_archives_hint_tile_dimensions}
@@ -384,7 +369,6 @@
                                         </div>
                                         <div class="admin__cms-archive-edit__hint-schema-label">#{msg.admin__cms_archives_hint_header_label}</div>
                                     </div>
-
                                     <div class="admin__form-help-text in mt-3">#{msg.admin__cms_archives_hint_header_text}</div>
                                     <div class="admin__cms-archive-edit__hint-meta">
                                         #{msg.admin__cms_archives_hint_header_dimensions}
@@ -397,13 +381,12 @@
                     </div>
                 </h:panelGroup>
 
+                <!-- ARCHIVE EDIT SCRIPT -->
                 <script>
-                    viewerJS.jsfAjax.success
-                        .pipe(rxjs.operators.merge(rxjs.fromEvent(window, 'load')))
-                        .subscribe((e) => {
-                            $("[data-target='isChecked'] input").prop('checked', true);
-                            $("[data-target='blurIfUnchecked'] input").prop('checked', false);
-                        });
+                    viewerJS.jsfAjax.success.pipe(rxjs.operators.merge(rxjs.fromEvent(window, 'load'))).subscribe((e) => {
+                        $("[data-target='isChecked'] input").prop('checked', true);
+                        $("[data-target='blurIfUnchecked'] input").prop('checked', false);
+                    });
                 </script>
             </f:view>
         </div>

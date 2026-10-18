@@ -5,7 +5,7 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:util="http://goobi.io/util">
-    <!-- INTERFACE OPTIONS -->
+    <!-- INTERFACE -->
     <composite:interface>
         <composite:attribute
             name="field"
@@ -17,7 +17,7 @@
             required="true" />
     </composite:interface>
 
-    <!-- COMPONENT CONTENT -->
+    <!-- CONTENT -->
     <composite:implementation>
         <h:outputScript
             name="resources/javascript/libs/chartjs/chart.umd.js"
@@ -59,6 +59,7 @@
                             </h:form>
                         </div>
                     </div>
+
                     <!-- SECTION COLLAPSE -->
                     <button
                         type="button"
@@ -71,9 +72,7 @@
                             svgClass="widget-search-facets__section-toggle-icon-svg" />
                     </button>
                 </div>
-
                 <p class="sr-only">#{msg.a11y__widget_chronology_reloaded}</p>
-
                 <div
                     id="chronoSlider_#{cc.attrs.index}"
                     class="widget__body widget-chronology-slider__body"
@@ -86,16 +85,16 @@
                     group-label-id="chronoSliderTitle_#{cc.attrs.index}"
                     show-tooltip="true" />
 
+                <!-- CHRONOLOGY SCRIPT -->
                 <script>
-                    // chronologySlider.tag and chronologyGraph.tag for widget chronology
                     (() => {
                         let values = #{searchBean.facets.getValueRangeAsJsonMap(cc.attrs.field)};
                         let valueMap = new Map(Object.entries(values));
 
                         let graphType = "#{searchBean.facets.getRangeFacetStyle(cc.attrs.field)}";
-                        graphType = graphType ? graphType : "slider";
+                        graphType = graphType ? graphType : 'slider';
 
-                        riot.mount("#chronoSlider_#{cc.attrs.index}", "chronology" + graphType, {
+                        riot.mount("#chronoSlider_#{cc.attrs.index}", 'chronology' + graphType, {
                             datamap: valueMap,
                             msg: {
                                 enterYearStart: "#{msg.widgetChronology__year_start}",
@@ -110,7 +109,7 @@
             </div>
         </ui:fragment>
 
-        <!-- HIDDEN FORM TO UPDATE SEARCHHITS - outside ui:fragment so it is always in the component tree -->
+        <!-- HIDDEN SEARCH UPDATE FORM, OUTSIDE UI:FRAGMENT TO STAY IN THE TREE -->
         <h:form
             id="chronologySliderForm"
             styleClass="hidden">

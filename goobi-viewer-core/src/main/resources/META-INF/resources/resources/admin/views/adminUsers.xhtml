@@ -4,7 +4,6 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -26,6 +25,7 @@
                     <div class="admin__title-bar">
                         <!-- TITLE -->
                         <h1 class="admin__title">#{msg.admin__users}</h1>
+
                         <!-- CREATE NEW USER -->
                         <a
                             href="#{navigationHelper.getPageUrl('adminUserNew')}/"
@@ -33,15 +33,14 @@
                             #{msg.add}
                         </a>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <div class="admin__table-tools">
                             <!-- PAGINATOR -->
                             <div class="admin__table-paginator">
                                 <viewerComponent:dataTablePaginator tableValues="#{adminBean.lazyModelUsers}" />
                             </div>
+
                             <!-- FILTER -->
                             <div class="admin__table-filter">
                                 <viewerComponent:dataTableColumnFilter
@@ -50,7 +49,7 @@
                             </div>
                         </div>
 
-                        <!-- All USERS TABLE -->
+                        <!-- ALL USERS TABLE -->
                         <div
                             id="new-table-adminallusertable"
                             class="admin__table-content"
@@ -68,6 +67,7 @@
                                         colHeading="#{msg.admin__users}"
                                         list="#{adminBean.lazyModelUsers}" />
                                 </div>
+
                                 <!-- LAST LOGIN COL -->
                                 <div class="col-3 d-flex -sorting-arrow-trigger">
                                     <!-- SORTING -->
@@ -76,6 +76,7 @@
                                         colHeading="#{msg.lastLoginDate}"
                                         list="#{adminBean.lazyModelUsers}" />
                                 </div>
+
                                 <!-- USER GROUPS COL -->
                                 <div
                                     class="col-3 d-flex"
@@ -109,12 +110,14 @@
                                                     value="#{user.nickName}"
                                                     escape="true" />
                                             </span>
+
                                             <!-- USER EMAIL -->
                                             <a
                                                 href="mailto:#{user.email}"
                                                 class="admin__table-email -textlink">
                                                 #{user.email}
                                             </a>
+
                                             <!-- EDIT -->
                                             <a
                                                 href="#{navigationHelper.applicationUrl}admin/users/edit/#{user.id}/"
@@ -144,20 +147,19 @@
                                         class="col-3 d-flex align-items-center align-content-center flex-wrap"
                                         role="gridcell">
                                         <h:panelGroup>
-                                            <!-- Admin -->
+                                            <!-- ADMIN -->
                                             <ui:fragment rendered="#{user.superuser}">
                                                 <div class="admin__badge admin__badge-danger admin__table-badges">#{msg.admin}</div>
                                             </ui:fragment>
 
-                                            <!-- TODO This might get expensive -->
-                                            <!-- Ownerships -->
+                                            <!-- OWNERSHIPS -->
                                             <ui:repeat
                                                 var="group"
                                                 value="#{user.userGroupOwnerships}">
                                                 <div class="admin__badge admin__badge-info admin__table-badges">#{group.name}</div>
                                             </ui:repeat>
 
-                                            <!-- Memberships -->
+                                            <!-- MEMBERSHIPS -->
                                             <ui:repeat
                                                 var="role"
                                                 value="#{user.userGroupMemberships}">
@@ -173,16 +175,17 @@
             </h:panelGroup>
         </div>
 
+        <!-- DATA TABLE SCRIPT -->
         <script type="text/javascript">
             var dataTableConfig = {
-    dataTablePaginator: '#dataTablePaginator',
-    txtField1: '#txtMoveTo1',
-    txtField2: '#txtMoveTo2',
-    totalCount: '#totalCount',
-    reloadBtn: 'input[id*="cmdMoveTo"]',
-};
+                dataTablePaginator: '#dataTablePaginator',
+                txtField1: '#txtMoveTo1',
+                txtField2: '#txtMoveTo2',
+                totalCount: '#totalCount',
+                reloadBtn: 'input[id*="cmdMoveTo"]',
+            };
 
-viewerJS.dataTable.init(dataTableConfig);
+            viewerJS.dataTable.init(dataTableConfig);
         </script>
     </ui:define>
 </ui:composition>

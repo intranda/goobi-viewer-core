@@ -5,9 +5,6 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:o="http://omnifaces.org/ui"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     template="/resources/themes/#{navigationHelper.theme}/template.html">
@@ -76,13 +73,12 @@
                                         <f:param value="#{calendarBean.getCenturyLabel(century.value, navigationHelper.locale)}" />
                                     </h:outputFormat>
                                 </h2>
-
                                 <ul class="search-calendar__century-grid">
                                     <ui:repeat
                                         var="year"
                                         value="#{century.years}">
                                         <li class="search-calendar__century-year">
-                                            <!-- YEAR HAS ENTRIES SO LINK RENDERED -->
+                                            <!-- YEAR WITH HITS -->
                                             <span
                                                 jsf:id="yearLink"
                                                 class="search-calendar__century-year-link"
@@ -91,7 +87,8 @@
                                                 title="#{year.hits} #{msg.currentwitsForYear}">
                                                 <a href="#{request.contextPath}/searchcalendar/#{year.name}/">#{year.name}</a>
                                             </span>
-                                            <!-- YEAR HAS 0 ENTRIES SO NO LINK RENDERED -->
+
+                                            <!-- YEAR WITHOUT HITS -->
                                             <span
                                                 aria-hidden="true"
                                                 class="search-calendar__century-year-text"
@@ -105,6 +102,7 @@
                             </ui:repeat>
                         </div>
 
+                        <!-- CALENDAR SEARCH -->
                         <h:panelGroup rendered="#{configurationBean.calendarSearchEnabled}">
                             <!-- SEARCH CALENDAR MONTHS -->
                             <h:panelGroup rendered="#{configurationBean.calendarSearchEnabled and calendarBean.currentYear.hits ge 1}">
@@ -161,7 +159,6 @@
                                                                 </h:commandLink>
                                                             </div>
                                                         </h:panelGroup>
-
                                                         <h:panelGroup rendered="#{day.name == ''}">
                                                             <div class="search-calendar__month-day-empty" />
                                                         </h:panelGroup>

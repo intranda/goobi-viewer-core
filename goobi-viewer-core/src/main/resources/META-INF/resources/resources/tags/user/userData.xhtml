@@ -4,14 +4,10 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:o="http://omnifaces.org/ui"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
     <h2>#{msg.general}</h2>
     <div class="userdata__form-wrapper">
-        <!-- prevent autocomplete in IE, Chrome and Firefox -->
+        <!-- AUTOCOMPLETE TRAPS -->
         <input
             type="text"
             class="hidden" />
@@ -20,6 +16,7 @@
             autocomplete="off"
             class="hidden" />
 
+        <!-- FIELDS -->
         <fieldset>
             <!-- USER DISPLAY NAME -->
             <div class="form-group form-row">
@@ -108,12 +105,13 @@
                     if (!#{confirmEmailChange}) return true;
                     var emailField = document.getElementById('email');
                     if (!emailField || emailField.value === emailField.defaultValue) return true;
-                    viewerJS.notifications.confirm("#{msg.user__change_email__confirm}", "#{msg.ok}", undefined, undefined, {icon: 'question'})
-                        .then(function() {
+                    viewerJS.notifications
+                        .confirm("#{msg.user__change_email__confirm}", "#{msg.ok}", undefined, undefined, { icon: 'question' })
+                        .then(function () {
                             button._emailConfirmed = true;
                             button.click();
                         })
-                        .catch(function() {
+                        .catch(function () {
                             emailField.value = emailField.defaultValue;
                         });
                     return false;
@@ -219,7 +217,7 @@
             <div
                 class="form-horizontal"
                 role="form">
-                <!-- Current password (only when changing own password) -->
+                <!-- CURRENT PASSWORD -->
                 <ui:fragment rendered="#{user.id == userBean.user.id and userBean.user.id != adminBean.currentUser.id}">
                     <div class="form-group form-row">
                         <h:outputLabel

@@ -40,7 +40,6 @@
                             <span class="-sr-only">#{msg.bookmarkList_myBookmarkLists}:</span>
                             #{bookmarkBean.currentBookmarkList.name}
                         </h1>
-
                         <h:form
                             id="viewBookmarkListActionForm"
                             prependId="false"
@@ -69,12 +68,12 @@
                             </h:commandLink>
                         </h:form>
                     </div>
-
                     <ui:fragment rendered="#{bookmarkBean.currentBookmarkList.hasDescription()}">
                         <p class="view-bookmark__intro">#{bookmarkBean.currentBookmarkList.description}</p>
                     </ui:fragment>
                 </div>
 
+                <!-- BOOKMARKS DISABLED -->
                 <ui:fragment rendered="#{!configurationBean.bookmarksEnabled}">
                     <div
                         class="alert alert-warning"
@@ -83,6 +82,7 @@
                     </div>
                 </ui:fragment>
 
+                <!-- LIST CONTENT -->
                 <ui:fragment rendered="#{configurationBean.bookmarksEnabled and !bookmarkBean.newBookmarkList}">
                     <ui:fragment rendered="#{bookmarkBean.currentBookmarkList.items.isEmpty()}">
                         <div class="view-bookmark__empty">
@@ -90,9 +90,7 @@
                         </div>
                     </ui:fragment>
 
-                    <!-- browseElement renders search-hit markup; the theme lays it out via
-                         .view-bookmark__entries. The search list's own container class is not
-                         reused: it starts at opacity 0 and is revealed by the search page's JS. -->
+                    <!-- BOOKMARK ENTRIES, NO SEARCH-LIST CLASS (IT STARTS HIDDEN) -->
                     <ui:fragment rendered="#{!bookmarkBean.currentBookmarkList.items.isEmpty()}">
                         <div class="view-bookmark__entries">
                             <ui:repeat

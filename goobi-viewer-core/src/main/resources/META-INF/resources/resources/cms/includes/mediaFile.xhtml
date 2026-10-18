@@ -5,9 +5,7 @@
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
     <ui:param
         name="media"
         value="#{item.value}" />
@@ -242,7 +240,7 @@
                             </div>
                         </div>
 
-                        <!-- EDIT PRIORITY ("IMPORTANT" ATTRIBUTE) -->
+                        <!-- EDIT PRIORITY, IMPORTANT ATTRIBUTE -->
                         <div class="cms-module__option-group">
                             <div class="cms-module__option-label">
                                 <label for="editMediaPriority">#{msg.admin__media_important}:</label>
@@ -279,7 +277,7 @@
                                     value="#{media.link}"
                                     validator="URISyntaxValidator"
                                     styleClass="form-control">
-                                    <!-- Activate URI syntax validation so free-text descriptions cannot be saved as link -->
+                                    <!-- URI VALIDATION, NO FREE TEXT AS LINK -->
                                     <f:attribute
                                         name="validator_active"
                                         value="true" />
@@ -395,7 +393,6 @@
                         data-action="cancel">
                         #{msg.button__abort}
                     </button>
-
                     <button
                         class="btn btn--clean delete admin__boxed-entry-actions-delete -redlink delete"
                         data-require-confirmation="true"
@@ -407,7 +404,6 @@
                             render="adminCmsMediaFilesForm :messages"
                             onevent="reload" />
                     </button>
-
                     <h:commandLink
                         actionListener="#{cmsMediaBean.saveMedia(media, item.categories)}"
                         onclick="$(this).siblings('.abort').click()"

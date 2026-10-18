@@ -6,11 +6,7 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
     <ui:param
         name="search"
         value="#{searchParam != null ? searchParam : searchBean}" />
@@ -26,6 +22,7 @@
             </div>
         </h:panelGroup>
 
+        <!-- ADVANCED SEARCH -->
         <h:panelGroup rendered="#{configurationBean.advancedSearchEnabled}">
             <h:form
                 id="searchAdvancedForm"
@@ -65,6 +62,7 @@
                                 </ui:fragment>
                             </div>
 
+                            <!-- ENTITY DROPDOWN -->
                             <ul
                                 data-target="entityDropdown"
                                 class="search-advanced__entity-tabs-dropdown">
@@ -82,6 +80,7 @@
                                 </ui:repeat>
                             </ul>
 
+                            <!-- ENTITY TABS -->
                             <div class="search-advanced__entity-tabs-links-wrapper">
                                 <!-- LINK TO CONFIGURED TEMPLATE NAMES -->
                                 <ui:repeat
@@ -106,13 +105,13 @@
                     </ui:fragment>
                 </ui:fragment>
 
+                <!-- ENTRY AREA -->
                 <div
                     class="search-advanced__entry-area -result-group-#{searchBean.advancedSearchFieldTemplate} #{configurationBean.searchResultGroupsEnabled ? '-resultsGroupsActive' : ''}">
                     <!-- AJAX LOADER -->
                     <div class="search-advanced__loader" />
 
                     <!-- SEARCH ADVANCED INPUT GROUP -->
-                    <!-- TODO: Loops will need to be replaced with ui:repeat when enabling multiple lines per query item -->
                     <c:forEach
                         var="queryItem"
                         items="#{searchBean.advancedSearchQueryGroup.queryItems}"
@@ -140,15 +139,14 @@
                                                     <f:passThroughAttribute
                                                         name="aria-haspopup"
                                                         value="listbox" />
-                                                    <!-- f:selectItems instead of c:forEach: the field list is locale-dependent and a changing
-                                                         number of f:selectItem components causes duplicate IDs after a language switch -->
+
+                                                    <!-- USE F:SELECTITEMS, NOT C:FOREACH (DUPLICATE IDS AFTER A LANGUAGE SWITCH) -->
                                                     <f:selectItems
                                                         value="#{searchBean.advancedSearchFirstItemAllowedFields}"
                                                         var="field"
                                                         itemValue="#{field.field}"
                                                         itemLabel="#{msg[field.label]}"
                                                         itemDisabled="#{field.disabled}" />
-
                                                     <f:ajax
                                                         render="searchAdvancedInputGroup-0-#{status.index}-#{lineStatus.index} advsearch_value_group_0-#{status.index}-#{lineStatus.index}"
                                                         onevent="e => {if(e.status == 'success' &amp;&amp; viewerJS.datePicker) viewerJS.datePicker.init()}" />
@@ -156,7 +154,6 @@
                                             </div>
                                         </div>
                                     </c:when>
-
                                     <c:otherwise>
                                         <div class="search-advanced__operator-field-pair-wrapper">
                                             <!-- OPERATOR SELECT -->
@@ -487,7 +484,6 @@
                                 </h:commandButton>
                             </div>
                         </div>
-
                         <div class="search-advanced__nav-helper-item">
                             <div class="search-advanced__nav-helper-label">
                                 <label for="sortSelect">#{msg.sortBy}:</label>
@@ -522,12 +518,10 @@
                                 name="data-target"
                                 value="buttonLoaderClickEvent" />
                         </h:commandButton>
-
                         <div
                             class="small-button-loader__icon -top-right"
                             data-target="buttonLoader" />
                     </div>
-
                     <button
                         class="btn btn--default search-advanced__action-reset-button"
                         jsf:action="#{search.resetSearch}">
@@ -535,8 +529,8 @@
                     </button>
                 </div>
 
+                <!-- ENTITY DROPDOWN SCRIPT -->
                 <script>
-                    // FUNCTIONALITY FOR ENTITY GROUP DROPDOWN
                     $('[data-trigger="entityDropdown"]').on('click', function () {
                         $('[data-target="entityDropdown"]').toggleClass('-active');
                         $(this).toggleClass('-active');
@@ -563,11 +557,12 @@
         </h:panelGroup>
     </div>
 
+    <!-- SEARCH ADVANCED SCRIPT -->
     <script type="text/javascript">
         $(document).ready(function () {
-    var searchAdvancedConfig = {};
+            var searchAdvancedConfig = {};
 
-    viewerJS.searchAdvanced.init(searchAdvancedConfig);
-});
+            viewerJS.searchAdvanced.init(searchAdvancedConfig);
+        });
     </script>
 </ui:composition>

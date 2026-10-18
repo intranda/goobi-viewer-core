@@ -33,7 +33,6 @@
             class="user-bookmark">
             <div class="user-bookmark__head">
                 <h1>#{msg.bookmarkList_bookmarkLists}</h1>
-
                 <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
                     <button
                         type="button"
@@ -48,6 +47,7 @@
                 </ui:fragment>
             </div>
 
+            <!-- ADD LIST FORM -->
             <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
                 <h:form
                     prependId="false"
@@ -80,7 +80,6 @@
                                 styleClass="user-bookmark__messages"
                                 errorClass="user-bookmark__message -danger" />
                         </div>
-
                         <div class="user-bookmark__add-foot">
                             <button
                                 type="button"
@@ -99,6 +98,7 @@
                 </h:form>
             </ui:fragment>
 
+            <!-- BOOKMARKS DISABLED -->
             <ui:fragment rendered="#{!configurationBean.bookmarksEnabled}">
                 <div
                     class="alert alert-warning"
@@ -107,6 +107,7 @@
                 </div>
             </ui:fragment>
 
+            <!-- BOOKMARK LISTS -->
             <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
                 <!-- MY BOOKMARK LISTS -->
                 <ui:fragment rendered="#{bookmarkBean.getBookmarkListsForUser(userBean.user).isEmpty()}">
@@ -114,7 +115,6 @@
                         <p class="user-bookmark__empty-text">#{msg.bookmarkList_noBookmarkListsWarning}</p>
                     </div>
                 </ui:fragment>
-
                 <ui:fragment rendered="#{!bookmarkBean.getBookmarkListsForUser(userBean.user).isEmpty()}">
                     <h:form
                         id="userBookmarkListsForm"
@@ -209,7 +209,7 @@
                         input.addEventListener('input', syncSubmit);
                         syncSubmit();
 
-                        // a failed validation re-renders the page with the panel closed, hiding its own message
+                        // REOPEN THE PANEL AFTER A FAILED VALIDATION
                         if (panel.querySelector('.user-bookmark__message')) {
                             setOpen(true);
                         }

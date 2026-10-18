@@ -3,8 +3,6 @@
     xmlns:util="http://goobi.io/util"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:t="http://myfaces.apache.org/tomahawk"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
@@ -54,8 +52,7 @@
     <composite:implementation>
         <div class="cms-module__option-group">
             <div class="cms-module__option-label">
-                <label
-                    for="#{cc.attrs.defaultItemValue == '' and cc.attrs.defaultItemLabel == '' ? cc.attrs.id.concat(':input1') : cc.attrs.id.concat(':input2')}">
+                <label for="#{cc.attrs.defaultItemValue == '' and cc.attrs.defaultItemLabel == '' ? cc.attrs.id.concat(':input1') : cc.attrs.id.concat(':input2')}">
                     #{cc.attrs.label}
                 </label>
             </div>

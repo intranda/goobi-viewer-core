@@ -6,7 +6,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:util="http://goobi.io/util">
-    <!-- INTERFACE OPTIONS -->
+    <!-- INTERFACE -->
     <composite:interface>
         <composite:attribute
             name="mode"
@@ -20,7 +20,7 @@
             default="#{null}" />
     </composite:interface>
 
-    <!-- COMPONENT CONTENT -->
+    <!-- CONTENT -->
     <composite:implementation>
         <h:panelGroup
             layout="block"
@@ -100,7 +100,8 @@
                                 <f:passThroughAttribute
                                     name="data-original-title"
                                     value="#{msg.removeFacet}" />
-                                <!-- tooltip only repeats the sr-only prefix: keep it visual-only -->
+
+                                <!-- TOOLTIP VISUAL ONLY, IT REPEATS THE SR-ONLY PREFIX -->
                                 <f:passThroughAttribute
                                     name="data-tooltip-muted"
                                     value="true" />

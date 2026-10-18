@@ -1,14 +1,9 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:util="http://goobi.io/util"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:o="http://omnifaces.org/ui"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
@@ -37,7 +32,7 @@
     </composite:interface>
 
     <composite:implementation>
-        <!-- Modal -->
+        <!-- MODAL -->
         <div
             class="modal fade download-modal"
             id="#{cc.attrs.modalId}"
@@ -55,23 +50,18 @@
                             <span aria-hidden="true">x</span>
                         </button>
                     </div>
-
                     <div class="modal-body">
                         <!-- PDF-DOWNLOAD DESCRIPTION -->
                         <div>
-                            <!--TODO MK-->
                             <h2>#{msg.downloadHeading}</h2>
-
                             <dl class="row">
                                 <dt class="col-sm-3">#{msg.downloadInfoTitle}:</dt>
                                 <dd class="col-sm-9">#{cc.attrs.title}</dd>
-
                                 <ui:fragment rendered="#{not empty cc.attrs.fileSize}">
                                     <dt class="col-sm-3">#{msg.downloadInfoFileSize}:</dt>
                                     <dd class="col-sm-9">~ #{cc.attrs.fileSize}</dd>
                                 </ui:fragment>
                             </dl>
-
                             <p class="mt-4 mb-4">
                                 <h:outputText
                                     value="#{msg.downloadEMailText}"
@@ -88,6 +78,7 @@
                             <h:inputHidden
                                 id="#{cc.attrs.modalId}__pi"
                                 value="#{downloadBean.currentPi}" />
+
                             <!-- E-MAIL -->
                             <div class="form-group form-row">
                                 <label
@@ -95,7 +86,6 @@
                                     class="col-lg-3 control-label">
                                     #{msg.email}
                                 </label>
-
                                 <div class="col-12 col-lg-9">
                                     <h:inputText
                                         id="#{cc.attrs.modalId}__download-modal__email"
@@ -122,7 +112,6 @@
                                     <p class="col-12">
                                         <h:outputText escape="false" />
                                     </p>
-
                                     <div
                                         id="downloadAcceptTerms"
                                         data-reference="downloadAcceptTerms"
@@ -133,7 +122,6 @@
                                                 escape="false" />
                                         </p>
                                         <label class="col-lg-3 control-label">#{msg.admin__terms_of_use__accept}:</label>
-
                                         <div class="col-12 col-lg-9 admin__radio-switch">
                                             <h:selectOneRadio
                                                 group="downloadTerms"
@@ -145,7 +133,6 @@
                                                     itemValue="#{false}"
                                                     itemLabel="#{msg.no}" />
                                             </h:selectOneRadio>
-
                                             <h:selectOneRadio
                                                 group="downloadTerms"
                                                 value="true"
@@ -154,7 +141,6 @@
                                                 pt:data-require-input-checkbox="ticketRequired">
                                                 <f:selectItem itemLabel="#{msg.yes}" />
                                             </h:selectOneRadio>
-
                                             <span class="toggle-outside">
                                                 <span class="toggle-inside" />
                                             </span>
@@ -172,7 +158,6 @@
                                         class="btn btn--clean mr-4">
                                         #{msg.cancel}
                                     </button>
-
                                     <h:commandButton
                                         action="#{downloadBean.createDownloadJob(cc.attrs.downloadType, cc.attrs.pi, cc.attrs.logId, true, '')}"
                                         styleClass="btn btn--full"
@@ -185,7 +170,7 @@
 
                             <!-- SHOW LOADER AFTER BUTTON CLICK FOR REQUESTING TICKET -->
                             <script>
-                                // Guard against empty jQuery sets to prevent TypeError on undefined
+                                // GUARD AGAINST EMPTY JQUERY SETS
                                 $.fn.isValid = function () {
                                     return this[0] ? this[0].checkValidity() : true;
                                 };
@@ -207,18 +192,10 @@
                             <script type="text/javascript">
                                 //<![CDATA[
                                 $(document).ready(function () {
-                                    const $emailInput = $(
-                                        "##{cc.attrs.modalId} input[data-reference='download-modal__email']"
-                                    );
-                                    const $radiosWrapper = $(
-                                        "##{cc.attrs.modalId} [data-reference='downloadAcceptTerms']"
-                                    );
-                                    const $radios = $(
-                                        "##{cc.attrs.modalId} [data-reference='downloadAcceptTerms']"
-                                    ).find("input[type='radio']");
-                                    const $submitBtn = $(
-                                        "##{cc.attrs.modalId} input[data-reference='downloadSubmitButton']"
-                                    );
+                                    const $emailInput = $("##{cc.attrs.modalId} input[data-reference='download-modal__email']");
+                                    const $radiosWrapper = $("##{cc.attrs.modalId} [data-reference='downloadAcceptTerms']");
+                                    const $radios = $("##{cc.attrs.modalId} [data-reference='downloadAcceptTerms']").find("input[type='radio']");
+                                    const $submitBtn = $("##{cc.attrs.modalId} input[data-reference='downloadSubmitButton']");
 
                                     $radiosWrapper.hide();
                                     $submitBtn.prop('disabled', true);
@@ -228,9 +205,7 @@
                                         const isEmailValid = $emailInput[0].checkValidity();
 
                                         const acceptTermsVal = $radios.filter(':checked').val();
-                                        const isTermsAccepted = acceptTermsVal
-                                            ? acceptTermsVal?.split(':')?.pop() !== 'false'
-                                            : false;
+                                        const isTermsAccepted = acceptTermsVal ? acceptTermsVal?.split(':')?.pop() !== 'false' : false;
 
                                         if (emailVal.length && isEmailValid) {
                                             $radiosWrapper.show();

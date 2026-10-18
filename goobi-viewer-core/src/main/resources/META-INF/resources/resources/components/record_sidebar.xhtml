@@ -3,12 +3,7 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <composite:interface />
 
@@ -100,7 +95,6 @@
                     <!-- WIDGET METADATA TECH -->
                     <ui:fragment rendered="#{widgetName == 'metadata-tech'}">
                         <widgetComponent:widget_metadataTech id="widgetTechnical" />
-                        <!-- TODO own config? -->
                     </ui:fragment>
 
                     <!-- WIDGET NAMES ENTITIES -->

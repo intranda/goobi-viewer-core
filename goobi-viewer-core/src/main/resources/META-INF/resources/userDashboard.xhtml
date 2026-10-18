@@ -34,6 +34,7 @@
             class="user-account">
             <h1>#{msg.admin__user_profile}</h1>
 
+            <!-- NOT LOGGED IN -->
             <ui:fragment rendered="#{!userBean.loggedIn}">
                 <div
                     class="alert alert-warning"
@@ -42,6 +43,7 @@
                 </div>
             </ui:fragment>
 
+            <!-- DASHBOARD -->
             <ui:fragment rendered="#{userBean.loggedIn}">
                 <div class="user-dashboard__top">
                     <div class="user-dashboard__identity">
@@ -69,6 +71,7 @@
                         </a>
                     </div>
 
+                    <!-- CROWDSOURCING ACTIVITY -->
                     <div class="user-dashboard__panel">
                         <h2 class="user-dashboard__panel-title">#{msg.label__user_crowdsourcing_activity}</h2>
                         <c:set
@@ -132,6 +135,7 @@
                     </div>
                 </div>
 
+                <!-- OVERVIEW CARDS -->
                 <c:if test="#{configurationBean.bookmarksEnabled or configurationBean.searchSavingEnabled or commentBean.userCommentsEnabled}">
                     <h2>#{msg.admin__overview}</h2>
                     <div class="user-dashboard__cards">

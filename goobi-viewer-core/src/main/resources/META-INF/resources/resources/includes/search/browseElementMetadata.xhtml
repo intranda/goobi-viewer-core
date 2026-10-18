@@ -2,23 +2,18 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <ui:param
         name="browseElement"
         value="#{browseElement != null ? browseElement : null}" />
 
-    <!-- 	STANDARD METADATA LIST IN SEARCH LIST (FIRST) -->
+    <!-- STANDARD METADATA LIST IN SEARCH LIST (FIRST) -->
     <dl class="search-list__hit-metadata-first search-list__hit-metadata-list">
         <ui:repeat
             value="#{browseElement.metadataListForCurrentLocale}"
             var="browseElementMetadata">
             <ui:fragment rendered="#{!browseElementMetadata.blank}">
-                <!-- Metadata label -->
+                <!-- METADATA LABEL -->
                 <dt
                     data-metadata-field="#{browseElementMetadata.label}"
                     title="#{browseElementMetadata.label}"
@@ -26,16 +21,16 @@
                     #{msg[browseElementMetadata.label]}:
                 </dt>
 
-                <!-- grouped="true" -->
+                <!-- GROUPED VALUES -->
                 <ui:fragment rendered="#{browseElementMetadata.group}">
-                    <!-- Single label for all values, each value is a single string -->
+                    <!-- SINGLE STRING -->
                     <ui:fragment rendered="#{browseElementMetadata.singleString}">
                         <!-- STANDARD STRUCTURE -->
                         <ui:fragment rendered="#{browseElementMetadata.separator == null}">
                             <ui:repeat
                                 value="#{browseElementMetadata.values}"
                                 var="val">
-                                <!-- Metadata value -->
+                                <!-- METADATA VALUE -->
                                 <dd class="search-list__hit-text-value">
                                     <ui:fragment rendered="#{browseElementMetadata.singleString}">
                                         <h:outputFormat
@@ -53,7 +48,7 @@
                                     value="#{browseElementMetadata.values}"
                                     var="val">
                                     <span class="metadata__element-wrapper-single-custom">
-                                        <!-- Metadata value -->
+                                        <!-- METADATA VALUE -->
                                         <ui:fragment rendered="#{browseElementMetadata.singleString}">
                                             <span class="search-list__hit-text-value-single">
                                                 <h:outputFormat
@@ -68,7 +63,7 @@
                         </ui:fragment>
                     </ui:fragment>
 
-                    <!-- Each value has a label column and a value column -->
+                    <!-- KEY VALUE PAIRS -->
                     <ui:fragment rendered="#{!browseElementMetadata.singleString}">
                         <ui:repeat
                             value="#{browseElementMetadata.values}"
@@ -79,7 +74,7 @@
                                     <div class="metadata__element-wrapper">
                                         <div class="metadata__element-level-#{metadata.indentation}">
                                             <dl class="dl-horizontal metadata__element-dl metadata__key-value-pairs-list">
-                                                <!-- Metadata value -->
+                                                <!-- METADATA VALUE -->
                                                 <ui:repeat
                                                     value="#{metadataBean.range(0, browseElementMetadata.paramCount)}"
                                                     var="ind0">
@@ -105,7 +100,7 @@
                     </ui:fragment>
                 </ui:fragment>
 
-                <!-- grouped="false" -->
+                <!-- UNGROUPED VALUES -->
                 <ui:fragment rendered="#{browseElementMetadata.separator == null}">
                     <!-- WITHOUT SEPARATOR NEW LINES -->
                     <ui:fragment
@@ -116,8 +111,8 @@
                             var="val"
                             varStatus="status">
                             <dd class="search-list__hit-text-value">
-                                <!-- Custom separator -->
-                                <!-- !!ATTENTION!! DO NOT BREAK NEXT LINE IN CODE, OTHERWISE SPACES ARE GENERATED IN FRONTEND -->
+                                <!-- CUSTOM SEPARATOR -->
+                                <!-- DO NOT BREAK THE NEXT LINE -->
                                 <span class="search-list__hit-text-value-single">
                                     <h:outputFormat
                                         value="#{val.getDisplayValue(navigationHelper.locale)}"
@@ -128,8 +123,9 @@
                     </ui:fragment>
                 </ui:fragment>
 
+                <!-- WITH SEPARATOR -->
                 <ui:fragment rendered="#{browseElementMetadata.separator != null}">
-                    <!-- WITH SEPARATOR IN SAME LINE -->
+                    <!-- SAME LINE -->
                     <ui:fragment
                         layout="block"
                         rendered="#{!browseElementMetadata.group}">
@@ -138,8 +134,8 @@
                                 value="#{browseElementMetadata.values}"
                                 var="val"
                                 varStatus="status">
-                                <!-- Custom separator -->
-                                <!-- !!ATTENTION!! DO NOT BREAK NEXT LINE IN CODE, OTHERWISE SPACES ARE GENERATED IN FRONTEND -->
+                                <!-- CUSTOM SEPARATOR -->
+                                <!-- DO NOT BREAK THE NEXT LINE -->
                                 <ui:fragment rendered="#{status.index gt 0}">
                                     <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
                                 </ui:fragment>
@@ -183,7 +179,7 @@
                             escape="false" />
                     </dt>
 
-                    <!-- Default multivalue separator (new line) -->
+                    <!-- DEFAULT SEPARATOR -->
                     <ui:fragment rendered="#{eventMetadata.separator == null}">
                         <ui:repeat
                             var="val"
@@ -196,7 +192,7 @@
                         </ui:repeat>
                     </ui:fragment>
 
-                    <!-- Custom multivalue separator-->
+                    <!-- CUSTOM SEPARATOR -->
                     <ui:fragment rendered="#{browseElementMetadata.separator != null}">
                         <span class="metadata__element-wrapper-single-custom-wrapper search-list__hit-text-value">
                             <ui:repeat
@@ -220,7 +216,6 @@
             </ui:repeat>
         </ui:repeat>
     </dl>
-    <!-- STANDARD METADATA LIST IN SEARCH LIST (FIRST) EOL -->
 
     <!-- SECONDARY METADATA (ONLY FOR TILE VIEW) -->
     <ui:fragment rendered="#{not empty browseElement.secondaryMetadataListForCurrentLocale}">
@@ -238,7 +233,8 @@
                             escape="false"
                             styleClass="search-list__hit-text-label" />
                     </dt>
-                    <!-- Default multivalue separator (new line) -->
+
+                    <!-- DEFAULT SEPARATOR -->
                     <ui:fragment rendered="#{browseElementMetadata.separator == null}">
                         <ui:repeat
                             var="val"
@@ -252,7 +248,7 @@
                         </ui:repeat>
                     </ui:fragment>
 
-                    <!-- Custom multivalue separator-->
+                    <!-- CUSTOM SEPARATOR -->
                     <ui:fragment rendered="#{browseElementMetadata.separator != null}">
                         <dd class="search-list__hit-text-value">
                             <ui:repeat
@@ -260,7 +256,7 @@
                                 value="#{browseElementMetadata.values}"
                                 varStatus="status">
                                 <ui:fragment rendered="#{browseElementMetadata.separator != null}">
-                                    <!-- !!ATTENTION!! DO NOT BREAK THIS LINE, OTHERWISE SPACES GENERATED IN FRONTEND -->
+                                    <!-- DO NOT BREAK THE NEXT LINE -->
                                     <ui:fragment rendered="#{status.index gt 0}">
                                         <span class="metadata__element-wrapper-single-custom-separator">#{browseElementMetadata.separator}</span>
                                     </ui:fragment>
@@ -277,5 +273,4 @@
             </ui:repeat>
         </div>
     </ui:fragment>
-    <!-- SECONDARY METADATA (ONLY FOR TILE VIEW) EOL -->
 </ui:composition>

@@ -1,15 +1,12 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -18,7 +15,6 @@
                 listener="#{navigationHelper.setCurrentPageAdmin( cmsRecordNoteEditBean.newNote ? 'adminCmsRecordNotesNew':'adminCmsRecordNotesEdit')}" />
         </f:metadata>
     </ui:define>
-
     <ui:param
         name="note"
         value="#{cmsRecordNoteEditBean.note}" />
@@ -41,9 +37,7 @@
                             msg.cms__record_notes_edit__title}
                         </h1>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <h:form
                             id="selectRecord"
@@ -63,7 +57,6 @@
                                     <div class="admin__default-block">
                                         <div>
                                             <label for="inputRecordIdentifier">#{msg.cms__record_notes__input_idenfier_or_query}:</label>
-                                            <!-- TYPE:  #{cmsRecordNoteEditBean.currentNoteType}  -->
                                         </div>
                                         <div class="form-group admin__record-notes-connected-area admin__cms-edit-collection-connected-radio-buttons">
                                             <div class="connected-top">
@@ -139,7 +132,6 @@
                                                                 class="fa fa-exclamation"
                                                                 aria-hidden="true" />
                                                         </div>
-
                                                         <h:inputText
                                                             id="inputQuery"
                                                             tabindex="1"
@@ -159,7 +151,6 @@
                                             </div>
                                         </div>
                                     </div>
-
                                     <div class="admin__final-actions">
                                         <a
                                             class="btn btn--cancel"
@@ -181,7 +172,6 @@
                                 </div>
                             </div>
                         </h:form>
-
                         <ui:fragment rendered="#{cmsRecordNoteEditBean.recordSelected}">
                             <div class="form-horizontal form-group admin__content-wrapper">
                                 <div class="admin__content-main -sticky -refreshHCsticky">
@@ -191,14 +181,12 @@
                                         <div class="admin__record-notes-box-editable">
                                             <ui:fragment rendered="#{cmsRecordNoteEditBean.isMultiRecordNote()}">
                                                 <h2>#{msg.general}</h2>
-
                                                 <div class="admin__default-block">
                                                     <div class="form-group form-row">
                                                         <div class="col-2 control-label admin__form-label">
                                                             <label for="inputQuery2">#{msg.cms__record_notes__type_query}:</label>
                                                             <span class="admin__label-required-field">(#{msg.form__required_field})</span>
                                                         </div>
-
                                                         <div class="cms-module__option-control col-9 admin__form-input">
                                                             <h:panelGroup id="inputQueryGroup">
                                                                 <div class="cms-module__option-message">
@@ -207,7 +195,6 @@
                                                                         infoClass="cms-module__option-message-status success"
                                                                         warnClass="cms-module__option-message-status warning"
                                                                         errorClass="cms-module__option-message-status danger" />
-
                                                                     <div class="cms-module__option-message-mark">
                                                                         <i
                                                                             class="fa fa-check"
@@ -217,7 +204,6 @@
                                                                             aria-hidden="true" />
                                                                     </div>
                                                                 </div>
-
                                                                 <h:inputText
                                                                     id="inputQuery2"
                                                                     tabindex="1"
@@ -232,7 +218,6 @@
                                                                         event="blur"
                                                                         render="inputQueryGroup" />
                                                                 </h:inputText>
-
                                                                 <span class="admin__form-help-text">#{msg.cms__record_notes_select_record__help}</span>
                                                             </h:panelGroup>
                                                         </div>
@@ -240,17 +225,13 @@
                                                 </div>
                                                 <script>$(document).ready(() => $('#inputQuery2').trigger('blur'));</script>
                                             </ui:fragment>
-
                                             <ui:fragment rendered="#{!cmsRecordNoteEditBean.isMultiRecordNote()}">
                                                 <h2>#{msg.general}</h2>
-
                                                 <div class="admin__default-block">
                                                     <div class="form-group form-row">
                                                         <div class="col-2 control-label admin__form-label">
                                                             <label for="inputQuery3">#{msg.cms__record_notes__type_record}:</label>
-                                                            <!-- 												<span class="admin__label-required-field">(#{msg.form__required_field})</span> -->
                                                         </div>
-
                                                         <div class="cms-module__option-control col-9 admin__form-input">
                                                             <h:panelGroup id="inputQueryGroup2">
                                                                 <h:inputText
@@ -266,13 +247,10 @@
                                                     </div>
                                                 </div>
                                             </ui:fragment>
-
                                             <h2>#{msg.cms__record_notes_edit_text__title}</h2>
-
                                             <div class="admin__language-tabs">
                                                 <viewerComponent:localeSelector object="#{cmsRecordNoteEditBean}" />
                                             </div>
-
                                             <div class="admin__default-block">
                                                 <div class="tab-content">
                                                     <!-- LOCALIZE TABS -->
@@ -286,7 +264,6 @@
                                                                     </ui:fragment>
                                                                 </label>
                                                             </div>
-
                                                             <div class="col-9 admin__form-input cms-module__option-control">
                                                                 <h:message
                                                                     for="recordNoteTitle"
@@ -328,7 +305,6 @@
                                                                     </ui:fragment>
                                                                 </label>
                                                             </div>
-
                                                             <div class="col-9 admin__form-input input_form__option_control">
                                                                 <h:message
                                                                     for="recordNoteText"
@@ -361,8 +337,6 @@
                                                         </div>
                                                     </h:panelGroup>
                                                 </div>
-
-                                                <!-- SHOW OR HIDE RECORD NOTE -->
                                             </div>
                                         </div>
 
@@ -391,7 +365,6 @@
                                                 <h2>#{msg.cms_pageMetadata_privacyStatus}</h2>
                                                 <div class="admin__form-help-text in mb-2">#{msg.cms__record_notes_edit_text__toggle_help}</div>
                                                 <div class="mb-1 d-flex justify-content-between">
-                                                    <!-- 												<label>#{msg.cms__record_notes_edit_text__toggle}: </label> -->
                                                     <viewerComponent:toggleSwitch
                                                         name="showThisNote"
                                                         value="#{note.displayNote}" />
@@ -403,7 +376,6 @@
                                     <!-- ADD CSS CLASS FOR THIS CMS PAGE -->
                                     <div class="admin__default-block">
                                         <h2>#{msg.cms_wrapperElementClass}</h2>
-
                                         <div class="admin__form-help-text in mb-3">#{msg.cms__recordnote__css__help}</div>
                                         <h:form>
                                             <!-- AREA FOR AJAX REFRESH -->
@@ -415,7 +387,6 @@
                                                         infoClass="cms-module__option-message-status success"
                                                         warnClass="cms-module__option-message-status warning"
                                                         errorClass="cms-module__option-message-status danger" />
-
                                                     <div class="cms-module__option-message-mark">
                                                         <i
                                                             class="fa fa-check"
@@ -459,7 +430,6 @@
                                                 </div>
                                             </div>
                                         </h:panelGroup>
-
                                         <div class="admin__default-block">
                                             <h2>#{msg.cms__record_notes_select_record__title}</h2>
                                             <div class="admin__record-notes-info-box">
@@ -480,7 +450,6 @@
                                             </div>
                                         </div>
                                     </ui:fragment>
-
                                     <ui:fragment rendered="#{cmsRecordNoteEditBean.isMultiRecordNote()}">
                                         <h:panelGroup
                                             layout="block"
@@ -506,27 +475,22 @@
                                             </ui:fragment>
                                         </h:panelGroup>
                                     </ui:fragment>
-
                                     <div class="admin__default-block">
                                         <h2>#{msg.title__did_you_know}</h2>
                                         <h:outputText
                                             escape="false"
                                             value="#{msg.cms__record_notes_text_editor_hints__text}" />
                                     </div>
-
-                                    <!-- SIDEBAR EOL -->
                                 </div>
                             </div>
                         </ui:fragment>
                     </div>
                 </h:panelGroup>
                 <script>
-                    viewerJS.jsfAjax.success
-                        .pipe(rxjs.operators.merge(rxjs.fromEvent(window, 'load')))
-                        .subscribe((e) => {
-                            $("[data-target='isChecked'] input").prop('checked', true);
-                            $("[data-target='blurIfUnchecked'] input").prop('checked', false);
-                        });
+                    viewerJS.jsfAjax.success.pipe(rxjs.operators.merge(rxjs.fromEvent(window, 'load'))).subscribe((e) => {
+                        $("[data-target='isChecked'] input").prop('checked', true);
+                        $("[data-target='blurIfUnchecked'] input").prop('checked', false);
+                    });
                 </script>
             </f:view>
         </div>

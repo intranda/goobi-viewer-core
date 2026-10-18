@@ -10,6 +10,8 @@
             <f:event
                 type="preRenderView"
                 listener="#{navigationHelper.setCurrentView('immersive')}" />
+
+            <!-- BOTH LISTENERS NEEDED, THEY INIT METADATA AND PAGINATION -->
             <f:event
                 type="preRenderView"
                 listener="#{metadataBean.selectFirstMetadataViewOfLocation('objectview')}" />

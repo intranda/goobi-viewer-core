@@ -5,15 +5,16 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-    <!-- INTERFACE OPTIONS -->
+    <!-- INTERFACE -->
     <composite:interface />
 
-    <!-- COMPONENT CONTENT -->
+    <!-- CONTENT -->
     <composite:implementation>
         <ui:param
             name="search"
             value="#{cc.attrs.search != null ? cc.attrs.search : searchBean}" />
-        <!--  WIDGET Geo facetting -->
+
+        <!-- GEO FACETTING WIDGET -->
         <ui:fragment rendered="#{searchBean.showGeoFacetMap}">
             <h:form>
                 <div class="widget widget-geofacetting">
@@ -47,6 +48,7 @@
                                     svgClass="widget__topbar-icon-svg widget-geofacetting__topbar-icon-svg" />
                             </button>
                         </div>
+
                         <!-- SECTION COLLAPSE -->
                         <button
                             type="button"
@@ -137,72 +139,72 @@
                 </div>
                 <script type="text/javascript">
                     //<![CDATA[
-                    $(document).ready(e => {
-                       let config = {
-                         		areaString: '#{searchBean.facets.geoFacetFeature}',
-                         		map: {
-                         			mapId: "geoFacettingMap",
-                         			language: "#{navigationHelper.localeString}",
-                         			iconPath: "/resources/images/map",
-                         			hitsLayer: {
-                         				allowMovingFeatures: false,
-                         				popoverOnHover: true,
-                         				popover: $( '<div><p data-metadata="title"></p></div>' ),
-                         				clusterMarkers: true,
-                         				style: {
-                         					fillOpacity: 0.02,
-                         					color: "#{configurationBean.markerForFacetting.markerColor}"
-                         				},
-                    					markerIcon: (icon => icon)(#{configurationBean.markerForFacetting.toJSONString()}),
-                    					search: {
-                                 			searchUrlTemplate: location.origin + location.pathname
-                    					}
-                         			},
-                         			areaLayer: {
-                         				style : {
-                         					fillColor : "#{configurationBean.selectionColorForFacetting}",
-                         					color : "#{configurationBean.selectionColorForFacetting}",
-                         					fillOpacity : 0.3,
-                         				}
-                         			}
-                         		},
-                         		heatmap: {
-                         			enabled: #{configurationBean.useHeatmapForFacetting()},
-                         			heatmapUrl: "#{request.contextPath}/api/v1/index/spatial/heatmap/{solrField}",
-                         			featureUrl: "#{request.contextPath}/api/v1/index/spatial/search/{solrField}",
-                         			filterQuery: "#{searchBean.getFinalSolrQueryEscaped('NO_AGGREGATION')}",
-                         			facetQuery: "#{searchBean.getCombinedFilterQueryEscaped()}",
-                         			labelField: "LABEL",
-                         			searchScope: "RECORDS",
-                         		},
-                         		search: {
-                         			$loader: $( "[data-loader='geoFacet']" ),
-                         			$searchButton: $( "[data-geofacet='execute']" ),
-                         		},
-                         		buttons: {
-                         			$searchWithFacets: $( "[data-geofacet='trigger-execute']" ),
-                         			$resetFacets: $( "[data-geofacet='reset']" ),
-                         			$cancelEditMode: $( "[data-geofacet='cancel']" ),
-                         			$facetInput: $( "[data-geofacet='feature']" ),
-                         			$toggleMarkers: $( "[data-geofacet='toggleMarkers']" ),
-                         			$toggleMarkersEditMode: $( "[data-geofacet='toggleMarkersFullscreen']" ),
-                         			$openEditMode: $("#expandFacetMap"),
-                         		},
-                         		editMode: {
-                         			$editModeWrapper: $('#widgetGeoFacettingOverlay'),
-                         			$editModeMap: $("#geoFacettingOverlayMap"),
-                         			enableAddressSearch : true,
-                         			addressSearchPlaceholder : "#{msg.ADDRESS}"
-                         		}
-                         	}
+                    $(document).ready((e) => {
+                        let config = {
+                            areaString: '#{searchBean.facets.geoFacetFeature}',
+                            map: {
+                                mapId: 'geoFacettingMap',
+                                language: "#{navigationHelper.localeString}",
+                                iconPath: '/resources/images/map',
+                                hitsLayer: {
+                                    allowMovingFeatures: false,
+                                    popoverOnHover: true,
+                                    popover: $('<div><p data-metadata="title"></p></div>'),
+                                    clusterMarkers: true,
+                                    style: {
+                                        fillOpacity: 0.02,
+                                        color: "#{configurationBean.markerForFacetting.markerColor}",
+                                    },
+                                    markerIcon: ((icon) => icon)(#{configurationBean.markerForFacetting.toJSONString()}),
+                                    search: {
+                                        searchUrlTemplate: location.origin + location.pathname,
+                                    },
+                                },
+                                areaLayer: {
+                                    style: {
+                                        fillColor: "#{configurationBean.selectionColorForFacetting}",
+                                        color: "#{configurationBean.selectionColorForFacetting}",
+                                        fillOpacity: 0.3,
+                                    },
+                                },
+                            },
+                            heatmap: {
+                                enabled: #{configurationBean.useHeatmapForFacetting()},
+                                heatmapUrl: "#{request.contextPath}/api/v1/index/spatial/heatmap/{solrField}",
+                                featureUrl: "#{request.contextPath}/api/v1/index/spatial/search/{solrField}",
+                                filterQuery: "#{searchBean.getFinalSolrQueryEscaped('NO_AGGREGATION')}",
+                                facetQuery: "#{searchBean.getCombinedFilterQueryEscaped()}",
+                                labelField: 'LABEL',
+                                searchScope: 'RECORDS',
+                            },
+                            search: {
+                                $loader: $("[data-loader='geoFacet']"),
+                                $searchButton: $("[data-geofacet='execute']"),
+                            },
+                            buttons: {
+                                $searchWithFacets: $("[data-geofacet='trigger-execute']"),
+                                $resetFacets: $("[data-geofacet='reset']"),
+                                $cancelEditMode: $("[data-geofacet='cancel']"),
+                                $facetInput: $("[data-geofacet='feature']"),
+                                $toggleMarkers: $("[data-geofacet='toggleMarkers']"),
+                                $toggleMarkersEditMode: $("[data-geofacet='toggleMarkersFullscreen']"),
+                                $openEditMode: $('#expandFacetMap'),
+                            },
+                            editMode: {
+                                $editModeWrapper: $('#widgetGeoFacettingOverlay'),
+                                $editModeMap: $('#geoFacettingOverlayMap'),
+                                enableAddressSearch: true,
+                                addressSearchPlaceholder: "#{msg.ADDRESS}",
+                            },
+                        };
 
                         let facetMap = new viewerJS.GeoMapFacet(config);
-                       	let features = #{searchBean.getHitsLocations()};
-                       	facetMap.init(features, {
-                                            zoom: 1,
-                                            center: [0,0] //long, lat
-                                       	})
-                    })
+                        let features = #{searchBean.getHitsLocations()};
+                        facetMap.init(features, {
+                            zoom: 1,
+                            center: [0, 0], //long, lat
+                        });
+                    });
                     //]]>
                 </script>
             </h:form>

@@ -36,18 +36,16 @@
                 </h:panelGroup>
             </h:panelGroup>
 
+            <!-- CHART SCRIPT -->
             <script type="text/javascript">
-                (function() {
+                (function () {
                     const filter = '#{cc.attrs.component.getContent("filter").filterQuery}';
                     const url = new URL('#{request.contextPath}/api/v1/statistics/index/languages', window.location.origin);
                     url.searchParams.set('lang', '#{navigationHelper.localeString}');
                     if (filter) {
                         url.searchParams.set('filter', filter);
                     }
-                    viewerJS.statistics.charts.renderLanguages(
-                        'canvas-languages#{cc.clientId}',
-                        url.toString()
-                    );
+                    viewerJS.statistics.charts.renderLanguages('canvas-languages#{cc.clientId}', url.toString());
                 })();
             </script>
         </ui:fragment>

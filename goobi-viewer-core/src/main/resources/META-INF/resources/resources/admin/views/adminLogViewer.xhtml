@@ -20,15 +20,12 @@
         <h:panelGroup rendered="#{!userBean.admin}">
             <h:outputText value="#{msg.errAccessDenied}" />
         </h:panelGroup>
-
         <h:panelGroup rendered="#{userBean.admin}">
             <div id="adminLogViewer">
                 <div class="admin__title-bar">
                     <h1 class="admin__title">#{msg.admin__log_viewer}</h1>
                 </div>
-
                 <viewerComponent:adminBreadcrumbs />
-
                 <div class="admin__content-inner-content">
                     <div class="admin__content-wrapper">
                         <div class="admin__content-main">
@@ -36,7 +33,7 @@
                                 class="admin__boxed-entry logviewer"
                                 data-api-base="#{request.contextPath}/api/v1/logs"
                                 data-ws-base="#{request.contextPath}/admin/logviewer.socket">
-                                <!-- Header: tabs left, filters right -->
+                                <!-- HEADER, TABS LEFT, FILTERS RIGHT -->
                                 <div class="logviewer__header">
                                     <div class="logviewer__tabs">
                                         <ui:repeat
@@ -75,7 +72,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Log output + floating scroll button -->
+                                <!-- LOG OUTPUT AND SCROLL BUTTON -->
                                 <div class="logviewer__output-wrap">
                                     <div
                                         id="logOutput"
@@ -90,27 +87,21 @@
                             </div>
                         </div>
 
-                        <!-- Sidebar -->
+                        <!-- SIDEBAR -->
                         <div class="admin__content-side">
-                            <!-- "Did you know?" block -->
+                            <!-- DID YOU KNOW BLOCK -->
                             <div class="admin__default-block">
                                 <h2>#{msg.title__did_you_know}</h2>
-
                                 <h3>Tabs</h3>
                                 <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__tabs}</div>
-
                                 <h3>Level-Filter</h3>
                                 <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__level_filter}</div>
-
                                 <h3>#{msg.search}</h3>
                                 <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__text_filter}</div>
-
                                 <h3>Auto-Scroll</h3>
                                 <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__autoscroll}</div>
-
                                 <h3>Live / Polling</h3>
                                 <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__live}</div>
-
                                 <h3>Buffer</h3>
                                 <div class="admin__form-help-text in mb-3">#{msg.admin__logviewer_sidebar__buffer}</div>
                             </div>
@@ -119,13 +110,14 @@
                 </div>
             </div>
 
+            <!-- LOG VIEWER SCRIPT -->
             <script type="text/javascript">
-            //<![CDATA[
-                document.addEventListener('DOMContentLoaded', function() {
+                //<![CDATA[
+                document.addEventListener('DOMContentLoaded', function () {
                     var root = document.querySelector('.logviewer');
                     if (root) adminJS.logViewer.init(root);
                 });
-            //]]>
+                //]]>
             </script>
         </h:panelGroup>
     </ui:define>

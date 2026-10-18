@@ -2,9 +2,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
@@ -45,11 +43,10 @@
             name="actionListener"
             method-signature="void valueChangeListener(jakarta.faces.event.ValueChangeEvent)" />
     </composite:interface>
-
     <div
         class="admin__radio-switch"
         id="#{cc.clientId}">
-        <!-- cc.attrs.actionListener cannot be empty if used as an attribute. -->
+        <!-- ACTIONLISTENER MUST NOT BE EMPTY WHEN SET -->
         <ui:fragment rendered="#{empty cc.attrs.actionListener}">
             <h:selectOneRadio
                 group="#{cc.attrs.name}"

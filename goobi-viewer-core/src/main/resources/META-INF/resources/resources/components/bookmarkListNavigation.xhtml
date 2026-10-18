@@ -1,17 +1,12 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:templateComponent="http://xmlns.jcp.org/jsf/composite/themes/gaugsammlungen/components">
-    <!-- INTERFACE OPTIONS -->
+    xmlns:composite="http://xmlns.jcp.org/jsf/composite">
+    <!-- INTERFACE -->
     <composite:interface />
 
-    <!-- COMPONENT CONTENT -->
+    <!-- CONTENT -->
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
             <!-- BOOKMARK LIST NAVIGATION -->
@@ -23,11 +18,9 @@
                         type="button"
                         class="btn btn--clean"
                         data-bookmark-list-type="dropdown">
-                        <!-- TO DO: THIS AREA HAS TO BE AJAX RELOADED AFTER AN ITEM IS ADDED TO THE LIST -->
-                        <!-- NOT LOGGED IN AND AT LEAST ONE ITEM ON BOOKMARKLIST -->
-                        <!--                         <ui:fragment rendered="#{!userBean.loggedIn and bookmarkList.numItems > 0}"> -->
                         <!-- BOOKMARK LIST NAVIGATION STRING -->
                         <span class="bookmark-navigation__string">#{msg.bookmarkList}</span>
+
                         <!-- BOOKMARK LIST NAVIGATION COUNTER -->
                         <span
                             class="bookmark-navigation__counter"
@@ -36,15 +29,6 @@
                             data-placement="bottom"
                             data-trigger="hover"
                             title="#{msg.wl_watchListItems}" />
-                        <!--                         </ui:fragment> -->
-
-                        <!--                         LOGGED IN -->
-                        <!--                         <ui:fragment rendered="#{userBean.loggedIn}"> -->
-                        <!-- 							BOOKMARK LIST NAVIGATION STRING -->
-                        <!--                         	<span class="bookmark-navigation__string">#{msg.bookmarkList}</span> -->
-                        <!--                         	BOOKMARK LIST NAVIGATION COUNTER -->
-                        <!--                             <span class="bookmark-navigation__counter" data-bookmark-list-type="counter" data-toggle="tooltip" data-placement="bottom" data-trigger="hover" title="#{msg.wl_allWatchListItems}"></span> -->
-                        <!--                         </ui:fragment> -->
                     </button>
                 </div>
             </div>

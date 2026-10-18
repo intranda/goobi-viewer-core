@@ -2,9 +2,6 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:util="http://goobi.io/util"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
     <composite:interface>
         <composite:attribute
@@ -23,6 +20,7 @@
     <composite:implementation>
         <script src="#{request.contextPath}/resources/javascript/libs/replaywebpage/ui.js" />
 
+        <!-- REPLAY OVERLAY -->
         <div class="replay-overlay">
             <div class="replay-overlay__header">
                 <div class="replay-overlay__header-inner">
@@ -45,8 +43,7 @@
                 </div>
             </div>
 
-            <!--  Webarchives are restricted by PRIV_VIEW_IMAGES instead of a dedicated webarchives privilege, since a distinction is not neccessary. 
-			      Perspectively, all media content should be handled with the same privilege -->
+            <!-- RESTRICTED BY VIEW_IMAGES, NO OWN PRIVILEGE -->
             <ui:fragment rendered="#{activeDocumentBean.viewManager.isAccessPermission('VIEW_IMAGES')}">
                 <replay-web-page
                     embed="full"

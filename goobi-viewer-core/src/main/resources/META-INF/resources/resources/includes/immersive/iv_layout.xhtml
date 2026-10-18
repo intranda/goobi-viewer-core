@@ -8,6 +8,7 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core">
     <div class="immersive">
         <h1 class="sr-only">#{activeDocumentBean.titleBarLabel}</h1>
+
         <!-- VIEWER HERO -->
         <section class="immersive__viewer">
             <!-- HEADER OVERLAY -->
@@ -102,6 +103,7 @@
                                 svgClass="immersive__tool-icon" />
                         </button>
                     </ui:fragment>
+
                     <!-- FULLTEXT -->
                     <ui:fragment
                         rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}') and activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
@@ -119,6 +121,7 @@
                                 svgClass="immersive__tool-icon" />
                         </button>
                     </ui:fragment>
+
                     <!-- SEARCH -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImage}">
                         <button
@@ -134,6 +137,7 @@
                                 svgClass="immersive__tool-icon" />
                         </button>
                     </ui:fragment>
+
                     <!-- METADATA -->
                     <button
                         type="button"
@@ -147,6 +151,7 @@
                             icon="info-circle"
                             svgClass="immersive__tool-icon" />
                     </button>
+
                     <!-- KEYBOARD SHORTCUTS -->
                     <button
                         type="button"
@@ -194,6 +199,7 @@
                     <widgetComponent:widget_toc />
                 </aside>
             </ui:fragment>
+
             <!-- METADATA PANEL -->
             <aside
                 id="immersivePanelMetadata"
@@ -253,6 +259,7 @@
                     </ui:fragment>
                 </div>
             </aside>
+
             <!-- SEARCH PANEL -->
             <aside
                 id="immersivePanelSearch"
@@ -309,6 +316,7 @@
                     </div>
                 </ui:fragment>
             </aside>
+
             <!-- FULLTEXT PANEL -->
             <ui:fragment rendered="#{displayConditions.matchPage('{contentType:[TEXT, ALTO], accessCondition: VIEW_FULLTEXT}')}">
                 <aside
@@ -351,14 +359,17 @@
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
                     <ui:include src="/resources/includes/immersive/iv_image.xhtml" />
                 </h:panelGroup>
+
                 <!-- VIEW VIDEO -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.video}">
                     <ui:include src="/resources/includes/object/video.xhtml" />
                 </h:panelGroup>
+
                 <!-- VIEW AUDIO -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.audio}">
                     <ui:include src="/resources/includes/object/audio.xhtml" />
                 </h:panelGroup>
+
                 <!-- VIEW 3D OBJECT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.is3DModel()}">
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mimeType.matches('.*\\/gl(tf|b)(\\+json)?')}">
@@ -368,6 +379,7 @@
                         <ui:include src="/resources/includes/object/object3d.xhtml" />
                     </ui:fragment>
                 </h:panelGroup>
+
                 <!-- VIEW TEXT -->
                 <h:panelGroup rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.sandboxedHtml}">
                     <ui:include src="/resources/includes/object/text.xhtml" />
@@ -417,6 +429,7 @@
                                 svgClass="immersive__tool-icon" />
                         </a>
                     </ui:fragment>
+
                     <!-- SHARE -->
                     <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
                         <button
@@ -436,6 +449,7 @@
                                 svgClass="immersive__tool-icon" />
                         </button>
                     </ui:fragment>
+
                     <!-- CITE -->
                     <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
                         <button
@@ -476,6 +490,7 @@
                                 svgClass="immersive__tool-icon" />
                         </button>
                     </ui:fragment>
+
                     <!-- OVERVIEW -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.imagesCount ge 2}">
                         <button
@@ -491,6 +506,7 @@
                                 svgClass="immersive__tool-icon" />
                         </button>
                     </ui:fragment>
+
                     <!-- FULLSCREEN -->
                     <button
                         type="button"
@@ -541,6 +557,7 @@
                                 svgClass="immersive__bar-icon" />
                         </button>
                     </div>
+
                     <!-- ZOOM -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageZoom}">
                         <div class="immersive__bottombar-group">
@@ -566,6 +583,7 @@
                             </button>
                         </div>
                     </ui:fragment>
+
                     <!-- ROTATE -->
                     <div class="immersive__bottombar-group">
                         <button
@@ -589,6 +607,7 @@
                                 svgClass="immersive__bar-icon" />
                         </button>
                     </div>
+
                     <!-- RESET -->
                     <div class="immersive__bottombar-group">
                         <button
@@ -602,6 +621,7 @@
                                 svgClass="immersive__bar-icon" />
                         </button>
                     </div>
+
                     <!-- FILTER -->
                     <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
                         <div class="immersive__bottombar-group">
@@ -910,12 +930,14 @@
                 <widgetComponent:widget_socialMedia_share />
             </popover>
         </ui:fragment>
+
         <!-- CITE POPOVER -->
         <ui:fragment rendered="#{configurationBean.displaySidebarWidgetUsageCitationLinks}">
             <popover id="immersiveCitationPopover">
                 <widgetComponent:widget_citation id="immersiveCitationWidget" />
             </popover>
         </ui:fragment>
+
         <!-- FILTER POPOVER -->
         <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
             <popover id="immersiveFilterPopover">
@@ -924,6 +946,7 @@
         </ui:fragment>
     </div>
 
+    <!-- NORMDATA CONFIG -->
     <script type="text/javascript">
         viewerJS.normdata.init({
             path: '#{request.contextPath}',

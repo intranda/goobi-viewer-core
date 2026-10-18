@@ -5,9 +5,8 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:harvesterComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:util="http://goobi.io/util">
-    <!-- interface options -->
+    <!-- INTERFACE -->
     <composite:interface>
         <composite:attribute
             name="filter"
@@ -18,7 +17,7 @@
             default="empty" />
     </composite:interface>
 
-    <!-- component content -->
+    <!-- CONTENT -->
     <composite:implementation>
         <div class="admin__table-filter-inner">
             <div class="form-group mb-0">
@@ -53,6 +52,7 @@
                                     render="@form" />
                             </button>
                         </ui:fragment>
+
                         <!-- NO MESSAGE KEY, USE ICON INSTEAD -->
                         <ui:fragment rendered="#{cc.attrs.key == 'empty'}">
                             <button
@@ -68,27 +68,24 @@
                 </div>
             </div>
         </div>
-        <!-- FILTER INPUT SCRIPT - ADDED HERE BECAUSE OF COMPONENT RELOAD-->
+
+        <!-- FILTER INPUT SCRIPT, HERE BECAUSE THE COMPONENT RELOADS -->
         <script type="text/javascript">
             $(document).ready(function () {
-    // Trigger search on pressing enter
-    const searchInp = document.querySelector('.admin__search-input-wrapper input');
-    const searchBtn = document.querySelector('.admin__search-action button');
-    searchInp.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') searchBtn.click();
-    });
+                const searchInp = document.querySelector('.admin__search-input-wrapper input');
+                const searchBtn = document.querySelector('.admin__search-action button');
+                searchInp.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') searchBtn.click();
+                });
 
-    /* check for input value and show clear button */
-    if (!$('.admin__search-input').val() == '') {
-        $('.admin__search-clear').show();
-    }
-    $('.admin__search-clear').click(function () {
-        /* clear value on click*/
-        $('.admin__search-input').val('');
-        /* trigger empty search on click */
-        $('.admin__search-action button').click();
-    });
-});
+                if (!$('.admin__search-input').val() == '') {
+                    $('.admin__search-clear').show();
+                }
+                $('.admin__search-clear').click(function () {
+                    $('.admin__search-input').val('');
+                    $('.admin__search-action button').click();
+                });
+            });
         </script>
     </composite:implementation>
 </ui:composition>

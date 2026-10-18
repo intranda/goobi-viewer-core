@@ -1,10 +1,6 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
@@ -42,54 +38,41 @@
                 aria-label="#{cc.attrs.arialabel}" />
             <script>
                 function initAutocomplete() {
+                    const autocompleteResponseListener_#{cc.attrs.id} = new rxjs.Subject();
+                    const socket = new viewerJS.WebSocket(window.location.host, "#{request.contextPath}", viewerJS.WebSocket.PATH_SEARCH_AUTOCOMPLETE);
+                    const input = document.getElementById("#{cc.attrs.id}");
 
-                	//Observable for ajax responses of automcompleteRequest commandScript
-                	const autocompleteResponseListener_#{cc.attrs.id} = new rxjs.Subject();
-                	const socket = new
-                viewerJS.WebSocket(window.location.host, "#{request.contextPath}", viewerJS.WebSocket.PATH_SEARCH_AUTOCOMPLETE);
-                	const input = document.getElementById("#{cc.attrs.id}");
+                    socket.onMessage.subscribe((event) => {
+                        if (event.data) {
+                            autocompleteResponseListener_#{cc.attrs.id}.next(JSON.parse(event.data));
+                        }
+                    });
 
-                	socket.onMessage.subscribe( (event) => {
-                		//console.log("autosuggest-event ", event);
-                		if(event.data) {
-                			autocompleteResponseListener_#{cc.attrs.id}.next(JSON.parse(event.data));
-                		}
-                	});
-
-                	//jquery autocomplete
-                	let autocomplete__#{cc.attrs.id} = $("##{cc.attrs.id}").autocomplete( {
-                	    source: function( request, response ) {
-                	    	//console.log("request autocomplete ", request.term);
-                	        //pass entered term to commandScript
-                	        socket.sendMessage(JSON.stringify({term:request.term}));
-                	        //subscribe to ajax response listener of commandscript to fill autocomplete options
-                	        autocompleteResponseListener_#{cc.attrs.id}.pipe(rxjs.operators.first()).subscribe(resp => {
-                	            response(resp);
-                	        });
-                	    },
+                    let autocomplete__#{cc.attrs.id} = $("##{cc.attrs.id}").autocomplete({
+                        source: function (request, response) {
+                            socket.sendMessage(JSON.stringify({ term: request.term }));
+                            autocompleteResponseListener_#{cc.attrs.id}.pipe(rxjs.operators.first()).subscribe((resp) => {
+                                response(resp);
+                            });
+                        },
                         minLength: 3,
                         delay: 300, //ms
                         //appendTo: $("##{cc.attrs.id}").parent(),
-                        change: function(event, ui) {
-                            //console.log("change ", event, ui);
-                            //refocus input field after other javascript has finished because jquery will defocus the
-                			// element first
-                            setTimeout( () => $("##{cc.attrs.id}").focus(), 0);
+                        change: function (event, ui) {
+                            // REFOCUS LATER, JQUERY DEFOCUSES THE FIELD FIRST
+                            setTimeout(() => $("##{cc.attrs.id}").focus(), 0);
                         },
-                	});
-
+                    });
                 }
 
                 initAutocomplete();
 
-                //Trigger form submit button when pressing enter
-                $("##{cc.attrs.id}").on("keyup", e => {
-                    if(e.originalEvent.key == "Enter") {
-                        let $button = $(event.target).closest("form").find('input[type=submit]:first');
-                           //console.log("submit button", $button);
-                           $button.click();
+                $("##{cc.attrs.id}").on('keyup', (e) => {
+                    if (e.originalEvent.key == 'Enter') {
+                        let $button = $(event.target).closest('form').find('input[type=submit]:first');
+                        $button.click();
                     }
-                })
+                });
             </script>
         </div>
     </composite:implementation>

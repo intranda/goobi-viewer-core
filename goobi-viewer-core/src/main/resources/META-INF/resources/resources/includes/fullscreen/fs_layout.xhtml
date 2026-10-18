@@ -6,9 +6,6 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:o="http://omnifaces.org/ui"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
     <!-- VIEW -->
@@ -23,7 +20,7 @@
             id="fullscreenViewImage"
             class="fullscreen__view-image">
             <ui:fragment rendered="#{activeDocumentBean.viewManager.pageNavigation.name() == 'SEQUENCE'}">
-                <!-- Update pagenumber and all relevant html areas with ajax when changing image in sequence mode -->
+                <!-- PAGE UPDATE -->
                 <h:form>
                     <h:commandScript
                         name="setCurrentImageOrder"
@@ -31,27 +28,19 @@
                         onevent="onPageUpdateEvent"
                         onerror="onPageUpdateEvent"
                         render=":sidebarMetadata :sidebarMetadataTech :sidebarDownloads:pageDownloads :sidebarFormatLinks:widgetSectionLinks :sidebarCitation:pageCitations :sidebarFulltext :sidebarGeomap" />
-
                     <script>
                         function onPageUpdateEvent(data) {
                             if (data.status === 'begin') {
-                                document
-                                    .querySelectorAll('.ajax_loader__image_update')
-                                    .forEach((loader) => loader.classList.remove('-hidden'));
+                                document.querySelectorAll('.ajax_loader__image_update').forEach((loader) => loader.classList.remove('-hidden'));
                             } else {
-                                document
-                                    .querySelectorAll('.ajax_loader__image_update')
-                                    .forEach((loader) => loader.classList.add('-hidden'));
+                                document.querySelectorAll('.ajax_loader__image_update').forEach((loader) => loader.classList.add('-hidden'));
                             }
                         }
                     </script>
                 </h:form>
             </ui:fragment>
 
-            <!-- heading for screen readers -->
-            <!--
-        	<h1 class="-sr-only">Goobi viewer</h1>
- 			-->
+            <!-- IMAGE AREA -->
             <div class="fullscreen__view-image-inner">
                 <!-- VIEW IMAGE -->
                 <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.mediaType.allowsImageView}">
@@ -107,6 +96,7 @@
                 </div>
             </div>
         </main>
+
         <!-- SIDEBAR -->
         <aside
             id="fullscreenViewSidebar"
@@ -136,6 +126,7 @@
                 </button>
             </div>
 
+            <!-- SIDEBAR INNER -->
             <div class="fullscreen__view-sidebar-inner">
                 <!-- SIDEBAR CONTROLS -->
                 <div class="fullscreen__view-sidebar-controls">
@@ -152,16 +143,19 @@
                 <div class="fullscreen__view-sidebar-work-title">
                     <h1>#{activeDocumentBean.titleBarLabel}</h1>
 
+                    <!-- SOCIAL MEDIA SHARE -->
                     <ui:fragment rendered="#{configurationBean.displaySocialMediaShareLinks}">
                         <div class="fullscreen__view-sidebar-share">
                             <widgetComponent:widget_socialMedia_share />
                         </div>
                     </ui:fragment>
 
+                    <!-- COPYRIGHT INDICATOR -->
                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'trafficlight'}">
                         <viewerComponent:copyrightIndicator />
                     </ui:fragment>
 
+                    <!-- COPYRIGHT WIDGET -->
                     <ui:fragment rendered="#{configurationBean.copyrightIndicatorStyle == 'widget'}">
                         <widgetComponent:widget_copyrightInfo />
                     </ui:fragment>
@@ -186,13 +180,13 @@
                                 <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                             </div>
                         </h2>
-
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <div jsf:id="sidebarMetadata">
                                 <ui:include src="/resources/includes/metadata/metadata.xhtml" />
                             </div>
                         </div>
                     </div>
+
                     <!-- METADATA TECH -->
                     <ui:fragment rendered="#{fn:length(activeDocumentBean.viewManager.currentPage.metadata) > 0}">
                         <div
@@ -206,7 +200,6 @@
                                     <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                                 </div>
                             </h2>
-
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <div jsf:id="sidebarMetadataTech">
                                     <widgetComponent:widget_metadataTech />
@@ -228,7 +221,6 @@
                                     <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                                 </div>
                             </h3>
-
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <widgetComponent:widget_toc />
                             </div>
@@ -248,7 +240,6 @@
                                     <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                                 </div>
                             </h3>
-
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <div jsf:id="sidebarFulltext">
                                     <ui:include src="/resources/includes/object/fulltext.xhtml" />
@@ -286,9 +277,9 @@
                         </div>
                     </ui:fragment>
 
+                    <!-- ANNOTATIONS -->
                     <ui:fragment
                         rendered="#{!configurationBean.displayUserGeneratedContentBelowImage and not empty contentBean.getUserGeneratedContentsForDisplay(activeDocumentBean.viewManager.pi).stream().filter(content -> !content.isEmpty() and content.type != 'GEOLOCATION').toList()}">
-                        <!-- ANNOTATIONS -->
                         <div
                             id="panel-9"
                             class="fullscreen__view-sidebar-accordeon-panel fs-annotations">
@@ -300,7 +291,6 @@
                                     <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                                 </div>
                             </h3>
-
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <widgetComponent:widget_annotations
                                     id="sidebarAnnotations"
@@ -309,8 +299,8 @@
                         </div>
                     </ui:fragment>
 
+                    <!-- ARCHIVE -->
                     <c:if test="#{activeDocumentBean.recordLoaded and activeDocumentBean.viewManager.archiveEntryIdentifier != null}">
-                        <!-- ARCHIVE -->
                         <div
                             id="panel-10"
                             class="fullscreen__view-sidebar-accordeon-panel fs-archives">
@@ -345,12 +335,11 @@
                                 </span>
                             </h3>
 
-                            <!-- neighbours is a pair of optionals holding the ids of the previous and succeeding archives entry. This format is used to avoid querying solr more than once -->
+                            <!-- NEIGHBOURS, ONE SOLR QUERY FOR BOTH -->
                             <c:set
                                 scope="view"
                                 var="neighbours"
                                 value="#{activeDocumentBean.viewManager.getArchiveTreeNeighbours()}" />
-
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <div
                                     id="widgetArchives"
@@ -393,7 +382,6 @@
                                         navigationHelper.defaultLocale)}
                                     </span>
                                 </h3>
-
                                 <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                     <h:outputText
                                         escape="false"
@@ -420,7 +408,6 @@
                                 <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                             </div>
                         </h3>
-
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <widgetComponent:widget_downloads
                                 id="sidebarDownloads"
@@ -440,7 +427,6 @@
                                 <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                             </div>
                         </h3>
-
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <widgetComponent:widget_formatsLinks
                                 id="sidebarFormatLinks"
@@ -460,7 +446,6 @@
                                 <img src="#{request.contextPath}/resources/images/infinity_loader.svg" />
                             </div>
                         </h3>
-
                         <div class="fullscreen__view-sidebar-accordeon-panel-body">
                             <widgetComponent:widget_citation
                                 id="sidebarCitation"
@@ -478,7 +463,6 @@
                                 tabindex="0">
                                 <span>#{msg.widget_usage_statistics__title}</span>
                             </h3>
-
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <widgetComponent:widget_statistics_usage />
                             </div>
@@ -495,7 +479,6 @@
                                 tabindex="0">
                                 <span>#{msg.searchHitNavigation}</span>
                             </h3>
-
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <widgetComponent:widget_searchResultNavigation />
                             </div>
@@ -512,7 +495,6 @@
                                 tabindex="0">
                                 <span>#{msg.label__image_filter_toolkit}</span>
                             </h3>
-
                             <div class="fullscreen__view-sidebar-accordeon-panel-body">
                                 <span class="fullscreen__view-sidebar-accordeon-panel-error">#{msg.label__image_filter_toolkit__error}</span>
                                 <imageFilters />
@@ -534,6 +516,7 @@
                             <div class="fullscreen__view-sidebar-accordeon-panel-body share-image-area">
                                 <div class="share-image-area__instructions">#{msg.help__share_image_area__select}</div>
 
+                                <!-- SHARE LINKS -->
                                 <div class="share-image-area__links">
                                     <div>#{msg.help__share_image_area__share}</div>
                                     <ul>
@@ -558,6 +541,7 @@
                                     </ul>
                                 </div>
 
+                                <!-- SHARE CONTROLS -->
                                 <div class="share-image-area__controls">
                                     <button
                                         type="button"
@@ -574,21 +558,19 @@
         </aside>
     </div>
 
+    <!-- FULLSCREEN SCRIPTS -->
     <script type="text/javascript">
         $(function () {
-    $('[data-toggle="popover"]').popover();
-});
+            $('[data-toggle="popover"]').popover();
+        });
 
-//init imageFilters
-zoomableImageLoaded.subscribe((image) => {
-    image.updateMargins();
-    let originClean = image.viewer.isOriginClean();
-    if (originClean) {
-        $(
-            '.fullscreen__view-sidebar-accordeon-panel.fs-imagefilters .fullscreen__view-sidebar-accordeon-panel-error'
-        ).hide();
-        $('imageFilters').css('display', 'block');
-    }
-});
+        zoomableImageLoaded.subscribe((image) => {
+            image.updateMargins();
+            let originClean = image.viewer.isOriginClean();
+            if (originClean) {
+                $('.fullscreen__view-sidebar-accordeon-panel.fs-imagefilters .fullscreen__view-sidebar-accordeon-panel-error').hide();
+                $('imageFilters').css('display', 'block');
+            }
+        });
     </script>
 </ui:composition>

@@ -2,7 +2,6 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:util="http://goobi.io/util"
@@ -64,6 +63,7 @@
                             </div>
                         </c:forEach>
 
+                        <!-- LICENCE -->
                         <h3>#{msg.copyright_indicator__copyright_licence}</h3>
                         <div class="copyright-indicator__hidden-information-element">
                             <h:outputText
@@ -91,7 +91,6 @@
                     <ui:fragment rendered="#{empty activeDocumentBean.viewManager.copyrightIndicatorLicense.icons}">
                         <ui:include src="#{navigationHelper.getResource('images/licence/unclear.svg')}" />
                     </ui:fragment>
-
                     <c:forEach
                         var="iconPath"
                         items="#{navigationHelper.getLicenceIconResources(activeDocumentBean.viewManager.copyrightIndicatorLicense.icons)}">

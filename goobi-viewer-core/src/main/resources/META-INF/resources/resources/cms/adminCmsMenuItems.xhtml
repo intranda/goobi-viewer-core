@@ -3,11 +3,9 @@
     xmlns:util="http://goobi.io/util"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -31,9 +29,7 @@
                         <!-- TITLE -->
                         <h1 class="admin__title">#{msg.cms_menu_heading}</h1>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <!-- SAVE MENU -->
                         <div class="admin__content-component-overlay-wrapper">
@@ -43,7 +39,6 @@
                                 <h:inputHidden
                                     id="itemOrderInput"
                                     value="#{cmsNavigationBean.menuItemList}" />
-
                                 <h:commandButton
                                     value="#{msg.save}"
                                     action="#{cmsNavigationBean.saveMenuItems}"
@@ -95,7 +90,6 @@
                             <!-- VISIBLE ITEMS -->
                             <div class="cms-menu__visible-items">
                                 <h2 class="admin__h3">#{msg.cms_menu_main_menu}</h2>
-
                                 <ul
                                     id="visibleItemList"
                                     class="cms-menu__visible-items-list">
@@ -123,6 +117,7 @@
                                                     <util:icon icon="circle-arrow-right" />
                                                 </button>
                                             </div>
+
                                             <!-- ITEM LABEL -->
                                             <div class="cms-menu__visible-item-label">
                                                 <span>#{msg[visibleItem.itemLabel]}</span>
@@ -140,6 +135,7 @@
                                                     </span>
                                                 </ui:fragment>
                                             </div>
+
                                             <!-- ITEM EDIT -->
                                             <div class="cms-menu__visible-item-edit">
                                                 <button
@@ -154,6 +150,7 @@
                                                         svgClass="icon" />
                                                 </button>
                                             </div>
+
                                             <!-- OPTION -->
                                             <div class="cms-menu__visible-item-edit-wrapper cms-module__option">
                                                 <ui:fragment rendered="#{visibleItem.absoluteLink}">
@@ -272,7 +269,6 @@
                             <!-- AVAILABLE ITEMS -->
                             <div class="cms-menu__available-items">
                                 <h2 class="admin__h3">#{msg.cms_menu_available_items}</h2>
-
                                 <div class="cms-menu__available-items-list-wrapper cms-menu__available-items-list">
                                     <div class="cms-menu__available-items-list-inner">
                                         <h3
@@ -284,7 +280,6 @@
                                                 styleClass="icon-rot-on-open"
                                                 svgClass="icon" />
                                         </h3>
-
                                         <div class="cms-menu__available-items-toggle in">
                                             <ul class="cms-menu__available-items-list-pages">
                                                 <ui:repeat
@@ -314,7 +309,6 @@
                                                     </li>
                                                 </ui:repeat>
                                             </ul>
-
                                             <div class="cms-menu__available-item-page-add">
                                                 <button
                                                     class="btn btn--default"
@@ -326,7 +320,6 @@
                                     </div>
 
                                     <!-- SECOND BLOCK -->
-
                                     <div class="cms-menu__available-items-list-inner">
                                         <!-- ADD INDIVIDUAL MENU ITEM/LINK -->
                                         <h3
@@ -338,7 +331,6 @@
                                                 styleClass="icon-rot-on-open"
                                                 svgClass="icon" />
                                         </h3>
-
                                         <div class="cms-menu__available-items-toggle cms-menu__available-items-list-add-item">
                                             <!-- OPTION -->
                                             <div class="cms-module__option">
@@ -453,21 +445,21 @@
                 </h:form>
             </div>
 
+            <!-- MENU ITEMS SCRIPT -->
             <script type="text/javascript">
                 $(document).ready(function () {
-    var createMenuConfig = {
-        sortablesConfig: {
-            componentListInput: document.getElementById('itemOrderInput'),
-            editButton: $('.widget-edit'),
-            visibleItemList: '#visibleItemList',
-        },
-    };
+                    var createMenuConfig = {
+                        sortablesConfig: {
+                            componentListInput: document.getElementById('itemOrderInput'),
+                            editButton: $('.widget-edit'),
+                            visibleItemList: '#visibleItemList',
+                        },
+                    };
 
-    cmsJS.sortableList.init(20, true, createMenuConfig);
-});
+                    cmsJS.sortableList.init(20, true, createMenuConfig);
+                });
             </script>
         </h:panelGroup>
-
         <ui:fragment rendered="#{!navigationHelper.solrIndexOnline}">
             <div
                 class="alert alert-danger"

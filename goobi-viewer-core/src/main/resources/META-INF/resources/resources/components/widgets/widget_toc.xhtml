@@ -6,7 +6,6 @@
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:o="http://omnifaces.org/ui"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
     <composite:interface>
         <composite:attribute
@@ -36,7 +35,6 @@
             <o:socket
                 channel="tocUpdateChannel"
                 onmessage="updateToc" />
-
             <div
                 id="widgetToc"
                 class="widget widget-toc">
@@ -75,6 +73,7 @@
                             </ui:fragment>
                         </div>
                     </div>
+
                     <!-- ELEMENTS -->
                     <div
                         jsf:id="sidebarTocTree"
@@ -180,6 +179,7 @@
                                                         value="#{msg.sidebarTocAnchor}: #{tocElement.label}, #{tocElement.logId}" />
                                                 </h:outputLink>
                                             </div>
+
                                             <!-- PAGE NUMBER -->
                                             <ui:fragment rendered="#{configurationBean.sidebarTocPageNumbersVisible}">
                                                 <div class="widget-toc__element-pagenumber">
@@ -195,6 +195,7 @@
                 </h:form>
             </div>
 
+            <!-- TOC INIT -->
             <script type="text/javascript">viewerJS.widgetToc.init();</script>
         </ui:fragment>
     </composite:implementation>

@@ -1,15 +1,9 @@
 <ui:composition
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    template="/resources/themes/#{navigationHelper.theme}/template.html"
-    xmlns:pretty="http://ocpsoft.com/prettyfaces/3.3.3">
+    template="/resources/themes/#{navigationHelper.theme}/template.html">
     <composite:interface>
         <composite:attribute
             name="component"
@@ -50,28 +44,28 @@
                 <div class="gutter-sizer" />
             </div>
 
+            <!-- MASONRY SCRIPT -->
             <script
                 type="text/javascript"
                 src="#{request.contextPath}/resources/javascript/libs/masonry/masonry.min.js" />
             <script type="text/javascript">
                 $.ajax({
-    url: '#{cc.attrs.grid.content.tileGridUrl}',
-    type: 'GET',
-    dataType: 'json',
-})
-    .then(function (data) {
-        // init masonry
-        $(document).ready(() => {
-            const masonryConfig = {
-                $grid: $('#templateMasonry .grid'),
-                language: currentLang,
-            };
-            cmsJS.masonry.init(masonryConfig, data);
-        });
-    })
-    .fail(function (jqXHR, textStatus, errorThrown) {
-        console.error('Masonry: failed to load tile grid', textStatus, errorThrown);
-    });
+                    url: '#{cc.attrs.grid.content.tileGridUrl}',
+                    type: 'GET',
+                    dataType: 'json',
+                })
+                    .then(function (data) {
+                        $(document).ready(() => {
+                            const masonryConfig = {
+                                $grid: $('#templateMasonry .grid'),
+                                language: currentLang,
+                            };
+                            cmsJS.masonry.init(masonryConfig, data);
+                        });
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        console.error('Masonry: failed to load tile grid', textStatus, errorThrown);
+                    });
             </script>
         </div>
     </composite:implementation>

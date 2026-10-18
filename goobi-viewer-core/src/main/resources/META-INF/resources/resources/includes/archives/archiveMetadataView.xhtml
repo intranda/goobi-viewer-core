@@ -5,34 +5,29 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <c:set
         var="archiveEntry"
         value="archiveEntry != null ? archiveEntry : 'archiveBean.displayEntry'}"
         scope="request" />
-
     <div class="archives__object-info-heading">#{msg.archives__archive_area_unit}</div>
     <div class="archives__object-info">
         <div class="archives__object-metadata">
             <!-- METADATA -->
             <div class="archives__object-title">#{archiveEntry.label}</div>
-
             <c:forEach
                 begin="0"
                 end="6"
                 var="index">
-                <!-- Identity statement metadata -->
-                <ui:fragment
-                    rendered="#{archiveMetadataBean.getMetadata(archiveEntry).getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
+                <!-- METADATA AREA -->
+                <ui:fragment rendered="#{archiveMetadataBean.getMetadata(archiveEntry).getAreaList(index).stream().filter(metadata -> !metadata.blank).count() > 0}">
                     <div class="archives__object-block-label">#{msg['archives__archive_area_'.concat(index)]}</div>
                     <c:forEach
                         var="metadata"
                         items="#{archiveMetadataBean.getMetadata(archiveEntry).getAreaList(index)}">
-                        <!-- grouped="true" -->
+                        <!-- GROUPED VALUES -->
                         <h:panelGroup rendered="#{metadata.group}">
-                            <!-- Single label for all values, each value is a single string -->
+                            <!-- SINGLE STRING -->
                             <h:panelGroup rendered="#{metadata.singleString}">
                                 <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
                                     <ui:param
@@ -41,7 +36,7 @@
                                 </ui:include>
                             </h:panelGroup>
 
-                            <!-- Each value has a label column and a value column -->
+                            <!-- KEY VALUE PAIRS -->
                             <h:panelGroup rendered="#{!metadata.singleString}">
                                 <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
                                     <ui:param
@@ -51,7 +46,7 @@
                             </h:panelGroup>
                         </h:panelGroup>
 
-                        <!-- grouped="false" -->
+                        <!-- UNGROUPED VALUES -->
                         <h:panelGroup
                             styleClass="metadata__ungrouped-wrapper"
                             layout="block"
@@ -82,16 +77,15 @@
                 </ui:fragment>
             </c:forEach>
 
-            <!-- Description control metadata -->
-            <ui:fragment
-                rendered="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList.stream().filter(metadata -> !metadata.blank).count() > 0}">
+            <!-- DESCRIPTION CONTROL -->
+            <ui:fragment rendered="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList.stream().filter(metadata -> !metadata.blank).count() > 0}">
                 <div class="archives__object-block-label">#{msg.archives__archive_area_descriptionControl}</div>
                 <c:forEach
                     var="metadata"
                     items="#{archiveMetadataBean.getMetadata(archiveEntry).descriptionControlAreaList}">
-                    <!-- grouped="true" -->
+                    <!-- GROUPED VALUES -->
                     <h:panelGroup rendered="#{metadata.group}">
-                        <!-- Single label for all values, each value is a single string -->
+                        <!-- SINGLE STRING -->
                         <h:panelGroup rendered="#{metadata.singleString}">
                             <ui:include src="/resources/includes/metadata/metadataSingleString.xhtml">
                                 <ui:param
@@ -100,7 +94,7 @@
                             </ui:include>
                         </h:panelGroup>
 
-                        <!-- Each value has a label column and a value column -->
+                        <!-- KEY VALUE PAIRS -->
                         <h:panelGroup rendered="#{!metadata.singleString}">
                             <ui:include src="/resources/includes/metadata/metadataKeyValuePairs.xhtml">
                                 <ui:param
@@ -110,7 +104,7 @@
                         </h:panelGroup>
                     </h:panelGroup>
 
-                    <!-- grouped="false" -->
+                    <!-- UNGROUPED VALUES -->
                     <h:panelGroup
                         styleClass="metadata__ungrouped-wrapper"
                         layout="block"
@@ -141,6 +135,7 @@
             </ui:fragment>
         </div>
 
+        <!-- RECORD DATA FOR JS -->
         <h:inputHidden value="#{archiveEntry.associatedRecordPi}">
             <f:passThroughAttribute
                 name="data-name"
@@ -156,10 +151,10 @@
                 styleClass="archives__object-image-link"
                 rendered="#{archiveEntry != null and archiveEntry.associatedRecordPi != ''}"
                 value="#{navigationHelper.objectUrl}/#{archiveEntry.associatedRecordPi}/1/">
-                <!-- TODO less trivial image display -->
                 <div class="archives__object-image-overlay" />
-                <img data-viewer-thumbnail="thumbnail"/>
-                <!-- set src from javascript -->
+
+                <!-- THUMBNAIL, SRC SET BY JS -->
+                <img data-viewer-thumbnail="thumbnail" />
                 <div class="archives__object-image-hover-text">#{msg.archives__showRecord}</div>
                 <div class="archives__object-image-hover-icon">
                     <util:icon icon="circle-arrow-right" />
@@ -181,17 +176,18 @@
         </div>
     </div>
 
+    <!-- NORMDATA CONFIG -->
     <script type="text/javascript">
         var normdataConfig = {
-		    path: '#{request.contextPath}',
-		    lang: {
-		        popoverTitle: '#{msg.normdataPopoverTitle}',
-		        popoverClose: '#{msg.normdataPopoverClose}',
-		        showNormdata: '#{msg.normdataExpand}',
-		    },
-		    elemWrapper: $('#metadataElementWrapper'),
-		};
-		
-		viewerJS.normdata.init(normdataConfig);
+            path: '#{request.contextPath}',
+            lang: {
+                popoverTitle: '#{msg.normdataPopoverTitle}',
+                popoverClose: '#{msg.normdataPopoverClose}',
+                showNormdata: '#{msg.normdataExpand}',
+            },
+            elemWrapper: $('#metadataElementWrapper'),
+        };
+
+        viewerJS.normdata.init(normdataConfig);
     </script>
 </ui:composition>

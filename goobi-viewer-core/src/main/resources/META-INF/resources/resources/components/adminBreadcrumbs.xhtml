@@ -2,7 +2,6 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html">
     <composite:interface />
 
@@ -21,7 +20,7 @@
                             value="#{breadcrumbBean.breadcrumbs}"
                             var="breadcrumb"
                             varStatus="status">
-                            <!-- FIRST BREADCRUMB: TEXT NO LINK - USER IS ON FIRST PAGE (HOMEPAGE) -->
+                            <!-- FIRST BREADCRUMB, TEXT ON THE HOMEPAGE -->
                             <h:panelGroup rendered="#{(status.first and status.last)}">
                                 <li
                                     class="admin__breadcrumbs-crumb-point"
@@ -34,7 +33,7 @@
                                 </li>
                             </h:panelGroup>
 
-                            <!-- FIRST BREADCRUMB: TEXT WITH LINK - ACTUAL PAGE IS NOT HOMEPAGE -->
+                            <!-- FIRST BREADCRUMB, LINK ELSEWHERE -->
                             <h:panelGroup rendered="#{(status.first and !status.last and breadcrumb.link)}">
                                 <li class="admin__breadcrumbs-crumb-point">
                                     <a

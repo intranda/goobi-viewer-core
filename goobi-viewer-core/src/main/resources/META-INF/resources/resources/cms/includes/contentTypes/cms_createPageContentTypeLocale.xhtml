@@ -3,10 +3,7 @@
     xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:h="http://xmlns.jcp.org/jsf/html">
     <!-- CONTENT TYPE LOCALE -->
     <div class="cms-module__option-group">
         <div class="cms-module__option-label">
@@ -22,7 +19,6 @@
                         infoClass="cms-module__option-message-status success"
                         warnClass="cms-module__option-message-status warning"
                         errorClass="cms-module__option-message-status danger" />
-
                     <div class="cms-module__option-message-mark">
                         <i
                             class="fa fa-check"
@@ -52,6 +48,7 @@
             <!-- INLINE HELP -->
             <span class="cms-module__option-control-helptext">#{msg.inline_help__cms_content_type_locale}</span>
         </div>
+
         <!-- TOGGLE INLINE HELP -->
         <div class="cms-module__option-help">
             <button

@@ -4,12 +4,7 @@
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
-    xmlns:facelet="http://goobi.io/facelets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -40,9 +35,7 @@
                             </ui:fragment>
                         </ui:fragment>
                     </div>
-
                     <viewerComponent:adminBreadcrumbs />
-
                     <div class="admin__content-inner-content">
                         <h:form
                             id="editCommentGroup"
@@ -84,7 +77,7 @@
                                             </div>
                                         </ui:fragment>
 
-                                        <!-- SOLR QUERY (required if not "all comments" group) -->
+                                        <!-- SOLR QUERY, REQUIRED UNLESS ALL COMMENTS -->
                                         <div class="form-group form-row">
                                             <div class="col-2 control-label admin__form-label">
                                                 <label for="solrQuery">
@@ -94,7 +87,6 @@
                                                     </ui:fragment>
                                                 </label>
                                             </div>
-
                                             <div class="cms-module__option-control col-11 col-lg-9 admin__form-input">
                                                 <h:panelGroup id="solrQueryInputGroup">
                                                     <div class="cms-module__option-message">
@@ -103,7 +95,6 @@
                                                             infoClass="cms-module__option-message-status success"
                                                             warnClass="cms-module__option-message-status warning"
                                                             errorClass="cms-module__option-message-status danger" />
-
                                                         <div class="cms-module__option-message-mark">
                                                             <util:icon icon="check" />
                                                             <util:icon icon="exclamation" />
@@ -124,7 +115,6 @@
                                                 </h:panelGroup>
                                                 <span class="admin__form-help-text">#{msg.admin__comment_group_view_solr_query__help}</span>
                                             </div>
-
                                             <div class="col-1 admin__form-help-icon">
                                                 <button
                                                     type="button"
@@ -136,7 +126,7 @@
                                             </div>
                                         </div>
 
-                                        <!-- DESCRIPTION (non-all comments only) -->
+                                        <!-- DESCRIPTION, NOT FOR ALL COMMENTS -->
                                         <ui:fragment rendered="#{!adminCommentBean.currentCommentGroup.coreType}">
                                             <div class="form-group form-row">
                                                 <div class="col-12 col-lg-2 control-label admin__form-label">
@@ -164,7 +154,7 @@
                                             </div>
                                         </ui:fragment>
 
-                                        <!-- USER GROUP FOR EMAIL NOTIFICATION (all comments only) -->
+                                        <!-- NOTIFICATION USER GROUP, ALL COMMENTS ONLY -->
                                         <ui:fragment rendered="#{adminCommentBean.currentCommentGroup.coreType}">
                                             <div class="form-group form-row">
                                                 <div class="col-12 col-lg-2 control-label admin__form-label">
@@ -227,7 +217,6 @@
                                                     #{msg.admin__comment_group_enable_for_user_group}:
                                                 </label>
                                             </div>
-
                                             <div class="col-1 admin__form-help-icon">
                                                 <button
                                                     type="button"
@@ -237,7 +226,6 @@
                                                     <util:icon icon="help" />
                                                 </button>
                                             </div>
-
                                             <div class="col-12 admin__form-input">
                                                 <h:selectOneMenu
                                                     id="adminCommentGroupUserGroupSelection"
@@ -252,7 +240,6 @@
                                                     <f:ajax render="GroupOwner GroupOwnerNotification GroupOwnerEdit GroupOwnerDelete" />
                                                 </h:selectOneMenu>
                                                 <span class="admin__form-help-text">#{msg.admin__comment_group_enable_for_user_group__help}</span>
-
                                                 <h:panelGroup id="GroupOwner">
                                                     <ui:fragment rendered="#{adminCommentBean.currentCommentGroup.userGroup != null}">
                                                         <div class="mt-1 d-flex justify-content-start admin__small-info">
@@ -279,7 +266,6 @@
                                                     <div class="col-11 control-label admin__form-label">
                                                         <label for="adminCrowdVisibleFor">#{msg.admin__comment_group_send_email_notification}:</label>
                                                     </div>
-
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button
                                                             type="button"
@@ -326,7 +312,6 @@
                                                     <div class="col-11 control-label admin__form-label">
                                                         <label for="adminCrowdVisibleFor">#{msg.admin__comment_group_members_may_edit_comments}:</label>
                                                     </div>
-
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button
                                                             type="button"
@@ -375,7 +360,6 @@
                                                     <div class="col-11 control-label admin__form-label">
                                                         <label for="adminCrowdVisibleFor">#{msg.admin__comment_group_members_may_delete_comments}:</label>
                                                     </div>
-
                                                     <div class="col-1 admin__form-help-icon">
                                                         <button
                                                             type="button"

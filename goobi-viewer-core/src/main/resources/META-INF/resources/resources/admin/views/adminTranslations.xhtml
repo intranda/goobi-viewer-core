@@ -6,14 +6,14 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:o="http://omnifaces.org/ui"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
             <f:event
                 type="preRenderView"
                 listener="#{navigationHelper.setCurrentPageAdmin('adminTranslations')}" />
-            <!-- Rebuild translation-group completeness on entering the overview so edits are reflected. -->
+
+            <!-- REBUILD COMPLETENESS ON ENTRY, SO EDITS SHOW -->
             <f:event
                 type="preRenderView"
                 listener="#{adminBean.resetTranslationGroups()}" />
@@ -31,7 +31,6 @@
                     <h:outputText
                         rendered="#{userBean.admin and adminBean.translationLocked}"
                         value="#{msg.admin__translation_locked}" />
-
                     <h:panelGroup rendered="#{userBean.admin and !adminBean.translationLocked}">
                         <h:form
                             id="adminTranslations"
@@ -39,6 +38,7 @@
                             <div class="admin__title-bar">
                                 <!-- TITLE -->
                                 <h1 class="admin__title">#{msg.admin__translations}</h1>
+
                                 <!-- ADD NEW TRANSLATIONS -->
                                 <ui:fragment rendered="#{adminBean.newMessageEntryModeAllowed and adminBean.hasAccessPermissingForTranslationFiles}">
                                     <a
@@ -48,9 +48,7 @@
                                     </a>
                                 </ui:fragment>
                             </div>
-
                             <viewerComponent:adminBreadcrumbs />
-
                             <div class="admin__content-inner-content">
                                 <!-- INFO TEXT -->
                                 <div class="admin__info-text">
@@ -58,7 +56,6 @@
                                         value="#{msg.admin__translations_description_text}"
                                         escape="false" />
                                 </div>
-
                                 <c:choose>
                                     <c:when test="#{adminBean.hasAccessPermissingForTranslationFiles}">
                                         <div class="admin__entry-list">
@@ -85,7 +82,6 @@
                                                                     </p>
                                                                 </ui:fragment>
                                                             </div>
-
                                                             <div class="col-12 col-lg-3 d-flex justify-content-center justify-content-lg-end">
                                                                 <div class="d-flex flex-column align-items-center">
                                                                     <ui:fragment rendered="#{group.fullyTranslatedEntryCount != group.entryCount}">
@@ -100,7 +96,6 @@
                                                                         #{group.entryCount})
                                                                         </div>
                                                                     </ui:fragment>
-
                                                                     <ui:fragment rendered="#{group.fullyTranslatedEntryCount == group.entryCount}">
                                                                         <a
                                                                             class="btn btn--default"
@@ -112,7 +107,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-
                                                         <div class="admin__boxed-entry-progress">
                                                             <div
                                                                 class="admin__boxed-entry-progress-complete"
@@ -140,7 +134,8 @@
                     </h:panelGroup>
                 </h:panelGroup>
             </div>
-            <!-- Keep translation lock alive; releases on navigation away -->
+
+            <!-- KEEP THE TRANSLATION LOCK ALIVE, RELEASED ON NAVIGATION -->
             <h:outputScript>
                 (function() {
                     if (!window.viewerJS || !viewerJS.WebSocket) { return; }
@@ -151,7 +146,8 @@
                     );
                 })();
             </h:outputScript>
-            <!-- Hidden form for AJAX re-render of lock status area -->
+
+            <!-- HIDDEN FORM FOR THE LOCK STATUS RE-RENDER -->
             <h:form
                 id="lockStatusRefreshForm"
                 style="display:none">

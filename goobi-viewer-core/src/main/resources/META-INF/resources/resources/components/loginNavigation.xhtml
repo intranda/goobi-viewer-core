@@ -4,16 +4,16 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
     xmlns:composite="http://xmlns.jcp.org/jsf/composite">
-    <!-- INTERFACE OPTIONS -->
+    <!-- INTERFACE -->
     <composite:interface>
         <composite:attribute
             name="customName"
             required="false"
             default="false" />
     </composite:interface>
-    <!-- COMPONENT CONTENT -->
+
+    <!-- CONTENT -->
     <composite:implementation>
         <ui:fragment rendered="#{configurationBean.displayUserNavigation || userBean.loggedIn }">
             <!-- USER NOT LOGGED IN -->
@@ -33,6 +33,7 @@
                     </button>
                 </div>
             </ui:fragment>
+
             <!-- USER LOGGED IN -->
             <ui:fragment rendered="#{userBean.loggedIn}">
                 <ul class="login-navigation">
@@ -50,6 +51,7 @@
                                     data-placement="bottom">
                                     <h:outputText escape="true">#{userBean.user.displayName}</h:outputText>
                                 </span>
+
                                 <!-- USER ICON -->
                                 <span class="login-navigation__user-icon">
                                     <img
@@ -60,6 +62,7 @@
                                 </span>
                             </button>
                         </ui:fragment>
+
                         <!-- TOGGLE USER DROPDOWN WITH CUSTOM NAME -->
                         <ui:fragment rendered="#{cc.attrs.customName}">
                             <button
@@ -69,6 +72,7 @@
                                 #{msg.login__custom_name}
                             </button>
                         </ui:fragment>
+
                         <!-- USER DROPDOWN -->
                         <div class="login-navigation__user-dropdown">
                             <h:form
@@ -90,6 +94,7 @@
                                             </a>
                                         </li>
                                     </ui:fragment>
+
                                     <!-- DASHBOARD -->
                                     <li class="login-navigation__user-dropdown-item">
                                         <a
@@ -103,6 +108,7 @@
                                                 textClass="login-navigation__user-dropdown-item-text" />
                                         </a>
                                     </li>
+
                                     <!-- BOOKMARKS -->
                                     <ui:fragment rendered="#{configurationBean.bookmarksEnabled and userDataBean.getNumBookmarkLists(userBean.user) > 0}">
                                         <li class="login-navigation__bookmarks-list-wrapper">
@@ -125,6 +131,7 @@
                                             </div>
                                         </li>
                                     </ui:fragment>
+
                                     <!-- SAVED SEARCHES -->
                                     <ui:fragment rendered="#{searchBean.searchSavingEnabled and userDataBean.getNumSearches(userBean.user) > 0}">
                                         <li class="login-navigation__user-dropdown-item">
@@ -140,6 +147,7 @@
                                             </a>
                                         </li>
                                     </ui:fragment>
+
                                     <!-- COMMENTS -->
                                     <ui:fragment rendered="#{userDataBean.commentCount != 0}">
                                         <li class="login-navigation__user-dropdown-item">
@@ -155,6 +163,7 @@
                                             </a>
                                         </li>
                                     </ui:fragment>
+
                                     <!-- ANNOTATIONS -->
                                     <ui:fragment rendered="#{userDataBean.annotationCount != 0}">
                                         <li class="login-navigation__user-dropdown-item">
@@ -170,7 +179,7 @@
                                             </a>
                                         </li>
                                     </ui:fragment>
-                                    <!-- TODO: INSERT COMMENTS -->
+
                                     <!-- MODULE CONTRIBUTIONS -->
                                     <c:forEach
                                         var="module"
@@ -181,6 +190,7 @@
                                             <ui:include src="/#{contribution}" />
                                         </c:forEach>
                                     </c:forEach>
+
                                     <!-- CONTENT UPLOAD -->
                                     <ui:fragment rendered="#{configurationBean.contentUploadEnabled}">
                                         <li class="login-navigation__user-dropdown-item">
@@ -196,6 +206,7 @@
                                             </a>
                                         </li>
                                     </ui:fragment>
+
                                     <!-- USERDATA/PROFILE SETTINGS -->
                                     <li class="login-navigation__user-dropdown-item">
                                         <a
@@ -209,6 +220,7 @@
                                                 textClass="login-navigation__user-dropdown-item-text" />
                                         </a>
                                     </li>
+
                                     <!-- LOGOUT -->
                                     <li class="login-navigation__user-dropdown-item">
                                         <h:commandLink

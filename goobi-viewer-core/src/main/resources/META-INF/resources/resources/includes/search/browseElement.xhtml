@@ -3,21 +3,14 @@
     xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-    xmlns:jsf="http://xmlns.jcp.org/jsf"
-    xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
-    xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
-    xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components">
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions">
     <ui:param
         name="browseElement"
         value="#{browseElement != null ? browseElement : null}" />
     <ui:param
         name="showBookmarkIcon"
         value="#{showBookmarkIcon != null ? showBookmarkIcon : false}" />
-
     <div class="search-list__hit-inner-structure">
-
         <div class="search-list__hit-thumb-wrapper">
             <!-- THUMBNAIL -->
             <ui:include src="/resources/includes/search/browseElementThumbnail.xhtml">
@@ -25,16 +18,14 @@
                     name="browseElement"
                     value="#{browseElement}" />
             </ui:include>
-
         </div>
-        
+
         <!-- ALL CONTENT/VALUES WRAPPER -->
         <div class="search-list__hit-info-wrapper #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-            
             <div class="search-list__hit-options-wrapper #{browseElement.showThumbnail ? '' : '-noThumbnail'}">
                 <!-- DOWNLOAD PDF BUTTON -->
                 <ui:fragment rendered="#{browseElement.downloadPdfAllowed}">
-                    <!-- Direct download — pre-rendered PDFs exist: show small + full links -->
+                    <!-- PDF DOWNLOAD, SMALL AND FULL -->
                     <ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue and browseElement.hasPrerenderedPagePdfs}">
                         <a
                             href="#{browseElement.pdfDownloadLinkSmall}"
@@ -60,7 +51,7 @@
                         </a>
                     </ui:fragment>
 
-                    <!-- Direct download — no pre-rendered PDFs: single link -->
+                    <!-- PDF DOWNLOAD, SINGLE LINK -->
                     <ui:fragment rendered="#{!configurationBean.generatePdfInMessageQueue and !browseElement.hasPrerenderedPagePdfs}">
                         <a
                             href="#{browseElement.pdfDownloadLink}"
@@ -75,7 +66,7 @@
                         </a>
                     </ui:fragment>
 
-                    <!-- Message queue mode — opens shared modal -->
+                    <!-- PDF DOWNLOAD, QUEUE -->
                     <ui:fragment rendered="#{configurationBean.generatePdfInMessageQueue}">
                         <button
                             type="button"
@@ -131,6 +122,7 @@
                                 <h6 class="search-list__hit-citation-dropdown-heading">Zitierempfehlung</h6>
                             </div>
 
+                            <!-- CITATION -->
                             <div class="search-list__hit-citation-wrapper">
                                 <button
                                     type="button"
@@ -184,7 +176,6 @@
 
                 <!-- ADD TO BOOKMARKS BUTTON (ICON) -->
                 <ui:fragment rendered="#{configurationBean.bookmarksEnabled}">
-                    <!-- 	                <div class="search-list__thumb-bookmark-wrapper"> -->
                     <button
                         type="button"
                         class="btn btn--icon search-list__thumb-bookmark
@@ -210,33 +201,30 @@
                                 styleClass="bookmark-toggle__icon bookmark-toggle__icon--filled" />
                         </span>
                     </button>
-                    <!-- 	                </div> -->
                 </ui:fragment>
 
-                <!-- TOGGLE BS TOOLTIPS ON BUTTONS/LINKS "MANUALLY" BY JS -->
+                <!-- TOOLTIP TOGGLE -->
                 <script>
-                    $('[data-trigger="bstooltip"]').each(function() {
-							if (!$(this).data('bs.tooltip')) {
-								$(this).tooltip({
-									placement: 'top',
-									trigger: 'hover'
-								});
-							}
-						});
+                    $('[data-trigger="bstooltip"]').each(function () {
+                        if (!$(this).data('bs.tooltip')) {
+                            $(this).tooltip({
+                                placement: 'top',
+                                trigger: 'hover',
+                            });
+                        }
+                    });
                 </script>
 
-                <!-- COPY TO CLIPBOARD INIT FOR THIS ELEMENT -->
+                <!-- CLIPBOARD INIT -->
                 <script>viewerJS.clipboard.init(null, null, '#{msg.copied_to_clipboard}');</script>
             </div>
-            
-            
-            
+
             <!-- TOP WRAPPER -->
             <div class="search-list__hit-top-wrapper">
                 <!-- TITLE -->
                 <div
                     class="search-list__hit-title #{browseElement.showThumbnail ? '' : '-noThumbnail'} #{configurationBean.displaySearchHitNumbers ? '-hitNumber' : ''} #{not empty browseElement.secondaryMetadataListForCurrentLocale ? '-extraMetadataForGrid' : ''}">
-                    <!-- Display search hit number -->
+                    <!-- HIT NUMBER -->
                     <h2 class="search-list__hit-title-heading">
                         <a
                             class="search-list__hit-title-link"
@@ -257,11 +245,11 @@
                                     escape="false" />
                             </span>
                         </a>
-                    </h2> 
+                    </h2>
                 </div>
             </div>
 
-            <!-- DOCTSTRUCT HIERACHY BREADCRUMBS -->
+            <!-- DOCSTRUCT BREADCRUMBS -->
             <h:panelGroup rendered="#{fn:length(browseElement.structElements) > 0 and browseElement.metadataGroupType == NULL and configurationBean.displayStructType}">
                 <div class="search-list__hit-docstruct">
                     <ul>
@@ -287,19 +275,19 @@
                 </div>
             </h:panelGroup>
 
+            <!-- GROUP STATUS -->
             <h:panelGroup rendered="#{browseElement.displayGroupStatus}">
                 <div class="search-list__hit-docstruct">
                     <h:outputText value="#{msg['doctype_'.concat(browseElement.docType)]}" />
                 </div>
             </h:panelGroup>
 
+            <!-- METADATA -->
             <ui:include src="/resources/includes/search/browseElementMetadata.xhtml">
                 <ui:param
                     name="browseElement"
                     value="#{browseElement}" />
             </ui:include>
         </div>
-
-
     </div>
 </ui:composition>

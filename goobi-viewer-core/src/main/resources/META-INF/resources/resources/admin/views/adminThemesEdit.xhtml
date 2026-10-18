@@ -8,8 +8,6 @@
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
-    xmlns:cmsComponent="http://xmlns.jcp.org/jsf/composite/cms/components"
-    xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
     <ui:define name="metadata">
         <f:metadata>
@@ -28,15 +26,13 @@
         <div class="admin__title-bar">
             <h1 class="admin__title">#{msg.admin__themes__title}</h1>
         </div>
-
         <viewerComponent:adminBreadcrumbs />
-
         <div
             id="adminThemesEdit"
             class="admin__content-inner-content">
             <!-- WRAPPER -->
             <div class="admin__content-wrapper">
-                <!-- Sticky main content -->
+                <!-- STICKY MAIN CONTENT -->
                 <div class="admin__content-main -sticky -refreshHCsticky">
                     <!-- JSF FORM WRAPER -->
                     <h:form prependId="false">
@@ -45,7 +41,6 @@
                         <div class="row">
                             <h2 class="col-12">#{msg.admin__themes__general__title}</h2>
                         </div>
-
                         <div class="admin__default-block">
                             <div class="form-group form-row">
                                 <div class="col-2 control-label admin__form-label">
@@ -70,7 +65,6 @@
                                     </button>
                                 </div>
                             </div>
-                            <!-- End form-group -->
 
                             <!-- LOGO UPLOAD -->
                             <h:panelGroup
@@ -83,7 +77,6 @@
                                 <div class="col-2 control-label admin__form-label">
                                     <label for="">#{msg.admin__themes__general_logo__label}:</label>
                                 </div>
-
                                 <div class="col-9 admin__form-input">
                                     <div class="admin__campaign-media-file-box">
                                         <!-- ACTIONS -->
@@ -112,13 +105,11 @@
                                                     alt="" />
                                             </ui:fragment>
                                         </div>
+
                                         <!-- HELP -->
                                         <span class="admin__form-help-text">#{msg.admin__themes__general_logo__help}</span>
                                     </div>
-                                    <!-- End admin__campaign-media-file-box -->
                                 </div>
-                                <!-- End col-9 admin__form-input -->
-
                                 <div class="col-1 admin__form-help-icon">
                                     <button
                                         type="button"
@@ -129,7 +120,6 @@
                                     </button>
                                 </div>
                             </h:panelGroup>
-                            <!-- End LOGO UPLOAD -->
 
                             <!-- DARK MODE LOGO UPLOAD -->
                             <h:panelGroup
@@ -142,7 +132,6 @@
                                 <div class="col-2 control-label admin__form-label">
                                     <label for="">#{msg.admin__themes__general_logo_dark__label}:</label>
                                 </div>
-
                                 <div class="col-9 admin__form-input">
                                     <div class="admin__campaign-media-file-box">
                                         <!-- ACTIONS -->
@@ -171,13 +160,11 @@
                                                     alt="" />
                                             </ui:fragment>
                                         </div>
+
                                         <!-- HELP -->
                                         <span class="admin__form-help-text">#{msg.admin__themes__general_logo_dark__help}</span>
                                     </div>
-                                    <!-- End admin__campaign-media-file-box -->
                                 </div>
-                                <!-- End col-9 admin__form-input -->
-
                                 <div class="col-1 admin__form-help-icon">
                                     <button
                                         type="button"
@@ -188,7 +175,6 @@
                                     </button>
                                 </div>
                             </h:panelGroup>
-                            <!-- End DARK MODE LOGO UPLOAD -->
 
                             <!-- FULLSCREEN LOGO UPLOAD -->
                             <h:panelGroup
@@ -201,7 +187,6 @@
                                 <div class="col-2 control-label admin__form-label">
                                     <label for="">#{msg.admin__themes__fullscreen_logo__label}:</label>
                                 </div>
-
                                 <div class="col-9 admin__form-input">
                                     <div class="admin__campaign-media-file-box">
                                         <!-- ACTIONS -->
@@ -230,13 +215,11 @@
                                                     alt="" />
                                             </ui:fragment>
                                         </div>
+
                                         <!-- HELP -->
                                         <span class="admin__form-help-text">#{msg.admin__themes__fullscreen_logo_help}</span>
                                     </div>
-                                    <!-- End admin__campaign-media-file-box -->
                                 </div>
-                                <!-- End col-9 admin__form-input -->
-
                                 <div class="col-1 admin__form-help-icon">
                                     <button
                                         type="button"
@@ -247,7 +230,6 @@
                                     </button>
                                 </div>
                             </h:panelGroup>
-                            <!-- End FULLSCREEN LOGO UPLOAD -->
 
                             <!-- DARK MODE FULLSCREEN LOGO UPLOAD -->
                             <h:panelGroup
@@ -260,7 +242,6 @@
                                 <div class="col-2 control-label admin__form-label">
                                     <label for="">#{msg.admin__themes__fullscreen_logo_dark__label}:</label>
                                 </div>
-
                                 <div class="col-9 admin__form-input">
                                     <div class="admin__campaign-media-file-box">
                                         <!-- ACTIONS -->
@@ -289,13 +270,11 @@
                                                     alt="" />
                                             </ui:fragment>
                                         </div>
+
                                         <!-- HELP -->
                                         <span class="admin__form-help-text">#{msg.admin__themes__fullscreen_logo_dark__help}</span>
                                     </div>
-                                    <!-- End admin__campaign-media-file-box -->
                                 </div>
-                                <!-- End col-9 admin__form-input -->
-
                                 <div class="col-1 admin__form-help-icon">
                                     <button
                                         type="button"
@@ -306,7 +285,6 @@
                                     </button>
                                 </div>
                             </h:panelGroup>
-                            <!-- End DARK MODE FULLSCREEN LOGO UPLOAD -->
 
                             <!-- ICON UPLOAD -->
                             <h:panelGroup
@@ -319,7 +297,6 @@
                                 <div class="col-2 control-label admin__form-label">
                                     <label for="">#{msg.admin__themes__general_icon__label}:</label>
                                 </div>
-
                                 <div class="col-9 admin__form-input">
                                     <div class="admin__campaign-media-file-box">
                                         <!-- ACTIONS -->
@@ -343,13 +320,11 @@
                                         <ui:fragment rendered="#{theme.icon.hasMediaItem()}">
                                             <img src="#{theme.icon.mediaItem.iconURI}" />
                                         </ui:fragment>
+
                                         <!-- HELP -->
                                         <span class="admin__form-help-text">#{msg.admin__themes__general_icon__help}</span>
                                     </div>
-                                    <!-- End admin__campaign-media-file-box -->
                                 </div>
-                                <!-- End col-9 admin__form-input -->
-
                                 <div class="col-1 admin__form-help-icon">
                                     <button
                                         type="button"
@@ -360,9 +335,7 @@
                                     </button>
                                 </div>
                             </h:panelGroup>
-                            <!-- End ICON UPLOAD -->
                         </div>
-                        <!-- End admin__default-block => GENERAL -->
 
                         <!-- CSS -->
                         <!-- TITLE -->
@@ -373,11 +346,9 @@
                                 #{msg.admin__themes__css__title}
                             </h2>
                         </div>
-
                         <div class="admin__default-block">
                             <!-- INFO -->
                             <div class="admin__info-text">#{msg.admin__themes__css__info}</div>
-
                             <div class="form-group form-row">
                                 <div class="col-2 control-label">
                                     <label for="quickCSSInput">#{msg.admin__themes__css__label}:</label>
@@ -402,7 +373,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- End admin__default-block => CSS -->
 
                         <!-- JAVASCRIPT -->
                         <!-- TITLE -->
@@ -413,11 +383,9 @@
                                 #{msg.admin__themes__javascript__title}
                             </h2>
                         </div>
-
                         <div class="admin__default-block">
                             <!-- INFO -->
                             <div class="admin__info-text">#{msg.admin__themes__javascript__info}</div>
-
                             <div class="form-group form-row">
                                 <div class="col-2 control-label">
                                     <label for="quickJSInput">#{msg.admin__themes__javascript__label}:</label>
@@ -442,14 +410,12 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- End admin__default-block => CSS -->
 
                         <!-- SOCIAL MEDIA -->
                         <!-- TITLE -->
                         <div class="row">
                             <h2 class="col-12">#{msg.admin__themes__social_media__title}</h2>
                         </div>
-
                         <div class="admin__default-block">
                             <!-- INFO -->
                             <div class="admin__info-text">#{msg.admin__themes__social_media__info}</div>
@@ -489,14 +455,12 @@
                                 </div>
                             </ui:repeat>
                         </div>
-                        <!-- End admin__default-block => SOCIAL MEDIA -->
 
                         <!-- FOOTER LINKS -->
                         <!-- TITLE -->
                         <div class="row">
                             <h2 class="col-12">#{msg.admin__themes__footer_links__title}</h2>
                         </div>
-
                         <div class="admin__default-block">
                             <!-- INFO -->
                             <div class="admin__info-text">#{msg.admin__themes__footer_links__info}</div>
@@ -536,7 +500,6 @@
                                 </div>
                             </ui:repeat>
                         </div>
-                        <!-- End admin__default-block => SERVICE -->
 
                         <!-- FORM ACTIONS -->
                         <div class="admin__final-actions">
@@ -552,13 +515,6 @@
                         </div>
                     </h:form>
                 </div>
-                <!-- End sticky main content -->
-
-                <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-                <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-                <!-- %%%%%% SIDEBAR %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-                <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-                <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
                 <!-- SIDEBAR -->
                 <div class="admin__content-side -sticky -refreshHCsticky">
@@ -584,8 +540,6 @@
                     </div>
                 </div>
             </div>
-            <!-- End admin__content-inner-content -->
-
             <h:panelGroup id="mediaSelectPanel">
                 <ui:fragment rendered="#{cmsBean.hasSelectedMediaHolder()}">
                     <div class="admin-cms-media-select-overlay">
@@ -610,17 +564,13 @@
                 </ui:fragment>
             </h:panelGroup>
         </div>
-        <!-- End WRAPPER -->
 
         <!-- VARIABLES IF READ OR WRITABLE -->
         <script>
             $(document).ready(function () {
                 document.querySelectorAll('[data-codemirror]').forEach((element) => {
                     let mode = element.dataset['codemirror'];
-                    //  console.log('Found code mirror text ', element, mode);
-                    // INIT EDITOR MAIN
                     let cmInstance = adminJS.codemirror(element, mode);
-                    // console.log('initialized code mirror ', cmInstance);
                 });
             });
         </script>

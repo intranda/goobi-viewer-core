@@ -2,7 +2,6 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:util="http://goobi.io/util"
     xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-    xmlns:composite="http://xmlns.jcp.org/jsf/composite"
     xmlns:c="http://java.sun.com/jsp/jstl/core"
     xmlns:h="http://xmlns.jcp.org/jsf/html"
     xmlns:f="http://xmlns.jcp.org/jsf/core"
@@ -17,7 +16,6 @@
             <f:event
                 type="preRenderView"
                 listener="#{breadcrumbBean.addStaticLinkToBreadcrumb('admin__user_profile', request.contextPath.concat('/user/'), 1)}" />
-
             <f:event
                 type="preRenderView"
                 listener="#{navigationHelper.addStaticLinkToBreadcrumb('annotations',2)}" />
@@ -36,7 +34,6 @@
             class="page-wrapp">
             <h:panelGroup rendered="#{userBean.loggedIn}">
                 <h1>#{msg.annotations}</h1>
-
                 <div
                     id="userAnnotations"
                     class="user-annotations">
@@ -49,9 +46,9 @@
                                 <div class="admin__table-paginator">
                                     <viewerComponent:dataTablePaginator tableValues="#{userDataBean.lazyModelAnnotations}" />
                                 </div>
+
                                 <!-- FILTER -->
                                 <div class="admin__table-filter b-3 mb-sm-0">
-                                    <!-- TODO: ADD FILTER FOR targetPI, TOO -->
                                     <viewerComponent:dataTableColumnFilter
                                         key="admin__crowsourcing_annotations_search"
                                         filter="#{userDataBean.lazyModelAnnotations.getFilter('targetPI_body_campaign_dateCreated')}" />
@@ -152,6 +149,7 @@
                                                     value="#{navigationHelper.dateTimePattern}" />
                                             </h:outputText>
                                         </div>
+
                                         <!-- REVIEW STATE -->
                                         <div
                                             class="user-annotations__table-entry-review-state"
@@ -166,15 +164,15 @@
                         </div>
                         <script>
                             $(document).ready(() => {
-                                                  riot.mount( "annotationBody", {
-                                                      currentlang: "#{navigationHelper.localeString}",
-                                                      resturl: "#{configurationBean.restApiUrlV1}",
-                                                      geomap : {
-                                                          initialView : {
-                                                              zoom: #{configurationBean.geomapAnnotationZoom},
-                                                          },
-                                                      }
-                                                  } );
+                                riot.mount('annotationBody', {
+                                    currentlang: "#{navigationHelper.localeString}",
+                                    resturl: "#{configurationBean.restApiUrlV1}",
+                                    geomap: {
+                                        initialView: {
+                                            zoom: #{configurationBean.geomapAnnotationZoom},
+                                        },
+                                    },
+                                });
                             });
                         </script>
                     </h:form>
