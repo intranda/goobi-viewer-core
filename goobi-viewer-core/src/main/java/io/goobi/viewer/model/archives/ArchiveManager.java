@@ -24,17 +24,14 @@ package io.goobi.viewer.model.archives;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -326,50 +323,44 @@ public class ArchiveManager implements Serializable {
             return Pair.of(prev, next);
         }
 
-        // Get list of all node IDs for the archive, sorted by EAD_NODE_ID
-        String archivePi = SolrTools.getSingleFieldStringValue(archiveRootDoc, SolrConstants.PI_TOPSTRUCT);
-        String query2 = "+" + SolrConstants.PI_TOPSTRUCT + ":\"" + archivePi + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name();
-        SolrDocumentList archiveNodeDocs = DataManager.getInstance()
-                .getSearchIndex()
-                .search(query2, SolrSearchIndex.MAX_HITS, null, Collections.singletonList(SolrConstants.EAD_NODE_ID));
-        Set<String> archiveNodeIds = archiveNodeDocs.stream()
-                .map(doc -> SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID))
-                .filter(StringUtils::isNotEmpty)
-                .collect(Collectors.toSet());
-
-        // Find records with linked archive nodes that belong to the relevant archive.
+        // Neighbours among the records linked to nodes of this archive, in EAD_NODE_ID order. Instead of loading all node IDs of the archive
+        // and all linked records in the index (up to a million rows each, on every record view), only the immediate neighbour on each side
+        // is requested. The restriction to this archive's nodes is a join filter, which Solr caches.
         // Require a PI to restrict the hits to top-level records: sub-structure DOCSTRCT elements carry
         // EAD_NODE_ID but no PI, are not navigable targets, and would otherwise produce a null PI below.
-        String query3 =
-                "+" + SolrConstants.PI + ":* +" + SolrConstants.EAD_NODE_ID + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name();
-        SolrDocumentList linkedRecordDocs = DataManager.getInstance()
-                .getSearchIndex()
-                .search(query3, SolrSearchIndex.MAX_HITS, Collections.singletonList(new StringPair(SolrConstants.EAD_NODE_ID, "asc")),
-                        Arrays.asList(SolrConstants.PI, SolrConstants.EAD_NODE_ID));
-
-        // Filter records, leaving only those linked to nodes in the relevant archive
-        List<SolrDocument> relevantRecordDocs = linkedRecordDocs.stream()
-                .filter(doc -> archiveNodeIds.contains(SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID)))
-                .toList();
-
-        ListIterator<SolrDocument> iter = relevantRecordDocs.listIterator();
-        while (iter.hasNext()) {
-            SolrDocument doc = iter.next();
-            String pi = SolrTools.getSingleFieldStringValue(doc, SolrConstants.PI);
-            String nodeId = SolrTools.getSingleFieldStringValue(doc, SolrConstants.EAD_NODE_ID);
-            if (entryId.equals(nodeId)) {
-                if (iter.hasNext()) {
-                    String nextPi = SolrTools.getSingleFieldStringValue(iter.next(), SolrConstants.PI);
-                    // Use ofNullable to stay null-safe if a hit unexpectedly lacks a PI (Optional.of would throw an NPE)
-                    next = Optional.ofNullable(nextPi);
-                }
-                break;
-            }
-            // Use ofNullable to stay null-safe if a hit unexpectedly lacks a PI (Optional.of would throw an NPE)
-            prev = Optional.ofNullable(pi);
-        }
+        String archivePi = SolrTools.getSingleFieldStringValue(archiveRootDoc, SolrConstants.PI_TOPSTRUCT);
+        List<String> filterQueries = Collections.singletonList("{!join from=" + SolrConstants.EAD_NODE_ID + " to=" + SolrConstants.EAD_NODE_ID
+                + "}+" + SolrConstants.PI_TOPSTRUCT + ":\"" + archivePi + "\" +" + SolrConstants.DOCTYPE + ":" + DocType.ARCHIVE.name());
+        String recordQuery = "+" + SolrConstants.PI + ":* +" + SolrConstants.DOCTYPE + ":" + DocType.DOCSTRCT.name() + " +" + SolrConstants.EAD_NODE_ID
+                + ":";
+        String quotedEntryId = '"' + entryId.replace("\\", "\\\\").replace("\"", "\\\"") + '"';
+        prev = findNeighbourPi(recordQuery + "[* TO " + quotedEntryId + "}", "desc", filterQueries);
+        next = findNeighbourPi(recordQuery + "{" + quotedEntryId + " TO *]", "asc", filterQueries);
 
         return Pair.of(prev, next);
+    }
+
+    /**
+     * 
+     * @param query Query for records on one side of the entry
+     * @param order Sort order of EAD_NODE_ID ("asc" or "desc"), so that the closest record comes first
+     * @param filterQueries Filter queries
+     * @return PI of the closest record, if any
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static Optional<String> findNeighbourPi(String query, String order, List<String> filterQueries)
+            throws PresentationException, IndexUnreachableException {
+        SolrDocumentList hits = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query, 0, 1, Collections.singletonList(new StringPair(SolrConstants.EAD_NODE_ID, order)), null,
+                        Collections.singletonList(SolrConstants.PI), filterQueries, null)
+                .getResults();
+        if (hits.isEmpty()) {
+            return Optional.empty();
+        }
+        // Use ofNullable to stay null-safe if a hit unexpectedly lacks a PI (Optional.of would throw an NPE)
+        return Optional.ofNullable(SolrTools.getSingleFieldStringValue(hits.get(0), SolrConstants.PI));
     }
 
     /**

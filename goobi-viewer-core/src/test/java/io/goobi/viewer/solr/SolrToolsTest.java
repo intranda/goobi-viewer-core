@@ -432,6 +432,16 @@ class SolrToolsTest extends AbstractSolrEnabledTest {
 
     /**
      * @see SolrTools#cleanUpQuery(String)
+     * @verifies keep archive node join parameter
+     */
+    @Test
+    void cleanUpQuery_shouldKeepArchiveNodeJoinParameter() {
+        String query = "{!join from=EAD_NODE_ID to=EAD_NODE_ID}+PI_TOPSTRUCT:\"foo\" +DOCTYPE:ARCHIVE";
+        assertEquals(query, SolrTools.cleanUpQuery(query));
+    }
+
+    /**
+     * @see SolrTools#cleanUpQuery(String)
      * @verifies keep single braces
      */
     @Test
