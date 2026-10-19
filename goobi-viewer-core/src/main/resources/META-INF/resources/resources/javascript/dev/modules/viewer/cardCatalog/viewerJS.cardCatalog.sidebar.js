@@ -22,6 +22,7 @@ var viewerJS = (function (viewer, $) {
 
     var letterGroupThreshold = 26;
     var pathFoldThreshold = 5;
+    var noteVariable = /\{(PAGE_URL|IMAGE_URL)\}|%7B(PAGE_URL|IMAGE_URL)%7D/gi;
 
     Object.assign(viewer.cardCatalog, {
         /**
@@ -216,6 +217,74 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
+         * Keeps the original markup of the work notes, whose {PAGE_URL} and {IMAGE_URL} follow the card on the stage, and hides notes that need a card.
+         * Links render as rows here, so punctuation directly after a link would stand alone on its own line and is dropped.
+         */
+        initNotes: function () {
+            this.$notes = $('[data-cc="notes"] .widget-record-notes__body');
+            this.$notes.find('p a, li a').each((index, link) => {
+                var next = link.nextSibling;
+                if (next && next.nodeType === Node.TEXT_NODE && /^[\s.,;:!?]*$/.test(next.nodeValue)) {
+                    next.remove();
+                }
+            });
+            this.noteTemplates = this.$notes.map((index, body) => body.innerHTML).get();
+            this.noteValues = null;
+            this.renderNoteVariables(null);
+        },
+
+        /**
+         * Resolves the note variables for the card on the stage; a note whose variables are not all known, e.g. without a card, is hidden.
+         */
+        renderNoteVariables: function (item) {
+            if (!this.$notes || !this.$notes.length) {
+                return;
+            }
+            var values = {
+                PAGE_URL: item && item.recordPi ? new URL(`${this.rootUrl()}/object/${encodeURIComponent(item.recordPi)}/1/`, window.location.href).href : '',
+                IMAGE_URL: (item && item.imageUrl) || '',
+            };
+            var key = values.PAGE_URL + ' ' + values.IMAGE_URL;
+            if (this.noteValues === key) {
+                return;
+            }
+            this.noteValues = key;
+            this.$notes.each((index, body) => {
+                var template = this.noteTemplates[index];
+                var names = Array.from(template.matchAll(noteVariable), (match) => (match[1] || match[2]).toUpperCase());
+                if (!names.length) {
+                    return;
+                }
+                var complete = names.every((name) => values[name]);
+                $(body).closest('.widget-record-notes').prop('hidden', !complete);
+                if (!complete) {
+                    return;
+                }
+                body.innerHTML = template;
+                body.querySelectorAll('a[href]').forEach((link) => {
+                    link.setAttribute('href', this.replaceNoteVariables(link.getAttribute('href'), values, true));
+                });
+                var walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+                while (walker.nextNode()) {
+                    if (walker.currentNode.nodeValue.search(noteVariable) >= 0) {
+                        walker.currentNode.nodeValue = this.replaceNoteVariables(walker.currentNode.nodeValue, values, false);
+                    }
+                }
+            });
+        },
+
+        /**
+         * Value with its note variables replaced; inside a link target, values after the query mark are URL-encoded.
+         */
+        replaceNoteVariables: function (value, values, linkTarget) {
+            var query = linkTarget ? value.indexOf('?') : -1;
+            return value.replace(noteVariable, (match, name, encodedName, offset) => {
+                var replacement = values[(name || encodedName).toUpperCase()] || '';
+                return query >= 0 && offset > query ? encodeURIComponent(replacement) : replacement;
+            });
+        },
+
+        /**
          * Number of zoom levels needed to reach the full view in the largest drawer, from the configured zoom factor and full-view threshold.
          */
         zoomLevels: function () {
@@ -264,12 +333,7 @@ var viewerJS = (function (viewer, $) {
                     );
                 })
                 .join('');
-            var tip = document.getElementById('feedbackModal')
-                ? `<p class="archives-cardcatalog__guide-tip">${this.iconSvg('message-question')}<span>${this.msg('guideFeedbackText')}</span></p>`
-                : '';
-            this.$guide.html(
-                `<h2 class="archives-cardcatalog__sidebar-heading">${this.msg('guide')}</h2><ol class="archives-cardcatalog__guide-steps" role="list">${items}</ol>${tip}`
-            );
+            this.$guide.html(`<h2 class="archives-cardcatalog__sidebar-heading">${this.msg('guide')}</h2><ol class="archives-cardcatalog__guide-steps" role="list">${items}</ol>`);
             if (this.stageItem && current === 'read') {
                 this.$guide.find('[data-cc-guide-record]').prop('hidden', !this.stageItem.recordPi);
             }

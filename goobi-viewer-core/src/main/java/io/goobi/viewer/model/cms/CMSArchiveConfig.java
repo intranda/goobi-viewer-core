@@ -23,9 +23,7 @@ package io.goobi.viewer.model.cms;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,19 +36,15 @@ import io.goobi.viewer.managedbeans.utils.BeanUtils;
 import io.goobi.viewer.model.cms.media.CMSMediaItem;
 import io.goobi.viewer.model.cms.media.CMSMediaMultiHolder;
 import io.goobi.viewer.model.translations.TranslatedText;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
 /**
@@ -125,11 +119,6 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     @Column(name = "catalog_type")
     private CatalogType catalogType = CatalogType.CARD;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "owner_config_id")
-    @OrderColumn(name = "link_order")
-    private List<CMSArchiveLink> links = new ArrayList<>();
-
     public CMSArchiveConfig() {
     }
 
@@ -157,9 +146,6 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
         this.headerImage = orig.headerImage;
         this.cardCatalog = orig.cardCatalog;
         this.catalogType = orig.catalogType;
-        for (CMSArchiveLink link : orig.links) {
-            this.links.add(new CMSArchiveLink(link));
-        }
     }
 
     public boolean isCardCatalog() {
@@ -179,27 +165,6 @@ public class CMSArchiveConfig implements CMSMediaMultiHolder, Serializable {
     }
 
 
-    public List<CMSArchiveLink> getLinks() {
-        return links;
-    }
-
-    public void addLink() {
-        links.add(new CMSArchiveLink());
-    }
-
-    public void removeLink(CMSArchiveLink link) {
-        links.remove(link);
-    }
-
-    /**
-     * Drops links without a URL, e.g. rows added in the admin form but left empty, and normalizes the remaining addresses.
-     */
-    public void normalizeLinks() {
-        links.removeIf(link -> link.getUrl() == null || link.getUrl().isBlank());
-        links.forEach(link -> link.setUrl(CMSArchiveLink.normalizeUrl(link.getUrl())));
-    }
-
-    
     public Long getId() {
         return id;
     }

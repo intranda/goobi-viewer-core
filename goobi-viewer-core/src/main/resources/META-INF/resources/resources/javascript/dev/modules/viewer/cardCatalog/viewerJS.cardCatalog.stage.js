@@ -98,6 +98,7 @@ var viewerJS = (function (viewer, $) {
          */
         updateStage: function (item) {
             this.stageItem = item;
+            this.renderNoteVariables(item);
             this.$guide.find('[data-cc-guide-record]').prop('hidden', !item.recordPi);
             var drawer = this.currentDrawer();
             var entryCount = drawer.entryCount;

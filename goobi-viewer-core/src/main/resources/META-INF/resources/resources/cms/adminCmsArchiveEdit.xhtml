@@ -311,61 +311,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- CATALOG HELP LINKS -->
-                                    <h2 class="admin__cms-archive-edit__section-title">#{msg.admin__cms_archives_links}</h2>
-                                    <div class="admin__cms-archive-edit__links-block admin__default-block">
-                                        <div class="admin__form-help-text in mb-3">#{msg.admin__cms_archives_links_help}</div>
-                                        <h:panelGroup id="archiveLinksGroup">
-                                            <h:commandLink
-                                                styleClass="btn btn--default admin__cms-archive-edit__link-add"
-                                                action="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.addLink()}"
-                                                value="#{msg.admin__cms_archives_links_add}">
-                                                <f:ajax
-                                                    execute="archiveLinksGroup"
-                                                    render="archiveLinksGroup" />
-                                            </h:commandLink>
-                                            <ui:repeat
-                                                var="link"
-                                                value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.links}">
-                                                <div class="admin__cms-archive-edit__link-row">
-                                                    <div class="admin__cms-archive-edit__link-label admin__form-input">
-                                                        <div class="admin__language-tabs">
-                                                            <viewerComponent:localeSelector
-                                                                object="#{link.label}"
-                                                                render="archiveLinksGroup"
-                                                                execute="archiveLinksGroup" />
-                                                        </div>
-                                                        <h:inputText
-                                                            value="#{link.label.text}"
-                                                            styleClass="form-control">
-                                                            <f:passThroughAttribute
-                                                                name="aria-label"
-                                                                value="#{msg.admin__cms_archives_links_label}" />
-                                                        </h:inputText>
-                                                    </div>
-                                                    <div class="admin__cms-archive-edit__link-url admin__form-input">
-                                                        <h:inputText
-                                                            value="#{link.url}"
-                                                            styleClass="form-control"
-                                                            pt:placeholder="https://">
-                                                            <f:passThroughAttribute
-                                                                name="aria-label"
-                                                                value="#{msg.admin__cms_archives_links_url}" />
-                                                        </h:inputText>
-                                                    </div>
-                                                    <h:commandLink
-                                                        styleClass="-redlink admin__cms-archive-edit__link-remove"
-                                                        action="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.removeLink(link)}"
-                                                        value="#{msg.delete}">
-                                                        <f:ajax
-                                                            execute="archiveLinksGroup"
-                                                            render="archiveLinksGroup" />
-                                                    </h:commandLink>
-                                                </div>
-                                            </ui:repeat>
-                                        </h:panelGroup>
-                                    </div>
-
                                     <!-- SAVE/CANCEL BUTTONS -->
                                     <div class="admin__content-component-overlay-bar admin__cms-archive-edit__save-bar">
                                         <a

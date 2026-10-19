@@ -80,7 +80,6 @@ var viewerJS = (function (viewer, $) {
         guideRead: 'archives__card_catalog_guide_read',
         guideReadText: 'archives__card_catalog_guide_read_text',
         guideRecord: 'archives__card_catalog_guide_record',
-        guideFeedbackText: 'archives__card_catalog_guide_feedback_text',
         fullscreenEnter: 'fullscreen_enter',
         fullscreenExit: 'fullscreen_exit',
     };
@@ -101,7 +100,6 @@ var viewerJS = (function (viewer, $) {
         guideZoomStepsOne: 'archives__volume_catalog_guide_zoom_steps_one',
         guideRead: 'archives__volume_catalog_guide_read',
         guideRecord: 'archives__volume_catalog_guide_record',
-        guideFeedbackText: 'archives__volume_catalog_guide_feedback_text',
     };
 
     viewer.cardCatalog = {
@@ -143,6 +141,7 @@ var viewerJS = (function (viewer, $) {
             this.$guide = $('[data-cc="guide"]');
             this.$register = $('[data-cc="register"]');
             this.$content = $('[data-cc="content"]');
+            this.initNotes();
             this.cancelRender();
             this.resetContent();
             if (this.initController) {
@@ -479,6 +478,9 @@ var viewerJS = (function (viewer, $) {
          * Renders the sidebars and the content area for the current state: hint, zoom view or full view.
          */
         render: function () {
+            if (!this.state.drawer || !this.showsFullView()) {
+                this.renderNoteVariables(null);
+            }
             this.renderOrientation();
             this.renderGuide();
             this.renderRegister();

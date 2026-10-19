@@ -37,7 +37,14 @@
                 <div
                     class="archives-cardcatalog__guide"
                     data-cc="guide" />
-                <ui:include src="/resources/includes/archives/archiveHelpLinks.xhtml" />
+
+                <!-- WORK NOTES -->
+                <div data-cc="notes">
+                    <widgetComponent:widget_recordNotes
+                        notes="#{cmsRecordNotesBean.getNotesForRecord(archiveBean.currentResource)}"
+                        variables="client"
+                        editLink="false" />
+                </div>
 
                 <!-- ADMIN ACTIONS -->
                 <widgetComponent:widget_archivesInteractions />
@@ -66,7 +73,7 @@
                     "archives__card_catalog_guide_zoom_text", "archives__card_catalog_guide_zoom_steps",
                     "archives__card_catalog_guide_zoom_steps_one", "archives__card_catalog_guide_register",
                     "archives__card_catalog_guide_read", "archives__card_catalog_guide_read_text",
-                    "archives__card_catalog_guide_record", "archives__card_catalog_guide_feedback_text", "fullscreen_enter",
+                    "archives__card_catalog_guide_record", "fullscreen_enter",
                     "fullscreen_exit", "archives__volume_catalog_cards", "archives__volume_catalog_card",
                     "archives__volume_catalog_error", "archives__volume_catalog_loading",
                     "archives__volume_catalog_load_more_error", "archives__volume_catalog_show_full_cards",
@@ -74,6 +81,6 @@
                     "archives__volume_catalog_feedback", "archives__volume_catalog_feedback_message",
                     "archives__volume_catalog_guide_zoom_text", "archives__volume_catalog_guide_zoom_steps",
                     "archives__volume_catalog_guide_zoom_steps_one", "archives__volume_catalog_guide_read",
-                    "archives__volume_catalog_guide_record", "archives__volume_catalog_guide_feedback_text"]))});
+                    "archives__volume_catalog_guide_record"]))});
     </script>
 </ui:composition>

@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -35,25 +34,18 @@ import org.junit.jupiter.api.Test;
 import io.goobi.viewer.AbstractDatabaseEnabledTest;
 import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.model.cms.CMSArchiveConfig;
-import io.goobi.viewer.model.cms.CMSArchiveLink;
 
 class CMSArchiveConfigDAOTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @verifies persist and reload card catalog flag, catalog type and help links
+     * @verifies persist and reload card catalog flag and catalog type
      */
     @Test
-    void saveCMSArchiveConfig_shouldPersistAndReloadCardCatalogFlagAndHelpLinks() throws Exception {
+    void saveCMSArchiveConfig_shouldPersistAndReloadCardCatalogFlagAndCatalogType() throws Exception {
         CMSArchiveConfig config = new CMSArchiveConfig("PI_CARDCATALOG");
         config.setDateUpdated(LocalDateTime.now());
         config.setCardCatalog(true);
         config.setCatalogType(CMSArchiveConfig.CatalogType.VOLUME);
-        config.addLink();
-        config.getLinks().get(0).getLabel().setText("Ordnungskriterien", Locale.GERMAN);
-        config.getLinks().get(0).setUrl("https://example.org/ordnungskriterien");
-        config.addLink();
-        config.getLinks().get(1).getLabel().setText("Suchhilfe", Locale.GERMAN);
-        config.getLinks().get(1).setUrl("https://example.org/suchhilfe");
 
         assertNotNull(DataManager.getInstance().getDao().saveCMSArchiveConfig(config));
 
@@ -61,26 +53,18 @@ class CMSArchiveConfigDAOTest extends AbstractDatabaseEnabledTest {
         assertTrue(loaded.isPresent());
         assertTrue(loaded.get().isCardCatalog());
         assertEquals(CMSArchiveConfig.CatalogType.VOLUME, loaded.get().getCatalogType());
-        assertEquals(2, loaded.get().getLinks().size());
-        CMSArchiveLink first = loaded.get().getLinks().get(0);
-        assertEquals("Ordnungskriterien", first.getLabel().getText(Locale.GERMAN));
-        assertEquals("https://example.org/ordnungskriterien", first.getUrl());
-        assertEquals("https://example.org/suchhilfe", loaded.get().getLinks().get(1).getUrl());
     }
 
     /**
      * Regression: deleteCMSArchiveConfig used to fetch its reference via the wrong entity class (Role), so deletion never removed the config.
      *
-     * @verifies delete config with its links
+     * @verifies delete config
      */
     @Test
-    void deleteCMSArchiveConfig_shouldDeleteConfigWithItsLinks() throws Exception {
+    void deleteCMSArchiveConfig_shouldDeleteConfig() throws Exception {
         CMSArchiveConfig config = new CMSArchiveConfig("PI_CARDCATALOG_DELETE");
         config.setDateUpdated(LocalDateTime.now());
         config.setCardCatalog(true);
-        config.addLink();
-        config.getLinks().get(0).getLabel().setText("Hinweise", Locale.GERMAN);
-        config.getLinks().get(0).setUrl("https://example.org/hinweise");
         assertNotNull(DataManager.getInstance().getDao().saveCMSArchiveConfig(config));
 
         CMSArchiveConfig saved =

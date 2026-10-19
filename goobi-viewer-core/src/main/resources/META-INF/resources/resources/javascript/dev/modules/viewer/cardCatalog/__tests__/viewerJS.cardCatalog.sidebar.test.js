@@ -246,7 +246,6 @@ describe('viewerJS.cardCatalog right column', function () {
         archives__card_catalog_guide_read: 'Zettel lesen',
         archives__card_catalog_guide_read_text: 'Mit Zurück und Weiter blättern.',
         archives__card_catalog_guide_record: 'Der Titel führt zum Digitalisat.',
-        archives__card_catalog_guide_feedback_text: 'Fragen zu einem Zettel? Über das Sprechblasen-Symbol.',
     };
     const drawers = (count, size) =>
         Array.from({ length: count }, (_, index) => ({
@@ -309,17 +308,13 @@ describe('viewerJS.cardCatalog right column', function () {
         expect(steps()[1]).toContain('Zettel lesen');
     });
 
-    test('should add the question tip below the steps only when the contact modal is on the page', function () {
-        cardCatalog.renderGuide();
-        expect(cardCatalog.$guide.find('.archives-cardcatalog__guide-tip')).toHaveLength(0);
-
+    test('should end with the steps and leave the contact tip out even when the contact modal is on the page', function () {
         document.body.innerHTML = '<div id="feedbackModal"></div>';
         cardCatalog.renderGuide();
-        const $tip = cardCatalog.$guide.find('.archives-cardcatalog__guide-tip');
+
         expect(steps()).toHaveLength(3);
-        expect($tip.text()).toContain('Fragen zu einem Zettel?');
-        expect($tip.find('svg use').attr('href')).toContain('/message-question.svg#icon');
-        expect($tip.find('svg').attr('aria-hidden')).toBe('true');
+        expect(cardCatalog.$guide.children().last().is('ol')).toBe(true);
+        expect(cardCatalog.$guide.text()).not.toContain('Fragen zu einem Zettel?');
     });
 
     test('should mark the step that matches the current view and the steps before it as done', function () {
@@ -454,5 +449,76 @@ describe('viewerJS.cardCatalog right column', function () {
             'Stufe 6 Zettel 1 – 3',
         ]);
         expect(document.activeElement).toBe(cardCatalog.$orientation.find('[data-chain="2"]')[0]);
+    });
+});
+
+describe('viewerJS.cardCatalog note variables', function () {
+    const imageUrl = 'https://viewer.example/api/v1/records/CARD1/representative/full/!1200,1200/0/default.jpg';
+    const card = { recordPi: 'CARD 1', imageUrl: imageUrl };
+
+    beforeEach(function () {
+        document.body.innerHTML =
+            '<div data-cc="notes"><div class="widget-record-notes__body"><p>Bild: {IMAGE_URL} ' +
+            '<a href="https://order.example/form.do?id=12&amp;card_link={IMAGE_URL}">Bestellen</a> ' +
+            '<a href="%7BPAGE_URL%7D">Ansehen</a> <a href="https://viewer.example/hilfe/">Hilfe</a></p></div></div>';
+        cardCatalog.config = { rootUrl: '/viewer', msg: {} };
+        cardCatalog.initNotes();
+    });
+
+    afterEach(function () {
+        cardCatalog.config = null;
+        cardCatalog.$notes = null;
+        cardCatalog.noteTemplates = null;
+        document.body.innerHTML = '';
+    });
+
+    const links = () => Array.from(document.querySelectorAll('[data-cc="notes"] a'));
+
+    test('should resolve the variables of the work notes for the card on the stage', function () {
+        cardCatalog.renderNoteVariables(card);
+
+        expect(links().map((link) => link.getAttribute('href'))).toEqual([
+            'https://order.example/form.do?id=12&card_link=' + encodeURIComponent(imageUrl),
+            window.location.origin + '/viewer/object/CARD%201/1/',
+            'https://viewer.example/hilfe/',
+        ]);
+        expect(document.querySelector('[data-cc="notes"] p').textContent).toContain('Bild: ' + imageUrl + ' ');
+    });
+
+    test('should drop punctuation that would stand alone below a link row and keep real text after a link', function () {
+        document.body.innerHTML =
+            '<div data-cc="notes"><div class="widget-record-notes__body">' +
+            '<p>Bestellen: <a href="https://order.example/">Bestellformular</a>. </p>' +
+            '<p><a href="https://help.example/">Hilfe</a> zum Katalog</p></div></div>';
+        cardCatalog.initNotes();
+
+        const paragraphs = document.querySelectorAll('[data-cc="notes"] p');
+        expect(paragraphs[0].lastChild.nodeName).toBe('A');
+        expect(paragraphs[0].textContent).toBe('Bestellen: Bestellformular');
+        expect(paragraphs[1].textContent).toBe('Hilfe zum Katalog');
+
+        cardCatalog.renderNoteVariables(card);
+        expect(document.querySelectorAll('[data-cc="notes"] p')[0].textContent).toBe('Bestellen: Bestellformular');
+    });
+
+    test('should show a work note with variables only while all of its values are known', function () {
+        document.body.innerHTML =
+            '<div data-cc="notes">' +
+            '<div class="widget-record-notes"><div class="widget-record-notes__body"><a href="https://order.example/?card_link={IMAGE_URL}">Bestellen</a></div></div>' +
+            '<div class="widget-record-notes"><div class="widget-record-notes__body"><a href="https://help.example/">Hilfe</a></div></div></div>';
+        cardCatalog.initNotes();
+        const notes = () => Array.from(document.querySelectorAll('.widget-record-notes')).map((note) => note.hidden);
+
+        expect(notes()).toEqual([true, false]);
+
+        cardCatalog.renderNoteVariables({ recordPi: 'CARD 1', imageUrl: null });
+        expect(notes()).toEqual([true, false]);
+
+        cardCatalog.renderNoteVariables(card);
+        expect(notes()).toEqual([false, false]);
+        expect(links()[0].getAttribute('href')).toBe('https://order.example/?card_link=' + encodeURIComponent(imageUrl));
+
+        cardCatalog.renderNoteVariables(null);
+        expect(notes()).toEqual([true, false]);
     });
 });

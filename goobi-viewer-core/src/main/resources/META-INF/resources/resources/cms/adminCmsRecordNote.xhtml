@@ -347,7 +347,9 @@
                                                                     required="#{cmsRecordNoteEditBean.isDefaultLocaleSelected()}"
                                                                     requiredMessage="#{msg.info__input_required}"
                                                                     value="#{note.noteText.text}" />
-                                                                <span class="admin__form-help-text">#{msg.cms__record_notes_input_text__help}</span>
+                                                                <span class="admin__form-help-text">
+                                                                    #{msg.cms__record_notes_input_text__help} #{msg.cms__record_notes_input_text__variables_help}
+                                                                </span>
                                                             </div>
                                                             <div class="col-1 admin__form-help-icon">
                                                                 <button

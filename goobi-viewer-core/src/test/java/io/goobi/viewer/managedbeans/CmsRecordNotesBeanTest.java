@@ -22,6 +22,8 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -119,6 +121,71 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseAndSolrEnabledTest {
                         .build()
                         .replace("representative", "files/images/00000001.tif"); // TODO replace hack
         assertEquals(reference, url);
+    }
+
+    /**
+     * @verifies resolve variables in link targets and text
+     * @see CmsRecordNotesBean#resolveNoteVariables
+     */
+    @Test
+    void resolveNoteVariables_shouldResolveVariablesInLinkTargetsAndText() {
+        String text = "<p>Seite {PAGE_URL}: <a href=\"https://order.example/form.do?id=12&amp;card_link={IMAGE_URL}\">Bestellen</a>"
+                + " <a href=\"{PAGE_URL}\">Ansehen</a></p>";
+
+        String resolved = bean.resolveNoteVariables(text, "https://viewer.example/image/PPN1/57/",
+                "https://viewer.example/api/v1/records/PPN1/files/images/00000057.jpg/full/!1252,2048/0/default.jpg");
+
+        assertEquals("<p>Seite https://viewer.example/image/PPN1/57/: <a href=\"https://order.example/form.do?id=12&amp;card_link="
+                + "https%3A%2F%2Fviewer.example%2Fapi%2Fv1%2Frecords%2FPPN1%2Ffiles%2Fimages%2F00000057.jpg%2Ffull%2F!1252%2C2048%2F0%2Fdefault.jpg\">"
+                + "Bestellen</a> <a href=\"https://viewer.example/image/PPN1/57/\">Ansehen</a></p>", resolved);
+    }
+
+    /**
+     * @verifies resolve url encoded variables in link targets
+     * @see CmsRecordNotesBean#resolveNoteVariables
+     */
+    @Test
+    void resolveNoteVariables_shouldResolveUrlEncodedVariablesInLinkTargets() {
+        String resolved = bean.resolveNoteVariables("<a href=\"https://order.example/?card_link=%7bIMAGE_URL%7D\">Bestellen</a>", "",
+                "https://viewer.example/image.jpg");
+
+        assertEquals("<a href=\"https://order.example/?card_link=https%3A%2F%2Fviewer.example%2Fimage.jpg\">Bestellen</a>", resolved);
+    }
+
+    /**
+     * @verifies return null if a variable has no value
+     * @see CmsRecordNotesBean#resolveNoteVariables
+     */
+    @Test
+    void resolveNoteVariables_shouldReturnNullIfAVariableHasNoValue() {
+        assertNull(bean.resolveNoteVariables("<a href=\"https://order.example/?card_link={IMAGE_URL}\">Bestellen</a>",
+                "https://viewer.example/image/PPN1/1/", ""));
+        assertNull(bean.resolveNoteVariables("<p>Seite: {PAGE_URL}</p>", " ", "https://viewer.example/image.jpg"));
+    }
+
+    /**
+     * @verifies return text without variables unchanged
+     * @see CmsRecordNotesBean#resolveNoteVariables
+     */
+    @Test
+    void resolveNoteVariables_shouldReturnTextWithoutVariablesUnchanged() {
+        String text = "<p>Hinweis<br>ohne <b>Variable</b></p>";
+        assertSame(text, bean.resolveNoteVariables(text, "https://viewer.example/", "https://viewer.example/image.jpg"));
+    }
+
+    /**
+     * @verifies keep variables for the client and hide notes with variables elsewhere when values are missing
+     * @see CmsRecordNotesBean#resolveNoteText
+     */
+    @Test
+    void resolveNoteText_shouldKeepVariablesForTheClientAndHideNotesWithVariablesElsewhereWhenValuesAreMissing() {
+        String text = "<a href=\"https://order.example/?card_link={IMAGE_URL}\">Bestellen</a>";
+        String staticText = "<a href=\"https://help.example/\">Hilfe</a>";
+
+        assertSame(text, bean.resolveNoteText(text, "client"));
+        assertNull(bean.resolveNoteText(text, "none"));
+        assertNull(bean.resolveNoteText(text, "page"));
+        assertSame(staticText, bean.resolveNoteText(staticText, "none"));
     }
 
 }

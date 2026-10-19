@@ -149,7 +149,11 @@
                             </ui:include>
                         </h:panelGroup>
 
-                        <ui:include src="/resources/includes/archives/archiveHelpLinks.xhtml" />
+                        <!-- WORK NOTES -->
+                        <widgetComponent:widget_recordNotes
+                            notes="#{cmsRecordNotesBean.getNotesForRecord(archiveBean.currentResource)}"
+                            variables="none"
+                            editLink="false" />
                     </div>
 
                     <!-- RIGHT SIDE -->

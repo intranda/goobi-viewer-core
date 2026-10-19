@@ -386,25 +386,6 @@
         }
     }
 
-    &__guide-tip {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        margin: 18px 0 0;
-        padding: 10px 12px;
-        color: var(--_archives-cardcatalog-text-color);
-        font-size: @fontSmall;
-        line-height: 1.5;
-        background: var(--_archives-cardcatalog-canvas-background-color);
-
-        .icon-svg {
-            flex: 0 0 auto;
-            width: 18px;
-            height: 18px;
-            color: var(--_archives-cardcatalog-accent-color);
-        }
-    }
-
     &__register-range {
         display: block;
         width: 100%;
@@ -458,17 +439,76 @@
         }
     }
 
-    &__sidebar-body .archives__helplinks {
-        margin-top: 0;
-    }
-
     &__sidebar-body #widgetArchivesInteractions {
         width: auto;
         margin-top: 28px;
     }
 
-    &__overview {
-        display: flow-root;
+    &__sidebar-body .widget-record-notes {
+        margin: 0 0 28px;
+    }
+
+    &__sidebar-body .widget-record-notes .widget__topbar {
+        min-height: 0;
+        padding: 0;
+        background: transparent;
+    }
+
+    &__sidebar-body .widget-record-notes .widget__title {
+        margin: 0 0 8px;
+        color: var(--_archives-cardcatalog-text-color);
+        font-size: @fontSmall;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    &__sidebar-body .widget-record-notes .widget__body {
+        padding: 0;
+        color: var(--_archives-cardcatalog-muted-text-color);
+        font-size: @fontSmall;
+        line-height: 1.5;
+        background: transparent;
+        border: 0;
+
+        p {
+            margin: 0;
+        }
+
+        :is(p, li) a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            min-height: 32px;
+            margin: 6px -8px 0;
+            padding: 6px 8px;
+            color: var(--_archives-cardcatalog-accent-color);
+            font-weight: 600;
+            text-decoration: none;
+
+            &::after {
+                content: '\2192' / '';
+                flex: 0 0 auto;
+            }
+
+            &[target='_blank']::after {
+                content: '\2197' / '';
+            }
+
+            &[href]:hover,
+            &[href]:active,
+            &[href]:focus-visible {
+                color: var(--_archives-cardcatalog-accent-color);
+                text-decoration: none;
+                background: var(--_archives-cardcatalog-hover-background-color);
+            }
+
+            &[href]:focus-visible {
+                outline: 2px solid var(--_archives-cardcatalog-accent-color);
+                outline-offset: 2px;
+            }
+        }
     }
 
     &__content-header {

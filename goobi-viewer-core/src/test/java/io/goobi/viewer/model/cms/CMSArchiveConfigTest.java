@@ -27,21 +27,15 @@ import org.junit.jupiter.api.Test;
 class CMSArchiveConfigTest {
 
     @Test
-    void copyConstructor_shouldCopyCardCatalogFlagAndLinks() {
+    void copyConstructor_shouldCopyCatalogViewSettings() {
         CMSArchiveConfig original = new CMSArchiveConfig("catalog");
         original.setCardCatalog(true);
         original.setCatalogType(CMSArchiveConfig.CatalogType.VOLUME);
-        original.addLink();
-        original.getLinks().get(0).setUrl("https://example.org/help");
 
         CMSArchiveConfig copy = new CMSArchiveConfig(original);
 
         assertTrue(copy.isCardCatalog());
         assertEquals(CMSArchiveConfig.CatalogType.VOLUME, copy.getCatalogType());
-        assertEquals(1, copy.getLinks().size());
-        assertEquals("https://example.org/help", copy.getLinks().get(0).getUrl());
-        copy.getLinks().get(0).setUrl("https://example.org/other");
-        assertEquals("https://example.org/help", original.getLinks().get(0).getUrl());
     }
 
     @Test
@@ -51,23 +45,5 @@ class CMSArchiveConfigTest {
 
         config.setCatalogType(null);
         assertEquals(CMSArchiveConfig.CatalogType.CARD, config.getCatalogType());
-    }
-
-    @Test
-    void normalizeLinks_shouldDropLinksWithoutUrlAndNormalizeTheOthers() {
-        CMSArchiveConfig config = new CMSArchiveConfig("catalog");
-        config.addLink();
-        config.addLink();
-        config.getLinks().get(0).setUrl("https://example.org/help");
-        config.addLink();
-        config.getLinks().get(2).setUrl("   ");
-        config.addLink();
-        config.getLinks().get(3).setUrl(" www.gei.de ");
-
-        config.normalizeLinks();
-
-        assertEquals(2, config.getLinks().size());
-        assertEquals("https://example.org/help", config.getLinks().get(0).getUrl());
-        assertEquals("https://www.gei.de", config.getLinks().get(1).getUrl());
     }
 }
