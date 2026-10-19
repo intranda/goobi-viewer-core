@@ -257,17 +257,26 @@ public class ArchiveManager implements Serializable {
     }
 
     /**
-     * 
+     * Resolves the archive containing the given entry and loads its tree, unless the archive is shown as catalog view: that view never displays the
+     * tree, and catalogs can hold around a million entries.
+     *
      * @param identifier EAD node ID used to locate the containing archive
      * @return ArchiveResource
      * @throws IllegalStateException
      * @throws PresentationException
      * @throws IndexUnreachableException
+     * @should resolve the archive without loading its tree when it is shown as catalog
      */
     public ArchiveResource loadArchiveForEntry(String identifier) throws IllegalStateException, PresentationException, IndexUnreachableException {
         ArchiveResource resource = getArchiveForEntrySolr(identifier);
-        this.initializeArchiveTree(resource);
+        if (resource == null || !isCatalogView(resource)) {
+            this.initializeArchiveTree(resource);
+        }
         return resource;
+    }
+
+    boolean isCatalogView(ArchiveResource resource) {
+        return DataManager.getInstance().getCardCatalogManager().getCatalogType(resource.getResourceId()).isPresent();
     }
 
     /**
