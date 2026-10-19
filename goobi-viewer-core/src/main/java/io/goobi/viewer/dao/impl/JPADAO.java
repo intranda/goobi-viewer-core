@@ -157,6 +157,8 @@ public class JPADAO implements IDAO {
     private Object crowdsourcingRequestLock = new Object();
     // Dedicated lock for ViewerMessage operations to prevent concurrent write deadlocks on mq_message_properties
     private Object viewerMessageLock = new Object();
+    /** Number of viewer messages deleted per batch by {@link #deleteViewerMessagesBefore(LocalDateTime)}. */
+    static final int VIEWER_MESSAGE_DELETE_BATCH_SIZE = 1000;
 
     /**
      * Creates a new JPADAO instance.
@@ -5253,6 +5255,38 @@ public class JPADAO implements IDAO {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>
+     * Used by backward-compatibility routines to check for indexes added to existing tables.
+     */
+    @Override
+    public boolean columnIndexExists(String tableName, String columnName) throws SQLException, DAOException {
+        preQuery();
+        EntityManager em = getEntityManager();
+        try {
+            startTransaction(em);
+            Connection connection = em.unwrap(Connection.class);
+            DatabaseMetaData metaData = connection.getMetaData();
+            try (ResultSet indexes = metaData.getIndexInfo(connection.getCatalog(), connection.getSchema(), tableName, false, true)) {
+                while (indexes.next()) {
+                    if (indexes.getShort("ORDINAL_POSITION") == 1 && columnName.equalsIgnoreCase(indexes.getString("COLUMN_NAME"))) {
+                        return true;
+                    }
+                }
+                return false;
+            } finally {
+                commitTransaction(em);
+            }
+        } catch (PersistenceException e) {
+            handleException(em);
+            return false;
+        } finally {
+            close(em);
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public CrowdsourcingAnnotation getAnnotation(Long id) throws DAOException {
@@ -7375,21 +7409,56 @@ public class JPADAO implements IDAO {
     @Override
     public int deleteViewerMessagesBefore(LocalDateTime date)
             throws DAOException {
+        // Delete in batches of message IDs (selected via the index on last_update_time) instead of one bulk JPQL DELETE: for the element
+        // collection, the bulk delete becomes "DELETE FROM mq_message_properties WHERE EXISTS (...)", which scans and locks the entire
+        // properties table. The lock is only held per batch, so that queueing new messages is not blocked for the whole cleanup.
+        int deleted = 0;
+        while (true) {
+            int batchDeleted = deleteViewerMessagesBeforeBatch(date, VIEWER_MESSAGE_DELETE_BATCH_SIZE);
+            deleted += batchDeleted;
+            if (batchDeleted < VIEWER_MESSAGE_DELETE_BATCH_SIZE) {
+                return deleted;
+            }
+        }
+    }
+
+    /**
+     * Deletes up to <code>batchSize</code> viewer messages last updated before the given date, together with their properties.
+     *
+     * @param date Messages last updated before this date are deleted
+     * @param batchSize Maximum number of messages to delete
+     * @return Number of deleted messages
+     * @throws DAOException
+     */
+    private int deleteViewerMessagesBeforeBatch(LocalDateTime date, int batchSize) throws DAOException {
         // Synchronized together with add/update/deleteViewerMessage to prevent concurrent DELETE+INSERT deadlocks on mq_message_properties
         synchronized (viewerMessageLock) {
             preQuery();
             EntityManager em = getEntityManager();
             try {
-
                 em.getTransaction().begin();
 
-                Query q = em.createQuery("DELETE FROM ViewerMessage a WHERE a.lastUpdateTime < :date");
-                q.setParameter("date", date);
-                int deleted = q.executeUpdate();
+                List<Long> ids = em.createQuery("SELECT a.id FROM ViewerMessage a WHERE a.lastUpdateTime < :date", Long.class)
+                        .setParameter("date", date)
+                        .setMaxResults(batchSize)
+                        .getResultList();
+                if (ids.isEmpty()) {
+                    em.getTransaction().commit();
+                    return 0;
+                }
+                // IDs are numeric database keys, so they can safely be inlined
+                String idList = ids.stream().map(String::valueOf).collect(Collectors.joining(","));
+                em.createNativeQuery("DELETE FROM mq_message_properties WHERE message_id IN (" + idList + ")").executeUpdate();
+                int deleted = em.createNativeQuery("DELETE FROM mq_messages WHERE id IN (" + idList + ")").executeUpdate();
 
                 em.getTransaction().commit();
+                // The native deletes bypass the persistence context, so remove any cached instances
+                factory.getCache().evict(ViewerMessage.class);
 
                 return deleted;
+            } catch (PersistenceException e) {
+                handleException(em);
+                throw new DAOException(e.getMessage());
             } finally {
                 close(em);
             }

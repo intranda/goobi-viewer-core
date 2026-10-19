@@ -113,6 +113,17 @@ public interface IDAO {
      */
     boolean columnsExists(String tableName, String columnName) throws DAOException, SQLException;
 
+    /**
+     * Checks whether the given table has an index whose first column is the given column.
+     *
+     * @param tableName name of the database table to check
+     * @param columnName name of the column
+     * @return true if such an index exists; false otherwise
+     * @throws java.sql.SQLException if any.
+     * @throws DAOException
+     */
+    boolean columnIndexExists(String tableName, String columnName) throws DAOException, SQLException;
+
     // User
 
     /**
