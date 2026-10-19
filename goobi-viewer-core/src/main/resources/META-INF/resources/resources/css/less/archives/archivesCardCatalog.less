@@ -12,6 +12,7 @@
         --_archives-cardcatalog-surface-background-color: var(--bg-content-box, @white);
         --_archives-cardcatalog-canvas-background-color: var(--bg-general, @white);
         --_archives-cardcatalog-border: var(--archives-card-border, var(--border, 1px solid @middlegray));
+        --_archives-cardcatalog-trail-color: var(--archives-trail-color, @middlegray);
         --_archives-cardcatalog-text-color: var(--fg-general, @black);
         --_archives-cardcatalog-muted-text-color: var(--fg-controls, @gray);
         --_archives-cardcatalog-caption-font-size: 1.1rem;
@@ -193,7 +194,7 @@
             position: absolute;
             inset-block: 50% -50%;
             inset-inline-start: 4px;
-            border-inline-start: var(--_archives-cardcatalog-border);
+            border-inline-start: 1px solid var(--_archives-cardcatalog-trail-color);
         }
 
         &--more:not(:last-child)::after {
@@ -226,7 +227,7 @@
             width: 9px;
             height: 9px;
             background: var(--_archives-cardcatalog-surface-background-color);
-            border: var(--_archives-cardcatalog-border);
+            border: 1px solid var(--_archives-cardcatalog-trail-color);
             border-radius: 50%;
         }
     }
@@ -244,6 +245,12 @@
     &__path-link,
     &__path-more {
         cursor: pointer;
+
+        &:hover,
+        &:active,
+        &:focus-visible {
+            color: var(--_archives-cardcatalog-text-color);
+        }
 
         &:hover::before,
         &:focus-visible::before {
@@ -311,7 +318,7 @@
             font-size: @fontSmall;
             font-weight: 600;
             background: var(--_archives-cardcatalog-surface-background-color);
-            border: var(--_archives-cardcatalog-border);
+            border: 1px solid var(--_archives-cardcatalog-trail-color);
             border-radius: 50%;
         }
 
@@ -320,7 +327,7 @@
             position: absolute;
             inset-block: 28px 4px;
             inset-inline-start: 11px;
-            border-inline-start: var(--_archives-cardcatalog-border);
+            border-inline-start: 1px solid var(--_archives-cardcatalog-trail-color);
         }
 
         &:last-child {
@@ -453,6 +460,11 @@
 
     &__sidebar-body .archives__helplinks {
         margin-top: 0;
+    }
+
+    &__sidebar-body #widgetArchivesInteractions {
+        width: auto;
+        margin-top: 28px;
     }
 
     &__overview {
