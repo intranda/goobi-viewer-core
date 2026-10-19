@@ -90,9 +90,9 @@ public class CardCatalogManager {
 
     private final CachingMap<String, CardCatalogIndex> catalogs = new CachingMap<>(MAX_CACHED_CATALOGS);
     private final Object[] catalogLocks = new Object[CATALOG_LOCK_COUNT];
-    /** Cached card catalog flags per archive PI, cleared periodically so admin changes propagate. */
-    private final CachingMap<String, Boolean> cardCatalogFlags = new CachingMap<>(100);
-    private volatile long cardCatalogFlagsCleared = System.currentTimeMillis();
+    /** Cached catalog types per archive PI (empty without catalog view), cleared periodically so admin changes propagate. */
+    private final CachingMap<String, Optional<CMSArchiveConfig.CatalogType>> catalogTypes = new CachingMap<>(100);
+    private volatile long catalogTypesCleared = System.currentTimeMillis();
 
     public CardCatalogManager() {
         Arrays.setAll(catalogLocks, i -> new Object());
@@ -277,37 +277,37 @@ public class CardCatalogManager {
     }
 
     /**
-     * Checks whether the archive resource with the given PI is flagged as a card catalog in its CMS configuration. Results are cached and refreshed
-     * periodically, so this is cheap enough for search hit and widget rendering.
+     * Returns the catalog type of the archive resource with the given PI if its CMS configuration enables the catalog view. Results are cached and
+     * refreshed periodically, so this is cheap enough for search hit and widget rendering.
      *
      * @param pi PI of the archive resource
-     * @return true if the archive is flagged as a card catalog
+     * @return the catalog type, or empty if the archive has no catalog view
      */
-    public boolean isCardCatalogResource(String pi) {
+    public Optional<CMSArchiveConfig.CatalogType> getCatalogType(String pi) {
         if (StringUtils.isBlank(pi)) {
-            return false;
+            return Optional.empty();
         }
-        if (System.currentTimeMillis() - cardCatalogFlagsCleared > STALENESS_CHECK_INTERVAL_MILLIS) {
-            synchronized (cardCatalogFlags) {
-                cardCatalogFlags.clear();
+        if (System.currentTimeMillis() - catalogTypesCleared > STALENESS_CHECK_INTERVAL_MILLIS) {
+            synchronized (catalogTypes) {
+                catalogTypes.clear();
             }
-            cardCatalogFlagsCleared = System.currentTimeMillis();
+            catalogTypesCleared = System.currentTimeMillis();
         }
-        Boolean flag = cardCatalogFlags.get(pi);
-        if (flag == null) {
+        Optional<CMSArchiveConfig.CatalogType> type = catalogTypes.get(pi);
+        if (type == null) {
             try {
-                flag = DataManager.getInstance()
+                type = DataManager.getInstance()
                         .getDao()
                         .getCmsArchiveConfigForArchive(pi)
-                        .map(CMSArchiveConfig::isCardCatalog)
-                        .orElse(Boolean.FALSE);
+                        .filter(CMSArchiveConfig::isCardCatalog)
+                        .map(CMSArchiveConfig::getCatalogType);
             } catch (DAOException e) {
                 logger.warn("Could not load archive configuration for '{}': {}", pi, e.getMessage());
-                flag = Boolean.FALSE;
+                type = Optional.empty();
             }
-            cardCatalogFlags.put(pi, flag);
+            catalogTypes.put(pi, type);
         }
-        return flag;
+        return type;
     }
 
     /**

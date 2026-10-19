@@ -39,7 +39,6 @@ var viewerJS = (function (viewer, $) {
     };
 
     var _msgKeys = {
-        interval: 'archives__card_catalog_interval',
         cards: 'archives__card_catalog_cards',
         card: 'archives__card_catalog_card',
         of: 'archives__card_catalog_of',
@@ -57,10 +56,10 @@ var viewerJS = (function (viewer, $) {
         loadMoreError: 'archives__card_catalog_load_more_error',
         retry: 'archives__card_catalog_retry',
         back: 'archives__card_catalog_back',
-        path: 'archives__card_catalog_path',
-        wholeDrawer: 'archives__card_catalog_whole_drawer',
+        pathMore: 'archives__card_catalog_path_more',
+        pathLevel: 'archives__card_catalog_path_level',
+        location: 'archives__card_catalog_location',
         drawer: 'archives__card_catalog_drawer',
-        drawers: 'archives__card_catalog_drawers',
         showFullCards: 'archives__card_catalog_show_full_cards',
         completeCards: 'archives__card_catalog_complete_cards',
         previousDrawer: 'archives__card_catalog_previous_drawer',
@@ -69,9 +68,6 @@ var viewerJS = (function (viewer, $) {
         feedback: 'archives__card_catalog_feedback',
         feedbackMessage: 'archives__card_catalog_feedback_message',
         letters: 'archives__card_catalog_letters',
-        catalog: 'archives__card_catalog_catalog',
-        indexDate: 'archives__card_catalog_index_date',
-        selection: 'archives__card_catalog_selection',
         guide: 'archives__card_catalog_guide',
         guideDrawer: 'archives__card_catalog_guide_drawer',
         guideDrawerText: 'archives__card_catalog_guide_drawer_text',
@@ -87,6 +83,25 @@ var viewerJS = (function (viewer, $) {
         guideFeedbackText: 'archives__card_catalog_guide_feedback_text',
         fullscreenEnter: 'fullscreen_enter',
         fullscreenExit: 'fullscreen_exit',
+    };
+
+    var _volumeMsgKeys = {
+        cards: 'archives__volume_catalog_cards',
+        card: 'archives__volume_catalog_card',
+        errOccurred: 'archives__volume_catalog_error',
+        loading: 'archives__volume_catalog_loading',
+        loadMoreError: 'archives__volume_catalog_load_more_error',
+        showFullCards: 'archives__volume_catalog_show_full_cards',
+        completeCards: 'archives__volume_catalog_complete_cards',
+        viewCard: 'archives__volume_catalog_view_card',
+        feedback: 'archives__volume_catalog_feedback',
+        feedbackMessage: 'archives__volume_catalog_feedback_message',
+        guideZoomText: 'archives__volume_catalog_guide_zoom_text',
+        guideZoomSteps: 'archives__volume_catalog_guide_zoom_steps',
+        guideZoomStepsOne: 'archives__volume_catalog_guide_zoom_steps_one',
+        guideRead: 'archives__volume_catalog_guide_read',
+        guideRecord: 'archives__volume_catalog_guide_record',
+        guideFeedbackText: 'archives__volume_catalog_guide_feedback_text',
     };
 
     viewer.cardCatalog = {
@@ -124,7 +139,7 @@ var viewerJS = (function (viewer, $) {
             }
             this.config = $.extend(true, {}, _defaults, config);
             this.$drawers = $('[data-cc="drawers"]');
-            this.$counts = $('[data-cc="counts"]');
+            this.$orientation = $('[data-cc="orientation"]');
             this.$guide = $('[data-cc="guide"]');
             this.$register = $('[data-cc="register"]');
             this.$content = $('[data-cc="content"]');
@@ -464,7 +479,7 @@ var viewerJS = (function (viewer, $) {
          * Renders the sidebars and the content area for the current state: hint, zoom view or full view.
          */
         render: function () {
-            this.renderCounts();
+            this.renderOrientation();
             this.renderGuide();
             this.renderRegister();
             this.loadRegister();
@@ -504,27 +519,18 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
-         * Zoom path markup: the whole drawer, the earlier zoom levels as chips and the current range.
+         * Button back to the previous zoom level; empty at the top level.
          */
-        renderBreadcrumb: function (drawer, from, to) {
-            var separator = '<span class="archives-cardcatalog__chip-separator" aria-hidden="true">&rsaquo;</span>';
-            var range = (start, end) => `${this.formatNumber(start)} &ndash; ${this.formatNumber(end)}`;
-            var zoomed = this.state.chain.length > 0;
-            var rootLabel = this.msg('wholeDrawer');
-            var html = zoomed
-                ? `<button type="button" class="archives-cardcatalog__chip" data-chain="-1">${rootLabel}</button>`
-                : `<span class="archives-cardcatalog__chip -current" aria-current="step">${rootLabel}</span>`;
-            this.state.chain.slice(1).forEach((step, index) => {
-                html += `<span class="archives-cardcatalog__breadcrumb-step">${separator}<button type="button" class="archives-cardcatalog__chip" data-chain="${index + 1}">${this.msg('cards')} ${range(step.from, step.to)}</button></span>`;
-            });
-            if (zoomed) {
-                html += `<span class="archives-cardcatalog__breadcrumb-step">${separator}<span class="archives-cardcatalog__chip -current" aria-current="step">${this.msg('cards')} ${range(from, to)}</span></span>`;
+        renderBack: function () {
+            var last = this.state.chain.length - 1;
+            if (last < 0) {
+                return '';
             }
-            return `<nav class="archives-cardcatalog__breadcrumb${zoomed ? ' archives-cardcatalog__breadcrumb--zoomed' : ''}" aria-label="${this.msg('path')}"><div class="archives-cardcatalog__breadcrumb-steps">${html}</div></nav>`;
+            return `<button type="button" class="archives-cardcatalog__back" data-chain="${last > 0 ? last : -1}">${this.iconSvg('zoom-out')}<span>${this.msg('back')}</span></button>`;
         },
 
         /**
-         * Header of the content area: drawer label, live position text, zoom path and, in the zoom list, the preview action.
+         * Header of the content area: drawer label, live position text, the way back one zoom level and, in the zoom list, the preview action.
          */
         renderContentHeader: function (drawer, from, to, fullView) {
             var position = fullView
@@ -538,7 +544,7 @@ var viewerJS = (function (viewer, $) {
                 `<div class="archives-cardcatalog__header-main">` +
                 `<div class="archives-cardcatalog__location" tabindex="-1"><strong title="${this.escape(drawer.label)}">${this.escape(drawer.label)}</strong>` +
                 `<span class="archives-cardcatalog__location-position" data-cc-location="true" role="status" aria-live="polite">${position}</span></div>` +
-                `</div><div class="archives-cardcatalog__navigation">${this.renderBreadcrumb(drawer, from, to)}` +
+                `</div><div class="archives-cardcatalog__navigation">${this.renderBack()}` +
                 `${actions}</div></div>`
             );
         },
@@ -710,22 +716,12 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
-         * Raw translated text for a short key or bundle key; falls back to the key itself.
+         * Raw translated text for a short key or bundle key, in the page wording of a volume catalog where it differs; falls back to the key itself.
          */
         msgText: function (key) {
-            var bundleKey = _msgKeys[key] || key;
+            var volumeKey = this.config.catalogType === 'VOLUME' ? _volumeMsgKeys[key] : null;
+            var bundleKey = volumeKey || _msgKeys[key] || key;
             return String(this.config.msg[bundleKey] || bundleKey);
-        },
-
-        /**
-         * Date of a millisecond timestamp formatted for the page language.
-         */
-        formatDate: function (timestamp) {
-            try {
-                return new Date(timestamp).toLocaleDateString(document.documentElement.lang || undefined, { day: '2-digit', month: '2-digit', year: 'numeric' });
-            } catch (e) {
-                return new Date(timestamp).toISOString().substring(0, 10);
-            }
         },
 
         /**

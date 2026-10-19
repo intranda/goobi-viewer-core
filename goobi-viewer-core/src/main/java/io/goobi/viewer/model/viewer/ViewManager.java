@@ -125,6 +125,7 @@ import io.goobi.viewer.model.citation.CitationLink.CitationLinkLevel;
 import io.goobi.viewer.model.citation.CitationList;
 import io.goobi.viewer.model.citation.CitationProcessorWrapper;
 import io.goobi.viewer.model.citation.CitationTools;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.job.download.DownloadOption;
 import io.goobi.viewer.model.media.webarchives.WebArchiveReader;
 import io.goobi.viewer.model.metadata.ComplexMetadata;
@@ -254,7 +255,7 @@ public class ViewManager implements Serializable {
     private CitationProcessorWrapper citationProcessorWrapper;
     private ArchiveResource archiveResource = null;
 
-    private boolean cardCatalogArchive = false;
+    private CMSArchiveConfig.CatalogType archiveCatalogType = null;
     private Pair<Optional<String>, Optional<String>> archiveTreeNeighbours = Pair.of(Optional.empty(), Optional.empty());
     private List<CopyrightIndicatorStatus> copyrightIndicatorStatuses = null;
     private CopyrightIndicatorLicense copyrightIndicatorLicense = null;
@@ -324,8 +325,8 @@ public class ViewManager implements Serializable {
                 this.archiveResource = DataManager.getInstance().getArchiveManager().loadArchiveForEntry(archiveId);
                 this.archiveTreeNeighbours = DataManager.getInstance().getArchiveManager().findIndexedNeighbours(archiveId);
                 if (this.archiveResource != null) {
-                    this.cardCatalogArchive =
-                            DataManager.getInstance().getCardCatalogManager().isCardCatalogResource(this.archiveResource.getResourceId());
+                    this.archiveCatalogType =
+                            DataManager.getInstance().getCardCatalogManager().getCatalogType(this.archiveResource.getResourceId()).orElse(null);
                 }
             }
         } catch (ArchiveException e) {
@@ -341,7 +342,14 @@ public class ViewManager implements Serializable {
      * @return true if the archive containing this record's linked EAD node is flagged as a card catalog
      */
     public boolean isCardCatalogArchive() {
-        return cardCatalogArchive;
+        return archiveCatalogType != null;
+    }
+
+    /**
+     * @return catalog type of the archive containing this record's linked EAD node; null if that archive has no catalog view
+     */
+    public CMSArchiveConfig.CatalogType getArchiveCatalogType() {
+        return archiveCatalogType;
     }
 
     public List<ArchiveEntry> getArchiveHierarchyForIdentifier(String identifier) {

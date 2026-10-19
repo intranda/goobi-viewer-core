@@ -8,6 +8,7 @@
     xmlns:jsf="http://xmlns.jcp.org/jsf"
     xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
+    xmlns:viewerForms="http://xmlns.jcp.org/jsf/composite/components/forms"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets"
     xmlns:adminWidget="http://xmlns.jcp.org/jsf/composite/admin/widgets"
     template="/resources/themes/#{navigationHelper.theme}/templateAdmin.html">
@@ -288,13 +289,26 @@
                                         </h:panelGroup>
                                     </div>
 
-                                    <!-- CARD CATALOG FLAG -->
+                                    <!-- CATALOG VIEW -->
                                     <h2 class="admin__cms-archive-edit__section-title">#{msg.admin__cms_archives_card_catalog}</h2>
                                     <div class="admin__cms-archive-edit__card-catalog-block admin__default-block">
-                                        <viewerComponent:toggleSwitch
-                                            name="cardCatalogSwitch"
-                                            value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.cardCatalog}" />
-                                        <div class="admin__form-help-text in mt-2">#{msg.admin__cms_archives_card_catalog_help}</div>
+                                        <viewerForms:booleanSelectField
+                                            label="#{msg.active}"
+                                            value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.cardCatalog}"
+                                            toggleTarget="#catalogTypeWrapper"
+                                            helpText="#{msg.admin__cms_archives_card_catalog_help}" />
+
+                                        <!-- CATALOG TYPE -->
+                                        <div
+                                            id="catalogTypeWrapper"
+                                            class="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.cardCatalog ? '' : 'hide'}">
+                                            <viewerForms:singleSelectField
+                                                label="#{msg.type}"
+                                                value="#{cmsArchivesBean.selectedArchiveWrapper.archiveConfig.catalogType}"
+                                                selectValues="#{cmsArchivesBean.catalogTypes}"
+                                                itemLabel="#{msg[var.labelKey]}"
+                                                helpText="#{msg.admin__cms_archives_catalog_type_help}" />
+                                        </div>
                                     </div>
 
                                     <!-- CATALOG HELP LINKS -->

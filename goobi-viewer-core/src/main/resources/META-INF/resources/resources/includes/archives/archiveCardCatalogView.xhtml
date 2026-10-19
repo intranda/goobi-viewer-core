@@ -9,7 +9,6 @@
         <!-- LEFT SIDEBAR -->
         <aside class="archives-cardcatalog__sidebar">
             <div class="archives-cardcatalog__sidebar-body">
-                <h2 class="archives-cardcatalog__sidebar-heading">#{msg.archives__card_catalog_drawers}</h2>
                 <div
                     class="archives-cardcatalog__drawers"
                     data-cc="drawers" />
@@ -29,11 +28,11 @@
         <aside class="archives-cardcatalog__sidebar archives-cardcatalog__sidebar--right">
             <div class="archives-cardcatalog__sidebar-body">
                 <div
+                    class="archives-cardcatalog__orientation"
+                    data-cc="orientation" />
+                <div
                     class="archives-cardcatalog__register"
                     data-cc="register" />
-                <div
-                    class="archives-cardcatalog__counts"
-                    data-cc="counts" />
                 <div
                     class="archives-cardcatalog__guide"
                     data-cc="guide" />
@@ -48,23 +47,29 @@
     <script>
         viewerJS.cardCatalog.init(#{archiveBean.getCardCatalogBootstrapJson(request.contextPath,
             navigationHelper.getTranslations(
-                    ["archives__card_catalog_interval", "archives__card_catalog_cards", "archives__card_catalog_card",
+                    ["archives__card_catalog_cards", "archives__card_catalog_card",
                     "archives__card_catalog_of", "archives__card_catalog_zoom_mode", "archives__card_catalog_zoom_in",
                     "archives__card_catalog_full_view", "archives__card_catalog_register", "archives__card_catalog_choose_drawer",
                     "archives__card_catalog_no_image", "archives__open_record", "previous", "next", "archives__card_catalog_error",
                     "archives__card_catalog_loading", "archives__card_catalog_load_more_error", "archives__card_catalog_retry",
-                    "archives__card_catalog_back", "archives__card_catalog_path", "archives__card_catalog_whole_drawer",
-                    "archives__card_catalog_drawer", "archives__card_catalog_drawers", "archives__card_catalog_show_full_cards",
+                    "archives__card_catalog_back", "archives__card_catalog_path_more", "archives__card_catalog_path_level",
+                    "archives__card_catalog_location", "archives__card_catalog_drawer", "archives__card_catalog_show_full_cards",
                     "archives__card_catalog_complete_cards", "archives__card_catalog_previous_drawer",
                     "archives__card_catalog_next_drawer", "archives__card_catalog_view_card", "archives__card_catalog_feedback",
-                    "archives__card_catalog_feedback_message", "archives__card_catalog_letters", "archives__card_catalog_catalog",
-                    "archives__card_catalog_index_date", "archives__card_catalog_selection", "archives__card_catalog_guide",
+                    "archives__card_catalog_feedback_message", "archives__card_catalog_letters", "archives__card_catalog_guide",
                     "archives__card_catalog_guide_drawer", "archives__card_catalog_guide_drawer_text",
                     "archives__card_catalog_guide_letters", "archives__card_catalog_guide_zoom",
                     "archives__card_catalog_guide_zoom_text", "archives__card_catalog_guide_zoom_steps",
                     "archives__card_catalog_guide_zoom_steps_one", "archives__card_catalog_guide_register",
                     "archives__card_catalog_guide_read", "archives__card_catalog_guide_read_text",
                     "archives__card_catalog_guide_record", "archives__card_catalog_guide_feedback_text", "fullscreen_enter",
-                    "fullscreen_exit"]))});
+                    "fullscreen_exit", "archives__volume_catalog_cards", "archives__volume_catalog_card",
+                    "archives__volume_catalog_error", "archives__volume_catalog_loading",
+                    "archives__volume_catalog_load_more_error", "archives__volume_catalog_show_full_cards",
+                    "archives__volume_catalog_complete_cards", "archives__volume_catalog_view_card",
+                    "archives__volume_catalog_feedback", "archives__volume_catalog_feedback_message",
+                    "archives__volume_catalog_guide_zoom_text", "archives__volume_catalog_guide_zoom_steps",
+                    "archives__volume_catalog_guide_zoom_steps_one", "archives__volume_catalog_guide_read",
+                    "archives__volume_catalog_guide_record", "archives__volume_catalog_guide_feedback_text"]))});
     </script>
 </ui:composition>

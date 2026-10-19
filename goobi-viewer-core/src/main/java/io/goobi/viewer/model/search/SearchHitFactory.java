@@ -221,7 +221,7 @@ public class SearchHitFactory {
             if (relatedRecordDoc != null) {
                 String archivePi = SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT);
                 hit.setAltUrl("archives/" + archivePi + "/?selected=" + entryId + "#selected");
-                hit.setAltUrlCardCatalog(DataManager.getInstance().getCardCatalogManager().isCardCatalogResource(archivePi));
+                hit.setAltUrlCatalogType(DataManager.getInstance().getCardCatalogManager().getCatalogType(archivePi).orElse(null));
                 hit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.LABEL));
                 if (StringUtils.isEmpty(hit.getAltLabel())) {
                     hit.setAltLabel(SolrTools.getSingleFieldStringValue(relatedRecordDoc, SolrConstants.PI_TOPSTRUCT));

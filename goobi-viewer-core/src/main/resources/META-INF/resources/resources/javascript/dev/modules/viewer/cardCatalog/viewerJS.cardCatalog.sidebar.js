@@ -21,6 +21,7 @@ var viewerJS = (function (viewer, $) {
     'use strict';
 
     var letterGroupThreshold = 26;
+    var pathFoldThreshold = 5;
 
     Object.assign(viewer.cardCatalog, {
         /**
@@ -113,11 +114,11 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
-         * Renders the drawer list, grouped behind a letter navigation when the catalog has more than 26 drawers.
+         * Renders the headed drawer list, grouped behind a headed letter navigation when the catalog has more than 26 drawers.
          */
         renderSidebar: function () {
             var drawers = this.info.drawers;
-            var html;
+            var html = '';
             var grouped = drawers.length > letterGroupThreshold;
             if (grouped) {
                 var groups = new Map();
@@ -138,12 +139,11 @@ var viewerJS = (function (viewer, $) {
                     })
                     .join('');
                 drawers = groups.get(activeLetter) || [];
-                html = `<div class="archives-cardcatalog__letters" role="group" aria-label="${this.msg('letters')}">${navigation}</div>`;
-                this.$drawers.addClass('archives-cardcatalog__drawers--letters');
-            } else {
-                html = '';
-                this.$drawers.removeClass('archives-cardcatalog__drawers--letters');
+                html =
+                    `<h2 class="archives-cardcatalog__sidebar-heading">${this.msg('letters')}</h2>` +
+                    `<div class="archives-cardcatalog__letters" role="group" aria-label="${this.msg('letters')}">${navigation}</div>`;
             }
+            var level = grouped ? 'h3' : 'h2';
             var drawerButtons = drawers
                 .map((drawer) => {
                     var active = this.state.drawer === drawer.id ? ' -active' : '';
@@ -151,7 +151,7 @@ var viewerJS = (function (viewer, $) {
                     return `<button type="button" class="archives-cardcatalog__drawer${active}" data-drawer="${this.escape(drawer.id)}" title="${this.formatNumber(drawer.entryCount)} ${this.msg('cards')}"${current}>${this.escape(drawer.label)}</button>`;
                 })
                 .join('');
-            html += grouped ? `<div class="archives-cardcatalog__drawer-group">${drawerButtons}</div>` : drawerButtons;
+            html += `<${level} class="archives-cardcatalog__sidebar-heading">${this.msg('drawer')}</${level}><div class="archives-cardcatalog__drawer-group">${drawerButtons}</div>`;
             this.$drawers.html(html);
             this.$drawers.find('[data-letter]').on('click', (event) => {
                 var letter = $(event.currentTarget).attr('data-letter');
@@ -164,27 +164,55 @@ var viewerJS = (function (viewer, $) {
         },
 
         /**
-         * Renders the catalog figures as labelled values with the index date and, once a drawer is chosen, the current selection.
+         * Location trail from the chosen drawer down to the current range, one numbered zoom level per row; deep trails fold their middle levels behind a button.
          */
-        renderCounts: function () {
-            var info = this.info;
-            var stat = (label, value) => `<div class="archives-cardcatalog__stat"><dt>${this.msg(label)}</dt><dd>${this.formatNumber(value)}</dd></div>`;
-            var html =
-                `<h2 class="archives-cardcatalog__sidebar-heading">${this.msg('catalog')}</h2>` +
-                `<dl class="archives-cardcatalog__stats">${stat('cards', info.totalEntries)}${stat('drawers', info.drawers.length)}</dl>` +
-                (info.dateIndexed ? `<p class="archives-cardcatalog__facts">${this.msgFormat('indexDate', [this.formatDate(info.dateIndexed)])}</p>` : '');
-            var drawer = this.state.drawer ? this.currentDrawer() : null;
-            if (drawer) {
-                html +=
-                    `<h2 class="archives-cardcatalog__sidebar-heading">${this.msg('selection')}</h2><dl class="archives-cardcatalog__selection">` +
-                    `<dt>${this.msg('drawer')}</dt><dd>${this.escape(drawer.label)}</dd>` +
-                    `<dt>${this.msg('cards')}</dt><dd>${this.formatNumber(drawer.entryCount)}</dd>`;
-                if (this.state.from && this.state.to) {
-                    html += `<dt>${this.msg('interval')}</dt><dd>${this.formatNumber(this.state.from)} &ndash; ${this.formatNumber(this.state.to)}</dd>`;
-                }
-                html += '</dl>';
+        renderPath: function (drawer) {
+            var chain = this.state.chain;
+            var steps = [{ index: -1, label: this.escape(drawer.label), from: 1, to: drawer.entryCount }];
+            if (chain.length) {
+                chain.slice(1).forEach((step, index) => steps.push({ index: index + 1, label: this.msgFormat('pathLevel', [index + 1]), from: step.from, to: step.to }));
+                steps.push({ label: this.msgFormat('pathLevel', [chain.length]), from: this.state.from || 1, to: this.state.to || drawer.entryCount });
             }
-            this.$counts.html(html);
+            steps[steps.length - 1].current = true;
+            var folded = steps.length > pathFoldThreshold ? steps.length - 4 : 0;
+            var items = steps.map((step, position) => {
+                var text =
+                    `<span class="archives-cardcatalog__path-text"><span class="archives-cardcatalog__path-label">${step.label}</span> ` +
+                    `<span class="archives-cardcatalog__path-range"><span class="sr-only">${this.msg('cards')} </span>${this.formatNumber(step.from)} &ndash; ${this.formatNumber(step.to)}</span></span>`;
+                var content = step.current
+                    ? `<span class="archives-cardcatalog__path-current" aria-current="location">${text}</span>`
+                    : `<button type="button" class="archives-cardcatalog__path-link" data-chain="${step.index}">${text}</button>`;
+                var hidden = folded && position >= 2 && position < steps.length - 2 ? ' hidden' : '';
+                var item = `<li class="archives-cardcatalog__path-step${step.current ? ' -current' : ''}"${hidden}>${content}</li>`;
+                if (folded && position === 2) {
+                    item =
+                        `<li class="archives-cardcatalog__path-step archives-cardcatalog__path-step--more">` +
+                        `<button type="button" class="archives-cardcatalog__path-more" data-path-more="true"><span class="archives-cardcatalog__path-text">${this.msgFormat('pathMore', [folded])}</span></button></li>` +
+                        item;
+                }
+                return item;
+            });
+            return (
+                `<nav class="archives-cardcatalog__path" aria-labelledby="archivesCardCatalogPathHeading">` +
+                `<h2 class="archives-cardcatalog__sidebar-heading" id="archivesCardCatalogPathHeading">${this.msg('location')}</h2>` +
+                `<ol class="archives-cardcatalog__path-steps" role="list">${items.join('')}</ol></nav>`
+            );
+        },
+
+        /**
+         * Renders where the user is: nothing before a drawer is chosen, then the location trail of the drawer and its zoom levels.
+         */
+        renderOrientation: function () {
+            this.$orientation.html(this.state.drawer ? this.renderPath(this.currentDrawer()) : '');
+            this.$orientation.find('[data-chain]').on('click', (event) => {
+                this.chainJump(parseInt($(event.currentTarget).attr('data-chain'), 10));
+            });
+            this.$orientation.find('[data-path-more]').on('click', (event) => {
+                var $more = $(event.currentTarget).closest('li');
+                var $revealed = $more.nextAll('[hidden]').prop('hidden', false);
+                $more.remove();
+                $revealed.first().find('button').trigger('focus');
+            });
         },
 
         /**

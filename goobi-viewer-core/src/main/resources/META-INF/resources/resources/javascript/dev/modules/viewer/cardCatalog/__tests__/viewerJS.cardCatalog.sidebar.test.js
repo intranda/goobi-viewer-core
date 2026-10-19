@@ -22,7 +22,7 @@ describe('viewerJS.cardCatalog sidebar navigation', function () {
             <div class="archives-cardcatalog__wrapper">
                 <aside class="archives-cardcatalog__sidebar">
                     <div class="archives-cardcatalog__sidebar-body">
-                        <div data-cc="counts"></div><div data-cc="drawers"></div>
+                        <div data-cc="orientation"></div><div data-cc="drawers"></div>
                     </div>
                 </aside>
                 <main><div data-cc="content"></div></main>
@@ -34,7 +34,7 @@ describe('viewerJS.cardCatalog sidebar navigation', function () {
         cardCatalog.$content = jQuery('[data-cc="content"]');
         cardCatalog.$drawers = jQuery('[data-cc="drawers"]');
         cardCatalog.$register = jQuery('[data-cc="register"]');
-        cardCatalog.$counts = jQuery('[data-cc="counts"]');
+        cardCatalog.$orientation = jQuery('[data-cc="orientation"]');
         cardCatalog.$guide = jQuery('<div>');
         cardCatalog.config = { apiUrl: '/viewer/api/v1', pi: 'catalog', msg: { archives__card_catalog_letters: 'Anfangsbuchstaben' } };
         cardCatalog.info = { drawers: info.drawers, totalEntries: 1838, config: { fullViewThreshold: 16 } };
@@ -106,6 +106,34 @@ describe('viewerJS.cardCatalog sidebar navigation', function () {
         const selectDrawer = jest.spyOn(cardCatalog, 'selectDrawer').mockImplementation(() => {});
         cardCatalog.$drawers.find('[data-letter="A"]').trigger('click');
         expect(selectDrawer).toHaveBeenCalledWith('drawer-a1');
+    });
+
+    test('should head the letters and, below them, the ranges of a grouped catalog', function () {
+        cardCatalog.config.msg = { archives__card_catalog_letters: 'Buchstaben', archives__card_catalog_drawer: 'Bereich' };
+        cardCatalog.info.drawers = Array.from({ length: 30 }, (_, index) => ({ id: 'drawer-' + index, label: 'A ' + index, entryCount: 100 }));
+        cardCatalog.state.drawer = 'drawer-0';
+
+        cardCatalog.renderSidebar();
+
+        const parts = cardCatalog.$drawers
+            .children()
+            .map((_, element) => element.tagName.toLowerCase() + (element.matches('h2, h3') ? ':' + element.textContent : ''))
+            .get();
+        expect(parts).toEqual(['h2:Buchstaben', 'div', 'h3:Bereich', 'div']);
+        expect(cardCatalog.$drawers.find('.archives-cardcatalog__drawer-group [data-drawer]')).toHaveLength(30);
+    });
+
+    test('should head the ranges of an ungrouped catalog without a letters heading', function () {
+        cardCatalog.config.msg = { archives__card_catalog_letters: 'Buchstaben', archives__card_catalog_drawer: 'Bereich' };
+
+        cardCatalog.renderSidebar();
+
+        const parts = cardCatalog.$drawers
+            .children()
+            .map((_, element) => element.tagName.toLowerCase() + (element.matches('h2, h3') ? ':' + element.textContent : ''))
+            .get();
+        expect(parts).toEqual(['h2:Bereich', 'div']);
+        expect(cardCatalog.$drawers.find('.archives-cardcatalog__drawer-group [data-drawer]')).toHaveLength(2);
     });
 });
 
@@ -201,13 +229,11 @@ describe('viewerJS.cardCatalog.loadRegister', function () {
 
 describe('viewerJS.cardCatalog right column', function () {
     const messages = {
-        archives__card_catalog_catalog: 'Katalog',
         archives__card_catalog_cards: 'Zettel',
-        archives__card_catalog_drawers: 'Schubladen',
-        archives__card_catalog_index_date: 'Stand des Index: {0}',
-        archives__card_catalog_selection: 'Aktuelle Auswahl',
         archives__card_catalog_drawer: 'Schublade',
-        archives__card_catalog_interval: 'Intervall',
+        archives__card_catalog_location: 'Sie sind hier',
+        archives__card_catalog_path_more: '{0} weitere Stufen anzeigen',
+        archives__card_catalog_path_level: 'Stufe {0}',
         archives__card_catalog_guide: 'So funktioniert es',
         archives__card_catalog_guide_drawer: 'Schublade wählen',
         archives__card_catalog_guide_drawer_text: 'Von „{0}“ bis „{1}“.',
@@ -239,7 +265,7 @@ describe('viewerJS.cardCatalog right column', function () {
             config: { zoomFactor: 8, fullViewThreshold: 16 },
         };
         cardCatalog.state = { drawer: null, from: null, to: null, card: null, chain: [] };
-        cardCatalog.$counts = jQuery('<div>');
+        cardCatalog.$orientation = jQuery('<div>');
         cardCatalog.$guide = jQuery('<div>');
     });
 
@@ -315,22 +341,118 @@ describe('viewerJS.cardCatalog right column', function () {
         expect(marks()).toEqual(['done', 'done', 'current']);
     });
 
-    test('should show the catalog figures as labelled values, the index date and the current selection', function () {
-        cardCatalog.renderCounts();
-        const stats = cardCatalog.$counts
-            .find('.archives-cardcatalog__stat')
-            .map((_, stat) => jQuery(stat).children('dt').text() + '=' + jQuery(stat).children('dd').text())
-            .get();
-        expect(stats).toEqual(['Zettel=900', 'Schubladen=30']);
-        expect(cardCatalog.$counts.find('.archives-cardcatalog__facts').text()).toContain('2026');
-        expect(cardCatalog.$counts.find('.archives-cardcatalog__selection')).toHaveLength(0);
+    test('should stay empty without a drawer and then show the chosen drawer as the current location', function () {
+        cardCatalog.renderOrientation();
+        expect(cardCatalog.$orientation.children()).toHaveLength(0);
 
-        cardCatalog.state = { drawer: 'd3', from: 17, to: 32, card: 20, chain: [{ from: 1, to: 195 }] };
-        cardCatalog.renderCounts();
-        const rows = cardCatalog.$counts
-            .find('.archives-cardcatalog__selection dt, .archives-cardcatalog__selection dd')
-            .map((_, cell) => cell.textContent)
+        cardCatalog.info.drawers[3].label = 'M <b>3</b>';
+        cardCatalog.state = { drawer: 'd3', from: null, to: null, card: null, chain: [] };
+        cardCatalog.renderOrientation();
+
+        const $path = cardCatalog.$orientation.find('.archives-cardcatalog__path');
+        expect($path.find('h2').text()).toBe('Sie sind hier');
+        expect($path.attr('aria-labelledby')).toBe($path.find('h2').attr('id'));
+        expect(pathSteps()).toEqual(['M <b>3</b> Zettel 1 – 195']);
+        expect($path.find('b')).toHaveLength(0);
+        expect($path.find('[aria-current="location"] .archives-cardcatalog__path-label').text()).toBe('M <b>3</b>');
+        expect($path.find('[data-chain]')).toHaveLength(0);
+        expect(cardCatalog.$orientation.find('dl')).toHaveLength(0);
+    });
+
+    const pathSteps = () =>
+        cardCatalog.$orientation
+            .find('.archives-cardcatalog__path-step')
+            .map((_, step) => (step.hidden ? 'hidden:' : '') + step.textContent.trim())
             .get();
-        expect(rows).toEqual(['Schublade', 'M3', 'Zettel', '195', 'Intervall', '17 – 32']);
+
+    test('should list the zoom levels below the chosen drawer with the current level last and jump back to earlier levels', function () {
+        cardCatalog.state = {
+            drawer: 'd3',
+            from: 10,
+            to: 20,
+            card: null,
+            chain: [
+                { from: 1, to: 195 },
+                { from: 1, to: 100 },
+            ],
+        };
+        const chainJump = jest.spyOn(cardCatalog, 'chainJump').mockImplementation(() => {});
+
+        cardCatalog.renderOrientation();
+
+        const $path = cardCatalog.$orientation.find('.archives-cardcatalog__path');
+        expect(pathSteps()).toEqual(['M3 Zettel 1 – 195', 'Stufe 1 Zettel 1 – 100', 'Stufe 2 Zettel 10 – 20']);
+        $path.find('[data-chain], [aria-current="location"]').each((_, row) => {
+            expect(
+                jQuery(row)
+                    .children()
+                    .map((_, child) => child.className)
+                    .get()
+            ).toEqual(['archives-cardcatalog__path-text']);
+            expect(
+                jQuery(row)
+                    .children()
+                    .children()
+                    .map((_, child) => child.className)
+                    .get()
+            ).toEqual(['archives-cardcatalog__path-label', 'archives-cardcatalog__path-range']);
+        });
+        expect(
+            $path
+                .find('[data-chain]')
+                .map((_, link) => link.getAttribute('data-chain'))
+                .get()
+        ).toEqual(['-1', '1']);
+        expect($path.find('[aria-current="location"] .archives-cardcatalog__path-label').text()).toBe('Stufe 2');
+        expect(
+            $path
+                .find('.archives-cardcatalog__path-range .sr-only')
+                .map((_, unit) => unit.textContent)
+                .get()
+        ).toEqual(['Zettel ', 'Zettel ', 'Zettel ']);
+        expect($path.find('svg')).toHaveLength(0);
+
+        $path.find('[data-chain="1"]').trigger('click');
+        expect(chainJump).toHaveBeenCalledWith(1);
+        jest.restoreAllMocks();
+    });
+
+    test('should fold the middle levels of a deep zoom path and unfold them on request', function () {
+        const chain = [
+            { from: 1, to: 195 },
+            { from: 1, to: 100 },
+            { from: 1, to: 50 },
+            { from: 1, to: 25 },
+            { from: 1, to: 12 },
+            { from: 1, to: 6 },
+        ];
+        cardCatalog.state = { drawer: 'd3', from: 1, to: 3, card: null, chain: chain };
+
+        cardCatalog.renderOrientation();
+
+        expect(pathSteps()).toEqual([
+            'M3 Zettel 1 – 195',
+            'Stufe 1 Zettel 1 – 100',
+            '3 weitere Stufen anzeigen',
+            'hidden:Stufe 2 Zettel 1 – 50',
+            'hidden:Stufe 3 Zettel 1 – 25',
+            'hidden:Stufe 4 Zettel 1 – 12',
+            'Stufe 5 Zettel 1 – 6',
+            'Stufe 6 Zettel 1 – 3',
+        ]);
+
+        document.body.appendChild(cardCatalog.$orientation[0]);
+        cardCatalog.$orientation.find('[data-path-more]').trigger('click');
+
+        expect(pathSteps()).toEqual([
+            'M3 Zettel 1 – 195',
+            'Stufe 1 Zettel 1 – 100',
+            'Stufe 2 Zettel 1 – 50',
+            'Stufe 3 Zettel 1 – 25',
+            'Stufe 4 Zettel 1 – 12',
+            'Stufe 5 Zettel 1 – 6',
+            'Stufe 6 Zettel 1 – 3',
+        ]);
+        expect(document.activeElement).toBe(cardCatalog.$orientation.find('[data-chain="2"]')[0]);
     });
 });

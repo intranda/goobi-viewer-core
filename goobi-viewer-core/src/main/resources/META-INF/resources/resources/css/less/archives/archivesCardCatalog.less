@@ -102,16 +102,6 @@
         }
     }
 
-    &__drawers {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 6px;
-
-        &--letters {
-            display: block;
-        }
-    }
-
     &__letters {
         display: grid;
         grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -180,7 +170,7 @@
     }
 
     &__register,
-    &__counts,
+    &__orientation,
     &__guide {
         margin-bottom: 28px;
 
@@ -189,66 +179,108 @@
         }
     }
 
-    &__stats {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
+    &__path-steps {
         margin: 0;
+        padding: 0;
+        list-style: none;
     }
 
-    &__stat {
+    &__path-step {
+        position: relative;
+
+        &:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            inset-block: 50% -50%;
+            inset-inline-start: 4px;
+            border-inline-start: var(--_archives-cardcatalog-border);
+        }
+
+        &--more:not(:last-child)::after {
+            border-inline-start-style: dashed;
+        }
+    }
+
+    &__path-link,
+    &__path-current,
+    &__path-more {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 9px minmax(0, 1fr);
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 2px 0;
+        color: var(--_archives-cardcatalog-text-color);
+        font-size: @fontSmall;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.4;
+        text-align: start;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+
+        &::before {
+            content: '';
+            width: 9px;
+            height: 9px;
+            background: var(--_archives-cardcatalog-surface-background-color);
+            border: var(--_archives-cardcatalog-border);
+            border-radius: 50%;
+        }
+    }
+
+    &__path-text {
         display: flex;
-        flex-direction: column-reverse;
-        gap: 2px;
-        min-width: 0;
-        padding: 10px 12px;
-        background: var(--_archives-cardcatalog-canvas-background-color);
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        column-gap: 8px;
+        min-height: 32px;
+        padding: 6px 8px;
+    }
 
-        dt {
-            color: var(--_archives-cardcatalog-muted-text-color);
-            font-size: @fontSmall;
-            font-weight: 400;
+    &__path-link,
+    &__path-more {
+        cursor: pointer;
+
+        &:hover::before,
+        &:focus-visible::before {
+            border-color: var(--_archives-cardcatalog-accent-color);
         }
 
-        dd {
-            margin: 0;
-            color: var(--_archives-cardcatalog-text-color);
-            font-size: @fontXLarge;
-            font-weight: 600;
-            line-height: 1.15;
-            font-variant-numeric: tabular-nums;
-            overflow-wrap: anywhere;
+        &:hover .archives-cardcatalog__path-text,
+        &:focus-visible .archives-cardcatalog__path-text {
+            background: var(--_archives-cardcatalog-hover-background-color);
         }
     }
 
-    &__facts {
-        margin: 8px 0 0;
+    &__path-more {
         color: var(--_archives-cardcatalog-muted-text-color);
-        font-size: @fontSmall;
+
+        &::before {
+            visibility: hidden;
+        }
     }
 
-    &__selection {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
-        gap: 4px 14px;
-        margin: 0;
-        padding: 10px 12px;
-        font-size: @fontSmall;
-        line-height: 1.45;
-        background: var(--_archives-cardcatalog-canvas-background-color);
-        border-inline-start: 3px solid var(--_archives-cardcatalog-accent-color);
+    &__path-current {
+        font-weight: 600;
 
-        dt {
-            color: var(--_archives-cardcatalog-muted-text-color);
-            font-weight: 400;
+        &::before {
+            background: var(--_archives-cardcatalog-selection-background-color);
+            border-color: var(--_archives-cardcatalog-selection-background-color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--_archives-cardcatalog-selection-background-color) 25%, transparent);
         }
 
-        dd {
-            margin: 0;
-            color: var(--_archives-cardcatalog-text-color);
-            font-weight: 600;
-            overflow-wrap: anywhere;
+        .archives-cardcatalog__path-text {
+            color: var(--_archives-cardcatalog-accent-contrast-color);
+            background: var(--_archives-cardcatalog-selection-background-color);
         }
+    }
+
+    &__path-range {
+        white-space: nowrap;
     }
 
     &__guide-steps {
@@ -501,29 +533,7 @@
         min-width: 0;
     }
 
-    &__breadcrumb {
-        display: flex;
-        flex: 1 1 0;
-        align-items: center;
-        min-width: 0;
-    }
-
-    &__breadcrumb-steps {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 4px;
-        min-width: 0;
-    }
-
-    &__breadcrumb-step {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        min-width: 0;
-        max-width: 100%;
-    }
-
+    &__back,
     &__preview-toggle {
         display: inline-flex;
         flex: 0 0 auto;
@@ -557,77 +567,10 @@
         }
     }
 
-    [dir='rtl'] &__chip-separator {
-        transform: scaleX(-1);
-    }
-
     &__preview-toggle[aria-pressed='true'] {
         color: var(--_archives-cardcatalog-accent-color);
         background: var(--_archives-cardcatalog-hover-background-color);
         border-color: var(--_archives-cardcatalog-accent-color);
-    }
-
-    &__chip {
-        display: inline-flex;
-        flex: 0 1 auto;
-        align-items: center;
-        min-width: 0;
-        min-height: 32px;
-        padding: 5px 6px;
-        color: var(--_archives-cardcatalog-text-color);
-        font-size: @fontSmall;
-        font-variant-numeric: tabular-nums;
-        line-height: 1.4;
-        text-align: start;
-        text-decoration: none;
-        overflow-wrap: anywhere;
-        background: transparent;
-        border: 0;
-        border-radius: 0;
-        cursor: pointer;
-
-        &:first-child {
-            padding-inline-start: 0;
-        }
-
-        &:not(.-current):hover,
-        &:not(.-current):active,
-        &:not(.-current):focus-visible {
-            color: var(--_archives-cardcatalog-text-color);
-            text-decoration: none;
-            background: color-mix(in srgb, var(--_archives-cardcatalog-hover-background-color) 50%, var(--_archives-cardcatalog-surface-background-color));
-        }
-
-        &.-current {
-            color: var(--_archives-cardcatalog-text-color);
-            font-weight: 600;
-            cursor: default;
-        }
-    }
-
-    &__chip-separator {
-        flex: 0 0 auto;
-        padding: 0 2px;
-        color: var(--_archives-cardcatalog-muted-text-color);
-        font-size: @fontMedium;
-    }
-
-    &__breadcrumb--zoomed .archives-cardcatalog__chip {
-        padding: 5px 10px;
-        white-space: nowrap;
-        border: var(--_archives-cardcatalog-border);
-
-        &:not(.-current):hover,
-        &:not(.-current):active,
-        &:not(.-current):focus-visible {
-            border-color: color-mix(in srgb, var(--_archives-cardcatalog-text-color) 25%, transparent);
-        }
-
-        &.-current {
-            color: var(--_archives-cardcatalog-accent-contrast-color);
-            background: var(--_archives-cardcatalog-selection-background-color);
-            border-color: var(--_archives-cardcatalog-selection-background-color);
-        }
     }
 
     &__zoomlist {
@@ -1025,10 +968,6 @@
 
 @container archives-cardcatalog-sidebar (max-width: 300px) {
     .archives-cardcatalog {
-        &__drawers {
-            grid-template-columns: minmax(0, 1fr);
-        }
-
         &__drawer-group {
             grid-template-columns: minmax(0, 1fr);
         }
@@ -1114,8 +1053,10 @@
         }
 
         &__drawer,
+        &__back,
         &__preview-toggle,
-        &__chip {
+        &__path-link,
+        &__path-more {
             min-height: 44px;
         }
 

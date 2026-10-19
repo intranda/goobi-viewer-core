@@ -50,7 +50,25 @@ class ArchiveBeanCardCatalogTest {
         Assertions.assertEquals("/viewer/api/v1", parsed.getString("apiUrl"));
         Assertions.assertEquals("/viewer", parsed.getString("rootUrl"));
         Assertions.assertFalse(parsed.has("portrait"));
+        Assertions.assertEquals("CARD", parsed.getString("catalogType"));
         Assertions.assertEquals("</script> & \"quoted\"", parsed.getJSONObject("msg").getString("label"));
+    }
+
+    @Test
+    void cardCatalogBootstrapJson_shouldCarryTheCatalogTypeOfTheCurrentArchive() throws Exception {
+        ArchiveBean bean = new ArchiveBean(Mockito.mock(ArchiveManager.class));
+        bean.setCurrentResource("catalog");
+        CMSArchiveConfig config = Mockito.mock(CMSArchiveConfig.class);
+        Mockito.when(config.getPi()).thenReturn("catalog");
+        Mockito.when(config.getCatalogType()).thenReturn(CMSArchiveConfig.CatalogType.VOLUME);
+        Field archiveConfig = ArchiveBean.class.getDeclaredField("archiveConfig");
+        archiveConfig.setAccessible(true);
+        archiveConfig.set(bean, config);
+
+        Assertions.assertEquals("VOLUME", new JSONObject(bean.getCardCatalogBootstrapJson("/viewer", Map.of())).getString("catalogType"));
+
+        bean.setCurrentResource("other");
+        Assertions.assertEquals("CARD", new JSONObject(bean.getCardCatalogBootstrapJson("/viewer", Map.of())).getString("catalogType"));
     }
 
     @Test

@@ -105,12 +105,9 @@ var viewerJS = (function (viewer, $) {
             var to = this.state.to || entryCount;
             var $header = this.$content.find('.archives-cardcatalog__content-header');
             if ($header.attr('data-range') !== from + '-' + to) {
-                this.renderCounts();
+                this.renderOrientation();
                 this.renderRegister();
-                $header
-                    .attr('data-range', from + '-' + to)
-                    .find('.archives-cardcatalog__breadcrumb')
-                    .replaceWith(this.renderBreadcrumb(drawer, from, to));
+                $header.attr('data-range', from + '-' + to);
             }
             $header.find('[data-cc-location]').text(`${this.msgText('card')} ${this.formatNumber(item.position)} ${this.msgText('of')} ${this.formatNumber(entryCount)}`);
             var titleHtml = this.escape(item.label || '');

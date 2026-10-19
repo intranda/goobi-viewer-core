@@ -44,13 +44,11 @@ describe('viewerJS.cardCatalog overview presentation', function () {
             apiUrl: '/api/v1',
             pi: 'catalog',
             msg: {
-                archives__card_catalog_path: 'Zoompfad',
                 archives__card_catalog_back: 'Eine Zoomstufe zurück',
                 archives__card_catalog_card: 'Zettel',
                 archives__card_catalog_cards: 'Zettel',
                 archives__card_catalog_of: 'von',
                 archives__card_catalog_drawer: 'Schublade',
-                archives__card_catalog_whole_drawer: 'Ganze Schublade',
                 archives__card_catalog_complete_cards: 'Ganze Karten',
                 archives__card_catalog_show_full_cards: 'Ganze Karten anzeigen',
                 archives__card_catalog_zoom_help: 'Zoom-Hilfe',
@@ -69,7 +67,7 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         cardCatalog.$content = jQuery('<div><div></div></div>').children();
         cardCatalog.$drawers = jQuery('<div>');
         cardCatalog.$register = jQuery('<div>');
-        cardCatalog.$counts = jQuery('<div>');
+        cardCatalog.$orientation = jQuery('<div>');
         cardCatalog.$guide = jQuery('<div>');
         jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue({ from: 1, to: 100, items: boundaryItems });
         jest.spyOn(cardCatalog, 'syncUrl').mockImplementation(() => {});
@@ -116,20 +114,11 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         expect($toggle.attr('aria-label')).toBe('Ganze Karten anzeigen');
     });
 
-    test('should start the zoom path with the whole drawer as its current step without a visible label', async function () {
+    test('should offer no way back in the content header at the top zoom level', async function () {
         await renderOverview();
-        const $path = cardCatalog.$content.find('.archives-cardcatalog__breadcrumb');
-        const $root = $path.find('.archives-cardcatalog__chip').first();
 
-        expect($path.attr('aria-label')).toBe('Zoompfad');
-        expect(
-            $path
-                .children()
-                .map((_, child) => child.className)
-                .get()
-        ).toEqual(['archives-cardcatalog__breadcrumb-steps']);
-        expect($root.text()).toBe('Ganze Schublade');
-        expect($root.attr('aria-current')).toBe('step');
+        expect(cardCatalog.$content.find('.archives-cardcatalog__back')).toHaveLength(0);
+        expect(cardCatalog.$content.find('[data-chain]')).toHaveLength(0);
     });
 
     test('should keep every range between its two boundary cards in DOM reading order', async function () {
@@ -154,7 +143,7 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         expect(cardCatalog.$content.find('.archives-cardcatalog__zoomcard img').first().attr('src')).toBe(fullImage);
     });
 
-    test('should return to earlier zoom levels through the breadcrumb', async function () {
+    test('should go back exactly one zoom level from the content header', async function () {
         cardCatalog.state = {
             drawer: 'drawer-a',
             from: 10,
@@ -168,24 +157,14 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         cardCatalog.renderZoomView(cardCatalog.currentDrawer(), 10, 40);
         await Promise.resolve();
 
-        const $path = cardCatalog.$content.find('.archives-cardcatalog__breadcrumb');
-        expect($path.attr('aria-label')).toBe('Zoompfad');
-        expect(
-            $path
-                .find('.archives-cardcatalog__chip')
-                .map((_, chip) => chip.textContent)
-                .get()
-        ).toEqual(['Ganze Schublade', 'Zettel 1 – 67', 'Zettel 10 – 40']);
-        expect(
-            $path
-                .find('.archives-cardcatalog__chip[data-chain]')
-                .map((_, chip) => chip.getAttribute('data-chain'))
-                .get()
-        ).toEqual(['-1', '1']);
-        expect(cardCatalog.$content.find('.archives-cardcatalog__navigation').children().first()[0]).toBe($path[0]);
-        expect(cardCatalog.$content.find('.archives-cardcatalog__back')).toHaveLength(0);
+        const $back = cardCatalog.$content.find('.archives-cardcatalog__back');
+        expect($back.text().trim()).toBe('Eine Zoomstufe zurück');
+        expect($back.attr('data-chain')).toBe('1');
+        expect($back.find('svg').attr('aria-hidden')).toBe('true');
+        expect(cardCatalog.$content.find('.archives-cardcatalog__navigation').children().first()[0]).toBe($back[0]);
+        expect(cardCatalog.$content.find('[data-chain]')).toHaveLength(1);
 
-        $path.find('[data-chain="1"]').trigger('click');
+        $back.trigger('click');
         expect(cardCatalog.state).toEqual({ drawer: 'drawer-a', from: 1, to: 67, card: null, chain: [{ from: 1, to: 100 }] });
         expect(cardCatalog.syncUrl).toHaveBeenCalledWith(true);
         await Promise.resolve();
@@ -199,7 +178,7 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         cardCatalog.$content.find('[data-open="67"]').trigger('click');
         await Promise.resolve();
         cardCatalog.$content.parent().scrollTop(0);
-        cardCatalog.$content.find('.archives-cardcatalog__chip[data-chain="-1"]').trigger('click');
+        cardCatalog.$content.find('.archives-cardcatalog__back[data-chain="-1"]').trigger('click');
         await Promise.resolve();
 
         expect(cardCatalog.$content.parent().scrollTop()).toBe(245);
@@ -218,7 +197,7 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         expect(cardCatalog.overviewPositions.has(JSON.stringify(['drawer-a', 34, 100]))).toBe(true);
     });
 
-    test.each([false, true])('should stack a title row and a zoom-path row when full view is %s', function (fullView) {
+    test.each([false, true])('should stack a title row and a navigation row when full view is %s', function (fullView) {
         const drawerLabel = 'A & "B" <C> – vollständig lesbarer Schubladentitel';
         cardCatalog.currentDrawer().label = drawerLabel;
         cardCatalog.state.card = fullView ? 1 : null;
@@ -248,7 +227,7 @@ describe('viewerJS.cardCatalog overview presentation', function () {
         expect($actions).toHaveLength(fullView ? 0 : 1);
         expect($actions.find('[data-preview-toggle]')).toHaveLength(fullView ? 0 : 1);
         expect($header.find('details')).toHaveLength(0);
-        expect($navigation.children('.archives-cardcatalog__breadcrumb')).toHaveLength(1);
+        expect($navigation.children('.archives-cardcatalog__back')).toHaveLength(0);
         expect(
             $header.find(
                 '.archives-cardcatalog__toolbar, .archives-cardcatalog__navigation-hint, .archives-cardcatalog__mode-label, .archives-cardcatalog__breadcrumb-label, .archives-cardcatalog__group-label'

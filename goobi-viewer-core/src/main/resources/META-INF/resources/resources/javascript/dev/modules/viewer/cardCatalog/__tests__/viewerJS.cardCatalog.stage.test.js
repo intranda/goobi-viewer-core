@@ -71,13 +71,11 @@ describe('viewerJS.cardCatalog full view presentation', function () {
             apiUrl: '/api/v1',
             pi: 'catalog',
             msg: {
-                archives__card_catalog_path: 'Zoompfad',
                 archives__card_catalog_back: 'Eine Zoomstufe zurück',
                 archives__card_catalog_card: 'Zettel',
                 archives__card_catalog_cards: 'Zettel',
                 archives__card_catalog_of: 'von',
                 archives__card_catalog_drawer: 'Schublade',
-                archives__card_catalog_whole_drawer: 'Ganze Schublade',
                 archives__card_catalog_complete_cards: 'Ganze Karten',
                 archives__card_catalog_show_full_cards: 'Ganze Karten anzeigen',
                 archives__card_catalog_zoom_help: 'Zoom-Hilfe',
@@ -96,7 +94,7 @@ describe('viewerJS.cardCatalog full view presentation', function () {
         cardCatalog.$content = jQuery('<div><div></div></div>').children();
         cardCatalog.$drawers = jQuery('<div>');
         cardCatalog.$register = jQuery('<div>');
-        cardCatalog.$counts = jQuery('<div>');
+        cardCatalog.$orientation = jQuery('<div>');
         cardCatalog.$guide = jQuery('<div>');
         jest.spyOn(cardCatalog, 'fetchJson').mockResolvedValue({ from: 1, to: 100, items: boundaryItems });
         jest.spyOn(cardCatalog, 'syncUrl').mockImplementation(() => {});
@@ -394,7 +392,7 @@ describe('viewerJS.cardCatalog full view presentation', function () {
         }
     });
 
-    test('should update the visible position and interval when selecting a card outside the current URL window', async function () {
+    test('should update the visible position and current zoom level when selecting a card outside the current URL window', async function () {
         cardCatalog.state = { drawer: 'drawer-a', from: 1, to: 16, card: 16, chain: [{ from: 1, to: 100 }] };
         cardCatalog.fetchJson.mockResolvedValue({ from: 1, to: 16, items: [{ position: 16, label: 'Card 16' }] });
         cardCatalog.renderFullView(cardCatalog.currentDrawer(), 1, 16);
@@ -405,13 +403,12 @@ describe('viewerJS.cardCatalog full view presentation', function () {
         cardCatalog.selectCard(17);
 
         expect(cardCatalog.$content.find('[data-cc-location]').text()).toBe('Zettel 17 von 100');
-        expect(cardCatalog.$counts.text()).toContain('9');
-        expect(cardCatalog.$counts.text()).toContain('24');
+        expect(cardCatalog.$orientation.find('[aria-current="location"] .archives-cardcatalog__path-range').text()).toBe('Zettel 9 – 24');
         expect(cardCatalog.state.from).toBe(9);
         expect(cardCatalog.state.to).toBe(24);
     });
 
-    test('should keep the return actions working after the full-view breadcrumb is refreshed', async function () {
+    test('should keep the return actions working after the full-view zoom path is refreshed', async function () {
         cardCatalog.state = {
             drawer: 'drawer-a',
             from: 1,
@@ -430,13 +427,13 @@ describe('viewerJS.cardCatalog full view presentation', function () {
         cardCatalog.selectCard(17);
         const chainJump = jest.spyOn(cardCatalog, 'chainJump').mockImplementation(() => {});
 
-        cardCatalog.$content.find('.archives-cardcatalog__chip[data-chain="-1"]').trigger('click');
+        cardCatalog.$orientation.find('.archives-cardcatalog__path-link[data-chain="-1"]').trigger('click');
 
         expect(chainJump).toHaveBeenCalledTimes(1);
         expect(chainJump).toHaveBeenCalledWith(-1);
 
         chainJump.mockClear();
-        cardCatalog.$content.find('.archives-cardcatalog__chip[data-chain="1"]').trigger('click');
+        cardCatalog.$content.find('.archives-cardcatalog__back[data-chain="1"]').trigger('click');
         expect(chainJump).toHaveBeenCalledTimes(1);
         expect(chainJump).toHaveBeenCalledWith(1);
     });
@@ -474,13 +471,13 @@ describe('viewerJS.cardCatalog full view presentation', function () {
         cardCatalog.section.to = 17;
         const header = cardCatalog.$content.find('.archives-cardcatalog__content-header')[0];
         const livePosition = cardCatalog.$content.find('[data-cc-location]')[0];
-        const breadcrumb = cardCatalog.$content.find('.archives-cardcatalog__breadcrumb')[0];
+        const back = cardCatalog.$content.find('.archives-cardcatalog__back')[0];
         cardCatalog.selectCard(position);
         expect(cardCatalog.$content.find('.archives-cardcatalog__content-header')[0]).toBe(header);
         expect(cardCatalog.$content.find('[data-cc-location]')[0]).toBe(livePosition);
         expect(livePosition.textContent).toBe('Zettel ' + position + ' von 100');
         expect(livePosition.getAttribute('role')).toBe('status');
         expect(livePosition.getAttribute('aria-live')).toBe('polite');
-        expect(cardCatalog.$content.find('.archives-cardcatalog__breadcrumb')[0] === breadcrumb).toBe(position === 15);
+        expect(cardCatalog.$content.find('.archives-cardcatalog__back')[0]).toBe(back);
     });
 });

@@ -67,7 +67,7 @@
 
                                 <!-- CARD CATALOG BADGE -->
                                 <ui:fragment rendered="#{archiveWrapper.archiveConfig != null and archiveWrapper.archiveConfig.cardCatalog}">
-                                    <span class="archives-list__card-catalog-badge">#{msg.archives__card_catalog}</span>
+                                    <span class="archives-list__card-catalog-badge">#{msg[archiveWrapper.archiveConfig.catalogType.labelKey]}</span>
                                 </ui:fragment>
 
                                 <!-- TITLE OVERLAY -->

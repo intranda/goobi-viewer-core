@@ -30,16 +30,27 @@ class CMSArchiveConfigTest {
     void copyConstructor_shouldCopyCardCatalogFlagAndLinks() {
         CMSArchiveConfig original = new CMSArchiveConfig("catalog");
         original.setCardCatalog(true);
+        original.setCatalogType(CMSArchiveConfig.CatalogType.VOLUME);
         original.addLink();
         original.getLinks().get(0).setUrl("https://example.org/help");
 
         CMSArchiveConfig copy = new CMSArchiveConfig(original);
 
         assertTrue(copy.isCardCatalog());
+        assertEquals(CMSArchiveConfig.CatalogType.VOLUME, copy.getCatalogType());
         assertEquals(1, copy.getLinks().size());
         assertEquals("https://example.org/help", copy.getLinks().get(0).getUrl());
         copy.getLinks().get(0).setUrl("https://example.org/other");
         assertEquals("https://example.org/help", original.getLinks().get(0).getUrl());
+    }
+
+    @Test
+    void getCatalogType_shouldDefaultToCardCatalog() {
+        CMSArchiveConfig config = new CMSArchiveConfig("catalog");
+        assertEquals(CMSArchiveConfig.CatalogType.CARD, config.getCatalogType());
+
+        config.setCatalogType(null);
+        assertEquals(CMSArchiveConfig.CatalogType.CARD, config.getCatalogType());
     }
 
     @Test

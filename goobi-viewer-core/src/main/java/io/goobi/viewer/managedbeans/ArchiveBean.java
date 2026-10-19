@@ -226,6 +226,8 @@ public class ArchiveBean implements Serializable {
         config.put("apiUrl", root + "/api/v1");
         config.put("rootUrl", root);
         config.put("osdScriptUrl", root + "/resources/javascript/libs/openseadragon/openseadragon.min.js");
+        boolean ownConfig = archiveConfig != null && Objects.equals(archiveConfig.getPi(), currentResource);
+        config.put("catalogType", (ownConfig ? archiveConfig.getCatalogType() : CMSArchiveConfig.CatalogType.CARD).name());
         config.put("msg", new JSONObject(translations));
         return config.toString()
                 .replace("&", "\\u0026")

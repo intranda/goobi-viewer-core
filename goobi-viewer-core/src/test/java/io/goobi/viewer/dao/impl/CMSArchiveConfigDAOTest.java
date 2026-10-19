@@ -40,13 +40,14 @@ import io.goobi.viewer.model.cms.CMSArchiveLink;
 class CMSArchiveConfigDAOTest extends AbstractDatabaseEnabledTest {
 
     /**
-     * @verifies persist and reload card catalog flag and help links
+     * @verifies persist and reload card catalog flag, catalog type and help links
      */
     @Test
     void saveCMSArchiveConfig_shouldPersistAndReloadCardCatalogFlagAndHelpLinks() throws Exception {
         CMSArchiveConfig config = new CMSArchiveConfig("PI_CARDCATALOG");
         config.setDateUpdated(LocalDateTime.now());
         config.setCardCatalog(true);
+        config.setCatalogType(CMSArchiveConfig.CatalogType.VOLUME);
         config.addLink();
         config.getLinks().get(0).getLabel().setText("Ordnungskriterien", Locale.GERMAN);
         config.getLinks().get(0).setUrl("https://example.org/ordnungskriterien");
@@ -59,6 +60,7 @@ class CMSArchiveConfigDAOTest extends AbstractDatabaseEnabledTest {
         Optional<CMSArchiveConfig> loaded = DataManager.getInstance().getDao().getCmsArchiveConfigForArchive("PI_CARDCATALOG");
         assertTrue(loaded.isPresent());
         assertTrue(loaded.get().isCardCatalog());
+        assertEquals(CMSArchiveConfig.CatalogType.VOLUME, loaded.get().getCatalogType());
         assertEquals(2, loaded.get().getLinks().size());
         CMSArchiveLink first = loaded.get().getLinks().get(0);
         assertEquals("Ordnungskriterien", first.getLabel().getText(Locale.GERMAN));

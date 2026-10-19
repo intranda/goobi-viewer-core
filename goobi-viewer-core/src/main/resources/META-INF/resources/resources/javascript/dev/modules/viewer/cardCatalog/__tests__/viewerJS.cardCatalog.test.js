@@ -46,7 +46,7 @@ describe('viewerJS.cardCatalog async view ownership', function () {
         cardCatalog.$content = jQuery('<div>');
         cardCatalog.$drawers = jQuery('<div>');
         cardCatalog.$register = jQuery('<div>');
-        cardCatalog.$counts = jQuery('<div>');
+        cardCatalog.$orientation = jQuery('<div>');
         cardCatalog.$guide = jQuery('<div>');
         jest.spyOn(cardCatalog, 'fetchJson').mockImplementation(
             () =>
@@ -143,13 +143,27 @@ describe('viewerJS.cardCatalog.msg', function () {
     });
 
     test('should look up the bundle key for a short name and escape the translation', function () {
-        cardCatalog.config = { msg: { archives__card_catalog_catalog: 'Katalog <b>&</b>' } };
-        expect(cardCatalog.msg('catalog')).toBe('Katalog &lt;b&gt;&amp;&lt;/b&gt;');
+        cardCatalog.config = { msg: { archives__card_catalog_register: 'Register <b>&</b>' } };
+        expect(cardCatalog.msg('register')).toBe('Register &lt;b&gt;&amp;&lt;/b&gt;');
     });
 
     test('should fall back to the escaped key for unknown keys', function () {
         cardCatalog.config = { msg: {} };
         expect(cardCatalog.msg('unknown_key')).toBe('unknown_key');
+    });
+
+    test('should use the page wording of a volume catalog and keep the shared wording', function () {
+        const msg = {
+            archives__card_catalog_cards: 'Zettel',
+            archives__volume_catalog_cards: 'Seiten',
+            archives__card_catalog_drawer: 'Bereich',
+        };
+        cardCatalog.config = { catalogType: 'VOLUME', msg: msg };
+        expect(cardCatalog.msg('cards')).toBe('Seiten');
+        expect(cardCatalog.msg('drawer')).toBe('Bereich');
+
+        cardCatalog.config = { catalogType: 'CARD', msg: msg };
+        expect(cardCatalog.msg('cards')).toBe('Zettel');
     });
 });
 
@@ -230,7 +244,7 @@ describe('viewerJS.cardCatalog.selectDrawer', function () {
         cardCatalog.config = { apiUrl: '/api/v1', pi: 'catalog', msg: {} };
         cardCatalog.state = { drawer: 'drawer-a', from: null, to: null, card: 2, chain: [] };
         cardCatalog.$drawers = jQuery('<div>');
-        cardCatalog.$counts = jQuery('<div>');
+        cardCatalog.$orientation = jQuery('<div>');
         cardCatalog.$guide = jQuery('<div>');
         cardCatalog.$register = jQuery('<div>');
         cardCatalog.$content = jQuery('<div>');
@@ -388,7 +402,7 @@ describe('viewerJS.cardCatalog drawer boundaries', function () {
         };
         cardCatalog.section = { from: 85, to: 100, items: [{ position: 99 }, { position: 100 }] };
         cardCatalog.$drawers = jQuery('<div>');
-        cardCatalog.$counts = jQuery('<div>');
+        cardCatalog.$orientation = jQuery('<div>');
         cardCatalog.$guide = jQuery('<div>');
         cardCatalog.$register = jQuery('<div>');
         cardCatalog.$content = jQuery('<div><div data-cc-caption></div><div data-cc-strip></div><button data-shift="-1"></button><button data-shift="1"></button></div>');
@@ -462,7 +476,7 @@ describe('viewerJS.cardCatalog drawer boundaries', function () {
         expect(cardCatalog.state).toEqual({ drawer: 'drawer-b', from: null, to: null, card: 1, chain: [] });
         expect(cardCatalog.$content.find('.archives-cardcatalog__back')).toHaveLength(0);
         expect(cardCatalog.$content.find('[data-chain]')).toHaveLength(0);
-        expect(cardCatalog.$content.find('.archives-cardcatalog__chip[aria-current="step"]')).toHaveLength(1);
+        expect(cardCatalog.$orientation.find('.archives-cardcatalog__path-step')).toHaveLength(1);
     });
 
     test.each([1, 2])('should enter a complete previous drawer of %i cards at its last card without a redundant zoom level', async function (entryCount) {
@@ -498,7 +512,8 @@ describe('viewerJS.cardCatalog drawer boundaries', function () {
             card: 1,
             chain: entryCount === 1 ? [] : [{ from: 1, to: entryCount }],
         });
-        expect(cardCatalog.$content.find('.archives-cardcatalog__chip[data-chain]')).toHaveLength(entryCount === 1 ? 0 : 1);
+        expect(cardCatalog.$orientation.find('.archives-cardcatalog__path-link')).toHaveLength(entryCount === 1 ? 0 : 1);
+        expect(cardCatalog.$content.find('.archives-cardcatalog__back')).toHaveLength(entryCount === 1 ? 0 : 1);
     });
 
     test('should not leave the drawer when displaying its last card', function () {
@@ -546,7 +561,7 @@ describe('viewerJS.cardCatalog drawer boundaries', function () {
         expect(render).not.toHaveBeenCalled();
     });
 
-    test('should update the active sidebar drawer and counts after crossing a drawer boundary', function () {
+    test('should update the active sidebar drawer and the location after crossing a drawer boundary', function () {
         cardCatalog.renderSidebar();
         jest.spyOn(cardCatalog, 'renderFullView').mockImplementation(() => {});
 
@@ -554,8 +569,8 @@ describe('viewerJS.cardCatalog drawer boundaries', function () {
 
         expect(cardCatalog.$drawers.find('[aria-current="true"]').attr('data-drawer')).toBe('drawer-b');
         expect(cardCatalog.$drawers.find('[data-drawer="drawer-a"]').hasClass('-active')).toBe(false);
-        expect(cardCatalog.$counts.text()).toContain('B');
-        expect(cardCatalog.$counts.text()).toContain('50');
-        expect(cardCatalog.$counts.text()).not.toContain('85');
+        expect(cardCatalog.$orientation.text()).toContain('B');
+        expect(cardCatalog.$orientation.text()).toContain('50');
+        expect(cardCatalog.$orientation.text()).not.toContain('85');
     });
 });
