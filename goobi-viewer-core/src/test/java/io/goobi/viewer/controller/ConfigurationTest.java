@@ -3949,6 +3949,35 @@ class ConfigurationTest extends AbstractTest {
     }
 
     /**
+     * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean,int)
+     * @verifies load icon attributes correctly
+     */
+    @Test
+    void getMetadataFromSubnodeConfig_shouldLoadIconAttributesCorrectly() {
+        List<HierarchicalConfiguration<ImmutableNode>> metadataConfig =
+                DataManager.getInstance().getConfiguration().getLocalConfigurationsAt("metadata.metadataView(0).template(0).metadata(4)");
+        assertFalse(metadataConfig.isEmpty());
+        Metadata md = Configuration.getMetadataFromSubnodeConfig(metadataConfig.get(0), false, 0);
+        // React-style name
+        assertTrue(md.isHasIcon());
+        assertEquals("info-circle", md.getIcon());
+        assertTrue(md.isIconFilled());
+
+        // File name style with iconFilled on a nested metadata element
+        metadataConfig = DataManager.getInstance().getConfiguration().getLocalConfigurationsAt("metadata.metadataView(1).template(0).metadata(1)");
+        assertFalse(metadataConfig.isEmpty());
+        Metadata childMd = Configuration.getMetadataFromSubnodeConfig(metadataConfig.get(0), false, 0).getChildMetadata().get(0);
+        assertEquals("user", childMd.getIcon());
+        assertTrue(childMd.isIconFilled());
+
+        // No icon configured
+        metadataConfig = DataManager.getInstance().getConfiguration().getLocalConfigurationsAt("metadata.metadataView(1).template(0).metadata(1)");
+        Metadata parentMd = Configuration.getMetadataFromSubnodeConfig(metadataConfig.get(0), false, 0);
+        assertFalse(parentMd.isHasIcon());
+        assertFalse(parentMd.isIconFilled());
+    }
+
+    /**
      * @see Configuration#getMetadataFromSubnodeConfig(HierarchicalConfiguration,boolean)
      * @verifies load parameters correctly
      */

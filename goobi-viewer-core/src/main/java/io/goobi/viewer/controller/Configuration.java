@@ -842,6 +842,7 @@ public class Configuration extends AbstractConfiguration {
      * @param indentation indentation level for nested metadata
      * @return the resulting {@link Metadata} instance
      * @should load metadata config attributes correctly
+     * @should load icon attributes correctly
      * @should load parameters correctly
      * @should load replace rules correctly
      * @should load child metadata configurations recursively
@@ -865,6 +866,8 @@ public class Configuration extends AbstractConfiguration {
         String labelField = sub.getString("[@labelField]");
         String sortField = sub.getString("[@sortField]");
         String separator = sub.getString("[@separator]");
+        String icon = sub.getString("[@icon]");
+        boolean iconFilled = sub.getBoolean("[@iconFilled]", false);
         String filterQuery = sub.getString("filterQuery", "");
         List<HierarchicalConfiguration<ImmutableNode>> params = sub.configurationsAt("param");
         List<MetadataParameter> paramList = null;
@@ -886,6 +889,8 @@ public class Configuration extends AbstractConfiguration {
                 .setLabelField(labelField)
                 .setSortField(sortField)
                 .setSeparator(separator)
+                .setIcon(icon)
+                .setIconFilled(iconFilled)
                 .setIndentation(indentation)
                 .setFilterQuery(filterQuery);
 

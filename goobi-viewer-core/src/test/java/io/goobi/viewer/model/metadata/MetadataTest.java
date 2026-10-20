@@ -575,4 +575,114 @@ class MetadataTest extends AbstractDatabaseAndSolrEnabledTest {
         assertEquals(one, other);
         assertEquals(one.hashCode(), other.hashCode());
     }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies return file name unchanged
+     */
+    @Test
+    void normalizeIconName_shouldReturnFileNameUnchanged() {
+        Assertions.assertEquals("info-circle", Metadata.normalizeIconName("info-circle"));
+        Assertions.assertEquals("number-1-small", Metadata.normalizeIconName(" number-1-small "));
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies convert react style name to kebab case
+     */
+    @Test
+    void normalizeIconName_shouldConvertReactStyleNameToKebabCase() {
+        Assertions.assertEquals("info-circle", Metadata.normalizeIconName("IconInfoCircle"));
+        Assertions.assertEquals("arrow-big-down-lines", Metadata.normalizeIconName("IconArrowBigDownLines"));
+        Assertions.assertEquals("a-b", Metadata.normalizeIconName("IconAB"));
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies strip filled suffix from react style name
+     */
+    @Test
+    void normalizeIconName_shouldStripFilledSuffixFromReactStyleName() {
+        Assertions.assertEquals("info-circle", Metadata.normalizeIconName("IconInfoCircleFilled"));
+        Assertions.assertTrue(Metadata.isFilledIconName("IconInfoCircleFilled"));
+        Assertions.assertFalse(Metadata.isFilledIconName("IconInfoCircle"));
+        Assertions.assertFalse(Metadata.isFilledIconName("info-circle"));
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies separate digits from letters
+     */
+    @Test
+    void normalizeIconName_shouldSeparateDigitsFromLetters() {
+        Assertions.assertEquals("number-1-small", Metadata.normalizeIconName("IconNumber1Small"));
+        Assertions.assertEquals("square-number-10", Metadata.normalizeIconName("IconSquareNumber10"));
+        Assertions.assertEquals("h-1", Metadata.normalizeIconName("IconH1"));
+        Assertions.assertEquals("a-b-2", Metadata.normalizeIconName("IconAB2"));
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies return null if name blank
+     */
+    @Test
+    void normalizeIconName_shouldReturnNullIfNameBlank() {
+        Assertions.assertNull(Metadata.normalizeIconName(null));
+        Assertions.assertNull(Metadata.normalizeIconName(" "));
+    }
+
+    /**
+     * @see Metadata#normalizeIconName(String)
+     * @verifies return null if name contains illegal characters
+     */
+    @Test
+    void normalizeIconName_shouldReturnNullIfNameContainsIllegalCharacters() {
+        Assertions.assertNull(Metadata.normalizeIconName("../info-circle"));
+        Assertions.assertNull(Metadata.normalizeIconName("info circle"));
+        Assertions.assertNull(Metadata.normalizeIconName("Info-Circle"));
+    }
+
+    /**
+     * @see Metadata#setIcon(String)
+     * @verifies set file name style icon as is
+     */
+    @Test
+    void setIcon_shouldSetFileNameStyleIconAsIs() {
+        Metadata md = new Metadata().setIcon("info-circle");
+        Assertions.assertTrue(md.isHasIcon());
+        Assertions.assertEquals("info-circle", md.getIcon());
+        Assertions.assertFalse(md.isIconFilled());
+        Assertions.assertTrue(md.setIconFilled(true).isIconFilled());
+    }
+
+    /**
+     * @see Metadata#setIcon(String)
+     * @verifies convert react style icon name and select filled variant
+     */
+    @Test
+    void setIcon_shouldConvertReactStyleIconNameAndSelectFilledVariant() {
+        // Order of setters must not matter
+        Metadata md = new Metadata().setIcon("IconInfoCircleFilled").setIconFilled(false);
+        Assertions.assertEquals("info-circle", md.getIcon());
+        Assertions.assertTrue(md.isIconFilled());
+
+        // Copy constructor keeps icon and variant
+        Metadata copy = new Metadata(md);
+        Assertions.assertEquals("info-circle", copy.getIcon());
+        Assertions.assertTrue(copy.isIconFilled());
+    }
+
+    /**
+     * @see Metadata#setIcon(String)
+     * @verifies reset icon if name blank or invalid
+     */
+    @Test
+    void setIcon_shouldResetIconIfNameBlankOrInvalid() {
+        Metadata md = new Metadata().setIcon("IconInfoCircleFilled");
+        md.setIcon("");
+        Assertions.assertFalse(md.isHasIcon());
+        Assertions.assertFalse(md.isIconFilled());
+        md.setIcon("../evil");
+        Assertions.assertFalse(md.isHasIcon());
+    }
 }
