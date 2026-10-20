@@ -67,8 +67,8 @@ import jakarta.servlet.http.HttpServletRequest;
  * Builds the episode configuration (version 5) consumed by the Podlove Web Player for a podcast episode record.
  *
  * <p>The episode is expected to be a top-level record whose first page holds the audio file. Chapters are read from the
- * structure elements of the record that carry a start time in {@link #FIELD_CHAPTER_START}. If the record has a parent
- * (anchor), it is used as the podcast show.
+ * structure elements of the record that carry a start time in {@link #FIELD_CHAPTER_START}. If the record belongs to a series
+ * (referenced in {@link #FIELD_SERIES_ID}), the series group record is used as the podcast show.
  */
 public class PodloveEpisodeResourceBuilder {
 
@@ -82,6 +82,8 @@ public class PodloveEpisodeResourceBuilder {
     public static final String FIELD_PUBLICATION_DATE = "MD_DATEPUBLISH";
     /** Solr field containing the start time of a chapter within the episode audio. */
     public static final String FIELD_CHAPTER_START = "MD_TIME_START";
+    /** Solr field of an episode containing the PI of the series (podcast) it belongs to. */
+    public static final String FIELD_SERIES_ID = SolrConstants.PREFIX_GROUPID + "SERIES";
 
     private static final int POSTER_SIZE = 500;
     private static final Pattern PATTERN_CLOCK_TIME = Pattern.compile("^(?:(\\d+):)?(\\d{1,2}):(\\d{1,2})(?:\\.(\\d{1,3}))?$");
@@ -136,7 +138,7 @@ public class PodloveEpisodeResourceBuilder {
         putIfNotBlank(json, "poster", getPoster(episode));
         putIfNotBlank(json, "link", getLink(episode));
 
-        StructElement show = episode.getParent();
+        StructElement show = loadSeries(episode);
         if (show != null) {
             JSONObject showJson = new JSONObject();
             showJson.put("title", getTitle(show));
@@ -186,6 +188,37 @@ public class PodloveEpisodeResourceBuilder {
         }
 
         return ret;
+    }
+
+    /**
+     * Loads the series group record the given episode belongs to.
+     *
+     * @param episode episode record
+     * @return series record; null if the episode does not belong to a series or the series record does not exist
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static StructElement loadSeries(StructElement episode) throws PresentationException, IndexUnreachableException {
+        String seriesPi = episode.getMetadataValue(FIELD_SERIES_ID);
+        if (StringUtils.isBlank(seriesPi)) {
+            return null;
+        }
+        String query = new StringBuilder().append('+')
+                .append(SolrConstants.PI)
+                .append(":\"")
+                .append(seriesPi)
+                .append("\" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.GROUP)
+                .toString();
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
+        if (doc == null) {
+            logger.warn("Series {} referenced by {} not found", seriesPi, episode.getPi());
+            return null;
+        }
+
+        return new StructElement(doc);
     }
 
     /**

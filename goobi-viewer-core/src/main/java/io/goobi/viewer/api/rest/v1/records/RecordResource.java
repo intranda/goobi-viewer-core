@@ -1007,7 +1007,7 @@ public class RecordResource {
      * Returns the episode configuration for the Podlove Web Player of an audio record.
      *
      * <p>The configuration contains the episode metadata, the audio sources of the first page, the chapters of the record and, if the
-     * record has an anchor, the anchor as podcast show.
+     * record belongs to a series (GROUPID_SERIES), the series as podcast show.
      *
      * @return Podlove episode configuration as JSON
      * @throws ContentNotFoundException if the record does not exist, is not visible to the caller or has no audio
