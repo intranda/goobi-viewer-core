@@ -9,32 +9,11 @@
     xmlns:viewer="http://xmlns.jcp.org/jsf/composite/components/partner"
     xmlns:viewerComponent="http://xmlns.jcp.org/jsf/composite/components"
     xmlns:widgetComponent="http://xmlns.jcp.org/jsf/composite/components/widgets">
-    <script src="#{request.contextPath}/resources/javascript/libs/podlove-player/embed.js" />
-
-    <!-- VIEW AUDIO -->
+    <!-- VIEW PODCAST EPISODE -->
     <div
         id="viewObjectContent"
         class="view-object-content">
-        <!-- THUMBNAIL -->
-        <div class="view-object-content__thumb">
-            <figure>
-                <img
-                    src="#{activeDocumentBean.viewManager.getRepresentativeImageUrl(300,300)}"
-                    alt="#{msg.thumbnail}"
-                    data-viewer-thumbnail="thumbnail"
-                    data-viewer-access-denied-url="#{activeDocumentBean.viewManager.representativePage.getAccessDeniedThumbnailUrl(navigationHelper.locale)}" />
-            </figure>
-        </div>
         <div class="view-object-content__objects">
-            <!-- TITLE -->
-            <div class="view-object-content__audio-title">
-                <h3>
-                    <h:outputText
-                        value="#{activeDocumentBean.viewManager.currentStructElement.label}"
-                        escape="false" />
-                </h3>
-            </div>
-
             <!-- ACCESS DENIED DESCRIPTION TEXT -->
             <h:panelGroup
                 styleClass="view-object__access-denied-text"
@@ -43,21 +22,38 @@
                     escape="false"
                     value="#{activeDocumentBean.viewManager.currentPage.getAccessDeniedDescriptionTextForAudio(navigationHelper.locale)}" />
             </h:panelGroup>
-            <!-- AUDIO -->
-            <div
-                id="audioContainer"
-                class="view-object-content__audio"
-                data-allow-download="#{activeDocumentBean.viewManager.currentPage.accessPermissionImageDownload}" />
-            <script>
-                const src = "#{activeDocumentBean.viewManager.currentPage.getMediaUrl(activeDocumentBean.viewManager.currentPage.mediaType.subType)}";
-            	const rss = "https://www.geschichte.fm/feed/mp3/";
-            	console.log("audio source ", src);
-            	if(typeof podlovePlayer !== "undefined") {
-            		const player = podlovePlayer("#audioContainer", rss);
-            	} else {
-            		alert("Podlove player not installed");
-            	}
-            </script>
+
+            <!-- PODLOVE PLAYER -->
+            <ui:fragment rendered="#{activeDocumentBean.viewManager.currentPage.accessPermissionAudio}">
+                <script src="#{request.contextPath}/resources/javascript/libs/podlove-player/embed.js?#{navigationHelper.buildVersion}" />
+                <!-- The player renders itself into an iframe, the variant selects the bundled layout template -->
+                <div
+                    id="podcastPlayer"
+                    class="view-object-content__audio"
+                    data-variant="xl" />
+                <script>
+                    (function () {
+                        const restApiUrl = "#{configurationBean.restApiUrlV1}".replace(/\/$/, "");
+                        const pi = "#{activeDocumentBean.viewManager.pi}";
+                        const episode = restApiUrl + "/records/" + encodeURIComponent(pi) + "/podlove/episode.json";
+                        const config = {
+                            version: 5,
+                            // Location of the lazy-loaded player assets; podlove would otherwise load them from the server root
+                            base: "#{request.contextPath}/resources/javascript/libs/podlove-player/",
+                            activeTab: "chapters",
+                            share: {
+                                channels: ["link", "mail"],
+                                sharePlaytime: true
+                            }
+                        };
+                        if (typeof podlovePlayer === "undefined") {
+                            console.error("Podlove player library not loaded");
+                            return;
+                        }
+                        podlovePlayer("#podcastPlayer", episode, config);
+                    })();
+                </script>
+            </ui:fragment>
         </div>
     </div>
 </ui:composition>

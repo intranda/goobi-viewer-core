@@ -35,6 +35,7 @@ import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_METADATA_SOURCE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_NER_TAGS;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PLAINTEXT_ZIP;
+import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_PODLOVE_EPISODE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RECORD;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_FILE;
 import static io.goobi.viewer.api.rest.v1.ApiUrls.RECORDS_RIS_TEXT;
@@ -85,6 +86,7 @@ import io.goobi.viewer.api.rest.model.ner.DocumentReference;
 import io.goobi.viewer.api.rest.resourcebuilders.AnnotationsResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.IIIFPresentation2ResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.NERBuilder;
+import io.goobi.viewer.api.rest.resourcebuilders.PodloveEpisodeResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.RisResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TextResourceBuilder;
 import io.goobi.viewer.api.rest.resourcebuilders.TocResourceBuilder;
@@ -999,6 +1001,33 @@ public class RecordResource {
         JSONObject jsonObj = JsonTools.createJsonObjectFromSolrDoc(docs.get(0), config.getFields());
 
         return Response.ok(jsonObj.toString(), MediaType.APPLICATION_JSON).build();
+    }
+
+    /**
+     * Returns the episode configuration for the Podlove Web Player of an audio record.
+     *
+     * <p>The configuration contains the episode metadata, the audio sources of the first page, the chapters of the record and, if the
+     * record has an anchor, the anchor as podcast show.
+     *
+     * @return Podlove episode configuration as JSON
+     * @throws ContentNotFoundException if the record does not exist, is not visible to the caller or has no audio
+     * @throws ServiceNotAllowedException if the caller may not listen to the audio of the record
+     */
+    @GET
+    @jakarta.ws.rs.Path(RECORDS_PODLOVE_EPISODE)
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(tags = { "records" }, summary = "Get Podlove Web Player episode configuration for an audio record",
+            description = "Returns the episode configuration (version 5) for the Podlove Web Player. Audio sources point to the media"
+                    + " delivery endpoints of the record; chapters are read from structure elements carrying a start time. Download files"
+                    + " are only included if the caller may download the audio.")
+    @ApiResponse(responseCode = "200", description = "Podlove episode configuration",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = "object")))
+    @ApiResponse(responseCode = "400", description = "Invalid record identifier")
+    @ApiResponse(responseCode = "403", description = "Listening to the audio of this record is not allowed")
+    @ApiResponse(responseCode = "404", description = "No audio record found for the given identifier")
+    public String getPodloveEpisode()
+            throws ContentNotFoundException, ServiceNotAllowedException, PresentationException, IndexUnreachableException, DAOException {
+        return new PodloveEpisodeResourceBuilder(urls, servletRequest).build(pi).toString();
     }
 
     /**

@@ -370,14 +370,22 @@ const depsPathsJS = [
         dest: `${jsLibsDir}`,
     },
 	
-	{
-	    // PODLOVE PLAYER
-	    expand: true,
-	    cwd: nodeModules,
-	    src: ['@podlove/web-player/embed.js'],
-	    flatten: true,
-	    dest: `${jsLibsDir}podlove-player/`,
-	}
+    {
+        // PODLOVE PLAYER
+        // embed.js lazy-loads the variant templates and the player iframe assets (5.13.0/player/) relative to the
+        // configured "base" URL, so the folder structure must be kept. Source maps and the bundle report are omitted.
+        expand: true,
+        cwd: `${nodeModules}@podlove/web-player/`,
+        src: [
+            'embed.js*',
+            'variant-*.js*',
+            '*/player/**/*',
+            '!*/player/**/*.map',
+            '!*/player/report.html',
+        ],
+        flatten: false,
+        dest: `${jsLibsDir}podlove-player/`,
+    },
 ];
 
 /////////////////////

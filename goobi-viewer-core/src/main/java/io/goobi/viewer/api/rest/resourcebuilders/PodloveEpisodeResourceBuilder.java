@@ -1,0 +1,346 @@
+/*
+ * This file is part of the Goobi viewer - a content presentation and management
+ * application for digitized objects.
+ *
+ * Visit these websites for more information.
+ *          - http://www.intranda.com
+ *          - http://digiverso.com
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+package io.goobi.viewer.api.rest.resourcebuilders;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import de.unigoettingen.sub.commons.contentlib.exceptions.ContentNotFoundException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.IllegalRequestException;
+import de.unigoettingen.sub.commons.contentlib.exceptions.ServiceNotAllowedException;
+import io.goobi.viewer.api.rest.AbstractApiUrlManager;
+import io.goobi.viewer.controller.DataManager;
+import io.goobi.viewer.controller.DateTools;
+import io.goobi.viewer.controller.NetTools;
+import io.goobi.viewer.controller.imaging.MediaHandler;
+import io.goobi.viewer.exceptions.DAOException;
+import io.goobi.viewer.exceptions.IndexUnreachableException;
+import io.goobi.viewer.exceptions.PresentationException;
+import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.search.SearchHelper;
+import io.goobi.viewer.model.security.AccessConditionUtils;
+import io.goobi.viewer.model.security.IPrivilegeHolder;
+import io.goobi.viewer.model.viewer.PhysicalElement;
+import io.goobi.viewer.model.viewer.StructElement;
+import io.goobi.viewer.model.viewer.pageloader.AbstractPageLoader;
+import io.goobi.viewer.solr.SolrConstants;
+import io.goobi.viewer.solr.SolrConstants.DocType;
+import io.goobi.viewer.solr.SolrSearchIndex;
+import jakarta.servlet.http.HttpServletRequest;
+
+/**
+ * Builds the episode configuration (version 5) consumed by the Podlove Web Player for a podcast episode record.
+ *
+ * <p>The episode is expected to be a top-level record whose first page holds the audio file. Chapters are read from the
+ * structure elements of the record that carry a start time in {@link #FIELD_CHAPTER_START}. If the record has a parent
+ * (anchor), it is used as the podcast show.
+ */
+public class PodloveEpisodeResourceBuilder {
+
+    private static final Logger logger = LogManager.getLogger(PodloveEpisodeResourceBuilder.class);
+
+    /** Version of the Podlove Web Player configuration format. */
+    public static final int PODLOVE_CONFIG_VERSION = 5;
+    /** Solr field containing the title of episodes, shows and chapters. */
+    public static final String FIELD_TITLE = "MD_TITLE";
+    /** Solr field containing the publication date of an episode. */
+    public static final String FIELD_PUBLICATION_DATE = "MD_DATEPUBLISH";
+    /** Solr field containing the start time of a chapter within the episode audio. */
+    public static final String FIELD_CHAPTER_START = "MD_TIME_START";
+
+    private static final int POSTER_SIZE = 500;
+    private static final Pattern PATTERN_CLOCK_TIME = Pattern.compile("^(?:(\\d+):)?(\\d{1,2}):(\\d{1,2})(?:\\.(\\d{1,3}))?$");
+    private static final Pattern PATTERN_SECONDS = Pattern.compile("^\\d+(?:\\.\\d+)?$");
+
+    private final AbstractApiUrlManager urls;
+    private final HttpServletRequest request;
+
+    /**
+     * @param urls API URL manager used to build the audio file URLs
+     * @param request current request, used for access checks
+     */
+    public PodloveEpisodeResourceBuilder(AbstractApiUrlManager urls, HttpServletRequest request) {
+        this.urls = urls;
+        this.request = request;
+    }
+
+    /**
+     * Builds the Podlove episode configuration for the record with the given PI.
+     *
+     * @param pi persistent identifier of the episode record
+     * @return Podlove episode configuration as JSON
+     * @throws ContentNotFoundException if the record does not exist, is not visible to the caller or has no audio
+     * @throws ServiceNotAllowedException if the caller may not listen to the audio of the record
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     * @throws DAOException
+     */
+    public JSONObject build(String pi)
+            throws ContentNotFoundException, ServiceNotAllowedException, PresentationException, IndexUnreachableException, DAOException {
+        String query = SearchHelper.buildFinalQuery("+" + SolrConstants.PI + ":\"" + pi + "\"", false, request, null);
+        SolrDocument doc = DataManager.getInstance().getSearchIndex().getFirstDoc(query, null);
+        if (doc == null) {
+            throw new ContentNotFoundException("No record found for PI: " + pi);
+        }
+        StructElement episode = new StructElement(doc);
+        PhysicalElement page = AbstractPageLoader.loadPage(episode, 1);
+        if (page == null || page.getMediaType() == null || !page.getMediaType().isAudio()) {
+            throw new ContentNotFoundException("No audio found for PI: " + pi);
+        }
+        if (!hasPermission(pi, page, IPrivilegeHolder.PRIV_VIEW_AUDIO)) {
+            throw new ServiceNotAllowedException("Listening to audio not allowed for PI: " + pi);
+        }
+
+        JSONObject json = new JSONObject();
+        json.put("version", PODLOVE_CONFIG_VERSION);
+        json.put("title", getTitle(episode));
+        String publicationDate = formatPublicationDate(episode.getMetadataValue(FIELD_PUBLICATION_DATE));
+        if (publicationDate != null) {
+            json.put("publicationDate", publicationDate);
+        }
+        putIfNotBlank(json, "poster", getPoster(episode));
+        putIfNotBlank(json, "link", getLink(episode));
+
+        StructElement show = episode.getParent();
+        if (show != null) {
+            JSONObject showJson = new JSONObject();
+            showJson.put("title", getTitle(show));
+            putIfNotBlank(showJson, "poster", getPoster(show));
+            putIfNotBlank(showJson, "link", getLink(show));
+            json.put("show", showJson);
+        }
+
+        JSONArray audio = buildAudio(pi, page);
+        json.put("audio", audio);
+        if (hasPermission(pi, page, IPrivilegeHolder.PRIV_DOWNLOAD_IMAGES)) {
+            json.put("files", audio);
+        }
+        json.put("chapters", buildChapters(loadChapterDocs(pi)));
+
+        return json;
+    }
+
+    /**
+     * Creates one audio source per available mime type of the given page.
+     *
+     * @param pi persistent identifier of the record
+     * @param page page holding the audio file
+     * @return Podlove audio sources
+     */
+    private JSONArray buildAudio(String pi, PhysicalElement page) {
+        MediaHandler mediaHandler = new MediaHandler(urls);
+        // Several formats may map to the same mime type (e.g. mp3 and mpeg); only the first one is used
+        Map<String, String> formatsByMimeType = new LinkedHashMap<>();
+        for (String format : page.getMediaFormats("audio")) {
+            formatsByMimeType.putIfAbsent(getAudioMimeType(format), format);
+        }
+
+        JSONArray ret = new JSONArray();
+        for (Map.Entry<String, String> entry : formatsByMimeType.entrySet()) {
+            String format = entry.getValue();
+            try {
+                JSONObject source = new JSONObject();
+                source.put("url", mediaHandler.getMediaUrl("audio", format, pi, page.getFileNameForFormat(format)));
+                source.put("mimeType", entry.getKey());
+                source.put("size", page.getFileSize());
+                source.put("title", format.toUpperCase());
+                ret.put(source);
+            } catch (IllegalRequestException e) {
+                logger.error("Cannot build audio URL for {} in format {}: {}", pi, format, e.getMessage());
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Loads all structure elements of the given record that carry a chapter start time.
+     *
+     * @param pi persistent identifier of the record
+     * @return Solr documents of the chapters
+     * @throws PresentationException
+     * @throws IndexUnreachableException
+     */
+    private static List<SolrDocument> loadChapterDocs(String pi) throws PresentationException, IndexUnreachableException {
+        String query = new StringBuilder().append('+')
+                .append(SolrConstants.PI_TOPSTRUCT)
+                .append(":\"")
+                .append(pi)
+                .append("\" +")
+                .append(SolrConstants.DOCTYPE)
+                .append(':')
+                .append(DocType.DOCSTRCT)
+                .append(" +")
+                .append(FIELD_CHAPTER_START)
+                .append(":*")
+                .toString();
+        SolrDocumentList docs = DataManager.getInstance()
+                .getSearchIndex()
+                .search(query, SolrSearchIndex.MAX_HITS, null, Arrays.asList(SolrConstants.LABEL, FIELD_TITLE, FIELD_CHAPTER_START));
+        return docs != null ? docs : new ArrayList<>();
+    }
+
+    /**
+     * Creates Podlove chapters from the given Solr documents, sorted by start time. Documents without a valid start time are skipped.
+     *
+     * @param docs Solr documents of the chapters
+     * @return Podlove chapters
+     * @should sort chapters by start time and skip invalid ones
+     * @should fall back to label if title is missing
+     */
+    static JSONArray buildChapters(List<SolrDocument> docs) {
+        List<JSONObject> chapters = new ArrayList<>();
+        for (SolrDocument doc : docs) {
+            String start = formatNormalPlayTime((String) doc.getFirstValue(FIELD_CHAPTER_START));
+            if (start == null) {
+                logger.warn("Skipping chapter with invalid start time: {}", doc.getFirstValue(FIELD_CHAPTER_START));
+                continue;
+            }
+            String title = (String) doc.getFirstValue(FIELD_TITLE);
+            if (StringUtils.isBlank(title)) {
+                title = (String) doc.getFirstValue(SolrConstants.LABEL);
+            }
+            JSONObject chapter = new JSONObject();
+            chapter.put("start", start);
+            chapter.put("title", StringUtils.defaultString(title));
+            chapters.add(chapter);
+        }
+        // The normalized format has fixed width (unless above 99 hours), so lexicographic order equals chronological order
+        chapters.sort(Comparator.comparing(c -> c.getString("start")));
+
+        return new JSONArray(chapters);
+    }
+
+    /**
+     * Converts a time value into the normal play time format "HH:MM:SS.mmm" expected by Podlove. Accepted inputs are "H:MM:SS(.mmm)",
+     * "MM:SS(.mmm)" and plain seconds (optionally with fraction).
+     *
+     * @param value time value to convert
+     * @return normalized time, or null if the value cannot be parsed
+     * @should normalize hours minutes seconds
+     * @should normalize minutes seconds
+     * @should convert plain seconds
+     * @should return null for invalid input
+     */
+    static String formatNormalPlayTime(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        String trimmed = value.trim();
+        long millis;
+        if (PATTERN_SECONDS.matcher(trimmed).matches()) {
+            millis = Math.round(Double.parseDouble(trimmed) * 1000);
+        } else {
+            Matcher matcher = PATTERN_CLOCK_TIME.matcher(trimmed);
+            if (!matcher.matches()) {
+                return null;
+            }
+            long hours = matcher.group(1) != null ? Long.parseLong(matcher.group(1)) : 0;
+            long minutes = Long.parseLong(matcher.group(2));
+            long seconds = Long.parseLong(matcher.group(3));
+            if (seconds > 59 || (matcher.group(1) != null && minutes > 59)) {
+                return null;
+            }
+            long fraction = matcher.group(4) != null ? Long.parseLong(StringUtils.rightPad(matcher.group(4), 3, '0')) : 0;
+            millis = ((hours * 60 + minutes) * 60 + seconds) * 1000 + fraction;
+        }
+
+        return String.format("%02d:%02d:%02d.%03d", millis / 3_600_000, (millis / 60_000) % 60, (millis / 1000) % 60, millis % 1000);
+    }
+
+    /**
+     * @param format media format key as used in the media URLs
+     * @return mime type for the given audio format
+     * @should map formats to mime types
+     */
+    static String getAudioMimeType(String format) {
+        if ("mp3".equalsIgnoreCase(format)) {
+            return "audio/mpeg";
+        }
+        return "audio/" + format.toLowerCase();
+    }
+
+    /**
+     * @param value date value as indexed
+     * @return ISO date if the value can be parsed, otherwise the value as is
+     */
+    private static String formatPublicationDate(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
+        LocalDateTime date = DateTools.parseDateFromString(value);
+        if (date == null) {
+            return value;
+        }
+        return date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
+
+    private boolean hasPermission(String pi, PhysicalElement page, String privilege) throws IndexUnreachableException, DAOException {
+        return AccessConditionUtils.checkAccessPermissionByIdentifierAndFileNameWithSessionMap(request != null ? request.getSession() : null, pi,
+                page.getFileName(), privilege, request != null ? NetTools.getIpAddress(request) : null).isGranted();
+    }
+
+    private static String getTitle(StructElement element) {
+        String title = element.getMetadataValue(FIELD_TITLE);
+        return StringUtils.isNotBlank(title) ? title : element.getLabel();
+    }
+
+    private static String getPoster(StructElement element) {
+        try {
+            return BeanUtils.getImageDeliveryBean().getThumbs().getThumbnailUrl(element, POSTER_SIZE, POSTER_SIZE);
+        } catch (RuntimeException e) {
+            logger.warn("Cannot build poster URL for {}: {}", element.getPi(), e.getMessage());
+            return null;
+        }
+    }
+
+    private static String getLink(StructElement element) {
+        try {
+            return element.getUrl();
+        } catch (RuntimeException e) {
+            logger.warn("Cannot build record URL for {}: {}", element.getPi(), e.getMessage());
+            return null;
+        }
+    }
+
+    private static void putIfNotBlank(JSONObject json, String key, String value) {
+        if (StringUtils.isNotBlank(value)) {
+            json.put(key, value);
+        }
+    }
+}
