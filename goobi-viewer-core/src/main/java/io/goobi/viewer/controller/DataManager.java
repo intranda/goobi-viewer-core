@@ -562,6 +562,15 @@ public final class DataManager {
         return restApiJobManager;
     }
 
+    /**
+     * Sets custom ArchiveManager object (used for unit testing).
+     *
+     * @param archiveManager archive manager instance to inject
+     */
+    public void injectArchiveManager(ArchiveManager archiveManager) {
+        this.archiveManager = archiveManager;
+    }
+
     public ArchiveManager getArchiveManager() {
         if (archiveManager == null) {
             synchronized (LOCK) {

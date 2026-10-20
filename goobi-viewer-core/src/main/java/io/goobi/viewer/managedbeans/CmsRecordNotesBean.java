@@ -52,6 +52,7 @@ import io.goobi.viewer.managedbeans.tabledata.TableDataProvider;
 import io.goobi.viewer.managedbeans.tabledata.TableDataProvider.SortOrder;
 import io.goobi.viewer.managedbeans.tabledata.TableDataSource;
 import io.goobi.viewer.managedbeans.utils.BeanUtils;
+import io.goobi.viewer.model.cms.CMSArchiveConfig;
 import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
@@ -170,11 +171,15 @@ public class CmsRecordNotesBean implements Serializable {
     /**
      *
      * @param note Note whose related record URL is requested
-     * @return Record URL
+     * @return Record URL, or the archive URL for a note of an archive
      * @throws IndexUnreachableException
      * @throws PresentationException
+     * @should return the archive url for a note of an archive
      */
     public String getRecordUrl(CMSSingleRecordNote note) throws PresentationException, IndexUnreachableException {
+        if (isArchiveNote(note)) {
+            return navigationHelper.getApplicationUrl() + "archives/" + note.getRecordPi() + "/";
+        }
         if (note != null) {
             if (note.getSolrDoc() == null) {
                 note.setSolrDoc(
@@ -236,6 +241,35 @@ public class CmsRecordNotesBean implements Serializable {
         dataProvider.setEntriesPerPage(DEFAULT_ROWS_PER_PAGE);
         dataProvider.getFilter(PI_TITLE_FILTER);
         //            lazyModelPages.addFilter("CMSCategory", "name");
+    }
+
+    /**
+     * @param note Note to check
+     * @return true if the note belongs to an archive instead of a record
+     * @should return true only for single notes whose identifier is an archive
+     */
+    public boolean isArchiveNote(CMSRecordNote note) {
+        return note instanceof CMSSingleRecordNote n && StringUtils.isNotBlank(n.getRecordPi())
+                && DataManager.getInstance().getArchiveManager().getArchive(n.getRecordPi()) != null;
+    }
+
+    /**
+     * @param note Note of an archive
+     * @return URL of the tile image of the archive, or an empty string if it has none
+     * @throws DAOException
+     * @should return an empty string if the archive has no tile image
+     */
+    public String getArchiveImageUrl(CMSRecordNote note) throws DAOException {
+        if (note instanceof CMSSingleRecordNote n) {
+            return DataManager.getInstance()
+                    .getDao()
+                    .getCmsArchiveConfigForArchive(n.getRecordPi())
+                    .filter(CMSArchiveConfig::hasMediaItem)
+                    .map(config -> config.getMediaItem().getIconURI())
+                    .map(Object::toString)
+                    .orElse("");
+        }
+        return "";
     }
 
     public List<CMSRecordNote> getNotesForRecord(String pi) throws DAOException {

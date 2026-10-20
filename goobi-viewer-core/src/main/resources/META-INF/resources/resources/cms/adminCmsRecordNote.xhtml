@@ -110,6 +110,56 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <ui:fragment rendered="#{not empty cmsRecordNoteEditBean.archives}">
+                                                <div class="connected-middle">
+                                                    <div class="form-row">
+                                                        <div
+                                                            data-target="#{cmsRecordNoteEditBean.currentNoteType == 'ARCHIVE' ? 'isChecked' : 'blurIfUnchecked'}"
+                                                            class="admin__record-notes-radio-select control-label admin__form-label">
+                                                            <h:selectOneRadio
+                                                                group="noteTypeSelect"
+                                                                value="#{cmsRecordNoteEditBean.currentNoteType}"
+                                                                immediate="true">
+                                                                <f:selectItem
+                                                                    itemValue="ARCHIVE"
+                                                                    itemLabel="#{msg.cms__record_notes__type_archive}" />
+                                                                <f:ajax render="@form" />
+                                                            </h:selectOneRadio>
+                                                        </div>
+                                                        <div class="admin__form-input cms-module__option-control">
+                                                            <h:message
+                                                                for="selectArchive"
+                                                                errorClass="-validation-message -danger" />
+                                                            <div class="-validation-mark">
+                                                                <i
+                                                                    class="fa fa-check"
+                                                                    aria-hidden="true" />
+                                                                <i
+                                                                    class="fa fa-exclamation"
+                                                                    aria-hidden="true" />
+                                                            </div>
+                                                            <h:selectOneMenu
+                                                                id="selectArchive"
+                                                                tabindex="1"
+                                                                disabled="#{cmsRecordNoteEditBean.currentNoteType ne 'ARCHIVE'}"
+                                                                styleClass="form-control -validation-input"
+                                                                requiredMessage="#{msg.info__input_required}"
+                                                                required="#{cmsRecordNoteEditBean.currentNoteType eq 'ARCHIVE'}"
+                                                                value="#{cmsRecordNoteEditBean.recordIdentifier}">
+                                                                <f:selectItem
+                                                                    itemLabel="#{msg.select}"
+                                                                    itemValue="#{null}"
+                                                                    noSelectionOption="true" />
+                                                                <f:selectItems
+                                                                    value="#{cmsRecordNoteEditBean.archives}"
+                                                                    var="archive"
+                                                                    itemLabel="#{archive.resourceName}"
+                                                                    itemValue="#{archive.resourceId}" />
+                                                            </h:selectOneMenu>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ui:fragment>
                                             <div class="connected-bottom">
                                                 <div class="form-row">
                                                     <div
@@ -247,7 +297,9 @@
                                                 <div class="admin__default-block">
                                                     <div class="form-group form-row">
                                                         <div class="col-2 control-label admin__form-label">
-                                                            <label for="inputQuery3">#{msg.cms__record_notes__type_record}:</label>
+                                                            <label for="inputQuery3">
+                                                                #{cmsRecordNotesBean.isArchiveNote(note) ? msg.cms__record_notes__type_archive : msg.cms__record_notes__type_record}:
+                                                            </label>
                                                             <!-- 												<span class="admin__label-required-field">(#{msg.form__required_field})</span> -->
                                                         </div>
 
@@ -347,9 +399,7 @@
                                                                     required="#{cmsRecordNoteEditBean.isDefaultLocaleSelected()}"
                                                                     requiredMessage="#{msg.info__input_required}"
                                                                     value="#{note.noteText.text}" />
-                                                                <span class="admin__form-help-text">
-                                                                    #{msg.cms__record_notes_input_text__help} #{msg.cms__record_notes_input_text__variables_help}
-                                                                </span>
+                                                                <span class="admin__form-help-text">#{msg.cms__record_notes_input_text__help}</span>
                                                             </div>
                                                             <div class="col-1 admin__form-help-icon">
                                                                 <button
@@ -465,18 +515,23 @@
                                         <div class="admin__default-block">
                                             <h2>#{msg.cms__record_notes_select_record__title}</h2>
                                             <div class="admin__record-notes-info-box">
-                                                <div class="admin__record-notes-image-wrapper">
-                                                    <img
-                                                        class="admin__record-notes-image"
-                                                        alt="#{note.recordTitle.getValue(navigationHelper.locale)}"
-                                                        title="#{note.recordTitle.getValue(navigationHelper.locale)}"
-                                                        src="#{cmsRecordNotesBean.getThumbnailUrl(note, 350, 420)}" />
-                                                </div>
+                                                <ui:fragment rendered="#{!cmsRecordNotesBean.isArchiveNote(note)}">
+                                                    <div class="admin__record-notes-image-wrapper">
+                                                        <img
+                                                            class="admin__record-notes-image"
+                                                            alt="#{note.recordTitle.getValue(navigationHelper.locale)}"
+                                                            title="#{note.recordTitle.getValue(navigationHelper.locale)}"
+                                                            src="#{cmsRecordNotesBean.getThumbnailUrl(note, 350, 420)}" />
+                                                    </div>
+                                                </ui:fragment>
                                                 <div class="admin__record-notes-metadata">
                                                     <ui:include src="/resources/includes/metadata/metadataElement.xhtml">
                                                         <ui:param
                                                             name="metadataElement"
                                                             value="#{cmsRecordNoteEditBean.metadataElement}" />
+                                                        <ui:param
+                                                            name="renderTitle"
+                                                            value="#{!cmsRecordNotesBean.isArchiveNote(note)}" />
                                                     </ui:include>
                                                 </div>
                                             </div>
@@ -514,6 +569,7 @@
                                         <h:outputText
                                             escape="false"
                                             value="#{msg.cms__record_notes_text_editor_hints__text}" />
+                                        <p class="mt-3 mb-0">#{msg.cms__record_notes_input_text__variables_help}</p>
                                     </div>
 
                                     <!-- SIDEBAR EOL -->

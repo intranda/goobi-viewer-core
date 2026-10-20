@@ -22,9 +22,14 @@
 package io.goobi.viewer.managedbeans;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +42,9 @@ import io.goobi.viewer.controller.DataManager;
 import io.goobi.viewer.exceptions.IndexUnreachableException;
 import io.goobi.viewer.exceptions.PresentationException;
 import io.goobi.viewer.exceptions.ViewerConfigurationException;
+import io.goobi.viewer.model.archives.ArchiveManager;
+import io.goobi.viewer.model.archives.ArchiveResource;
+import io.goobi.viewer.model.cms.recordnotes.CMSMultiRecordNote;
 import io.goobi.viewer.model.cms.recordnotes.CMSSingleRecordNote;
 
 /**
@@ -66,7 +74,14 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseAndSolrEnabledTest {
      */
     @AfterEach
     public void tearDown() throws Exception {
+        DataManager.getInstance().injectArchiveManager(null);
         super.tearDown();
+    }
+
+    private static void injectArchive(String resourceId) {
+        ArchiveManager archiveManager = mock(ArchiveManager.class);
+        when(archiveManager.getArchive(resourceId)).thenReturn(new ArchiveResource(resourceId, resourceId, "", "1"));
+        DataManager.getInstance().injectArchiveManager(archiveManager);
     }
 
     /**
@@ -186,6 +201,44 @@ class CmsRecordNotesBeanTest extends AbstractDatabaseAndSolrEnabledTest {
         assertNull(bean.resolveNoteText(text, "none"));
         assertNull(bean.resolveNoteText(text, "page"));
         assertSame(staticText, bean.resolveNoteText(staticText, "none"));
+    }
+
+    /**
+     * @verifies return true only for single notes whose identifier is an archive
+     * @see CmsRecordNotesBean#isArchiveNote
+     */
+    @Test
+    void isArchiveNote_shouldReturnTrueOnlyForSingleNotesWhoseIdentifierIsAnArchive() {
+        injectArchive("ARCHIVE_1");
+
+        assertTrue(bean.isArchiveNote(new CMSSingleRecordNote("ARCHIVE_1")));
+        assertFalse(bean.isArchiveNote(new CMSSingleRecordNote("PI1")));
+        assertFalse(bean.isArchiveNote(new CMSMultiRecordNote("PI:ARCHIVE_1")));
+        assertFalse(bean.isArchiveNote(null));
+    }
+
+    /**
+     * @verifies return the archive url for a note of an archive
+     * @see CmsRecordNotesBean#getRecordUrl
+     */
+    @Test
+    void getRecordUrl_shouldReturnTheArchiveUrlForANoteOfAnArchive() throws Exception {
+        injectArchive("ARCHIVE_1");
+        NavigationHelper navigationHelper = mock(NavigationHelper.class);
+        when(navigationHelper.getApplicationUrl()).thenReturn("http://localhost:8080/viewer/");
+        FieldUtils.writeField(bean, "navigationHelper", navigationHelper, true);
+
+        assertEquals("http://localhost:8080/viewer/archives/ARCHIVE_1/", bean.getRecordUrl(new CMSSingleRecordNote("ARCHIVE_1")));
+    }
+
+    /**
+     * @verifies return an empty string if the archive has no tile image
+     * @see CmsRecordNotesBean#getArchiveImageUrl
+     */
+    @Test
+    void getArchiveImageUrl_shouldReturnAnEmptyStringIfTheArchiveHasNoTileImage() throws Exception {
+        assertEquals("", bean.getArchiveImageUrl(new CMSSingleRecordNote("ARCHIVE_WITHOUT_CONFIG")));
+        assertEquals("", bean.getArchiveImageUrl(new CMSMultiRecordNote("PI:ARCHIVE_1")));
     }
 
 }
